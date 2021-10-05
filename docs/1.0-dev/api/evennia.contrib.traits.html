@@ -50,64 +50,118 @@ be used to represent everything from attributes (str, agi etc) to skills
 a server reload/reboot).</p>
 <section id="adding-traits-to-a-typeclass">
 <h2>Adding Traits to a typeclass<a class="headerlink" href="#adding-traits-to-a-typeclass" title="Permalink to this headline">¶</a></h2>
-<p>To access and manipulate traits on an entity, its Typeclass needs to have a
-<strong>TraitHandler</strong> assigned it. Usually, the handler is made available as <strong>.traits</strong>
-(in the same way as <strong>.tags</strong> or <strong>.attributes</strong>). It’s recommended to do this
-using Evennia’s <strong>lazy_property</strong> (which basically just means it’s not
-initialized until it’s actually accessed).</p>
-<p>Here’s an example for adding the TraitHandler to the base Object class:</p>
+<p>There are two ways to set up Traits on a typeclass. The first sets up the <strong>TraitHandler</strong>
+as a property <strong>.traits</strong> on your class and you then access traits as e.g. <strong>.traits.strength</strong>.
+The other alternative uses a <strong>TraitProperty</strong>, which makes the trait available directly
+as e.g. <strong>.strength</strong>. This solution also uses the <strong>TraitHandler</strong>, but you don’t need to
+define it explicitly. You can combine both styles if you like.</p>
+<section id="traits-with-traithandler">
+<h3>Traits with TraitHandler<a class="headerlink" href="#traits-with-traithandler" title="Permalink to this headline">¶</a></h3>
+<p>Here’s an example for adding the TraitHandler to the Character class:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/objects.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
 <span class="kn">from</span> <span class="nn">evennia.contrib.traits</span> <span class="kn">import</span> <span class="n">TraitHandler</span>
 
 <span class="c1"># ...</span>
 
-<span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">traits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># this adds the handler as .traits</span>
         <span class="k">return</span> <span class="n">TraitHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="using-traits">
-<h2>Using traits<a class="headerlink" href="#using-traits" title="Permalink to this headline">¶</a></h2>
-<p>A trait is added to the traithandler, after which one can access it
-as a property on the handler (similarly to how you can do .db.attrname for Attributes
-in Evennia).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># this is an example using the &quot;static&quot; trait, described below</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;hunting&quot;</span><span class="p">,</span> <span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
-<span class="mi">4</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">5</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
-<span class="mi">9</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;hp&quot;</span><span class="p">,</span> <span class="s2">&quot;Health&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
-<span class="mi">100</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span> <span class="o">-=</span> <span class="mi">200</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
-<span class="mi">0</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
-<span class="mi">100</span>
-<span class="c1"># you can also access property with getitem</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
-<span class="mi">100</span>
-<span class="c1"># you can store arbitrary data persistently as well</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">effect</span> <span class="o">=</span> <span class="s2">&quot;poisoned!&quot;</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">effect</span>
-<span class="s2">&quot;poisoned!&quot;</span>
+
+    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># (or wherever you want)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;hp&quot;</span><span class="p">,</span> <span class="s2">&quot;Health&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;hunting&quot;</span><span class="p">,</span> <span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
+                        <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>When adding the trait, you supply the name of the property (<strong>hunting</strong>) along
 with a more human-friendly name (“Hunting Skill”). The latter will show if you
 print the trait etc. The <strong>trait_type</strong> is important, this specifies which type
-of trait this is.</p>
+of trait this is (see below).</p>
+</section>
+<section id="traitproperties">
+<h3>TraitProperties<a class="headerlink" href="#traitproperties" title="Permalink to this headline">¶</a></h3>
+<p>Using <strong>TraitProperties</strong> makes the trait available directly on the class, much like Django model
+fields. The drawback is that you must make sure that the name of your Traits don’t collide with any
+other properties/methods on your class.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/objects.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.traits</span> <span class="kn">import</span> <span class="n">TraitProperty</span>
+
+<span class="c1"># ...</span>
+
+<span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">strength</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">health</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Health&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">hunting</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>&gt; Note that the property-name will become the name of the trait and you don’t supply <strong>trait_key</strong>
+&gt; separately.</p>
+<p>&gt; The <strong>.traits</strong> TraitHandler will still be created (it’s used under the
+&gt; hood. But it will only be created when the TraitProperty has been accessed at least once,
+&gt; so be careful if mixing the two styles. If you want to make sure <strong>.traits</strong> is always available,
+&gt; add the <strong>TraitHandler</strong> manually like shown earlier - the <strong>TraitProperty</strong> will by default use
+&gt; the same handler (<strong>.traits</strong>).</p>
+</section>
+</section>
+<section id="using-traits">
+<h2>Using traits<a class="headerlink" href="#using-traits" title="Permalink to this headline">¶</a></h2>
+<p>A trait is added to the traithandler (if you use <strong>TraitProperty</strong> the handler is just created under
+the hood) after which one can access it as a property on the handler (similarly to how you can do
+.db.attrname for Attributes in Evennia).</p>
+<p>All traits have a _read-<a href="#id7"><span class="problematic" id="id8">only_</span></a> field <strong>.value</strong>. This is only used to read out results, you never
+manipulate it directly (if you try, it will just remain unchanged). The <strong>.value</strong> is calculated based
+on combining fields, like <strong>.base</strong> and <strong>.mod</strong> - which fields are available and how they relate to
+each other depends on the trait type.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">12</span>                                  <span class="c1"># base + mod</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">base</span> <span class="o">+=</span> <span class="mi">5</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">17</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">102</span>                                 <span class="c1"># base + mod</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">base</span> <span class="o">-=</span> <span class="mi">200</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">0</span>                                   <span class="c1"># min of 0</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">100</span>
+
+<span class="c1"># you can also access properties like a dict</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+<span class="mi">100</span>
+
+<span class="c1"># you can store arbitrary data persistently for easy reference</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">effect</span> <span class="o">=</span> <span class="s2">&quot;poisoned!&quot;</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">effect</span>
+<span class="s2">&quot;poisoned!&quot;</span>
+
+<span class="c1"># with TraitProperties:</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">12</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">5</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">17</span>
+</pre></div>
+</div>
 </section>
 <section id="trait-types">
 <h2>Trait types<a class="headerlink" href="#trait-types" title="Permalink to this headline">¶</a></h2>
@@ -115,13 +169,15 @@ of trait this is.</p>
 ‘current’ value of the trait. Exactly what this means depends on the type of trait.</p>
 <p>Traits can also be combined to do arithmetic with their .value, if both have a
 compatible type.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">trait1</span> <span class="o">+</span> <span class="n">trait2</span>
-<span class="go">54</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">trait1</span><span class="o">.</span><span class="n">value</span>
-<span class="go">3</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">trait1</span> <span class="o">+</span> <span class="mi">2</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">trait1</span><span class="o">.</span><span class="n">value</span>
-<span class="go">5</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">trait1</span> <span class="o">+</span> <span class="n">trait2</span>
+<span class="mi">54</span>
+
+<span class="o">&gt;</span> <span class="n">trait1</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">3</span>
+
+<span class="o">&gt;</span> <span class="n">trait1</span> <span class="o">+</span> <span class="mi">2</span>
+<span class="o">&gt;</span> <span class="n">trait1</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">5</span>
 </pre></div>
 </div>
 <p>Two numerical traits can also be compared (bigger-than etc), which is useful in
@@ -137,25 +193,27 @@ all sorts of rule-resolution.</p>
 <p>The static trait has a <strong>base</strong> value and an optional <strong>mod</strong>-ifier. A typical use
 of a static trait would be a Strength stat or Skill value. That is, something
 that varies slowly or not at all, and which may be modified in-place.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
-<span class="go">12   # base + mod</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">base</span> <span class="o">+=</span> <span class="mi">2</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">mod</span> <span class="o">+=</span> <span class="mi">1</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
-<span class="go">15</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
-<span class="go">12</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
+
+<span class="mi">12</span>   <span class="c1"># base + mod</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">base</span> <span class="o">+=</span> <span class="mi">2</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">mod</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">15</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">12</span>
 </pre></div>
 </div>
 <section id="counter">
 <h3>Counter<a class="headerlink" href="#counter" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">min</span><span class="o">/</span><span class="n">unset</span>     <span class="n">base</span>    <span class="n">base</span><span class="o">+</span><span class="n">mod</span>                       <span class="nb">max</span><span class="o">/</span><span class="n">unset</span>
 <span class="o">|--------------|--------|---------</span><span class="n">X</span><span class="o">--------</span><span class="n">X</span><span class="o">------------|</span>
-                            <span class="n">current</span>   <span class="n">value</span>
-                                      <span class="o">=</span> <span class="n">current</span>
-                                      <span class="o">+</span> <span class="n">mod</span>
+                              <span class="n">current</span>    <span class="n">value</span>
+                                         <span class="o">=</span> <span class="n">current</span>
+                                         <span class="o">+</span> <span class="n">mod</span>
 </pre></div>
 </div>
 <p>A counter describes a value that can move from a base. The <strong>.current</strong> property
@@ -163,18 +221,23 @@ is the thing usually modified. It starts at the <strong>.base</strong>. One can 
 modifier, which will both be added to the base and to current (forming
 <strong>.value</strong>).  The min/max of the range are optional, a boundary set to None will
 remove it. A suggested use for a Counter Trait would be to track skill values.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;hunting&quot;</span><span class="p">,</span> <span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
-<span class="go">                   base=10, mod=1, min=0, max=100)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
-<span class="go">11  # current starts at base + mod</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">current</span> <span class="o">+=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
-<span class="go">21</span>
-<span class="go"># reset back to base+mod by deleting current</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">current</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
-<span class="go">11</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># removing upper bound</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;hunting&quot;</span><span class="p">,</span> <span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
+                   <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">11</span>  <span class="c1"># current starts at base + mod</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">current</span> <span class="o">+=</span> <span class="mi">10</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">21</span>
+
+<span class="c1"># reset back to base+mod by deleting current</span>
+<span class="o">&gt;</span> <span class="k">del</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">current</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">11</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># removing upper bound</span>
+
+<span class="c1"># for TraitProperties, pass the args/kwargs of traits.add() to the</span>
+<span class="c1"># TraitProperty constructor instead.</span>
 </pre></div>
 </div>
 <p>Counters have some extra properties:</p>
@@ -188,19 +251,20 @@ interval. Here is an example for skill values between 0 and 10:</p>
 </div>
 <p>The keys must be supplied from smallest to largest. Any values below the lowest and above the
 highest description will be considered to be included in the closest description slot.
-By calling <strong>.desc()</strong> on the Counter, will you get the text matching the current <strong>value</strong>
-value.</p>
+By calling <strong>.desc()</strong> on the Counter, you will get the text matching the current <strong>value</strong>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># (could also have passed descs= to traits.add())</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">descs</span> <span class="o">=</span> <span class="p">{</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">descs</span> <span class="o">=</span> <span class="p">{</span>
     <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;unskilled&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span> <span class="s2">&quot;neophyte&quot;</span><span class="p">,</span> <span class="mi">50</span><span class="p">:</span> <span class="s2">&quot;trained&quot;</span><span class="p">,</span> <span class="mi">70</span><span class="p">:</span> <span class="s2">&quot;expert&quot;</span><span class="p">,</span> <span class="mi">90</span><span class="p">:</span> <span class="s2">&quot;master&quot;</span><span class="p">}</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
 <span class="mi">11</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">desc</span><span class="p">()</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">desc</span><span class="p">()</span>
 <span class="s2">&quot;neophyte&quot;</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">current</span> <span class="o">+=</span> <span class="mi">60</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">current</span> <span class="o">+=</span> <span class="mi">60</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
 <span class="mi">71</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">desc</span><span class="p">()</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">desc</span><span class="p">()</span>
 <span class="s2">&quot;expert&quot;</span>
 </pre></div>
 </div>
@@ -216,39 +280,46 @@ if those are set.</p>
 <p>It is also possible to set a <strong>.ratetarget</strong>, for the auto-change to stop at
 (rather than at the min/max boundaries). This allows the value to return to
 a previous value.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
-<span class="go">71</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">ratetarget</span> <span class="o">=</span> <span class="mi">71</span>
-<span class="go"># debuff hunting for some reason</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">current</span> <span class="o">-=</span> <span class="mi">30</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
-<span class="go">41</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">rate</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># 1/s increase</span>
-<span class="go"># Waiting 5s</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
-<span class="go">46</span>
-<span class="go"># Waiting 8s</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
-<span class="go">54</span>
-<span class="go"># Waiting 100s</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
-<span class="go">71    # we have stopped at the ratetarget</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">rate</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># disable auto-change</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">71</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">ratetarget</span> <span class="o">=</span> <span class="mi">71</span>
+<span class="c1"># debuff hunting for some reason</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">current</span> <span class="o">-=</span> <span class="mi">30</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">41</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">rate</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># 1/s increase</span>
+<span class="c1"># Waiting 5s</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">46</span>
+
+<span class="c1"># Waiting 8s</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">54</span>
+
+<span class="c1"># Waiting 100s</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">71</span>    <span class="c1"># we have stopped at the ratetarget</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">rate</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># disable auto-change</span>
 </pre></div>
 </div>
-<p>Note that if <strong>.rate</strong> is a non-integer, the resulting <strong>.value</strong> (at least until it
-reaches a boundary or rate-target) will also come out a float (so you can get a
-very exact value at the current time). If you expect an integer, you must run
-<strong>int()</strong> (or something like <strong>round()</strong>) on the result yourself.</p>
+<p>Note that when retrieving the <strong>current</strong>, the result will always be of the same
+type as the <strong>.base</strong> even <strong>rate</strong> is a non-integer value. So if <strong>base</strong> is an <strong>int</strong>
+(default)**, the <strong>current</strong> value will also be rounded the closest full integer.
+If you want to see the exact <strong>current</strong> value, set <strong>base</strong> to a float - you
+will then need to use <strong>round()</strong> yourself on the result if you want integers.</p>
 </section>
 <section id="percent">
 <h4>.percent()<a class="headerlink" href="#percent" title="Permalink to this headline">¶</a></h4>
 <p>If both min and max are defined, the <strong>.percent()</strong> method of the trait will
 return the value as a percentage.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">percent</span><span class="p">()</span>
-<span class="go">&quot;71.0%&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">percent</span><span class="p">(</span><span class="n">formatting</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-<span class="go">71.0</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">percent</span><span class="p">()</span>
+<span class="s2">&quot;71.0%&quot;</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">percent</span><span class="p">(</span><span class="n">formatting</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="mf">71.0</span>
 </pre></div>
 </div>
 </section>
@@ -268,15 +339,17 @@ read-only and is set by <strong>.base</strong> + <strong>.mod</strong>. So contr
 value. The minimum bound defaults to 0 if not set explicitly.</p>
 <p>This trait is useful for showing commonly depletable resources like health,
 stamina and the like.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;hp&quot;</span><span class="p">,</span> <span class="s2">&quot;Health&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>  <span class="c1"># (or .current)</span>
-<span class="go">100</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
-<span class="go">110</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">current</span> <span class="o">-=</span> <span class="mi">30</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
-<span class="go">80</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;hp&quot;</span><span class="p">,</span> <span class="s2">&quot;Health&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>  <span class="c1"># (or .current)</span>
+<span class="mi">100</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">110</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">current</span> <span class="o">-=</span> <span class="mi">30</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">80</span>
 </pre></div>
 </div>
 <p>The Gauge trait is subclass of the Counter, so you have access to the same
@@ -291,16 +364,18 @@ from poison slowly draining your health, to resting gradually increasing it.</p>
 <p>A single value of any type.</p>
 <p>This is the ‘base’ Trait, meant to inherit from if you want to invent
 trait-types from scratch (most of the time you’ll probably inherit from some of
-the more advanced trait-type classes though). A <strong>Trait**s  **.value</strong> can be
-anything (that can be stored in an Attribute) and if it’s a integer/float you
-can do arithmetic with it, but otherwise it acts just like a glorified
-Attribute.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;mytrait&quot;</span><span class="p">,</span> <span class="s2">&quot;My Trait&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;trait&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
-<span class="go">30</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;stringvalue&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
-<span class="go">&quot;stringvalue&quot;</span>
+the more advanced trait-type classes though).</p>
+<p>Unlike other Trait-types, the single <strong>.value</strong> property of the base <strong>Trait</strong> can
+be editied. The value can hold any data that can be stored in an Attribute. If
+it’s an integer/float you can do arithmetic with it, but otherwise this acts just
+like a glorified Attribute.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;mytrait&quot;</span><span class="p">,</span> <span class="s2">&quot;My Trait&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;trait&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">30</span>
+
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;stringvalue&quot;</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
+<span class="s2">&quot;stringvalue&quot;</span>
 </pre></div>
 </div>
 </section>
@@ -337,9 +412,14 @@ default (0). Above we also added some helper methods.</p>
 </pre></div>
 </div>
 <p>Reload the server and you should now be able to use your trait:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;mood&quot;</span><span class="p">,</span> <span class="s2">&quot;A dark mood&quot;</span><span class="p">,</span> <span class="n">rage</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s1">&#39;rage&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mood</span><span class="o">.</span><span class="n">rage</span>
-<span class="go">30</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;mood&quot;</span><span class="p">,</span> <span class="s2">&quot;A dark mood&quot;</span><span class="p">,</span> <span class="n">rage</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s1">&#39;rage&#39;</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mood</span><span class="o">.</span><span class="n">rage</span>
+<span class="mi">30</span>
+
+<span class="c1"># as TraitProperty</span>
+
+<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">rage</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;A dark mood&quot;</span><span class="p">,</span> <span class="n">rage</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s1">&#39;rage&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <hr class="docutils" />
@@ -374,7 +454,17 @@ by Trait classes when defining their required keys.</p>
 <dt id="evennia.contrib.traits.TraitHandler">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">TraitHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">db_attribute_key</span><span class="o">=</span><span class="default_value">'traits'</span></em>, <em class="sig-param"><span class="n">db_attribute_category</span><span class="o">=</span><span class="default_value">'traits'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Factory class that instantiates Trait objects.</p>
+<p>Factory class that instantiates Trait objects. Must be assigned as a property
+on the class, usually with <strong>lazy_property</strong>.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="nd">@lazy_property</span>
+    <span class="k">def</span> <span class="nf">traits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># this adds the handler as .traits</span>
+        <span class="k">return</span> <span class="n">TraitHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt id="evennia.contrib.traits.TraitHandler.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">db_attribute_key</span><span class="o">=</span><span class="default_value">'traits'</span></em>, <em class="sig-param"><span class="n">db_attribute_category</span><span class="o">=</span><span class="default_value">'traits'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitHandler.__init__" title="Permalink to this definition">¶</a></dt>
@@ -383,7 +473,8 @@ by Trait classes when defining their required keys.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>obj</strong> (<em>Object</em>) – Parent Object typeclass for this TraitHandler</p></li>
-<li><p><strong>db_attribute_key</strong> (<em>str</em>) – Name of the DB attribute for trait data storage</p></li>
+<li><p><strong>db_attribute_key</strong> (<em>str</em>) – Name of the DB attribute for trait data storage.</p></li>
+<li><p><strong>db_attribute_category</strong> (<em>str</em>) – Name of DB attribute’s category to trait data storage.</p></li>
 </ul>
 </dd>
 </dl>
@@ -426,7 +517,7 @@ available on this handler (example ‘hp’).</p></li>
 <li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the Trait, like “Health”. If
 not given, will use <strong>trait_key</strong> starting with a capital letter.</p></li>
 <li><p><strong>trait_type</strong> (<em>str</em><em>, </em><em>optional</em>) – One of ‘static’, ‘counter’ or ‘gauge’.</p></li>
-<li><p><strong>force_add</strong> (<em>bool</em>) – If set, create a new Trait even if a Trait with
+<li><p><strong>force</strong> (<em>bool</em>) – If set, create a new Trait even if a Trait with
 the same <strong>trait_key</strong> already exists.</p></li>
 <li><p><strong>trait_properties</strong> (<em>dict</em>) – These will all be use to initialize
 the new trait. See the <strong>properties</strong> class variable on each
@@ -456,6 +547,54 @@ already exists (and <strong>force</strong> is unset).</p>
 <dt id="evennia.contrib.traits.TraitHandler.clear">
 <code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitHandler.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitHandler.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove all Traits from the handler’s parent object.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.traits.TraitProperty">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">TraitProperty</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trait_type</span><span class="o">=</span><span class="default_value">'static'</span></em>, <em class="sig-param"><span class="n">force</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">trait_properties</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Optional extra: Allows for applying traits as individual properties directly on the parent class
+instead for properties on the <strong>.traits</strong> handler. So with this you could access data e.g. as
+<strong>character.hp.value</strong> instead of <strong>character.traits.hp.value</strong>. This still uses the traitshandler
+under the hood.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.traits</span> <span class="kn">import</span> <span class="n">TraitProperty</span>
+
+<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+
+    <span class="n">strength</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">hunting</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;hunting&quot;</span><span class="p">,</span> <span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
+                            <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">health</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;health&quot;</span><span class="p">,</span> <span class="s2">&quot;Health&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="evennia.contrib.traits.TraitProperty.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trait_type</span><span class="o">=</span><span class="default_value">'static'</span></em>, <em class="sig-param"><span class="n">force</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">trait_properties</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitProperty.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitProperty.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a TraitField. Mimics TraitHandler.add input except no <strong>trait_key</strong>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the Trait, like “Health”. If
+not given, will use <strong>trait_key</strong> starting with a capital letter.</p></li>
+<li><p><strong>trait_type</strong> (<em>str</em><em>, </em><em>optional</em>) – One of ‘static’, ‘counter’ or ‘gauge’.</p></li>
+<li><p><strong>force</strong> (<em>bool</em>) – If set, create a new Trait even if a Trait with
+the same <strong>trait_key</strong> already exists.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Kwargs:</dt><dd><dl class="simple">
+<dt>traithandler_name (str): If given, this is used as the name of the TraitHandler created</dt><dd><p>behind the scenes. If not set, this will be a property <strong>traits</strong> on the class.</p>
+</dd>
+<dt>any: All other trait_properties are the same as for adding a new trait of the given type</dt><dd><p>using the normal TraitHandler.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -557,7 +696,7 @@ initialization of this trait.</p>
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">StaticTrait</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trait_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#StaticTrait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.StaticTrait" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.traits.Trait" title="evennia.contrib.traits.Trait"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.traits.Trait</span></code></a></p>
 <p>Static Trait. This is a single value with a modifier,
-with no concept of a ‘current’ value.</p>
+with no concept of a ‘current’ value or min/max etc.</p>
 <p>value = base + mod</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.traits.StaticTrait.trait_type">
@@ -567,6 +706,11 @@ with no concept of a ‘current’ value.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.traits.StaticTrait.default_keys">
 <code class="sig-name descname">default_keys</code><em class="property"> = {'base': 0, 'mod': 0}</em><a class="headerlink" href="#evennia.contrib.traits.StaticTrait.default_keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.traits.StaticTrait.base">
+<em class="property">property </em><code class="sig-name descname">base</code><a class="headerlink" href="#evennia.contrib.traits.StaticTrait.base" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -868,7 +1012,11 @@ returned.</p>
 <p><h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">evennia.contrib.traits</a><ul>
-<li><a class="reference internal" href="#adding-traits-to-a-typeclass">Adding Traits to a typeclass</a></li>
+<li><a class="reference internal" href="#adding-traits-to-a-typeclass">Adding Traits to a typeclass</a><ul>
+<li><a class="reference internal" href="#traits-with-traithandler">Traits with TraitHandler</a></li>
+<li><a class="reference internal" href="#traitproperties">TraitProperties</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#using-traits">Using traits</a></li>
 <li><a class="reference internal" href="#trait-types">Trait types</a></li>
 <li><a class="reference internal" href="#static-trait">Static trait</a><ul>

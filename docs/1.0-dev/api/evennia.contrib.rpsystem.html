@@ -68,7 +68,7 @@ represent you in the emote. You can use /sdesc, /nick, /key or
 /alias to reference objects in the room. You can use any
 number of sdesc sub-parts to differentiate a local sdesc, or
 use /1-sdesc etc to differentiate them. The emote also
-identifies nested says.</p>
+identifies nested says and separates case.</p>
 </dd>
 </dl>
 </li>
@@ -113,13 +113,17 @@ The tavern is full of nice people</p>
 an example of a static <em>pose</em>: The “standing by the bar” has been set
 by the player of the tall man, so that people looking at him can tell
 at a glance what is going on.</p>
-<p>&gt; emote /me looks at /tall and says “Hello!”</p>
+<p>&gt; emote /me looks at /Tall and says “Hello!”</p>
 <dl class="simple">
 <dt>I see:</dt><dd><p>Griatch looks at Tall man and says “Hello”.</p>
 </dd>
 <dt>Tall man (assuming his name is Tom) sees:</dt><dd><p>The godlike figure looks at Tom and says “Hello”.</p>
 </dd>
 </dl>
+<p>Note that by default, the case of the tag matters, so <strong>/tall</strong> will
+lead to ‘tall man’ while <strong>/Tall</strong> will become ‘Tall man’ and /TALL
+becomes /TALL MAN. If you don’t want this behavior, you can pass
+case_sensitive=False to the <strong>send_emote</strong> function.</p>
 <p>Verbose Installation Instructions:</p>
 <blockquote>
 <div><ol class="arabic">
@@ -154,9 +158,9 @@ Import the <strong>ContribRPCharacter</strong> class:</p>
 </dd>
 </dl>
 </li>
-<li><p>Reload the server (&#64;reload or from console: “evennia reload”)</p></li>
+<li><p>Reload the server (<strong>reload</strong> or from console: “evennia reload”)</p></li>
 <li><dl class="simple">
-<dt>Force typeclass updates as required. Example for your character:</dt><dd><p>&#64;type/reset/force me = typeclasses.characters.Character</p>
+<dt>Force typeclass updates as required. Example for your character:</dt><dd><p><strong>type/reset/force me = typeclasses.characters.Character</strong></p>
 </dd>
 </dl>
 </li>
@@ -285,7 +289,7 @@ information is actually conveyed.</p>
 
 <dl class="py function">
 <dt id="evennia.contrib.rpsystem.parse_sdescs_and_recogs">
-<code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">parse_sdescs_and_recogs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sender</span></em>, <em class="sig-param"><span class="n">candidates</span></em>, <em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">search_mode</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#parse_sdescs_and_recogs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.parse_sdescs_and_recogs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">parse_sdescs_and_recogs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sender</span></em>, <em class="sig-param"><span class="n">candidates</span></em>, <em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">search_mode</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">case_sensitive</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#parse_sdescs_and_recogs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.parse_sdescs_and_recogs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read a raw emote and parse it into an intermediary
 format for distributing to all observers.</p>
 <dl class="field-list simple">
@@ -303,6 +307,13 @@ search_mode (bool, optional): If <strong>True</strong>, the “emote” is a que
 <blockquote>
 <div><p>we want to analyze. If so, the return value is changed.</p>
 </div></blockquote>
+<dl class="simple">
+<dt>case_sensitive (bool, optional); If set, the case of /refs matter, so that</dt><dd><p>/tall will come out as ‘tall man’ while /Tall will become ‘Tall man’.
+This allows for more grammatically correct emotes at the cost of being
+a little more to learn for players. If disabled, the original sdesc case
+is always kept and are inserted as-is.</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><p><em>(emote, mapping) (tuple)</em> –</p>
@@ -350,6 +361,18 @@ self-referencing in the emote, this will auto-add
 - ‘last’: Add sender to the end of emote as [sender]
 - ‘first’: Prepend sender to start of emote.</p></li>
 </ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Kwargs:</dt><dd><dl class="simple">
+<dt>case_sensitive (bool): Defaults to True, but can be unset</dt><dd><p>here. When enabled, /tall will lead to a lowercase
+‘tall man’ while /Tall will lead to ‘Tall man’ and
+/TALL will lead to ‘TALL MAN’. If disabled, the sdesc’s
+case will always be used, regardless of the /ref case used.</p>
+</dd>
+<dt>any: Other kwargs will be passed on into the receiver’s process_sdesc and</dt><dd><p>process_recog methods, and can thus be used to customize those.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -802,7 +825,7 @@ Using the command without arguments will list all current recogs.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdRecog.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['forget', 'recognize']</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['recognize', 'forget']</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -829,7 +852,7 @@ Using the command without arguments will list all current recogs.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdRecog.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'forget recognize', 'category': 'general', 'key': 'recog', 'tags': '', 'text': '\n    Recognize another person in the same room.\n\n    Usage:\n      recog\n      recog sdesc as alias\n      forget alias\n\n    Example:\n        recog tall man as Griatch\n        forget griatch\n\n    This will assign a personal alias for a person, or forget said alias.\n    Using the command without arguments will list all current recogs.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'recognize forget', 'category': 'general', 'key': 'recog', 'tags': '', 'text': '\n    Recognize another person in the same room.\n\n    Usage:\n      recog\n      recog sdesc as alias\n      forget alias\n\n    Example:\n        recog tall man as Griatch\n        forget griatch\n\n    This will assign a personal alias for a person, or forget said alias.\n    Using the command without arguments will list all current recogs.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1165,8 +1188,23 @@ you are viewing yourself (and sdesc is your key).
 This is not used by default.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>sdesc (str)</em> –</p>
+</dl>
+<dl class="simple">
+<dt>Kwargs:</dt><dd><dl class="simple">
+<dt>ref (str): The reference marker found in string to replace.</dt><dd><p>This is on the form #{num}{case}, like ‘#12^’, where
+the number is a processing location in the string and the
+case symbol indicates the case of the original tag input
+- <strong>t</strong> - input was Titled, like /Tall
+- <strong>^</strong> - input was all uppercase, like /TALL
+- <strong>v</strong> - input was all lowercase, like /tall
+- <strong>~</strong> - input case should be kept, or was mixed-case</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>sdesc (str)</em> –</p>
 <dl class="simple">
 <dt>The processed sdesc ready</dt><dd><p>for display.</p>
 </dd>
@@ -1189,8 +1227,14 @@ translated from the original sdesc at this point.</p></li>
 This is not used by default.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>recog (str)</em> – The modified recog string.</p>
+</dl>
+<dl class="simple">
+<dt>Kwargs:</dt><dd><p>ref (str): See process_sdesc.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>recog (str)</em> – The modified recog string.</p>
 </dd>
 </dl>
 </dd></dl>

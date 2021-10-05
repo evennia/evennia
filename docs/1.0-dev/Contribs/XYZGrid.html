@@ -75,6 +75,16 @@ option.</p>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <ol>
+<li><p>XYZGrid requires the <code class="docutils literal notranslate"><span class="pre">scipy</span></code> library. Easiest is to just install the
+optional/contrib requirements in <code class="docutils literal notranslate"><span class="pre">evennia/requirements_extra.txt</span></code> by
+doing</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="p">(</span><span class="n">cd</span> <span class="n">to</span> <span class="n">evennia</span><span class="o">/</span> <span class="n">folder</span><span class="p">)</span>
+ <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements_extra</span><span class="o">.</span><span class="n">txt</span>
+ <span class="p">(</span><span class="n">then</span> <span class="n">go</span> <span class="n">back</span> <span class="n">to</span> <span class="n">your</span> <span class="n">mygame</span><span class="o">/</span> <span class="n">folder</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will install all optional requirements of Evennia.</p>
+</li>
 <li><p>Import and add the <code class="docutils literal notranslate"><span class="pre">evennia.contrib.commands.XYZGridCmdSet</span></code> to the
 <code class="docutils literal notranslate"><span class="pre">CharacterCmdset</span></code> cmdset in <code class="docutils literal notranslate"><span class="pre">mygame/commands.default_cmds.py</span></code>. Reload
 the server. This makes the <code class="docutils literal notranslate"><span class="pre">map</span></code>, <code class="docutils literal notranslate"><span class="pre">goto/path</span></code> and the modified <code class="docutils literal notranslate"><span class="pre">teleport</span></code> and

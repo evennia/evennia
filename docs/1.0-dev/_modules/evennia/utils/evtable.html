@@ -1158,7 +1158,7 @@
 
 <span class="sd">        Notes:</span>
 <span class="sd">            Beyond those table-specific keywords, the non-overlapping keywords</span>
-<span class="sd">            of `EcCell.__init__` are also available. These will be passed down</span>
+<span class="sd">            of `EvCell.__init__` are also available. These will be passed down</span>
 <span class="sd">            to every cell in the table.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1520,31 +1520,13 @@
                         <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">chmin</span> <span class="o">+</span> <span class="n">locked_height</span><span class="p">)</span>
                     <span class="p">)</span>
 
-                <span class="c1"># now we add all the extra height up to the desired table-height.</span>
-                <span class="c1"># We do this so that the tallest cells gets expanded first (and</span>
-                <span class="c1"># thus avoid getting cropped)</span>
-
-                <span class="n">even</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
-                <span class="n">correction</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="k">while</span> <span class="n">correction</span> <span class="o">&lt;</span> <span class="n">excess</span><span class="p">:</span>
-                    <span class="c1"># expand the cells with the most rows first</span>
-                    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">correction</span> <span class="o">&lt;</span> <span class="n">nrowmax</span> <span class="ow">and</span> <span class="n">nrowmax</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                        <span class="c1"># avoid adding to header first round (looks bad on very small tables)</span>
-                        <span class="n">ci</span> <span class="o">=</span> <span class="n">cheights</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">cheights</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span> <span class="o">+</span> <span class="mi">1</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">ci</span> <span class="o">=</span> <span class="n">cheights</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">cheights</span><span class="p">))</span>
-                    <span class="k">if</span> <span class="n">ci</span> <span class="ow">in</span> <span class="n">locked_cols</span><span class="p">:</span>
-                        <span class="c1"># locked row, make sure it&#39;s not picked again</span>
-                        <span class="n">cheights</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">9999</span>
-                        <span class="n">cheights_min</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span> <span class="o">=</span> <span class="n">locked_cols</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">cheights_min</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-                        <span class="c1"># change balance</span>
-                        <span class="k">if</span> <span class="n">ci</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">:</span>
-                            <span class="c1"># it doesn&#39;t look very good if header expands too fast</span>
-                            <span class="n">cheights</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">even</span> <span class="k">else</span> <span class="mi">3</span>
-                        <span class="n">cheights</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">even</span> <span class="k">else</span> <span class="mi">1</span>
-                        <span class="n">correction</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c1"># Add all the excess at the end of the table</span>
+                <span class="c1"># Note: Older solutions tried to balance individual</span>
+                <span class="c1"># rows&#39; vsize. This could lead to empty rows that</span>
+                <span class="c1"># looked like a bug. This solution instead</span>
+                <span class="c1"># adds empty rows at the end which is less sophisticated</span>
+                <span class="c1"># but much more visually consistent.</span>
+                <span class="n">cheights_min</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">excess</span>
                 <span class="n">cheights</span> <span class="o">=</span> <span class="n">cheights_min</span>
 
                 <span class="c1"># we must tell cells to crop instead of expanding</span>
@@ -1603,7 +1585,7 @@
 <span class="sd">        to the end.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            args (`EvColum` or multiple strings): Either a single EvColumn instance or</span>
+<span class="sd">            args (`EvColumn` or multiple strings): Either a single EvColumn instance or</span>
 <span class="sd">                a number of data string arguments to be used to create a new column.</span>
 <span class="sd">            header (str, optional): The header text for the column</span>
 <span class="sd">            xpos (int, optional): Index position in table *before* which</span>

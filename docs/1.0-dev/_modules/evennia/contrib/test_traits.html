@@ -52,8 +52,7 @@
 <span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Something</span>
 <span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">patch</span>
 <span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
 <span class="kn">from</span> <span class="nn">evennia.contrib</span> <span class="kn">import</span> <span class="n">traits</span>
 
 
@@ -945,6 +944,51 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertGreaterEqual</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertGreaterEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertGreaterEqual</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="DummyCharacter"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.DummyCharacter">[docs]</a><span class="k">class</span> <span class="nc">DummyCharacter</span><span class="p">(</span><span class="n">_MockObj</span><span class="p">):</span>
+    <span class="n">strength</span> <span class="o">=</span> <span class="n">traits</span><span class="o">.</span><span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">hunting</span> <span class="o">=</span> <span class="n">traits</span><span class="o">.</span><span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Hunting skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">health</span> <span class="o">=</span> <span class="n">traits</span><span class="o">.</span><span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Health value&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestTraitFields"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitFields">[docs]</a><span class="k">class</span> <span class="nc">TestTraitFields</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test the TraitField class.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestTraitFields.test_traitfields"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitFields.test_traitfields">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.traits._TRAIT_CLASS_PATHS&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">_TEST_TRAIT_CLASS_PATHS</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_traitfields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">DummyCharacter</span><span class="p">()</span>
+        <span class="n">obj2</span> <span class="o">=</span> <span class="n">DummyCharacter</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">health</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="n">obj</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">base</span> <span class="o">+=</span> <span class="mi">5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="n">obj</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">berserk</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">berserk</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">health</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="p">)</span>
+
+        <span class="c1"># the traithandler still works</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">health</span><span class="o">.</span><span class="n">current</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">99</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">health</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="c1"># making sure Descriptors are separate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">obj2</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="n">obj2</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">base</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">base</span> <span class="o">+=</span> <span class="mi">3</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="n">obj2</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>

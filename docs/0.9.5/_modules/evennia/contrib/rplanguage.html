@@ -316,8 +316,8 @@
         <span class="c1"># {&quot;vv&quot;: [&quot;ea&quot;, &quot;oh&quot;, ...], ...}</span>
         <span class="n">grammar2phonemes</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">phoneme</span> <span class="ow">in</span> <span class="n">phonemes</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\W&quot;</span><span class="p">,</span> <span class="n">phoneme</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">LanguageError</span><span class="p">(</span><span class="s2">&quot;The phoneme &#39;</span><span class="si">%s</span><span class="s2">&#39; contains an invalid character&quot;</span> <span class="o">%</span> <span class="n">phoneme</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\W&quot;</span><span class="p">,</span> <span class="n">phoneme</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">U</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">LanguageError</span><span class="p">(</span><span class="s2">&quot;The phoneme &#39;</span><span class="si">%s</span><span class="s2">&#39; contains an invalid character.&quot;</span> <span class="o">%</span> <span class="n">phoneme</span><span class="p">)</span>
             <span class="n">gram</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;v&quot;</span> <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">vowels</span> <span class="k">else</span> <span class="s2">&quot;c&quot;</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">phoneme</span><span class="p">])</span>
             <span class="n">grammar2phonemes</span><span class="p">[</span><span class="n">gram</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">phoneme</span><span class="p">)</span>
 
@@ -513,7 +513,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        text (str): Text to obfuscate.</span>
 <span class="sd">        level (real, optional): A value from 0.0-1.0 determining</span>
-<span class="sd">            the level of obfuscation where 0 means no jobfuscation</span>
+<span class="sd">            the level of obfuscation where 0 means no obfuscation</span>
 <span class="sd">            (string returned unchanged) and 1.0 means the entire</span>
 <span class="sd">            string is obfuscated.</span>
 <span class="sd">        language (str, optional): The identifier of a language</span>

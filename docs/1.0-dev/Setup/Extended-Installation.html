@@ -483,6 +483,9 @@ Once installed, run <code class="docutils literal notranslate"><span class="pre"
 <li><p>Under some not-updated Linux distributions you may run into errors with a
 too-old <code class="docutils literal notranslate"><span class="pre">setuptools</span></code> or missing <code class="docutils literal notranslate"><span class="pre">functools</span></code>. If so, update your environment
 with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">pip</span> <span class="pre">wheel</span> <span class="pre">setuptools</span></code>. Then try <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">evennia</span></code> again.</p></li>
+<li><p>If you get an <code class="docutils literal notranslate"><span class="pre">setup.py</span> <span class="pre">not</span> <span class="pre">found</span></code> error message while trying to <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code>, make sure you are
+in the right directory. You should be at the same level of the <code class="docutils literal notranslate"><span class="pre">evenv</span></code> directory, and the
+<code class="docutils literal notranslate"><span class="pre">evennia</span></code> git repository. Note that there is an <code class="docutils literal notranslate"><span class="pre">evennia</span></code> directory inside of the repository too.</p></li>
 <li><p>One user reported a rare issue on Ubuntu 16 is an install error on installing Twisted; <code class="docutils literal notranslate"><span class="pre">Command</span> <span class="pre">&quot;python</span> <span class="pre">setup.py</span> <span class="pre">egg_info&quot;</span> <span class="pre">failed</span> <span class="pre">with</span> <span class="pre">error</span> <span class="pre">code</span> <span class="pre">1</span> <span class="pre">in</span> <span class="pre">/tmp/pip-build-vnIFTg/twisted/</span></code> with errors
 like <code class="docutils literal notranslate"><span class="pre">distutils.errors.DistutilsError:</span> <span class="pre">Could</span> <span class="pre">not</span> <span class="pre">find</span> <span class="pre">suitable</span> <span class="pre">distribution</span> <span class="pre">for</span> <span class="pre">Requirement.parse('incremental&gt;=16.10.1')</span></code>. This appears possible to solve by simply updating Ubuntu
 with <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">update</span> <span class="pre">&amp;&amp;</span> <span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">dist-upgrade</span></code>.</p></li>
@@ -528,6 +531,9 @@ path to the <code class="docutils literal notranslate"><span class="pre">twistd<
 text editor like Notepad. It’s just one line containing  the path to the <code class="docutils literal notranslate"><span class="pre">twistd.exe</span></code> executable as
 determined by Evennia. If you installed Twisted in a non-standard location this might be wrong and
 you should update the line to the real location.</p></li>
+<li><p>Some users have reported issues with Windows WSL and anti-virus software during Evennia
+development. Timeout errors and the inability to run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">connections</span></code> may be due to your anti-
+virus software interfering. Try disabling or changing your anti-virus software settings.</p></li>
 </ul>
 </section>
 </section>

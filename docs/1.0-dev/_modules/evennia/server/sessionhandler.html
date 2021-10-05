@@ -73,6 +73,7 @@
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 <span class="n">_FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED</span>
+<span class="n">_BROADCAST_SERVER_RESTART_MESSAGES</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BROADCAST_SERVER_RESTART_MESSAGES</span>
 
 <span class="c1"># delayed imports</span>
 <span class="n">_AccountDB</span> <span class="o">=</span> <span class="kc">None</span>
@@ -439,7 +440,8 @@
         <span class="c1"># tell the server hook we synced</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">at_post_portal_sync</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
         <span class="c1"># announce the reconnection</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">announce_all</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot; ... Server restarted.&quot;</span><span class="p">))</span></div>
+        <span class="k">if</span> <span class="n">_BROADCAST_SERVER_RESTART_MESSAGES</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">announce_all</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot; ... Server restarted.&quot;</span><span class="p">))</span> </div>
 
 <div class="viewcode-block" id="ServerSessionHandler.portal_disconnect"><a class="viewcode-back" href="../../../api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.ServerSessionHandler.portal_disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">portal_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

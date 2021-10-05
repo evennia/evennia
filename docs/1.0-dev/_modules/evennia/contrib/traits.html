@@ -56,71 +56,128 @@
 
 <span class="sd">## Adding Traits to a typeclass</span>
 
-<span class="sd">To access and manipulate traits on an entity, its Typeclass needs to have a</span>
-<span class="sd">`TraitHandler` assigned it. Usually, the handler is made available as `.traits`</span>
-<span class="sd">(in the same way as `.tags` or `.attributes`). It&#39;s recommended to do this</span>
-<span class="sd">using Evennia&#39;s `lazy_property` (which basically just means it&#39;s not</span>
-<span class="sd">initialized until it&#39;s actually accessed).</span>
+<span class="sd">There are two ways to set up Traits on a typeclass. The first sets up the `TraitHandler`</span>
+<span class="sd">as a property `.traits` on your class and you then access traits as e.g. `.traits.strength`.</span>
+<span class="sd">The other alternative uses a `TraitProperty`, which makes the trait available directly</span>
+<span class="sd">as e.g. `.strength`. This solution also uses the `TraitHandler`, but you don&#39;t need to</span>
+<span class="sd">define it explicitly. You can combine both styles if you like.</span>
 
-<span class="sd">Here&#39;s an example for adding the TraitHandler to the base Object class:</span>
+<span class="sd">### Traits with TraitHandler</span>
+
+<span class="sd">Here&#39;s an example for adding the TraitHandler to the Character class:</span>
 
 <span class="sd">```python</span>
 <span class="sd"># mygame/typeclasses/objects.py</span>
 
-<span class="sd">from evennia import DefaultObject</span>
+<span class="sd">from evennia import DefaultCharacter</span>
 <span class="sd">from evennia.utils import lazy_property</span>
 <span class="sd">from evennia.contrib.traits import TraitHandler</span>
 
 <span class="sd"># ...</span>
 
-<span class="sd">class Object(DefaultObject):</span>
+<span class="sd">class Character(DefaultCharacter):</span>
 <span class="sd">    ...</span>
 <span class="sd">    @lazy_property</span>
 <span class="sd">    def traits(self):</span>
 <span class="sd">        # this adds the handler as .traits</span>
 <span class="sd">        return TraitHandler(self)</span>
 
-<span class="sd">```</span>
 
-<span class="sd">## Using traits</span>
+<span class="sd">    def at_object_creation(self):</span>
+<span class="sd">        # (or wherever you want)</span>
+<span class="sd">        self.traits.add(&quot;str&quot;, &quot;Strength&quot;, trait_type=&quot;static&quot;, base=10, mod=2)</span>
+<span class="sd">        self.traits.add(&quot;hp&quot;, &quot;Health&quot;, trait_type=&quot;gauge&quot;, min=0, max=100)</span>
+<span class="sd">        self.traits.add(&quot;hunting&quot;, &quot;Hunting Skill&quot;, trait_type=&quot;counter&quot;,</span>
+<span class="sd">                        base=10, mod=1, min=0, max=100)</span>
 
-<span class="sd">A trait is added to the traithandler, after which one can access it</span>
-<span class="sd">as a property on the handler (similarly to how you can do .db.attrname for Attributes</span>
-<span class="sd">in Evennia).</span>
-
-<span class="sd">```python</span>
-<span class="sd"># this is an example using the &quot;static&quot; trait, described below</span>
-
-<span class="sd">&gt;&gt;&gt; obj.traits.add(&quot;hunting&quot;, &quot;Hunting Skill&quot;, trait_type=&quot;static&quot;, base=4)</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.value</span>
-<span class="sd">4</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.value += 5</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.value</span>
-<span class="sd">9</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.add(&quot;hp&quot;, &quot;Health&quot;, trait_type=&quot;gauge&quot;, min=0, max=100)</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hp.value</span>
-<span class="sd">100</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hp -= 200</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hp.value</span>
-<span class="sd">0</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hp.reset()</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hp.value</span>
-<span class="sd">100</span>
-<span class="sd"># you can also access property with getitem</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hp[&quot;value&quot;]</span>
-<span class="sd">100</span>
-<span class="sd"># you can store arbitrary data persistently as well</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hp.effect = &quot;poisoned!&quot;</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hp.effect</span>
-<span class="sd">&quot;poisoned!&quot;</span>
 
 <span class="sd">```</span>
-
 <span class="sd">When adding the trait, you supply the name of the property (`hunting`) along</span>
 <span class="sd">with a more human-friendly name (&quot;Hunting Skill&quot;). The latter will show if you</span>
 <span class="sd">print the trait etc. The `trait_type` is important, this specifies which type</span>
-<span class="sd">of trait this is.</span>
+<span class="sd">of trait this is (see below).</span>
 
+<span class="sd">### TraitProperties</span>
+
+<span class="sd">Using `TraitProperties` makes the trait available directly on the class, much like Django model</span>
+<span class="sd">fields. The drawback is that you must make sure that the name of your Traits don&#39;t collide with any</span>
+<span class="sd">other properties/methods on your class.</span>
+
+<span class="sd">```python</span>
+<span class="sd"># mygame/typeclasses/objects.py</span>
+
+<span class="sd">from evennia import DefaultObject</span>
+<span class="sd">from evennia.utils import lazy_property</span>
+<span class="sd">from evennia.contrib.traits import TraitProperty</span>
+
+<span class="sd"># ...</span>
+
+<span class="sd">class Object(DefaultObject):</span>
+<span class="sd">    ...</span>
+<span class="sd">    strength = TraitProperty(&quot;Strength&quot;, trait_type=&quot;static&quot;, base=10, mod=2)</span>
+<span class="sd">    health = TraitProperty(&quot;Health&quot;, trait_type=&quot;gauge&quot;, min=0, base=100, mod=2)</span>
+<span class="sd">    hunting = TraitProperty(&quot;Hunting Skill&quot;, trait_type=&quot;counter&quot;, base=10, mod=1, min=0, max=100)</span>
+
+<span class="sd">```</span>
+
+<span class="sd">&gt; Note that the property-name will become the name of the trait and you don&#39;t supply `trait_key`</span>
+<span class="sd">&gt; separately.</span>
+
+<span class="sd">&gt; The `.traits` TraitHandler will still be created (it&#39;s used under the</span>
+<span class="sd">&gt; hood. But it will only be created when the TraitProperty has been accessed at least once,</span>
+<span class="sd">&gt; so be careful if mixing the two styles. If you want to make sure `.traits` is always available,</span>
+<span class="sd">&gt; add the `TraitHandler` manually like shown earlier - the `TraitProperty` will by default use</span>
+<span class="sd">&gt; the same handler (`.traits`).</span>
+
+<span class="sd">## Using traits</span>
+
+<span class="sd">A trait is added to the traithandler (if you use `TraitProperty` the handler is just created under</span>
+<span class="sd">the hood) after which one can access it as a property on the handler (similarly to how you can do</span>
+<span class="sd">.db.attrname for Attributes in Evennia).</span>
+
+<span class="sd">All traits have a _read-only_ field `.value`. This is only used to read out results, you never</span>
+<span class="sd">manipulate it directly (if you try, it will just remain unchanged). The `.value` is calculated based</span>
+<span class="sd">on combining fields, like `.base` and `.mod` - which fields are available and how they relate to</span>
+<span class="sd">each other depends on the trait type.</span>
+
+<span class="sd">```python</span>
+<span class="sd">&gt; obj.traits.strength.value</span>
+<span class="sd">12                                  # base + mod</span>
+
+<span class="sd">&gt; obj.traits.strength.base += 5</span>
+<span class="sd">obj.traits.strength.value</span>
+<span class="sd">17</span>
+
+<span class="sd">&gt; obj.traits.hp.value</span>
+<span class="sd">102                                 # base + mod</span>
+
+<span class="sd">&gt; obj.traits.hp.base -= 200</span>
+<span class="sd">&gt; obj.traits.hp.value</span>
+<span class="sd">0                                   # min of 0</span>
+
+<span class="sd">&gt; obj.traits.hp.reset()</span>
+<span class="sd">&gt; obj.traits.hp.value</span>
+<span class="sd">100</span>
+
+<span class="sd"># you can also access properties like a dict</span>
+<span class="sd">&gt; obj.traits.hp[&quot;value&quot;]</span>
+<span class="sd">100</span>
+
+<span class="sd"># you can store arbitrary data persistently for easy reference</span>
+<span class="sd">&gt; obj.traits.hp.effect = &quot;poisoned!&quot;</span>
+<span class="sd">&gt; obj.traits.hp.effect</span>
+<span class="sd">&quot;poisoned!&quot;</span>
+
+<span class="sd"># with TraitProperties:</span>
+
+<span class="sd">&gt; obj.hunting.value</span>
+<span class="sd">12</span>
+
+<span class="sd">&gt; obj.strength.value += 5</span>
+<span class="sd">&gt; obj.strength.value</span>
+<span class="sd">17</span>
+
+<span class="sd">```</span>
 
 <span class="sd">## Trait types</span>
 
@@ -131,12 +188,14 @@
 <span class="sd">compatible type.</span>
 
 <span class="sd">```python</span>
-<span class="sd">&gt;&gt;&gt; trait1 + trait2</span>
+<span class="sd">&gt; trait1 + trait2</span>
 <span class="sd">54</span>
-<span class="sd">&gt;&gt;&gt; trait1.value</span>
+
+<span class="sd">&gt; trait1.value</span>
 <span class="sd">3</span>
-<span class="sd">&gt;&gt;&gt; trait1 + 2</span>
-<span class="sd">&gt;&gt;&gt; trait1.value</span>
+
+<span class="sd">&gt; trait1 + 2</span>
+<span class="sd">&gt; trait1.value</span>
 <span class="sd">5</span>
 
 <span class="sd">```</span>
@@ -159,15 +218,17 @@
 <span class="sd">that varies slowly or not at all, and which may be modified in-place.</span>
 
 <span class="sd">```python</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.add(&quot;str&quot;, &quot;Strength&quot;, trait_type=&quot;static&quot;, base=10, mod=2)</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.mytrait.value</span>
+<span class="sd">&gt; obj.traits.add(&quot;str&quot;, &quot;Strength&quot;, trait_type=&quot;static&quot;, base=10, mod=2)</span>
+<span class="sd">&gt; obj.traits.mytrait.value</span>
+
 <span class="sd">12   # base + mod</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.mytrait.base += 2</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.mytrait.mod += 1</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.mytrait.value</span>
+<span class="sd">&gt; obj.traits.mytrait.base += 2</span>
+<span class="sd">&gt; obj.traits.mytrait.mod += 1</span>
+<span class="sd">&gt; obj.traits.mytrait.value</span>
 <span class="sd">15</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.mytrait.mod = 0</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.mytrait.value</span>
+
+<span class="sd">&gt; obj.traits.mytrait.mod = 0</span>
+<span class="sd">&gt; obj.traits.mytrait.value</span>
 <span class="sd">12</span>
 
 <span class="sd">```</span>
@@ -177,9 +238,9 @@
 
 <span class="sd">    min/unset     base    base+mod                       max/unset</span>
 <span class="sd">    |--------------|--------|---------X--------X------------|</span>
-<span class="sd">                                current   value</span>
-<span class="sd">                                          = current</span>
-<span class="sd">                                          + mod</span>
+<span class="sd">                                  current    value</span>
+<span class="sd">                                             = current</span>
+<span class="sd">                                             + mod</span>
 
 <span class="sd">A counter describes a value that can move from a base. The `.current` property</span>
 <span class="sd">is the thing usually modified. It starts at the `.base`. One can also add a</span>
@@ -188,18 +249,24 @@
 <span class="sd">remove it. A suggested use for a Counter Trait would be to track skill values.</span>
 
 <span class="sd">```python</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.add(&quot;hunting&quot;, &quot;Hunting Skill&quot;, trait_type=&quot;counter&quot;,</span>
+<span class="sd">&gt; obj.traits.add(&quot;hunting&quot;, &quot;Hunting Skill&quot;, trait_type=&quot;counter&quot;,</span>
 <span class="sd">                   base=10, mod=1, min=0, max=100)</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.value</span>
+<span class="sd">&gt; obj.traits.hunting.value</span>
 <span class="sd">11  # current starts at base + mod</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.current += 10</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.value</span>
+
+<span class="sd">&gt; obj.traits.hunting.current += 10</span>
+<span class="sd">&gt; obj.traits.hunting.value</span>
 <span class="sd">21</span>
+
 <span class="sd"># reset back to base+mod by deleting current</span>
-<span class="sd">&gt;&gt;&gt; del obj.traits.hunting.current</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.value</span>
+<span class="sd">&gt; del obj.traits.hunting.current</span>
+<span class="sd">&gt; obj.traits.hunting.value</span>
 <span class="sd">11</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.max = None  # removing upper bound</span>
+<span class="sd">&gt; obj.traits.hunting.max = None  # removing upper bound</span>
+
+<span class="sd"># for TraitProperties, pass the args/kwargs of traits.add() to the</span>
+<span class="sd"># TraitProperty constructor instead.</span>
+
 
 <span class="sd">```</span>
 
@@ -216,21 +283,22 @@
 
 <span class="sd">The keys must be supplied from smallest to largest. Any values below the lowest and above the</span>
 <span class="sd">highest description will be considered to be included in the closest description slot.</span>
-<span class="sd">By calling `.desc()` on the Counter, will you get the text matching the current `value`</span>
-<span class="sd">value.</span>
+<span class="sd">By calling `.desc()` on the Counter, you will get the text matching the current `value`.</span>
 
 <span class="sd">```python</span>
 <span class="sd"># (could also have passed descs= to traits.add())</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.descs = {</span>
+<span class="sd">&gt; obj.traits.hunting.descs = {</span>
 <span class="sd">    0: &quot;unskilled&quot;, 10: &quot;neophyte&quot;, 50: &quot;trained&quot;, 70: &quot;expert&quot;, 90: &quot;master&quot;}</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.value</span>
+<span class="sd">&gt; obj.traits.hunting.value</span>
 <span class="sd">11</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.desc()</span>
+
+<span class="sd">&gt; obj.traits.hunting.desc()</span>
 <span class="sd">&quot;neophyte&quot;</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.current += 60</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.value</span>
+<span class="sd">&gt; obj.traits.hunting.current += 60</span>
+<span class="sd">&gt; obj.traits.hunting.value</span>
 <span class="sd">71</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.desc()</span>
+
+<span class="sd">&gt; obj.traits.hunting.desc()</span>
 <span class="sd">&quot;expert&quot;</span>
 
 <span class="sd">```</span>
@@ -250,30 +318,37 @@
 
 <span class="sd">```python</span>
 
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.value</span>
+<span class="sd">&gt; obj.traits.hunting.value</span>
 <span class="sd">71</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.ratetarget = 71</span>
+
+<span class="sd">&gt; obj.traits.hunting.ratetarget = 71</span>
 <span class="sd"># debuff hunting for some reason</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.current -= 30</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.value</span>
+<span class="sd">&gt; obj.traits.hunting.current -= 30</span>
+<span class="sd">&gt; obj.traits.hunting.value</span>
 <span class="sd">41</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.rate = 1  # 1/s increase</span>
+
+<span class="sd">&gt; obj.traits.hunting.rate = 1  # 1/s increase</span>
 <span class="sd"># Waiting 5s</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.value</span>
+<span class="sd">&gt; obj.traits.hunting.value</span>
 <span class="sd">46</span>
+
 <span class="sd"># Waiting 8s</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.value</span>
+<span class="sd">&gt; obj.traits.hunting.value</span>
 <span class="sd">54</span>
+
 <span class="sd"># Waiting 100s</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.value</span>
+<span class="sd">&gt; obj.traits.hunting.value</span>
 <span class="sd">71    # we have stopped at the ratetarget</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.rate = 0  # disable auto-change</span>
+
+<span class="sd">&gt; obj.traits.hunting.rate = 0  # disable auto-change</span>
+
 
 <span class="sd">```</span>
-<span class="sd">Note that if `.rate` is a non-integer, the resulting `.value` (at least until it</span>
-<span class="sd">reaches a boundary or rate-target) will also come out a float (so you can get a</span>
-<span class="sd">very exact value at the current time). If you expect an integer, you must run</span>
-<span class="sd">`int()` (or something like `round()`) on the result yourself.</span>
+<span class="sd">Note that when retrieving the `current`, the result will always be of the same</span>
+<span class="sd">type as the `.base` even `rate` is a non-integer value. So if `base` is an `int`</span>
+<span class="sd">(default)`, the `current` value will also be rounded the closest full integer.</span>
+<span class="sd">If you want to see the exact `current` value, set `base` to a float - you</span>
+<span class="sd">will then need to use `round()` yourself on the result if you want integers.</span>
 
 <span class="sd">#### .percent()</span>
 
@@ -281,9 +356,10 @@
 <span class="sd">return the value as a percentage.</span>
 
 <span class="sd">```python</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.percent()</span>
+<span class="sd">&gt; obj.traits.hunting.percent()</span>
 <span class="sd">&quot;71.0%&quot;</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hunting.percent(formatting=None)</span>
+
+<span class="sd">&gt; obj.traits.hunting.percent(formatting=None)</span>
 <span class="sd">71.0</span>
 
 <span class="sd">```</span>
@@ -301,20 +377,22 @@
 <span class="sd">The `.current` value will start from a full gauge. The .max property is</span>
 <span class="sd">read-only and is set by `.base` + `.mod`. So contrary to a `Counter`, the</span>
 <span class="sd">`.mod` modifier only applies to the max value of the gauge and not the current</span>
-<span class="sd">value. The minimum bound defaults to 0 if not set explicitly. </span>
+<span class="sd">value. The minimum bound defaults to 0 if not set explicitly.</span>
 
 <span class="sd">This trait is useful for showing commonly depletable resources like health,</span>
 <span class="sd">stamina and the like.</span>
 
 <span class="sd">```python</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.add(&quot;hp&quot;, &quot;Health&quot;, trait_type=&quot;gauge&quot;, base=100)</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hp.value  # (or .current)</span>
+<span class="sd">&gt; obj.traits.add(&quot;hp&quot;, &quot;Health&quot;, trait_type=&quot;gauge&quot;, base=100)</span>
+<span class="sd">&gt; obj.traits.hp.value  # (or .current)</span>
 <span class="sd">100</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hp.mod = 10</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hp.value</span>
+
+<span class="sd">&gt; obj.traits.hp.mod = 10</span>
+<span class="sd">&gt; obj.traits.hp.value</span>
 <span class="sd">110</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hp.current -= 30</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.hp.value</span>
+
+<span class="sd">&gt; obj.traits.hp.current -= 30</span>
+<span class="sd">&gt; obj.traits.hp.value</span>
 <span class="sd">80</span>
 
 <span class="sd">```</span>
@@ -322,7 +400,7 @@
 <span class="sd">The Gauge trait is subclass of the Counter, so you have access to the same</span>
 <span class="sd">methods and properties where they make sense. So gauges can also have a</span>
 <span class="sd">`.descs` dict to describe the intervals in text, and can use `.percent()` to</span>
-<span class="sd">get how filled it is as a percentage etc. </span>
+<span class="sd">get how filled it is as a percentage etc.</span>
 
 <span class="sd">The `.rate` is particularly relevant for gauges - useful for everything</span>
 <span class="sd">from poison slowly draining your health, to resting gradually increasing it.</span>
@@ -333,18 +411,21 @@
 
 <span class="sd">This is the &#39;base&#39; Trait, meant to inherit from if you want to invent</span>
 <span class="sd">trait-types from scratch (most of the time you&#39;ll probably inherit from some of</span>
-<span class="sd">the more advanced trait-type classes though). A `Trait`s  `.value` can be</span>
-<span class="sd">anything (that can be stored in an Attribute) and if it&#39;s a integer/float you</span>
-<span class="sd">can do arithmetic with it, but otherwise it acts just like a glorified</span>
-<span class="sd">Attribute.</span>
+<span class="sd">the more advanced trait-type classes though).</span>
+
+<span class="sd">Unlike other Trait-types, the single `.value` property of the base `Trait` can</span>
+<span class="sd">be editied. The value can hold any data that can be stored in an Attribute. If</span>
+<span class="sd">it&#39;s an integer/float you can do arithmetic with it, but otherwise this acts just</span>
+<span class="sd">like a glorified Attribute.</span>
 
 
 <span class="sd">```python</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.add(&quot;mytrait&quot;, &quot;My Trait&quot;, trait_type=&quot;trait&quot;, value=30)</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.mytrait.value</span>
+<span class="sd">&gt; obj.traits.add(&quot;mytrait&quot;, &quot;My Trait&quot;, trait_type=&quot;trait&quot;, value=30)</span>
+<span class="sd">&gt; obj.traits.mytrait.value</span>
 <span class="sd">30</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.mytrait.value = &quot;stringvalue&quot;</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.mytrait.value</span>
+
+<span class="sd">&gt; obj.traits.mytrait.value = &quot;stringvalue&quot;</span>
+<span class="sd">&gt; obj.traits.mytrait.value</span>
 <span class="sd">&quot;stringvalue&quot;</span>
 
 <span class="sd">```</span>
@@ -371,7 +452,7 @@
 
 <span class="sd">    def sedate(self):</span>
 <span class="sd">        self.mod = 0</span>
-<span class="sd">        </span>
+
 
 <span class="sd">```</span>
 
@@ -389,9 +470,14 @@
 <span class="sd">Reload the server and you should now be able to use your trait:</span>
 
 <span class="sd">```python</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.add(&quot;mood&quot;, &quot;A dark mood&quot;, rage=30, trait_type=&#39;rage&#39;)</span>
-<span class="sd">&gt;&gt;&gt; obj.traits.mood.rage</span>
+<span class="sd">&gt; obj.traits.add(&quot;mood&quot;, &quot;A dark mood&quot;, rage=30, trait_type=&#39;rage&#39;)</span>
+<span class="sd">&gt; obj.traits.mood.rage</span>
 <span class="sd">30</span>
+
+<span class="sd"># as TraitProperty</span>
+
+<span class="sd">class Character(DefaultCharacter):</span>
+<span class="sd">    rage = TraitProperty(&quot;A dark mood&quot;, rage=30, trait_type=&#39;rage&#39;)</span>
 
 <span class="sd">```</span>
 
@@ -477,12 +563,22 @@
 <span class="sd">    This represents a required key that must be</span>
 <span class="sd">    supplied when a Trait is initialized. It&#39;s used</span>
 <span class="sd">    by Trait classes when defining their required keys.</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
 
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="TraitHandler"><a class="viewcode-back" href="../../../api/evennia.contrib.traits.html#evennia.contrib.traits.TraitHandler">[docs]</a><span class="k">class</span> <span class="nc">TraitHandler</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Factory class that instantiates Trait objects.</span>
+<span class="sd">    Factory class that instantiates Trait objects. Must be assigned as a property</span>
+<span class="sd">    on the class, usually with `lazy_property`.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">    ::</span>
+<span class="sd">        class Object(DefaultObject):</span>
+<span class="sd">            ...</span>
+<span class="sd">            @lazy_property</span>
+<span class="sd">            def traits(self):</span>
+<span class="sd">                # this adds the handler as .traits</span>
+<span class="sd">                return TraitHandler(self)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -492,12 +588,14 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            obj (Object): Parent Object typeclass for this TraitHandler</span>
-<span class="sd">            db_attribute_key (str): Name of the DB attribute for trait data storage</span>
+<span class="sd">            db_attribute_key (str): Name of the DB attribute for trait data storage.</span>
+<span class="sd">            db_attribute_category (str):  Name of DB attribute&#39;s category to trait data storage.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># load the available classes, if necessary</span>
         <span class="n">_delayed_import_trait_classes</span><span class="p">()</span>
 
+        <span class="c1"># initialize any</span>
         <span class="c1"># Note that .trait_data retains the connection to the database, meaning every</span>
         <span class="c1"># update we do to .trait_data automatically syncs with database.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait_data</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_attribute_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">db_attribute_category</span><span class="p">)</span>
@@ -602,7 +700,7 @@
 <span class="sd">            name (str, optional): Name of the Trait, like &quot;Health&quot;. If</span>
 <span class="sd">                not given, will use `trait_key` starting with a capital letter.</span>
 <span class="sd">            trait_type (str, optional): One of &#39;static&#39;, &#39;counter&#39; or &#39;gauge&#39;.</span>
-<span class="sd">            force_add (bool): If set, create a new Trait even if a Trait with</span>
+<span class="sd">            force (bool): If set, create a new Trait even if a Trait with</span>
 <span class="sd">                the same `trait_key` already exists.</span>
 <span class="sd">            trait_properties (dict): These will all be use to initialize</span>
 <span class="sd">                the new trait. See the `properties` class variable on each</span>
@@ -656,6 +754,100 @@
         <span class="k">for</span> <span class="n">trait_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">trait_key</span><span class="p">)</span></div></div>
 
+
+<div class="viewcode-block" id="TraitProperty"><a class="viewcode-back" href="../../../api/evennia.contrib.traits.html#evennia.contrib.traits.TraitProperty">[docs]</a><span class="k">class</span> <span class="nc">TraitProperty</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Optional extra: Allows for applying traits as individual properties directly on the parent class</span>
+<span class="sd">    instead for properties on the `.traits` handler. So with this you could access data e.g. as</span>
+<span class="sd">    `character.hp.value` instead of `character.traits.hp.value`. This still uses the traitshandler</span>
+<span class="sd">    under the hood.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">    ::</span>
+<span class="sd">        from evennia.utils import lazy_property</span>
+<span class="sd">        from evennia.contrib.traits import TraitProperty</span>
+
+<span class="sd">        class Character(DefaultCharacter):</span>
+
+<span class="sd">            strength = TraitProperty(&quot;str&quot;, &quot;Strength&quot;, trait_type=&quot;static&quot;, base=10, mod=2)</span>
+<span class="sd">            hunting = TraitProperty(self, &quot;hunting&quot;, &quot;Hunting Skill&quot;, trait_type=&quot;counter&quot;,</span>
+<span class="sd">                                    base=10, mod=1, max=100)</span>
+<span class="sd">            health = TraitProperty(&quot;health&quot;, &quot;Health&quot;, trait_type=&quot;gauge&quot;, min=0, base=100)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TraitProperty.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.traits.html#evennia.contrib.traits.TraitProperty.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="n">DEFAULT_TRAIT_TYPE</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">trait_properties</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a TraitField. Mimics TraitHandler.add input except no `trait_key`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str, optional): Name of the Trait, like &quot;Health&quot;. If</span>
+<span class="sd">                not given, will use `trait_key` starting with a capital letter.</span>
+<span class="sd">            trait_type (str, optional): One of &#39;static&#39;, &#39;counter&#39; or &#39;gauge&#39;.</span>
+<span class="sd">            force (bool): If set, create a new Trait even if a Trait with</span>
+<span class="sd">                the same `trait_key` already exists.</span>
+<span class="sd">        Kwargs:</span>
+<span class="sd">            traithandler_name (str): If given, this is used as the name of the TraitHandler created</span>
+<span class="sd">                behind the scenes. If not set, this will be a property `traits` on the class.</span>
+<span class="sd">            any: All other trait_properties are the same as for adding a new trait of the given type</span>
+<span class="sd">                using the normal TraitHandler.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_traithandler_name</span> <span class="o">=</span> <span class="n">trait_properties</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;traithandler_name&quot;</span><span class="p">,</span> <span class="s2">&quot;traits&quot;</span><span class="p">)</span>
+
+        <span class="n">trait_properties</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;trait_type&quot;</span><span class="p">:</span> <span class="n">trait_type</span><span class="p">,</span> <span class="s2">&quot;force&quot;</span><span class="p">:</span> <span class="n">force</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trait_properties</span> <span class="o">=</span> <span class="n">trait_properties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+    <span class="k">def</span> <span class="nf">__set_name__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is called the very first time the Descriptor is assigned to the</span>
+<span class="sd">        class; we store it so we can create new instances with this later.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trait_key</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Descriptor definition. This is called when the trait-name is aqcuired on the</span>
+<span class="sd">        instance and reroutes to fetching the actual Trait from the connected</span>
+<span class="sd">        TraitHandler (the connection is set up on-demand).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Trait: The trait this property represents.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            We have one descriptor on the class, but we don&#39;t want each instance to share the</span>
+<span class="sd">            state (self) of that descriptor. So we must make sure to cache the trait per-instance</span>
+<span class="sd">            or we would end up with cross-use between instances.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">traithandler</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traithandler_name</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="c1"># traithandler not found; create a new on-demand</span>
+                <span class="n">traithandler</span> <span class="o">=</span> <span class="n">TraitHandler</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traithandler_name</span><span class="p">,</span> <span class="n">traithandler</span><span class="p">)</span>
+
+            <span class="c1"># this will either get the trait from attribute or make a new one</span>
+            <span class="n">trait</span> <span class="o">=</span> <span class="n">traithandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trait_key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">trait</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># initialize the trait</span>
+                <span class="n">traithandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_trait_key</span><span class="p">,</span>
+                    <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_trait_properties</span>
+                <span class="p">)</span>
+                <span class="n">trait</span> <span class="o">=</span> <span class="n">traithandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trait_key</span><span class="p">)</span>  <span class="c1"># caches it in the traithandler</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">instance</span><span class="p">]</span> <span class="o">=</span> <span class="n">trait</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">instance</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We don&#39;t set data directly, it&#39;s all rerouted to the trait.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
 <span class="c1"># Parent Trait class</span>
 
@@ -991,7 +1183,7 @@
 <div class="viewcode-block" id="StaticTrait"><a class="viewcode-back" href="../../../api/evennia.contrib.traits.html#evennia.contrib.traits.StaticTrait">[docs]</a><span class="k">class</span> <span class="nc">StaticTrait</span><span class="p">(</span><span class="n">Trait</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Static Trait. This is a single value with a modifier,</span>
-<span class="sd">    with no concept of a &#39;current&#39; value.</span>
+<span class="sd">    with no concept of a &#39;current&#39; value or min/max etc.</span>
 
 <span class="sd">    value = base + mod</span>
 
@@ -1006,6 +1198,16 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{name:12}</span><span class="s2"> </span><span class="si">{status}</span><span class="s2"> (</span><span class="si">{mod:+3}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">)</span>
 
     <span class="c1"># Helpers</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">]</span>
+
+    <span class="nd">@base</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">base</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_keys</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1126,7 +1328,6 @@
     <span class="k">def</span> <span class="nf">_check_and_start_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Start timer if we are not at a boundary.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;last_update&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ratetarget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;ratetarget&quot;</span><span class="p">]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_within_boundaries</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_passed_ratetarget</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
                 <span class="c1"># we are not at a boundary [anymore].</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;last_update&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
@@ -1155,6 +1356,8 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;current&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">current</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">current</span>
 
     <span class="c1"># properties</span>
@@ -1359,6 +1562,9 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;current&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">current</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">current</span>
 
     <span class="k">def</span> <span class="nf">_enforce_boundaries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -1416,13 +1622,13 @@
     <span class="nd">@max</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">TraitException</span><span class="p">(</span>
-            <span class="s2">&quot;The .max property is not settable &quot;</span> <span class="s2">&quot;on GaugeTraits. Set .base instead.&quot;</span>
+            <span class="s2">&quot;The .max property is not settable on GaugeTraits. Set .mod and .base instead.&quot;</span>
         <span class="p">)</span>
 
     <span class="nd">@max</span><span class="o">.</span><span class="n">deleter</span>
     <span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">TraitException</span><span class="p">(</span>
-            <span class="s2">&quot;The .max property cannot be reset &quot;</span> <span class="s2">&quot;on GaugeTraits. Reset .mod and .base instead.&quot;</span>
+            <span class="s2">&quot;The .max property cannot be reset on GaugeTraits. Reset .mod and .base instead.&quot;</span>
         <span class="p">)</span>
 
     <span class="nd">@property</span>

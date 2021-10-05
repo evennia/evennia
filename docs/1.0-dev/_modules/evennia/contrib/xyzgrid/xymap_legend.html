@@ -60,8 +60,10 @@
 
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">from</span> <span class="nn">django.core</span> <span class="kn">import</span> <span class="n">exceptions</span> <span class="k">as</span> <span class="n">django_exceptions</span>
 <span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">spawner</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span>
+
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">MAPSCAN</span><span class="p">,</span> <span class="n">REVERSE_DIRECTIONS</span><span class="p">,</span> <span class="n">MapParserError</span><span class="p">,</span> <span class="n">BIGVAL</span>
 
 <span class="n">NodeTypeclass</span> <span class="o">=</span> <span class="kc">None</span>
@@ -351,7 +353,7 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">nodeobj</span> <span class="o">=</span> <span class="n">NodeTypeclass</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="n">xyz</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">NodeTypeclass</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+        <span class="k">except</span> <span class="n">django_exceptions</span><span class="o">.</span><span class="n">ObjectDoesNotExist</span><span class="p">:</span>
             <span class="c1"># create a new entity with proper coordinates etc</span>
             <span class="n">tclass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prototype</span><span class="p">[</span><span class="s1">&#39;typeclass&#39;</span><span class="p">]</span>
             <span class="n">tclass</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="n">tclass</span><span class="si">}</span><span class="s1">)&#39;</span>
@@ -475,7 +477,7 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">nodeobj</span> <span class="o">=</span> <span class="n">NodeTypeclass</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="n">xyz</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">NodeTypeclass</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+        <span class="k">except</span> <span class="n">django_exceptions</span><span class="o">.</span><span class="n">ObjectDoesNotExist</span><span class="p">:</span>
             <span class="c1"># no object exists</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
