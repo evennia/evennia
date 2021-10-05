@@ -365,6 +365,10 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
         be found as a match.
 
     """
+    # prototype keys are always in lowecase
+    if key:
+      key = key.lower()
+
     # search module prototypes
 
     mod_matches = {}
