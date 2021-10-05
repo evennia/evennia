@@ -100,17 +100,17 @@ we break up too-long data snippets into multiple batches here.</p>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.MsgLauncher2Portal.arguments">
-<code class="sig-name descname">arguments</code><em class="property"> = [(b'operation', &lt;twisted.protocols.amp.String object&gt;), (b'arguments', &lt;twisted.protocols.amp.String object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.MsgLauncher2Portal.arguments" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">arguments</code><em class="property">: List<span class="p">[</span>Tuple<span class="p">[</span>bytes<span class="p">, </span>twisted.protocols.amp.Argument<span class="p">]</span><span class="p">]</span></em><em class="property"> = [(b'operation', &lt;twisted.protocols.amp.String object&gt;), (b'arguments', &lt;twisted.protocols.amp.String object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.MsgLauncher2Portal.arguments" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.MsgLauncher2Portal.errors">
-<code class="sig-name descname">errors</code><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.portal.amp.MsgLauncher2Portal.errors" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">errors</code><em class="property">: Dict<span class="p">[</span>Type<span class="p">[</span>Exception<span class="p">]</span><span class="p">, </span>bytes<span class="p">]</span></em><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.portal.amp.MsgLauncher2Portal.errors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.MsgLauncher2Portal.response">
-<code class="sig-name descname">response</code><em class="property"> = []</em><a class="headerlink" href="#evennia.server.portal.amp.MsgLauncher2Portal.response" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">response</code><em class="property">: List<span class="p">[</span>Tuple<span class="p">[</span>bytes<span class="p">, </span>twisted.protocols.amp.Argument<span class="p">]</span><span class="p">]</span></em><em class="property"> = []</em><a class="headerlink" href="#evennia.server.portal.amp.MsgLauncher2Portal.response" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -142,17 +142,17 @@ we break up too-long data snippets into multiple batches here.</p>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.MsgPortal2Server.arguments">
-<code class="sig-name descname">arguments</code><em class="property"> = [(b'packed_data', &lt;evennia.server.portal.amp.Compressed object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.MsgPortal2Server.arguments" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">arguments</code><em class="property">: List<span class="p">[</span>Tuple<span class="p">[</span>bytes<span class="p">, </span>twisted.protocols.amp.Argument<span class="p">]</span><span class="p">]</span></em><em class="property"> = [(b'packed_data', &lt;evennia.server.portal.amp.Compressed object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.MsgPortal2Server.arguments" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.MsgPortal2Server.errors">
-<code class="sig-name descname">errors</code><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.portal.amp.MsgPortal2Server.errors" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">errors</code><em class="property">: Dict<span class="p">[</span>Type<span class="p">[</span>Exception<span class="p">]</span><span class="p">, </span>bytes<span class="p">]</span></em><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.portal.amp.MsgPortal2Server.errors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.MsgPortal2Server.response">
-<code class="sig-name descname">response</code><em class="property"> = []</em><a class="headerlink" href="#evennia.server.portal.amp.MsgPortal2Server.response" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">response</code><em class="property">: List<span class="p">[</span>Tuple<span class="p">[</span>bytes<span class="p">, </span>twisted.protocols.amp.Argument<span class="p">]</span><span class="p">]</span></em><em class="property"> = []</em><a class="headerlink" href="#evennia.server.portal.amp.MsgPortal2Server.response" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -184,17 +184,17 @@ we break up too-long data snippets into multiple batches here.</p>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.MsgServer2Portal.arguments">
-<code class="sig-name descname">arguments</code><em class="property"> = [(b'packed_data', &lt;evennia.server.portal.amp.Compressed object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.MsgServer2Portal.arguments" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">arguments</code><em class="property">: List<span class="p">[</span>Tuple<span class="p">[</span>bytes<span class="p">, </span>twisted.protocols.amp.Argument<span class="p">]</span><span class="p">]</span></em><em class="property"> = [(b'packed_data', &lt;evennia.server.portal.amp.Compressed object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.MsgServer2Portal.arguments" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.MsgServer2Portal.errors">
-<code class="sig-name descname">errors</code><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.portal.amp.MsgServer2Portal.errors" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">errors</code><em class="property">: Dict<span class="p">[</span>Type<span class="p">[</span>Exception<span class="p">]</span><span class="p">, </span>bytes<span class="p">]</span></em><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.portal.amp.MsgServer2Portal.errors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.MsgServer2Portal.response">
-<code class="sig-name descname">response</code><em class="property"> = []</em><a class="headerlink" href="#evennia.server.portal.amp.MsgServer2Portal.response" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">response</code><em class="property">: List<span class="p">[</span>Tuple<span class="p">[</span>bytes<span class="p">, </span>twisted.protocols.amp.Argument<span class="p">]</span><span class="p">]</span></em><em class="property"> = []</em><a class="headerlink" href="#evennia.server.portal.amp.MsgServer2Portal.response" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -228,17 +228,17 @@ server, such as when a new session connects or resyncs</p>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.AdminPortal2Server.arguments">
-<code class="sig-name descname">arguments</code><em class="property"> = [(b'packed_data', &lt;evennia.server.portal.amp.Compressed object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.AdminPortal2Server.arguments" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">arguments</code><em class="property">: List<span class="p">[</span>Tuple<span class="p">[</span>bytes<span class="p">, </span>twisted.protocols.amp.Argument<span class="p">]</span><span class="p">]</span></em><em class="property"> = [(b'packed_data', &lt;evennia.server.portal.amp.Compressed object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.AdminPortal2Server.arguments" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.AdminPortal2Server.errors">
-<code class="sig-name descname">errors</code><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.portal.amp.AdminPortal2Server.errors" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">errors</code><em class="property">: Dict<span class="p">[</span>Type<span class="p">[</span>Exception<span class="p">]</span><span class="p">, </span>bytes<span class="p">]</span></em><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.portal.amp.AdminPortal2Server.errors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.AdminPortal2Server.response">
-<code class="sig-name descname">response</code><em class="property"> = []</em><a class="headerlink" href="#evennia.server.portal.amp.AdminPortal2Server.response" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">response</code><em class="property">: List<span class="p">[</span>Tuple<span class="p">[</span>bytes<span class="p">, </span>twisted.protocols.amp.Argument<span class="p">]</span><span class="p">]</span></em><em class="property"> = []</em><a class="headerlink" href="#evennia.server.portal.amp.AdminPortal2Server.response" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -272,17 +272,17 @@ portal.</p>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.AdminServer2Portal.arguments">
-<code class="sig-name descname">arguments</code><em class="property"> = [(b'packed_data', &lt;evennia.server.portal.amp.Compressed object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.AdminServer2Portal.arguments" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">arguments</code><em class="property">: List<span class="p">[</span>Tuple<span class="p">[</span>bytes<span class="p">, </span>twisted.protocols.amp.Argument<span class="p">]</span><span class="p">]</span></em><em class="property"> = [(b'packed_data', &lt;evennia.server.portal.amp.Compressed object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.AdminServer2Portal.arguments" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.AdminServer2Portal.errors">
-<code class="sig-name descname">errors</code><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.portal.amp.AdminServer2Portal.errors" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">errors</code><em class="property">: Dict<span class="p">[</span>Type<span class="p">[</span>Exception<span class="p">]</span><span class="p">, </span>bytes<span class="p">]</span></em><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.portal.amp.AdminServer2Portal.errors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.AdminServer2Portal.response">
-<code class="sig-name descname">response</code><em class="property"> = []</em><a class="headerlink" href="#evennia.server.portal.amp.AdminServer2Portal.response" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">response</code><em class="property">: List<span class="p">[</span>Tuple<span class="p">[</span>bytes<span class="p">, </span>twisted.protocols.amp.Argument<span class="p">]</span><span class="p">]</span></em><em class="property"> = []</em><a class="headerlink" href="#evennia.server.portal.amp.AdminServer2Portal.response" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -314,17 +314,17 @@ portal.</p>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.MsgStatus.arguments">
-<code class="sig-name descname">arguments</code><em class="property"> = [(b'status', &lt;twisted.protocols.amp.String object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.MsgStatus.arguments" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">arguments</code><em class="property">: List<span class="p">[</span>Tuple<span class="p">[</span>bytes<span class="p">, </span>twisted.protocols.amp.Argument<span class="p">]</span><span class="p">]</span></em><em class="property"> = [(b'status', &lt;twisted.protocols.amp.String object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.MsgStatus.arguments" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.MsgStatus.errors">
-<code class="sig-name descname">errors</code><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.portal.amp.MsgStatus.errors" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">errors</code><em class="property">: Dict<span class="p">[</span>Type<span class="p">[</span>Exception<span class="p">]</span><span class="p">, </span>bytes<span class="p">]</span></em><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.portal.amp.MsgStatus.errors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.MsgStatus.response">
-<code class="sig-name descname">response</code><em class="property"> = [(b'status', &lt;twisted.protocols.amp.String object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.MsgStatus.response" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">response</code><em class="property">: List<span class="p">[</span>Tuple<span class="p">[</span>bytes<span class="p">, </span>twisted.protocols.amp.Argument<span class="p">]</span><span class="p">]</span></em><em class="property"> = [(b'status', &lt;twisted.protocols.amp.String object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.MsgStatus.response" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -358,17 +358,17 @@ the other. This does not use the batch-send functionality.</p>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.FunctionCall.arguments">
-<code class="sig-name descname">arguments</code><em class="property"> = [(b'module', &lt;twisted.protocols.amp.String object&gt;), (b'function', &lt;twisted.protocols.amp.String object&gt;), (b'args', &lt;twisted.protocols.amp.String object&gt;), (b'kwargs', &lt;twisted.protocols.amp.String object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.FunctionCall.arguments" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">arguments</code><em class="property">: List<span class="p">[</span>Tuple<span class="p">[</span>bytes<span class="p">, </span>twisted.protocols.amp.Argument<span class="p">]</span><span class="p">]</span></em><em class="property"> = [(b'module', &lt;twisted.protocols.amp.String object&gt;), (b'function', &lt;twisted.protocols.amp.String object&gt;), (b'args', &lt;twisted.protocols.amp.String object&gt;), (b'kwargs', &lt;twisted.protocols.amp.String object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.FunctionCall.arguments" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.FunctionCall.errors">
-<code class="sig-name descname">errors</code><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.portal.amp.FunctionCall.errors" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">errors</code><em class="property">: Dict<span class="p">[</span>Type<span class="p">[</span>Exception<span class="p">]</span><span class="p">, </span>bytes<span class="p">]</span></em><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.portal.amp.FunctionCall.errors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.server.portal.amp.FunctionCall.response">
-<code class="sig-name descname">response</code><em class="property"> = [(b'result', &lt;twisted.protocols.amp.String object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.FunctionCall.response" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">response</code><em class="property">: List<span class="p">[</span>Tuple<span class="p">[</span>bytes<span class="p">, </span>twisted.protocols.amp.Argument<span class="p">]</span><span class="p">]</span></em><em class="property"> = [(b'result', &lt;twisted.protocols.amp.String object&gt;)]</em><a class="headerlink" href="#evennia.server.portal.amp.FunctionCall.response" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">

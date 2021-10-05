@@ -438,6 +438,102 @@
 
 </dd></dl>
 
+<dl class="py class">
+<dt id="evennia.contrib.test_traits.DummyCharacter">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.test_traits.</code><code class="sig-name descname">DummyCharacter</code><a class="reference internal" href="../_modules/evennia/contrib/test_traits.html#DummyCharacter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.test_traits.DummyCharacter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.test_traits._MockObj</span></code></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.test_traits.DummyCharacter.strength">
+<code class="sig-name descname">strength</code><a class="headerlink" href="#evennia.contrib.test_traits.DummyCharacter.strength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows for applying traits as individual properties directly on the parent class
+instead for properties on the <strong>.traits</strong> handler. So with this you could access data e.g. as
+<strong>character.hp.value</strong> instead of <strong>character.traits.hp.value</strong>. This still uses the traitshandler
+under the hood.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.traits</span> <span class="kn">import</span> <span class="n">TraitProperty</span>
+
+<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+
+    <span class="n">strength</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">hunting</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;hunting&quot;</span><span class="p">,</span> <span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
+                            <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">health</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;health&quot;</span><span class="p">,</span> <span class="s2">&quot;Health&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Optional extra</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.test_traits.DummyCharacter.hunting">
+<code class="sig-name descname">hunting</code><a class="headerlink" href="#evennia.contrib.test_traits.DummyCharacter.hunting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows for applying traits as individual properties directly on the parent class
+instead for properties on the <strong>.traits</strong> handler. So with this you could access data e.g. as
+<strong>character.hp.value</strong> instead of <strong>character.traits.hp.value</strong>. This still uses the traitshandler
+under the hood.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.traits</span> <span class="kn">import</span> <span class="n">TraitProperty</span>
+
+<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+
+    <span class="n">strength</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">hunting</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;hunting&quot;</span><span class="p">,</span> <span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
+                            <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">health</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;health&quot;</span><span class="p">,</span> <span class="s2">&quot;Health&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Optional extra</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.test_traits.DummyCharacter.health">
+<code class="sig-name descname">health</code><a class="headerlink" href="#evennia.contrib.test_traits.DummyCharacter.health" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows for applying traits as individual properties directly on the parent class
+instead for properties on the <strong>.traits</strong> handler. So with this you could access data e.g. as
+<strong>character.hp.value</strong> instead of <strong>character.traits.hp.value</strong>. This still uses the traitshandler
+under the hood.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.traits</span> <span class="kn">import</span> <span class="n">TraitProperty</span>
+
+<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+
+    <span class="n">strength</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">hunting</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;hunting&quot;</span><span class="p">,</span> <span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
+                            <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">health</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;health&quot;</span><span class="p">,</span> <span class="s2">&quot;Health&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Optional extra</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.test_traits.TestTraitFields">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.test_traits.</code><code class="sig-name descname">TestTraitFields</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/test_traits.html#TestTraitFields"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.test_traits.TestTraitFields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Test the TraitField class.</p>
+<dl class="py method">
+<dt id="evennia.contrib.test_traits.TestTraitFields.test_traitfields">
+<code class="sig-name descname">test_traitfields</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/test_traits.html#TestTraitFields.test_traitfields"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.test_traits.TestTraitFields.test_traitfields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 

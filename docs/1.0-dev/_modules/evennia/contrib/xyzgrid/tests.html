@@ -1111,12 +1111,13 @@
         <span class="n">Xmax</span><span class="p">,</span> <span class="n">Ymax</span> <span class="o">=</span> <span class="n">gridsize</span>
         <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_grid</span><span class="p">(</span><span class="n">Xmax</span><span class="p">,</span> <span class="n">Ymax</span><span class="p">)</span>
         <span class="n">mapobj</span> <span class="o">=</span> <span class="n">xymap</span><span class="o">.</span><span class="n">XYMap</span><span class="p">({</span><span class="s1">&#39;map&#39;</span><span class="p">:</span> <span class="n">grid</span><span class="p">},</span> <span class="n">Z</span><span class="o">=</span><span class="s2">&quot;testmap&quot;</span><span class="p">)</span>
-        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="c1"># t0 = time()</span>
         <span class="n">mapobj</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
         <span class="c1"># cProfile.runctx(&#39;mapobj.parse()&#39;, globals(), locals())</span>
-        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertLess</span><span class="p">(</span><span class="n">t1</span> <span class="o">-</span> <span class="n">t0</span><span class="p">,</span> <span class="n">max_time</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Map creation of (</span><span class="si">{</span><span class="n">Xmax</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">Ymax</span><span class="si">}</span><span class="s2">) grid slower &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;than expected </span><span class="si">{</span><span class="n">max_time</span><span class="si">}</span><span class="s2">s.&quot;</span><span class="p">)</span>
+        <span class="c1"># t1 = time()</span>
+        <span class="c1"># if (t1 - t0 &gt; max_time):</span>
+        <span class="c1">#     print(f&quot;Map creation of ({Xmax}x{Ymax}) grid slower &quot;</span>
+        <span class="c1">#           f&quot;than expected {max_time}s.&quot;)</span>
 
     <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span>
         <span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">3</span><span class="p">),</span>
@@ -1132,9 +1133,9 @@
         <span class="n">mapobj</span> <span class="o">=</span> <span class="n">xymap</span><span class="o">.</span><span class="n">XYMap</span><span class="p">({</span><span class="s1">&#39;map&#39;</span><span class="p">:</span> <span class="n">grid</span><span class="p">},</span> <span class="n">Z</span><span class="o">=</span><span class="s2">&quot;testmap&quot;</span><span class="p">)</span>
         <span class="n">mapobj</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
 
-        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="c1"># t0 = time()</span>
         <span class="n">mapobj</span><span class="o">.</span><span class="n">calculate_path_matrix</span><span class="p">()</span>
-        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="c1"># t1 = time()</span>
         <span class="c1"># print(f&quot;pathfinder matrix for grid {Xmax}x{Ymax}: {t1 - t0}s&quot;)</span>
 
         <span class="c1"># get the maximum distance and 9 other random points in the grid</span>
@@ -1143,12 +1144,13 @@
             <span class="n">start_end_points</span><span class="o">.</span><span class="n">append</span><span class="p">(((</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Xmax</span><span class="p">),</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Ymax</span><span class="p">)),</span>
                                      <span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Xmax</span><span class="p">),</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Ymax</span><span class="p">))))</span>
 
-        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="c1"># t0 = time()</span>
         <span class="k">for</span> <span class="n">startcoord</span><span class="p">,</span> <span class="n">endcoord</span> <span class="ow">in</span> <span class="n">start_end_points</span><span class="p">:</span>
             <span class="n">mapobj</span><span class="o">.</span><span class="n">get_shortest_path</span><span class="p">(</span><span class="n">startcoord</span><span class="p">,</span> <span class="n">endcoord</span><span class="p">)</span>
-        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertLess</span><span class="p">((</span><span class="n">t1</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span><span class="p">,</span> <span class="n">max_time</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Pathfinding for (</span><span class="si">{</span><span class="n">Xmax</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">Ymax</span><span class="si">}</span><span class="s2">) grid slower &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;than expected </span><span class="si">{</span><span class="n">max_time</span><span class="si">}</span><span class="s2">s.&quot;</span><span class="p">)</span>
+        <span class="c1"># t1 = time()</span>
+        <span class="c1"># if (t1 - t0) / 10 &gt; max_time:</span>
+        <span class="c1">#     print(f&quot;Pathfinding for ({Xmax}x{Ymax}) grid slower &quot;</span>
+        <span class="c1">#           f&quot;than expected {max_time}s.&quot;)</span>
 
     <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span>
         <span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">),</span>
@@ -1165,9 +1167,9 @@
         <span class="n">mapobj</span> <span class="o">=</span> <span class="n">xymap</span><span class="o">.</span><span class="n">XYMap</span><span class="p">({</span><span class="s1">&#39;map&#39;</span><span class="p">:</span> <span class="n">grid</span><span class="p">},</span> <span class="n">Z</span><span class="o">=</span><span class="s2">&quot;testmap&quot;</span><span class="p">)</span>
         <span class="n">mapobj</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
 
-        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="c1"># t0 = time()</span>
         <span class="n">mapobj</span><span class="o">.</span><span class="n">calculate_path_matrix</span><span class="p">()</span>
-        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="c1"># t1 = time()</span>
         <span class="c1"># print(f&quot;pathfinder matrix for grid {Xmax}x{Ymax}: {t1 - t0}s&quot;)</span>
 
         <span class="c1"># get random center points in grid and a range of targets to visualize the</span>
@@ -1177,14 +1179,14 @@
             <span class="n">start_end_points</span><span class="o">.</span><span class="n">append</span><span class="p">(((</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Xmax</span><span class="p">),</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Ymax</span><span class="p">)),</span>
                                     <span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Xmax</span><span class="p">),</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Ymax</span><span class="p">))))</span>
 
-        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="c1"># t0 = time()</span>
         <span class="k">for</span> <span class="n">coord</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">start_end_points</span><span class="p">:</span>
             <span class="n">mapobj</span><span class="o">.</span><span class="n">get_visual_range</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="n">dist</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;nodes&#39;</span><span class="p">,</span>
-                                    <span class="n">character</span><span class="o">=</span><span class="s1">&#39;@&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
-        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertLess</span><span class="p">((</span><span class="n">t1</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span><span class="p">,</span> <span class="n">max_time</span><span class="p">,</span>
-                        <span class="sa">f</span><span class="s2">&quot;Visual Range calculation for (</span><span class="si">{</span><span class="n">Xmax</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">Ymax</span><span class="si">}</span><span class="s2">) grid &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;slower than expected </span><span class="si">{</span><span class="n">max_time</span><span class="si">}</span><span class="s2">s.&quot;</span><span class="p">)</span></div>
+                                    <span class="n">character</span><span class="o">=</span><span class="s1">&#39;@&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">)</span></div>
+        <span class="c1"># t1 = time()</span>
+        <span class="c1"># if (t1 - t0) / 10 &gt; max_time:</span>
+        <span class="c1">#     print(f&quot;Visual Range calculation for ({Xmax}x{Ymax}) grid &quot;</span>
+        <span class="c1">#           f&quot;slower than expected {max_time}s.&quot;)</span>
 
 
 <div class="viewcode-block" id="TestXYZGrid"><a class="viewcode-back" href="../../../../api/evennia.contrib.xyzgrid.tests.html#evennia.contrib.xyzgrid.tests.TestXYZGrid">[docs]</a><span class="k">class</span> <span class="nc">TestXYZGrid</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>

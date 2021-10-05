@@ -558,6 +558,10 @@
 <span class="sd">        be found as a match.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># prototype keys are always in lowecase</span>
+    <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
+      <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
     <span class="c1"># search module prototypes</span>
 
     <span class="n">mod_matches</span> <span class="o">=</span> <span class="p">{}</span>
