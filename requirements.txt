@@ -26,3 +26,6 @@ parameterized==0.8.1
 
 # windows-specific
 pypiwin32;platform_system=="Windows"
+
+# xyzroom contrib
+scipy==1.7.1

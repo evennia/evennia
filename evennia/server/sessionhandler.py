@@ -31,6 +31,7 @@ from codecs import decode as codecs_decode
 from django.utils.translation import gettext as _
 
 _FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED = settings.FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED
+_BROADCAST_SERVER_RESTART_MESSAGES = settings.BROADCAST_SERVER_RESTART_MESSAGES
 
 # delayed imports
 _AccountDB = None
@@ -397,7 +398,8 @@ class ServerSessionHandler(SessionHandler):
         # tell the server hook we synced
         self.server.at_post_portal_sync(mode)
         # announce the reconnection
-        self.announce_all(_(" ... Server restarted."))
+        if _BROADCAST_SERVER_RESTART_MESSAGES:
+            self.announce_all(_(" ... Server restarted.")) 
 
     def portal_disconnect(self, session):
         """

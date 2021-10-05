@@ -26,6 +26,7 @@ from evennia.scripts.taskhandler import TaskHandlerTask
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 _TASK_HANDLER = None
+_BROADCAST_SERVER_RESTART_MESSAGES = settings.BROADCAST_SERVER_RESTART_MESSAGES
 
 # delayed imports
 _RESOURCE = None
@@ -69,7 +70,8 @@ class CmdReload(COMMAND_DEFAULT_CLASS):
         reason = ""
         if self.args:
             reason = "(Reason: %s) " % self.args.rstrip(".")
-        SESSIONS.announce_all(" Server restart initiated %s..." % reason)
+        if _BROADCAST_SERVER_RESTART_MESSAGES:
+            SESSIONS.announce_all(" Server restart initiated %s..." % reason)
         SESSIONS.portal_restart_server()
 
 
