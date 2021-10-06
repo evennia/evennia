@@ -384,7 +384,7 @@ class CmdEvMenuNode(Command):
 
         caller = self.caller
         # we store Session on the menu since this can be hard to
-        # get in multisession environemtns if caller is an Account.
+        # get in multisession environments if caller is an Account.
         menu = caller.ndb._evmenu
         if not menu:
             if _restore(caller):
