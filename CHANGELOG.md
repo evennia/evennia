@@ -2,7 +2,7 @@
 
 ## Evennia 1.0 (2019-) (develop branch, WIP)
 
-Up requirements to Django 3.2+
+Up requirements to Django 3.2+, Twisted 21+
 
 - New `drop:holds()` lock default to limit dropping nonsensical things. Access check
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
@@ -90,11 +90,19 @@ Up requirements to Django 3.2+
   while /Tall becomes 'Tall man'. One can turn this off if wanting the old style.
 - Change `EvTable` fixed-height rebalance algorithm to fill with empty lines at end of
   column instead of inserting rows based on cell-size (could be mistaken for a bug).
+- Split `return_appearance` hook with helper methods and have it use a template
+  string in order to make it easier to override.
+
+
+
 
 ### Evennia 0.9.5 (2019-2020)
 
+
 Released 2020-11-14.
 A transitional release, including new doc system.
+
+Backported from develop: Python 3.8, 3.9 support. Django 3.2+ support, Twisted 21+ support.
 
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
 - `py` command now reroutes stdout to output results in-game client. `py`
