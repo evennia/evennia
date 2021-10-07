@@ -1386,7 +1386,7 @@ class CmdName(ObjManipCommand):
             return
         # change the name and set aliases:
         if newname:
-            obj.name = newname
+            obj.key = newname
         astring = ""
         if aliases:
             [obj.aliases.add(alias) for alias in aliases]
