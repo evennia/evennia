@@ -45,6 +45,7 @@ class TestDummyrunnerSettings(TestCase):
             c_login(self.client),
             (
                 Something,  # create
+                'yes',  # confirm creation
                 Something,  # connect
                 "dig %s" % self.client.start_room,
                 "teleport %s" % self.client.start_room,

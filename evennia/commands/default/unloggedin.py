@@ -194,6 +194,20 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
 
         username, password = parts
 
+        # pre-normalize username so the user know what they get
+        non_normalized_username = username
+        username = Account.normalize_username(username)
+        if non_normalized_username != username:
+            session.msg("Note: your username was normalized to strip spaces and remove characters "
+                        "that could be visually confusing.")
+
+        # have the user verify their new account was what they intended
+        answer = yield(f"You want to create an account '{username}' with password '{password}'."
+                       "\nIs this what you intended? [Y]/N?")
+        if answer.lower() in ('n', 'no'):
+            session.msg("Aborted. If your user name contains spaces, surround it by quotes.")
+            return
+
         # everything's ok. Create the new account account.
         account, errors = Account.create(
             username=username, password=password, ip=address, session=session
