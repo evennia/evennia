@@ -92,6 +92,7 @@ Up requirements to Django 3.2+, Twisted 21+
   column instead of inserting rows based on cell-size (could be mistaken for a bug).
 - Split `return_appearance` hook with helper methods and have it use a template
   string in order to make it easier to override.
+- Add validation question to default account creation.
 
 
 
