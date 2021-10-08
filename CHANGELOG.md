@@ -93,8 +93,8 @@ Up requirements to Django 3.2+, Twisted 21+
 - Split `return_appearance` hook with helper methods and have it use a template
   string in order to make it easier to override.
 - Add validation question to default account creation.
-
-
+- Add `LOCALECHO` client option to add server-side echo for clients that does
+  not support this (useful for getting a complete log).
 
 
 ### Evennia 0.9.5 (2019-2020)

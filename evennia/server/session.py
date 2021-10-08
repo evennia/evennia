@@ -82,6 +82,7 @@ class Session:
             "INPUTDEBUG": False,
             "RAW": False,
             "NOCOLOR": False,
+            "LOCALECHO": False,
         }
         self.server_data = {}
 
