@@ -441,6 +441,10 @@ class PortalSessionHandler(SessionHandler):
             session.cmd_last = now
             self.portal.amp_protocol.send_MsgPortal2Server(session, **kwargs)
 
+            # eventual local echo (text input only)
+            if 'text' in kwargs and session.protocol_flags.get('LOCALECHO', False):
+                self.data_out(session, text=kwargs['text'])
+
     def data_out(self, session, **kwargs):
         """
         Called by server for having the portal relay messages and data
