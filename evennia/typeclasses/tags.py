@@ -14,6 +14,7 @@ from collections import defaultdict
 from django.conf import settings
 from django.db import models
 from evennia.utils.utils import to_str, make_iter
+from evennia.locks.lockfuncs import perm as perm_lockfunc
 
 
 _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
@@ -536,3 +537,47 @@ class PermissionHandler(TagHandler):
     """
 
     _tagtype = "permission"
+
+    def check(self, *permissions, require_all=False):
+        """
+        Straight-up check the provided permission against this handler. The check will pass if
+
+        - any/all given permission exists on the handler (depending on if `require_all` is set).
+        - If handler sits on puppeted object and this is a hierarachical perm, the puppeting
+          Account's permission will also be included in the check, prioritizing the Account's perm
+          (this avoids escalation exploits by puppeting a too-high prio character)
+        - a permission is also considered to exist on the handler, if it is *lower* than
+          a permission on the handler and this is a 'hierarchical' permission given
+          in `settings.PERMISSION_HIERARCHY`. Example: If the 'Developer' hierarchical
+          perm perm is set on the handler, and we check for the 'Builder' perm, the
+          check will pass.
+
+        Args:
+            *permissions (str): Any number of permissions to check. By default,
+                the permission is passed if any of these (or higher, if a
+                hierarchical permission defined in settings.PERMISSION_HIERARCHY)
+                exists in the handler. Permissions are not case-sensitive.
+            require_all (bool): If set, *all* provided permissions much pass
+                the check for the entire check to pass. By default only one
+                needs to pass.
+
+        Returns:
+            bool: If the provided permission(s) pass the check on this handler.
+
+        Example:
+            ::
+                can_enter = obj.permissions.check("Blacksmith", "Builder")
+
+        Notes:
+            This works the same way as the `perms` lockfunc and could be
+            replicated with a lock check against the lockstring
+
+                "locktype: perm(perm1) OR perm(perm2) OR ..."
+
+            (using AND for the `require_all` condition).
+
+        """
+        if require_all:
+            return all(perm_lockfunc(self.obj, None, perm) for perm in permissions)
+        else:
+            return any(perm_lockfunc(self.obj, None, perm) for perm in permissions)

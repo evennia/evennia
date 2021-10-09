@@ -208,3 +208,39 @@ class TestLockfuncs(EvenniaTest):
         self.assertEqual(True, lockfuncs.serversetting(None, None, "TESTVAL", "[1, 2, 3]"))
         self.assertEqual(False, lockfuncs.serversetting(None, None, "TESTVAL", "[1, 2, 4]"))
         self.assertEqual(False, lockfuncs.serversetting(None, None, "TESTVAL", "123"))
+
+
+class TestPermissionCheck(EvenniaTest):
+    """
+    Test the PermissionHandler.check method
+
+    """
+    def test_check__success(self):
+        """Test combinations that should pass the check"""
+        self.assertEqual(
+            [perm for perm in self.char1.account.permissions.all()],
+            ['developer', 'player']
+
+        )
+        self.assertTrue(self.char1.permissions.check("Builder"))
+        self.assertTrue(self.char1.permissions.check("Builder", "Player"))
+        self.assertTrue(self.char1.permissions.check("Builder", "dummy"))
+        self.assertTrue(self.char1.permissions.check("Developer", "dummy", "foobar"))
+        self.assertTrue(self.char1.permissions.check("Builder", "Player", require_all=True))
+
+    def test_check__fail(self):
+        """Test combinations that should fail the check"""
+        self.assertFalse(self.char1.permissions.check("dummy"))
+        self.assertFalse(self.char1.permissions.check("Builder", "dummy", require_all=True))
+        self.assertFalse(self.char1.permissions.check("Developer", "foobar", require_all=True))
+
+        self.char1.account.permissions.remove('developer')
+        self.char1.account.permissions.add("Builder")
+
+        self.assertEqual(
+            [perm for perm in self.char1.account.permissions.all()],
+            ['builder', 'player']
+        )
+        self.assertFalse(self.char1.permissions.check("Developer"))
+        self.assertFalse(self.char1.permissions.check("Developer", "Player", require_all=True))
+        self.assertFalse(self.char1.permissions.check("Player", "dummy", require_all=True))
