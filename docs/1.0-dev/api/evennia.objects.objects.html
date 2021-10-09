@@ -160,6 +160,11 @@ without <strong>obj.save()</strong> having to be called explicitly.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt id="evennia.objects.objects.DefaultObject.appearance_template">
+<code class="sig-name descname">appearance_template</code><em class="property"> = '\n{header}\n|c{name}|n\n{desc}\n{exits}{characters}{things}\n{footer}\n    '</em><a class="headerlink" href="#evennia.objects.objects.DefaultObject.appearance_template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="evennia.objects.objects.DefaultObject.cmdset">
 <code class="sig-name descname">cmdset</code><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.cmdset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.cmdset" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1205,19 +1210,94 @@ get called.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.get_visible_contents">
+<code class="sig-name descname">get_visible_contents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.get_visible_contents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.get_visible_contents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all contents of this object that a looker can see (whatever that means, by default it
+checks the ‘view’ lock), grouped by type. Helper method to return_appearance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>looker</strong> (<em>Object</em>) – The entity looking.</p></li>
+<li><p><strong>**kwargs</strong> (<em>any</em>) – Passed from <strong>return_appearance</strong>. Unused by default.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>dict</em> –</p>
+<dl class="simple">
+<dt>A dict of lists categorized by type. Byt default this</dt><dd><p>contains ‘exits’, ‘characters’ and ‘things’. The elements of these
+lists are the actual objects.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.get_content_names">
+<code class="sig-name descname">get_content_names</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.get_content_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.get_content_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the proper names for all contents of this object. Helper method
+for return_appearance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>looker</strong> (<em>Object</em>) – The entity looking.</p></li>
+<li><p><strong>**kwargs</strong> (<em>any</em>) – Passed from <strong>return_appearance</strong>. Passed into
+<strong>get_display_name</strong> for each found entity.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>dict</em> –</p>
+<dl class="simple">
+<dt>A dict of lists categorized by type. Byt default this</dt><dd><p>contains ‘exits’, ‘characters’ and ‘things’. The elements
+of these lists are strings - names of the objects that
+can depend on the looker and also be grouped in the case
+of multiple same-named things etc.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method shouldn’t add extra coloring to the names beyond what is
+already given by the .get_display_name() (and the .name field) already.
+Per-type coloring can be applied in <strong>return_apperance</strong>.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.return_appearance">
 <code class="sig-name descname">return_appearance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.return_appearance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.return_appearance" title="Permalink to this definition">¶</a></dt>
-<dd><p>This formats a description. It is the hook a ‘look’ command
-should call.</p>
+<dd><p>Main callback used by ‘look’ for the object to describe itself.
+This formats a description. By default, this looks for the <strong>appearance_template</strong>
+string set on this class and populates it with formatting keys</p>
+<blockquote>
+<div><p>‘name’, ‘desc’, ‘exits’, ‘characters’, ‘things’ as well as
+(currently empty) ‘header’/’footer’.</p>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>looker</strong> (<em>Object</em>) – Object doing the looking.</p></li>
 <li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
-overriding the call (unused by default).</p></li>
+overriding the call. This is passed into the helper
+methods and into <strong>get_display_name</strong> calls.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>str</em> –</p>
+<dl class="simple">
+<dt>The description of this entity. By default this includes</dt><dd><p>the entity’s name, description and any contents inside it.</p>
+</dd>
 </dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>To simply change the layout of how the object displays itself (like
+adding some line decorations or change colors of different sections),
+you can simply edit <strong>.appearance_template</strong>. You only need to override
+this method (and/or its helpers) if you want to change what is passed
+into the template or want the most control over output.</p>
 </dd></dl>
 
 <dl class="py method">

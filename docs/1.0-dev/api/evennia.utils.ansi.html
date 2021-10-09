@@ -205,6 +205,11 @@ by prepending with an extra <strong>|</strong>.</p>
 <code class="sig-name descname">ansi_escapes</code><em class="property"> = re.compile('({{|\\\\|\\|\\|)', re.DOTALL)</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_escapes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.unsafe_tokens">
+<code class="sig-name descname">unsafe_tokens</code><em class="property"> = re.compile('\\|\\/|\\|-', re.DOTALL)</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.unsafe_tokens" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="evennia.utils.ansi.ANSIParser.sub_ansi">
 <code class="sig-name descname">sub_ansi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ansimatch</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser.sub_ansi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.sub_ansi" title="Permalink to this definition">¶</a></dt>
@@ -285,6 +290,12 @@ to standard ANSI should be done or not.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.utils.ansi.ANSIParser.strip_unsafe_tokens">
+<code class="sig-name descname">strip_unsafe_tokens</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser.strip_unsafe_tokens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.strip_unsafe_tokens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strip explicitly ansi line breaks and tabs.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.utils.ansi.ANSIParser.parse_ansi">
 <code class="sig-name descname">parse_ansi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">strip_ansi</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">xterm256</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mxp</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser.parse_ansi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.parse_ansi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parses a string, subbing color codes according to the stored
@@ -361,6 +372,13 @@ ANSI-bytecodes in the string.</p>
 <dd class="field-even"><p><em>string (str)</em> – the stripped string.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.ansi.strip_unsafe_tokens">
+<code class="sig-prename descclassname">evennia.utils.ansi.</code><code class="sig-name descname">strip_unsafe_tokens</code><span class="sig-paren">(</span><em class="sig-param">string</em>, <em class="sig-param">parser=&lt;evennia.utils.ansi.ANSIParser object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#strip_unsafe_tokens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.strip_unsafe_tokens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strip markup that can be used to create visual exploits
+(notably linebreaks and tags)</p>
 </dd></dl>
 
 <dl class="py function">

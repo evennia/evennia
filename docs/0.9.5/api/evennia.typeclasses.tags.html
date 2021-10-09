@@ -417,6 +417,51 @@ of a latter tuple with the same category).</p>
 <em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.tags.</code><code class="sig-name descname">PermissionHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#PermissionHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.PermissionHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.typeclasses.tags.TagHandler" title="evennia.typeclasses.tags.TagHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.tags.TagHandler</span></code></a></p>
 <p>A handler for the Permission Tag type.</p>
+<dl class="py method">
+<dt id="evennia.typeclasses.tags.PermissionHandler.check">
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">permissions</span></em>, <em class="sig-param"><span class="n">require_all</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#PermissionHandler.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.PermissionHandler.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Straight-up check the provided permission against this handler. The check will pass if</p>
+<ul class="simple">
+<li><p>any/all given permission exists on the handler (depending on if <strong>require_all</strong> is set).</p></li>
+<li><p>If handler sits on puppeted object and this is a hierarachical perm, the puppeting
+Account’s permission will also be included in the check, prioritizing the Account’s perm
+(this avoids escalation exploits by puppeting a too-high prio character)</p></li>
+<li><p>a permission is also considered to exist on the handler, if it is <em>lower</em> than
+a permission on the handler and this is a ‘hierarchical’ permission given
+in <strong>settings.PERMISSION_HIERARCHY</strong>. Example: If the ‘Developer’ hierarchical
+perm perm is set on the handler, and we check for the ‘Builder’ perm, the
+check will pass.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*permissions</strong> (<em>str</em>) – Any number of permissions to check. By default,
+the permission is passed if any of these (or higher, if a
+hierarchical permission defined in settings.PERMISSION_HIERARCHY)
+exists in the handler. Permissions are not case-sensitive.</p></li>
+<li><p><strong>require_all</strong> (<em>bool</em>) – If set, <em>all</em> provided permissions much pass
+the check for the entire check to pass. By default only one
+needs to pass.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>bool</em> – If the provided permission(s) pass the check on this handler.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<dl class="simple">
+<dt>::</dt><dd><p>can_enter = obj.permissions.check(“Blacksmith”, “Builder”)</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This works the same way as the <strong>perms</strong> lockfunc and could be
+replicated with a lock check against the lockstring</p>
+<blockquote>
+<div><p>“locktype: perm(perm1) OR perm(perm2) OR …”</p>
+</div></blockquote>
+<p>(using AND for the <strong>require_all</strong> condition).</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>

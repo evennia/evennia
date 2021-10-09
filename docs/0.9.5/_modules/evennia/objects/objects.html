@@ -257,6 +257,15 @@
 
     <span class="n">objects</span> <span class="o">=</span> <span class="n">ObjectManager</span><span class="p">()</span>
 
+    <span class="c1"># populated by `return_apperance`</span>
+    <span class="n">appearance_template</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="si">{header}</span><span class="s1"></span>
+<span class="s1">|c</span><span class="si">{name}</span><span class="s1">|n</span>
+<span class="si">{desc}</span><span class="s1"></span>
+<span class="si">{exits}{characters}{things}</span><span class="s1"></span>
+<span class="si">{footer}</span><span class="s1"></span>
+<span class="s1">    &#39;&#39;&#39;</span>
+
     <span class="c1"># on-object properties</span>
 
 <div class="viewcode-block" id="DefaultObject.cmdset"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.cmdset">[docs]</a>    <span class="nd">@lazy_property</span>
@@ -1766,59 +1775,130 @@
 
     <span class="c1"># hooks called by the default cmdset.</span>
 
+<div class="viewcode-block" id="DefaultObject.get_visible_contents"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_visible_contents">[docs]</a>    <span class="k">def</span> <span class="nf">get_visible_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all contents of this object that a looker can see (whatever that means, by default it</span>
+<span class="sd">        checks the &#39;view&#39; lock), grouped by type. Helper method to return_appearance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            looker (Object): The entity looking.</span>
+<span class="sd">            **kwargs (any): Passed from `return_appearance`. Unused by default.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dict of lists categorized by type. Byt default this</span>
+<span class="sd">                contains &#39;exits&#39;, &#39;characters&#39; and &#39;things&#39;. The elements of these</span>
+<span class="sd">                lists are the actual objects.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">filter_visible</span><span class="p">(</span><span class="n">obj_list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_list</span> <span class="k">if</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">looker</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;exits&quot;</span><span class="p">:</span> <span class="n">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;exit&quot;</span><span class="p">)),</span>
+            <span class="s2">&quot;characters&quot;</span><span class="p">:</span> <span class="n">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;character&quot;</span><span class="p">)),</span>
+            <span class="s2">&quot;things&quot;</span><span class="p">:</span> <span class="n">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">))</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="DefaultObject.get_content_names"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_content_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_content_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the proper names for all contents of this object. Helper method</span>
+<span class="sd">        for return_appearance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            looker (Object): The entity looking.</span>
+<span class="sd">            **kwargs (any): Passed from `return_appearance`. Passed into</span>
+<span class="sd">                `get_display_name` for each found entity.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dict of lists categorized by type. Byt default this</span>
+<span class="sd">                contains &#39;exits&#39;, &#39;characters&#39; and &#39;things&#39;. The elements</span>
+<span class="sd">                of these lists are strings - names of the objects that</span>
+<span class="sd">                can depend on the looker and also be grouped in the case</span>
+<span class="sd">                of multiple same-named things etc.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This method shouldn&#39;t add extra coloring to the names beyond what is</span>
+<span class="sd">            already given by the .get_display_name() (and the .name field) already.</span>
+<span class="sd">            Per-type coloring can be applied in `return_apperance`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># a mapping {&#39;exits&#39;: [...], &#39;characters&#39;: [...], &#39;things&#39;: [...]}</span>
+        <span class="n">contents_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_visible_contents</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">character_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">char</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                           <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">contents_map</span><span class="p">[</span><span class="s1">&#39;characters&#39;</span><span class="p">]]</span>
+        <span class="n">exit_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">exi</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">exi</span> <span class="ow">in</span> <span class="n">contents_map</span><span class="p">[</span><span class="s1">&#39;exits&#39;</span><span class="p">]]</span>
+
+        <span class="c1"># group all same-named things under one name</span>
+        <span class="n">things</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">contents_map</span><span class="p">[</span><span class="s1">&#39;things&#39;</span><span class="p">]:</span>
+            <span class="n">things</span><span class="p">[</span><span class="n">thing</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>
+
+        <span class="c1"># pluralize same-named things</span>
+        <span class="n">thing_names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">thingname</span><span class="p">,</span> <span class="n">thinglist</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">things</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">nthings</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">thinglist</span><span class="p">)</span>
+            <span class="n">thing</span> <span class="o">=</span> <span class="n">thinglist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">singular</span><span class="p">,</span> <span class="n">plural</span> <span class="o">=</span> <span class="n">thing</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="n">nthings</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">thingname</span><span class="p">)</span>
+            <span class="n">thing_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">singular</span> <span class="k">if</span> <span class="n">nthings</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">plural</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;exits&quot;</span><span class="p">:</span> <span class="n">exit_names</span><span class="p">,</span>
+            <span class="s2">&quot;characters&quot;</span><span class="p">:</span> <span class="n">character_names</span><span class="p">,</span>
+            <span class="s2">&quot;things&quot;</span><span class="p">:</span> <span class="n">thing_names</span>
+        <span class="p">}</span></div>
+
 <div class="viewcode-block" id="DefaultObject.return_appearance"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.return_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This formats a description. It is the hook a &#39;look&#39; command</span>
-<span class="sd">        should call.</span>
+<span class="sd">        Main callback used by &#39;look&#39; for the object to describe itself.</span>
+<span class="sd">        This formats a description. By default, this looks for the `appearance_template`</span>
+<span class="sd">        string set on this class and populates it with formatting keys</span>
+<span class="sd">            &#39;name&#39;, &#39;desc&#39;, &#39;exits&#39;, &#39;characters&#39;, &#39;things&#39; as well as</span>
+<span class="sd">            (currently empty) &#39;header&#39;/&#39;footer&#39;.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            looker (Object): Object doing the looking.</span>
 <span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
-<span class="sd">                overriding the call (unused by default).</span>
+<span class="sd">                overriding the call. This is passed into the helper</span>
+<span class="sd">                methods and into `get_display_name` calls.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The description of this entity. By default this includes</span>
+<span class="sd">                the entity&#39;s name, description and any contents inside it.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            To simply change the layout of how the object displays itself (like</span>
+<span class="sd">            adding some line decorations or change colors of different sections),</span>
+<span class="sd">            you can simply edit `.appearance_template`. You only need to override</span>
+<span class="sd">            this method (and/or its helpers) if you want to change what is passed</span>
+<span class="sd">            into the template or want the most control over output.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">filter_visible</span><span class="p">(</span><span class="n">obj_list</span><span class="p">):</span>
-            <span class="c1"># Helper method to determine if objects are visible to the looker.</span>
-            <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_list</span> <span class="k">if</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">looker</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">)]</span>
-
         <span class="k">if</span> <span class="ow">not</span> <span class="n">looker</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span>
 
-        <span class="c1"># get and identify all objects</span>
-        <span class="n">exits_list</span> <span class="o">=</span> <span class="n">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;exit&quot;</span><span class="p">))</span>
-        <span class="n">users_list</span> <span class="o">=</span> <span class="n">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;character&quot;</span><span class="p">))</span>
-        <span class="n">things_list</span> <span class="o">=</span> <span class="n">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">))</span>
+        <span class="c1"># ourselves</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="ow">or</span> <span class="s2">&quot;You see nothing special.&quot;</span>
 
-        <span class="n">things</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="c1"># contents</span>
+        <span class="n">content_names_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_content_names</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">exits</span> <span class="o">=</span> <span class="n">list_to_string</span><span class="p">(</span><span class="n">content_names_map</span><span class="p">[</span><span class="s1">&#39;exits&#39;</span><span class="p">])</span>
+        <span class="n">characters</span> <span class="o">=</span> <span class="n">list_to_string</span><span class="p">(</span><span class="n">content_names_map</span><span class="p">[</span><span class="s1">&#39;characters&#39;</span><span class="p">])</span>
+        <span class="n">things</span> <span class="o">=</span> <span class="n">list_to_string</span><span class="p">(</span><span class="n">content_names_map</span><span class="p">[</span><span class="s1">&#39;things&#39;</span><span class="p">])</span>
 
-        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">things_list</span><span class="p">:</span>
-            <span class="n">things</span><span class="p">[</span><span class="n">thing</span><span class="o">.</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>
-        <span class="n">users</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;|c</span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n&quot;</span> <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">users_list</span><span class="p">]</span>
-        <span class="n">exits</span> <span class="o">=</span> <span class="p">[</span><span class="n">ex</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">exits_list</span><span class="p">]</span>
-
-        <span class="c1"># get description, build string</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;|c</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">)</span>
-        <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
-        <span class="k">if</span> <span class="n">desc</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">desc</span>
-        <span class="k">if</span> <span class="n">exits</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wExits:|n &quot;</span> <span class="o">+</span> <span class="n">list_to_string</span><span class="p">(</span><span class="n">exits</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">users</span> <span class="ow">or</span> <span class="n">things</span><span class="p">:</span>
-            <span class="c1"># handle pluralization of things (never pluralize users)</span>
-            <span class="n">thing_strings</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">itemlist</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">things</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
-                <span class="n">nitem</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">itemlist</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">nitem</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">key</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">itemlist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="n">nitem</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">key</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">get_numbered_name</span><span class="p">(</span><span class="n">nitem</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">itemlist</span><span class="p">][</span>
-                        <span class="mi">0</span>
-                    <span class="p">]</span>
-                <span class="n">thing_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wYou see:|n &quot;</span> <span class="o">+</span> <span class="n">list_to_string</span><span class="p">(</span><span class="n">users</span> <span class="o">+</span> <span class="n">thing_strings</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">string</span></div>
+        <span class="c1"># populate the appearance_template string. It&#39;s a good idea to strip it and</span>
+        <span class="c1"># let the client add any extra spaces instead.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">appearance_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">header</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span>
+            <span class="n">exits</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;|wExits:|n </span><span class="si">{</span><span class="n">exits</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">exits</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">characters</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wCharacters:|n </span><span class="si">{</span><span class="n">characters</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">characters</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">things</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wYou see:|n </span><span class="si">{</span><span class="n">things</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">things</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">footer</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DefaultObject.at_look"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_look">[docs]</a>    <span class="k">def</span> <span class="nf">at_look</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

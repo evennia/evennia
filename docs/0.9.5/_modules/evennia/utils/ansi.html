@@ -293,6 +293,9 @@
     <span class="c1"># instance of each</span>
     <span class="n">ansi_escapes</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ANSI_ESCAPES</span><span class="p">),</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
 
+    <span class="c1"># tabs/linebreaks |/ and |- should be able to be cleaned</span>
+    <span class="n">unsafe_tokens</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|\/|\|-&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+
 <div class="viewcode-block" id="ANSIParser.sub_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.sub_ansi">[docs]</a>    <span class="k">def</span> <span class="nf">sub_ansi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ansimatch</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replacer used by `re.sub` to replace ANSI</span>
@@ -471,6 +474,13 @@
         <span class="n">string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mxp_url_sub</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\1&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>  <span class="c1"># replace with url verbatim</span>
         <span class="k">return</span> <span class="n">string</span></div>
 
+<div class="viewcode-block" id="ANSIParser.strip_unsafe_tokens"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.strip_unsafe_tokens">[docs]</a>    <span class="k">def</span> <span class="nf">strip_unsafe_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Strip explicitly ansi line breaks and tabs.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unsafe_tokens</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="ANSIParser.parse_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.parse_ansi">[docs]</a>    <span class="k">def</span> <span class="nf">parse_ansi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parses a string, subbing color codes according to the stored</span>
@@ -603,6 +613,15 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">strip_raw_codes</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="strip_unsafe_tokens"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.strip_unsafe_tokens">[docs]</a><span class="k">def</span> <span class="nf">strip_unsafe_tokens</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">ANSI_PARSER</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Strip markup that can be used to create visual exploits</span>
+<span class="sd">    (notably linebreaks and tags)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">strip_unsafe_tokens</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="raw"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.raw">[docs]</a><span class="k">def</span> <span class="nf">raw</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>

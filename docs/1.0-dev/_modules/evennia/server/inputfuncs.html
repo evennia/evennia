@@ -101,6 +101,7 @@
 <span class="sd">            arguments are ignored.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># from evennia.server.profiling.timetrace import timetrace</span>
     <span class="c1"># text = timetrace(text, &quot;ServerSession.data_in&quot;)</span>
 
@@ -198,6 +199,7 @@
     <span class="s2">&quot;RAW&quot;</span><span class="p">,</span>
     <span class="s2">&quot;NOCOLOR&quot;</span><span class="p">,</span>
     <span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LOCALECHO&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -222,6 +224,7 @@
 <span class="sd">        inputdebug (bool): Debug input functions</span>
 <span class="sd">        nocolor (bool): Strip color</span>
 <span class="sd">        raw (bool): Turn off parsing</span>
+<span class="sd">        localecho (bool): Turn on server-side echo (for clients not supporting it)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">old_flags</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span>
@@ -281,6 +284,8 @@
             <span class="n">flags</span><span class="p">[</span><span class="s2">&quot;RAW&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">validate_bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;nogoahead&quot;</span><span class="p">:</span>
             <span class="n">flags</span><span class="p">[</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">validate_bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;localecho&quot;</span><span class="p">:</span>
+            <span class="n">flags</span><span class="p">[</span><span class="s2">&quot;LOCALECHO&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">validate_bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span>
             <span class="s2">&quot;Char 1&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Char.Skills 1&quot;</span><span class="p">,</span>

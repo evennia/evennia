@@ -1428,7 +1428,7 @@
             <span class="k">return</span>
         <span class="c1"># change the name and set aliases:</span>
         <span class="k">if</span> <span class="n">newname</span><span class="p">:</span>
-            <span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">newname</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">newname</span>
         <span class="n">astring</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="n">aliases</span><span class="p">:</span>
             <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">aliases</span><span class="p">]</span>
@@ -1829,28 +1829,42 @@
                 <span class="s2">&quot;dicts.|n&quot;</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="CmdSetAttribute.edit_handler"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSetAttribute.edit_handler">[docs]</a>    <span class="k">def</span> <span class="nf">edit_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+    <span class="nd">@interactive</span>
+    <span class="k">def</span> <span class="nf">edit_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Activate the line editor&quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Called for the editor to load the buffer&quot;&quot;&quot;</span>
-            <span class="n">old_value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">old_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">old_value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">old_value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="s2">&quot;|RWARNING! Saving this buffer will overwrite the &quot;</span>
-                    <span class="s2">&quot;current attribute (of type </span><span class="si">%s</span><span class="s2">) with a string!|n&quot;</span> <span class="o">%</span> <span class="n">typ</span>
-                <span class="p">)</span>
-                <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">old_value</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">old_value</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">old_value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="c1"># we set empty buffer on nonexisting Attribute because otherwise</span>
+                <span class="c1"># we&#39;d always have the string &quot;None&quot; in the buffer to start with</span>
+                <span class="n">old_value</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">old_value</span><span class="p">)</span>  <span class="c1"># we already confirmed we are ok with this</span>
 
         <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">buf</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Called when editor saves its buffer.&quot;&quot;&quot;</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">buf</span><span class="p">)</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Saved Attribute </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">attr</span><span class="p">)</span>
 
+        <span class="c1"># check non-strings before activating editor</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">old_value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">old_value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">answer</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;|rWarning: Attribute |w</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">|r is of type |w</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">old_value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">|r. &quot;</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">To continue editing, it must be converted to (and saved as) a string. &quot;</span>
+                    <span class="s2">&quot;Continue? [Y]/N?&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">answer</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Aborted edit.&quot;</span><span class="p">)</span>
+                    <span class="k">return</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
         <span class="c1"># start the editor</span>
-        <span class="n">EvEditor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">load</span><span class="p">,</span> <span class="n">save</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">))</span></div>
+        <span class="n">EvEditor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">load</span><span class="p">,</span> <span class="n">save</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CmdSetAttribute.search_for_obj"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSetAttribute.search_for_obj">[docs]</a>    <span class="k">def</span> <span class="nf">search_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objname</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1920,7 +1934,7 @@
                            <span class="s2">&quot;edit the current room description, use `set/edit here/desc` (or &quot;</span>
                            <span class="s2">&quot;use the `desc` command).&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">edit_handler</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attrs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edit_handler</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attrs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">caller</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

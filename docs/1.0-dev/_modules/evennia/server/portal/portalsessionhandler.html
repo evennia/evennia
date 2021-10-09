@@ -481,7 +481,11 @@
 
             <span class="c1"># relay data to Server</span>
             <span class="n">session</span><span class="o">.</span><span class="n">cmd_last</span> <span class="o">=</span> <span class="n">now</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_MsgPortal2Server</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_MsgPortal2Server</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="c1"># eventual local echo (text input only)</span>
+            <span class="k">if</span> <span class="s1">&#39;text&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;LOCALECHO&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="PortalSessionHandler.data_out"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.data_out">[docs]</a>    <span class="k">def</span> <span class="nf">data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
