@@ -3,12 +3,119 @@
 A *permission* is simply a text string stored in the handler `permissions` on `Objects`
 and `Accounts`. Think of it as a specialized sort of [Tag](./Tags) - one specifically dedicated
 to access checking. They are thus often tightly coupled to [Locks](./Locks).
+Permission strings are not case-sensitive, so "Builder" is the same as "builder"
+etc.
 
 Permissions are used as a convenient way to structure access levels and
-hierarchies. It is set by the `perm` command. Permissions are especially
-handled by the `perm()` and `pperm()` [lock functions](./Locks).
+hierarchies. It is set by the `perm` command and checked by the
+`PermissionHandler.check` method as well as by the specially the `perm()` and
+`pperm()` [lock functions](./Locks).
 
-Let's say we have a `red_key` object. We also have red chests that we want to unlock with this key.
+All new accounts are given a default set of permissions defined by
+`settings.PERMISSION_ACCOUNT_DEFAULT`.
+
+## Managing Permissions
+
+In-game, you use the `perm` command to add and remove permissions
+
+     perm/account Tommy = Builders
+     perm/account/del Tommy = Builders
+
+Note the use of the `/account` switch. It means you assign the permission to the
+[Accounts](./Accounts) Tommy instead of any [Character](./Objects) that also
+happens to be named "Tommy".
+
+There can be reasons for putting permissions on Objects (especially NPCS), but
+for granting powers to players, you should usually put the permission on the
+`Account` - this guarantees that they are kept, *regardless*
+of which Character they are currently puppeting. This is especially important to
+remember when assigning permissions from the *hierarchy tree* (see below), as an
+Account's permissions will overrule that of its character. So to be sure to
+avoid confusion you should generally put hierarchy permissions on the Account,
+not on their Characters (but see also [quelling](./Locks#Quelling)).
+
+In code, you add/remove Permissions via the `PermissionHandler`, which sits on all
+typeclassed entities as the property `.permissions`:
+
+```python
+    account.permissions.add("Builders")
+    account.permissions.add("cool_guy")
+    obj.permissions.add("Blacksmith")
+    obj.permissions.remove("Blacksmith")
+```
+
+
+## The permission hierarchy
+
+Selected permission strings can be organized in a *permission hierarchy* by editing the tuple
+`settings.PERMISSION_HIERARCHY`.  Evennia's default permission hierarchy is as follows
+(in increasing order of power):
+
+     Player           # can chat and send tells (default level) (lowest)
+     Helper           # can edit help files
+     Builder          # can edit the world
+     Admin            # can administrate accounts
+     Developer        # like superuser but affected by locks (highest)
+
+(Besides being case-insensitive, hierarchical permissions also understand the
+plural form, so you could use `Developers` and `Developer` interchangeably).
+
+> There is also a `Guest` level below `Player` that is only active if `settings.GUEST_ENABLED` is
+set. The Guest is is never part of `settings.PERMISSION_HIERARCHY`.
+
+When checking a hierarchical permission (using one of the methods to follow),
+you will pass checks for your level and all *below* you. That is, even if the
+check explicitly checks for "Builder" level access, you will actually pass if you have
+one of "Builder", "Admin" or "Developer". By contrast, if you check for a
+non-hierarchical permission, like "Blacksmith" you *must* have exactly
+that permission to pass.
+
+## Checking permissions
+
+It's important to note that you check for the permission of a *puppeted*
+[Object](./Objects) (like a Character), the check will always first use the
+permissions of any `Account` connected to that Object before checking for
+permissions on the Object. In the case of hierarchical permissions (Admins,
+Builders etc), the Account permission will always be used (this stops an Account
+from escalating their permission by puppeting a high-level Character). If the
+permission looked for is not in the hierarchy, an exact match is required, first
+on the Account and if not found there (or if no Account is connected), then on
+the Object itself.
+
+### Checking with obj.permissions.check()
+
+The simplest way to check if an entity has a permission is to check its
+_PermissionHandler_, stored as `.permissions`  on all typeclassed entities.
+
+    if obj.permissions.check("Builder"):
+        # allow builder to do stuff
+
+    if obj.permissions.check("Blacksmith", "Warrior"):
+        # do stuff for blacksmiths OR warriors
+
+    if obj.permissions.check("Blacksmith", "Warrior", require_all=True):
+        # only for those that are both blacksmiths AND warriors
+
+Using the `.check` method is the way to go, it will take hierarchical
+permissions into account, check accounts/sessions etc.
+
+```warning
+
+    Don't confuse `.permissions.check()` with `.permissions.has()`. The .has()
+    method checks if a string is defined specifically on that PermissionHandler.
+    It will not consider permission-hierarchy, puppeting etc. `.has` can be useful
+    if you are manipulating permissions, but use `.check` for access checking.
+
+```
+
+### Lock funcs
+
+While the `PermissionHandler` offers a simple way to check perms, [Lock
+strings](Locks) offers a mini-language for describing how something is accessed.
+The `perm()` _lock function_ is the main tool for using Permissions in locks.
+
+Let's say we have a `red_key` object. We also have red chests that we want to
+unlock with this key.
 
     perm red_key = unlocks_red_chests
 
@@ -32,87 +139,63 @@ class TreasureChest(Object):
       if not chest.access(who, tried_key, "unlock"):
           who.msg("The key does not fit!")
           return
+      else:
+          who.msg("The key fits! The chest opens.")
+          # ...
 
 ```
 
-All new accounts are given a default set of permissions defined by
-`settings.PERMISSION_ACCOUNT_DEFAULT`.
+There are several variations to the default `perm` lockfunc:
 
-Selected permission strings can be organized in a *permission hierarchy* by editing the tuple
-`settings.PERMISSION_HIERARCHY`.  Evennia's default permission hierarchy is as follows:
+- `perm_above` - requires a hierarchical permission *higher* than the one
+  provided. Example: `"edit: perm_above(Player)"`
+- `pperm` - looks *only* for permissions on `Accounts`, never at any puppeted
+  objects (regardless of hierarchical perm or not).
+- `pperm_above` - like `perm_above`, but for Accounts only.
 
-     Developer        # like superuser but affected by locks
-     Admin            # can administrate accounts
-     Builder          # can edit the world
-     Helper           # can edit help files
-     Player           # can chat and send tells (default level)
 
-(Also the plural form works, so you could use `Developers` etc too).
+### Some examples
 
-> There is also a `Guest` level below `Player` that is only active if `settings.GUEST_ENABLED` is
-set. This is never part of `settings.PERMISSION_HIERARCHY`.
-
-The main use of this is that if you use the lock function `perm()` mentioned above, a lock check for
-a particular permission in the hierarchy will *also* grant access to those with *higher* hierarchy
-access. So if you have the permission "Admin" you will also pass a lock defined as `perm(Builder)`
-or any of those levels below "Admin".
-
-When doing an access check from an [Object](./Objects) or Character, the `perm()` lock function will
-always first use the permissions of any Account connected to that Object before checking for
-permissions on the Object. In the case of hierarchical permissions (Admins, Builders etc), the
-Account permission will always be used (this stops an Account from escalating their permission by
-puppeting a high-level Character).  If the permission looked for is not in the hierarchy, an exact
-match is required, first on the Account and if not found there (or if no Account is connected), then
-on the Object itself.
-
-Here is how you use `perm` to give an account more permissions:
-
-     perm/account Tommy = Builders
-     perm/account/del Tommy = Builders # remove it again
-
-Note the use of the `/account` switch. It means you assign the permission to the
-[Accounts](./Accounts) Tommy instead of any [Character](./Objects) that also happens to be named
-"Tommy".
-
-Putting permissions on the *Account* guarantees that they are kept, *regardless* of which Character
-they are currently puppeting. This is especially important to remember when assigning permissions
-from the *hierarchy tree* - as mentioned above, an Account's permissions will overrule that of its
-character. So to be sure to avoid confusion you should generally put hierarchy permissions on the
-Account, not on their Characters (but see also [quelling](./Locks#Quelling)).
-
-Below is an example of an object without any connected account
+Adding permissions and checking with locks
 
 ```python
-    obj1.permissions = ["Builders", "cool_guy"]
-    obj2.locks.add("enter:perm_above(Accounts) and perm(cool_guy)")
-
-    obj2.access(obj1, "enter") # this returns True!
+    account.permissions.add("Builder")
+    account.permissions.add("cool_guy")
+    account.locks.add("enter:perm_above(Player) and perm(cool_guy)")
+    account.access(obj1, "enter") # this returns True!
 ```
 
-And one example of a puppet with a connected account:
+An example of a puppet with a connected account:
 
 ```python
-    account.permissions.add("Accounts")
-    puppet.permissions.add("Builders", "cool_guy")
+    account.permissions.add("Player")
+    puppet.permissions.add("Builders")
+    puppet.permissions.add("cool_guy")
     obj2.locks.add("enter:perm_above(Accounts) and perm(cool_guy)")
 
-    obj2.access(puppet, "enter") # this returns False!
+    obj2.access(puppet, "enter") # this returns False, since puppet permission
+                                 # is lower than Account's perm, and perm takes
+                                 # precedence.
 ```
 
 ## Superusers
 
-There is normally only one *superuser* account and that is the one first created when starting
-Evennia (User #1). This is sometimes known as the "Owner" or "God" user.  A superuser has more than
-full access - it completely *bypasses* all locks so no checks are even run. This allows for the
-superuser to always have access to everything in an emergency. But it also hides any eventual errors
-you might have made in your lock definitions. So when trying out game systems you should either use
-quelling (see below) or make a second Developer-level character so your locks get tested correctly.
+There is normally only one *superuser* account and that is the one first created
+when starting Evennia (User #1). This is sometimes known as the "Owner" or "God"
+user.  A superuser has more than full access - it completely *bypasses* all
+locks and will always pass the `PermissionHandler.check()` check. This allows
+for the superuser to always have access to everything in an emergency. But it
+could also hide any eventual errors you might have made in your lock definitions. So
+when trying out game systems you should either use quelling (see below) or make
+a second Developer-level character that does not bypass such checks.
 
 ## Quelling
 
-The `quell` command can be used to enforce the `perm()` lockfunc to ignore permissions on the
-Account and instead use the permissions on the Character only. This can be used e.g. by staff to
-test out things with a lower permission level. Return to the normal operation with `unquell`.  Note
-that quelling will use the smallest of any hierarchical permission on the Account or Character, so
-one cannot escalate one's Account permission by quelling to a high-permission Character. Also the
-superuser can quell their powers this way, making them affectable by locks.
+The `quell` command can be used to enforce the `perm()` lockfunc to ignore
+permissions on the Account and instead use the permissions on the Character
+only. This can be used e.g. by staff to test out things with a lower permission
+level. Return to the normal operation with `unquell`.  Note that quelling will
+use the smallest of any hierarchical permission on the Account or Character, so
+one cannot escalate one's Account permission by quelling to a high-permission
+Character. Also the superuser can quell their powers this way, making them
+affectable by locks.

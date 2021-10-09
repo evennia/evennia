@@ -235,6 +235,20 @@
 
         <span class="n">username</span><span class="p">,</span> <span class="n">password</span> <span class="o">=</span> <span class="n">parts</span>
 
+        <span class="c1"># pre-normalize username so the user know what they get</span>
+        <span class="n">non_normalized_username</span> <span class="o">=</span> <span class="n">username</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="n">Account</span><span class="o">.</span><span class="n">normalize_username</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">non_normalized_username</span> <span class="o">!=</span> <span class="n">username</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Note: your username was normalized to strip spaces and remove characters &quot;</span>
+                        <span class="s2">&quot;that could be visually confusing.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># have the user verify their new account was what they intended</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You want to create an account &#39;</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2">&#39; with password &#39;</span><span class="si">{</span><span class="n">password</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                       <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Is this what you intended? [Y]/N?&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">answer</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">):</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Aborted. If your user name contains spaces, surround it by quotes.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
         <span class="c1"># everything&#39;s ok. Create the new account account.</span>
         <span class="n">account</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">Account</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
             <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span>

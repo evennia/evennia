@@ -42,11 +42,116 @@
 <h1>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h1>
 <p>A <em>permission</em> is simply a text string stored in the handler <code class="docutils literal notranslate"><span class="pre">permissions</span></code> on <code class="docutils literal notranslate"><span class="pre">Objects</span></code>
 and <code class="docutils literal notranslate"><span class="pre">Accounts</span></code>. Think of it as a specialized sort of <a class="reference internal" href="Tags.html"><span class="doc">Tag</span></a> - one specifically dedicated
-to access checking. They are thus often tightly coupled to <a class="reference internal" href="Locks.html"><span class="doc">Locks</span></a>.</p>
+to access checking. They are thus often tightly coupled to <a class="reference internal" href="Locks.html"><span class="doc">Locks</span></a>.
+Permission strings are not case-sensitive, so “Builder” is the same as “builder”
+etc.</p>
 <p>Permissions are used as a convenient way to structure access levels and
-hierarchies. It is set by the <code class="docutils literal notranslate"><span class="pre">perm</span></code> command. Permissions are especially
-handled by the <code class="docutils literal notranslate"><span class="pre">perm()</span></code> and <code class="docutils literal notranslate"><span class="pre">pperm()</span></code> <a class="reference internal" href="Locks.html"><span class="doc">lock functions</span></a>.</p>
-<p>Let’s say we have a <code class="docutils literal notranslate"><span class="pre">red_key</span></code> object. We also have red chests that we want to unlock with this key.</p>
+hierarchies. It is set by the <code class="docutils literal notranslate"><span class="pre">perm</span></code> command and checked by the
+<code class="docutils literal notranslate"><span class="pre">PermissionHandler.check</span></code> method as well as by the specially the <code class="docutils literal notranslate"><span class="pre">perm()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">pperm()</span></code> <a class="reference internal" href="Locks.html"><span class="doc">lock functions</span></a>.</p>
+<p>All new accounts are given a default set of permissions defined by
+<code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_ACCOUNT_DEFAULT</span></code>.</p>
+<section id="managing-permissions">
+<h2>Managing Permissions<a class="headerlink" href="#managing-permissions" title="Permalink to this headline">¶</a></h2>
+<p>In-game, you use the <code class="docutils literal notranslate"><span class="pre">perm</span></code> command to add and remove permissions</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">perm</span><span class="o">/</span><span class="n">account</span> <span class="n">Tommy</span> <span class="o">=</span> <span class="n">Builders</span>
+ <span class="n">perm</span><span class="o">/</span><span class="n">account</span><span class="o">/</span><span class="k">del</span> <span class="n">Tommy</span> <span class="o">=</span> <span class="n">Builders</span>
+</pre></div>
+</div>
+<p>Note the use of the <code class="docutils literal notranslate"><span class="pre">/account</span></code> switch. It means you assign the permission to the
+<a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a> Tommy instead of any <a class="reference internal" href="Objects.html"><span class="doc">Character</span></a> that also
+happens to be named “Tommy”.</p>
+<p>There can be reasons for putting permissions on Objects (especially NPCS), but
+for granting powers to players, you should usually put the permission on the
+<code class="docutils literal notranslate"><span class="pre">Account</span></code> - this guarantees that they are kept, <em>regardless</em>
+of which Character they are currently puppeting. This is especially important to
+remember when assigning permissions from the <em>hierarchy tree</em> (see below), as an
+Account’s permissions will overrule that of its character. So to be sure to
+avoid confusion you should generally put hierarchy permissions on the Account,
+not on their Characters (but see also <a class="reference external" href="Components/Locks.html#Quelling">quelling</a>).</p>
+<p>In code, you add/remove Permissions via the <code class="docutils literal notranslate"><span class="pre">PermissionHandler</span></code>, which sits on all
+typeclassed entities as the property <code class="docutils literal notranslate"><span class="pre">.permissions</span></code>:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Builders&quot;</span><span class="p">)</span>
+    <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;cool_guy&quot;</span><span class="p">)</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Blacksmith&quot;</span><span class="p">)</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;Blacksmith&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</section>
+<section id="the-permission-hierarchy">
+<h2>The permission hierarchy<a class="headerlink" href="#the-permission-hierarchy" title="Permalink to this headline">¶</a></h2>
+<p>Selected permission strings can be organized in a <em>permission hierarchy</em> by editing the tuple
+<code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_HIERARCHY</span></code>.  Evennia’s default permission hierarchy is as follows
+(in increasing order of power):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">Player</span>           <span class="c1"># can chat and send tells (default level) (lowest)</span>
+ <span class="n">Helper</span>           <span class="c1"># can edit help files</span>
+ <span class="n">Builder</span>          <span class="c1"># can edit the world</span>
+ <span class="n">Admin</span>            <span class="c1"># can administrate accounts</span>
+ <span class="n">Developer</span>        <span class="c1"># like superuser but affected by locks (highest)</span>
+</pre></div>
+</div>
+<p>(Besides being case-insensitive, hierarchical permissions also understand the
+plural form, so you could use <code class="docutils literal notranslate"><span class="pre">Developers</span></code> and <code class="docutils literal notranslate"><span class="pre">Developer</span></code> interchangeably).</p>
+<blockquote>
+<div><p>There is also a <code class="docutils literal notranslate"><span class="pre">Guest</span></code> level below <code class="docutils literal notranslate"><span class="pre">Player</span></code> that is only active if <code class="docutils literal notranslate"><span class="pre">settings.GUEST_ENABLED</span></code> is
+set. The Guest is is never part of <code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_HIERARCHY</span></code>.</p>
+</div></blockquote>
+<p>When checking a hierarchical permission (using one of the methods to follow),
+you will pass checks for your level and all <em>below</em> you. That is, even if the
+check explicitly checks for “Builder” level access, you will actually pass if you have
+one of “Builder”, “Admin” or “Developer”. By contrast, if you check for a
+non-hierarchical permission, like “Blacksmith” you <em>must</em> have exactly
+that permission to pass.</p>
+</section>
+<section id="checking-permissions">
+<h2>Checking permissions<a class="headerlink" href="#checking-permissions" title="Permalink to this headline">¶</a></h2>
+<p>It’s important to note that you check for the permission of a <em>puppeted</em>
+<a class="reference internal" href="Objects.html"><span class="doc">Object</span></a> (like a Character), the check will always first use the
+permissions of any <code class="docutils literal notranslate"><span class="pre">Account</span></code> connected to that Object before checking for
+permissions on the Object. In the case of hierarchical permissions (Admins,
+Builders etc), the Account permission will always be used (this stops an Account
+from escalating their permission by puppeting a high-level Character). If the
+permission looked for is not in the hierarchy, an exact match is required, first
+on the Account and if not found there (or if no Account is connected), then on
+the Object itself.</p>
+<section id="checking-with-obj-permissions-check">
+<h3>Checking with obj.permissions.check()<a class="headerlink" href="#checking-with-obj-permissions-check" title="Permalink to this headline">¶</a></h3>
+<p>The simplest way to check if an entity has a permission is to check its
+<em>PermissionHandler</em>, stored as <code class="docutils literal notranslate"><span class="pre">.permissions</span></code>  on all typeclassed entities.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;Builder&quot;</span><span class="p">):</span>
+    <span class="c1"># allow builder to do stuff</span>
+
+<span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;Blacksmith&quot;</span><span class="p">,</span> <span class="s2">&quot;Warrior&quot;</span><span class="p">):</span>
+    <span class="c1"># do stuff for blacksmiths OR warriors</span>
+
+<span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;Blacksmith&quot;</span><span class="p">,</span> <span class="s2">&quot;Warrior&quot;</span><span class="p">,</span> <span class="n">require_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="c1"># only for those that are both blacksmiths AND warriors</span>
+</pre></div>
+</div>
+<p>Using the <code class="docutils literal notranslate"><span class="pre">.check</span></code> method is the way to go, it will take hierarchical
+permissions into account, check accounts/sessions etc.</p>
+<div class="highlight-warning notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+    Don&#39;t confuse `.permissions.check()` with `.permissions.has()`. The .has()
+    method checks if a string is defined specifically on that PermissionHandler.
+    It will not consider permission-hierarchy, puppeting etc. `.has` can be useful
+    if you are manipulating permissions, but use `.check` for access checking.
+</pre></div>
+</td></tr></table></div>
+</section>
+<section id="lock-funcs">
+<h3>Lock funcs<a class="headerlink" href="#lock-funcs" title="Permalink to this headline">¶</a></h3>
+<p>While the <code class="docutils literal notranslate"><span class="pre">PermissionHandler</span></code> offers a simple way to check perms, <a class="reference internal" href="Locks.html"><span class="doc">Lock
+strings</span></a> offers a mini-language for describing how something is accessed.
+The <code class="docutils literal notranslate"><span class="pre">perm()</span></code> <em>lock function</em> is the main tool for using Permissions in locks.</p>
+<p>Let’s say we have a <code class="docutils literal notranslate"><span class="pre">red_key</span></code> object. We also have red chests that we want to
+unlock with this key.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">perm</span> <span class="n">red_key</span> <span class="o">=</span> <span class="n">unlocks_red_chests</span>
 </pre></div>
 </div>
@@ -67,7 +172,10 @@ then take the key and do an access check:</p>
 <span class="normal"> 8</span>
 <span class="normal"> 9</span>
 <span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in some typeclass file where chest is defined</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in some typeclass file where chest is defined</span>
 
 <span class="k">class</span> <span class="nc">TreasureChest</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
 
@@ -78,87 +186,73 @@ then take the key and do an access check:</p>
       <span class="k">if</span> <span class="ow">not</span> <span class="n">chest</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">who</span><span class="p">,</span> <span class="n">tried_key</span><span class="p">,</span> <span class="s2">&quot;unlock&quot;</span><span class="p">):</span>
           <span class="n">who</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The key does not fit!&quot;</span><span class="p">)</span>
           <span class="k">return</span>
+      <span class="k">else</span><span class="p">:</span>
+          <span class="n">who</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The key fits! The chest opens.&quot;</span><span class="p">)</span>
+          <span class="c1"># ...</span>
 </pre></div>
 </td></tr></table></div>
-<p>All new accounts are given a default set of permissions defined by
-<code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_ACCOUNT_DEFAULT</span></code>.</p>
-<p>Selected permission strings can be organized in a <em>permission hierarchy</em> by editing the tuple
-<code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_HIERARCHY</span></code>.  Evennia’s default permission hierarchy is as follows:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">Developer</span>        <span class="c1"># like superuser but affected by locks</span>
- <span class="n">Admin</span>            <span class="c1"># can administrate accounts</span>
- <span class="n">Builder</span>          <span class="c1"># can edit the world</span>
- <span class="n">Helper</span>           <span class="c1"># can edit help files</span>
- <span class="n">Player</span>           <span class="c1"># can chat and send tells (default level)</span>
-</pre></div>
-</div>
-<p>(Also the plural form works, so you could use <code class="docutils literal notranslate"><span class="pre">Developers</span></code> etc too).</p>
-<blockquote>
-<div><p>There is also a <code class="docutils literal notranslate"><span class="pre">Guest</span></code> level below <code class="docutils literal notranslate"><span class="pre">Player</span></code> that is only active if <code class="docutils literal notranslate"><span class="pre">settings.GUEST_ENABLED</span></code> is
-set. This is never part of <code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_HIERARCHY</span></code>.</p>
-</div></blockquote>
-<p>The main use of this is that if you use the lock function <code class="docutils literal notranslate"><span class="pre">perm()</span></code> mentioned above, a lock check for
-a particular permission in the hierarchy will <em>also</em> grant access to those with <em>higher</em> hierarchy
-access. So if you have the permission “Admin” you will also pass a lock defined as <code class="docutils literal notranslate"><span class="pre">perm(Builder)</span></code>
-or any of those levels below “Admin”.</p>
-<p>When doing an access check from an <a class="reference internal" href="Objects.html"><span class="doc">Object</span></a> or Character, the <code class="docutils literal notranslate"><span class="pre">perm()</span></code> lock function will
-always first use the permissions of any Account connected to that Object before checking for
-permissions on the Object. In the case of hierarchical permissions (Admins, Builders etc), the
-Account permission will always be used (this stops an Account from escalating their permission by
-puppeting a high-level Character).  If the permission looked for is not in the hierarchy, an exact
-match is required, first on the Account and if not found there (or if no Account is connected), then
-on the Object itself.</p>
-<p>Here is how you use <code class="docutils literal notranslate"><span class="pre">perm</span></code> to give an account more permissions:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">perm</span><span class="o">/</span><span class="n">account</span> <span class="n">Tommy</span> <span class="o">=</span> <span class="n">Builders</span>
- <span class="n">perm</span><span class="o">/</span><span class="n">account</span><span class="o">/</span><span class="k">del</span> <span class="n">Tommy</span> <span class="o">=</span> <span class="n">Builders</span> <span class="c1"># remove it again</span>
-</pre></div>
-</div>
-<p>Note the use of the <code class="docutils literal notranslate"><span class="pre">/account</span></code> switch. It means you assign the permission to the
-<a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a> Tommy instead of any <a class="reference internal" href="Objects.html"><span class="doc">Character</span></a> that also happens to be named
-“Tommy”.</p>
-<p>Putting permissions on the <em>Account</em> guarantees that they are kept, <em>regardless</em> of which Character
-they are currently puppeting. This is especially important to remember when assigning permissions
-from the <em>hierarchy tree</em> - as mentioned above, an Account’s permissions will overrule that of its
-character. So to be sure to avoid confusion you should generally put hierarchy permissions on the
-Account, not on their Characters (but see also <a class="reference external" href="Components/Locks.html#Quelling">quelling</a>).</p>
-<p>Below is an example of an object without any connected account</p>
+<p>There are several variations to the default <code class="docutils literal notranslate"><span class="pre">perm</span></code> lockfunc:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">perm_above</span></code> - requires a hierarchical permission <em>higher</em> than the one
+provided. Example: <code class="docutils literal notranslate"><span class="pre">&quot;edit:</span> <span class="pre">perm_above(Player)&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pperm</span></code> - looks <em>only</em> for permissions on <code class="docutils literal notranslate"><span class="pre">Accounts</span></code>, never at any puppeted
+objects (regardless of hierarchical perm or not).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pperm_above</span></code> - like <code class="docutils literal notranslate"><span class="pre">perm_above</span></code>, but for Accounts only.</p></li>
+</ul>
+</section>
+<section id="some-examples">
+<h3>Some examples<a class="headerlink" href="#some-examples" title="Permalink to this headline">¶</a></h3>
+<p>Adding permissions and checking with locks</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">obj1</span><span class="o">.</span><span class="n">permissions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Builders&quot;</span><span class="p">,</span> <span class="s2">&quot;cool_guy&quot;</span><span class="p">]</span>
-    <span class="n">obj2</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;enter:perm_above(Accounts) and perm(cool_guy)&quot;</span><span class="p">)</span>
-
-    <span class="n">obj2</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">obj1</span><span class="p">,</span> <span class="s2">&quot;enter&quot;</span><span class="p">)</span> <span class="c1"># this returns True!</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Builder&quot;</span><span class="p">)</span>
+    <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;cool_guy&quot;</span><span class="p">)</span>
+    <span class="n">account</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;enter:perm_above(Player) and perm(cool_guy)&quot;</span><span class="p">)</span>
+    <span class="n">account</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">obj1</span><span class="p">,</span> <span class="s2">&quot;enter&quot;</span><span class="p">)</span> <span class="c1"># this returns True!</span>
 </pre></div>
 </td></tr></table></div>
-<p>And one example of a puppet with a connected account:</p>
+<p>An example of a puppet with a connected account:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Accounts&quot;</span><span class="p">)</span>
-    <span class="n">puppet</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Builders&quot;</span><span class="p">,</span> <span class="s2">&quot;cool_guy&quot;</span><span class="p">)</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Player&quot;</span><span class="p">)</span>
+    <span class="n">puppet</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Builders&quot;</span><span class="p">)</span>
+    <span class="n">puppet</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;cool_guy&quot;</span><span class="p">)</span>
     <span class="n">obj2</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;enter:perm_above(Accounts) and perm(cool_guy)&quot;</span><span class="p">)</span>
 
-    <span class="n">obj2</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">puppet</span><span class="p">,</span> <span class="s2">&quot;enter&quot;</span><span class="p">)</span> <span class="c1"># this returns False!</span>
+    <span class="n">obj2</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">puppet</span><span class="p">,</span> <span class="s2">&quot;enter&quot;</span><span class="p">)</span> <span class="c1"># this returns False, since puppet permission</span>
+                                 <span class="c1"># is lower than Account&#39;s perm, and perm takes</span>
+                                 <span class="c1"># precedence.</span>
 </pre></div>
 </td></tr></table></div>
+</section>
+</section>
 <section id="superusers">
 <h2>Superusers<a class="headerlink" href="#superusers" title="Permalink to this headline">¶</a></h2>
-<p>There is normally only one <em>superuser</em> account and that is the one first created when starting
-Evennia (User #1). This is sometimes known as the “Owner” or “God” user.  A superuser has more than
-full access - it completely <em>bypasses</em> all locks so no checks are even run. This allows for the
-superuser to always have access to everything in an emergency. But it also hides any eventual errors
-you might have made in your lock definitions. So when trying out game systems you should either use
-quelling (see below) or make a second Developer-level character so your locks get tested correctly.</p>
+<p>There is normally only one <em>superuser</em> account and that is the one first created
+when starting Evennia (User #1). This is sometimes known as the “Owner” or “God”
+user.  A superuser has more than full access - it completely <em>bypasses</em> all
+locks and will always pass the <code class="docutils literal notranslate"><span class="pre">PermissionHandler.check()</span></code> check. This allows
+for the superuser to always have access to everything in an emergency. But it
+could also hide any eventual errors you might have made in your lock definitions. So
+when trying out game systems you should either use quelling (see below) or make
+a second Developer-level character that does not bypass such checks.</p>
 </section>
 <section id="quelling">
 <h2>Quelling<a class="headerlink" href="#quelling" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">quell</span></code> command can be used to enforce the <code class="docutils literal notranslate"><span class="pre">perm()</span></code> lockfunc to ignore permissions on the
-Account and instead use the permissions on the Character only. This can be used e.g. by staff to
-test out things with a lower permission level. Return to the normal operation with <code class="docutils literal notranslate"><span class="pre">unquell</span></code>.  Note
-that quelling will use the smallest of any hierarchical permission on the Account or Character, so
-one cannot escalate one’s Account permission by quelling to a high-permission Character. Also the
-superuser can quell their powers this way, making them affectable by locks.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">quell</span></code> command can be used to enforce the <code class="docutils literal notranslate"><span class="pre">perm()</span></code> lockfunc to ignore
+permissions on the Account and instead use the permissions on the Character
+only. This can be used e.g. by staff to test out things with a lower permission
+level. Return to the normal operation with <code class="docutils literal notranslate"><span class="pre">unquell</span></code>.  Note that quelling will
+use the smallest of any hierarchical permission on the Account or Character, so
+one cannot escalate one’s Account permission by quelling to a high-permission
+Character. Also the superuser can quell their powers this way, making them
+affectable by locks.</p>
 </section>
 </section>
 
@@ -185,6 +279,14 @@ superuser can quell their powers this way, making them affectable by locks.</p>
 <p><h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Permissions</a><ul>
+<li><a class="reference internal" href="#managing-permissions">Managing Permissions</a></li>
+<li><a class="reference internal" href="#the-permission-hierarchy">The permission hierarchy</a></li>
+<li><a class="reference internal" href="#checking-permissions">Checking permissions</a><ul>
+<li><a class="reference internal" href="#checking-with-obj-permissions-check">Checking with obj.permissions.check()</a></li>
+<li><a class="reference internal" href="#lock-funcs">Lock funcs</a></li>
+<li><a class="reference internal" href="#some-examples">Some examples</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#superusers">Superusers</a></li>
 <li><a class="reference internal" href="#quelling">Quelling</a></li>
 </ul>

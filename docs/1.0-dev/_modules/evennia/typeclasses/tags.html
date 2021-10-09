@@ -56,6 +56,7 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">make_iter</span>
+<span class="kn">from</span> <span class="nn">evennia.locks.lockfuncs</span> <span class="kn">import</span> <span class="n">perm</span> <span class="k">as</span> <span class="n">perm_lockfunc</span>
 
 
 <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">TYPECLASS_AGGRESSIVE_CACHE</span>
@@ -577,7 +578,51 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_tagtype</span> <span class="o">=</span> <span class="s2">&quot;permission&quot;</span></div>
+    <span class="n">_tagtype</span> <span class="o">=</span> <span class="s2">&quot;permission&quot;</span>
+
+<div class="viewcode-block" id="PermissionHandler.check"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.PermissionHandler.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">permissions</span><span class="p">,</span> <span class="n">require_all</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Straight-up check the provided permission against this handler. The check will pass if</span>
+
+<span class="sd">        - any/all given permission exists on the handler (depending on if `require_all` is set).</span>
+<span class="sd">        - If handler sits on puppeted object and this is a hierarachical perm, the puppeting</span>
+<span class="sd">          Account&#39;s permission will also be included in the check, prioritizing the Account&#39;s perm</span>
+<span class="sd">          (this avoids escalation exploits by puppeting a too-high prio character)</span>
+<span class="sd">        - a permission is also considered to exist on the handler, if it is *lower* than</span>
+<span class="sd">          a permission on the handler and this is a &#39;hierarchical&#39; permission given</span>
+<span class="sd">          in `settings.PERMISSION_HIERARCHY`. Example: If the &#39;Developer&#39; hierarchical</span>
+<span class="sd">          perm perm is set on the handler, and we check for the &#39;Builder&#39; perm, the</span>
+<span class="sd">          check will pass.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *permissions (str): Any number of permissions to check. By default,</span>
+<span class="sd">                the permission is passed if any of these (or higher, if a</span>
+<span class="sd">                hierarchical permission defined in settings.PERMISSION_HIERARCHY)</span>
+<span class="sd">                exists in the handler. Permissions are not case-sensitive.</span>
+<span class="sd">            require_all (bool): If set, *all* provided permissions much pass</span>
+<span class="sd">                the check for the entire check to pass. By default only one</span>
+<span class="sd">                needs to pass.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: If the provided permission(s) pass the check on this handler.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            ::</span>
+<span class="sd">                can_enter = obj.permissions.check(&quot;Blacksmith&quot;, &quot;Builder&quot;)</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This works the same way as the `perms` lockfunc and could be</span>
+<span class="sd">            replicated with a lock check against the lockstring</span>
+
+<span class="sd">                &quot;locktype: perm(perm1) OR perm(perm2) OR ...&quot;</span>
+
+<span class="sd">            (using AND for the `require_all` condition).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">require_all</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">perm_lockfunc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span> <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">permissions</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">perm_lockfunc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span> <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">permissions</span><span class="p">)</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>

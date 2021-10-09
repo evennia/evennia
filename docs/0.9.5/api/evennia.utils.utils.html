@@ -1344,7 +1344,8 @@ mainly used to lazy-load handlers:</p>
 </div>
 </div></blockquote>
 <p>Once initialized, the <strong>AttributeHandler</strong> will be available as a
-property “attributes” on the object.</p>
+property “attributes” on the object. This is read-only since
+this functionality is pretty much exclusively used by handlers.</p>
 <dl class="py method">
 <dt id="evennia.utils.utils.lazy_property.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">doc</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#lazy_property.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.lazy_property.__init__" title="Permalink to this definition">¶</a></dt>
@@ -1624,6 +1625,32 @@ def _funcname(*args, **kwargs):
     # ...
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.utils.strip_unsafe_input">
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">strip_unsafe_input</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txt</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bypass_perms</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#strip_unsafe_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.strip_unsafe_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove ‘unsafe’ text codes from text; these are used to elimitate
+exploits in user-provided data, such as html-tags, line breaks etc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>txt</strong> (<em>str</em>) – The text to clean.</p></li>
+<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – A Session in order to determine if
+the check should be bypassed by permission (will be checked
+with the ‘perm’ lock, taking permission hierarchies into account).</p></li>
+<li><p><strong>bypass_perms</strong> (<em>list</em><em>, </em><em>optional</em>) – Iterable of permission strings
+to check for bypassing the strip. If not given, use
+<strong>settings.INPUT_CLEANUP_BYPASS_PERMISSIONS</strong>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>str</em> – The cleaned string.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The <strong>INPUT_CLEANUP_BYPASS_PERMISSIONS</strong> list defines what account
+permissions are required to bypass this strip.</p>
 </dd></dl>
 
 </section>
