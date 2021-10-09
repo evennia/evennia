@@ -60,16 +60,16 @@ _LBR = ANSIString("\n")
 # text
 
 _DISPLAY = """{text}
-(|wmore|n [{pageno}/{pagemax}] retur|wn|n|||wb|nack|||wt|nop|||we|nnd|||wq|nuit)"""
+(|wPage|n [{pageno}/{pagemax}] |wn|next|n || |wp|nrevious || |wt|nop || |we|nnd || |wq|nuit)"""
 
 
 class CmdMore(Command):
     """
-    Manipulate the text paging
+    Manipulate the text paging. Catch no-input with aliases.
     """
 
     key = _CMD_NOINPUT
-    aliases = ["quit", "q", "abort", "a", "next", "n", "back", "b", "top", "t", "end", "e"]
+    aliases = ["quit", "q", "abort", "a", "next", "n", "previous", "p", "top", "t", "end", "e"]
     auto_help = False
 
     def func(self):
@@ -87,7 +87,7 @@ class CmdMore(Command):
 
         if cmd in ("abort", "a", "q"):
             more.page_quit()
-        elif cmd in ("back", "b"):
+        elif cmd in ("previous", "p"):
             more.page_back()
         elif cmd in ("top", "t", "look", "l"):
             more.page_top()
@@ -98,26 +98,23 @@ class CmdMore(Command):
             more.page_next()
 
 
-class CmdMoreLook(Command):
+class CmdMoreExit(Command):
     """
-    Override look to display window and prevent OOCLook from firing
-    """
+    Any non-more command will exit the pager.
 
-    key = "look"
-    aliases = ["l"]
-    auto_help = False
+    """
+    key = _CMD_NOMATCH
 
     def func(self):
         """
-        Implement the command
+        Exit pager and re-fire the failed command.
+
         """
         more = self.caller.ndb._more
-        if not more and hasattr(self.caller, "account"):
-            more = self.caller.account.ndb._more
-        if not more:
-            self.caller.msg("Error in loading the pager. Contact an admin.")
-            return
-        more.display()
+        more.page_quit()
+
+        # re-fire the command (in new cmdset)
+        self.caller.execute_cmd(self.raw_string)
 
 
 class CmdSetMore(CmdSet):
@@ -127,10 +124,11 @@ class CmdSetMore(CmdSet):
 
     key = "more_commands"
     priority = 110
+    mergetype = "Replace"
 
     def at_cmdset_creation(self):
         self.add(CmdMore())
-        self.add(CmdMoreLook())
+        self.add(CmdMoreExit())
 
 
 # resources for handling queryset inputs
@@ -233,7 +231,7 @@ class EvMore(object):
         self._justify_kwargs = justify_kwargs
         self.exit_on_lastpage = exit_on_lastpage
         self.exit_cmd = exit_cmd
-        self._exit_msg = _("Exited |wmore|n pager.")
+        self._exit_msg = _("|xExited pager.|n")
         self._kwargs = kwargs
 
         self._data = None
