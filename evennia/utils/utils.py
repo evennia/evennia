@@ -2064,7 +2064,8 @@ class lazy_property:
         ```
 
     Once initialized, the `AttributeHandler` will be available as a
-    property "attributes" on the object.
+    property "attributes" on the object. This is read-only since
+    this functionality is pretty much exclusively used by handlers.
 
     """
 
@@ -2084,6 +2085,24 @@ class lazy_property:
             value = self.func(obj)
         obj.__dict__[self.__name__] = value
         return value
+
+    def __set__(self, obj, value):
+        """Protect against setting"""
+        handlername = self.__name__
+        raise AttributeError(
+            _("{obj}.{handlername} is a handler and can't be set directly. "
+              "To add values, use `{obj}.{handlername}.add()` instead.").format(
+                  obj=obj, handlername=handlername)
+        )
+
+    def __delete__(self, obj):
+        """Protect against deleting"""
+        handlername = self.__name__
+        raise AttributeError(
+            _("{obj}.{handlername} is a handler and can't be deleted directly. "
+              "To remove values, use `{obj}.{handlername}.remove()` instead.").format(
+                  obj=obj, handlername=handlername)
+        )
 
 
 _STRIP_ANSI = None
