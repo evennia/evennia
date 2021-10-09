@@ -59,6 +59,7 @@ def text(session, *args, **kwargs):
             arguments are ignored.
 
     """
+
     # from evennia.server.profiling.timetrace import timetrace
     # text = timetrace(text, "ServerSession.data_in")
 

@@ -186,6 +186,9 @@ without arguments starts a full interactive Python console.
 - Fixes in multi-match situations - don't allow finding/listing multimatches for 3-box when
   only two boxes in location.
 - Fix for TaskHandler with proper deferred returns/ability to cancel etc (PR by davewiththenicehat)
+- Add `PermissionHandler.check` method for straight string perm-checks without needing lockstrings.
+- Add `evennia.utils.utils.strip_unsafe_input` for removing html/newlines/tags from user input. The
+  `INPUT_CLEANUP_BYPASS_PERMISSIONS` is a list of perms that bypass this safety stripping.
 
 
 ## Evennia 0.9 (2018-2019)
