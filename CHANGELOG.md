@@ -95,6 +95,9 @@ Up requirements to Django 3.2+, Twisted 21+
 - Add validation question to default account creation.
 - Add `LOCALECHO` client option to add server-side echo for clients that does
   not support this (useful for getting a complete log).
+- Make `@lazy_property` decorator create read/delete-protected properties. This is
+  because it's used for handlers, and e.g. self.locks=[] is a common beginner mistake.
+
 
 
 ### Evennia 0.9.5 (2019-2020)
