@@ -722,6 +722,12 @@ CREATION_THROTTLE_LIMIT = 2
 CREATION_THROTTLE_TIMEOUT = 10 * 60
 LOGIN_THROTTLE_LIMIT = 5
 LOGIN_THROTTLE_TIMEOUT = 5 * 60
+# Certain characters, like html tags, line breaks and tabs are stripped
+# from user input for commands using the `evennia.utils.strip_unsafe_input` helper
+# since they can be exploitative. This list defines Account-level permissions
+# (and higher) that bypass this stripping. It is used as a fallback if a
+# specific list of perms are not given to the helper function.
+INPUT_CLEANUP_BYPASS_PERMISSIONS = ['Builder']
 
 
 ######################################################################

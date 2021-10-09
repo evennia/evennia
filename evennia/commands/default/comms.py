@@ -15,7 +15,7 @@ from evennia.locks.lockhandler import LockException
 from evennia.comms.comms import DefaultChannel
 from evennia.utils import create, logger, utils
 from evennia.utils.logger import tail_log_file
-from evennia.utils.utils import class_from_module
+from evennia.utils.utils import class_from_module, strip_unsafe_input
 from evennia.utils.evmenu import ask_yes_no
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -297,6 +297,9 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         if not channel.access(self.caller, "send"):
             caller.msg(f"You are not allowed to send messages to channel {channel}")
             return
+
+        # avoid unsafe tokens in message
+        message = strip_unsafe_input(message, self.session)
 
         channel.msg(message, senders=self.caller, **kwargs)
 

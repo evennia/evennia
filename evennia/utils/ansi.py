@@ -252,6 +252,9 @@ class ANSIParser(object):
     # instance of each
     ansi_escapes = re.compile(r"(%s)" % "|".join(ANSI_ESCAPES), re.DOTALL)
 
+    # tabs/linebreaks |/ and |- should be able to be cleaned
+    unsafe_tokens = re.compile(r"\|\/|\|-", re.DOTALL)
+
     def sub_ansi(self, ansimatch):
         """
         Replacer used by `re.sub` to replace ANSI
@@ -430,6 +433,13 @@ class ANSIParser(object):
         string = self.mxp_url_sub.sub(r"\1", string)  # replace with url verbatim
         return string
 
+    def strip_unsafe_tokens(self, string):
+        """
+        Strip explicitly ansi line breaks and tabs.
+
+        """
+        return self.unsafe_tokens.sub('', string)
+
     def parse_ansi(self, string, strip_ansi=False, xterm256=False, mxp=False):
         """
         Parses a string, subbing color codes according to the stored
@@ -562,6 +572,15 @@ def strip_raw_ansi(string, parser=ANSI_PARSER):
 
     """
     return parser.strip_raw_codes(string)
+
+
+def strip_unsafe_tokens(string, parser=ANSI_PARSER):
+    """
+    Strip markup that can be used to create visual exploits
+    (notably linebreaks and tags)
+
+    """
+    return parser.strip_unsafe_tokens(string)
 
 
 def raw(string):
