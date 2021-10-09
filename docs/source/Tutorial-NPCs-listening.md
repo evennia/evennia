@@ -29,7 +29,7 @@ class Npc(Character):
         message = message.split('says, ')[1].strip(' "')
 
         # we'll make use of this in .msg() below
-        return "%s said: '%s'" % (from_obj, message)
+        return f"{from_obj} said: '{message}'"
 ```
 
 When someone in the room speaks to this NPC, its `msg` method will be called. We will modify the
@@ -60,7 +60,7 @@ class Npc(Character):
                 # If there is a response
                 if response != None:
                     # speak ourselves, using the return
-                    self.execute_cmd("say %s" % response)
+                    self.execute_cmd(f"say {response}")
     
         # this is needed if anyone ever puppets this NPC - without it you would never
         # get any feedback from the server (not even the results of look)

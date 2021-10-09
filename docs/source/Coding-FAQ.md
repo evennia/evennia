@@ -96,12 +96,12 @@ CHANNEL_COLORS = {'public': '|015Public|n',
 # Add to the Channel class
     # ...
     def channel_prefix(self, msg, emit=False):
-        prefix_string = ""
+        prefix_arg = ""
         if self.key in COLORS:
-            prefix_string = "[%s] " % CHANNEL_COLORS.get(self.key.lower())
+            prefix_arg = CHANNEL_COLORS.get(self.key.lower())
         else:
-            prefix_string = "[%s] " % self.key.capitalize()
-        return prefix_string
+            prefix_arg = self.key.capitalize()
+        return f"[{prefix_arg}] "
 ```
 Additional hint: To make colors easier to change from one place you could instead put the
 `CHANNEL_COLORS` dict in your settings file and import it as `from django.conf.settings import

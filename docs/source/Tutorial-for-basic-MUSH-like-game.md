@@ -150,7 +150,7 @@ class CmdSetPower(Command):
             return
         # at this point the argument is tested as valid. Let's set it.
         self.caller.db.power = power
-        self.caller.msg("Your Power was set to %i." % power)
+        self.caller.msg(f"Your Power was set to {power}.")
 ```
 This is a pretty straightforward command. We do some error checking, then set the power on ourself.
 We use a `help_category` of "mush" for all our commands, just so they are easy to find and separate
@@ -295,11 +295,20 @@ class CmdAttack(Command):
         caller.db.combat_score = combat_score
 
         # announce
-        message = "%s +attack%s with a combat score of %s!"
-        caller.msg(message % ("You", "", combat_score))
-        caller.location.msg_contents(message %
-                                     (caller.key, "s", combat_score),
-                                     exclude=caller)
+        message_template = "{attacker} +attack{s} with a combat score of {c_score}!"
+        caller.msg(message_template.format(
+            attacker="You",
+            s="",
+            c_score=combat_score,
+        ))
+        caller.location.msg_contents(
+            message_template.format(
+                attacker=caller.key,
+                s="s",
+                c_score=combat_score,
+            ),
+            exclude=caller,
+        )
 ```
 
 What we do here is simply to generate a "combat score" using Python's inbuilt `random.randint()`
@@ -359,7 +368,7 @@ class Character(DefaultCharacter):
         looker sees when looking at this object.
         """
         text = super().return_appearance(looker)
-        cscore = " (combat score: %s)" % self.db.combat_score
+        cscore = f" (combat score: {self.db.combat_score})"
         if "\n" in text:
             # text is multi-line, add score after first line
             first_line, rest = text.split("\n", 1)
@@ -435,12 +444,14 @@ class CmdCreateNPC(Command):
         npc = create_object("characters.Character",
                       key=name,
                       location=caller.location,
-                      locks="edit:id(%i) and perm(Builders);call:false()" % caller.id)
+                      locks=f"edit:id({caller.id}) and perm(Builders);call:false()"
         # announce
-        message = "%s created the NPC '%s'."
-        caller.msg(message % ("You", name))
-        caller.location.msg_contents(message % (caller.key, name),
-                                                exclude=caller)
+        message_template = "{creator} created the NPC '{npc}'."
+        caller.msg(message_template.format(creator="You", npc=name))
+        caller.location.msg_contents(
+            message_template.format(creator=caller.key, npc=name),
+            exclude=caller,
+        )
 ```
 Here we define a `+createnpc` (`+createNPC` works too) that is callable by everyone *not* having the
 `nonpcs` "[permission](./Locks#Permissions)" (in Evennia, a "permission" can just as well be used to

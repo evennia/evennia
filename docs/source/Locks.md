@@ -190,7 +190,7 @@ The above could for example be used in a lock function like this:
 
 ```python
     # we have `obj` and `owner_object` from before
-    obj.locks.add("edit: id(%i)" % owner_object.id)
+    obj.locks.add(f"edit: id({owner_object.id})")
 ```
 
 We could check if the "edit" lock is passed with something like this:

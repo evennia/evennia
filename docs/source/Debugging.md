@@ -67,7 +67,7 @@ class CmdTest(Command):
     def func(self):
         from evennia import set_trace; set_trace()   # <--- start of debugger
         obj = self.search(self.args)
-        self.msg("You've found {}.".format(obj.get_display_name()))
+        self.msg(f"You've found {obj.get_display_name()}.")
 
 ```
 
@@ -99,7 +99,7 @@ first one you should know is `list` (you can type `l` for short):
  46         def func(self):
  47             from evennia import set_trace; set_trace()   # <--- start of debugger
  48  ->         obj = self.search(self.args)
- 49             self.msg("You've found {}.".format(obj.get_display_name()))
+ 49             self.msg(f"You've found {obj.get_display_name()}.")
  50
  51     # -------------------------------------------------------------
  52     #
@@ -194,7 +194,7 @@ command again.
 ```
 (Pdb) n
 > .../mygame/commands/command.py(80)func()
--> self.msg("You've found {}.".format(obj.get_display_name()))
+-> self.msg(f"You've found {obj.get_display_name()}")
 (Pdb)
 ```
 
@@ -232,7 +232,7 @@ Let's execute this line right away:
 -> obj = self.caller.search(self.args)
 (Pdb) n
 > .../mygame/commands/command.py(80)func()
--> self.msg("You've found {}.".format(obj.get_display_name()))
+-> self.msg(f"You've found {obj.get_display_name()}.")
 (Pdb) obj
 <Character: barkeep>
 (Pdb)
@@ -244,7 +244,7 @@ At least this time we have found the object.  Let's process...
 (Pdb) n
 TypeError: 'get_display_name() takes exactly 2 arguments (1 given)'
 > .../mygame/commands/command.py(80)func()
--> self.msg("You've found {}.".format(obj.get_display_name()))
+-> self.msg(f"You've found {obj.get_display_name()}.")
 (Pdb)
 ```
 

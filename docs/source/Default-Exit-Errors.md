@@ -42,7 +42,7 @@ class CmdExitError(default_cmds.MuxCommand):
     auto_help = False
     def func(self):
         "returns the error"
-        self.caller.msg("You cannot move %s." % self.key)
+        self.caller.msg(f"You cannot move {self.key}.")
 
 class CmdExitErrorNorth(CmdExitError):
     key = "north"

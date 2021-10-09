@@ -176,7 +176,7 @@ def red(*args, **kwargs):
    """
    if not args or len(args) > 1:
       raise ValueError("Must have one argument, the text to color red!")
-   return "|r{}|n".format(args[0])
+   return f"|r{args[0]}|n"
 ```
 
 > Note that we must make sure to validate input and raise `ValueError` if that fails. Also, it is

@@ -184,7 +184,7 @@ def add_XP(character, amount):
             character.db.level += 1
             character.db.STR += 1
             character.db.combat += 2
-            character.msg("You are now level %i!" % character.db.level)
+            character.msg(f"You are now level {character.db.level}!")
 
 
 def skill_combat(*args):
@@ -195,8 +195,8 @@ def skill_combat(*args):
     """
     char1, char2 = args
     roll1, roll2 = roll_hit(), roll_hit()
-    failtext = "You are hit by %s for %i damage!"
-    wintext = "You hit %s for %i damage!"
+    failtext_template = "You are hit by {attacker} for {dmg} damage!"
+    wintext_template = "You hit {target} for {dmg} damage!"
     xp_gain = randint(1, 3)
 
     # display messages showing attack numbers
@@ -211,18 +211,18 @@ def skill_combat(*args):
     if char1.db.combat+roll1 > char2.db.combat+roll2:
         # char 1 hits
         dmg = roll_dmg() + char1.db.STR
-        char1.msg(wintext % (char2, dmg))
+        char1.msg(wintext_template.format(target=char2, dmg=dmg))
         add_XP(char1, xp_gain)
-        char2.msg(failtext % (char1, dmg))
+        char2.msg(failtext_template.format(attacker=char1, dmg=dmg))
         char2.db.HP -= dmg
         check_defeat(char2)
     elif char2.db.combat+roll2 > char1.db.combat+roll1:
         # char 2 hits
         dmg = roll_dmg() + char2.db.STR
-        char1.msg(failtext % (char2, dmg))
+        char1.msg(failtext_template.format(attacker=char2, dmg=dmg))
         char1.db.HP -= dmg
         check_defeat(char1)
-        char2.msg(wintext % (char1, dmg))
+        char2.msg(wintext_template.format(target=char1, dmg=dmg))
         add_XP(char2, xp_gain)
     else:
         # a draw
@@ -242,7 +242,7 @@ def roll_challenge(character1, character2, skillname):
     if skillname in SKILLS:
         SKILLS[skillname](character1, character2)
     else:
-        raise RunTimeError("Skillname %s not found." % skillname)
+        raise RunTimeError(f"Skillname {skillname} not found.")
 ```
 
 These few functions implement the entirety of our simple rule system.  We have a function to check

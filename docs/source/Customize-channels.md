@@ -81,18 +81,18 @@ class CmdConnect(Command):
 
         # Check permissions
         if not channel.access(caller, 'listen'):
-            self.msg("%s: You are not allowed to listen to this channel." % channel.key)
+            self.msg(f"{channel.key}: You are not allowed to listen to this channel.")
             return
 
         # If not connected to the channel, try to connect
         if not channel.has_connection(caller):
             if not channel.connect(caller):
-                self.msg("%s: You are not allowed to join this channel." % channel.key)
+                self.msg(f"{channel.key}: You are not allowed to join this channel.")
                 return
             else:
-                self.msg("You now are connected to the %s channel. " % channel.key.lower())
+                self.msg(f"You now are connected to the {channel.key.lower()} channel. ")
         else:
-            self.msg("You already are connected to the %s channel. " % channel.key.lower())
+            self.msg(f"You already are connected to the {channel.key.lower()} channel. ")
 ```
 
 Okay, let's review this code, but if you're used to Evennia commands, it shouldn't be too strange:
@@ -146,12 +146,12 @@ class CmdDisconnect(Command):
         # If connected to the channel, try to disconnect
         if channel.has_connection(caller):
             if not channel.disconnect(caller):
-                self.msg("%s: You are not allowed to disconnect from this channel." % channel.key)
+                self.msg(f"{channel.key}: You are not allowed to disconnect from this channel.")
                 return
             else:
-                self.msg("You stop listening to the %s channel. " % channel.key.lower())
+                self.msg(f"You stop listening to the {channel.key.lower()} channel. ")
         else:
-            self.msg("You are not connected to the %s channel. " % channel.key.lower())
+            self.msg(f"You are not connected to the {channel.key.lower()} channel. ")
 ```
 
 So far, you shouldn't have trouble following what this command does: it's
@@ -366,19 +366,17 @@ handle switches and also the raw message to send if no switch was used.
 
         # Check that the channel exists
         if not channel:
-            self.msg(_("Channel '%s' not found.") % channelkey)
+            self.msg(f"Channel '{channelkey}' not found.")
             return
 
         # Check that the caller is connected
         if not channel.has_connection(caller):
-            string = "You are not connected to channel '%s'."
-            self.msg(string % channelkey)
+            self.msg(f"You are not connected to channel '{channelkey}'.")
             return
 
         # Check that the caller has send access
         if not channel.access(caller, 'send'):
-            string = "You are not permitted to send to channel '%s'."
-            self.msg(string % channelkey)
+            self.msg(f"You are not permitted to send to channel '{channelkey}'.")
             return
 
         # Handle the various switches
@@ -386,15 +384,15 @@ handle switches and also the raw message to send if no switch was used.
             if not msg:
                 self.msg("What do you want to do on this channel?")
             else:
-                msg = "{} {}".format(caller.key, msg)
+                msg = f"{caller.key} {msg}"
                 channel.msg(msg, online=True)
         elif self.switch:
-            self.msg("{}: Invalid switch {}.".format(channel.key, self.switch))
+            self.msg(f"{channel.key}: Invalid switch {self.switch}.")
         elif not msg:
             self.msg("Say what?")
         else:
             if caller in channel.mutelist:
-                self.msg("You currently have %s muted." % channel)
+                self.msg(f"You currently have {channel} muted.")
                 return
             channel.msg(msg, senders=self.caller, online=True)
 ```

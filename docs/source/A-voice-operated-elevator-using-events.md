@@ -140,7 +140,7 @@ This is important, in order to know what variables we can use in our callback ou
 write a single line to be sure our callback is called when we expect it to:
 
 ```python
-character.msg("You just said {}.".format(message))
+character.msg(f"You just said {message}.")
 ```
 
 You can paste this line in-game, then type the `:wq` command to exit the editor and save your

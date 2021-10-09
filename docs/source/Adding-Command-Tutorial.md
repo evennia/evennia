@@ -42,7 +42,7 @@ Below is an example how this all could look for the echo command:
                 if not self.args:
                     self.caller.msg("You didn't enter anything!")
                 else:
-                    self.caller.msg("You gave the string: '%s'" % self.args)
+                    self.caller.msg(f"You gave the string: '{self.args}'")
 ```
 
 ## Step 2: Adding the Command to a default Cmdset

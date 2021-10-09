@@ -73,8 +73,8 @@ class EditCmd(Command):
         if obj.typename == "Room":
             Menu = RoomBuildingMenu
         else:
-            self.msg("|rThe object {} cannot be
-edited.|n".format(obj.get_display_name(self.caller)))
+            obj_name = obj.get_display_name(self.caller)
+            self.msg(f"|rThe object {obj_name} cannot be edited.|n")
             return
 
         menu = Menu(self.caller, obj)
@@ -549,7 +549,7 @@ def glance_exits(room):
     if room.exits:
         glance = ""
         for exit in room.exits:
-            glance += "\n  |y{exit}|n".format(exit=exit.key)
+            glance += f"\n  |y{exit.key}|n"
 
         return glance
 
@@ -648,7 +648,7 @@ def glance_exits(room):
     if room.exits:
         glance = ""
         for exit in room.exits:
-            glance += "\n  |y{exit}|n".format(exit=exit.key)
+            glance += f"\n  |y{exit.key}|n"
 
         return glance
 
@@ -662,12 +662,15 @@ def text_exits(caller, room):
     text += "\n\nExisting exits:"
     if room.exits:
         for exit in room.exits:
-            text += "\n  |y@e {exit}|n".format(exit=exit.key)
+            text += f"\n  |y@e {exit.key}|n"
             if exit.aliases.all():
-                text += " (|y{aliases}|n)".format(aliases="|n, |y".join(
-                        alias for alias in exit.aliases.all()))
+                text += " (|y{aliases}|n)".format(
+                    aliases="|n, |y".join(
+                        alias for alias in exit.aliases.all()
+                    )
+                )
             if exit.destination:
-                text += " toward {destination}".format(destination=exit.get_display_name(caller))
+                text += f" toward {exit.get_display_name(caller)}"
     else:
         text += "\n\n |gNo exit has yet been defined.|n"
 
@@ -870,7 +873,7 @@ def glance_exits(room):
     if room.exits:
         glance = ""
         for exit in room.exits:
-            glance += "\n  |y{exit}|n".format(exit=exit.key)
+            glance += f"\n  |y{exit.key}|n"
 
         return glance
 
@@ -884,12 +887,15 @@ def text_exits(caller, room):
     text += "\n\nExisting exits:"
     if room.exits:
         for exit in room.exits:
-            text += "\n  |y@e {exit}|n".format(exit=exit.key)
+            text += f"\n  |y@e {exit.key}|n"
             if exit.aliases.all():
-                text += " (|y{aliases}|n)".format(aliases="|n, |y".join(
-                        alias for alias in exit.aliases.all()))
+                text += " (|y{aliases}|n)".format(
+                    aliases="|n, |y".join(
+                        alias for alias in exit.aliases.all()
+                    )
+                )
             if exit.destination:
-                text += " toward {destination}".format(destination=exit.get_display_name(caller))
+                text += f" toward {exit.get_display_name(caller)}"
     else:
         text += "\n\n |gNo exit has yet been defined.|n"
 
@@ -905,7 +911,7 @@ def nomatch_exits(menu, caller, room, string):
         return
 
     # Open a sub-menu, using nested keys
-    caller.msg("Editing: {}".format(exit.key))
+    caller.msg(f"Editing: {exit.key}")
     menu.move(exit)
     return False
 
@@ -1012,7 +1018,7 @@ def glance_exits(room):
     if room.exits:
         glance = ""
         for exit in room.exits:
-            glance += "\n  |y{exit}|n".format(exit=exit.key)
+            glance += f"\n  |y{exit.ken}|n"
 
         return glance
 
@@ -1026,12 +1032,15 @@ def text_exits(caller, room):
     text += "\n\nExisting exits:"
     if room.exits:
         for exit in room.exits:
-            text += "\n  |y@e {exit}|n".format(exit=exit.key)
+            text += f"\n  |y@e {exit.key}|n"
             if exit.aliases.all():
-                text += " (|y{aliases}|n)".format(aliases="|n, |y".join(
-                        alias for alias in exit.aliases.all()))
+                text += " (|y{aliases}|n)".format(
+                    aliases="|n, |y".join(
+                        alias for alias in exit.aliases.all()
+                    )
+                )
             if exit.destination:
-                text += " toward {destination}".format(destination=exit.get_display_name(caller))
+                text += f" toward {exit.get_display_name(caller)}"
     else:
         text += "\n\n |gNo exit has yet been defined.|n"
 
@@ -1047,7 +1056,7 @@ def nomatch_exits(menu, caller, room, string):
         return
 
     # Open a sub-menu, using nested keys
-    caller.msg("Editing: {}".format(exit.key))
+    caller.msg(f"Editing: {exit.key}")
     menu.open_submenu("commands.building.ExitBuildingMenu", exit, parent_keys=["e"])
     return False
 

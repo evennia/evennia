@@ -184,8 +184,8 @@ the bottom of this file:
             def func(self):
                 """implements the actual functionality"""
 
-                 str, agi, mag = self.caller.get_abilities()
-                 string = "STR: %s, AGI: %s, MAG: %s" % (str, agi, mag)
+                 str_a, agi_a, mag_a = self.caller.get_abilities()
+                 string = f"STR: {str_a}, AGI: {agi_a}, MAG: {mag_a}"
                  self.caller.msg(string)
     ```
 
@@ -255,10 +255,9 @@ functionality. Here is an example of how the file could look:
             """
             # first get the base string from the
             # parent's return_appearance.
-            string = super().return_appearance(looker)
-            wisewords = "\n\nIt grumbles and says: '%s'"
-            wisewords = wisewords % choice(self.db.wise_texts)
-            return string + wisewords
+            appearance = super().return_appearance(looker)
+            wisewords = choice(self.db.wise_texts)
+            return f"{appearance}\n\nIt grumbles and says: '{wisewords}'"
     ```
 
 1. Check your code for bugs. Tracebacks will appear on your command line or log. If you have a grave

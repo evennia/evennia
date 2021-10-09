@@ -346,7 +346,7 @@ class Room(DefaultRoom):
     
     def return_appearance(self, looker):
         # [...]
-        string = "%s\n" % Map(looker).show_map()
+        string = f"{Map(looker).show_map()}\n"
         # Add all the normal stuff like room description,
         # contents, exits etc.
         string += "\n" + super().return_appearance(looker)

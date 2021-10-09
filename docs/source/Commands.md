@@ -64,7 +64,7 @@ Here is a minimalistic command with no custom parsing:
 
         def func(self):
             # echo the caller's input back to the caller
-            self.caller.msg("Echo: {}".format(self.args)
+            self.caller.msg(f"Echo: {self.args}")
 
 ```
 
@@ -547,7 +547,7 @@ class CmdTestID(Command):
             self.xval = 0
         self.xval += 1
 
-        self.caller.msg("Command memory ID: {} (xval={})".format(id(self), self.xval))
+        self.caller.msg(f"Command memory ID: {id(self)} (xval={self.xval})")
 
 ```
 
@@ -650,7 +650,7 @@ thus do so asynchronously, using callbacks.
 ```python
      # in command class func()
      def callback(ret, caller):
-        caller.msg("Returned is %s" % ret)
+        caller.msg(f"Returned is {ret}")
      deferred = self.execute_command("longrunning")
      deferred.addCallback(callback, self.caller)
 ```

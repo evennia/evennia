@@ -59,10 +59,8 @@ Here is a simple example of the prompt sent/updated from a command class:
                 self.caller.msg("Not a valid target!")
                 return
              
-            text = "You diagnose %s as having " \
-                   "%i health, %i mana and %i stamina." \
-                   % (hp, mp, sp)
-            prompt = "%i HP, %i MP, %i SP" % (hp, mp, sp)
+            text = f"You diagnose {target} as having {hp} health, {mp} mana and {sp} stamina."
+            prompt = f"{hp} HP, {mp} MP, {sp} SP"
             self.caller.msg(text, prompt=prompt)
 ```
 ## A prompt sent with every command
@@ -86,9 +84,7 @@ class MuxCommand(default_cmds.MuxCommand):
     def at_post_cmd(self):
         "called after self.func()."
         caller = self.caller
-        prompt = "%i HP, %i MP, %i SP" % (caller.db.hp,
-                                          caller.db.mp,
-                                          caller.db.sp)
+        prompt = f"{caller.db.hp} HP, {caller.db.mp} MP, {caller.db.sp} SP"
         caller.msg(prompt=prompt)
 
 ```

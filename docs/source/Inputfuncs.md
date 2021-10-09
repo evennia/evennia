@@ -48,7 +48,7 @@ and then pass on the input to the central Commandhandler.
 ### echo
 
  - Input: `("echo", (args), {})`
- - Output: `("text", ("Echo returns: %s" % args), {})`
+ - Output: `("text", (f"Echo returns: %s" % args), {})`
 
 This is a test input, which just echoes the argument back to the session as text. Can be used for
 testing custom client input.
