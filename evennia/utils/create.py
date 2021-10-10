@@ -73,8 +73,8 @@ def create_object(
         typeclass (class or str): Class or python path to a typeclass.
         key (str): Name of the new object. If not set, a name of
             `#dbref` will be set.
-        home (Object or str): Obj or #dbref to use as the object's
-            home location.
+        location (Object or str): Obj or #dbref to use as the location of the new object.
+        home (Object or str): Obj or #dbref to use as the object's home location.
         permissions (list): A list of permission strings or tuples (permstring, category).
         locks (str): one or more lockstrings, separated by semicolons.
         aliases (list): A list of alternative keys or tuples (aliasstring, category).
