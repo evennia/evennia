@@ -66,16 +66,16 @@ command
             
                 keys = prototypes.keys()
                 nprots = len(prototypes)
-                tweet = "Prototype Count: %s  Random Keys: " % nprots
+                tweet = f"Prototype Count: {nprots}  Random Keys: "
 
-                tweet += " %s" % keys[randint(0,len(keys)-1)]
+                tweet += f" {keys[randint(0,len(keys)-1)]}"
                 for x in range(0,2): ##tweet 3
-                    tweet += ", %s" % keys[randint(0,len(keys)-1)]
+                    tweet += f", {keys[randint(0,len(keys)-1)]}"
         # post the tweet 
         try:
             response = api.PostUpdate(tweet)
         except:
-            logger.log_trace("Tweet Error: When attempting to tweet %s" % tweet)
+            logger.log_trace(f"Tweet Error: When attempting to tweet {tweet}")
 ```
 
 In the `at_script_creation` method, we configure the script to fire immediately (useful for testing)
