@@ -145,7 +145,7 @@ Here are some examples
 
 ```python
     msg("Hello!")   # using the 'text' outputfunc
-    msg(prompt="HP:%i, SP: %i, MP: %i" % (HP, SP, MP))
+    msg(prompt=f"HP: {HP}, SP: {SP}, MP: {MP}")
     msg(mycommand=((1,2,3,4), {"foo": "bar"})
 
 ```

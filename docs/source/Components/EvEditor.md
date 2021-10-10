@@ -58,7 +58,7 @@ class CmdSetTestAttr(Command):
         def quit(caller):
             "Since we define it, we must handle messages"
             caller.msg("Editor exited")
-        key = "%s/test" % self.caller
+        key = f"{self.caller}/test"
         # launch the editor
         eveditor.EvEditor(self.caller, 
                           loadfunc=load, savefunc=save, quitfunc=quit, 
@@ -100,7 +100,7 @@ class CmdSetTestAttr(Command):
     key = "settestattr"
     def func(self):
         "Set up the callbacks and launch the editor"
-        key = "%s/test" % self.caller
+        key = f"{self.caller}/test"
         # launch the editor
         eveditor.EvEditor(self.caller, 
                           loadfunc=load, savefunc=save, quitfunc=quit, 
