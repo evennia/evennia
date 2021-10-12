@@ -50,9 +50,7 @@ def _monitor_callback(fieldname="", obj=None, **kwargs):
         new_value = getattr(obj, fieldname)
     else: # an attribute    
         new_value = obj.attributes.get(fieldname)
-
-    obj.msg("%s.%s changed to '%s'." % \
-                  (obj.key, fieldname, new_value))
+    obj.msg(f"{obj.key}.{fieldname} changed to '{new_value}'.")
 
 # (we could add _some_other_monitor_callback here too)
 

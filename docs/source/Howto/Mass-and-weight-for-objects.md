@@ -87,10 +87,12 @@ class CmdInventory(MuxCommand):
             table.border = False
             for item in items:
                 second = item.get_mass() \
-                        if 'weight' in self.switches else item.db.desc
-                table.add_row(["%s" % item.get_display_name(self.caller.sessions),
-                               second and second or ""])
-            string = "|wYou are carrying:\n%s" % table
+                        if "weight" in self.switches else item.db.desc
+                table.add_row([
+                    str(item.get_display_name(self.caller.sessions)),
+                    second and second or "",
+                ])
+            string = f"|wYou are carrying:\n{table}"
         self.caller.msg(string)
 
 ```
