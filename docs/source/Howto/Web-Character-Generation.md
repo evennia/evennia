@@ -246,8 +246,12 @@ def creating(request):
                 user.db._playable_characters.append(char)
                 # add the right locks for the character so the account can
                 #  puppet it
-                char.locks.add("puppet:id(%i) or pid(%i) or perm(Developers) "
-                    "or pperm(Developers)" % (char.id, user.id))
+                char.locks.add(" or ".join([
+                    f"puppet:id({char.id})",
+                    f"pid({user.id})",
+                    "perm(Developers)",
+                    "pperm(Developers)",
+                ]))
                 char.db.background = background # set the character background
             return HttpResponseRedirect('/chargen')
     else:
@@ -332,8 +336,12 @@ def creating(request):
                 user.db._playable_characters.append(char)
                 # add the right locks for the character so the account can
                 #  puppet it
-                char.locks.add("puppet:id(%i) or pid(%i) or perm(Developers) "
-                    "or pperm(Developers)" % (char.id, user.id))
+                char.locks.add(" or ".join([
+                    f"puppet:id({char.id})",
+                    f"pid({user.id})",
+                    "perm(Developers)",
+                    "pperm(Developers)",
+                ]))
                 char.db.background = background # set the character background
             return HttpResponseRedirect('/chargen')
     else:
