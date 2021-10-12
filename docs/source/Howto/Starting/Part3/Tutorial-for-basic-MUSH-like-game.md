@@ -450,7 +450,7 @@ class CmdCreateNPC(Command):
         ))
         caller.location.msg_contents(message_template.format(
             creator=caller.key,
-            npt=name,
+            npc=name,
         ), exclude=caller)
 ```
 Here we define a `+createnpc` (`+createNPC` works too) that is callable by everyone *not* having the
