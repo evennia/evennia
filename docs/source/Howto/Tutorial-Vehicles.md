@@ -293,7 +293,7 @@ class TrainObject(DefaultObject):
             roomref = self.db.rooms[idx]
             room = search_object(roomref)[0]
             self.move_to(room)
-            self.msg_contents("The train is moving forward to %s." % (room.name, ))
+            self.msg_contents(f"The train is moving forward to {room.name}.")
 ```
 
 We added a lot of code here. Since we changed the `at_object_creation` to add in variables we will

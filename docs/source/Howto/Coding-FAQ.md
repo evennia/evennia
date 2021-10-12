@@ -78,19 +78,18 @@ channel send. Edit `mygame/typeclasses/channels.py` (and then `@reload`):
 
 ```python
 # define our custom color names
-CHANNEL_COLORS = {'public': '|015Public|n',
-                  'newbie': '|550N|n|551e|n|552w|n|553b|n|554i|n|555e|n',
-                  'staff': '|010S|n|020t|n|030a|n|040f|n|050f|n'}
+CHANNEL_COLORS = {"public": "|015Public|n",
+                  "newbie": "|550N|n|551e|n|552w|n|553b|n|554i|n|555e|n",
+                  "staff": "|010S|n|020t|n|030a|n|040f|n|050f|n"}
 
 # Add to the Channel class
     # ...
     def channel_prefix(self, msg, emit=False):
-        prefix_string = ""
         if self.key in COLORS:
-            prefix_string = "[%s] " % CHANNEL_COLORS.get(self.key.lower())
+            p_str = CHANNEL_COLORS.get(self.key.lower())
         else:
-            prefix_string = "[%s] " % self.key.capitalize()
-        return prefix_string
+            p_str = self.key.capitalize()
+        return f"[{p_str}] "
 ```
 Additional hint: To make colors easier to change from one place you could instead put the
 `CHANNEL_COLORS` dict in your settings file and import it as `from django.conf.settings import
