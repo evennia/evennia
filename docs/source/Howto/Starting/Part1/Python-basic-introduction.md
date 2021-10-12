@@ -128,7 +128,7 @@ instead.
 Here's the stat-example again, moving the stats to variables (here we just set them, but in a real
 game they may be changed over time, or modified by circumstance):
 
-    > py str, dex, int = 13, 14, 8 ; print("STR: {}, DEX: {}, INT: {}".format(stren, dex, int))
+    > py stren, dex, intel = 13, 14, 8 ; print("STR: {}, DEX: {dex}, INT: {}".format(stren, dex, intel))
     STR: 13, DEX: 14, INT: 8
 
 The point is that even if the values of the stats change, the print() statement would not change - it just keeps
@@ -148,7 +148,7 @@ An f-string on its own is just like any other string. But let's redo the example
 We could just insert that `a` variable directly into the f-string using `{a}`. Fewer parentheses to
 remember and arguable easier to read as well.
 
-    > py str, dex, int = 13, 14, 8 ; print(f"STR: {str}, DEX: {dex}, INT: {int}")
+    > py stren, dex, intel = 13, 14, 8 ; print(f"STR: {stren}, DEX: {dex}, INT: {intel}")
     STR: 13, DEX: 14, INT: 8
 
 We will be exploring more complex string concepts when we get to creating Commands and need to
