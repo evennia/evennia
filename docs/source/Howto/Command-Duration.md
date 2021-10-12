@@ -82,16 +82,16 @@ class CmdEcho(default_cmds.MuxCommand):
         """
          This is called at the initial shout.            
         """
-        self.caller.msg("You shout '%s' and wait for an echo ..." % self.args)
+        self.caller.msg(f"You shout '{self.args}' and wait for an echo ...")
         # this waits non-blocking for 10 seconds, then calls self.echo
         utils.delay(10, self.echo) # call echo after 10 seconds
     
     def echo(self):
         "Called after 10 seconds."
         shout = self.args
-        string = "You hear an echo: %s ... %s ... %s"
-        string = string % (shout.upper(), shout.capitalize(), shout.lower())
-        self.caller.msg(string)
+        self.caller.msg(
+            f"You hear an echo: {shout.upper()} ... {shout.capitalize()} ... {shout.lower()}"
+        )
 ```
 
 Import this new echo command into the default command set and reload the server. You will find that
@@ -146,7 +146,7 @@ class CmdEcho(default_cmds.MuxCommand):
     
     def func(self):
         "This sets off a chain of delayed calls"
-        self.caller.msg("You shout '%s', waiting for an echo ..." % self.args)
+        self.caller.msg(f"You shout '{self.args}', waiting for an echo ...")
 
         # wait 2 seconds before calling self.echo1
         utils.delay(2, self.echo1)
@@ -154,19 +154,19 @@ class CmdEcho(default_cmds.MuxCommand):
     # callback chain, started above
     def echo1(self):
         "First echo"
-        self.caller.msg("... %s" % self.args.upper())
+        self.caller.msg(f"... {self.args.upper()}")
         # wait 2 seconds for the next one
         utils.delay(2, self.echo2)
 
     def echo2(self):
         "Second echo"
-        self.caller.msg("... %s" % self.args.capitalize())
+        self.caller.msg(f"... {self.args.capitalize()}")
         # wait another 2 seconds
         utils.delay(2, callback=self.echo3)
 
     def echo3(self):
         "Last echo"
-        self.caller.msg("... %s ..." % self.args.lower())
+        self.caller.msg(f"... {self.args.lower()} ...")
 ```
 
 The above version will have the echoes arrive one after another, each separated by a two second
@@ -364,9 +364,9 @@ from evennia import default_cmds, utils
 def echo(caller, args):
     "Called after 10 seconds."
     shout = args
-    string = "You hear an echo: %s ... %s ... %s"
-    string = string % (shout.upper(), shout.capitalize(), shout.lower())
-    caller.msg(string)
+    caller.msg(
+        f"You hear an echo: {shout.upper()} ... {shout.capitalize()} ... {shout.lower()}"
+    )
 
 class CmdEcho(default_cmds.MuxCommand):
     """
@@ -384,7 +384,7 @@ class CmdEcho(default_cmds.MuxCommand):
         """
          This is called at the initial shout.            
         """
-        self.caller.msg("You shout '%s' and wait for an echo ..." % self.args)
+        self.caller.msg(f"You shout '{self.args}' and wait for an echo ...")
         # this waits non-blocking for 10 seconds, then calls echo(self.caller, self.args)
         utils.delay(10, echo, self.caller, self.args, persistent=True) # changes! 
     

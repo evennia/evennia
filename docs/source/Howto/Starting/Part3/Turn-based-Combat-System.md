@@ -113,7 +113,7 @@ class CombatHandler(DefaultScript):
     def at_script_creation(self):
         "Called when script is first created"
 
-        self.key = "combat_handler_%i" % random.randint(1, 1000)
+        self.key = f"combat_handler_{random.randint(1, 1000)}"
         self.desc = "handles combat"
         self.interval = 60 * 2  # two minute timeout
         self.start_delay = True
@@ -400,57 +400,58 @@ def resolve_combat(combat_handler, actiondict):
                 taction, tchar, ttarget = actiondict[target.id][isub]
             if action == "hit":
                 if taction == "parry" and ttarget == char:
-                    msg = "%s tries to hit %s, but %s parries the attack!"
-                    messages.append(msg % (char, tchar, tchar))
+                    messages.append(
+                        f"{char} tries to hit {tchar}, but {tchar} parries the attack!"
+                    )
                 elif taction == "defend" and random.random() < 0.5:
-                    msg = "%s defends against the attack by %s."
-                    messages.append(msg % (tchar, char))
+                    messages.append(
+                        f"{tchar} defends against the attack by {char}."
+                    )
                 elif taction == "flee":
-                    msg = "%s stops %s from disengaging, with a hit!"
                     flee[tchar] = -2
-                    messages.append(msg % (char, tchar))
+                    messages.append(
+                        f"{char} stops {tchar} from disengaging, with a hit!"
+                    )
                 else:
-                    msg = "%s hits %s, bypassing their %s!"
-                    messages.append(msg % (char, tchar, taction))
+                    messages.append(
+                        f"{char} hits {tchar}, bypassing their {taction}!"
+                    )
             elif action == "parry":
                 if taction == "hit":
-                    msg = "%s parries the attack by %s."
-                    messages.append(msg % (char, tchar))
+                    messages.append(f"{char} parries the attack by {tchar}.")
                 elif taction == "feint":
-                    msg = "%s tries to parry, but %s feints and hits!"
-                    messages.append(msg % (char, tchar))
+                    messages.append(
+                        f"{char} tries to parry, but {tchar} feints and hits!"
+                    )
                 else:
-                    msg = "%s parries to no avail."
-                    messages.append(msg % char)
+                    messages.append(f"{char} parries to no avail.")
             elif action == "feint":
                 if taction == "parry":
-                    msg = "%s feints past %s's parry, landing a hit!"
-                    messages.append(msg % (char, tchar))
+                    messages.append(
+                        f"{char} feints past {tchar}'s parry, landing a hit!"
+                    )
                 elif taction == "hit":
-                    msg = "%s feints but is defeated by %s hit!"
-                    messages.append(msg % (char, tchar))
+                    messages.append(f"{char} feints but is defeated by {tchar}'s hit!")
                 else:
-                    msg = "%s feints to no avail."
-                    messages.append(msg % char)
+                    messages.append(f"{char} feints to no avail.")
             elif action == "defend":
-                msg = "%s defends."
-                messages.append(msg % char)
+                messages.append(f"{char} defends.")
             elif action == "flee":
                 if char in flee:
                     flee[char] += 1
                 else:
                     flee[char] = 1
-                    msg = "%s tries to disengage (two subsequent turns needed)"
-                    messages.append(msg % char)
+                    messages.append(
+                        f"{char} tries to disengage (two subsequent turns needed)"
+                    )
 
         # echo results of each subturn
         combat_handler.msg_all("\n".join(messages))
 
     # at the end of both sub-turns, test if anyone fled
-    msg = "%s withdraws from combat."
     for (char, fleevalue) in flee.items():
         if fleevalue == 2:
-            combat_handler.msg_all(msg % char)
+            combat_handler.msg_all(f"{char} withdraws from combat.")
             combat_handler.remove_character(char)
 ```
 
@@ -495,14 +496,14 @@ class CmdAttack(Command):
         if target.ndb.combat_handler:
             # target is already in combat - join it            
             target.ndb.combat_handler.add_character(self.caller)
-            target.ndb.combat_handler.msg_all("%s joins combat!" % self.caller)
+            target.ndb.combat_handler.msg_all(f"{self.caller} joins combat!")
         else:
             # create a new combat handler
             chandler = create_script("combat_handler.CombatHandler")
             chandler.add_character(self.caller)
             chandler.add_character(target)
-            self.caller.msg("You attack %s! You are in combat." % target)
-            target.msg("%s attacks you! You are in combat." % self.caller)       
+            self.caller.msg(f"You attack {target}! You are in combat.")
+            target.msg(f"{self.caller} attacks you! You are in combat.")       
 ```
 
 The `attack` command will not go into the combat cmdset but rather into the default cmdset. See e.g.
