@@ -67,7 +67,7 @@ the <strong>caller.msg()</strong> construct every time the page is updated.</p>
 <dt id="evennia.utils.evmore.CmdMore">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evmore.</code><code class="sig-name descname">CmdMore</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#CmdMore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.CmdMore" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
-<p>Manipulate the text paging</p>
+<p>Manipulate the text paging. Catch no-input with aliases.</p>
 <dl class="py attribute">
 <dt id="evennia.utils.evmore.CmdMore.key">
 <code class="sig-name descname">key</code><em class="property"> = '__noinput_command'</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.key" title="Permalink to this definition">¶</a></dt>
@@ -75,7 +75,7 @@ the <strong>caller.msg()</strong> construct every time the page is updated.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmore.CmdMore.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['top', 'a', 'next', 'b', 'end', 'e', 'abort', 'n', 'back', 'q', 't', 'quit']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['t', 'quit', 'e', 'abort', 'end', 'top', 'next', 'a', 'q', 'p', 'n', 'previous']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -101,50 +101,45 @@ the <strong>caller.msg()</strong> construct every time the page is updated.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmore.CmdMore.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'top a next b end e abort n back q t quit', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Manipulate the text paging\n    '}</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 't quit e abort end top next a q p n previous', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Manipulate the text paging. Catch no-input with aliases.\n    '}</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="evennia.utils.evmore.CmdMoreLook">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evmore.</code><code class="sig-name descname">CmdMoreLook</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#CmdMoreLook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.evmore.CmdMoreExit">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evmore.</code><code class="sig-name descname">CmdMoreExit</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#CmdMoreExit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.CmdMoreExit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
-<p>Override look to display window and prevent OOCLook from firing</p>
+<p>Any non-more command will exit the pager.</p>
 <dl class="py attribute">
-<dt id="evennia.utils.evmore.CmdMoreLook.key">
-<code class="sig-name descname">key</code><em class="property"> = 'look'</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook.key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.utils.evmore.CmdMoreLook.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['l']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook.aliases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.utils.evmore.CmdMoreLook.auto_help">
-<code class="sig-name descname">auto_help</code><em class="property"> = False</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook.auto_help" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.evmore.CmdMoreExit.key">
+<code class="sig-name descname">key</code><em class="property"> = '__nomatch_command'</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreExit.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="evennia.utils.evmore.CmdMoreLook.func">
-<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#CmdMoreLook.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook.func" title="Permalink to this definition">¶</a></dt>
-<dd><p>Implement the command</p>
+<dt id="evennia.utils.evmore.CmdMoreExit.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#CmdMoreExit.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.CmdMoreExit.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exit pager and re-fire the failed command.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.utils.evmore.CmdMoreLook.help_category">
-<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook.help_category" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.evmore.CmdMoreExit.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreExit.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.utils.evmore.CmdMoreLook.lock_storage">
-<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.evmore.CmdMoreExit.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreExit.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.utils.evmore.CmdMoreLook.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l', 'category': 'general', 'key': 'look', 'tags': '', 'text': '\n    Override look to display window and prevent OOCLook from firing\n    '}</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.evmore.CmdMoreExit.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreExit.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmore.CmdMoreExit.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': '__nomatch_command', 'tags': '', 'text': '\n    Any non-more command will exit the pager.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreExit.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -162,6 +157,11 @@ the <strong>caller.msg()</strong> construct every time the page is updated.</p>
 <dl class="py attribute">
 <dt id="evennia.utils.evmore.CmdSetMore.priority">
 <code class="sig-name descname">priority</code><em class="property"> = 110</em><a class="headerlink" href="#evennia.utils.evmore.CmdSetMore.priority" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmore.CmdSetMore.mergetype">
+<code class="sig-name descname">mergetype</code><em class="property"> = 'Replace'</em><a class="headerlink" href="#evennia.utils.evmore.CmdSetMore.mergetype" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">

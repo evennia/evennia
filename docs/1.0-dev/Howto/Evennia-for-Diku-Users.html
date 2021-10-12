@@ -48,9 +48,9 @@ Reading Evennia example code is a good way to get a feel for how different probl
 in Python.</p>
 <p>Overall, Python offers an extensive library of resources, safe memory management and excellent
 handling of errors. While Python code does not run as fast as raw C code does, the difference is not
-all that important for a text-based game. The main advantage of Python is an extremely fast
-development cycle with and easy ways to create game systems that would take many times more code and
-be much harder to make stable and maintainable in C.</p>
+all that important for a text-based game. The main advantages of Python are an extremely fast
+development cycle and easy ways to create game systems. Doing the same with C can take many times
+more code and be harder to make stable and maintainable.</p>
 <section id="core-differences">
 <h2>Core Differences<a class="headerlink" href="#core-differences" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -87,10 +87,10 @@ done by:</p>
 <span class="kt">void</span><span class="p">(</span><span class="k">struct</span> <span class="nc">char</span> <span class="n">ch</span><span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">room</span> <span class="n">room</span><span class="o">*</span><span class="p">){</span>
     <span class="kt">int</span> <span class="n">dam</span><span class="p">;</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">ROOM_FLAGGED</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">ROOM_LAVA</span><span class="p">)){</span>
-        <span class="n">dam</span> <span class="o">=</span> <span class="mi">100</span>
-        <span class="n">ch</span><span class="o">-&gt;</span><span class="n">damage_taken</span> <span class="o">=</span> <span class="n">dam</span>
-    <span class="p">};</span>
-<span class="p">};</span>
+        <span class="n">dam</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+        <span class="n">ch</span><span class="o">-&gt;</span><span class="n">damage_taken</span> <span class="o">=</span> <span class="n">dam</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
 <p>As an example for creating Commands in Evennia via the <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia</span> <span class="pre">import</span> <span class="pre">Command</span></code> the character
@@ -182,7 +182,7 @@ saved in flat files and indexed by VNUMs for easy access. Evennia has the abilit
 to the extent of categorising rooms/mobs/objs/trigger/zones[…] into vnum ranges.</p>
 <p>Evennia has objects that are called Scripts. As defined, they are the ‘out of game’ instances that
 exist within the mud, but never directly interacted with. Scripts can be used for timers, mob AI,
-and even a stand alone databases.</p>
+and even stand alone databases.</p>
 <p>Because of their wonderful structure all mob, room, zone, triggers, etc.. data can be saved in
 independently created global scripts.</p>
 <p>Here is a sample mob file from a Diku Derived flat file.</p>
@@ -246,7 +246,7 @@ read, but let’s see if we can emulate this as a dictionary to be stored on a d
 in Evennia.</p>
 <p>First, let’s create a global script that does absolutely nothing and isn’t attached to anything. You
 can either create this directly in-game with the &#64;py command or create it in another file to do some
-checks and balances if for whatever reason the script needs to be created again. Progmatically it
+checks and balances if for whatever reason the script needs to be created again. It
 can be done like so:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
 <span class="normal">2</span>
@@ -293,10 +293,10 @@ Next we have to create the mob layout..</p>
 </pre></div>
 </td></tr></table></div>
 <p>This is a very ‘caveman’ example, but it gets the idea across. You can use the keys in the
-<code class="docutils literal notranslate"><span class="pre">mob_db.vnums</span></code> to act as the mob vnum while the rest contains the data..</p>
+<code class="docutils literal notranslate"><span class="pre">mob_db.vnums</span></code> to act as the mob vnum while the rest contains the data.</p>
 <p>Much simpler to read and edit. If you plan on taking this route, you must keep in mind that by
 default evennia ‘looks’ at different properties when using the <code class="docutils literal notranslate"><span class="pre">look</span></code> command for instance. If you
-create an instance of this mob and make its <code class="docutils literal notranslate"><span class="pre">self.key</span> <span class="pre">=</span> <span class="pre">1</span></code>, by default evennia will say</p>
+create an instance of this mob and make its <code class="docutils literal notranslate"><span class="pre">self.key</span> <span class="pre">=</span> <span class="pre">1</span></code>, by default evennia will say:</p>
 <p><code class="docutils literal notranslate"><span class="pre">Here</span> <span class="pre">is</span> <span class="pre">:</span> <span class="pre">1</span></code></p>
 <p>You must restructure all default commands so that the mud looks at different properties defined on
 your mob.</p>
