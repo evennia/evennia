@@ -480,7 +480,7 @@ class CraftingRecipe(CraftingRecipeBase):
     # there should be multiple entries in this list.
     tool_tags = []
     # human-readable names for the tools. This will be used for informative messages
-    # or when usage fails. If empty
+    # or when usage fails. If empty, use tag-names.
     tool_names = []
     # if we must have exactly the right tools, no more
     exact_tools = True
@@ -628,20 +628,23 @@ class CraftingRecipe(CraftingRecipeBase):
         return message.format(**mapping)
 
     @classmethod
-    def seed(cls, tool_kwargs=None, consumable_kwargs=None):
+    def seed(cls, tool_kwargs=None, consumable_kwargs=None, location=None):
         """
         This is a helper class-method for easy testing and application of this
         recipe. When called, it will create simple dummy ingredients with names
         and tags needed by this recipe.
 
         Args:
+            tool_kwargs (dict, optional): Will be passed as `**tool_kwargs` into the `create_object`
+                call for each tool.  If not given, the matching
+                `tool_name` or `tool_tag` will  be used for key.
             consumable_kwargs (dict, optional): This will be passed as
                 `**consumable_kwargs` into the `create_object` call for each consumable.
                 If not given, matching `consumable_name` or `consumable_tag`
                 will  be used for key.
-            tool_kwargs (dict, optional): Will be passed as `**tool_kwargs` into the `create_object`
-                call for each tool.  If not given, the matching
-                `tool_name` or `tool_tag` will  be used for key.
+            location (Object, optional): If given, the created items will be created in this
+                location. This is a shortcut for adding {"location": <obj>} to both the
+                consumable/tool kwargs (and will *override* any such setting in those kwargs).
 
         Returns:
             tuple: A tuple `(tools, consumables)` with newly created dummy
@@ -649,8 +652,7 @@ class CraftingRecipe(CraftingRecipeBase):
 
         Example:
         ::
-
-            tools, consumables = SwordRecipe.seed()
+            tools, consumables = SwordRecipe.seed(location=caller)
             recipe = SwordRecipe(caller, *(tools + consumables))
             result = recipe.craft()
 
@@ -663,6 +665,11 @@ class CraftingRecipe(CraftingRecipeBase):
             tool_kwargs = {}
         if not consumable_kwargs:
             consumable_kwargs = {}
+
+        if location:
+            tool_kwargs['location'] = location
+            consumable_kwargs['location'] = location
+
         tool_key = tool_kwargs.pop("key", None)
         cons_key = consumable_kwargs.pop("key", None)
         tool_tags = tool_kwargs.pop("tags", [])
