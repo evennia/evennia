@@ -531,10 +531,10 @@ def _set_attribute(caller, raw_string, **kwargs):
 
 def node_background(caller):
     text = \
-    """
-    {} experienced a traumatic event
+    f"""
+    {caller.key} experienced a traumatic event
     in their childhood. What was it?
-    """.format(caller.key}
+    """
 
     options = ({"key": "death",
                 "desc": "A violent death in the family",
@@ -580,7 +580,7 @@ def _set_name(caller, raw_string, **kwargs):
         # a blank input either means OK or Abort
         if prev_entry:
             caller.key = prev_entry
-            caller.msg("Set name to {}.".format(prev_entry))
+            caller.msg(f"Set name to {prev_entry}.")
             return "node_background"
         else:
 	    caller.msg("Aborted.")
@@ -644,7 +644,7 @@ def _set_name(caller, raw_string, **kwargs):
 
     caller.ndb._menutree.charactersheet = {}
     caller.ndb._menutree.charactersheet['name'] = raw_string
-    caller.msg("You set your name to {}".format(raw_string)
+    caller.msg(f"You set your name to {raw_string}")
     return "background"
 
 def node_set_name(caller):
@@ -658,7 +658,7 @@ def node_set_name(caller):
 
 
 def node_view_sheet(caller):
-    text = "Character sheet:\n {}".format(self.ndb._menutree.charactersheet)
+    text = f"Character sheet:\n {self.ndb._menutree.charactersheet}"
 
     options = ({"key": "Accept",
                 "goto": "finish_chargen"},

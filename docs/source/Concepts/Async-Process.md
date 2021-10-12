@@ -106,10 +106,10 @@ An example of making an asynchronous call from inside a [Command](../Components/
                return final_value
            
            def at_return_function(r):
-               self.caller.msg("The final value is %s" % r)
+               self.caller.msg(f"The final value is {r}")
     
            def at_err_function(e):
-               self.caller.msg("There was an error: %s" % e)
+               self.caller.msg(f"There was an error: {e}")
 
            # do the async call, setting all callbacks
            utils.run_async(long_running_function, at_return=at_return_function,

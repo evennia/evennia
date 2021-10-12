@@ -79,7 +79,7 @@ This is how it looks:
          if not MYPROC_ENABLED:
              return
          # output to list this with the other services at startup
-         print("  myproc: %s" % MY_PORT)
+         print(f"  myproc: {MY_PORT}")
 
          # some setup (simple example)
          factory = MyOwnFactory()

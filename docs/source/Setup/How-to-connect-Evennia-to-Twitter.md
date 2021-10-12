@@ -76,13 +76,13 @@ class CmdTweet(Command):
  
         tlen = len(tweet)
         if tlen > 280:
-            caller.msg("Your tweet was %i chars long (max 280)." % tlen)
+            caller.msg(f"Your tweet was {tlen} chars long (max 280).")
             return
 
         # post the tweet        
         TWITTER_API.PostUpdate(tweet)
 
-        caller.msg("You tweeted:\n%s" % tweet)
+        caller.msg(f"You tweeted:\n{tweet}")
 ```
 
 Be sure to substitute your own actual API/Access keys and secrets in the appropriate places. 

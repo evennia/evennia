@@ -127,15 +127,14 @@ class Character(DefaultCharacter):
 
         if selfaccount and selfaccount.db.is_gm:
            # A GM. Show name as name(GM)
-           name = "%s(GM)" % name
+           name = f"{name}(GM)"
 
         if lookaccount and \
           (lookaccount.permissions.get("Developers") or lookaccount.db.is_gm):
             # Developers/GMs see name(#dbref) or name(GM)(#dbref)
-            return "%s(#%s)" % (name, self.id)
-        else:
-            return name
+            name = f"{name}(#{self.id})"
 
+        return name
 ```
 
 Above, we change how the Character's name is displayed: If the account controlling this Character is
@@ -192,10 +191,10 @@ class CmdMakeGM(default_cmds.MuxCommand):
 
         accountlist = evennia.search_account(self.args) # returns a list
         if not accountlist:
-            caller.msg("Could not find account '%s'" % self.args)
+            caller.msg(f"Could not find account '{self.args}'")
             return
         elif len(accountlist) > 1:
-            caller.msg("Multiple matches for '%s': %s" % (self.args, accountlist))
+            caller.msg(f"Multiple matches for '{self.args}': {accountlist}")
             return
         else:
             account = accountlist[0]
@@ -203,20 +202,20 @@ class CmdMakeGM(default_cmds.MuxCommand):
         if self.cmdstring == "gm":
             # turn someone into a GM
             if account.permissions.get("Admins"):
-                caller.msg("Account %s is already a GM." % account)
+                caller.msg(f"Account {account} is already a GM.")
             else:
                 account.permissions.add("Admins")
-                caller.msg("Account %s is now a GM." % account)
-                account.msg("You are now a GM (changed by %s)." % caller)
+                caller.msg(f"Account {account} is now a GM.")
+                account.msg(f"You are now a GM (changed by {caller}).")
                 account.character.db.is_gm = True
         else:
             # @ungm was entered - revoke GM status from someone
             if not account.permissions.get("Admins"):
-                caller.msg("Account %s is not a GM." % account)
+                caller.msg(f"Account {account} is not a GM.")
             else:
                 account.permissions.remove("Admins")
-                caller.msg("Account %s is no longer a GM." % account)
-                account.msg("You are no longer a GM (changed by %s)." % caller)
+                caller.msg(f"Account {account} is no longer a GM.")
+                account.msg(f"You are no longer a GM (changed by {caller}).")
                 del account.character.db.is_gm
 
 ```
@@ -511,11 +510,12 @@ ALLOWED_FIELDNAMES = ALLOWED_ATTRS + \
 def _validate_fieldname(caller, fieldname):
     "Helper function to validate field names."
     if fieldname not in ALLOWED_FIELDNAMES:
-        err = "Allowed field names: %s" % (", ".join(ALLOWED_FIELDNAMES))
+        list_of_fieldnames = ", ".join(ALLOWED_FIELDNAMES)
+        err = f"Allowed field names: {list_of_fieldnames}"
         caller.msg(err)
         return False
     if fieldname in ALLOWED_ATTRS and not value.isdigit():
-        caller.msg("%s must receive a number." % fieldname)
+        caller.msg(f"{fieldname} must receive a number.")
         return False
     return True
 
@@ -570,7 +570,7 @@ class CmdSheet(MuxCommand):
         else:
             caller.chardata[fieldname] = value
         caller.update_charsheet()
-        caller.msg("%s was set to %s." % (fieldname, value))
+        caller.msg(f"{fieldname} was set to {value}.")
 
 ```
 
@@ -641,13 +641,13 @@ class CmdGMsheet(MuxCommand):
                 caller.msg("The character sheet is already locked.")
             else:
                 character.db.sheet_locked = True
-                caller.msg("%s can no longer edit their character sheet." % character.key)
+                caller.msg(f"{character.key} can no longer edit their character sheet.")
         elif "unlock" in self.switches:
             if not character.db.sheet_locked:
                 caller.msg("The character sheet is already unlocked.")
             else:
                 character.db.sheet_locked = False
-                caller.msg("%s can now edit their character sheet." % character.key)
+                caller.msg(f"{character.key} can now edit their character sheet.")
 
         if fieldname:
             if fieldname == "name":
@@ -655,7 +655,7 @@ class CmdGMsheet(MuxCommand):
             else:
                 character.db.chardata[fieldname] = value
             character.update_charsheet()
-            caller.msg("You set %s's %s to %s." % (character.key, fieldname, value)
+            caller.msg(f"You set {character.key}'s {fieldname} to {value}.")
         else:
             # just display
             caller.msg(character.db.charsheet)
