@@ -59,11 +59,11 @@ just mocked for the example.
 
     # skill (stored as Attribute on caster)
 
-    firemagic skill level3+
+    firemagic skill level10+
 
     # recipe for fireball
 
-    fireball = spellbook[T] + wand[T] + [firemagic skill lvl3+]
+    fireball = spellbook[T] + wand[T] + [firemagic skill lvl10+]
 
 ----
 
