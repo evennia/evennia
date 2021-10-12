@@ -10,9 +10,9 @@ in Python.
 
 Overall, Python offers an extensive library of resources, safe memory management and excellent
 handling of errors. While Python code does not run as fast as raw C code does, the difference is not
-all that important for a text-based game. The main advantage of Python is an extremely fast
-development cycle with and easy ways to create game systems that would take many times more code and
-be much harder to make stable and maintainable in C.
+all that important for a text-based game. The main advantages of Python are an extremely fast
+development cycle and easy ways to create game systems. Doing the same with C can take many times
+more code and be harder to make stable and maintainable.
 
 ### Core Differences
 
@@ -43,10 +43,10 @@ done by:
 void(struct char ch*, struct room room*){
     int dam;
     if (ROOM_FLAGGED(room, ROOM_LAVA)){
-        dam = 100
-        ch->damage_taken = dam
-    };
-};
+        dam = 100;
+        ch->damage_taken = dam;
+    }
+}
 ```
 
 As an example for creating Commands in Evennia via the `from evennia import Command` the character
@@ -110,7 +110,7 @@ to the extent of categorising rooms/mobs/objs/trigger/zones[...] into vnum range
 
 Evennia has objects that are called Scripts. As defined, they are the 'out of game' instances that
 exist within the mud, but never directly interacted with. Scripts can be used for timers, mob AI,
-and even a stand alone databases.
+and even stand alone databases.
 
 Because of their wonderful structure all mob, room, zone, triggers, etc.. data can be saved in
 independently created global scripts.
@@ -152,7 +152,7 @@ in Evennia.
 
 First, let's create a global script that does absolutely nothing and isn't attached to anything. You
 can either create this directly in-game with the @py command or create it in another file to do some
-checks and balances if for whatever reason the script needs to be created again. Progmatically it
+checks and balances if for whatever reason the script needs to be created again. It
 can be done like so:
 
 ```python
@@ -184,16 +184,13 @@ mob_db.db.vnums[1] = mob_vnum_1
 ```
 
 This is a very 'caveman' example, but it gets the idea across. You can use the keys in the
-`mob_db.vnums` to act as the mob vnum while the rest contains the data..
+`mob_db.vnums` to act as the mob vnum while the rest contains the data.
 
 Much simpler to read and edit. If you plan on taking this route, you must keep in mind that by
 default evennia 'looks' at different properties when using the `look` command for instance. If you
-create an instance of this mob and make its `self.key = 1`, by default evennia will say
+create an instance of this mob and make its `self.key = 1`, by default evennia will say:
 
 `Here is : 1`
 
 You must restructure all default commands so that the mud looks at different properties defined on
 your mob.
-
-
-
