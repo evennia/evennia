@@ -158,16 +158,16 @@ you want more advanced options.  Learning to use alternatives might be much wort
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         This is called at the initial shout.            </span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You shout &#39;</span><span class="si">%s</span><span class="s2">&#39; and wait for an echo ...&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You shout &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39; and wait for an echo ...&quot;</span><span class="p">)</span>
         <span class="c1"># this waits non-blocking for 10 seconds, then calls self.echo</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">echo</span><span class="p">)</span> <span class="c1"># call echo after 10 seconds</span>
     
     <span class="k">def</span> <span class="nf">echo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Called after 10 seconds.&quot;</span>
         <span class="n">shout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You hear an echo: </span><span class="si">%s</span><span class="s2"> ... </span><span class="si">%s</span><span class="s2"> ... </span><span class="si">%s</span><span class="s2">&quot;</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="n">string</span> <span class="o">%</span> <span class="p">(</span><span class="n">shout</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">shout</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="n">shout</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;You hear an echo: </span><span class="si">{</span><span class="n">shout</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2"> ... </span><span class="si">{</span><span class="n">shout</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2"> ... </span><span class="si">{</span><span class="n">shout</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Import this new echo command into the default command set and reload the server. You will find that
@@ -255,7 +255,7 @@ asynchronous systems. You can also link such calls together as seen below:</p>
     
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;This sets off a chain of delayed calls&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You shout &#39;</span><span class="si">%s</span><span class="s2">&#39;, waiting for an echo ...&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You shout &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39;, waiting for an echo ...&quot;</span><span class="p">)</span>
 
         <span class="c1"># wait 2 seconds before calling self.echo1</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">echo1</span><span class="p">)</span>
@@ -263,19 +263,19 @@ asynchronous systems. You can also link such calls together as seen below:</p>
     <span class="c1"># callback chain, started above</span>
     <span class="k">def</span> <span class="nf">echo1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;First echo&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;... </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;... </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="c1"># wait 2 seconds for the next one</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">echo2</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">echo2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Second echo&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;... </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;... </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="c1"># wait another 2 seconds</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">echo3</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">echo3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Last echo&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;... </span><span class="si">%s</span><span class="s2"> ...&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;... </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2"> ...&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>The above version will have the echoes arrive one after another, each separated by a two second
@@ -617,9 +617,9 @@ must make sure Evennia can properly store things to the database.</p>
 <span class="k">def</span> <span class="nf">echo</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
     <span class="s2">&quot;Called after 10 seconds.&quot;</span>
     <span class="n">shout</span> <span class="o">=</span> <span class="n">args</span>
-    <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You hear an echo: </span><span class="si">%s</span><span class="s2"> ... </span><span class="si">%s</span><span class="s2"> ... </span><span class="si">%s</span><span class="s2">&quot;</span>
-    <span class="n">string</span> <span class="o">=</span> <span class="n">string</span> <span class="o">%</span> <span class="p">(</span><span class="n">shout</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">shout</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="n">shout</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;You hear an echo: </span><span class="si">{</span><span class="n">shout</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2"> ... </span><span class="si">{</span><span class="n">shout</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2"> ... </span><span class="si">{</span><span class="n">shout</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -637,7 +637,7 @@ must make sure Evennia can properly store things to the database.</p>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         This is called at the initial shout.            </span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You shout &#39;</span><span class="si">%s</span><span class="s2">&#39; and wait for an echo ...&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You shout &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39; and wait for an echo ...&quot;</span><span class="p">)</span>
         <span class="c1"># this waits non-blocking for 10 seconds, then calls echo(self.caller, self.args)</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">echo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># changes! </span>
     

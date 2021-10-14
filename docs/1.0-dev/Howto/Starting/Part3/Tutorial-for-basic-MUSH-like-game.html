@@ -219,7 +219,7 @@ just import from that instead.</p>
             <span class="k">return</span>
         <span class="c1"># at this point the argument is tested as valid. Let&#39;s set it.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">power</span> <span class="o">=</span> <span class="n">power</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Your Power was set to </span><span class="si">%i</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">power</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Your Power was set to </span><span class="si">{</span><span class="n">power</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>This is a pretty straightforward command. We do some error checking, then set the power on ourself.
@@ -378,7 +378,13 @@ You +attack with a combat score of 12!
 <span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
-<span class="normal">34</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
 
 <span class="c1"># ...</span>
 
@@ -407,11 +413,17 @@ You +attack with a combat score of 12!
         <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_score</span> <span class="o">=</span> <span class="n">combat_score</span>
 
         <span class="c1"># announce</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> +attack</span><span class="si">%s</span><span class="s2"> with a combat score of </span><span class="si">%s</span><span class="s2">!&quot;</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;You&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">combat_score</span><span class="p">))</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">message</span> <span class="o">%</span>
-                                     <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">combat_score</span><span class="p">),</span>
-                                     <span class="n">exclude</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
+        <span class="n">message_template</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{attacker}</span><span class="s2"> +attack</span><span class="si">{s}</span><span class="s2"> with a combat score of </span><span class="si">{c_score}</span><span class="s2">!&quot;</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">attacker</span><span class="o">=</span><span class="s2">&quot;You&quot;</span><span class="p">,</span>
+            <span class="n">s</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">c_score</span><span class="o">=</span><span class="n">combat_score</span><span class="p">,</span>
+        <span class="p">))</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">message_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">attacker</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">s</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span>
+            <span class="n">c_score</span><span class="o">=</span><span class="n">combat_score</span><span class="p">,</span>
+        <span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>What we do here is simply to generate a “combat score” using Python’s inbuilt <code class="docutils literal notranslate"><span class="pre">random.randint()</span></code>
@@ -488,7 +500,7 @@ method. In our case the change is small though:</p>
 <span class="sd">        looker sees when looking at this object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">text</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">return_appearance</span><span class="p">(</span><span class="n">looker</span><span class="p">)</span>
-        <span class="n">cscore</span> <span class="o">=</span> <span class="s2">&quot; (combat score: </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_score</span>
+        <span class="n">cscore</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; (combat score: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_score</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
             <span class="c1"># text is multi-line, add score after first line</span>
             <span class="n">first_line</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -566,7 +578,12 @@ instead put all relevant NPC commands in the default command set and limit event
 <span class="normal">35</span>
 <span class="normal">36</span>
 <span class="normal">37</span>
-<span class="normal">38</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
 
 <span class="k">class</span> <span class="nc">CmdCreateNPC</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -598,12 +615,17 @@ instead put all relevant NPC commands in the default command set and limit event
         <span class="n">npc</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="s2">&quot;characters.Character&quot;</span><span class="p">,</span>
                       <span class="n">key</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
                       <span class="n">location</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
-                      <span class="n">locks</span><span class="o">=</span><span class="s2">&quot;edit:id(</span><span class="si">%i</span><span class="s2">) and perm(Builders);call:false()&quot;</span> <span class="o">%</span> <span class="n">caller</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                      <span class="n">locks</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;edit:id(</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) and perm(Builders);call:false()&quot;</span><span class="p">)</span>
         <span class="c1"># announce</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> created the NPC &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;You&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">message</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span>
-                                                <span class="n">exclude</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
+        <span class="n">message_template</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{creator}</span><span class="s2"> created the NPC &#39;</span><span class="si">{npc}</span><span class="s2">&#39;.&quot;</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">creator</span><span class="o">=</span><span class="s2">&quot;You&quot;</span><span class="p">,</span>
+            <span class="n">npc</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="p">))</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">message_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">creator</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">npc</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Here we define a <code class="docutils literal notranslate"><span class="pre">+createnpc</span></code> (<code class="docutils literal notranslate"><span class="pre">+createNPC</span></code> works too) that is callable by everyone <em>not</em> having the
@@ -761,10 +783,10 @@ principle re-work our old <code class="docutils literal notranslate"><span class
             <span class="k">return</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">propname</span><span class="p">:</span>
             <span class="c1"># this means we just list the values</span>
-            <span class="n">output</span> <span class="o">=</span> <span class="s2">&quot;Properties of </span><span class="si">%s</span><span class="s2">:&quot;</span> <span class="o">%</span> <span class="n">npc</span><span class="o">.</span><span class="n">key</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Properties of </span><span class="si">{</span><span class="n">npc</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">:&quot;</span>
             <span class="k">for</span> <span class="n">propname</span> <span class="ow">in</span> <span class="n">allowed_propnames</span><span class="p">:</span>
                 <span class="n">propvalue</span> <span class="o">=</span> <span class="n">npc</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">propname</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;N/A&quot;</span><span class="p">)</span>
-                <span class="n">output</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">propname</span><span class="p">,</span> <span class="n">propvalue</span><span class="p">)</span>
+                <span class="n">output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">propname</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">propvalue</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">propname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_propnames</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You may only change </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span>
@@ -879,7 +901,7 @@ Anna says, &#39;Hello!&#39;
             <span class="k">return</span>
         <span class="c1"># send the command order</span>
         <span class="n">npc</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span><span class="p">)</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You told </span><span class="si">%s</span><span class="s2"> to do &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">npc</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span><span class="p">))</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You told </span><span class="si">{</span><span class="n">npc</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> to do &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Note that if you give an erroneous command, you will not see any error message, since that error

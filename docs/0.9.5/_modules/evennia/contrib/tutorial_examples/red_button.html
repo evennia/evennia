@@ -47,381 +47,14 @@
 
 <span class="sd">Create this button with</span>
 
-<span class="sd"> create/drop red_button.RedButton</span>
+<span class="sd"> @create/drop examples.red_button.RedButton</span>
 
 <span class="sd">Note that you must drop the button before you can see its messages!</span>
-
-<span class="sd">## Technical</span>
-
-<span class="sd">The button&#39;s functionality is controlled by CmdSets that gets added and removed</span>
-<span class="sd">depending on the &#39;state&#39; the button is in. </span>
-
-<span class="sd">- Lid-closed state: In this state the button is covered by a glass cover and trying</span>
-<span class="sd">  to &#39;push&#39; it will fail. You can &#39;nudge&#39;, &#39;smash&#39; or &#39;open&#39; the lid.</span>
-<span class="sd">- Lid-open state: In this state the lid is open but will close again after a certain</span>
-<span class="sd">  time. Using &#39;push&#39; now will press the button and trigger the Blind-state.</span>
-<span class="sd">- Blind-state: In this mode you are blinded by a bright flash. This will affect your</span>
-<span class="sd">  normal commands like &#39;look&#39; and help until the blindness wears off after a certain</span>
-<span class="sd">  time.</span>
-
-<span class="sd">Timers are handled by persistent delays on the button. These are examples of</span>
-<span class="sd">`evennia.utils.utils.delay` calls that wait a certain time before calling a method -</span>
-<span class="sd">such as when closing the lid and un-blinding a character.</span>
-
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">delay</span><span class="p">,</span> <span class="n">repeat</span><span class="p">,</span> <span class="n">interactive</span>
-
-
-<span class="c1"># Commands on the button (not all awailable at the same time)</span>
-
-
-<span class="c1"># Commands for the state when the lid covering the button is closed.</span>
-
-<div class="viewcode-block" id="CmdPushLidClosed"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.CmdPushLidClosed">[docs]</a><span class="k">class</span> <span class="nc">CmdPushLidClosed</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Push the red button (lid closed)</span>
-
-<span class="sd">    Usage:</span>
-<span class="sd">      push button</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;push button&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;push&quot;</span><span class="p">,</span> <span class="s2">&quot;press button&quot;</span><span class="p">,</span> <span class="s2">&quot;press&quot;</span><span class="p">]</span>
-    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
-
-<div class="viewcode-block" id="CmdPushLidClosed.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.CmdPushLidClosed.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This is the version of push used when the lid is closed.</span>
-
-<span class="sd">        An alternative would be to make a &#39;push&#39; command in a default cmdset</span>
-<span class="sd">        that is always available on the button and then use if-statements to</span>
-<span class="sd">        check if the lid is open or closed.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You cannot push the button = there is a glass lid covering it.&quot;</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="CmdNudge"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.CmdNudge">[docs]</a><span class="k">class</span> <span class="nc">CmdNudge</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Try to nudge the button&#39;s lid.</span>
-
-<span class="sd">    Usage:</span>
-<span class="sd">      nudge lid</span>
-
-<span class="sd">    This command will have you try to push the lid of the button away.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;nudge lid&quot;</span>  <span class="c1"># two-word command name!</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;nudge&quot;</span><span class="p">]</span>
-    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
-
-<div class="viewcode-block" id="CmdNudge.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.CmdNudge.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Nudge the lid. Random chance of success to open it.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">rand</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You nudge at the lid. It seems stuck.&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.7</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You move the lid back and forth. It won&#39;t budge.&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You manage to get a nail under the lid.&quot;</span><span class="p">)</span>
-            <span class="c1"># self.obj is the button object</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">to_open_state</span><span class="p">()</span></div></div>
-
-
-<div class="viewcode-block" id="CmdSmashGlass"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.CmdSmashGlass">[docs]</a><span class="k">class</span> <span class="nc">CmdSmashGlass</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Smash the protective glass.</span>
-
-<span class="sd">    Usage:</span>
-<span class="sd">      smash glass</span>
-
-<span class="sd">    Try to smash the glass of the button.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;smash glass&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;smash lid&quot;</span><span class="p">,</span> <span class="s2">&quot;break lid&quot;</span><span class="p">,</span> <span class="s2">&quot;smash&quot;</span><span class="p">]</span>
-    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
-
-<div class="viewcode-block" id="CmdSmashGlass.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.CmdSmashGlass.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The lid won&#39;t open, but there is a small chance of causing the lamp to</span>
-<span class="sd">        break.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">rand</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> tries to smash the glass of the button.&quot;</span><span class="p">,</span>
-            <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.2</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;You smash your hand against the glass&quot;</span>
-                      <span class="s2">&quot; with all your might. The lid won&#39;t budge&quot;</span>
-                      <span class="s2">&quot; but you cause quite the tremor through the button&#39;s mount.&quot;</span>
-                      <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">It looks like the button&#39;s lamp stopped working for the time being, &quot;</span>
-                      <span class="s2">&quot;but the lid is still as closed as ever.&quot;</span><span class="p">)</span>
-            <span class="c1"># self.obj is the button itself</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">break_lamp</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.6</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You hit the lid hard. It doesn&#39;t move an inch.&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;You place a well-aimed fist against the glass of the lid.&quot;</span>
-                      <span class="s2">&quot; Unfortunately all you get is a pain in your hand. Maybe&quot;</span>
-                      <span class="s2">&quot; you should just try to just ... open the lid instead?&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="CmdOpenLid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.CmdOpenLid">[docs]</a><span class="k">class</span> <span class="nc">CmdOpenLid</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    open lid</span>
-
-<span class="sd">    Usage:</span>
-<span class="sd">      open lid</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;open lid&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;open button&quot;</span><span class="p">]</span>
-    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
-
-<div class="viewcode-block" id="CmdOpenLid.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.CmdOpenLid.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;simply call the right function.&quot;</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_locked</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This lid seems locked in place for the moment.&quot;</span><span class="p">)</span>
-            <span class="k">return</span>
-
-        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">A ticking sound is heard, like a winding mechanism. Seems &quot;</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;the lid will soon close again.&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> opens the lid of the button.&quot;</span><span class="p">,</span>
-            <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">to_open_state</span><span class="p">()</span></div></div>
-
-
-<div class="viewcode-block" id="LidClosedCmdSet"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.LidClosedCmdSet">[docs]</a><span class="k">class</span> <span class="nc">LidClosedCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A simple cmdset tied to the redbutton object.</span>
-
-<span class="sd">    It contains the commands that launches the other</span>
-<span class="sd">    command sets, making the red button a self-contained</span>
-<span class="sd">    item (i.e. you don&#39;t have to manually add any</span>
-<span class="sd">    scripts etc to it when creating it).</span>
-
-<span class="sd">    Note that this is given with a `key_mergetype` set. This</span>
-<span class="sd">    is set up so that the cmdset with merge with Union merge type</span>
-<span class="sd">    *except* if the other cmdset to merge with is LidOpenCmdSet,</span>
-<span class="sd">    in which case it will Replace that. So these two cmdsets will</span>
-<span class="sd">    be mutually exclusive.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;LidClosedCmdSet&quot;</span>
-
-<div class="viewcode-block" id="LidClosedCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.LidClosedCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;Populates the cmdset when it is instantiated.&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdPushLidClosed</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdNudge</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSmashGlass</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdOpenLid</span><span class="p">())</span></div></div>
-
-
-<span class="c1"># Commands for the state when the button&#39;s protective cover is open - now the</span>
-<span class="c1"># push command will work. You can also close the lid again.</span>
-
-<div class="viewcode-block" id="CmdPushLidOpen"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.CmdPushLidOpen">[docs]</a><span class="k">class</span> <span class="nc">CmdPushLidOpen</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Push the red button</span>
-
-<span class="sd">    Usage:</span>
-<span class="sd">      push button</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;push button&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;push&quot;</span><span class="p">,</span> <span class="s2">&quot;press button&quot;</span><span class="p">,</span> <span class="s2">&quot;press&quot;</span><span class="p">]</span>
-    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
-
-    <span class="nd">@interactive</span>
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This version of push will immediately trigger the next button state.</span>
-
-<span class="sd">        The use of the @interactive decorator allows for using `yield` to add</span>
-<span class="sd">        simple pauses in how quickly a message is returned to the user.  This</span>
-<span class="sd">        kind of pause will not survive a server reload.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># pause a little between each message.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You reach out to press the big red button ...&quot;</span><span class="p">)</span>
-        <span class="k">yield</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># pause 2s before next message</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">|wBOOOOM! A bright light blinds you!|n&quot;</span><span class="p">)</span>
-        <span class="k">yield</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># pause 1s before next message</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">|xThe world goes dark ...|n&quot;</span><span class="p">)</span>
-
-        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> presses the button. BOOM! </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is blinded by a flash!&quot;</span><span class="p">,</span>
-            <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">blind_target</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="CmdCloseLid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.CmdCloseLid">[docs]</a><span class="k">class</span> <span class="nc">CmdCloseLid</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Close the lid</span>
-
-<span class="sd">    Usage:</span>
-<span class="sd">      close lid</span>
-
-<span class="sd">    Closes the lid of the red button.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;close lid&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">]</span>
-    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
-
-<div class="viewcode-block" id="CmdCloseLid.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.CmdCloseLid.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;Close the lid&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">to_closed_state</span><span class="p">()</span>
-
-        <span class="c1"># this will clean out scripts dependent on lid being open.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You close the button&#39;s lid. It clicks back into place.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> closes the button&#39;s lid.&quot;</span><span class="p">,</span>
-            <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="LidOpenCmdSet"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.LidOpenCmdSet">[docs]</a><span class="k">class</span> <span class="nc">LidOpenCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is the opposite of the Closed cmdset.</span>
-
-<span class="sd">    Note that this is given with a `key_mergetype` set. This</span>
-<span class="sd">    is set up so that the cmdset with merge with Union merge type</span>
-<span class="sd">    *except* if the other cmdset to merge with is LidClosedCmdSet,</span>
-<span class="sd">    in which case it will Replace that. So these two cmdsets will</span>
-<span class="sd">    be mutually exclusive.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;LidOpenCmdSet&quot;</span>
-
-<div class="viewcode-block" id="LidOpenCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.LidOpenCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Setup the cmdset&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdPushLidOpen</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdCloseLid</span><span class="p">())</span></div></div>
-
-
-<span class="c1"># Commands for when the button has been pushed and the player is blinded. This</span>
-<span class="c1"># replaces commands on the player making them &#39;blind&#39; for a while.</span>
-
-<div class="viewcode-block" id="CmdBlindLook"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.CmdBlindLook">[docs]</a><span class="k">class</span> <span class="nc">CmdBlindLook</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Looking around in darkness</span>
-
-<span class="sd">    Usage:</span>
-<span class="sd">      look &lt;obj&gt;</span>
-
-<span class="sd">    ... not that there&#39;s much to see in the dark.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;look&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;l&quot;</span><span class="p">,</span> <span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="s2">&quot;examine&quot;</span><span class="p">,</span> <span class="s2">&quot;ex&quot;</span><span class="p">,</span> <span class="s2">&quot;feel&quot;</span><span class="p">,</span> <span class="s2">&quot;listen&quot;</span><span class="p">]</span>
-    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
-
-<div class="viewcode-block" id="CmdBlindLook.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.CmdBlindLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;This replaces all the senses when blinded.&quot;</span>
-
-        <span class="c1"># we decide what to reply based on which command was</span>
-        <span class="c1"># actually tried</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">==</span> <span class="s2">&quot;get&quot;</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You fumble around blindly without finding anything.&quot;</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">==</span> <span class="s2">&quot;examine&quot;</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You try to examine your surroundings, but can&#39;t see a thing.&quot;</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">==</span> <span class="s2">&quot;listen&quot;</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You are deafened by the boom.&quot;</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">==</span> <span class="s2">&quot;feel&quot;</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You fumble around, hands outstretched. You bump your knee.&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># trying to look</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;You are temporarily blinded by the flash. &quot;</span>
-                      <span class="s2">&quot;Until it wears off, all you can do is feel around blindly.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> stumbles around, blinded.&quot;</span><span class="p">,</span>
-            <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="CmdBlindHelp"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.CmdBlindHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdBlindHelp</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Help function while in the blinded state</span>
-
-<span class="sd">    Usage:</span>
-<span class="sd">      help</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;help&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;h&quot;</span>
-    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
-
-<div class="viewcode-block" id="CmdBlindHelp.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.CmdBlindHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Just give a message while blinded. We could have added this to the</span>
-<span class="sd">        CmdBlindLook command too if we wanted to keep things more compact.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are beyond help ... until you can see again.&quot;</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="BlindCmdSet"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.BlindCmdSet">[docs]</a><span class="k">class</span> <span class="nc">BlindCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is the cmdset added to the *account* when</span>
-<span class="sd">    the button is pushed.</span>
-
-<span class="sd">    Since this has mergetype Replace it will completely remove the commands of</span>
-<span class="sd">    all other cmdsets while active. To allow some limited interaction</span>
-<span class="sd">    (pose/say) we import those default commands and add them too.</span>
-
-<span class="sd">    We also disable all exit-commands generated by exits and</span>
-<span class="sd">    object-interactions while blinded by setting `no_exits` and `no_objs` flags</span>
-<span class="sd">    on the cmdset. This is to avoid the player walking off or interfering with</span>
-<span class="sd">    other objects while blinded. Account-level commands however (channel messaging</span>
-<span class="sd">    etc) will not be affected by the blinding.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;BlindCmdSet&quot;</span>
-    <span class="c1"># we want it to completely replace all normal commands</span>
-    <span class="c1"># until the timed script removes it again.</span>
-    <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;Replace&quot;</span>
-    <span class="c1"># we want to stop the player from walking around</span>
-    <span class="c1"># in this blinded state, so we hide all exits too.</span>
-    <span class="c1"># (channel commands will still work).</span>
-    <span class="n">no_exits</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># keep player in the same room</span>
-    <span class="n">no_objs</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># don&#39;t allow object commands</span>
-
-<div class="viewcode-block" id="BlindCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.BlindCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;Setup the blind cmdset&quot;</span>
-        <span class="kn">from</span> <span class="nn">evennia.commands.default.general</span> <span class="kn">import</span> <span class="n">CmdSay</span>
-        <span class="kn">from</span> <span class="nn">evennia.commands.default.general</span> <span class="kn">import</span> <span class="n">CmdPose</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSay</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdPose</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdBlindLook</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdBlindHelp</span><span class="p">())</span></div></div>
-
+<span class="kn">from</span> <span class="nn">evennia.contrib.tutorial_examples</span> <span class="kn">import</span> <span class="n">red_button_scripts</span> <span class="k">as</span> <span class="n">scriptexamples</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.tutorial_examples</span> <span class="kn">import</span> <span class="n">cmdset_red_button</span> <span class="k">as</span> <span class="n">cmdsetexamples</span>
 
 <span class="c1">#</span>
 <span class="c1"># Definition of the object itself</span>
@@ -430,192 +63,149 @@
 
 <div class="viewcode-block" id="RedButton"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton">[docs]</a><span class="k">class</span> <span class="nc">RedButton</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This class describes an evil red button.  It will blink invitingly and</span>
-<span class="sd">    temporarily blind whomever presses it.</span>
+<span class="sd">    This class describes an evil red button.  It will use the script</span>
+<span class="sd">    definition in contrib/examples/red_button_scripts to blink at regular</span>
+<span class="sd">    intervals.  It also uses a series of script and commands to handle</span>
+<span class="sd">    pushing the button and causing effects when doing so.</span>
 
-<span class="sd">    The button can take a few optional attributes controlling how things will</span>
-<span class="sd">    be displayed in its various states. This is a useful way to give builders</span>
-<span class="sd">    the option to customize a complex object from in-game. Actual return messages</span>
-<span class="sd">    to event-actions are (in this example) left with each command, but one could</span>
-<span class="sd">    also imagine having those handled via Attributes as well, if one wanted a</span>
-<span class="sd">    completely in-game customizable button without needing to tweak command</span>
-<span class="sd">    classes.</span>
-
-<span class="sd">    Attributes:</span>
-<span class="sd">    - `desc_closed_lid`:  This is the description to show of the button</span>
-<span class="sd">      when the lid is closed.</span>
-<span class="sd">    - `desc_open_lid`&quot;: Shown when the lid is open</span>
-<span class="sd">    - `auto_close_msg`: Message to show when lid auto-closes</span>
-<span class="sd">    - `desc_add_lamp_broken`: Extra desc-line added after normal desc when lamp</span>
-<span class="sd">      is broken.</span>
-<span class="sd">    - blink_msg: A list of strings to randomly choose from when the lamp</span>
-<span class="sd">      blinks.</span>
-
-<span class="sd">    Notes:</span>
-<span class="sd">    The button starts with lid closed. To set the initial description,</span>
-<span class="sd">    you can either set desc after creating it or pass a `desc` attribute</span>
-<span class="sd">    when creating it, such as</span>
-<span class="sd">    `button = create_object(RedButton, ..., attributes=[(&#39;desc&#39;, &#39;my desc&#39;)])`.</span>
+<span class="sd">    The following attributes can be set on the button:</span>
+<span class="sd">     desc_lid_open - description when lid is open</span>
+<span class="sd">     desc_lid_closed - description when lid is closed</span>
+<span class="sd">     desc_lamp_broken - description when lamp is broken</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># these are the pre-set descriptions. Setting attributes will override</span>
-    <span class="c1"># these on the fly.</span>
-
-    <span class="n">desc_closed_lid</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;This is a large red button, inviting yet evil-looking. &quot;</span>
-                       <span class="s2">&quot;A closed glass lid protects it.&quot;</span><span class="p">)</span>
-    <span class="n">desc_open_lid</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;This is a large red button, inviting yet evil-looking. &quot;</span>
-                     <span class="s2">&quot;Its glass cover is open and the button exposed.&quot;</span><span class="p">)</span>
-    <span class="n">auto_close_msg</span> <span class="o">=</span> <span class="s2">&quot;The button&#39;s glass lid silently slides back in place.&quot;</span>
-    <span class="n">lamp_breaks_msg</span> <span class="o">=</span> <span class="s2">&quot;The lamp flickers, the button going dark.&quot;</span>
-    <span class="n">desc_add_lamp_broken</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The big red button has stopped blinking for the time being.&quot;</span>
-    <span class="c1"># note that this is a list. A random message will display each time</span>
-    <span class="n">blink_msgs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;The red button flashes briefly.&quot;</span><span class="p">,</span>
-                  <span class="s2">&quot;The red button blinks invitingly.&quot;</span><span class="p">,</span>
-                  <span class="s2">&quot;The red button flashes. You know you wanna push it!&quot;</span><span class="p">]</span>
 
 <div class="viewcode-block" id="RedButton.at_object_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This function is called (once) when object is created.</span>
-
+<span class="sd">        This function is called when object is created. Use this</span>
+<span class="sd">        instead of e.g. __init__.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lamp_works</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="c1"># start closed</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">to_closed_state</span><span class="p">()</span>
-
-        <span class="c1"># start blinking every 35s.</span>
-        <span class="n">repeat</span><span class="p">(</span><span class="mi">35</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_blink</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">_do_blink</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Have the button blink invitingly unless it&#39;s broken.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lamp_works</span><span class="p">:</span>
-            <span class="n">possible_messages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">blink_msgs</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">blink_msgs</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">possible_messages</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">_set_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set a description, based on the attrname given, taking the lamp-status</span>
-<span class="sd">        into account.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            attrname (str, optional): This will first check for an Attribute with this name,</span>
-<span class="sd">                secondly for a property on the class. So if `attrname=&quot;auto_close_msg&quot;`,</span>
-<span class="sd">                we will first look for an attribute `.db.auto_close_msg` and if that&#39;s</span>
-<span class="sd">                not found we&#39;ll use `.auto_close_msg` instead. If unset (`None`), the</span>
-<span class="sd">                currently set desc will not be changed (only lamp will be checked).</span>
-
-<span class="sd">        Notes:</span>
-<span class="sd">            If `self.db.lamp_works` is `False`, we&#39;ll append</span>
-<span class="sd">            `desc_add_lamp_broken` text.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">attrname</span><span class="p">:</span>
-            <span class="c1"># change desc</span>
-            <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attrname</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrname</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># use existing desc</span>
-            <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lamp_works</span><span class="p">:</span>
-            <span class="c1"># lamp not working. Add extra to button&#39;s desc</span>
-            <span class="n">desc</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc_add_lamp_broken</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">desc_add_lamp_broken</span>
-
+        <span class="c1"># store desc (default, you can change this at creation time)</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a large red button, inviting yet evil-looking. &quot;</span>
+        <span class="n">desc</span> <span class="o">+=</span> <span class="s2">&quot;A closed glass lid protects it.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
 
-    <span class="c1"># state-changing methods and actions</span>
-
-<div class="viewcode-block" id="RedButton.to_closed_state"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.to_closed_state">[docs]</a>    <span class="k">def</span> <span class="nf">to_closed_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Switches the button to having its lid closed.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            msg (str, optional): If given, display a message to the room</span>
-<span class="sd">            when lid closes.</span>
-
-<span class="sd">        This will first try to get the Attribute (self.db.desc_closed_lid) in</span>
-<span class="sd">        case it was set by a builder and if that was None, it will fall back to</span>
-<span class="sd">        self.desc_closed_lid, the default description (note that lack of .db).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_desc</span><span class="p">(</span><span class="s2">&quot;desc_closed_lid&quot;</span><span class="p">)</span>
-        <span class="c1"># remove lidopen-state, if it exists</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">LidOpenCmdSet</span><span class="p">)</span>
-        <span class="c1"># add lid-closed cmdset</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">LidClosedCmdSet</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">msg</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="RedButton.to_open_state"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.to_open_state">[docs]</a>    <span class="k">def</span> <span class="nf">to_open_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Switches the button to having its lid open. This also starts a timer</span>
-<span class="sd">        that will eventually close it again.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_desc</span><span class="p">(</span><span class="s2">&quot;desc_open_lid&quot;</span><span class="p">)</span>
-        <span class="c1"># remove lidopen-state, if it exists</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">LidClosedCmdSet</span><span class="p">)</span>
-        <span class="c1"># add lid-open cmdset</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">LidOpenCmdSet</span><span class="p">)</span>
-
-        <span class="c1"># wait 20s then call self.to_closed_state with a message as argument</span>
-        <span class="n">delay</span><span class="p">(</span><span class="mi">35</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_closed_state</span><span class="p">,</span>
-              <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">auto_close_msg</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_close_msg</span><span class="p">,</span>
-              <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">_unblind_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This is called to un-blind after a certain time.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">BlindCmdSet</span><span class="p">)</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You blink feverishly as your eyesight slowly returns.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> seems to be recovering their eyesight, blinking feverishly.&quot;</span><span class="p">,</span>
-            <span class="n">exclude</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
-
-<div class="viewcode-block" id="RedButton.blind_target"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.blind_target">[docs]</a>    <span class="k">def</span> <span class="nf">blind_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Someone was foolish enough to press the button! Blind them</span>
-<span class="sd">        temporarily.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            caller (Object): The one to be blinded.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="c1"># we don&#39;t need to remove other cmdsets, this will replace all,</span>
-        <span class="c1"># then restore whatever was there when it goes away.</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BlindCmdSet</span><span class="p">)</span>
-
-        <span class="c1"># wait 20s then call self._unblind to remove blindness effect. The</span>
-        <span class="c1"># persistent=True means the delay should survive a server reload.</span>
-        <span class="n">delay</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unblind_target</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span>
-              <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">_unbreak_lamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This is called to un-break the lamp after a certain time.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># we do this quietly, the user will just notice it starting blinking again</span>
+        <span class="c1"># We have to define all the variables the scripts</span>
+        <span class="c1"># are checking/using *before* adding the scripts or</span>
+        <span class="c1"># they might be deactivated before even starting!</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_open</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lamp_works</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_desc</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_locked</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="RedButton.break_lamp"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.break_lamp">[docs]</a>    <span class="k">def</span> <span class="nf">break_lamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">cmdsetexamples</span><span class="o">.</span><span class="n">DefaultCmdSet</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># since the cmdsets relevant to the button are added &#39;on the fly&#39;,</span>
+        <span class="c1"># we need to setup custom scripts to do this for us (also, these scripts</span>
+        <span class="c1"># check so they are valid (i.e. the lid is actually still closed)).</span>
+        <span class="c1"># The AddClosedCmdSet script makes sure to add the Closed-cmdset.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scriptexamples</span><span class="o">.</span><span class="n">ClosedLidState</span><span class="p">)</span>
+        <span class="c1"># the script EventBlinkButton makes the button blink regularly.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scriptexamples</span><span class="o">.</span><span class="n">BlinkButtonEvent</span><span class="p">)</span></div>
+
+    <span class="c1"># state-changing methods</span>
+
+<div class="viewcode-block" id="RedButton.open_lid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.open_lid">[docs]</a>    <span class="k">def</span> <span class="nf">open_lid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Breaks the lamp in the button, stopping it from blinking for a while</span>
+<span class="sd">        Opens the glass lid and start the timer so it will soon close</span>
+<span class="sd">        again.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_open</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc_lid_open</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">desc</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a large red button, inviting yet evil-looking. &quot;</span>
+            <span class="n">desc</span> <span class="o">+=</span> <span class="s2">&quot;Its glass cover is open and the button exposed.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_open</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># with the lid open, we validate scripts; this will clean out</span>
+        <span class="c1"># scripts that depend on the lid to be closed.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+        <span class="c1"># now add new scripts that define the open-lid state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scriptexamples</span><span class="o">.</span><span class="n">OpenLidState</span><span class="p">)</span>
+        <span class="c1"># we also add a scripted event that will close the lid after a while.</span>
+        <span class="c1"># (this one cleans itself after being called once)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scriptexamples</span><span class="o">.</span><span class="n">CloseLidEvent</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RedButton.close_lid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.close_lid">[docs]</a>    <span class="k">def</span> <span class="nf">close_lid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close the glass lid. This validates all scripts on the button,</span>
+<span class="sd">        which means that scripts only being valid when the lid is open</span>
+<span class="sd">        will go away automatically.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_open</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc_lid_closed</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">desc</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a large red button, inviting yet evil-looking. &quot;</span>
+            <span class="n">desc</span> <span class="o">+=</span> <span class="s2">&quot;Its glass cover is closed, protecting it.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_open</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># clean out scripts depending on lid to be open</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+        <span class="c1"># add scripts related to the closed state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scriptexamples</span><span class="o">.</span><span class="n">ClosedLidState</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RedButton.break_lamp"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.break_lamp">[docs]</a>    <span class="k">def</span> <span class="nf">break_lamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feedback</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Breaks the lamp in the button, stopping it from blinking.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            feedback (bool): Show a message about breaking the lamp.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lamp_works</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="c1"># this will update the desc with the info about the broken lamp</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_desc</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lamp_breaks_msg</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">lamp_breaks_msg</span><span class="p">)</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc_lamp_broken</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">desc</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The big red button has stopped blinking for the time being.&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
 
-        <span class="c1"># wait 21s before unbreaking the lamp again</span>
-        <span class="n">delay</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unbreak_lamp</span><span class="p">)</span></div></div>
+        <span class="k">if</span> <span class="n">feedback</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;The lamp flickers, the button going dark.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RedButton.press_button"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.press_button">[docs]</a>    <span class="k">def</span> <span class="nf">press_button</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pobject</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Someone was foolish enough to press the button!</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pobject (Object): The person pressing the button</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># deactivate the button so it won&#39;t flash/close lid etc.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scriptexamples</span><span class="o">.</span><span class="n">DeactivateButtonEvent</span><span class="p">)</span>
+        <span class="c1"># blind the person pressing the button. Note that this</span>
+        <span class="c1"># script is set on the *character* pressing the button!</span>
+        <span class="n">pobject</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scriptexamples</span><span class="o">.</span><span class="n">BlindedState</span><span class="p">)</span></div>
+
+    <span class="c1"># script-related methods</span>
+
+<div class="viewcode-block" id="RedButton.blink"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.blink">[docs]</a>    <span class="k">def</span> <span class="nf">blink</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The script system will regularly call this</span>
+<span class="sd">        function to make the button blink. Now and then</span>
+<span class="sd">        it won&#39;t blink at all though, to add some randomness</span>
+<span class="sd">        to how often the message is echoed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span>
+        <span class="k">if</span> <span class="n">loc</span><span class="p">:</span>
+            <span class="n">rand</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.2</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;The red button flashes briefly.&quot;</span>
+            <span class="k">elif</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.4</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;The red button blinks invitingly.&quot;</span>
+            <span class="k">elif</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.6</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;The red button flashes. You know you wanna push it!&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># no blink</span>
+                <span class="k">return</span>
+            <span class="n">loc</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -641,17 +231,18 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li>
-    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
-     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
-      <a href="https://evennia.blogspot.com/">Blog</a>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
   </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="red_button.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

@@ -70,7 +70,7 @@
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
 <span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
 <span class="kn">from</span> <span class="nn">django.utils.safestring</span> <span class="kn">import</span> <span class="n">SafeString</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">uses_database</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">to_bytes</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">uses_database</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">to_bytes</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;to_pickle&quot;</span><span class="p">,</span> <span class="s2">&quot;from_pickle&quot;</span><span class="p">,</span> <span class="s2">&quot;do_pickle&quot;</span><span class="p">,</span> <span class="s2">&quot;do_unpickle&quot;</span><span class="p">,</span> <span class="s2">&quot;dbserialize&quot;</span><span class="p">,</span> <span class="s2">&quot;dbunserialize&quot;</span><span class="p">)</span>
@@ -657,7 +657,7 @@
 <span class="sd">            that saves assigned data to the database. Skip if not</span>
 <span class="sd">            serializing onto a given object.  If db_obj is given, this</span>
 <span class="sd">            function will convert lists, dicts and sets to their</span>
-<span class="sd">            _SaverList, _SaverDict and _SaverSet counterparts.</span>
+<span class="sd">            `_SaverList`, `_SaverDict` and `_SaverSet` counterparts.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        data (any): Unpickled data.</span>
@@ -820,17 +820,18 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li>
-    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
-     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
-      <a href="https://evennia.blogspot.com/">Blog</a>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
   </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="dbserialize.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

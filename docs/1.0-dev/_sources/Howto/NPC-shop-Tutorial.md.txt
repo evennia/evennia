@@ -86,18 +86,17 @@ def menunode_shopfront(caller):
     # door! Let's remove that from our for sale list.
     wares = [ware for ware in wares if ware.key.lower() != "door"]
 
-    text = "*** Welcome to %s! ***\n" % shopname
+    text = f"*** Welcome to {shopname}! ***\n"
     if wares:
-        text += "   Things for sale (choose 1-%i to inspect);" \
-                " quit to exit:" % len(wares)
+        text += f"   Things for sale (choose 1-{len(wares)} to inspect); quit to exit:"
     else:
         text += "   There is nothing for sale; quit to exit."
 
     options = []
     for ware in wares:
         # add an option for every ware in store
-        options.append({"desc": "%s (%s gold)" %
-                             (ware.key, ware.db.gold_value or 1),
+        gold_val = ware.db.gold_value or 1
+        options.append({"desc": f"{ware.key} ({gold_val} gold)",
                         "goto": "menunode_inspect_and_buy"})
     return text, options
 ```
@@ -124,26 +123,27 @@ def menunode_inspect_and_buy(caller, raw_string):
     ware = wares[iware]
     value = ware.db.gold_value or 1
     wealth = caller.db.gold or 0
-    text = "You inspect %s:\n\n%s" % (ware.key, ware.db.desc)
+    text = f"You inspect {ware.key}:\n\n{ware.db.desc}"
 
     def buy_ware_result(caller):
         "This will be executed first when choosing to buy."
         if wealth >= value:
-            rtext = "You pay %i gold and purchase %s!" % \
-                         (value, ware.key)
+            rtext = f"You pay {value} gold and purchase {ware.key}!"
             caller.db.gold -= value
             ware.move_to(caller, quiet=True)
         else:
-            rtext = "You cannot afford %i gold for %s!" % \
-                          (value, ware.key)
+            rtext = f"You cannot afford {value} gold for {ware.key}!"
         caller.msg(rtext)
 
-    options = ({"desc": "Buy %s for %s gold" % \
-                        (ware.key, ware.db.gold_value or 1),
-                "goto": "menunode_shopfront",
-                "exec": buy_ware_result},
-               {"desc": "Look for something else",
-                "goto": "menunode_shopfront"})
+    gold_val = ware.db.gold_value or 1
+    options = ({
+        "desc": f"Buy {ware.key} for {gold_val} gold",
+        "goto": "menunode_shopfront",
+        "exec": buy_ware_result,
+    }, {
+        "desc": "Look for something else",
+        "goto": "menunode_shopfront",
+    })
 
     return text, options
 ```
@@ -267,7 +267,7 @@ class CmdBuildShop(Command):
                              key=shopname,
                              location=None)
         storeroom = create_object(DefaultRoom,
-                             key="%s-storage" % shopname,
+                             key=f"{shopname}-storage",
                              location=None)
         shop.db.storeroom = storeroom
         # create a door between the two
@@ -281,15 +281,15 @@ class CmdBuildShop(Command):
                                   location=storeroom,
                                   destination=shop)
         # make a key for accessing the store room
-        storeroom_key_name = "%s-storekey" % shopname
+        storeroom_key_name = f"{shopname}-storekey"
         storeroom_key = create_object(DefaultObject,
                                        key=storeroom_key_name,
                                        location=shop)
         # only allow chars with this key to enter the store room
-        shop_exit.locks.add("traverse:holds(%s)" % storeroom_key_name)
+        shop_exit.locks.add(f"traverse:holds({storeroom_key_name})")
 
         # inform the builder about progress
-        self.caller.msg("The shop %s was created!" % shop)
+        self.caller.msg(f"The shop {shop} was created!")
 ```
 
 Our typeclass is simple and so is our `buildshop` command. The command (which is for Builders only)

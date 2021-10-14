@@ -150,13 +150,13 @@ or together with your other custom commands, as you prefer.</p>
  
         <span class="n">tlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">tlen</span> <span class="o">&gt;</span> <span class="mi">280</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Your tweet was </span><span class="si">%i</span><span class="s2"> chars long (max 280).&quot;</span> <span class="o">%</span> <span class="n">tlen</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Your tweet was </span><span class="si">{</span><span class="n">tlen</span><span class="si">}</span><span class="s2"> chars long (max 280).&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># post the tweet        </span>
         <span class="n">TWITTER_API</span><span class="o">.</span><span class="n">PostUpdate</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
 
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You tweeted:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">tweet</span><span class="p">)</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You tweeted:</span><span class="se">\n</span><span class="si">{</span><span class="n">tweet</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Be sure to substitute your own actual API/Access keys and secrets in the appropriate places.</p>

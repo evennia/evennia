@@ -39,696 +39,16 @@
             
   <section id="module-evennia.commands.default.comms">
 <span id="evennia-commands-default-comms"></span><h1>evennia.commands.default.comms<a class="headerlink" href="#module-evennia.commands.default.comms" title="Permalink to this headline">¶</a></h1>
-<p>Communication commands:</p>
-<ul class="simple">
-<li><p>channel</p></li>
-<li><p>page</p></li>
-<li><p>irc/rss/grapevine linking</p></li>
-</ul>
-<dl class="py class">
-<dt id="evennia.commands.default.comms.CmdChannel">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.comms.</code><code class="sig-name descname">CmdChannel</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
-<p>Use and manage in-game channels.</p>
-<dl>
-<dt>Usage:</dt><dd><p>channel channelname &lt;msg&gt;
-channel channel name = &lt;msg&gt;
-channel        (show all subscription)
-channel/all    (show available channels)
-channel/alias channelname = alias[;alias…]
-channel/unalias alias
-channel/who channelname
-channel/history channelname [= index]
-channel/sub channelname [= alias[;alias…]]
-channel/unsub channelname[,channelname, …]
-channel/mute channelname[,channelname,…]
-channel/unmute channelname[,channelname,…]</p>
-<p>channel/create channelname[;alias;alias[:typeclass]] [= description]
-channel/destroy channelname [= reason]
-channel/desc channelname = description
-channel/lock channelname = lockstring
-channel/unlock channelname = lockstring
-channel/ban channelname   (list bans)
-channel/ban[/quiet] channelname[, channelname, …] = subscribername [: reason]
-channel/unban[/quiet] channelname[, channelname, …] = subscribername
-channel/boot[/quiet] channelname[,channelname,…] = subscribername [: reason]</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Usage: channel channelname msg</dt><dd><p>channel channel name = msg  (with space in channel name)</p>
-</dd>
-</dl>
-<p>This sends a message to the channel. Note that you will rarely use this
-command like this; instead you can use the alias</p>
-<blockquote>
-<div><p>channelname &lt;msg&gt;
-channelalias &lt;msg&gt;</p>
-</div></blockquote>
-<p>For example</p>
-<blockquote>
-<div><p>public Hello World
-pub Hello World</p>
-</div></blockquote>
-<p>(this shortcut doesn’t work for aliases containing spaces)</p>
-<p>See channel/alias for help on setting channel aliases.</p>
-<dl class="simple">
-<dt>Usage: channel/alias channel = alias[;alias[;alias…]]</dt><dd><p>channel/unalias alias
-channel    - this will list your subs and aliases to each channel</p>
-</dd>
-</dl>
-<p>Set one or more personal aliases for referencing a channel. For example:</p>
-<blockquote>
-<div><p>channel/alias warrior’s guild = warrior;wguild;warchannel;warrior guild</p>
-</div></blockquote>
-<p>You can now send to the channel using all of these:</p>
-<blockquote>
-<div><p>warrior’s guild Hello
-warrior Hello
-wguild Hello
-warchannel Hello</p>
-</div></blockquote>
-<p>Note that this will not work if the alias has a space in it. So the
-‘warrior guild’ alias must be used with the <strong>channel</strong> command:</p>
-<blockquote>
-<div><p>channel warrior guild = Hello</p>
-</div></blockquote>
-<p>Channel-aliases can be removed one at a time, using the ‘/unalias’ switch.</p>
-<p>Usage: channel/who channelname</p>
-<p>List the channel’s subscribers. Shows who are currently offline or are
-muting the channel. Subscribers who are ‘muting’ will not see messages sent
-to the channel (use channel/mute to mute a channel).</p>
-<p>Usage: channel/history channel [= index]</p>
-<p>This will display the last <a href="#id1"><span class="problematic" id="id2">|</span></a>c20|n lines of channel history. By supplying an
-index number, you will step that many lines back before viewing those 20 lines.</p>
-<p>For example:</p>
-<blockquote>
-<div><p>channel/history public = 35</p>
-</div></blockquote>
-<p>will go back 35 lines and show the previous 20 lines from that point (so
-lines -35 to -55).</p>
-<dl class="simple">
-<dt>Usage: channel/sub channel [=alias[;alias;…]]</dt><dd><p>channel/unsub channel</p>
-</dd>
-</dl>
-<p>This subscribes you to a channel and optionally assigns personal shortcuts
-for you to use to send to that channel (see aliases). When you unsub, all
-your personal aliases will also be removed.</p>
-<dl class="simple">
-<dt>Usage: channel/mute channelname</dt><dd><p>channel/unmute channelname</p>
-</dd>
-</dl>
-<p>Muting silences all output from the channel without actually
-un-subscribing. Other channel members will see that you are muted in the /who
-list. Sending a message to the channel will automatically unmute you.</p>
-<dl class="simple">
-<dt>Usage: channel/create channelname[;alias;alias[:typeclass]] [= description]</dt><dd><p>channel/destroy channelname [= reason]</p>
-</dd>
-</dl>
-<p>Creates a new channel (or destroys one you control). You will automatically
-join the channel you create and everyone will be kicked and loose all aliases
-to a destroyed channel.</p>
-<dl class="simple">
-<dt>Usage: channel/lock channelname = lockstring</dt><dd><p>channel/unlock channelname = lockstring</p>
-</dd>
-</dl>
-<p>Note: this is an admin command.</p>
-<p>A lockstring is on the form locktype:lockfunc(). Channels understand three
-locktypes:</p>
-<blockquote>
-<div><p>listen - who may listen or join the channel.
-send - who may send messages to the channel
-control - who controls the channel. This is usually the one creating</p>
-<blockquote>
-<div><p>the channel.</p>
-</div></blockquote>
-</div></blockquote>
-<p>Common lockfuncs are all() and perm(). To make a channel everyone can
-listen to but only builders can talk on, use this:</p>
-<blockquote>
-<div><p>listen:all()
-send: perm(Builders)</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Usage:</dt><dd><p>channel/boot[/quiet] channelname[,channelname,…] = subscribername [: reason]
-channel/ban channelname[, channelname, …] = subscribername [: reason]
-channel/unban channelname[, channelname, …] = subscribername
-channel/unban channelname
-channel/ban channelname    (list bans)</p>
-</dd>
-</dl>
-<p>Booting will kick a named subscriber from channel(s) temporarily. The
-‘reason’ will be passed to the booted user. Unless the /quiet switch is
-used, the channel will also be informed of the action. A booted user is
-still able to re-connect, but they’ll have to set up their aliases again.</p>
-<p>Banning will blacklist a user from (re)joining the provided channels. It
-will then proceed to boot them from those channels if they were connected.
-The ‘reason’ and <strong>/quiet</strong> works the same as for booting.</p>
-<p class="rubric">Example</p>
-<p>boot mychannel1 = EvilUser : Kicking you to cool down a bit.
-ban mychannel1,mychannel2= EvilUser : Was banned for spamming.</p>
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdChannel.key">
-<code class="sig-name descname">key</code><em class="property"> = 'channel'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdChannel.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['chan', 'channels']</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.aliases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdChannel.help_category">
-<code class="sig-name descname">help_category</code><em class="property"> = 'comms'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.help_category" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdChannel.locks">
-<code class="sig-name descname">locks</code><em class="property"> = 'cmd:not pperm(channel_banned);admin:all();manage:all();changelocks:perm(Admin)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.locks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdChannel.switch_options">
-<code class="sig-name descname">switch_options</code><em class="property"> = ('list', 'all', 'history', 'sub', 'unsub', 'mute', 'unmute', 'alias', 'unalias', 'create', 'destroy', 'desc', 'lock', 'unlock', 'boot', 'ban', 'unban', 'who')</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.switch_options" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdChannel.account_caller">
-<code class="sig-name descname">account_caller</code><em class="property"> = True</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.account_caller" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.search_channel">
-<code class="sig-name descname">search_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channelname</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">handle_errors</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.search_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.search_channel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Helper function for searching for a single channel with some error
-handling.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>channelname</strong> (<em>str</em>) – Name, alias #dbref or partial name/alias to search
-for.</p></li>
-<li><p><strong>exact</strong> (<em>bool</em><em>, </em><em>optional</em>) – If an exact or fuzzy-match of the name should be done.
-Note that even for a fuzzy match, an exactly given, unique channel name
-will always be returned.</p></li>
-<li><p><strong>handle_errors</strong> (<em>bool</em>) – If true, use <strong>self.msg</strong> to report errors if
-there are non/multiple matches. If so, the return will always be
-a single match or None.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>object, list or None</em> –</p>
-<dl class="simple">
-<dt>If <strong>handle_errors</strong> is <strong>True</strong>, this is either a found Channel</dt><dd><p>or <strong>None</strong>. Otherwise it’s a list  of zero, one or more channels found.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The ‘listen’ and ‘control’ accesses are checked before returning.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.msg_channel">
-<code class="sig-name descname">msg_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.msg_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.msg_channel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Send a message to a given channel. This will check the ‘send’
-permission on the channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<em>Channel</em>) – The channel to send to.</p></li>
-<li><p><strong>message</strong> (<em>str</em>) – The message to send.</p></li>
-<li><p><strong>**kwargs</strong> – Unused by default. These kwargs will be passed into
-all channel messaging hooks for custom overriding.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.get_channel_history">
-<code class="sig-name descname">get_channel_history</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">start_index</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.get_channel_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.get_channel_history" title="Permalink to this definition">¶</a></dt>
-<dd><p>View a channel’s history.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<em>Channel</em>) – The channel to access.</p></li>
-<li><p><strong>message</strong> (<em>str</em>) – The message to send.</p></li>
-<li><p><strong>**kwargs</strong> – Unused by default. These kwargs will be passed into
-all channel messaging hooks for custom overriding.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.sub_to_channel">
-<code class="sig-name descname">sub_to_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.sub_to_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.sub_to_channel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subscribe to a channel. Note that all permissions should
-be checked before this step.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>channel</strong> (<em>Channel</em>) – The channel to access.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>bool, str</em> –</p>
-<dl class="simple">
-<dt>True, None if connection failed. If False,</dt><dd><p>the second part is an error string.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.unsub_from_channel">
-<code class="sig-name descname">unsub_from_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.unsub_from_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.unsub_from_channel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Un-Subscribe to a channel. Note that all permissions should
-be checked before this step.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<em>Channel</em>) – The channel to unsub from.</p></li>
-<li><p><strong>**kwargs</strong> – Passed on to nick removal.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>bool, str</em> –</p>
-<dl class="simple">
-<dt>True, None if un-connection succeeded. If False,</dt><dd><p>the second part is an error string.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.add_alias">
-<code class="sig-name descname">add_alias</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">alias</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.add_alias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.add_alias" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a new alias (nick) for the user to use with this channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<em>Channel</em>) – The channel to alias.</p></li>
-<li><p><strong>alias</strong> (<em>str</em>) – The personal alias to use for this channel.</p></li>
-<li><p><strong>**kwargs</strong> – If given, passed into nicks.add.</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>We add two nicks - one is a plain <strong>alias -&gt; channel.key</strong> that
-we need to be able to reference this channel easily. The other
-is a templated nick to easily be able to send messages to the
-channel without needing to give the full <strong>channel</strong> command. The
-structure of this nick is given by <strong>self.channel_msg_pattern</strong>
-and <strong>self.channel_msg_nick_replacement</strong>. By default it maps
-<strong>alias &lt;msg&gt; -&gt; channel &lt;channelname&gt; = &lt;msg&gt;</strong>, so that you can
-for example just write <strong>pub Hello</strong> to send a message.</p>
-<p>The alias created is <strong>alias $1 -&gt; channel channel = $1</strong>, to allow
-for sending to channel using the main channel command.</p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.remove_alias">
-<code class="sig-name descname">remove_alias</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alias</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.remove_alias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.remove_alias" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove an alias from a channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>alias</strong> (<em>str</em><em>, </em><em>optional</em>) – The alias to remove.
-The channel will be reverse-determined from the
-alias, if it exists.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>bool, str</em> –</p>
-<dl class="simple">
-<dt>True, None if removal succeeded. If False,</dt><dd><p>the second part is an error string.</p>
-</dd>
-</dl>
-<p><a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs: If given, passed into nicks.get/add.</p>
-</p>
-</dd>
-</dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This will remove two nicks - the plain channel alias and the templated
-nick used for easily sending messages to the channel.</p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.get_channel_aliases">
-<code class="sig-name descname">get_channel_aliases</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.get_channel_aliases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.get_channel_aliases" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a user’s aliases for a given channel. The user is retrieved
-through self.caller.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>channel</strong> (<em>Channel</em>) – The channel to act on.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>list</em> – A list of zero, one or more alias-strings.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.mute_channel">
-<code class="sig-name descname">mute_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.mute_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.mute_channel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Temporarily mute a channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>channel</strong> (<em>Channel</em>) – The channel to alias.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>bool, str</em> –</p>
-<dl class="simple">
-<dt>True, None if muting successful. If False,</dt><dd><p>the second part is an error string.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.unmute_channel">
-<code class="sig-name descname">unmute_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.unmute_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.unmute_channel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Unmute a channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>channel</strong> (<em>Channel</em>) – The channel to alias.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>bool, str</em> –</p>
-<dl class="simple">
-<dt>True, None if unmuting successful. If False,</dt><dd><p>the second part is an error string.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.create_channel">
-<code class="sig-name descname">create_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">description</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.create_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.create_channel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a new channel. Its name must not previously exist
-(users can alias as needed). Will also connect to the
-new channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – The new channel name/key.</p></li>
-<li><p><strong>description</strong> (<em>str</em>) – This is used in listings.</p></li>
-<li><p><strong>aliases</strong> (<em>list</em>) – A list of strings - alternative aliases for the channel
-(not to be confused with per-user aliases; these are available for
-everyone).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>channel, str</em> –</p>
-<dl class="simple">
-<dt>new_channel, “” if creation successful. If False,</dt><dd><p>the second part is an error string.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.destroy_channel">
-<code class="sig-name descname">destroy_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.destroy_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.destroy_channel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Destroy an existing channel. Access should be checked before
-calling this function.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<em>Channel</em>) – The channel to alias.</p></li>
-<li><p><strong>message</strong> (<em>str</em><em>, </em><em>optional</em>) – Final message to send onto the channel
-before destroying it. If not given, a default message is
-used. Set to the empty string for no message.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="simple">
-<dt>if typeclass:</dt><dd><p>pass</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.set_lock">
-<code class="sig-name descname">set_lock</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">lockstring</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.set_lock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.set_lock" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set a lockstring on a channel. Permissions must have been
-checked before this call.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<em>Channel</em>) – The channel to operate on.</p></li>
-<li><p><strong>lockstring</strong> (<em>str</em>) – A lockstring on the form ‘type:lockfunc();…’</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>bool, str</em> –</p>
-<dl class="simple">
-<dt>True, None if setting lock was successful. If False,</dt><dd><p>the second part is an error string.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.unset_lock">
-<code class="sig-name descname">unset_lock</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">lockstring</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.unset_lock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.unset_lock" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove locks in a lockstring on a channel. Permissions must have been
-checked before this call.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<em>Channel</em>) – The channel to operate on.</p></li>
-<li><p><strong>lockstring</strong> (<em>str</em>) – A lockstring on the form ‘type:lockfunc();…’</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>bool, str</em> –</p>
-<dl class="simple">
-<dt>True, None if setting lock was successful. If False,</dt><dd><p>the second part is an error string.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.set_desc">
-<code class="sig-name descname">set_desc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">description</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.set_desc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.set_desc" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set a channel description. This is shown in listings etc.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>caller</strong> (<em>Object</em><em> or </em><em>Account</em>) – The entity performing the action.</p></li>
-<li><p><strong>channel</strong> (<em>Channel</em>) – The channel to operate on.</p></li>
-<li><p><strong>description</strong> (<em>str</em>) – A short description of the channel.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>bool, str</em> –</p>
-<dl class="simple">
-<dt>True, None if setting lock was successful. If False,</dt><dd><p>the second part is an error string.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.boot_user">
-<code class="sig-name descname">boot_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">quiet</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">reason</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.boot_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.boot_user" title="Permalink to this definition">¶</a></dt>
-<dd><p>Boot a user from a channel, with optional reason. This will
-also remove all their aliases for this channel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<em>Channel</em>) – The channel to operate on.</p></li>
-<li><p><strong>target</strong> (<em>Object</em><em> or </em><em>Account</em>) – The entity to boot.</p></li>
-<li><p><strong>quiet</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to announce to channel.</p></li>
-<li><p><strong>reason</strong> (<em>str</em><em>, </em><em>optional</em>) – A reason for the boot.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>bool, str</em> –</p>
-<dl class="simple">
-<dt>True, None if setting lock was successful. If False,</dt><dd><p>the second part is an error string.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.ban_user">
-<code class="sig-name descname">ban_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">quiet</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">reason</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.ban_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.ban_user" title="Permalink to this definition">¶</a></dt>
-<dd><p>Ban a user from a channel, by locking them out. This will also
-boot them, if they are currently connected.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<em>Channel</em>) – The channel to operate on.</p></li>
-<li><p><strong>target</strong> (<em>Object</em><em> or </em><em>Account</em>) – The entity to ban</p></li>
-<li><p><strong>quiet</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to announce to channel.</p></li>
-<li><p><strong>reason</strong> (<em>str</em><em>, </em><em>optional</em>) – A reason for the ban</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>bool, str</em> –</p>
-<dl class="simple">
-<dt>True, None if banning was successful. If False,</dt><dd><p>the second part is an error string.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.unban_user">
-<code class="sig-name descname">unban_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.unban_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.unban_user" title="Permalink to this definition">¶</a></dt>
-<dd><p>Un-Ban a user from a channel. This will not reconnect them
-to the channel, just allow them to connect again (assuming
-they have the suitable ‘listen’ lock like everyone else).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<em>Channel</em>) – The channel to operate on.</p></li>
-<li><p><strong>target</strong> (<em>Object</em><em> or </em><em>Account</em>) – The entity to unban</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>bool, str</em> –</p>
-<dl class="simple">
-<dt>True, None if unbanning was successful. If False,</dt><dd><p>the second part is an error string.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.channel_list_bans">
-<code class="sig-name descname">channel_list_bans</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.channel_list_bans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.channel_list_bans" title="Permalink to this definition">¶</a></dt>
-<dd><p>Show a channel’s bans.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>channel</strong> (<em>Channel</em>) – The channel to operate on.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>list</em> – A list of strings, each the name of a banned user.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.channel_list_who">
-<code class="sig-name descname">channel_list_who</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.channel_list_who"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.channel_list_who" title="Permalink to this definition">¶</a></dt>
-<dd><p>Show a list of online people is subscribing to a channel. This will check
-the ‘control’ permission of <strong>caller</strong> to determine if only online users
-should be returned or everyone.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>channel</strong> (<em>Channel</em>) – The channel to operate on.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>list</em> –</p>
-<dl class="simple">
-<dt>A list of prepared strings, with name + markers for if they are</dt><dd><p>muted or offline.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.list_channels">
-<code class="sig-name descname">list_channels</code><span class="sig-paren">(</span><em class="sig-param">channelcls=&lt;class 'evennia.comms.comms.DefaultChannel'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.list_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.list_channels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a available channels.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>channelcls</strong> (<em>Channel</em><em>, </em><em>optional</em>) – The channel-class to query on. Defaults
-to the default channel class from settings.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>tuple</em> –</p>
-<dl class="simple">
-<dt>A tuple <strong>(subbed_chans, available_chans)</strong> with the channels</dt><dd><p>currently subscribed to, and those we have ‘listen’ access to but
-don’t actually sub to yet.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.display_subbed_channels">
-<code class="sig-name descname">display_subbed_channels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subscribed</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.display_subbed_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.display_subbed_channels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Display channels subscribed to.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>subscribed</strong> (<em>list</em>) – List of subscribed channels</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>EvTable</em> – Table to display.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.display_all_channels">
-<code class="sig-name descname">display_all_channels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subscribed</span></em>, <em class="sig-param"><span class="n">available</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.display_all_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.display_all_channels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Display all available channels</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>subscribed</strong> (<em>list</em>) – List of subscribed channels</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>EvTable</em> – Table to display.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.comms.CmdChannel.func">
-<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannel.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.func" title="Permalink to this definition">¶</a></dt>
-<dd><p>Main functionality of command.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdChannel.lock_storage">
-<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:not pperm(channel_banned);admin:all();manage:all();changelocks:perm(Admin)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdChannel.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'chan channels', 'category': 'comms', 'key': 'channel', 'tags': '', 'text': &quot;\n    Use and manage in-game channels.\n\n    Usage:\n      channel channelname &lt;msg&gt;\n      channel channel name = &lt;msg&gt;\n      channel        (show all subscription)\n      channel/all    (show available channels)\n      channel/alias channelname = alias[;alias...]\n      channel/unalias alias\n      channel/who channelname\n      channel/history channelname [= index]\n      channel/sub channelname [= alias[;alias...]]\n      channel/unsub channelname[,channelname, ...]\n      channel/mute channelname[,channelname,...]\n      channel/unmute channelname[,channelname,...]\n\n      channel/create channelname[;alias;alias[:typeclass]] [= description]\n      channel/destroy channelname [= reason]\n      channel/desc channelname = description\n      channel/lock channelname = lockstring\n      channel/unlock channelname = lockstring\n      channel/ban channelname   (list bans)\n      channel/ban[/quiet] channelname[, channelname, ...] = subscribername [: reason]\n      channel/unban[/quiet] channelname[, channelname, ...] = subscribername\n      channel/boot[/quiet] channelname[,channelname,...] = subscribername [: reason]\n\n    # subtopics\n\n    ## sending\n\n    Usage: channel channelname msg\n           channel channel name = msg  (with space in channel name)\n\n    This sends a message to the channel. Note that you will rarely use this\n    command like this; instead you can use the alias\n\n        channelname &lt;msg&gt;\n        channelalias &lt;msg&gt;\n\n    For example\n\n        public Hello World\n        pub Hello World\n\n    (this shortcut doesn't work for aliases containing spaces)\n\n    See channel/alias for help on setting channel aliases.\n\n    ## alias and unalias\n\n    Usage: channel/alias channel = alias[;alias[;alias...]]\n           channel/unalias alias\n           channel    - this will list your subs and aliases to each channel\n\n    Set one or more personal aliases for referencing a channel. For example:\n\n        channel/alias warrior's guild = warrior;wguild;warchannel;warrior guild\n\n    You can now send to the channel using all of these:\n\n        warrior's guild Hello\n        warrior Hello\n        wguild Hello\n        warchannel Hello\n\n    Note that this will not work if the alias has a space in it. So the\n    'warrior guild' alias must be used with the `channel` command:\n\n        channel warrior guild = Hello\n\n    Channel-aliases can be removed one at a time, using the '/unalias' switch.\n\n    ## who\n\n    Usage: channel/who channelname\n\n    List the channel's subscribers. Shows who are currently offline or are\n    muting the channel. Subscribers who are 'muting' will not see messages sent\n    to the channel (use channel/mute to mute a channel).\n\n    ## history\n\n    Usage: channel/history channel [= index]\n\n    This will display the last |c20|n lines of channel history. By supplying an\n    index number, you will step that many lines back before viewing those 20 lines.\n\n    For example:\n\n        channel/history public = 35\n\n    will go back 35 lines and show the previous 20 lines from that point (so\n    lines -35 to -55).\n\n    ## sub and unsub\n\n    Usage: channel/sub channel [=alias[;alias;...]]\n           channel/unsub channel\n\n    This subscribes you to a channel and optionally assigns personal shortcuts\n    for you to use to send to that channel (see aliases). When you unsub, all\n    your personal aliases will also be removed.\n\n    ## mute and unmute\n\n    Usage: channel/mute channelname\n           channel/unmute channelname\n\n    Muting silences all output from the channel without actually\n    un-subscribing. Other channel members will see that you are muted in the /who\n    list. Sending a message to the channel will automatically unmute you.\n\n    ## create and destroy\n\n    Usage: channel/create channelname[;alias;alias[:typeclass]] [= description]\n           channel/destroy channelname [= reason]\n\n    Creates a new channel (or destroys one you control). You will automatically\n    join the channel you create and everyone will be kicked and loose all aliases\n    to a destroyed channel.\n\n    ## lock and unlock\n\n    Usage: channel/lock channelname = lockstring\n           channel/unlock channelname = lockstring\n\n    Note: this is an admin command.\n\n    A lockstring is on the form locktype:lockfunc(). Channels understand three\n    locktypes:\n        listen - who may listen or join the channel.\n        send - who may send messages to the channel\n        control - who controls the channel. This is usually the one creating\n            the channel.\n\n    Common lockfuncs are all() and perm(). To make a channel everyone can\n    listen to but only builders can talk on, use this:\n\n        listen:all()\n        send: perm(Builders)\n\n    ## boot and ban\n\n    Usage:\n           channel/boot[/quiet] channelname[,channelname,...] = subscribername [: reason]\n           channel/ban channelname[, channelname, ...] = subscribername [: reason]\n           channel/unban channelname[, channelname, ...] = subscribername\n           channel/unban channelname\n           channel/ban channelname    (list bans)\n\n    Booting will kick a named subscriber from channel(s) temporarily. The\n    'reason' will be passed to the booted user. Unless the /quiet switch is\n    used, the channel will also be informed of the action. A booted user is\n    still able to re-connect, but they'll have to set up their aliases again.\n\n    Banning will blacklist a user from (re)joining the provided channels. It\n    will then proceed to boot them from those channels if they were connected.\n    The 'reason' and `/quiet` works the same as for booting.\n\n    Example:\n        boot mychannel1 = EvilUser : Kicking you to cool down a bit.\n        ban mychannel1,mychannel2= EvilUser : Was banned for spamming.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannel.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<p>Comsystem command module.</p>
+<p>Comm commands are OOC commands and intended to be made available to
+the Account at all times (they go into the AccountCmdSet). So we
+make sure to homogenize self.caller to always be the account object
+for easy handling.</p>
 <dl class="py class">
 <dt id="evennia.commands.default.comms.CmdAddCom">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.comms.</code><code class="sig-name descname">CmdAddCom</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdAddCom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdAddCom" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.comms.CmdChannel</span></code></a></p>
-<p>Add a channel alias and/or subscribe to a channel</p>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>add a channel alias and/or subscribe to a channel</p>
 <dl class="simple">
 <dt>Usage:</dt><dd><p>addcom [alias=] &lt;channel&gt;</p>
 </dd>
@@ -744,7 +64,7 @@ aliases to an already joined channel.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdAddCom.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['aliaschan', 'chanalias']</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAddCom.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['chanalias', 'aliaschan']</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAddCom.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -773,17 +93,12 @@ aliases to an already joined channel.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:not pperm(channel_banned)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAddCom.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdAddCom.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'aliaschan chanalias', 'category': 'comms', 'key': 'addcom', 'tags': '', 'text': '\n    Add a channel alias and/or subscribe to a channel\n\n    Usage:\n       addcom [alias=] &lt;channel&gt;\n\n    Joins a given channel. If alias is given, this will allow you to\n    refer to the channel by this alias rather than the full channel\n    name. Subsequent calls of this command can be used to add multiple\n    aliases to an already joined channel.\n    '}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAddCom.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
 <dt id="evennia.commands.default.comms.CmdDelCom">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.comms.</code><code class="sig-name descname">CmdDelCom</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdDelCom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdDelCom" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.comms.CmdChannel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>remove a channel alias and/or unsubscribe from channel</p>
 <dl class="simple">
 <dt>Usage:</dt><dd><p>delcom &lt;alias or channel&gt;
@@ -830,17 +145,12 @@ for that channel.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:not perm(channel_banned)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdDelCom.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdDelCom.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'delaliaschan delchanalias', 'category': 'comms', 'key': 'delcom', 'tags': '', 'text': &quot;\n    remove a channel alias and/or unsubscribe from channel\n\n    Usage:\n       delcom &lt;alias or channel&gt;\n       delcom/all &lt;channel&gt;\n\n    If the full channel name is given, unsubscribe from the\n    channel. If an alias is given, remove the alias but don't\n    unsubscribe. If the 'all' switch is used, remove all aliases\n    for that channel.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdDelCom.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
 <dt id="evennia.commands.default.comms.CmdAllCom">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.comms.</code><code class="sig-name descname">CmdAllCom</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdAllCom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdAllCom" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.comms.CmdChannel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>perform admin operations on all channels</p>
 <dl class="simple">
 <dt>Usage:</dt><dd><p>allcom [on | off | who | destroy]</p>
@@ -853,11 +163,6 @@ channels that you control.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdAllCom.key">
 <code class="sig-name descname">key</code><em class="property"> = 'allcom'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAllCom.key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdAllCom.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAllCom.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -882,13 +187,65 @@ channels that you control.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt id="evennia.commands.default.comms.CmdAllCom.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAllCom.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdAllCom.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd: not pperm(channel_banned)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAllCom.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.comms.CmdChannels">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.comms.</code><code class="sig-name descname">CmdChannels</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>list all channels available to you</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>channels
+clist
+comlist</p>
+</dd>
+</dl>
+<p>Lists all channels available to you, whether you listen to them or not.
+Use ‘comlist’ to only view your current channel subscriptions.
+Use addcom/delcom to join and leave channels</p>
 <dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdAllCom.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'comms', 'key': 'allcom', 'tags': '', 'text': &quot;\n    perform admin operations on all channels\n\n    Usage:\n      allcom [on | off | who | destroy]\n\n    Allows the user to universally turn off or on all channels they are on, as\n    well as perform a 'who' for all channels they are on. Destroy deletes all\n    channels that you control.\n\n    Without argument, works like comlist.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAllCom.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.comms.CmdChannels.key">
+<code class="sig-name descname">key</code><em class="property"> = 'channels'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.comms.CmdChannels.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['comlist', 'chanlist', 'all channels', 'clist', 'channellist']</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.comms.CmdChannels.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'comms'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.comms.CmdChannels.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd: not pperm(channel_banned)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.comms.CmdChannels.account_caller">
+<code class="sig-name descname">account_caller</code><em class="property"> = True</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels.account_caller" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.comms.CmdChannels.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannels.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implement function</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.comms.CmdChannels.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd: not pperm(channel_banned)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -896,7 +253,7 @@ channels that you control.</p>
 <dl class="py class">
 <dt id="evennia.commands.default.comms.CmdCdestroy">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.comms.</code><code class="sig-name descname">CmdCdestroy</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdCdestroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdCdestroy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.comms.CmdChannel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>destroy a channel you created</p>
 <dl class="simple">
 <dt>Usage:</dt><dd><p>cdestroy &lt;channel&gt;</p>
@@ -906,11 +263,6 @@ channels that you control.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdCdestroy.key">
 <code class="sig-name descname">key</code><em class="property"> = 'cdestroy'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCdestroy.key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdCdestroy.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCdestroy.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -935,13 +287,13 @@ channels that you control.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdCdestroy.lock_storage">
-<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd: not pperm(channel_banned)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCdestroy.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.comms.CmdCdestroy.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCdestroy.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdCdestroy.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'comms', 'key': 'cdestroy', 'tags': '', 'text': '\n    destroy a channel you created\n\n    Usage:\n      cdestroy &lt;channel&gt;\n\n    Destroys a channel that you control.\n    '}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCdestroy.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.comms.CmdCdestroy.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd: not pperm(channel_banned)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCdestroy.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -949,7 +301,7 @@ channels that you control.</p>
 <dl class="py class">
 <dt id="evennia.commands.default.comms.CmdCBoot">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.comms.</code><code class="sig-name descname">CmdCBoot</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdCBoot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdCBoot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.comms.CmdChannel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>kick an account from a channel you control</p>
 <dl class="simple">
 <dt>Usage:</dt><dd><p>cboot[/quiet] &lt;channel&gt; = &lt;account&gt; [:reason]</p>
@@ -961,11 +313,6 @@ channels that you control.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdCBoot.key">
 <code class="sig-name descname">key</code><em class="property"> = 'cboot'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCBoot.key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdCBoot.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCBoot.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -995,13 +342,71 @@ channels that you control.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt id="evennia.commands.default.comms.CmdCBoot.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCBoot.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdCBoot.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd: not pperm(channel_banned)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCBoot.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.comms.CmdCemit">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.comms.</code><code class="sig-name descname">CmdCemit</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdCemit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdCemit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>send an admin message to a channel you control</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>cemit[/switches] &lt;channel&gt; = &lt;message&gt;</p>
+</dd>
+<dt>Switches:</dt><dd><p>sendername - attach the sender’s name before the message
+quiet - don’t echo the message back to sender</p>
+</dd>
+</dl>
+<p>Allows the user to broadcast a message over a channel as long as
+they control it. It does not show the user’s name unless they
+provide the /sendername switch.</p>
 <dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdCBoot.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'comms', 'key': 'cboot', 'tags': '', 'text': &quot;\n    kick an account from a channel you control\n\n    Usage:\n       cboot[/quiet] &lt;channel&gt; = &lt;account&gt; [:reason]\n\n    Switch:\n       quiet - don't notify the channel\n\n    Kicks an account or object from a channel you control.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCBoot.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.comms.CmdCemit.key">
+<code class="sig-name descname">key</code><em class="property"> = 'cemit'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCemit.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.comms.CmdCemit.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['cmsg']</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCemit.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.comms.CmdCemit.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('sendername', 'quiet')</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCemit.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.comms.CmdCemit.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd: not pperm(channel_banned) and pperm(Player)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCemit.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.comms.CmdCemit.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'comms'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCemit.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.comms.CmdCemit.account_caller">
+<code class="sig-name descname">account_caller</code><em class="property"> = True</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCemit.account_caller" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.comms.CmdCemit.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdCemit.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdCemit.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implement function</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.comms.CmdCemit.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd: not pperm(channel_banned) and pperm(Player)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCemit.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1009,7 +414,7 @@ channels that you control.</p>
 <dl class="py class">
 <dt id="evennia.commands.default.comms.CmdCWho">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.comms.</code><code class="sig-name descname">CmdCWho</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdCWho"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdCWho" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.comms.CmdChannel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>show who is listening to a channel</p>
 <dl class="simple">
 <dt>Usage:</dt><dd><p>cwho &lt;channel&gt;</p>
@@ -1019,11 +424,6 @@ channels that you control.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdCWho.key">
 <code class="sig-name descname">key</code><em class="property"> = 'cwho'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCWho.key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdCWho.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCWho.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1048,13 +448,13 @@ channels that you control.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdCWho.lock_storage">
-<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd: not pperm(channel_banned)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCWho.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.comms.CmdCWho.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCWho.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdCWho.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'comms', 'key': 'cwho', 'tags': '', 'text': '\n    show who is listening to a channel\n\n    Usage:\n      cwho &lt;channel&gt;\n\n    List who is connected to a given channel you have access to.\n    '}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCWho.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.comms.CmdCWho.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd: not pperm(channel_banned)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCWho.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1062,7 +462,7 @@ channels that you control.</p>
 <dl class="py class">
 <dt id="evennia.commands.default.comms.CmdChannelCreate">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.comms.</code><code class="sig-name descname">CmdChannelCreate</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdChannelCreate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdChannelCreate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.comms.CmdChannel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>create a new channel</p>
 <dl class="simple">
 <dt>Usage:</dt><dd><p>ccreate &lt;new channel&gt;[;alias;alias…] = description</p>
@@ -1105,17 +505,12 @@ channels that you control.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:not pperm(channel_banned) and pperm(Player)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannelCreate.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdChannelCreate.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'channelcreate', 'category': 'comms', 'key': 'ccreate', 'tags': '', 'text': '\n    create a new channel\n\n    Usage:\n     ccreate &lt;new channel&gt;[;alias;alias...] = description\n\n    Creates a new channel owned by you.\n    '}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannelCreate.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
 <dt id="evennia.commands.default.comms.CmdClock">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.comms.</code><code class="sig-name descname">CmdClock</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdClock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdClock" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.comms.CmdChannel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>change channel locks of a channel you control</p>
 <dl class="simple">
 <dt>Usage:</dt><dd><p>clock &lt;channel&gt; [= &lt;lockstring&gt;]</p>
@@ -1129,13 +524,13 @@ lockstring was given, view the current lock definitions.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdClock.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.comms.CmdClock.aliases" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.comms.CmdClock.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:not pperm(channel_banned)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdClock.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdClock.locks">
-<code class="sig-name descname">locks</code><em class="property"> = 'cmd:not pperm(channel_banned) and perm(Admin)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdClock.locks" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.comms.CmdClock.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.comms.CmdClock.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1156,12 +551,7 @@ lockstring was given, view the current lock definitions.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdClock.lock_storage">
-<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:not pperm(channel_banned) and perm(Admin)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdClock.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdClock.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'comms', 'key': 'clock', 'tags': '', 'text': '\n    change channel locks of a channel you control\n\n    Usage:\n      clock &lt;channel&gt; [= &lt;lockstring&gt;]\n\n    Changes the lock access restrictions of a channel. If no\n    lockstring was given, view the current lock definitions.\n    '}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdClock.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:not pperm(channel_banned)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdClock.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1169,7 +559,7 @@ lockstring was given, view the current lock definitions.</p>
 <dl class="py class">
 <dt id="evennia.commands.default.comms.CmdCdesc">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.comms.</code><code class="sig-name descname">CmdCdesc</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/comms.html#CmdCdesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.comms.CmdCdesc" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.comms.CmdChannel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>describe a channel you control</p>
 <dl class="simple">
 <dt>Usage:</dt><dd><p>cdesc &lt;channel&gt; = &lt;description&gt;</p>
@@ -1180,11 +570,6 @@ channel lists.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdCdesc.key">
 <code class="sig-name descname">key</code><em class="property"> = 'cdesc'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCdesc.key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdCdesc.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCdesc.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1209,13 +594,13 @@ channel lists.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdCdesc.lock_storage">
-<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:not pperm(channel_banned)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCdesc.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.comms.CmdCdesc.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCdesc.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdCdesc.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'comms', 'key': 'cdesc', 'tags': '', 'text': '\n    describe a channel you control\n\n    Usage:\n      cdesc &lt;channel&gt; = &lt;description&gt;\n\n    Changes the description of the channel as shown in\n    channel lists.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCdesc.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.comms.CmdCdesc.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:not pperm(channel_banned)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCdesc.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1226,18 +611,16 @@ channel lists.</p>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>send a private message to another account</p>
 <dl class="simple">
-<dt>Usage:</dt><dd><p>page &lt;account&gt; &lt;message&gt;
-page[/switches] [&lt;account&gt;,&lt;account&gt;,… = &lt;message&gt;]
+<dt>Usage:</dt><dd><p>page[/switches] [&lt;account&gt;,&lt;account&gt;,… = &lt;message&gt;]
 tell        ‘’
 page &lt;number&gt;</p>
 </dd>
-<dt>Switches:</dt><dd><p>last - shows who you last messaged
+<dt>Switch:</dt><dd><p>last - shows who you last messaged
 list - show your last &lt;number&gt; of tells/pages (default)</p>
 </dd>
 </dl>
-<p>Send a message to target user (if online). If no argument is given, you
-will get a list of your latest messages. The equal sign is needed for
-multiple targets or if sending to target with space in the name.</p>
+<p>Send a message to target user (if online). If no
+argument is given, you will get a list of your latest messages.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdPage.key">
 <code class="sig-name descname">key</code><em class="property"> = 'page'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdPage.key" title="Permalink to this definition">¶</a></dt>
@@ -1279,11 +662,6 @@ multiple targets or if sending to target with space in the name.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:not pperm(page_banned)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdPage.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdPage.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'tell', 'category': 'comms', 'key': 'page', 'tags': '', 'text': &quot;\n    send a private message to another account\n\n    Usage:\n      page &lt;account&gt; &lt;message&gt;\n      page[/switches] [&lt;account&gt;,&lt;account&gt;,... = &lt;message&gt;]\n      tell        ''\n      page &lt;number&gt;\n\n    Switches:\n      last - shows who you last messaged\n      list - show your last &lt;number&gt; of tells/pages (default)\n\n    Send a message to target user (if online). If no argument is given, you\n    will get a list of your latest messages. The equal sign is needed for\n    multiple targets or if sending to target with space in the name.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdPage.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -1323,7 +701,7 @@ The bot will relay everything said in the evennia channel to the
 IRC channel and vice versa. The bot will automatically connect at
 server start, so this command need only be given once. The
 /disconnect switch will permanently delete the bot. To only
-temporarily deactivate it, use the  <a href="#id5"><span class="problematic" id="id6">|</span></a>wservices|n command instead.
+temporarily deactivate it, use the  <a href="#id1"><span class="problematic" id="id2">|</span></a>wservices|n command instead.
 Provide an optional bot class path to use a custom bot.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdIRC2Chan.key">
@@ -1361,11 +739,6 @@ Provide an optional bot class path to use a custom bot.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:serversetting(IRC_ENABLED) and pperm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdIRC2Chan.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdIRC2Chan.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'comms', 'key': 'irc2chan', 'tags': '', 'text': '\n    Link an evennia channel to an external IRC channel\n\n    Usage:\n      irc2chan[/switches] &lt;evennia_channel&gt; = &lt;ircnetwork&gt; &lt;port&gt; &lt;#irchannel&gt; &lt;botname&gt;[:typeclass]\n      irc2chan/delete botname|#dbid\n\n    Switches:\n      /delete     - this will delete the bot and remove the irc connection\n                    to the channel. Requires the botname or #dbid as input.\n      /remove     - alias to /delete\n      /disconnect - alias to /delete\n      /list       - show all irc&lt;-&gt;evennia mappings\n      /ssl        - use an SSL-encrypted connection\n\n    Example:\n      irc2chan myircchan = irc.dalnet.net 6667 #mychannel evennia-bot\n      irc2chan public = irc.freenode.net 6667 #evgaming #evbot:accounts.mybot.MyBot\n\n    This creates an IRC bot that connects to a given IRC network and\n    channel. If a custom typeclass path is given, this will be used\n    instead of the default bot class.\n    The bot will relay everything said in the evennia channel to the\n    IRC channel and vice versa. The bot will automatically connect at\n    server start, so this command need only be given once. The\n    /disconnect switch will permanently delete the bot. To only\n    temporarily deactivate it, use the  |wservices|n command instead.\n    Provide an optional bot class path to use a custom bot.\n    '}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdIRC2Chan.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -1374,7 +747,7 @@ Provide an optional bot class path to use a custom bot.</p>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>Check and reboot IRC bot.</p>
 <dl class="simple">
-<dt>Usage:</dt><dd><p>ircstatus [#dbref ping | nicklist | reconnect]</p>
+<dt>Usage:</dt><dd><p>ircstatus [#dbref ping||nicklist||reconnect]</p>
 </dd>
 </dl>
 <p>If not given arguments, will return a list of all bots (like
@@ -1415,11 +788,6 @@ messages sent to either channel will be lost.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdIRCStatus.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:serversetting(IRC_ENABLED) and perm(ircstatus) or perm(Builder))'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdIRCStatus.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdIRCStatus.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'comms', 'key': 'ircstatus', 'tags': '', 'text': &quot;\n    Check and reboot IRC bot.\n\n    Usage:\n        ircstatus [#dbref ping | nicklist | reconnect]\n\n    If not given arguments, will return a list of all bots (like\n    irc2chan/list). The 'ping' argument will ping the IRC network to\n    see if the connection is still responsive. The 'nicklist' argument\n    (aliases are 'who' and 'users') will return a list of users on the\n    remote IRC channel.  Finally, 'reconnect' will force the client to\n    disconnect and reconnect again. This may be a last resort if the\n    client has silently lost connection (this may happen if the remote\n    network experience network issues). During the reconnection\n    messages sent to either channel will be lost.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdIRCStatus.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1492,11 +860,6 @@ to identify the connection uniquely.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.comms.CmdRSS2Chan.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:serversetting(RSS_ENABLED) and pperm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdRSS2Chan.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdRSS2Chan.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'comms', 'key': 'rss2chan', 'tags': '', 'text': '\n    link an evennia channel to an external RSS feed\n\n    Usage:\n      rss2chan[/switches] &lt;evennia_channel&gt; = &lt;rss_url&gt;\n\n    Switches:\n      /disconnect - this will stop the feed and remove the connection to the\n                    channel.\n      /remove     -                                 &quot;\n      /list       - show all rss-&gt;evennia mappings\n\n    Example:\n      rss2chan rsschan = http://code.google.com/feeds/p/evennia/updates/basic\n\n    This creates an RSS reader  that connects to a given RSS feed url. Updates\n    will be echoed as a title and news link to the given channel. The rate of\n    updating is set with the RSS_UPDATE_INTERVAL variable in settings (default\n    is every 10 minutes).\n\n    When disconnecting you need to supply both the channel and url again so as\n    to identify the connection uniquely.\n    '}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdRSS2Chan.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1572,11 +935,6 @@ must be added to game settings.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:serversetting(GRAPEVINE_ENABLED) and pperm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.comms.CmdGrapevine2Chan.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.comms.CmdGrapevine2Chan.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'comms', 'key': 'grapevine2chan', 'tags': '', 'text': '\n    Link an Evennia channel to an exteral Grapevine channel\n\n    Usage:\n      grapevine2chan[/switches] &lt;evennia_channel&gt; = &lt;grapevine_channel&gt;\n      grapevine2chan/disconnect &lt;connection #id&gt;\n\n    Switches:\n        /list     - (or no switch): show existing grapevine &lt;-&gt; Evennia\n                    mappings and available grapevine chans\n        /remove   - alias to disconnect\n        /delete   - alias to disconnect\n\n    Example:\n        grapevine2chan mygrapevine = gossip\n\n    This creates a link between an in-game Evennia channel and an external\n    Grapevine channel. The game must be registered with the Grapevine network\n    (register at https://grapevine.haus) and the GRAPEVINE_* auth information\n    must be added to game settings.\n    '}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdGrapevine2Chan.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 </section>
@@ -1612,17 +970,18 @@ must be added to game settings.</p>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li>
-    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
-     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
-      <a href="https://evennia.blogspot.com/">Blog</a>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
   </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../1.0-dev/api/evennia.commands.default.comms.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.commands.default.comms.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

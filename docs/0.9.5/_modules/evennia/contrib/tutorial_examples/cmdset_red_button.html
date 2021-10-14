@@ -1,0 +1,439 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.tutorial_examples.cmdset_red_button &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_examples.cmdset_red_button</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.tutorial_examples.cmdset_red_button</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This defines the cmdset for the red_button. Here we have defined</span>
+<span class="sd">the commands and the cmdset in the same module, but if you</span>
+<span class="sd">have many different commands to merge it is often better</span>
+<span class="sd">to define the cmdset separately, picking and choosing from</span>
+<span class="sd">among the available commands as to what should be included in the</span>
+<span class="sd">cmdset - this way you can often re-use the commands too.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span>
+
+<span class="c1"># Some simple commands for the red button</span>
+
+<span class="c1"># ------------------------------------------------------------</span>
+<span class="c1"># Commands defined on the red button</span>
+<span class="c1"># ------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="CmdNudge"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.CmdNudge">[docs]</a><span class="k">class</span> <span class="nc">CmdNudge</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Try to nudge the button&#39;s lid</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      nudge lid</span>
+
+<span class="sd">    This command will have you try to</span>
+<span class="sd">    push the lid of the button away.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;nudge lid&quot;</span>  <span class="c1"># two-word command name!</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;nudge&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+<div class="viewcode-block" id="CmdNudge.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.CmdNudge.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        nudge the lid. Random chance of success to open it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rand</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You nudge at the lid. It seems stuck.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.7</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You move the lid back and forth. It won&#39;t budge.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You manage to get a nail under the lid.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;open lid&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdPush"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.CmdPush">[docs]</a><span class="k">class</span> <span class="nc">CmdPush</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Push the red button</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      push button</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;push button&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;push&quot;</span><span class="p">,</span> <span class="s2">&quot;press button&quot;</span><span class="p">,</span> <span class="s2">&quot;press&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+<div class="viewcode-block" id="CmdPush.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.CmdPush.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Note that we choose to implement this with checking for</span>
+<span class="sd">        if the lid is open/closed. This is because this command</span>
+<span class="sd">        is likely to be tried regardless of the state of the lid.</span>
+
+<span class="sd">        An alternative would be to make two versions of this command</span>
+<span class="sd">        and tuck them into the cmdset linked to the Open and Closed</span>
+<span class="sd">        lid-state respectively.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_open</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You reach out to press the big red button ...&quot;</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">A BOOM! A bright light blinds you!&quot;</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The world goes dark ...&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> presses the button. BOOM! </span><span class="si">%s</span><span class="s2"> is blinded by a flash!&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># the button&#39;s method will handle all setup of scripts etc.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">press_button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You cannot push the button - there is a glass lid covering it.&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdSmashGlass"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.CmdSmashGlass">[docs]</a><span class="k">class</span> <span class="nc">CmdSmashGlass</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    smash glass</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      smash glass</span>
+
+<span class="sd">    Try to smash the glass of the button.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;smash glass&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;smash lid&quot;</span><span class="p">,</span> <span class="s2">&quot;break lid&quot;</span><span class="p">,</span> <span class="s2">&quot;smash&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+<div class="viewcode-block" id="CmdSmashGlass.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.CmdSmashGlass.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The lid won&#39;t open, but there is a small chance</span>
+<span class="sd">        of causing the lamp to break.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rand</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.2</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You smash your hand against the glass&quot;</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; with all your might. The lid won&#39;t budge&quot;</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; but you cause quite the tremor through the button&#39;s mount.&quot;</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">It looks like the button&#39;s lamp stopped working for the time being.&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">lamp_works</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.6</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You hit the lid hard. It doesn&#39;t move an inch.&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You place a well-aimed fist against the glass of the lid.&quot;</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; Unfortunately all you get is a pain in your hand. Maybe&quot;</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; you should just try to open the lid instead?&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> tries to smash the glass of the button.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdOpenLid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.CmdOpenLid">[docs]</a><span class="k">class</span> <span class="nc">CmdOpenLid</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    open lid</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      open lid</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;open lid&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;open button&quot;</span><span class="p">,</span> <span class="s2">&quot;open&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+<div class="viewcode-block" id="CmdOpenLid.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.CmdOpenLid.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;simply call the right function.&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_locked</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This lid seems locked in place for the moment.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">A ticking sound is heard, like a winding mechanism. Seems &quot;</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;the lid will soon close again.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> opens the lid of the button.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="p">)</span>
+        <span class="c1"># add the relevant cmdsets to button</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">LidClosedCmdSet</span><span class="p">)</span>
+        <span class="c1"># call object method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">open_lid</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="CmdCloseLid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.CmdCloseLid">[docs]</a><span class="k">class</span> <span class="nc">CmdCloseLid</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    close the lid</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      close lid</span>
+
+<span class="sd">    Closes the lid of the red button.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;close lid&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+<div class="viewcode-block" id="CmdCloseLid.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.CmdCloseLid.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Close the lid&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">close_lid</span><span class="p">()</span>
+
+        <span class="c1"># this will clean out scripts dependent on lid being open.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You close the button&#39;s lid. It clicks back into place.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> closes the button&#39;s lid.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdBlindLook"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindLook">[docs]</a><span class="k">class</span> <span class="nc">CmdBlindLook</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Looking around in darkness</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      look &lt;obj&gt;</span>
+
+<span class="sd">    ... not that there&#39;s much to see in the dark.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;look&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;l&quot;</span><span class="p">,</span> <span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="s2">&quot;examine&quot;</span><span class="p">,</span> <span class="s2">&quot;ex&quot;</span><span class="p">,</span> <span class="s2">&quot;feel&quot;</span><span class="p">,</span> <span class="s2">&quot;listen&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+<div class="viewcode-block" id="CmdBlindLook.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;This replaces all the senses when blinded.&quot;</span>
+
+        <span class="c1"># we decide what to reply based on which command was</span>
+        <span class="c1"># actually tried</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">==</span> <span class="s2">&quot;get&quot;</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You fumble around blindly without finding anything.&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">==</span> <span class="s2">&quot;examine&quot;</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You try to examine your surroundings, but can&#39;t see a thing.&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">==</span> <span class="s2">&quot;listen&quot;</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You are deafened by the boom.&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">==</span> <span class="s2">&quot;feel&quot;</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You fumble around, hands outstretched. You bump your knee.&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># trying to look</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You are temporarily blinded by the flash. &quot;</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;Until it wears off, all you can do is feel around blindly.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> stumbles around, blinded.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdBlindHelp"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdBlindHelp</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Help function while in the blinded state</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      help</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;help&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;h&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+<div class="viewcode-block" id="CmdBlindHelp.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Give a message.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are beyond help ... until you can see again.&quot;</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># ---------------------------------------------------------------</span>
+<span class="c1"># Command sets for the red button</span>
+<span class="c1"># ---------------------------------------------------------------</span>
+
+<span class="c1"># We next tuck these commands into their respective command sets.</span>
+<span class="c1"># (note that we are overdoing the cdmset separation a bit here</span>
+<span class="c1"># to show how it works).</span>
+
+
+<div class="viewcode-block" id="DefaultCmdSet"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.DefaultCmdSet">[docs]</a><span class="k">class</span> <span class="nc">DefaultCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The default cmdset always sits</span>
+<span class="sd">    on the button object and whereas other</span>
+<span class="sd">    command sets may be added/merge onto it</span>
+<span class="sd">    and hide it, removing them will always</span>
+<span class="sd">    bring it back. It&#39;s added to the object</span>
+<span class="sd">    using obj.cmdset.add_default().</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;RedButtonDefault&quot;</span>
+    <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;Union&quot;</span>  <span class="c1"># this is default, we don&#39;t really need to put it here.</span>
+
+<div class="viewcode-block" id="DefaultCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.DefaultCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Init the cmdset&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdPush</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="LidClosedCmdSet"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.LidClosedCmdSet">[docs]</a><span class="k">class</span> <span class="nc">LidClosedCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A simple cmdset tied to the redbutton object.</span>
+
+<span class="sd">    It contains the commands that launches the other</span>
+<span class="sd">    command sets, making the red button a self-contained</span>
+<span class="sd">    item (i.e. you don&#39;t have to manually add any</span>
+<span class="sd">    scripts etc to it when creating it).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;LidClosedCmdSet&quot;</span>
+    <span class="c1"># default Union is used *except* if we are adding to a</span>
+    <span class="c1"># cmdset named LidOpenCmdSet - this one we replace</span>
+    <span class="c1"># completely.</span>
+    <span class="n">key_mergetype</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;LidOpenCmdSet&quot;</span><span class="p">:</span> <span class="s2">&quot;Replace&quot;</span><span class="p">}</span>
+
+<div class="viewcode-block" id="LidClosedCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.LidClosedCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Populates the cmdset when it is instantiated.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdNudge</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSmashGlass</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdOpenLid</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="LidOpenCmdSet"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.LidOpenCmdSet">[docs]</a><span class="k">class</span> <span class="nc">LidOpenCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the opposite of the Closed cmdset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;LidOpenCmdSet&quot;</span>
+    <span class="c1"># default Union is used *except* if we are adding to a</span>
+    <span class="c1"># cmdset named LidClosedCmdSet - this one we replace</span>
+    <span class="c1"># completely.</span>
+    <span class="n">key_mergetype</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;LidClosedCmdSet&quot;</span><span class="p">:</span> <span class="s2">&quot;Replace&quot;</span><span class="p">}</span>
+
+<div class="viewcode-block" id="LidOpenCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.LidOpenCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;setup the cmdset (just one command)&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdCloseLid</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="BlindCmdSet"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.BlindCmdSet">[docs]</a><span class="k">class</span> <span class="nc">BlindCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the cmdset added to the *account* when</span>
+<span class="sd">    the button is pushed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;BlindCmdSet&quot;</span>
+    <span class="c1"># we want it to completely replace all normal commands</span>
+    <span class="c1"># until the timed script removes it again.</span>
+    <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;Replace&quot;</span>
+    <span class="c1"># we want to stop the account from walking around</span>
+    <span class="c1"># in this blinded state, so we hide all exits too.</span>
+    <span class="c1"># (channel commands will still work).</span>
+    <span class="n">no_exits</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># keep account in the same room</span>
+    <span class="n">no_objs</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># don&#39;t allow object commands</span>
+
+<div class="viewcode-block" id="BlindCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.cmdset_red_button.html#evennia.contrib.tutorial_examples.cmdset_red_button.BlindCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Setup the blind cmdset&quot;</span>
+        <span class="kn">from</span> <span class="nn">evennia.commands.default.general</span> <span class="kn">import</span> <span class="n">CmdSay</span>
+        <span class="kn">from</span> <span class="nn">evennia.commands.default.general</span> <span class="kn">import</span> <span class="n">CmdPose</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSay</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdPose</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdBlindLook</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdBlindHelp</span><span class="p">())</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="cmdset_red_button.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_examples.cmdset_red_button</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

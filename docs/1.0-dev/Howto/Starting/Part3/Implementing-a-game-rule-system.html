@@ -292,7 +292,7 @@ the following command:</p>
         <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">level</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">STR</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat</span> <span class="o">+=</span> <span class="mi">2</span>
-        <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are now level </span><span class="si">%i</span><span class="s2">!&quot;</span> <span class="o">%</span> <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">level</span><span class="p">)</span>
+        <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are now level </span><span class="si">{</span><span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">level</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">skill_combat</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -302,24 +302,24 @@ the following command:</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">char1</span><span class="p">,</span> <span class="n">char2</span> <span class="o">=</span> <span class="n">args</span>
     <span class="n">roll1</span><span class="p">,</span> <span class="n">roll2</span> <span class="o">=</span> <span class="n">roll_hit</span><span class="p">(),</span> <span class="n">roll_hit</span><span class="p">()</span>
-    <span class="n">failtext</span> <span class="o">=</span> <span class="s2">&quot;You are hit by </span><span class="si">%s</span><span class="s2"> for </span><span class="si">%i</span><span class="s2"> damage!&quot;</span>
-    <span class="n">wintext</span> <span class="o">=</span> <span class="s2">&quot;You hit </span><span class="si">%s</span><span class="s2"> for </span><span class="si">%i</span><span class="s2"> damage!&quot;</span>
+    <span class="n">failtext_template</span> <span class="o">=</span> <span class="s2">&quot;You are hit by </span><span class="si">{attacker}</span><span class="s2"> for </span><span class="si">{dmg}</span><span class="s2"> damage!&quot;</span>
+    <span class="n">wintext_template</span> <span class="o">=</span> <span class="s2">&quot;You hit </span><span class="si">{target}</span><span class="s2"> for </span><span class="si">{dmg}</span><span class="s2"> damage!&quot;</span>
     <span class="n">xp_gain</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat</span> <span class="o">&gt;=</span> <span class="n">roll1</span> <span class="o">&gt;</span> <span class="n">roll2</span><span class="p">:</span>
         <span class="c1"># char 1 hits</span>
         <span class="n">dmg</span> <span class="o">=</span> <span class="n">roll_dmg</span><span class="p">()</span> <span class="o">+</span> <span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">STR</span>
-        <span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">wintext</span> <span class="o">%</span> <span class="p">(</span><span class="n">char2</span><span class="p">,</span> <span class="n">dmg</span><span class="p">))</span>
+        <span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">wintext_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">char2</span><span class="p">,</span> <span class="n">dmg</span><span class="o">=</span><span class="n">dmg</span><span class="p">))</span>
         <span class="n">add_XP</span><span class="p">(</span><span class="n">char1</span><span class="p">,</span> <span class="n">xp_gain</span><span class="p">)</span>
-        <span class="n">char2</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">failtext</span> <span class="o">%</span> <span class="p">(</span><span class="n">char1</span><span class="p">,</span> <span class="n">dmg</span><span class="p">))</span>
+        <span class="n">char2</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">failtext_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attacker</span><span class="o">=</span><span class="n">char1</span><span class="p">,</span> <span class="n">dmg</span><span class="o">=</span><span class="n">dmg</span><span class="p">))</span>
         <span class="n">char2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">HP</span> <span class="o">-=</span> <span class="n">dmg</span>
         <span class="n">check_defeat</span><span class="p">(</span><span class="n">char2</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">char2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat</span> <span class="o">&gt;=</span> <span class="n">roll2</span> <span class="o">&gt;</span> <span class="n">roll1</span><span class="p">:</span>
         <span class="c1"># char 2 hits</span>
         <span class="n">dmg</span> <span class="o">=</span> <span class="n">roll_dmg</span><span class="p">()</span> <span class="o">+</span> <span class="n">char2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">STR</span>
-        <span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">failtext</span> <span class="o">%</span> <span class="p">(</span><span class="n">char2</span><span class="p">,</span> <span class="n">dmg</span><span class="p">))</span>
+        <span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">failtext_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attacker</span><span class="o">=</span><span class="n">char2</span><span class="p">,</span> <span class="n">dmg</span><span class="o">=</span><span class="n">dmg</span><span class="p">))</span>
         <span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">HP</span> <span class="o">-=</span> <span class="n">dmg</span>
         <span class="n">check_defeat</span><span class="p">(</span><span class="n">char1</span><span class="p">)</span>
-        <span class="n">char2</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">wintext</span> <span class="o">%</span> <span class="p">(</span><span class="n">char1</span><span class="p">,</span> <span class="n">dmg</span><span class="p">))</span>
+        <span class="n">char2</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">wintext_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">char1</span><span class="p">,</span> <span class="n">dmg</span><span class="o">=</span><span class="n">dmg</span><span class="p">))</span>
         <span class="n">add_XP</span><span class="p">(</span><span class="n">char2</span><span class="p">,</span> <span class="n">xp_gain</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># a draw</span>
@@ -337,7 +337,7 @@ the following command:</p>
     <span class="k">if</span> <span class="n">skillname</span> <span class="ow">in</span> <span class="n">SKILLS</span><span class="p">:</span>
         <span class="n">SKILLS</span><span class="p">[</span><span class="n">skillname</span><span class="p">](</span><span class="n">character1</span><span class="p">,</span> <span class="n">character2</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">RunTimeError</span><span class="p">(</span><span class="s2">&quot;Skillname </span><span class="si">%s</span><span class="s2"> not found.&quot;</span> <span class="o">%</span> <span class="n">skillname</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">RunTimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skillname </span><span class="si">{</span><span class="n">skillname</span><span class="si">}</span><span class="s2"> not found.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>These few functions implement the entirety of our simple rule system.  We have a function to check

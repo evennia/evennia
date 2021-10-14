@@ -310,7 +310,11 @@ name and background. This form we create in <code class="docutils literal notran
 <span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span>
-<span class="normal">44</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/views.py</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/views.py</span>
 
 <span class="kn">from</span> <span class="nn">web.chargen.models</span> <span class="kn">import</span> <span class="n">CharApp</span>
 <span class="kn">from</span> <span class="nn">web.chargen.forms</span> <span class="kn">import</span> <span class="n">AppForm</span>
@@ -347,8 +351,12 @@ name and background. This form we create in <code class="docutils literal notran
                 <span class="n">user</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
                 <span class="c1"># add the right locks for the character so the account can</span>
                 <span class="c1">#  puppet it</span>
-                <span class="n">char</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;puppet:id(</span><span class="si">%i</span><span class="s2">) or pid(</span><span class="si">%i</span><span class="s2">) or perm(Developers) &quot;</span>
-                    <span class="s2">&quot;or pperm(Developers)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+                <span class="n">char</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot; or &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+                    <span class="sa">f</span><span class="s2">&quot;puppet:id(</span><span class="si">{</span><span class="n">char</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;pid(</span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;perm(Developers)&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;pperm(Developers)&quot;</span><span class="p">,</span>
+                <span class="p">]))</span>
                 <span class="n">char</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">background</span> <span class="c1"># set the character background</span>
             <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="s1">&#39;/chargen&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -437,7 +445,11 @@ setting custom attributes is as easy as doing it in the meat of your Evennia gam
 <span class="normal">60</span>
 <span class="normal">61</span>
 <span class="normal">62</span>
-<span class="normal">63</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/views.py</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/views.py</span>
    
 <span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
 <span class="kn">from</span> <span class="nn">web.chargen.models</span> <span class="kn">import</span> <span class="n">CharApp</span>
@@ -493,8 +505,12 @@ setting custom attributes is as easy as doing it in the meat of your Evennia gam
                 <span class="n">user</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
                 <span class="c1"># add the right locks for the character so the account can</span>
                 <span class="c1">#  puppet it</span>
-                <span class="n">char</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;puppet:id(</span><span class="si">%i</span><span class="s2">) or pid(</span><span class="si">%i</span><span class="s2">) or perm(Developers) &quot;</span>
-                    <span class="s2">&quot;or pperm(Developers)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+                <span class="n">char</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot; or &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+                    <span class="sa">f</span><span class="s2">&quot;puppet:id(</span><span class="si">{</span><span class="n">char</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;pid(</span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;perm(Developers)&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;pperm(Developers)&quot;</span><span class="p">,</span>
+                <span class="p">]))</span>
                 <span class="n">char</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">background</span> <span class="c1"># set the character background</span>
             <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="s1">&#39;/chargen&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>

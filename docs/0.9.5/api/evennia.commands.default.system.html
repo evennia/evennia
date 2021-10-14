@@ -83,11 +83,6 @@ reset to purge) and at_reload() hooks will be called.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(reload) or perm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdReload.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.system.CmdReload.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'restart', 'category': 'system', 'key': 'reload', 'tags': '', 'text': '\n    reload the server\n\n    Usage:\n      reload [reason]\n\n    This restarts the server. The Portal is not\n    affected. Non-persistent scripts will survive a reload (use\n    reset to purge) and at_reload() hooks will be called.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdReload.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -140,11 +135,6 @@ cmdsets etc will be wiped.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(reload) or perm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdReset.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.system.CmdReset.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'reboot', 'category': 'system', 'key': 'reset', 'tags': '', 'text': '\n    reset and reboot the server\n\n    Usage:\n      reset\n\n    Notes:\n      For normal updating you are recommended to use reload rather\n      than this command. Use shutdown for a complete stop of\n      everything.\n\n    This emulates a cold reboot of the Server component of Evennia.\n    The difference to shutdown is that the Server will auto-reboot\n    and that it does not affect the Portal, so no users will be\n    disconnected. Contrary to reload however, all shutdown hooks will\n    be called and any non-database saved scripts, ndb-attributes,\n    cmdsets etc will be wiped.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdReset.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -186,11 +176,6 @@ cmdsets etc will be wiped.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdShutdown.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(shutdown) or perm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdShutdown.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.system.CmdShutdown.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'system', 'key': 'shutdown', 'tags': '', 'text': '\n    stop the server completely\n\n    Usage:\n      shutdown [announcement]\n\n    Gracefully shut down both Server and Portal.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdShutdown.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -280,9 +265,112 @@ should only be accessible by trusted server admins/superusers.|n</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(py) or perm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdPy.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.system.CmdScripts">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.system.</code><code class="sig-name descname">CmdScripts</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/system.html#CmdScripts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.system.CmdScripts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>list and manage all running scripts</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>scripts[/switches] [#dbref, key, script.path or &lt;obj&gt;]</p>
+</dd>
+<dt>Switches:</dt><dd><p>start - start a script (must supply a script path)
+stop - stops an existing script
+kill - kills a script - without running its cleanup hooks
+validate - run a validation on the script(s)</p>
+</dd>
+</dl>
+<p>If no switches are given, this command just views all active
+scripts. The argument can be either an object, at which point it
+will be searched for all scripts defined on it, or a script name
+or #dbref. For using the /stop switch, a unique script #dbref is
+required since whole classes of scripts often have the same name.</p>
+<p>Use script for managing commands on objects.</p>
 <dl class="py attribute">
-<dt id="evennia.commands.default.system.CmdPy.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '!', 'category': 'system', 'key': 'py', 'tags': '', 'text': &quot;\n    execute a snippet of python code\n\n    Usage:\n      py [cmd]\n      py/edit\n      py/time &lt;cmd&gt;\n      py/clientraw &lt;cmd&gt;\n      py/noecho\n\n    Switches:\n      time - output an approximate execution time for &lt;cmd&gt;\n      edit - open a code editor for multi-line code experimentation\n      clientraw - turn off all client-specific escaping. Note that this may\n        lead to different output depending on prototocol (such as angular brackets\n        being parsed as HTML in the webclient but not in telnet clients)\n      noecho - in Python console mode, turn off the input echo (e.g. if your client\n        does this for you already)\n\n    Without argument, open a Python console in-game. This is a full console,\n    accepting multi-line Python code for testing and debugging. Type `exit()` to\n    return to the game. If Evennia is reloaded, the console will be closed.\n\n    Enter a line of instruction after the 'py' command to execute it\n    immediately.  Separate multiple commands by ';' or open the code editor\n    using the /edit switch (all lines added in editor will be executed\n    immediately when closing or using the execute command in the editor).\n\n    A few variables are made available for convenience in order to offer access\n    to the system (you can import more at execution time).\n\n    Available variables in py environment:\n      self, me                   : caller\n      here                       : caller.location\n      evennia                    : the evennia API\n      inherits_from(obj, parent) : check object inheritance\n\n    You can explore The evennia API from inside the game by calling\n    the `__doc__` property on entities:\n        py evennia.__doc__\n        py evennia.managers.__doc__\n\n    |rNote: In the wrong hands this command is a severe security risk.  It\n    should only be accessible by trusted server admins/superusers.|n\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.system.CmdPy.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.system.CmdScripts.key">
+<code class="sig-name descname">key</code><em class="property"> = 'scripts'</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdScripts.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['listscripts', 'globalscript']</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdScripts.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('start', 'stop', 'kill', 'validate')</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdScripts.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(listscripts) or perm(Admin)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdScripts.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'system'</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdScripts.excluded_typeclass_paths">
+<code class="sig-name descname">excluded_typeclass_paths</code><em class="property"> = ['evennia.prototypes.prototypes.DbPrototype']</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.excluded_typeclass_paths" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.system.CmdScripts.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/system.html#CmdScripts.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>implement method</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdScripts.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(listscripts) or perm(Admin)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdScripts.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.system.CmdObjects">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.system.</code><code class="sig-name descname">CmdObjects</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/system.html#CmdObjects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.system.CmdObjects" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>statistics on objects in the database</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>objects [&lt;nr&gt;]</p>
+</dd>
+</dl>
+<p>Gives statictics on objects in database as well as
+a list of &lt;nr&gt; latest objects in database. If not
+given, &lt;nr&gt; defaults to 10.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdObjects.key">
+<code class="sig-name descname">key</code><em class="property"> = 'objects'</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdObjects.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['listobjs', 'listobjects', 'db', 'stats']</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdObjects.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(listobjects) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdObjects.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'system'</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.system.CmdObjects.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/system.html#CmdObjects.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implement the command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdObjects.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(listobjects) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -342,11 +430,6 @@ in the list.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(service) or perm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdService.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.system.CmdService.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'services', 'category': 'system', 'key': 'service', 'tags': '', 'text': '\n    manage system services\n\n    Usage:\n      service[/switch] &lt;service&gt;\n\n    Switches:\n      list   - shows all available services (default)\n      start  - activates or reactivate a service\n      stop   - stops/inactivate a service (can often be restarted)\n      delete - tries to permanently remove a service\n\n    Service management system. Allows for the listing,\n    starting, and stopping of services. If no switches\n    are given, services will be listed. Note that to operate on the\n    service you have to supply the full (green or red) name as given\n    in the list.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdService.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -388,11 +471,6 @@ in the list.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdAbout.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.system.CmdAbout.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.system.CmdAbout.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'version', 'category': 'system', 'key': 'about', 'tags': '', 'text': '\n    show Evennia info\n\n    Usage:\n      about\n\n    Display info about the game engine.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdAbout.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -437,11 +515,6 @@ and the current time stamp.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.system.CmdTime.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(time) or perm(Player)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdTime.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.system.CmdTime.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'uptime', 'category': 'system', 'key': 'time', 'tags': '', 'text': '\n    show server time statistics\n\n    Usage:\n      time\n\n    List Server time statistics such as uptime\n    and the current time stamp.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdTime.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -512,100 +585,6 @@ the released memory will instead be re-used by the program.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(list) or perm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdServerLoad.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="evennia.commands.default.system.CmdServerLoad.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'serverload serverprocess', 'category': 'system', 'key': 'server', 'tags': '', 'text': &quot;\n    show server load and memory statistics\n\n    Usage:\n       server[/mem]\n\n    Switches:\n        mem - return only a string of the current memory usage\n        flushmem - flush the idmapper cache\n\n    This command shows server load statistics and dynamic memory\n    usage. It also allows to flush the cache of accessed database\n    objects.\n\n    Some Important statistics in the table:\n\n    |wServer load|n is an average of processor usage. It's usually\n    between 0 (no usage) and 1 (100% usage), but may also be\n    temporarily higher if your computer has multiple CPU cores.\n\n    The |wResident/Virtual memory|n displays the total memory used by\n    the server process.\n\n    Evennia |wcaches|n all retrieved database entities when they are\n    loaded by use of the idmapper functionality. This allows Evennia\n    to maintain the same instances of an entity and allowing\n    non-persistent storage schemes. The total amount of cached objects\n    are displayed plus a breakdown of database object types.\n\n    The |wflushmem|n switch allows to flush the object cache. Please\n    note that due to how Python's memory management works, releasing\n    caches may not show you a lower Residual/Virtual memory footprint,\n    the released memory will instead be re-used by the program.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.system.CmdServerLoad.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="evennia.commands.default.system.CmdTasks">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.system.</code><code class="sig-name descname">CmdTasks</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/system.html#CmdTasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.system.CmdTasks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
-<p>Display or terminate active tasks (delays).</p>
-<dl class="simple">
-<dt>Usage:</dt><dd><p>tasks[/switch] [task_id or function_name]</p>
-</dd>
-<dt>Switches:</dt><dd><p>pause   - Pause the callback of a task.
-unpause - Process all callbacks made since pause() was called.
-do_task - Execute the task (call its callback).
-call    - Call the callback of this task.
-remove  - Remove a task without executing it.
-cancel  - Stop a task from automatically executing.</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>A task is a single use method of delaying the call of a function. Calls are created
-in code, using <strong>evennia.utils.delay</strong>.
-See <a href="#id11"><span class="problematic" id="id12">|</span></a>luhttps://www.evennia.com/docs/latest/Command-Duration.html|ltthe docs|le for help.</p>
-<p>By default, tasks that are canceled and never called are cleaned up after one minute.</p>
-<p class="rubric">Examples</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt><strong>tasks/cancel move_callback</strong> - Cancels all movement delays from the slow_exit contrib.</dt><dd><p>In this example slow exits creates it’s tasks with
-<strong>utils.delay(move_delay, move_callback)</strong></p>
-</dd>
-</dl>
-</li>
-<li><p><strong>tasks/cancel 2</strong> - Cancel task id 2.</p></li>
-</ul>
-<dl class="py attribute">
-<dt id="evennia.commands.default.system.CmdTasks.key">
-<code class="sig-name descname">key</code><em class="property"> = 'tasks'</em><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.system.CmdTasks.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['task', 'delays']</em><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.aliases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.system.CmdTasks.switch_options">
-<code class="sig-name descname">switch_options</code><em class="property"> = ('pause', 'unpause', 'do_task', 'call', 'remove', 'cancel')</em><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.switch_options" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.system.CmdTasks.locks">
-<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all();perm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.locks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.system.CmdTasks.help_category">
-<code class="sig-name descname">help_category</code><em class="property"> = 'system'</em><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.help_category" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.system.CmdTasks.coll_date_func">
-<em class="property">static </em><code class="sig-name descname">coll_date_func</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/system.html#CmdTasks.coll_date_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.coll_date_func" title="Permalink to this definition">¶</a></dt>
-<dd><p>Replace regex characters in date string and collect deferred function name.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.system.CmdTasks.do_task_action">
-<code class="sig-name descname">do_task_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/system.html#CmdTasks.do_task_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.do_task_action" title="Permalink to this definition">¶</a></dt>
-<dd><p>Process the action of a tasks command.</p>
-<p>This exists to gain support with yes or no function from EvMenu.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.system.CmdTasks.func">
-<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/system.html#CmdTasks.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.func" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the hook function that actually does all the work. It is called
-by the cmdhandler right after self.parser() finishes, and so has access
-to all the variables defined therein.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.system.CmdTasks.lock_storage">
-<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();cmd:perm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.system.CmdTasks.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'task delays', 'category': 'system', 'key': 'tasks', 'tags': '', 'text': &quot;\n    Display or terminate active tasks (delays).\n\n    Usage:\n        tasks[/switch] [task_id or function_name]\n\n    Switches:\n        pause   - Pause the callback of a task.\n        unpause - Process all callbacks made since pause() was called.\n        do_task - Execute the task (call its callback).\n        call    - Call the callback of this task.\n        remove  - Remove a task without executing it.\n        cancel  - Stop a task from automatically executing.\n\n    Notes:\n        A task is a single use method of delaying the call of a function. Calls are created\n        in code, using `evennia.utils.delay`.\n        See |luhttps://www.evennia.com/docs/latest/Command-Duration.html|ltthe docs|le for help.\n\n        By default, tasks that are canceled and never called are cleaned up after one minute.\n\n    Examples:\n        - `tasks/cancel move_callback` - Cancels all movement delays from the slow_exit contrib.\n            In this example slow exits creates it's tasks with\n            `utils.delay(move_delay, move_callback)`\n        - `tasks/cancel 2` - Cancel task id 2.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.system.CmdTasks.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 </section>
@@ -641,17 +620,18 @@ to all the variables defined therein.</p>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li>
-    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
-     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
-      <a href="https://evennia.blogspot.com/">Blog</a>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
   </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../1.0-dev/api/evennia.commands.default.system.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.commands.default.system.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

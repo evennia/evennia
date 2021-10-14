@@ -39,6 +39,8 @@
             
   <section id="module-evennia.utils.optionclasses">
 <span id="evennia-utils-optionclasses"></span><h1>evennia.utils.optionclasses<a class="headerlink" href="#module-evennia.utils.optionclasses" title="Permalink to this headline">¶</a></h1>
+<p>Option classes store user- or server Options in a generic way
+while also providing validation.</p>
 <dl class="py class">
 <dt id="evennia.utils.optionclasses.BaseOption">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.utils.optionclasses.</code><code class="sig-name descname">BaseOption</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">description</span></em>, <em class="sig-param"><span class="n">default</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#BaseOption"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.BaseOption" title="Permalink to this definition">¶</a></dt>
@@ -115,8 +117,8 @@ passing extra instructions into the validator.</p>
 <dt id="evennia.utils.optionclasses.BaseOption.save">
 <code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#BaseOption.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.BaseOption.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stores the current value using <strong>.handler.save_handler(self.key, value, **kwargs)</strong>
-where <strong>kwargs</strong> are a combination of those passed into this function and
-the ones specified by the <strong>OptionHandler</strong>.</p>
+where kwargs are a combination of those passed into this function and the
+ones specified by the OptionHandler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
 <dd class="field-odd"><p><strong>any</strong> (<em>any</em>) – Not used by default. These are passed in from self.set
@@ -887,17 +889,18 @@ entries are processed.</p></li>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li>
-    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
-     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
-      <a href="https://evennia.blogspot.com/">Blog</a>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
   </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../1.0-dev/api/evennia.utils.optionclasses.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.utils.optionclasses.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

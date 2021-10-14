@@ -686,10 +686,10 @@ which node it should go to next:</p>
 
 <span class="k">def</span> <span class="nf">node_background</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> \
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    {} experienced a traumatic event</span>
-<span class="sd">    in their childhood. What was it?</span>
-<span class="sd">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">}</span>
+    <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    </span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> experienced a traumatic event</span>
+<span class="s2">    in their childhood. What was it?</span>
+<span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="n">options</span> <span class="o">=</span> <span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;death&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A violent death in the family&quot;</span><span class="p">,</span>
@@ -763,7 +763,7 @@ We could also imagine the helper function analyzing what other choices</p>
         <span class="c1"># a blank input either means OK or Abort</span>
         <span class="k">if</span> <span class="n">prev_entry</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">prev_entry</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Set name to </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prev_entry</span><span class="p">))</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Set name to </span><span class="si">{</span><span class="n">prev_entry</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="s2">&quot;node_background&quot;</span>
         <span class="k">else</span><span class="p">:</span>
 	    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">)</span>
@@ -845,7 +845,7 @@ automatically when you exit the menu.</p>
 
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">charactersheet</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">charactersheet</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw_string</span>
-    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You set your name to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You set your name to </span><span class="si">{</span><span class="n">raw_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;background&quot;</span>
 
 <span class="k">def</span> <span class="nf">node_set_name</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
@@ -859,7 +859,7 @@ automatically when you exit the menu.</p>
 
 
 <span class="k">def</span> <span class="nf">node_view_sheet</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Character sheet:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">charactersheet</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Character sheet:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">charactersheet</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="n">options</span> <span class="o">=</span> <span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Accept&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;finish_chargen&quot;</span><span class="p">},</span>

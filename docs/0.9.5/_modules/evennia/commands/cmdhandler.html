@@ -47,6 +47,10 @@
 
 <span class="sd">1. The calling object (caller) is analyzed based on its callertype.</span>
 <span class="sd">2. Cmdsets are gathered from different sources:</span>
+<span class="sd">   - channels:  all available channel names are auto-created into a cmdset, to allow</span>
+<span class="sd">     for giving the channel name and have the following immediately</span>
+<span class="sd">     sent to the channel. The sending is performed by the CMD_CHANNEL</span>
+<span class="sd">     system command.</span>
 <span class="sd">   - object cmdsets: all objects at caller&#39;s location are scanned for non-empty</span>
 <span class="sd">     cmdsets. This includes cmdsets on exits.</span>
 <span class="sd">   - caller: the caller is searched for its own currently active cmdset.</span>
@@ -60,12 +64,14 @@
 <span class="sd">   cmdset, or fallback to error message. Exit.</span>
 <span class="sd">7. If no match was found -&gt; check for CMD_NOMATCH in current cmdset or</span>
 <span class="sd">   fallback to error message. Exit.</span>
-<span class="sd">8. At this point we have found a normal command. We assign useful variables to it that</span>
+<span class="sd">8. A single match was found. If this is a channel-command (i.e. the</span>
+<span class="sd">   ommand name is that of a channel), --&gt; check for CMD_CHANNEL in</span>
+<span class="sd">   current cmdset or use channelhandler default. Exit.</span>
+<span class="sd">9. At this point we have found a normal command. We assign useful variables to it that</span>
 <span class="sd">   will be available to the command coder at run-time.</span>
-<span class="sd">9. We have a unique cmdobject, primed for use. Call all hooks:</span>
+<span class="sd">12. We have a unique cmdobject, primed for use. Call all hooks:</span>
 <span class="sd">   `at_pre_cmd()`, `cmdobj.parse()`, `cmdobj.func()` and finally `at_post_cmd()`.</span>
-<span class="sd">10. Return deferred that will fire with the return from `cmdobj.func()` (unused by default).</span>
-
+<span class="sd">13. Return deferred that will fire with the return from `cmdobj.func()` (unused by default).</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
@@ -79,6 +85,7 @@
 <span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">inlineCallbacks</span><span class="p">,</span> <span class="n">returnValue</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">InterruptCommand</span>
+<span class="kn">from</span> <span class="nn">evennia.comms.channelhandler</span> <span class="kn">import</span> <span class="n">CHANNELHANDLER</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">string_suggestions</span>
 
@@ -109,10 +116,11 @@
 <span class="n">CMD_NOMATCH</span> <span class="o">=</span> <span class="s2">&quot;__nomatch_command&quot;</span>
 <span class="c1"># command to call if multiple command matches were found</span>
 <span class="n">CMD_MULTIMATCH</span> <span class="o">=</span> <span class="s2">&quot;__multimatch_command&quot;</span>
+<span class="c1"># command to call if found command is the name of a channel</span>
+<span class="n">CMD_CHANNEL</span> <span class="o">=</span> <span class="s2">&quot;__send_to_channel_command&quot;</span>
 <span class="c1"># command to call as the very first one when the user connects.</span>
 <span class="c1"># (is expected to display the login screen)</span>
 <span class="n">CMD_LOGINSTART</span> <span class="o">=</span> <span class="s2">&quot;__unloggedin_look_command&quot;</span>
-
 
 <span class="c1"># Function for handling multiple command matches.</span>
 <span class="n">_SEARCH_AT_RESULT</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">variable_from_module</span><span class="p">(</span><span class="o">*</span><span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_AT_RESULT</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
@@ -121,50 +129,50 @@
 <span class="c1"># is the normal &quot;production message to echo to the account.</span>
 
 <span class="n">_ERROR_UNTRAPPED</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">An untrapped error occurred.</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
-    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">An untrapped error occurred. Please file a bug report detailing the steps to reproduce.</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">An untrapped error occurred.</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">An untrapped error occurred. Please file a bug report detailing the steps to reproduce.</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">_ERROR_CMDSETS</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">A cmdset merger-error occurred. This is often due to a syntax</span>
-<span class="s2">error in one of the cmdsets to merge.</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
-    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">A cmdset merger-error occurred. Please file a bug report detailing the</span>
-<span class="s2">steps to reproduce.</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A cmdset merger-error occurred. This is often due to a syntax</span>
+<span class="sd">error in one of the cmdsets to merge.</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A cmdset merger-error occurred. Please file a bug report detailing the</span>
+<span class="sd">steps to reproduce.</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">_ERROR_NOCMDSETS</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">No command sets found! This is a critical bug that can have</span>
-<span class="s2">multiple causes.</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
-    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">No command sets found! This is a sign of a critical bug.  If</span>
-<span class="s2">disconnecting/reconnecting doesn&#39;t&quot; solve the problem, try to contact</span>
-<span class="s2">the server admin through&quot; some other means for assistance.</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">No command sets found! This is a critical bug that can have</span>
+<span class="sd">multiple causes.</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">No command sets found! This is a sign of a critical bug.  If</span>
+<span class="sd">disconnecting/reconnecting doesn&#39;t&quot; solve the problem, try to contact</span>
+<span class="sd">the server admin through&quot; some other means for assistance.</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">_ERROR_CMDHANDLER</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">A command handler bug occurred. If this is not due to a local change,</span>
-<span class="s2">please file a bug report with the Evennia project, including the</span>
-<span class="s2">traceback and steps to reproduce.</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
-    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">A command handler bug occurred. Please notify staff - they should</span>
-<span class="s2">likely file a bug report with the Evennia project.</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A command handler bug occurred. If this is not due to a local change,</span>
+<span class="sd">please file a bug report with the Evennia project, including the</span>
+<span class="sd">traceback and steps to reproduce.</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A command handler bug occurred. Please notify staff - they should</span>
+<span class="sd">likely file a bug report with the Evennia project.</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">_ERROR_RECURSION_LIMIT</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+<span class="n">_ERROR_RECURSION_LIMIT</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s2">&quot;Command recursion limit (</span><span class="si">{recursion_limit}</span><span class="s2">) &quot;</span> <span class="s2">&quot;reached for &#39;</span><span class="si">{raw_cmdname}</span><span class="s2">&#39; (</span><span class="si">{cmdclass}</span><span class="s2">).&quot;</span>
 <span class="p">)</span>
 
@@ -187,7 +195,7 @@
 <span class="sd">            production string (with a timestamp) to be shown to the user.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{traceback}</span><span class="se">\n</span><span class="si">{errmsg}</span><span class="se">\n</span><span class="s2">(Traceback was logged </span><span class="si">{timestamp}</span><span class="s2">).&quot;</span><span class="p">)</span>
+    <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{traceback}</span><span class="se">\n</span><span class="si">{errmsg}</span><span class="se">\n</span><span class="s2">(Traceback was logged </span><span class="si">{timestamp}</span><span class="s2">).&quot;</span>
     <span class="n">timestamp</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">timeformat</span><span class="p">()</span>
     <span class="n">tracestring</span> <span class="o">=</span> <span class="n">format_exc</span><span class="p">()</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
@@ -337,10 +345,22 @@
     <span class="k">try</span><span class="p">:</span>
 
         <span class="nd">@inlineCallbacks</span>
+        <span class="k">def</span> <span class="nf">_get_channel_cmdset</span><span class="p">(</span><span class="n">account_or_obj</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Helper-method; Get channel-cmdsets</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="c1"># Create cmdset for all account&#39;s available channels</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">channel_cmdset</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">CHANNELHANDLER</span><span class="o">.</span><span class="n">get_cmdset</span><span class="p">(</span><span class="n">account_or_obj</span><span class="p">)</span>
+                <span class="n">returnValue</span><span class="p">([</span><span class="n">channel_cmdset</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">_msg_err</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">_ERROR_CMDSETS</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">ErrorReported</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span>
+
+        <span class="nd">@inlineCallbacks</span>
         <span class="k">def</span> <span class="nf">_get_local_obj_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Helper-method; Get Object-level cmdsets</span>
-
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="c1"># Gather cmdsets from location, objects in location or carried</span>
             <span class="k">try</span><span class="p">:</span>
@@ -394,7 +414,6 @@
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Helper method; Get cmdset while making sure to trigger all</span>
 <span class="sd">            hooks safely. Returns the stack and the valid options.</span>
-
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_cmdset_get</span><span class="p">()</span>
@@ -427,6 +446,13 @@
                                 <span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;ExitCmdSet&quot;</span>
                             <span class="p">]</span>
                         <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">local_obj_cmdsets</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_channels</span><span class="p">:</span>
+                        <span class="c1"># also objs may have channels</span>
+                        <span class="n">channel_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_channel_cmdset</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                        <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">channel_cmdsets</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_channels</span><span class="p">:</span>
+                    <span class="n">channel_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_channel_cmdset</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
+                    <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">channel_cmdsets</span>
 
         <span class="k">elif</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
             <span class="c1"># we are calling the command from the account level</span>
@@ -444,6 +470,11 @@
                             <span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;ExitCmdSet&quot;</span>
                         <span class="p">]</span>
                     <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">local_obj_cmdsets</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_channels</span><span class="p">:</span>
+                    <span class="c1"># also objs may have channels</span>
+                    <span class="n">cmdsets</span> <span class="o">+=</span> <span class="k">yield</span> <span class="n">_get_channel_cmdset</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_channels</span><span class="p">:</span>
+                <span class="n">cmdsets</span> <span class="o">+=</span> <span class="k">yield</span> <span class="n">_get_channel_cmdset</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
             <span class="c1"># we are calling the command from the object level</span>
@@ -457,6 +488,9 @@
                         <span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;ExitCmdSet&quot;</span>
                     <span class="p">]</span>
                 <span class="n">cmdsets</span> <span class="o">+=</span> <span class="k">yield</span> <span class="n">local_obj_cmdsets</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_channels</span><span class="p">:</span>
+                <span class="c1"># also objs may have channels</span>
+                <span class="n">cmdsets</span> <span class="o">+=</span> <span class="k">yield</span> <span class="n">_get_channel_cmdset</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;get_and_merge_cmdsets: callertype </span><span class="si">%s</span><span class="s2"> is not valid.&quot;</span> <span class="o">%</span> <span class="n">callertype</span><span class="p">)</span>
 
@@ -614,6 +648,11 @@
             <span class="c1"># cmd.obj  # set via on-object cmdset handler for each command,</span>
             <span class="c1"># since this may be different for every command when</span>
             <span class="c1"># merging multiple cmdsets</span>
+
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;scripts&quot;</span><span class="p">):</span>
+                <span class="c1"># cmd.obj is automatically made available by the cmdhandler.</span>
+                <span class="c1"># we make sure to validate its scripts.</span>
+                <span class="k">yield</span> <span class="n">cmd</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="n">_testing</span><span class="p">:</span>
                 <span class="c1"># only return the command instance</span>
@@ -779,9 +818,17 @@
                             <span class="n">sysarg</span> <span class="o">+=</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39; Type &quot;help&quot; for help.&#39;</span><span class="p">)</span>
                     <span class="k">raise</span> <span class="n">ExecSystemCommand</span><span class="p">(</span><span class="n">syscmd</span><span class="p">,</span> <span class="n">sysarg</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">cmd</span><span class="o">.</span><span class="n">retain_instance</span><span class="p">:</span>
-                <span class="c1"># making a copy allows multiple users to share the command also when yield is used</span>
-                <span class="n">cmd</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+                <span class="c1"># Check if this is a Channel-cmd match.</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;is_channel&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cmd</span><span class="o">.</span><span class="n">is_channel</span><span class="p">:</span>
+                    <span class="c1"># even if a user-defined syscmd is not defined, the</span>
+                    <span class="c1"># found cmd is already a system command in its own right.</span>
+                    <span class="n">syscmd</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_CHANNEL</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">syscmd</span><span class="p">:</span>
+                        <span class="c1"># replace system command with custom version</span>
+                        <span class="n">cmd</span> <span class="o">=</span> <span class="n">syscmd</span>
+                    <span class="n">cmd</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
+                    <span class="n">sysarg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">ExecSystemCommand</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">sysarg</span><span class="p">)</span>
 
             <span class="c1"># A normal command.</span>
             <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_run_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">)</span>
@@ -844,17 +891,18 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li>
-    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
-     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
-      <a href="https://evennia.blogspot.com/">Blog</a>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
   </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="cmdhandler.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

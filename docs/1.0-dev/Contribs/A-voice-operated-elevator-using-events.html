@@ -179,7 +179,7 @@ all, the list of variables that are available in this callback:</p>
 </div>
 <p>This is important, in order to know what variables we can use in our callback out-of-the-box.  Let’s
 write a single line to be sure our callback is called when we expect it to:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You just said </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">message</span><span class="p">))</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You just said </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>You can paste this line in-game, then type the <code class="docutils literal notranslate"><span class="pre">:wq</span></code> command to exit the editor and save your

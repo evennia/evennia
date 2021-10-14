@@ -132,21 +132,19 @@ channel send. Edit <code class="docutils literal notranslate"><span class="pre">
 <span class="normal">10</span>
 <span class="normal">11</span>
 <span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># define our custom color names</span>
-<span class="n">CHANNEL_COLORS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;public&#39;</span><span class="p">:</span> <span class="s1">&#39;|015Public|n&#39;</span><span class="p">,</span>
-                  <span class="s1">&#39;newbie&#39;</span><span class="p">:</span> <span class="s1">&#39;|550N|n|551e|n|552w|n|553b|n|554i|n|555e|n&#39;</span><span class="p">,</span>
-                  <span class="s1">&#39;staff&#39;</span><span class="p">:</span> <span class="s1">&#39;|010S|n|020t|n|030a|n|040f|n|050f|n&#39;</span><span class="p">}</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># define our custom color names</span>
+<span class="n">CHANNEL_COLORS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;public&quot;</span><span class="p">:</span> <span class="s2">&quot;|015Public|n&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;newbie&quot;</span><span class="p">:</span> <span class="s2">&quot;|550N|n|551e|n|552w|n|553b|n|554i|n|555e|n&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;staff&quot;</span><span class="p">:</span> <span class="s2">&quot;|010S|n|020t|n|030a|n|040f|n|050f|n&quot;</span><span class="p">}</span>
 
 <span class="c1"># Add to the Channel class</span>
     <span class="c1"># ...</span>
     <span class="k">def</span> <span class="nf">channel_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">emit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">prefix_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="ow">in</span> <span class="n">COLORS</span><span class="p">:</span>
-            <span class="n">prefix_string</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">] &quot;</span> <span class="o">%</span> <span class="n">CHANNEL_COLORS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+            <span class="n">p_str</span> <span class="o">=</span> <span class="n">CHANNEL_COLORS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">prefix_string</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">] &quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">prefix_string</span>
+            <span class="n">p_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">p_str</span><span class="si">}</span><span class="s2">] &quot;</span>
 </pre></div>
 </td></tr></table></div>
 <p>Additional hint: To make colors easier to change from one place you could instead put the

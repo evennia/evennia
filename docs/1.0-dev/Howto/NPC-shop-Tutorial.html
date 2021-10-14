@@ -129,8 +129,7 @@ we will put everything needed for our shop in one module, <code class="docutils 
 <span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/npcshop.py</span>
+<span class="normal">27</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/npcshop.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evmenu</span>
 
@@ -144,18 +143,17 @@ we will put everything needed for our shop in one module, <code class="docutils 
     <span class="c1"># door! Let&#39;s remove that from our for sale list.</span>
     <span class="n">wares</span> <span class="o">=</span> <span class="p">[</span><span class="n">ware</span> <span class="k">for</span> <span class="n">ware</span> <span class="ow">in</span> <span class="n">wares</span> <span class="k">if</span> <span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;door&quot;</span><span class="p">]</span>
 
-    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;*** Welcome to </span><span class="si">%s</span><span class="s2">! ***</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">shopname</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;*** Welcome to </span><span class="si">{</span><span class="n">shopname</span><span class="si">}</span><span class="s2">! ***</span><span class="se">\n</span><span class="s2">&quot;</span>
     <span class="k">if</span> <span class="n">wares</span><span class="p">:</span>
-        <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;   Things for sale (choose 1-</span><span class="si">%i</span><span class="s2"> to inspect);&quot;</span> \
-                <span class="s2">&quot; quit to exit:&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">wares</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;   Things for sale (choose 1-</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">wares</span><span class="p">)</span><span class="si">}</span><span class="s2"> to inspect); quit to exit:&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;   There is nothing for sale; quit to exit.&quot;</span>
 
     <span class="n">options</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">ware</span> <span class="ow">in</span> <span class="n">wares</span><span class="p">:</span>
         <span class="c1"># add an option for every ware in store</span>
-        <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2"> gold)&quot;</span> <span class="o">%</span>
-                             <span class="p">(</span><span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">ware</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gold_value</span> <span class="ow">or</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">gold_val</span> <span class="o">=</span> <span class="n">ware</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gold_value</span> <span class="ow">or</span> <span class="mi">1</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">gold_val</span><span class="si">}</span><span class="s2"> gold)&quot;</span><span class="p">,</span>
                         <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;menunode_inspect_and_buy&quot;</span><span class="p">})</span>
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
 </pre></div>
@@ -200,7 +198,8 @@ circumstances. Let’s create it now.</p>
 <span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
-<span class="normal">34</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># further down in mygame/typeclasses/npcshop.py</span>
+<span class="normal">34</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># further down in mygame/typeclasses/npcshop.py</span>
 
 <span class="k">def</span> <span class="nf">menunode_inspect_and_buy</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">):</span>
     <span class="s2">&quot;Sets up the buy menu screen.&quot;</span>
@@ -212,26 +211,27 @@ circumstances. Let’s create it now.</p>
     <span class="n">ware</span> <span class="o">=</span> <span class="n">wares</span><span class="p">[</span><span class="n">iware</span><span class="p">]</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">ware</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gold_value</span> <span class="ow">or</span> <span class="mi">1</span>
     <span class="n">wealth</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gold</span> <span class="ow">or</span> <span class="mi">0</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;You inspect </span><span class="si">%s</span><span class="s2">:</span><span class="se">\n\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">ware</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;You inspect </span><span class="si">{</span><span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">:</span><span class="se">\n\n</span><span class="si">{</span><span class="n">ware</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="k">def</span> <span class="nf">buy_ware_result</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
         <span class="s2">&quot;This will be executed first when choosing to buy.&quot;</span>
         <span class="k">if</span> <span class="n">wealth</span> <span class="o">&gt;=</span> <span class="n">value</span><span class="p">:</span>
-            <span class="n">rtext</span> <span class="o">=</span> <span class="s2">&quot;You pay </span><span class="si">%i</span><span class="s2"> gold and purchase </span><span class="si">%s</span><span class="s2">!&quot;</span> <span class="o">%</span> \
-                         <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">rtext</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;You pay </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> gold and purchase </span><span class="si">{</span><span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">!&quot;</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gold</span> <span class="o">-=</span> <span class="n">value</span>
             <span class="n">ware</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">rtext</span> <span class="o">=</span> <span class="s2">&quot;You cannot afford </span><span class="si">%i</span><span class="s2"> gold for </span><span class="si">%s</span><span class="s2">!&quot;</span> <span class="o">%</span> \
-                          <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">rtext</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;You cannot afford </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> gold for </span><span class="si">{</span><span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">!&quot;</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">rtext</span><span class="p">)</span>
 
-    <span class="n">options</span> <span class="o">=</span> <span class="p">({</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Buy </span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2"> gold&quot;</span> <span class="o">%</span> \
-                        <span class="p">(</span><span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">ware</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gold_value</span> <span class="ow">or</span> <span class="mi">1</span><span class="p">),</span>
-                <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;menunode_shopfront&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;exec&quot;</span><span class="p">:</span> <span class="n">buy_ware_result</span><span class="p">},</span>
-               <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Look for something else&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;menunode_shopfront&quot;</span><span class="p">})</span>
+    <span class="n">gold_val</span> <span class="o">=</span> <span class="n">ware</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gold_value</span> <span class="ow">or</span> <span class="mi">1</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="p">({</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Buy </span><span class="si">{</span><span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">gold_val</span><span class="si">}</span><span class="s2"> gold&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;menunode_shopfront&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;exec&quot;</span><span class="p">:</span> <span class="n">buy_ware_result</span><span class="p">,</span>
+    <span class="p">},</span> <span class="p">{</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Look for something else&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;menunode_shopfront&quot;</span><span class="p">,</span>
+    <span class="p">})</span>
 
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
 </pre></div>
@@ -441,7 +441,7 @@ storeroom at once.</p>
                              <span class="n">key</span><span class="o">=</span><span class="n">shopname</span><span class="p">,</span>
                              <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">storeroom</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">,</span>
-                             <span class="n">key</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-storage&quot;</span> <span class="o">%</span> <span class="n">shopname</span><span class="p">,</span>
+                             <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">shopname</span><span class="si">}</span><span class="s2">-storage&quot;</span><span class="p">,</span>
                              <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">shop</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">storeroom</span> <span class="o">=</span> <span class="n">storeroom</span>
         <span class="c1"># create a door between the two</span>
@@ -455,15 +455,15 @@ storeroom at once.</p>
                                   <span class="n">location</span><span class="o">=</span><span class="n">storeroom</span><span class="p">,</span>
                                   <span class="n">destination</span><span class="o">=</span><span class="n">shop</span><span class="p">)</span>
         <span class="c1"># make a key for accessing the store room</span>
-        <span class="n">storeroom_key_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-storekey&quot;</span> <span class="o">%</span> <span class="n">shopname</span>
+        <span class="n">storeroom_key_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">shopname</span><span class="si">}</span><span class="s2">-storekey&quot;</span>
         <span class="n">storeroom_key</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">,</span>
                                        <span class="n">key</span><span class="o">=</span><span class="n">storeroom_key_name</span><span class="p">,</span>
                                        <span class="n">location</span><span class="o">=</span><span class="n">shop</span><span class="p">)</span>
         <span class="c1"># only allow chars with this key to enter the store room</span>
-        <span class="n">shop_exit</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;traverse:holds(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">storeroom_key_name</span><span class="p">)</span>
+        <span class="n">shop_exit</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;traverse:holds(</span><span class="si">{</span><span class="n">storeroom_key_name</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 
         <span class="c1"># inform the builder about progress</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The shop </span><span class="si">%s</span><span class="s2"> was created!&quot;</span> <span class="o">%</span> <span class="n">shop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The shop </span><span class="si">{</span><span class="n">shop</span><span class="si">}</span><span class="s2"> was created!&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Our typeclass is simple and so is our <code class="docutils literal notranslate"><span class="pre">buildshop</span></code> command. The command (which is for Builders only)

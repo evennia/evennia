@@ -100,7 +100,6 @@
 <span class="sd">            arguments are ignored.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="c1"># from evennia.server.profiling.timetrace import timetrace</span>
     <span class="c1"># text = timetrace(text, &quot;ServerSession.data_in&quot;)</span>
 
@@ -120,11 +119,11 @@
         <span class="n">puppet</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">puppet</span>
         <span class="k">if</span> <span class="n">puppet</span><span class="p">:</span>
             <span class="n">txt</span> <span class="o">=</span> <span class="n">puppet</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">nickreplace</span><span class="p">(</span>
-                <span class="n">txt</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;inputline&quot;</span><span class="p">),</span> <span class="n">include_account</span><span class="o">=</span><span class="kc">True</span>
+                <span class="n">txt</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">),</span> <span class="n">include_account</span><span class="o">=</span><span class="kc">True</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">txt</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">nickreplace</span><span class="p">(</span>
-                <span class="n">txt</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;inputline&quot;</span><span class="p">),</span> <span class="n">include_account</span><span class="o">=</span><span class="kc">False</span>
+                <span class="n">txt</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">),</span> <span class="n">include_account</span><span class="o">=</span><span class="kc">False</span>
             <span class="p">)</span>
     <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;options&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="n">cmdhandler</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">txt</span><span class="p">,</span> <span class="n">callertype</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -198,7 +197,6 @@
     <span class="s2">&quot;RAW&quot;</span><span class="p">,</span>
     <span class="s2">&quot;NOCOLOR&quot;</span><span class="p">,</span>
     <span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;LOCALECHO&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -223,7 +221,6 @@
 <span class="sd">        inputdebug (bool): Debug input functions</span>
 <span class="sd">        nocolor (bool): Strip color</span>
 <span class="sd">        raw (bool): Turn off parsing</span>
-<span class="sd">        localecho (bool): Turn on server-side echo (for clients not supporting it)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">old_flags</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span>
@@ -283,8 +280,6 @@
             <span class="n">flags</span><span class="p">[</span><span class="s2">&quot;RAW&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">validate_bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;nogoahead&quot;</span><span class="p">:</span>
             <span class="n">flags</span><span class="p">[</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">validate_bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;localecho&quot;</span><span class="p">:</span>
-            <span class="n">flags</span><span class="p">[</span><span class="s2">&quot;LOCALECHO&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">validate_bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span>
             <span class="s2">&quot;Char 1&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Char.Skills 1&quot;</span><span class="p">,</span>
@@ -533,6 +528,7 @@
 
 <span class="sd">    Keyword Args:</span>
 <span class="sd">        &lt;option name&gt;: an option to save</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">account</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">account</span>
 
@@ -686,17 +682,18 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li>
-    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
-     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
-      <a href="https://evennia.blogspot.com/">Blog</a>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
   </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="inputfuncs.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

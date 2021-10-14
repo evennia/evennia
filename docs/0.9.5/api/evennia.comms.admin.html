@@ -37,8 +37,197 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-comms-admin">
-<h1>evennia.comms.admin<a class="headerlink" href="#evennia-comms-admin" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.comms.admin">
+<span id="evennia-comms-admin"></span><h1>evennia.comms.admin<a class="headerlink" href="#module-evennia.comms.admin" title="Permalink to this headline">¶</a></h1>
+<p>This defines how Comm models are displayed in the web admin interface.</p>
+<dl class="py class">
+<dt id="evennia.comms.admin.ChannelAttributeInline">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.comms.admin.</code><code class="sig-name descname">ChannelAttributeInline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent_model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/admin.html#ChannelAttributeInline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.admin.ChannelAttributeInline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.typeclasses.admin.html#evennia.typeclasses.admin.AttributeInline" title="evennia.typeclasses.admin.AttributeInline"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.admin.AttributeInline</span></code></a></p>
+<p>Inline display of Channel Attribute - experimental</p>
+<dl class="py attribute">
+<dt id="evennia.comms.admin.ChannelAttributeInline.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.comms.admin.ChannelAttributeInline.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.comms.models.ChannelDB_db_attributes</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.admin.ChannelAttributeInline.related_field">
+<code class="sig-name descname">related_field</code><em class="property"> = 'channeldb'</em><a class="headerlink" href="#evennia.comms.admin.ChannelAttributeInline.related_field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.admin.ChannelAttributeInline.media">
+<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#evennia.comms.admin.ChannelAttributeInline.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.comms.admin.ChannelTagInline">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.comms.admin.</code><code class="sig-name descname">ChannelTagInline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent_model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/admin.html#ChannelTagInline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.admin.ChannelTagInline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.typeclasses.admin.html#evennia.typeclasses.admin.TagInline" title="evennia.typeclasses.admin.TagInline"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.admin.TagInline</span></code></a></p>
+<p>Inline display of Channel Tags - experimental</p>
+<dl class="py attribute">
+<dt id="evennia.comms.admin.ChannelTagInline.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.comms.admin.ChannelTagInline.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.comms.models.ChannelDB_db_tags</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.admin.ChannelTagInline.related_field">
+<code class="sig-name descname">related_field</code><em class="property"> = 'channeldb'</em><a class="headerlink" href="#evennia.comms.admin.ChannelTagInline.related_field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.admin.ChannelTagInline.media">
+<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#evennia.comms.admin.ChannelTagInline.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.comms.admin.MsgAdmin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.comms.admin.</code><code class="sig-name descname">MsgAdmin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/admin.html#MsgAdmin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.admin.MsgAdmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.ModelAdmin</span></code></p>
+<p>Defines display for Msg objects</p>
+<dl class="py attribute">
+<dt id="evennia.comms.admin.MsgAdmin.list_display">
+<code class="sig-name descname">list_display</code><em class="property"> = ('id', 'db_date_created', 'db_sender', 'db_receivers', 'db_channels', 'db_message', 'db_lock_storage')</em><a class="headerlink" href="#evennia.comms.admin.MsgAdmin.list_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.admin.MsgAdmin.list_display_links">
+<code class="sig-name descname">list_display_links</code><em class="property"> = ('id',)</em><a class="headerlink" href="#evennia.comms.admin.MsgAdmin.list_display_links" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.admin.MsgAdmin.ordering">
+<code class="sig-name descname">ordering</code><em class="property"> = ['db_date_created', 'db_sender', 'db_receivers', 'db_channels']</em><a class="headerlink" href="#evennia.comms.admin.MsgAdmin.ordering" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.admin.MsgAdmin.search_fields">
+<code class="sig-name descname">search_fields</code><em class="property"> = ['id', '^db_date_created', '^db_message']</em><a class="headerlink" href="#evennia.comms.admin.MsgAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.admin.MsgAdmin.save_as">
+<code class="sig-name descname">save_as</code><em class="property"> = True</em><a class="headerlink" href="#evennia.comms.admin.MsgAdmin.save_as" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.admin.MsgAdmin.save_on_top">
+<code class="sig-name descname">save_on_top</code><em class="property"> = True</em><a class="headerlink" href="#evennia.comms.admin.MsgAdmin.save_on_top" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.admin.MsgAdmin.list_select_related">
+<code class="sig-name descname">list_select_related</code><em class="property"> = True</em><a class="headerlink" href="#evennia.comms.admin.MsgAdmin.list_select_related" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.admin.MsgAdmin.media">
+<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#evennia.comms.admin.MsgAdmin.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.comms.admin.ChannelAdmin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.comms.admin.</code><code class="sig-name descname">ChannelAdmin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/admin.html#ChannelAdmin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.admin.ChannelAdmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.ModelAdmin</span></code></p>
+<p>Defines display for Channel objects</p>
+<dl class="py attribute">
+<dt id="evennia.comms.admin.ChannelAdmin.inlines">
+<code class="sig-name descname">inlines</code><em class="property"> = [&lt;class 'evennia.comms.admin.ChannelTagInline'&gt;, &lt;class 'evennia.comms.admin.ChannelAttributeInline'&gt;]</em><a class="headerlink" href="#evennia.comms.admin.ChannelAdmin.inlines" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.admin.ChannelAdmin.list_display">
+<code class="sig-name descname">list_display</code><em class="property"> = ('id', 'db_key', 'db_lock_storage', 'subscriptions')</em><a class="headerlink" href="#evennia.comms.admin.ChannelAdmin.list_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.admin.ChannelAdmin.list_display_links">
+<code class="sig-name descname">list_display_links</code><em class="property"> = ('id', 'db_key')</em><a class="headerlink" href="#evennia.comms.admin.ChannelAdmin.list_display_links" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.admin.ChannelAdmin.ordering">
+<code class="sig-name descname">ordering</code><em class="property"> = ['db_key']</em><a class="headerlink" href="#evennia.comms.admin.ChannelAdmin.ordering" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.admin.ChannelAdmin.search_fields">
+<code class="sig-name descname">search_fields</code><em class="property"> = ['id', 'db_key', 'db_tags__db_key']</em><a class="headerlink" href="#evennia.comms.admin.ChannelAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.admin.ChannelAdmin.save_as">
+<code class="sig-name descname">save_as</code><em class="property"> = True</em><a class="headerlink" href="#evennia.comms.admin.ChannelAdmin.save_as" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.admin.ChannelAdmin.save_on_top">
+<code class="sig-name descname">save_on_top</code><em class="property"> = True</em><a class="headerlink" href="#evennia.comms.admin.ChannelAdmin.save_on_top" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.admin.ChannelAdmin.list_select_related">
+<code class="sig-name descname">list_select_related</code><em class="property"> = True</em><a class="headerlink" href="#evennia.comms.admin.ChannelAdmin.list_select_related" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.admin.ChannelAdmin.raw_id_fields">
+<code class="sig-name descname">raw_id_fields</code><em class="property"> = ('db_object_subscriptions', 'db_account_subscriptions')</em><a class="headerlink" href="#evennia.comms.admin.ChannelAdmin.raw_id_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.admin.ChannelAdmin.fieldsets">
+<code class="sig-name descname">fieldsets</code><em class="property"> = ((None, {'fields': (('db_key',), 'db_lock_storage', 'db_account_subscriptions', 'db_object_subscriptions')}),)</em><a class="headerlink" href="#evennia.comms.admin.ChannelAdmin.fieldsets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.admin.ChannelAdmin.subscriptions">
+<code class="sig-name descname">subscriptions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/admin.html#ChannelAdmin.subscriptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.admin.ChannelAdmin.subscriptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper method to get subs from a channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>Channel</em>) – The channel to get subs from.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.admin.ChannelAdmin.save_model">
+<code class="sig-name descname">save_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">form</span></em>, <em class="sig-param"><span class="n">change</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/admin.html#ChannelAdmin.save_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.admin.ChannelAdmin.save_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model-save hook.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>Request</em>) – Incoming request.</p></li>
+<li><p><strong>obj</strong> (<em>Object</em>) – Database object.</p></li>
+<li><p><strong>form</strong> (<em>Form</em>) – Form instance.</p></li>
+<li><p><strong>change</strong> (<em>bool</em>) – If this is a change or a new object.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.admin.ChannelAdmin.response_add">
+<code class="sig-name descname">response_add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">post_url_continue</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/admin.html#ChannelAdmin.response_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.admin.ChannelAdmin.response_add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine the HttpResponse for the add_view stage.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.admin.ChannelAdmin.media">
+<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#evennia.comms.admin.ChannelAdmin.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -72,17 +261,18 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li>
-    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
-     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
-      <a href="https://evennia.blogspot.com/">Blog</a>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
   </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.comms.admin.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

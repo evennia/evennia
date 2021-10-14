@@ -522,7 +522,7 @@
     <span class="c1"># there should be multiple entries in this list.</span>
     <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="c1"># human-readable names for the tools. This will be used for informative messages</span>
-    <span class="c1"># or when usage fails. If empty</span>
+    <span class="c1"># or when usage fails. If empty, use tag-names.</span>
     <span class="n">tool_names</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="c1"># if we must have exactly the right tools, no more</span>
     <span class="n">exact_tools</span> <span class="o">=</span> <span class="kc">True</span>
@@ -670,20 +670,23 @@
         <span class="k">return</span> <span class="n">message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">mapping</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CraftingRecipe.seed"><a class="viewcode-back" href="../../../../api/evennia.contrib.crafting.crafting.html#evennia.contrib.crafting.crafting.CraftingRecipe.seed">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">seed</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">tool_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">consumable_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">seed</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">tool_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">consumable_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is a helper class-method for easy testing and application of this</span>
 <span class="sd">        recipe. When called, it will create simple dummy ingredients with names</span>
 <span class="sd">        and tags needed by this recipe.</span>
 
 <span class="sd">        Args:</span>
+<span class="sd">            tool_kwargs (dict, optional): Will be passed as `**tool_kwargs` into the `create_object`</span>
+<span class="sd">                call for each tool.  If not given, the matching</span>
+<span class="sd">                `tool_name` or `tool_tag` will  be used for key.</span>
 <span class="sd">            consumable_kwargs (dict, optional): This will be passed as</span>
 <span class="sd">                `**consumable_kwargs` into the `create_object` call for each consumable.</span>
 <span class="sd">                If not given, matching `consumable_name` or `consumable_tag`</span>
 <span class="sd">                will  be used for key.</span>
-<span class="sd">            tool_kwargs (dict, optional): Will be passed as `**tool_kwargs` into the `create_object`</span>
-<span class="sd">                call for each tool.  If not given, the matching</span>
-<span class="sd">                `tool_name` or `tool_tag` will  be used for key.</span>
+<span class="sd">            location (Object, optional): If given, the created items will be created in this</span>
+<span class="sd">                location. This is a shortcut for adding {&quot;location&quot;: &lt;obj&gt;} to both the</span>
+<span class="sd">                consumable/tool kwargs (and will *override* any such setting in those kwargs).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple: A tuple `(tools, consumables)` with newly created dummy</span>
@@ -691,8 +694,7 @@
 
 <span class="sd">        Example:</span>
 <span class="sd">        ::</span>
-
-<span class="sd">            tools, consumables = SwordRecipe.seed()</span>
+<span class="sd">            tools, consumables = SwordRecipe.seed(location=caller)</span>
 <span class="sd">            recipe = SwordRecipe(caller, *(tools + consumables))</span>
 <span class="sd">            result = recipe.craft()</span>
 
@@ -705,6 +707,11 @@
             <span class="n">tool_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">consumable_kwargs</span><span class="p">:</span>
             <span class="n">consumable_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">location</span><span class="p">:</span>
+            <span class="n">tool_kwargs</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">location</span>
+            <span class="n">consumable_kwargs</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">location</span>
+
         <span class="n">tool_key</span> <span class="o">=</span> <span class="n">tool_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">cons_key</span> <span class="o">=</span> <span class="n">consumable_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">tool_tags</span> <span class="o">=</span> <span class="n">tool_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="p">[])</span>
