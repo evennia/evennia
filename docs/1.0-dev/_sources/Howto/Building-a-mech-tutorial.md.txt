@@ -99,8 +99,9 @@ class CmdShoot(Command):
         # we have an argument, search for target
         target = caller.search(self.args.strip())
         if target:
-            message = "BOOM! The mech fires its gun at %s" % target.key
-            location.msg_contents(message)
+            location.msg_contents(
+                f"BOOM! The mech fires its gun at {target.key}"
+            )
 
 class CmdLaunch(Command):
     # make your own 'launch'-command here as an exercise!

@@ -418,7 +418,7 @@ and leave it.</p>
             <span class="n">roomref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rooms</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
             <span class="n">room</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="n">roomref</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">room</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;The train is moving forward to </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">room</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The train is moving forward to </span><span class="si">{</span><span class="n">room</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>We added a lot of code here. Since we changed the <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> to add in variables we will

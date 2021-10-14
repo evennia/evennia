@@ -160,8 +160,8 @@ here, feel free to organize the code differently):</p>
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">typename</span> <span class="o">==</span> <span class="s2">&quot;Room&quot;</span><span class="p">:</span>
             <span class="n">Menu</span> <span class="o">=</span> <span class="n">RoomBuildingMenu</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rThe object </span><span class="si">{}</span><span class="s2"> cannot be</span>
-<span class="n">edited</span><span class="o">.|</span><span class="n">n</span><span class="s2">&quot;.format(obj.get_display_name(self.caller)))</span>
+            <span class="n">obj_name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|rThe object </span><span class="si">{</span><span class="n">obj_name</span><span class="si">}</span><span class="s2"> cannot be edited.|n&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">menu</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
@@ -626,8 +626,7 @@ Excessive spaces will be removed from the left for each line automatically.  We 
 information between braces… sometimes using double braces.  What might be a bit odd:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">{back}</span></code> is a direct format argument we’ll use (see the <code class="docutils literal notranslate"><span class="pre">.format</span></code> specifiers).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">{{obj...}}</span> <span class="pre">refers</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">object</span> <span class="pre">being</span> <span class="pre">edited.</span>&#160; <span class="pre">We</span> <span class="pre">use</span> <span class="pre">two</span> <span class="pre">braces,</span> <span class="pre">because</span> </code>.format` will remove
-them.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{{obj...}}</span></code> refers to the object being edited.  We use two braces, because <code class="docutils literal notranslate"><span class="pre">.format</span></code> will remove them.</p></li>
 </ul>
 <p>In <code class="docutils literal notranslate"><span class="pre">glance</span></code>, we also use <code class="docutils literal notranslate"><span class="pre">{obj.key}</span></code> to indicate we want to show the room’s key.</p>
 </section>
@@ -720,7 +719,7 @@ it’s explained below:</p>
     <span class="k">if</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
         <span class="n">glance</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">for</span> <span class="n">exit</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
-            <span class="n">glance</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |y</span><span class="si">{exit}</span><span class="s2">|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">glance</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |y</span><span class="si">{</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n&quot;</span>
 
         <span class="k">return</span> <span class="n">glance</span>
 
@@ -836,7 +835,8 @@ callback.  To see it in action, as usual, replace the class and functions in <co
 <span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
-<span class="normal">53</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Our building menu</span>
+<span class="normal">53</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Our building menu</span>
 
 <span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
 
@@ -865,7 +865,7 @@ callback.  To see it in action, as usual, replace the class and functions in <co
     <span class="k">if</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
         <span class="n">glance</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">for</span> <span class="n">exit</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
-            <span class="n">glance</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |y</span><span class="si">{exit}</span><span class="s2">|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">glance</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |y</span><span class="si">{</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n&quot;</span>
 
         <span class="k">return</span> <span class="n">glance</span>
 
@@ -879,12 +879,13 @@ callback.  To see it in action, as usual, replace the class and functions in <co
     <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Existing exits:&quot;</span>
     <span class="k">if</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">exit</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
-            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |y@e </span><span class="si">{exit}</span><span class="s2">|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |y@e </span><span class="si">{</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n&quot;</span>
             <span class="k">if</span> <span class="n">exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
                 <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; (|y</span><span class="si">{aliases}</span><span class="s2">|n)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">aliases</span><span class="o">=</span><span class="s2">&quot;|n, |y&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                        <span class="n">alias</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()))</span>
+                    <span class="n">alias</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+                <span class="p">))</span>
             <span class="k">if</span> <span class="n">exit</span><span class="o">.</span><span class="n">destination</span><span class="p">:</span>
-                <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; toward </span><span class="si">{destination}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="n">exit</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">))</span>
+                <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; toward </span><span class="si">{</span><span class="n">exit</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2"> |gNo exit has yet been defined.|n&quot;</span>
 
@@ -1135,8 +1136,7 @@ explanations next!</p>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ... from commands/building.py</span>
+<span class="normal">101</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ... from commands/building.py</span>
 <span class="c1"># Our building menu</span>
 
 <span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
@@ -1159,12 +1159,10 @@ explanations next!</p>
 <span class="s2">                Current title: |c{{obj.key}}|n</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">back</span><span class="o">=</span><span class="s2">&quot;|n or |y&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys_go_back</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice_edit</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;exits&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="n">glance</span><span class="o">=</span><span class="n">glance_exits</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text_exits</span><span class="p">,</span>
-<span class="n">on_nomatch</span><span class="o">=</span><span class="n">nomatch_exits</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;exits&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="n">glance</span><span class="o">=</span><span class="n">glance_exits</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text_exits</span><span class="p">,</span> <span class="n">on_nomatch</span><span class="o">=</span><span class="n">nomatch_exits</span><span class="p">)</span>
 
         <span class="c1"># Exit sub-menu</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;exit&quot;</span><span class="p">,</span> <span class="s2">&quot;e.*&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text_single_exit</span><span class="p">,</span> <span class="n">on_nomatch</span><span class="o">=</span><span class="n">nomatch_single_exit</span><span class="p">)</span>
-
 
 
 <span class="c1"># Menu functions</span>
@@ -1173,7 +1171,7 @@ explanations next!</p>
     <span class="k">if</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
         <span class="n">glance</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">for</span> <span class="n">exit</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
-            <span class="n">glance</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |y</span><span class="si">{exit}</span><span class="s2">|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">glance</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |y</span><span class="si">{</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n&quot;</span>
 
         <span class="k">return</span> <span class="n">glance</span>
 
@@ -1187,12 +1185,13 @@ explanations next!</p>
     <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Existing exits:&quot;</span>
     <span class="k">if</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">exit</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
-            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |y@e </span><span class="si">{exit}</span><span class="s2">|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |y@e </span><span class="si">{</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n&quot;</span>
             <span class="k">if</span> <span class="n">exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
                 <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; (|y</span><span class="si">{aliases}</span><span class="s2">|n)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">aliases</span><span class="o">=</span><span class="s2">&quot;|n, |y&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                        <span class="n">alias</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()))</span>
+                    <span class="n">alias</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+                <span class="p">))</span>
             <span class="k">if</span> <span class="n">exit</span><span class="o">.</span><span class="n">destination</span><span class="p">:</span>
-                <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; toward </span><span class="si">{destination}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="n">exit</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">))</span>
+                <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; toward </span><span class="si">{</span><span class="n">exit</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2"> |gNo exit has yet been defined.|n&quot;</span>
 
@@ -1208,7 +1207,7 @@ explanations next!</p>
         <span class="k">return</span>
 
     <span class="c1"># Open a sub-menu, using nested keys</span>
-    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Editing: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Editing: </span><span class="si">{</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">menu</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">exit</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">False</span>
 
@@ -1219,13 +1218,13 @@ explanations next!</p>
     <span class="k">if</span> <span class="n">exit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Exit </span><span class="si">{exit}</span><span class="s2">:</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Exit </span><span class="si">{</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">:</span>
 
 <span class="s2">        Enter the exit key to change it, or |y@|n to go back.</span>
 
 <span class="s2">        New exit key:</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+<span class="s2">    &quot;&quot;&quot;</span>
 
 <span class="k">def</span> <span class="nf">nomatch_single_exit</span><span class="p">(</span><span class="n">menu</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;The user entered something in the exit sub-menu.  Replace the exit key.&quot;&quot;&quot;</span>
@@ -1362,7 +1361,8 @@ depending on what you want to achieve.  So let’s build two menus:</p>
 <span class="normal">76</span>
 <span class="normal">77</span>
 <span class="normal">78</span>
-<span class="normal">79</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Still in commands/building.py, replace the menu class and functions by...</span>
+<span class="normal">79</span>
+<span class="normal">80</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Still in commands/building.py, replace the menu class and functions by...</span>
 <span class="c1"># Our building menus</span>
 
 <span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
@@ -1392,7 +1392,7 @@ depending on what you want to achieve.  So let’s build two menus:</p>
     <span class="k">if</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
         <span class="n">glance</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">for</span> <span class="n">exit</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
-            <span class="n">glance</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |y</span><span class="si">{exit}</span><span class="s2">|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">glance</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |y</span><span class="si">{</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n&quot;</span>
 
         <span class="k">return</span> <span class="n">glance</span>
 
@@ -1406,12 +1406,13 @@ depending on what you want to achieve.  So let’s build two menus:</p>
     <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Existing exits:&quot;</span>
     <span class="k">if</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">exit</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
-            <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |y@e </span><span class="si">{exit}</span><span class="s2">|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |y@e </span><span class="si">{</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n&quot;</span>
             <span class="k">if</span> <span class="n">exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
                 <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; (|y</span><span class="si">{aliases}</span><span class="s2">|n)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">aliases</span><span class="o">=</span><span class="s2">&quot;|n, |y&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                        <span class="n">alias</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()))</span>
+                    <span class="n">alias</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+                <span class="p">))</span>
             <span class="k">if</span> <span class="n">exit</span><span class="o">.</span><span class="n">destination</span><span class="p">:</span>
-                <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; toward </span><span class="si">{destination}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="n">exit</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">))</span>
+                <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; toward </span><span class="si">{</span><span class="n">exit</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2"> |gNo exit has yet been defined.|n&quot;</span>
 
@@ -1427,7 +1428,7 @@ depending on what you want to achieve.  So let’s build two menus:</p>
         <span class="k">return</span>
 
     <span class="c1"># Open a sub-menu, using nested keys</span>
-    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Editing: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Editing: </span><span class="si">{</span><span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">menu</span><span class="o">.</span><span class="n">open_submenu</span><span class="p">(</span><span class="s2">&quot;commands.building.ExitBuildingMenu&quot;</span><span class="p">,</span> <span class="n">exit</span><span class="p">,</span> <span class="n">parent_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;e&quot;</span><span class="p">])</span>
     <span class="k">return</span> <span class="kc">False</span>
 

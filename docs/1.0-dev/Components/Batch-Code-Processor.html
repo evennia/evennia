@@ -131,8 +131,7 @@ a separate python module.</p></li>
 <span class="normal">34</span>
 <span class="normal">35</span>
 <span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1">#</span>
+<span class="normal">37</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1">#</span>
     <span class="c1"># This is an example batch-code build file for Evennia. </span>
     <span class="c1">#</span>
     
@@ -163,13 +162,12 @@ a separate python module.</p></li>
     <span class="n">table</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">Object</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Blue Table&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">limbo</span><span class="p">)</span>
     <span class="n">chair</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">Object</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Blue Chair&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">limbo</span><span class="p">)</span>
     
-    <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;A </span><span class="si">%s</span><span class="s2"> and </span><span class="si">%s</span><span class="s2"> were created.&quot;</span>
+    <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;A </span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">chair</span><span class="si">}</span><span class="s2"> were created.&quot;</span>
     <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
         <span class="n">table</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="n">chair</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; Since debug was active, &quot;</span> \
-             <span class="s2">&quot;they were deleted again.&quot;</span> 
-    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span> <span class="o">%</span> <span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">chair</span><span class="p">))</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; Since debug was active, they were deleted again.&quot;</span> 
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>This uses Evennia’s Python API to create three objects in sequence.</p>

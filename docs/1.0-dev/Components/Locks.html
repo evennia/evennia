@@ -241,7 +241,7 @@ arguments explicitly given in the lock definition will appear as extra arguments
 <p>The above could for example be used in a lock function like this:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># we have `obj` and `owner_object` from before</span>
-    <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;edit: id(</span><span class="si">%i</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">owner_object</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;edit: id(</span><span class="si">{</span><span class="n">owner_object</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>We could check if the “edit” lock is passed with something like this:</p>

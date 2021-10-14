@@ -91,13 +91,12 @@ Below is a version of the example file found in `evennia/contrib/tutorial_exampl
     table = create_object(Object, key="Blue Table", location=limbo)
     chair = create_object(Object, key="Blue Chair", location=limbo)
     
-    string = "A %s and %s were created."
+    string = f"A {table} and {chair} were created."
     if DEBUG:
         table.delete()
         chair.delete()
-        string += " Since debug was active, " \
-             "they were deleted again." 
-    caller.msg(string % (table, chair))
+        string += " Since debug was active, they were deleted again." 
+    caller.msg(string)
 ```
 
 This uses Evennia's Python API to create three objects in sequence. 

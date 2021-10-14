@@ -40,65 +40,21 @@
   <section id="module-evennia.utils.ansi">
 <span id="evennia-utils-ansi"></span><h1>evennia.utils.ansi<a class="headerlink" href="#module-evennia.utils.ansi" title="Permalink to this headline">¶</a></h1>
 <p>ANSI - Gives colour to text.</p>
-<p>Use the codes defined in the <em>ANSIParser</em> class to apply colour to text. The
-<strong>parse_ansi</strong> function in this module parses text for markup and <strong>strip_ansi</strong>
-removes it.</p>
-<p>You should usually not need to call <strong>parse_ansi</strong> explicitly; it is run by
-Evennia just before returning data to/from the user. Alternative markup is
-possible by overriding the parser class (see also contrib/ for deprecated
-markup schemes).</p>
-<p>Supported standards:</p>
-<ul class="simple">
-<li><p>ANSI 8 bright and 8 dark fg (foreground) colors</p></li>
-<li><p>ANSI 8 dark bg (background) colors</p></li>
-<li><p>‘ANSI’ 8 bright bg colors ‘faked’ with xterm256 (bright bg not included in ANSI standard)</p></li>
-<li><p>Xterm256 - 255 fg/bg colors + 26 greyscale fg/bg colors</p></li>
-</ul>
-<section id="markup">
-<h2>Markup<a class="headerlink" href="#markup" title="Permalink to this headline">¶</a></h2>
-<p>ANSI colors: <strong>r</strong> ed, <strong>g</strong> reen, <strong>y</strong> ellow, <strong>b</strong> lue, <strong>m</strong> agenta, <strong>c</strong> yan, <strong>n</strong> ormal (no color).
-Capital letters indicate the ‘dark’ variant.</p>
-<ul class="simple">
-<li><p><strong>|r</strong> fg bright red</p></li>
-<li><p><strong>|R</strong> fg dark red</p></li>
-<li><p><strong>|[r</strong> bg bright red</p></li>
-<li><p><strong>|[R</strong> bg dark red</p></li>
-<li><p><strong>|[R|g</strong> bg dark red, fg bright green</p></li>
-</ul>
+<p>Use the codes defined in ANSIPARSER in your text to apply colour to text
+according to the ANSI standard.</p>
+<p>Examples:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;This is |rRed text|n and this is normal again.&quot;</span>
 </pre></div>
 </div>
-<p>Xterm256 colors are given as RGB (Red-Green-Blue), with values 0-5:</p>
-<ul class="simple">
-<li><p><strong>|500</strong> fg bright red</p></li>
-<li><p><strong>|050</strong> fg bright green</p></li>
-<li><p><strong>|005</strong> fg bright blue</p></li>
-<li><p><strong>|110</strong> fg dark brown</p></li>
-<li><p><strong>|425</strong> fg pink</p></li>
-<li><p><strong>|[431</strong> bg orange</p></li>
-</ul>
-<p>Xterm256 greyscale:</p>
-<ul class="simple">
-<li><p><strong>|=a</strong> fg black</p></li>
-<li><p><strong>|=g</strong> fg dark grey</p></li>
-<li><p><strong>|=o</strong> fg middle grey</p></li>
-<li><p><strong>|=v</strong> fg bright grey</p></li>
-<li><p><strong>|=z</strong> fg white</p></li>
-<li><p><strong>|[=r</strong> bg middle grey</p></li>
-</ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;This is |500Red text|n and this is normal again.&quot;</span>
-<span class="s2">&quot;This is |[=jText on dark grey background&quot;</span>
-</pre></div>
-</div>
-<hr class="docutils" />
+<p>Mostly you should not need to call <strong>parse_ansi()</strong> explicitly; it is run by
+Evennia just before returning data to/from the user. Depreciated example forms
+are available by extending the ansi mapping.</p>
 <dl class="py class">
 <dt id="evennia.utils.ansi.ANSIParser">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.utils.ansi.</code><code class="sig-name descname">ANSIParser</code><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A class that parses ANSI markup
-to ANSI command sequences</p>
-<p>We also allow to escape colour codes
-by prepending with an extra <strong>|</strong>.</p>
+<p>A class that parses ANSI markup to ANSI command sequences.</p>
+<p>We also allow to escape colour codes by prepending with an extra <strong>|</strong>.</p>
 <dl class="py attribute">
 <dt id="evennia.utils.ansi.ANSIParser.ansi_map">
 <code class="sig-name descname">ansi_map</code><em class="property"> = [('|n', '\x1b[0m'), ('|/', '\r\n'), ('|-', '\t'), ('|&gt;', '    '), ('|_', ' '), ('|*', '\x1b[7m'), ('|^', '\x1b[5m'), ('|u', '\x1b[4m'), ('|r', '\x1b[1m\x1b[31m'), ('|g', '\x1b[1m\x1b[32m'), ('|y', '\x1b[1m\x1b[33m'), ('|b', '\x1b[1m\x1b[34m'), ('|m', '\x1b[1m\x1b[35m'), ('|c', '\x1b[1m\x1b[36m'), ('|w', '\x1b[1m\x1b[37m'), ('|x', '\x1b[1m\x1b[30m'), ('|R', '\x1b[22m\x1b[31m'), ('|G', '\x1b[22m\x1b[32m'), ('|Y', '\x1b[22m\x1b[33m'), ('|B', '\x1b[22m\x1b[34m'), ('|M', '\x1b[22m\x1b[35m'), ('|C', '\x1b[22m\x1b[36m'), ('|W', '\x1b[22m\x1b[37m'), ('|X', '\x1b[22m\x1b[30m'), ('|h', '\x1b[1m'), ('|H', '\x1b[22m'), ('|!R', '\x1b[31m'), ('|!G', '\x1b[32m'), ('|!Y', '\x1b[33m'), ('|!B', '\x1b[34m'), ('|!M', '\x1b[35m'), ('|!C', '\x1b[36m'), ('|!W', '\x1b[37m'), ('|!X', '\x1b[30m'), ('|[R', '\x1b[41m'), ('|[G', '\x1b[42m'), ('|[Y', '\x1b[43m'), ('|[B', '\x1b[44m'), ('|[M', '\x1b[45m'), ('|[C', '\x1b[46m'), ('|[W', '\x1b[47m'), ('|[X', '\x1b[40m')]</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_map" title="Permalink to this definition">¶</a></dt>
@@ -132,11 +88,6 @@ by prepending with an extra <strong>|</strong>.</p>
 <dl class="py attribute">
 <dt id="evennia.utils.ansi.ANSIParser.mxp_re">
 <code class="sig-name descname">mxp_re</code><em class="property"> = '\\|lc(.*?)\\|lt(.*?)\\|le'</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.mxp_re" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.utils.ansi.ANSIParser.mxp_url_re">
-<code class="sig-name descname">mxp_url_re</code><em class="property"> = '\\|lu(.*?)\\|lt(.*?)\\|le'</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.mxp_url_re" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -175,11 +126,6 @@ by prepending with an extra <strong>|</strong>.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.utils.ansi.ANSIParser.mxp_url_sub">
-<code class="sig-name descname">mxp_url_sub</code><em class="property"> = re.compile('\\|lu(.*?)\\|lt(.*?)\\|le', re.DOTALL)</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.mxp_url_sub" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
 <dt id="evennia.utils.ansi.ANSIParser.ansi_map_dict">
 <code class="sig-name descname">ansi_map_dict</code><em class="property"> = {'|!B': '\x1b[34m', '|!C': '\x1b[36m', '|!G': '\x1b[32m', '|!M': '\x1b[35m', '|!R': '\x1b[31m', '|!W': '\x1b[37m', '|!X': '\x1b[30m', '|!Y': '\x1b[33m', '|*': '\x1b[7m', '|-': '\t', '|/': '\r\n', '|&gt;': '    ', '|B': '\x1b[22m\x1b[34m', '|C': '\x1b[22m\x1b[36m', '|G': '\x1b[22m\x1b[32m', '|H': '\x1b[22m', '|M': '\x1b[22m\x1b[35m', '|R': '\x1b[22m\x1b[31m', '|W': '\x1b[22m\x1b[37m', '|X': '\x1b[22m\x1b[30m', '|Y': '\x1b[22m\x1b[33m', '|[B': '\x1b[44m', '|[C': '\x1b[46m', '|[G': '\x1b[42m', '|[M': '\x1b[45m', '|[R': '\x1b[41m', '|[W': '\x1b[47m', '|[X': '\x1b[40m', '|[Y': '\x1b[43m', '|^': '\x1b[5m', '|_': ' ', '|b': '\x1b[1m\x1b[34m', '|c': '\x1b[1m\x1b[36m', '|g': '\x1b[1m\x1b[32m', '|h': '\x1b[1m', '|m': '\x1b[1m\x1b[35m', '|n': '\x1b[0m', '|r': '\x1b[1m\x1b[31m', '|u': '\x1b[4m', '|w': '\x1b[1m\x1b[37m', '|x': '\x1b[1m\x1b[30m', '|y': '\x1b[1m\x1b[33m'}</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_map_dict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -202,11 +148,6 @@ by prepending with an extra <strong>|</strong>.</p>
 <dl class="py attribute">
 <dt id="evennia.utils.ansi.ANSIParser.ansi_escapes">
 <code class="sig-name descname">ansi_escapes</code><em class="property"> = re.compile('({{|\\\\|\\|\\|)', re.DOTALL)</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_escapes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.utils.ansi.ANSIParser.unsafe_tokens">
-<code class="sig-name descname">unsafe_tokens</code><em class="property"> = re.compile('\\|\\/|\\|-', re.DOTALL)</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.unsafe_tokens" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -289,12 +230,6 @@ to standard ANSI should be done or not.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.utils.ansi.ANSIParser.strip_unsafe_tokens">
-<code class="sig-name descname">strip_unsafe_tokens</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser.strip_unsafe_tokens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.strip_unsafe_tokens" title="Permalink to this definition">¶</a></dt>
-<dd><p>Strip explicitly ansi line breaks and tabs.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt id="evennia.utils.ansi.ANSIParser.parse_ansi">
 <code class="sig-name descname">parse_ansi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">strip_ansi</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">xterm256</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mxp</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser.parse_ansi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.parse_ansi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parses a string, subbing color codes according to the stored
@@ -371,13 +306,6 @@ ANSI-bytecodes in the string.</p>
 <dd class="field-even"><p><em>string (str)</em> – the stripped string.</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.ansi.strip_unsafe_tokens">
-<code class="sig-prename descclassname">evennia.utils.ansi.</code><code class="sig-name descname">strip_unsafe_tokens</code><span class="sig-paren">(</span><em class="sig-param">string</em>, <em class="sig-param">parser=&lt;evennia.utils.ansi.ANSIParser object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#strip_unsafe_tokens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.strip_unsafe_tokens" title="Permalink to this definition">¶</a></dt>
-<dd><p>Strip markup that can be used to create visual exploits
-(notably linebreaks and tags)</p>
 </dd></dl>
 
 <dl class="py function">
@@ -915,7 +843,6 @@ with.</p></li>
 </dd></dl>
 
 </section>
-</section>
 
 
             <div class="clearer"></div>
@@ -937,14 +864,6 @@ with.</p></li>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-<p><h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">evennia.utils.ansi</a><ul>
-<li><a class="reference internal" href="#markup">Markup</a></li>
-</ul>
-</li>
-</ul>
-
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -956,17 +875,18 @@ with.</p></li>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li>
-    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
-     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
-      <a href="https://evennia.blogspot.com/">Blog</a>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
   </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../1.0-dev/api/evennia.utils.ansi.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.utils.ansi.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

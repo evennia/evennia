@@ -39,14 +39,26 @@
             
   <section id="module-evennia.server.initial_setup">
 <span id="evennia-server-initial-setup"></span><h1>evennia.server.initial_setup<a class="headerlink" href="#module-evennia.server.initial_setup" title="Permalink to this headline">¶</a></h1>
-<p>This module handles initial database propagation, which is only run the first time the game starts.
-It will create some default objects (notably give #1 its evennia-specific properties, and create the
-Limbo room). It will also hooks, and then perform an initial restart.</p>
+<p>This module handles initial database propagation, which is only run the first
+time the game starts. It will create some default channels, objects, and
+other things.</p>
 <p>Everything starts at handle_setup()</p>
+<dl class="py function">
+<dt id="evennia.server.initial_setup.get_god_account">
+<code class="sig-prename descclassname">evennia.server.initial_setup.</code><code class="sig-name descname">get_god_account</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/initial_setup.html#get_god_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.initial_setup.get_god_account" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the god user and don’t take no for an answer.</p>
+</dd></dl>
+
 <dl class="py function">
 <dt id="evennia.server.initial_setup.create_objects">
 <code class="sig-prename descclassname">evennia.server.initial_setup.</code><code class="sig-name descname">create_objects</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/initial_setup.html#create_objects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.initial_setup.create_objects" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates the #1 account and Limbo room.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.initial_setup.create_channels">
+<code class="sig-prename descclassname">evennia.server.initial_setup.</code><code class="sig-name descname">create_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/initial_setup.html#create_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.initial_setup.create_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates some sensible default channels.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -75,14 +87,14 @@ also checks so the warm-reset mechanism works as it should.</p>
 
 <dl class="py function">
 <dt id="evennia.server.initial_setup.handle_setup">
-<code class="sig-prename descclassname">evennia.server.initial_setup.</code><code class="sig-name descname">handle_setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">last_step</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/initial_setup.html#handle_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.initial_setup.handle_setup" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.initial_setup.</code><code class="sig-name descname">handle_setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">last_step</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/initial_setup.html#handle_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.initial_setup.handle_setup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main logic for the module. It allows for restarting the
 initialization at any point if one of the modules should crash.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>last_step</strong> (<em>str</em><em>, </em><em>None</em>) – The last stored successful step, for starting
-over on errors. None if starting from scratch. If this is ‘done’,
-the function will exit immediately.</p>
+<dd class="field-odd"><p><strong>last_step</strong> (<em>int</em>) – The last stored successful step, for starting
+over on errors. If <strong>&lt; 0</strong>, initialization has finished and no
+steps need to be redone.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -120,17 +132,18 @@ the function will exit immediately.</p>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li>
-    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
-     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
-      <a href="https://evennia.blogspot.com/">Blog</a>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
   </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../1.0-dev/api/evennia.server.initial_setup.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.server.initial_setup.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

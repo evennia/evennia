@@ -130,7 +130,7 @@ function should not return anything.</p>
          <span class="k">if</span> <span class="ow">not</span> <span class="n">MYPROC_ENABLED</span><span class="p">:</span>
              <span class="k">return</span>
          <span class="c1"># output to list this with the other services at startup</span>
-         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  myproc: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">MY_PORT</span><span class="p">)</span>
+         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  myproc: </span><span class="si">{</span><span class="n">MY_PORT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
          <span class="c1"># some setup (simple example)</span>
          <span class="n">factory</span> <span class="o">=</span> <span class="n">MyOwnFactory</span><span class="p">()</span>

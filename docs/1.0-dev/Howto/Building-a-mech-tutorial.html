@@ -144,7 +144,8 @@ mech-suitable commands. In Evennia, commands are defined as Python classes.</p>
 <span class="normal">35</span>
 <span class="normal">36</span>
 <span class="normal">37</span>
-<span class="normal">38</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in a new file mygame/commands/mechcommands.py</span>
+<span class="normal">38</span>
+<span class="normal">39</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in a new file mygame/commands/mechcommands.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
@@ -176,8 +177,9 @@ mech-suitable commands. In Evennia, commands are defined as Python classes.</p>
         <span class="c1"># we have an argument, search for target</span>
         <span class="n">target</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">target</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;BOOM! The mech fires its gun at </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">target</span><span class="o">.</span><span class="n">key</span>
-            <span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;BOOM! The mech fires its gun at </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">CmdLaunch</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="c1"># make your own &#39;launch&#39;-command here as an exercise!</span>

@@ -156,10 +156,10 @@ errback.</p></li>
                <span class="k">return</span> <span class="n">final_value</span>
            
            <span class="k">def</span> <span class="nf">at_return_function</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
-               <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The final value is </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">r</span><span class="p">)</span>
+               <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The final value is </span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     
            <span class="k">def</span> <span class="nf">at_err_function</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-               <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;There was an error: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+               <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There was an error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
            <span class="c1"># do the async call, setting all callbacks</span>
            <span class="n">utils</span><span class="o">.</span><span class="n">run_async</span><span class="p">(</span><span class="n">long_running_function</span><span class="p">,</span> <span class="n">at_return</span><span class="o">=</span><span class="n">at_return_function</span><span class="p">,</span>

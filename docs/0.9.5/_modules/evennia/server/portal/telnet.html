@@ -66,11 +66,12 @@
     <span class="n">LINEMODE_TRAPSIG</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.server.session</span> <span class="kn">import</span> <span class="n">Session</span>
 <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">ttype</span><span class="p">,</span> <span class="n">mssp</span><span class="p">,</span> <span class="n">telnet_oob</span><span class="p">,</span> <span class="n">naws</span><span class="p">,</span> <span class="n">suppress_ga</span>
 <span class="kn">from</span> <span class="nn">evennia.server.portal.mccp</span> <span class="kn">import</span> <span class="n">Mccp</span><span class="p">,</span> <span class="n">mccp_compress</span><span class="p">,</span> <span class="n">MCCP</span>
 <span class="kn">from</span> <span class="nn">evennia.server.portal.mxp</span> <span class="kn">import</span> <span class="n">Mxp</span><span class="p">,</span> <span class="n">mxp_parse</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">to_bytes</span><span class="p">,</span> <span class="n">class_from_module</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">to_bytes</span>
 
 <span class="n">_RE_N</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|n$&quot;</span><span class="p">)</span>
 <span class="n">_RE_LEND</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">br</span><span class="s2">&quot;\n$|\r$|\r\n$|\r\x00$|&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
@@ -96,26 +97,19 @@
 <span class="p">)</span>
 
 
-<span class="n">_BASE_SESSION_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_SESSION_CLASS</span><span class="p">)</span>
-
-
 <div class="viewcode-block" id="TelnetServerFactory"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet.html#evennia.server.portal.telnet.TelnetServerFactory">[docs]</a><span class="k">class</span> <span class="nc">TelnetServerFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">ServerFactory</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This exists only to name this better in logs.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="s2">&quot;This is only to name this better in logs&quot;</span>
     <span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="TelnetServerFactory.logPrefix"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet.html#evennia.server.portal.telnet.TelnetServerFactory.logPrefix">[docs]</a>    <span class="k">def</span> <span class="nf">logPrefix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;Telnet&quot;</span></div></div>
 
 
-<div class="viewcode-block" id="TelnetProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet.html#evennia.server.portal.telnet.TelnetProtocol">[docs]</a><span class="k">class</span> <span class="nc">TelnetProtocol</span><span class="p">(</span><span class="n">Telnet</span><span class="p">,</span> <span class="n">StatefulTelnetProtocol</span><span class="p">,</span> <span class="n">_BASE_SESSION_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="TelnetProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet.html#evennia.server.portal.telnet.TelnetProtocol">[docs]</a><span class="k">class</span> <span class="nc">TelnetProtocol</span><span class="p">(</span><span class="n">Telnet</span><span class="p">,</span> <span class="n">StatefulTelnetProtocol</span><span class="p">,</span> <span class="n">Session</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Each player connecting over telnet (ie using most traditional mud</span>
 <span class="sd">    clients) gets a telnet protocol instance assigned to them.  All</span>
 <span class="sd">    communication between game and player goes through here.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="TelnetProtocol.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet.html#evennia.server.portal.telnet.TelnetProtocol.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -126,7 +120,6 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unused by default, but a good place to put debug printouts</span>
 <span class="sd">        of incoming data.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># print(f&quot;telnet dataReceived: {data}&quot;)</span>
         <span class="k">try</span><span class="p">:</span>
@@ -191,15 +184,11 @@
 <span class="sd">        Client refuses do(linemode). This is common for MUD-specific</span>
 <span class="sd">        clients, but we must ask for the sake of raw telnet. We ignore</span>
 <span class="sd">        this error.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">_send_nop_keepalive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Send NOP keepalive unless flag is set</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Send NOP keepalive unless flag is set&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NOPKEEPALIVE&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">IAC</span> <span class="o">+</span> <span class="n">NOP</span><span class="p">)</span>
 
@@ -208,8 +197,7 @@
 <span class="sd">        Allow to toggle the NOP keepalive for those sad clients that</span>
 <span class="sd">        can&#39;t even handle a NOP instruction. This is turned off by the</span>
 <span class="sd">        protocol_flag NOPKEEPALIVE (settable e.g. by the default</span>
-<span class="sd">        `option` command).</span>
-
+<span class="sd">        `@option` command).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nop_keep_alive</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">nop_keep_alive</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">nop_keep_alive</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
@@ -223,7 +211,6 @@
 <span class="sd">        When all have reported, a sync with the server is performed.</span>
 <span class="sd">        The system will force-call this sync after a small time to handle</span>
 <span class="sd">        clients that don&#39;t reply to handshakes at all.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">timeout</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">handshakes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -238,7 +225,6 @@
 <div class="viewcode-block" id="TelnetProtocol.at_login"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet.html#evennia.server.portal.telnet.TelnetProtocol.at_login">[docs]</a>    <span class="k">def</span> <span class="nf">at_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when this session gets authenticated by the server.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
@@ -374,10 +360,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">dat</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Hook overloading the one used in plain telnet</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;hook overloading the one used in plain telnet&quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\r\r\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">mccp_compress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
 
@@ -403,7 +386,7 @@
 
 <div class="viewcode-block" id="TelnetProtocol.disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet.html#evennia.server.portal.telnet.TelnetProtocol.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generic hook for the engine to call in order to</span>
+<span class="sd">        generic hook for the engine to call in order to</span>
 <span class="sd">        disconnect this protocol.</span>
 
 <span class="sd">        Args:</span>
@@ -432,7 +415,6 @@
 
 <span class="sd">        Keyword Args:</span>
 <span class="sd">            kwargs (any): Options to the protocol</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -446,19 +428,19 @@
 <span class="sd">            text (str): The first argument is always the text string to send. No other arguments</span>
 <span class="sd">                are considered.</span>
 <span class="sd">        Keyword Args:</span>
-<span class="sd">            options (dict): Send-option flags</span>
+<span class="sd">            options (dict): Send-option flags:</span>
 
-<span class="sd">               - mxp: Enforce MXP link support.</span>
-<span class="sd">               - ansi: Enforce no ANSI colors.</span>
-<span class="sd">               - xterm256: Enforce xterm256 colors, regardless of TTYPE.</span>
-<span class="sd">               - noxterm256: Enforce no xterm256 color support, regardless of TTYPE.</span>
-<span class="sd">               - nocolor: Strip all Color, regardless of ansi/xterm256 setting.</span>
-<span class="sd">               - raw: Pass string through without any ansi processing</span>
-<span class="sd">                    (i.e. include Evennia ansi markers but do not</span>
-<span class="sd">                    convert them into ansi tokens)</span>
-<span class="sd">               - echo: Turn on/off line echo on the client. Turn</span>
-<span class="sd">                    off line echo for client, for example for password.</span>
-<span class="sd">                    Note that it must be actively turned back on again!</span>
+<span class="sd">                - mxp: Enforce MXP link support.</span>
+<span class="sd">                - ansi: Enforce no ANSI colors.</span>
+<span class="sd">                - xterm256: Enforce xterm256 colors, regardless of TTYPE.</span>
+<span class="sd">                - noxterm256: Enforce no xterm256 color support, regardless of TTYPE.</span>
+<span class="sd">                - nocolor: Strip all Color, regardless of ansi/xterm256 setting.</span>
+<span class="sd">                - raw: Pass string through without any ansi processing</span>
+<span class="sd">                  (i.e. include Evennia ansi markers but do not</span>
+<span class="sd">                  convert them into ansi tokens)</span>
+<span class="sd">                - echo: Turn on/off line echo on the client. Turn</span>
+<span class="sd">                  off line echo for client, for example for password.</span>
+<span class="sd">                  Note that it must be actively turned back on again!</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">text</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
@@ -499,7 +481,7 @@
                     <span class="n">prompt</span> <span class="o">=</span> <span class="n">mxp_parse</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
             <span class="n">prompt</span> <span class="o">=</span> <span class="n">to_bytes</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
             <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">IAC</span><span class="p">,</span> <span class="n">IAC</span> <span class="o">+</span> <span class="n">IAC</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NOPROMPTGOAHEAD&quot;</span><span class="p">,</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NOPROMPTGOAHEAD&quot;</span><span class="p">,</span> 
                                            <span class="bp">self</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)):</span>
                 <span class="n">prompt</span> <span class="o">+=</span> <span class="n">IAC</span> <span class="o">+</span> <span class="n">GA</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mccp_compress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">))</span>
@@ -545,7 +527,6 @@
 <div class="viewcode-block" id="TelnetProtocol.send_default"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet.html#evennia.server.portal.telnet.TelnetProtocol.send_default">[docs]</a>    <span class="k">def</span> <span class="nf">send_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send other oob data</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">cmdname</span> <span class="o">==</span> <span class="s2">&quot;options&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">oob</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="n">cmdname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
@@ -574,17 +555,18 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li>
-    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
-     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
-      <a href="https://evennia.blogspot.com/">Blog</a>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
   </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="telnet.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

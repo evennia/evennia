@@ -194,15 +194,14 @@ return 300 (5 minutes).</p>
 
 <dl class="py function">
 <dt id="evennia.utils.gametime.schedule">
-<code class="sig-prename descclassname">evennia.utils.gametime.</code><code class="sig-name descname">schedule</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="n">repeat</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sec</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">min</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">hour</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">day</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">month</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">year</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#schedule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.schedule" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.gametime.</code><code class="sig-name descname">schedule</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="n">repeat</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sec</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">min</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">hour</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">day</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">month</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">year</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#schedule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.schedule" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call a callback at a given in-game time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>callback</strong> (<em>function</em>) – The callback function that will be called. Note
 that the callback must be a module-level function, since the script will
-be persistent. The callable should be on form <strong>callable(*args, **kwargs)</strong>
-where args/kwargs are passed into this schedule.</p></li>
+be persistent.</p></li>
 <li><p><strong>repeat</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defines if the callback should be called regularly
 at the specified time.</p></li>
 <li><p><strong>sec</strong> (<em>int</em><em> or </em><em>None</em>) – Number of absolute game seconds at which to run repeat.</p></li>
@@ -211,11 +210,6 @@ at the specified time.</p></li>
 <li><p><strong>day</strong> (<em>int</em><em> or </em><em>None</em>) – Number of absolute days.</p></li>
 <li><p><strong>month</strong> (<em>int</em><em> or </em><em>None</em>) – Number of absolute months.</p></li>
 <li><p><strong>year</strong> (<em>int</em><em> or </em><em>None</em>) – Number of absolute years.</p></li>
-<li><p><strong>*args</strong> – Will be passed into the callable. These must be possible
-to store in Attributes on the generated scheduling Script.</p></li>
-<li><p><strong>**kwargs</strong> – <p>Will be passed into the callable. These must be possible
-to store in Attributes on the generated scheduling Script.</p>
-</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -267,17 +261,18 @@ the epoch set by <strong>settings.TIME_GAME_EPOCH</strong> will still apply.</p>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li>
-    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
-     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
-      <a href="https://evennia.blogspot.com/">Blog</a>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
   </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../1.0-dev/api/evennia.utils.gametime.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.utils.gametime.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

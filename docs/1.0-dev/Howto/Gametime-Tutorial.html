@@ -315,8 +315,7 @@ on other MU*.  Here’s an example of how we could write it (for the example, yo
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in a file mygame/commands/gametime.py</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in a file mygame/commands/gametime.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia.contrib</span> <span class="kn">import</span> <span class="n">custom_gametime</span>
 
@@ -338,11 +337,10 @@ on other MU*.  Here’s an example of how we could write it (for the example, yo
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Execute the time command.&quot;&quot;&quot;</span>
         <span class="c1"># Get the absolute game time</span>
-        <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="nb">min</span><span class="p">,</span> <span class="n">sec</span> <span class="o">=</span> <span class="n">custom_gametime</span><span class="o">.</span><span class="n">custom_gametime</span><span class="p">(</span><span class="n">absolute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;We are in year </span><span class="si">{year}</span><span class="s2">, day </span><span class="si">{day}</span><span class="s2">, month </span><span class="si">{month}</span><span class="s2">.&quot;</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">It&#39;s </span><span class="si">{hour:02}</span><span class="s2">:</span><span class="si">{min:02}</span><span class="s2">:</span><span class="si">{sec:02}</span><span class="s2">.&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">,</span>
-                <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="nb">min</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">))</span>
+        <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">mins</span><span class="p">,</span> <span class="n">secs</span> <span class="o">=</span> <span class="n">custom_gametime</span><span class="o">.</span><span class="n">custom_gametime</span><span class="p">(</span><span class="n">absolute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">time_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;We are in year </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">, day </span><span class="si">{</span><span class="n">day</span><span class="si">}</span><span class="s2">, month </span><span class="si">{</span><span class="n">month</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="n">time_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">It&#39;s </span><span class="si">{</span><span class="n">hour</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">mins</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">secs</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">time_string</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Don’t forget to add it in your CharacterCmdSet to see this command:</p>

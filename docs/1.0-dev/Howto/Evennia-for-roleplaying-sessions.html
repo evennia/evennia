@@ -183,14 +183,14 @@ access) and the IC “Character objects”.</p>
 
         <span class="k">if</span> <span class="n">selfaccount</span> <span class="ow">and</span> <span class="n">selfaccount</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_gm</span><span class="p">:</span>
            <span class="c1"># A GM. Show name as name(GM)</span>
-           <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(GM)&quot;</span> <span class="o">%</span> <span class="n">name</span>
+           <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">(GM)&quot;</span>
 
         <span class="k">if</span> <span class="n">lookaccount</span> <span class="ow">and</span> \
           <span class="p">(</span><span class="n">lookaccount</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Developers&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">lookaccount</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_gm</span><span class="p">):</span>
             <span class="c1"># Developers/GMs see name(#dbref) or name(GM)(#dbref)</span>
-            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(#</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">name</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+        <span class="k">return</span> <span class="n">name</span>
 </pre></div>
 </td></tr></table></div>
 <p>Above, we change how the Character’s name is displayed: If the account controlling this Character is
@@ -303,10 +303,10 @@ Evennia’s default “mux-like” commands here.</p>
 
         <span class="n">accountlist</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_account</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="c1"># returns a list</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">accountlist</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Could not find account &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find account &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">accountlist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Multiple matches for &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">accountlist</span><span class="p">))</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Multiple matches for &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">accountlist</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">account</span> <span class="o">=</span> <span class="n">accountlist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -314,20 +314,20 @@ Evennia’s default “mux-like” commands here.</p>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">==</span> <span class="s2">&quot;gm&quot;</span><span class="p">:</span>
             <span class="c1"># turn someone into a GM</span>
             <span class="k">if</span> <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Admins&quot;</span><span class="p">):</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Account </span><span class="si">%s</span><span class="s2"> is already a GM.&quot;</span> <span class="o">%</span> <span class="n">account</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Account </span><span class="si">{</span><span class="n">account</span><span class="si">}</span><span class="s2"> is already a GM.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Admins&quot;</span><span class="p">)</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Account </span><span class="si">%s</span><span class="s2"> is now a GM.&quot;</span> <span class="o">%</span> <span class="n">account</span><span class="p">)</span>
-                <span class="n">account</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are now a GM (changed by </span><span class="si">%s</span><span class="s2">).&quot;</span> <span class="o">%</span> <span class="n">caller</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Account </span><span class="si">{</span><span class="n">account</span><span class="si">}</span><span class="s2"> is now a GM.&quot;</span><span class="p">)</span>
+                <span class="n">account</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are now a GM (changed by </span><span class="si">{</span><span class="n">caller</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
                 <span class="n">account</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_gm</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># @ungm was entered - revoke GM status from someone</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Admins&quot;</span><span class="p">):</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Account </span><span class="si">%s</span><span class="s2"> is not a GM.&quot;</span> <span class="o">%</span> <span class="n">account</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Account </span><span class="si">{</span><span class="n">account</span><span class="si">}</span><span class="s2"> is not a GM.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;Admins&quot;</span><span class="p">)</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Account </span><span class="si">%s</span><span class="s2"> is no longer a GM.&quot;</span> <span class="o">%</span> <span class="n">account</span><span class="p">)</span>
-                <span class="n">account</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are no longer a GM (changed by </span><span class="si">%s</span><span class="s2">).&quot;</span> <span class="o">%</span> <span class="n">caller</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Account </span><span class="si">{</span><span class="n">account</span><span class="si">}</span><span class="s2"> is no longer a GM.&quot;</span><span class="p">)</span>
+                <span class="n">account</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are no longer a GM (changed by </span><span class="si">{</span><span class="n">caller</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
                 <span class="k">del</span> <span class="n">account</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_gm</span>
 </pre></div>
 </td></tr></table></div>
@@ -771,7 +771,8 @@ The easiest to force an existing Character to re-fire its <code class="docutils 
 <span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
-<span class="normal">69</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># at the end of mygame/commands/command.py</span>
+<span class="normal">69</span>
+<span class="normal">70</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># at the end of mygame/commands/command.py</span>
 
 <span class="n">ALLOWED_ATTRS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;con&quot;</span><span class="p">,</span> <span class="s2">&quot;dex&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;wis&quot;</span><span class="p">,</span> <span class="s2">&quot;cha&quot;</span><span class="p">)</span>
 <span class="n">ALLOWED_FIELDNAMES</span> <span class="o">=</span> <span class="n">ALLOWED_ATTRS</span> <span class="o">+</span> \
@@ -780,11 +781,12 @@ The easiest to force an existing Character to re-fire its <code class="docutils 
 <span class="k">def</span> <span class="nf">_validate_fieldname</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">):</span>
     <span class="s2">&quot;Helper function to validate field names.&quot;</span>
     <span class="k">if</span> <span class="n">fieldname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_FIELDNAMES</span><span class="p">:</span>
-        <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Allowed field names: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ALLOWED_FIELDNAMES</span><span class="p">))</span>
+        <span class="n">list_of_fieldnames</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ALLOWED_FIELDNAMES</span><span class="p">)</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Allowed field names: </span><span class="si">{</span><span class="n">list_of_fieldnames</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="n">fieldname</span> <span class="ow">in</span> <span class="n">ALLOWED_ATTRS</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> must receive a number.&quot;</span> <span class="o">%</span> <span class="n">fieldname</span><span class="p">)</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fieldname</span><span class="si">}</span><span class="s2"> must receive a number.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="kc">True</span>
 
@@ -839,7 +841,7 @@ The easiest to force an existing Character to re-fire its <code class="docutils 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">chardata</span><span class="p">[</span><span class="n">fieldname</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">update_charsheet</span><span class="p">()</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> was set to </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fieldname</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fieldname</span><span class="si">}</span><span class="s2"> was set to </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 <p>Most of this command is error-checking to make sure the right type of data was input. Note how the
@@ -978,13 +980,13 @@ do it on other players than themselves. They are also not stopped by any <code c
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The character sheet is already locked.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sheet_locked</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> can no longer edit their character sheet.&quot;</span> <span class="o">%</span> <span class="n">character</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">character</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> can no longer edit their character sheet.&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="s2">&quot;unlock&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sheet_locked</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The character sheet is already unlocked.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sheet_locked</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> can now edit their character sheet.&quot;</span> <span class="o">%</span> <span class="n">character</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">character</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> can now edit their character sheet.&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">fieldname</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">fieldname</span> <span class="o">==</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span>
@@ -992,7 +994,7 @@ do it on other players than themselves. They are also not stopped by any <code c
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">chardata</span><span class="p">[</span><span class="n">fieldname</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
             <span class="n">character</span><span class="o">.</span><span class="n">update_charsheet</span><span class="p">()</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You set </span><span class="si">%s</span><span class="s2">&#39;s </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">character</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You set </span><span class="si">{</span><span class="n">character</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;s </span><span class="si">{</span><span class="n">fieldname</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># just display</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">charsheet</span><span class="p">)</span>

@@ -82,7 +82,7 @@ the <a class="reference internal" href="Starting/Part3/Tutorial-for-basic-MUSH-l
         <span class="n">message</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;says, &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39; &quot;&#39;</span><span class="p">)</span>
 
         <span class="c1"># we&#39;ll make use of this in .msg() below</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> said: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">from_obj</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">from_obj</span><span class="si">}</span><span class="s2"> said: &#39;</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
 </pre></div>
 </td></tr></table></div>
 <p>When someone in the room speaks to this NPC, its <code class="docutils literal notranslate"><span class="pre">msg</span></code> method will be called. We will modify the
@@ -137,7 +137,7 @@ NPCs <code class="docutils literal notranslate"><span class="pre">.msg</span></c
                 <span class="c1"># If there is a response</span>
                 <span class="k">if</span> <span class="n">response</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="c1"># speak ourselves, using the return</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;say </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">response</span><span class="p">)</span>   
+                    <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;say </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>   
     
         <span class="c1"># this is needed if anyone ever puppets this NPC - without it you would never</span>
         <span class="c1"># get any feedback from the server (not even the results of look)</span>

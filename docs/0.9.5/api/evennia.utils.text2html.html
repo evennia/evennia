@@ -191,17 +191,12 @@ snippet #577349 on <a class="reference external" href="http://code.activestate.c
 
 <dl class="py attribute">
 <dt id="evennia.utils.text2html.TextToHTMLparser.re_url">
-<code class="sig-name descname">re_url</code><em class="property"> = re.compile('(?&lt;!=&quot;)((?:ftp|www|https?)\\W+(?:(?!\\.(?:\\s|$)|&amp;\\w+;)[^&quot;\\\',;$*^\\\\(){}&lt;&gt;\\[\\]\\s])+)(\\.(?:\\s|$)|&amp;\\w+;|)')</em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.re_url" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">re_url</code><em class="property"> = re.compile('((?:ftp|www|https?)\\W+(?:(?!\\.(?:\\s|$)|&amp;\\w+;)[^&quot;\\\',;$*^\\\\(){}&lt;&gt;\\[\\]\\s])+)(\\.(?:\\s|$)|&amp;\\w+;|)')</em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.re_url" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.utils.text2html.TextToHTMLparser.re_mxplink">
 <code class="sig-name descname">re_mxplink</code><em class="property"> = re.compile('\\|lc(.*?)\\|lt(.*?)\\|le', re.DOTALL)</em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.re_mxplink" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.utils.text2html.TextToHTMLparser.re_mxpurl">
-<code class="sig-name descname">re_mxpurl</code><em class="property"> = re.compile('\\|lu(.*?)\\|lt(.*?)\\|le', re.DOTALL)</em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.re_mxpurl" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -355,20 +350,6 @@ replaces MXP links with HTML code.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.utils.text2html.TextToHTMLparser.sub_mxp_urls">
-<code class="sig-name descname">sub_mxp_urls</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">match</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/text2html.html#TextToHTMLparser.sub_mxp_urls"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.sub_mxp_urls" title="Permalink to this definition">¶</a></dt>
-<dd><p>Helper method to be passed to re.sub,
-replaces MXP links with HTML code.
-:param match: Match for substitution.
-:type match: re.Matchobject</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>text (str)</em> – Processed text.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="evennia.utils.text2html.TextToHTMLparser.sub_text">
 <code class="sig-name descname">sub_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">match</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/text2html.html#TextToHTMLparser.sub_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.sub_text" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper method to be passed to re.sub,
@@ -448,17 +429,18 @@ into html statements.</p>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li>
-    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
-     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
-      <a href="https://evennia.blogspot.com/">Blog</a>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
   </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../1.0-dev/api/evennia.utils.text2html.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.utils.text2html.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
+
 
         </div>
       </div>

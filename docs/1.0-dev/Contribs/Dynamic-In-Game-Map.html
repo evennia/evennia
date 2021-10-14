@@ -503,7 +503,7 @@ presentational string out of it using the <code class="docutils literal notransl
     
     <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">):</span>
         <span class="c1"># [...]</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">Map</span><span class="p">(</span><span class="n">looker</span><span class="p">)</span><span class="o">.</span><span class="n">show_map</span><span class="p">()</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">Map</span><span class="p">(</span><span class="n">looker</span><span class="p">)</span><span class="o">.</span><span class="n">show_map</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="c1"># Add all the normal stuff like room description, </span>
         <span class="c1"># contents, exits etc. </span>
         <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">return_appearance</span><span class="p">(</span><span class="n">looker</span><span class="p">)</span>

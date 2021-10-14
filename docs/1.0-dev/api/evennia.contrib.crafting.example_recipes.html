@@ -87,6 +87,24 @@ around with them.</p>
         <span class="o">+</span> <span class="n">sword</span> <span class="n">handle</span> <span class="o">+</span> <span class="n">leather</span> <span class="o">+</span> <span class="n">knife</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">+</span> <span class="n">hammer</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">+</span> <span class="n">furnace</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
 </pre></div>
 </div>
+</section>
+<section id="recipes-used-for-spell-casting">
+<h2>Recipes used for spell casting<a class="headerlink" href="#recipes-used-for-spell-casting" title="Permalink to this headline">¶</a></h2>
+<p>This is a simple example modifying the base Recipe to use as a way
+to describe magical spells instead. It combines tools with
+a skill (an attribute on the caster) in order to produce a magical effect.</p>
+<p>The example <strong>CmdCast</strong> command can be added to the CharacterCmdset in
+<strong>mygame/commands/default_cmdsets</strong> to test it out. The ‘effects’ are
+just mocked for the example.</p>
+<dl>
+<dt>::</dt><dd><p># base tools (assumed to already exist)</p>
+<p>spellbook[T], wand[T]</p>
+<p># skill (stored as Attribute on caster)</p>
+<p>firemagic skill level10+</p>
+<p># recipe for fireball</p>
+<p>fireball = spellbook[T] + wand[T] + [firemagic skill lvl10+]</p>
+</dd>
+</dl>
 <hr class="docutils" />
 <dl class="py function">
 <dt id="evennia.contrib.crafting.example_recipes.random">
@@ -384,6 +402,136 @@ strips for better grip.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt id="evennia.contrib.crafting.example_recipes.FireballRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.crafting.example_recipes.</code><code class="sig-name descname">FireballRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/example_recipes.html#FireballRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.FireballRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.crafting.example_recipes._MagicRecipe</span></code></p>
+<p>A Fireball is a magical effect that can be thrown at a target to cause damage.</p>
+<p>Note that the magic-effects are just examples, an actual rule system would
+need to be created to understand what they mean when used.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.example_recipes.FireballRecipe.name">
+<code class="sig-name descname">name</code><em class="property"> = 'fireball'</em><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.FireballRecipe.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.example_recipes.FireballRecipe.skill_requirements">
+<code class="sig-name descname">skill_requirements</code><em class="property"> = [('firemagic', 10)]</em><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.FireballRecipe.skill_requirements" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.example_recipes.FireballRecipe.skill_roll">
+<code class="sig-name descname">skill_roll</code><em class="property"> = 'firemagic'</em><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.FireballRecipe.skill_roll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.example_recipes.FireballRecipe.success_message">
+<code class="sig-name descname">success_message</code><em class="property"> = 'A ball of flame appears!'</em><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.FireballRecipe.success_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.example_recipes.FireballRecipe.desired_effects">
+<code class="sig-name descname">desired_effects</code><em class="property"> = [('target_fire_damage', 25), ('ranged_attack', -2), ('mana_cost', 12)]</em><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.FireballRecipe.desired_effects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.example_recipes.FireballRecipe.failure_effects">
+<code class="sig-name descname">failure_effects</code><em class="property"> = [('self_fire_damage', 5), ('mana_cost', 5)]</em><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.FireballRecipe.failure_effects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.crafting.example_recipes.HealingRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.crafting.example_recipes.</code><code class="sig-name descname">HealingRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/example_recipes.html#HealingRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.HealingRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.crafting.example_recipes._MagicRecipe</span></code></p>
+<p>Healing magic will restore a certain amount of health to the target over time.</p>
+<p>Note that the magic-effects are just examples, an actual rule system would
+need to be created to understand what they mean.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.example_recipes.HealingRecipe.name">
+<code class="sig-name descname">name</code><em class="property"> = 'heal'</em><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.HealingRecipe.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.example_recipes.HealingRecipe.skill_requirements">
+<code class="sig-name descname">skill_requirements</code><em class="property"> = [('bodymagic', 5), ('empathy', 10)]</em><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.HealingRecipe.skill_requirements" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.example_recipes.HealingRecipe.skill_roll">
+<code class="sig-name descname">skill_roll</code><em class="property"> = 'bodymagic'</em><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.HealingRecipe.skill_roll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.example_recipes.HealingRecipe.success_message">
+<code class="sig-name descname">success_message</code><em class="property"> = 'You successfully extend your healing aura.'</em><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.HealingRecipe.success_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.example_recipes.HealingRecipe.desired_effects">
+<code class="sig-name descname">desired_effects</code><em class="property"> = [('healing', 15), ('mana_cost', 5)]</em><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.HealingRecipe.desired_effects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.example_recipes.HealingRecipe.failure_effects">
+<code class="sig-name descname">failure_effects</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.HealingRecipe.failure_effects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.crafting.example_recipes.CmdCast">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.crafting.example_recipes.</code><code class="sig-name descname">CmdCast</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/example_recipes.html#CmdCast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.CmdCast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>Cast a magical spell.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>cast &lt;spell&gt; &lt;target&gt;</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.example_recipes.CmdCast.key">
+<code class="sig-name descname">key</code><em class="property"> = 'cast'</em><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.CmdCast.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.example_recipes.CmdCast.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/example_recipes.html#CmdCast.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.CmdCast.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple parser, assuming spellname doesn’t have spaces.
+Stores result in self.target and self.spellname.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.crafting.example_recipes.CmdCast.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/crafting/example_recipes.html#CmdCast.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.CmdCast.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the actual executing part of the command.  It is
+called directly after self.parse(). See the docstring of this
+module for which object properties are available (beyond those
+set in self.parse())</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.example_recipes.CmdCast.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.CmdCast.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.example_recipes.CmdCast.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.CmdCast.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.example_recipes.CmdCast.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.CmdCast.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.crafting.example_recipes.CmdCast.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'cast', 'tags': '', 'text': '\n    Cast a magical spell.\n\n    Usage:\n        cast &lt;spell&gt; &lt;target&gt;\n\n    '}</em><a class="headerlink" href="#evennia.contrib.crafting.example_recipes.CmdCast.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 
@@ -411,6 +559,7 @@ strips for better grip.</p>
   <ul>
 <li><a class="reference internal" href="#">evennia.contrib.crafting.example_recipes</a><ul>
 <li><a class="reference internal" href="#sword-crafting-tree">Sword crafting tree</a></li>
+<li><a class="reference internal" href="#recipes-used-for-spell-casting">Recipes used for spell casting</a></li>
 </ul>
 </li>
 </ul>

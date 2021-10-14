@@ -129,7 +129,9 @@ the following message in the elevator’s appearance: <code class="docutils lite
 <span class="normal">28</span>
 <span class="normal">29</span>
 <span class="normal">30</span>
-<span class="normal">31</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdInventory</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdInventory</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    view inventory</span>
 <span class="sd">    Usage:</span>
@@ -155,10 +157,12 @@ the following message in the elevator’s appearance: <code class="docutils lite
             <span class="n">table</span><span class="o">.</span><span class="n">border</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
                 <span class="n">second</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_mass</span><span class="p">()</span> \
-                        <span class="k">if</span> <span class="s1">&#39;weight&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="k">else</span> <span class="n">item</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
-                <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">item</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">sessions</span><span class="p">),</span>
-                               <span class="n">second</span> <span class="ow">and</span> <span class="n">second</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">])</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;|wYou are carrying:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">table</span>
+                        <span class="k">if</span> <span class="s2">&quot;weight&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="k">else</span> <span class="n">item</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
+                <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">([</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">sessions</span><span class="p">)),</span>
+                    <span class="n">second</span> <span class="ow">and</span> <span class="n">second</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="p">])</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|wYou are carrying:</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>

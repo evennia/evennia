@@ -306,7 +306,7 @@ Whereas the TickerHandler is easy to use, a Script offers more power in this cas
     <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Called when script is first created&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;combat_handler_</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;combat_handler_</span><span class="si">{</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;handles combat&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">2</span>  <span class="c1"># two minute timeout</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">=</span> <span class="kc">True</span>
@@ -686,7 +686,8 @@ turn). If so the character leaves combat.</p></li>
 <span class="normal">73</span>
 <span class="normal">74</span>
 <span class="normal">75</span>
-<span class="normal">76</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/rules.py</span>
+<span class="normal">76</span>
+<span class="normal">77</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/rules.py</span>
 
 <span class="kn">import</span> <span class="nn">random</span>
 
@@ -710,57 +711,58 @@ turn). If so the character leaves combat.</p></li>
                 <span class="n">taction</span><span class="p">,</span> <span class="n">tchar</span><span class="p">,</span> <span class="n">ttarget</span> <span class="o">=</span> <span class="n">actiondict</span><span class="p">[</span><span class="n">target</span><span class="o">.</span><span class="n">id</span><span class="p">][</span><span class="n">isub</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;hit&quot;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">taction</span> <span class="o">==</span> <span class="s2">&quot;parry&quot;</span> <span class="ow">and</span> <span class="n">ttarget</span> <span class="o">==</span> <span class="n">char</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> tries to hit </span><span class="si">%s</span><span class="s2">, but </span><span class="si">%s</span><span class="s2"> parries the attack!&quot;</span>
-                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">tchar</span><span class="p">,</span> <span class="n">tchar</span><span class="p">))</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2"> tries to hit </span><span class="si">{</span><span class="n">tchar</span><span class="si">}</span><span class="s2">, but </span><span class="si">{</span><span class="n">tchar</span><span class="si">}</span><span class="s2"> parries the attack!&quot;</span>
+                    <span class="p">)</span>
                 <span class="k">elif</span> <span class="n">taction</span> <span class="o">==</span> <span class="s2">&quot;defend&quot;</span> <span class="ow">and</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> defends against the attack by </span><span class="si">%s</span><span class="s2">.&quot;</span>
-                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">tchar</span><span class="p">,</span> <span class="n">char</span><span class="p">))</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tchar</span><span class="si">}</span><span class="s2"> defends against the attack by </span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="p">)</span>
                 <span class="k">elif</span> <span class="n">taction</span> <span class="o">==</span> <span class="s2">&quot;flee&quot;</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> stops </span><span class="si">%s</span><span class="s2"> from disengaging, with a hit!&quot;</span>
                     <span class="n">flee</span><span class="p">[</span><span class="n">tchar</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
-                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">tchar</span><span class="p">))</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2"> stops </span><span class="si">{</span><span class="n">tchar</span><span class="si">}</span><span class="s2"> from disengaging, with a hit!&quot;</span>
+                    <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> hits </span><span class="si">%s</span><span class="s2">, bypassing their </span><span class="si">%s</span><span class="s2">!&quot;</span>
-                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">tchar</span><span class="p">,</span> <span class="n">taction</span><span class="p">))</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2"> hits </span><span class="si">{</span><span class="n">tchar</span><span class="si">}</span><span class="s2">, bypassing their </span><span class="si">{</span><span class="n">taction</span><span class="si">}</span><span class="s2">!&quot;</span>
+                    <span class="p">)</span>
             <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;parry&quot;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">taction</span> <span class="o">==</span> <span class="s2">&quot;hit&quot;</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> parries the attack by </span><span class="si">%s</span><span class="s2">.&quot;</span>
-                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">tchar</span><span class="p">))</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2"> parries the attack by </span><span class="si">{</span><span class="n">tchar</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">taction</span> <span class="o">==</span> <span class="s2">&quot;feint&quot;</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> tries to parry, but </span><span class="si">%s</span><span class="s2"> feints and hits!&quot;</span>
-                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">tchar</span><span class="p">))</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2"> tries to parry, but </span><span class="si">{</span><span class="n">tchar</span><span class="si">}</span><span class="s2"> feints and hits!&quot;</span>
+                    <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> parries to no avail.&quot;</span>
-                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="n">char</span><span class="p">)</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2"> parries to no avail.&quot;</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;feint&quot;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">taction</span> <span class="o">==</span> <span class="s2">&quot;parry&quot;</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> feints past </span><span class="si">%s</span><span class="s2">&#39;s parry, landing a hit!&quot;</span>
-                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">tchar</span><span class="p">))</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2"> feints past </span><span class="si">{</span><span class="n">tchar</span><span class="si">}</span><span class="s2">&#39;s parry, landing a hit!&quot;</span>
+                    <span class="p">)</span>
                 <span class="k">elif</span> <span class="n">taction</span> <span class="o">==</span> <span class="s2">&quot;hit&quot;</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> feints but is defeated by </span><span class="si">%s</span><span class="s2"> hit!&quot;</span>
-                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">tchar</span><span class="p">))</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2"> feints but is defeated by </span><span class="si">{</span><span class="n">tchar</span><span class="si">}</span><span class="s2">&#39;s hit!&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> feints to no avail.&quot;</span>
-                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="n">char</span><span class="p">)</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2"> feints to no avail.&quot;</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;defend&quot;</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> defends.&quot;</span>
-                <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="n">char</span><span class="p">)</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2"> defends.&quot;</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;flee&quot;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">flee</span><span class="p">:</span>
                     <span class="n">flee</span><span class="p">[</span><span class="n">char</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">flee</span><span class="p">[</span><span class="n">char</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> tries to disengage (two subsequent turns needed)&quot;</span>
-                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="n">char</span><span class="p">)</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2"> tries to disengage (two subsequent turns needed)&quot;</span>
+                    <span class="p">)</span>
 
         <span class="c1"># echo results of each subturn</span>
         <span class="n">combat_handler</span><span class="o">.</span><span class="n">msg_all</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">messages</span><span class="p">))</span>
 
     <span class="c1"># at the end of both sub-turns, test if anyone fled</span>
-    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> withdraws from combat.&quot;</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">fleevalue</span><span class="p">)</span> <span class="ow">in</span> <span class="n">flee</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">fleevalue</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">combat_handler</span><span class="o">.</span><span class="n">msg_all</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="n">char</span><span class="p">)</span>
+            <span class="n">combat_handler</span><span class="o">.</span><span class="n">msg_all</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2"> withdraws from combat.&quot;</span><span class="p">)</span>
             <span class="n">combat_handler</span><span class="o">.</span><span class="n">remove_character</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
@@ -839,14 +841,14 @@ We store this with the other combat commands.</p>
         <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combat_handler</span><span class="p">:</span>
             <span class="c1"># target is already in combat - join it            </span>
             <span class="n">target</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combat_handler</span><span class="o">.</span><span class="n">add_character</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
-            <span class="n">target</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combat_handler</span><span class="o">.</span><span class="n">msg_all</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> joins combat!&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combat_handler</span><span class="o">.</span><span class="n">msg_all</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="si">}</span><span class="s2"> joins combat!&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># create a new combat handler</span>
             <span class="n">chandler</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="s2">&quot;combat_handler.CombatHandler&quot;</span><span class="p">)</span>
             <span class="n">chandler</span><span class="o">.</span><span class="n">add_character</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
             <span class="n">chandler</span><span class="o">.</span><span class="n">add_character</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You attack </span><span class="si">%s</span><span class="s2">! You are in combat.&quot;</span> <span class="o">%</span> <span class="n">target</span><span class="p">)</span>
-            <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> attacks you! You are in combat.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>       
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You attack </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">! You are in combat.&quot;</span><span class="p">)</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="si">}</span><span class="s2"> attacks you! You are in combat.&quot;</span><span class="p">)</span>       
 </pre></div>
 </td></tr></table></div>
 <p>The <code class="docutils literal notranslate"><span class="pre">attack</span></code> command will not go into the combat cmdset but rather into the default cmdset. See e.g.
