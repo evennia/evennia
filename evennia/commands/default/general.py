@@ -51,13 +51,6 @@ class CmdHome(COMMAND_DEFAULT_CLASS):
             caller.msg("There's no place like home ...")
             caller.move_to(home)
 
-        from evennia.utils import evtable
-        table = evtable.EvTable("|cHeading1|n", "|cHeading2 |n", "|cHeading 3|n")
-        table.add_row("This","Test","test")
-        print(table)
-        caller.msg(str(table))
-
-
 
 class CmdLook(COMMAND_DEFAULT_CLASS):
     """
