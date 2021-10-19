@@ -318,4 +318,4 @@ class TestWebSocket(EvenniaTest):
         self.proto.sendLine = MagicMock()
         msg = json.dumps(["logged_in", (), {}])
         self.proto.sessionhandler.data_out(self.proto, text=[["Excepting Alice"], {}])
-        self.proto.sendLine.assert_called_with(json.dumps(["text", ["Excepting Alice"], {}]))
+        self.proto.sendLine.assert_called_with(json.dumps(["text", ["Excepting&nbsp;Alice"], {}]))

@@ -156,7 +156,7 @@ class TestText2Html(TestCase):
             "tab": "\t",
             "space": "",
         }
-        self.assertEqual(" &nbsp;", parser.sub_text(mocked_match))
+        self.assertEqual("&nbsp;&nbsp;", parser.sub_text(mocked_match))
 
         mocked_match.groupdict.return_value = {
             "htmlchars": "",
@@ -165,7 +165,7 @@ class TestText2Html(TestCase):
             "space": " ",
             "spacestart": " ",
         }
-        self.assertEqual(" &nbsp; &nbsp;",
+        self.assertEqual("&nbsp;&nbsp;&nbsp;&nbsp;",
                          parser.sub_text(mocked_match))
 
         mocked_match.groupdict.return_value = {
@@ -183,15 +183,15 @@ class TestText2Html(TestCase):
         parser.tabstop = 4
         # single tab
         self.assertEqual(parser.parse("foo|>foo"),
-                         "foo &nbsp;&nbsp;&nbsp;foo")
+                         "foo&nbsp;&nbsp;&nbsp;&nbsp;foo")
 
         # space and tab
         self.assertEqual(parser.parse("foo |>foo"),
-                         "foo &nbsp;&nbsp;&nbsp;&nbsp;foo")
+                         "foo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foo")
 
         # space, tab, space
         self.assertEqual(parser.parse("foo |> foo"),
-                         "foo &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foo")
+                         "foo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foo")
 
     def test_parse_space_to_html(self):
         """test space parsing - a single space should be kept, two or more
@@ -199,13 +199,13 @@ class TestText2Html(TestCase):
         parser = text2html.HTML_PARSER
         # single space
         self.assertEqual(parser.parse("foo foo"),
-                         "foo foo")
+                         "foo&nbsp;foo")
         # double space
         self.assertEqual(parser.parse("foo  foo"),
-                         "foo &nbsp;foo")
+                         "foo&nbsp;&nbsp;foo")
         # triple space
         self.assertEqual(parser.parse("foo   foo"),
-                         "foo &nbsp;&nbsp;foo")
+                         "foo&nbsp;&nbsp;&nbsp;foo")
 
     def test_parse_html(self):
         self.assertEqual("foo", text2html.parse_html("foo"))
