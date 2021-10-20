@@ -31,6 +31,8 @@ class TestCraftUtils(TestCase):
             {
                 "crucible steel": example_recipes.CrucibleSteelRecipe,
                 "leather": example_recipes.LeatherRecipe,
+                "fireball": example_recipes.FireballRecipe,
+                "heal": example_recipes.HealingRecipe,
                 "oak bark": example_recipes.OakBarkRecipe,
                 "pig iron": example_recipes.PigIronRecipe,
                 "rawhide": example_recipes.RawhideRecipe,
