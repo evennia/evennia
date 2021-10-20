@@ -696,6 +696,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             "XTERM256": validate_bool,
             "INPUTDEBUG": validate_bool,
             "FORCEDENDLINE": validate_bool,
+            "LOCALECHO": validate_bool,
         }
 
         name = self.lhs.upper()

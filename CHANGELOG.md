@@ -2,7 +2,7 @@
 
 ## Evennia 1.0 (2019-) (develop branch, WIP)
 
-Up requirements to Django 3.2+
+Up requirements to Django 3.2+, Twisted 21+
 
 - New `drop:holds()` lock default to limit dropping nonsensical things. Access check
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
@@ -90,11 +90,23 @@ Up requirements to Django 3.2+
   while /Tall becomes 'Tall man'. One can turn this off if wanting the old style.
 - Change `EvTable` fixed-height rebalance algorithm to fill with empty lines at end of
   column instead of inserting rows based on cell-size (could be mistaken for a bug).
+- Split `return_appearance` hook with helper methods and have it use a template
+  string in order to make it easier to override.
+- Add validation question to default account creation.
+- Add `LOCALECHO` client option to add server-side echo for clients that does
+  not support this (useful for getting a complete log).
+- Make `@lazy_property` decorator create read/delete-protected properties. This is
+  because it's used for handlers, and e.g. self.locks=[] is a common beginner mistake.
+
+
 
 ### Evennia 0.9.5 (2019-2020)
 
+
 Released 2020-11-14.
 A transitional release, including new doc system.
+
+Backported from develop: Python 3.8, 3.9 support. Django 3.2+ support, Twisted 21+ support.
 
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
 - `py` command now reroutes stdout to output results in-game client. `py`
@@ -174,6 +186,9 @@ without arguments starts a full interactive Python console.
 - Fixes in multi-match situations - don't allow finding/listing multimatches for 3-box when
   only two boxes in location.
 - Fix for TaskHandler with proper deferred returns/ability to cancel etc (PR by davewiththenicehat)
+- Add `PermissionHandler.check` method for straight string perm-checks without needing lockstrings.
+- Add `evennia.utils.utils.strip_unsafe_input` for removing html/newlines/tags from user input. The
+  `INPUT_CLEANUP_BYPASS_PERMISSIONS` is a list of perms that bypass this safety stripping.
 
 
 ## Evennia 0.9 (2018-2019)

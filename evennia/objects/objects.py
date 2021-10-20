@@ -216,6 +216,15 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     objects = ObjectManager()
 
+    # populated by `return_apperance`
+    appearance_template = '''
+{header}
+|c{name}|n
+{desc}
+{exits}{characters}{things}
+{footer}
+    '''
+
     # on-object properties
 
     @lazy_property
@@ -1725,59 +1734,130 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     # hooks called by the default cmdset.
 
+    def get_visible_contents(self, looker, **kwargs):
+        """
+        Get all contents of this object that a looker can see (whatever that means, by default it
+        checks the 'view' lock), grouped by type. Helper method to return_appearance.
+
+        Args:
+            looker (Object): The entity looking.
+            **kwargs (any): Passed from `return_appearance`. Unused by default.
+
+        Returns:
+            dict: A dict of lists categorized by type. Byt default this
+                contains 'exits', 'characters' and 'things'. The elements of these
+                lists are the actual objects.
+
+        """
+        def filter_visible(obj_list):
+            return [obj for obj in obj_list if obj != looker and obj.access(looker, "view")]
+
+        return {
+            "exits": filter_visible(self.contents_get(content_type="exit")),
+            "characters": filter_visible(self.contents_get(content_type="character")),
+            "things": filter_visible(self.contents_get(content_type="object"))
+        }
+
+    def get_content_names(self, looker, **kwargs):
+        """
+        Get the proper names for all contents of this object. Helper method
+        for return_appearance.
+
+        Args:
+            looker (Object): The entity looking.
+            **kwargs (any): Passed from `return_appearance`. Passed into
+                `get_display_name` for each found entity.
+
+        Returns:
+            dict: A dict of lists categorized by type. Byt default this
+                contains 'exits', 'characters' and 'things'. The elements
+                of these lists are strings - names of the objects that
+                can depend on the looker and also be grouped in the case
+                of multiple same-named things etc.
+
+        Notes:
+            This method shouldn't add extra coloring to the names beyond what is
+            already given by the .get_display_name() (and the .name field) already.
+            Per-type coloring can be applied in `return_apperance`.
+
+        """
+        # a mapping {'exits': [...], 'characters': [...], 'things': [...]}
+        contents_map = self.get_visible_contents(looker, **kwargs)
+
+        character_names = [char.get_display_name(looker, **kwargs)
+                           for char in contents_map['characters']]
+        exit_names = [exi.get_display_name(looker, **kwargs) for exi in contents_map['exits']]
+
+        # group all same-named things under one name
+        things = defaultdict(list)
+        for thing in contents_map['things']:
+            things[thing.get_display_name(looker, **kwargs)].append(thing)
+
+        # pluralize same-named things
+        thing_names = []
+        for thingname, thinglist in sorted(things.items()):
+            nthings = len(thinglist)
+            thing = thinglist[0]
+            singular, plural = thing.get_numbered_name(nthings, looker, key=thingname)
+            thing_names.append(singular if nthings == 1 else plural)
+
+        return {
+            "exits": exit_names,
+            "characters": character_names,
+            "things": thing_names
+        }
+
     def return_appearance(self, looker, **kwargs):
         """
-        This formats a description. It is the hook a 'look' command
-        should call.
+        Main callback used by 'look' for the object to describe itself.
+        This formats a description. By default, this looks for the `appearance_template`
+        string set on this class and populates it with formatting keys
+            'name', 'desc', 'exits', 'characters', 'things' as well as
+            (currently empty) 'header'/'footer'.
 
         Args:
             looker (Object): Object doing the looking.
             **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call (unused by default).
+                overriding the call. This is passed into the helper
+                methods and into `get_display_name` calls.
+
+        Returns:
+            str: The description of this entity. By default this includes
+                the entity's name, description and any contents inside it.
+
+        Notes:
+            To simply change the layout of how the object displays itself (like
+            adding some line decorations or change colors of different sections),
+            you can simply edit `.appearance_template`. You only need to override
+            this method (and/or its helpers) if you want to change what is passed
+            into the template or want the most control over output.
+
         """
 
-        def filter_visible(obj_list):
-            # Helper method to determine if objects are visible to the looker.
-            return [obj for obj in obj_list if obj != looker and obj.access(looker, "view")]
-
         if not looker:
-            return ""
+            return ''
 
-        # get and identify all objects
-        exits_list = filter_visible(self.contents_get(content_type="exit"))
-        users_list = filter_visible(self.contents_get(content_type="character"))
-        things_list = filter_visible(self.contents_get(content_type="object"))
+        # ourselves
+        name = self.get_display_name(looker, **kwargs)
+        desc = self.db.desc or "You see nothing special."
 
-        things = defaultdict(list)
+        # contents
+        content_names_map = self.get_content_names(looker, **kwargs)
+        exits = list_to_string(content_names_map['exits'])
+        characters = list_to_string(content_names_map['characters'])
+        things = list_to_string(content_names_map['things'])
 
-        for thing in things_list:
-            things[thing.key].append(thing)
-        users = [f"|c{user.key}|n" for user in users_list]
-        exits = [ex.key for ex in exits_list]
-
-        # get description, build string
-        string = "|c%s|n\n" % self.get_display_name(looker)
-        desc = self.db.desc
-        if desc:
-            string += "%s" % desc
-        if exits:
-            string += "\n|wExits:|n " + list_to_string(exits)
-        if users or things:
-            # handle pluralization of things (never pluralize users)
-            thing_strings = []
-            for key, itemlist in sorted(things.items()):
-                nitem = len(itemlist)
-                if nitem == 1:
-                    key, _ = itemlist[0].get_numbered_name(nitem, looker, key=key)
-                else:
-                    key = [item.get_numbered_name(nitem, looker, key=key)[1] for item in itemlist][
-                        0
-                    ]
-                thing_strings.append(key)
-
-            string += "\n|wYou see:|n " + list_to_string(users + thing_strings)
-
-        return string
+        # populate the appearance_template string. It's a good idea to strip it and
+        # let the client add any extra spaces instead.
+        return self.appearance_template.format(
+            header='',
+            name=name,
+            desc=desc,
+            exits=f"|wExits:|n {exits}" if exits else '',
+            characters=f"\n|wCharacters:|n {characters}" if characters else '',
+            things=f"\n|wYou see:|n {things}" if things else '',
+            footer=''
+        ).strip()
 
     def at_look(self, target, **kwargs):
         """

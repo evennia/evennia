@@ -59,6 +59,7 @@ def text(session, *args, **kwargs):
             arguments are ignored.
 
     """
+
     # from evennia.server.profiling.timetrace import timetrace
     # text = timetrace(text, "ServerSession.data_in")
 
@@ -156,6 +157,7 @@ _CLIENT_OPTIONS = (
     "RAW",
     "NOCOLOR",
     "NOGOAHEAD",
+    "LOCALECHO",
 )
 
 
@@ -180,6 +182,7 @@ def client_options(session, *args, **kwargs):
         inputdebug (bool): Debug input functions
         nocolor (bool): Strip color
         raw (bool): Turn off parsing
+        localecho (bool): Turn on server-side echo (for clients not supporting it)
 
     """
     old_flags = session.protocol_flags
@@ -239,6 +242,8 @@ def client_options(session, *args, **kwargs):
             flags["RAW"] = validate_bool(value)
         elif key == "nogoahead":
             flags["NOGOAHEAD"] = validate_bool(value)
+        elif key == "localecho":
+            flags["LOCALECHO"] = validate_bool(value)
         elif key in (
             "Char 1",
             "Char.Skills 1",

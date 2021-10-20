@@ -118,6 +118,7 @@ def c_login(client):
     # teleport it (to keep the login room clean)
     cmds = (
         f"create {cname} {cpwd}",
+        f"yes",  # to confirm creation
         f"connect {cname} {cpwd}",
         f"dig {room_name}",
         f"teleport {room_name}",

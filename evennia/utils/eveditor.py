@@ -909,8 +909,10 @@ class EvEditor:
         try:
             self._buffer = self._loadfunc(self._caller)
             if not isinstance(self._buffer, str):
+                self._caller.msg(f"|rBuffer is of type |w{type(self._buffer)})|r. "
+                                 "Continuing, it is converted to a string "
+                                 "(and will be saved as such)!|n")
                 self._buffer = to_str(self._buffer)
-                self._caller.msg(_("|rNote: input buffer was converted to a string.|n"))
         except Exception as e:
             from evennia.utils import logger
 

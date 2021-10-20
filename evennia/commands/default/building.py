@@ -1386,7 +1386,7 @@ class CmdName(ObjManipCommand):
             return
         # change the name and set aliases:
         if newname:
-            obj.name = newname
+            obj.key = newname
         astring = ""
         if aliases:
             [obj.aliases.add(alias) for alias in aliases]
@@ -1787,28 +1787,42 @@ class CmdSetAttribute(ObjManipCommand):
                 "dicts.|n"
             )
 
-    def edit_handler(self, obj, attr):
+    @interactive
+    def edit_handler(self, obj, attr, caller):
         """Activate the line editor"""
 
         def load(caller):
             """Called for the editor to load the buffer"""
-            old_value = obj.attributes.get(attr)
-            if old_value is not None and not isinstance(old_value, str):
-                typ = type(old_value).__name__
-                self.caller.msg(
-                    "|RWARNING! Saving this buffer will overwrite the "
-                    "current attribute (of type %s) with a string!|n" % typ
-                )
-                return str(old_value)
-            return old_value
+
+            try:
+                old_value = obj.attributes.get(attr, raise_exception=True)
+            except AttributeError:
+                # we set empty buffer on nonexisting Attribute because otherwise
+                # we'd always have the string "None" in the buffer to start with
+                old_value = ''
+            return str(old_value)  # we already confirmed we are ok with this
 
         def save(caller, buf):
             """Called when editor saves its buffer."""
             obj.attributes.add(attr, buf)
             caller.msg("Saved Attribute %s." % attr)
 
+        # check non-strings before activating editor
+        try:
+            old_value = obj.attributes.get(attr, raise_exception=True)
+            if not isinstance(old_value, str):
+                answer = yield(
+                    f"|rWarning: Attribute |w{attr}|r is of type |w{type(old_value).__name__}|r. "
+                    "\nTo continue editing, it must be converted to (and saved as) a string. "
+                    "Continue? [Y]/N?")
+                if answer.lower() in ('n', 'no'):
+                    self.caller.msg("Aborted edit.")
+                    return
+        except AttributeError:
+            pass
+
         # start the editor
-        EvEditor(self.caller, load, save, key="%s/%s" % (obj, attr))
+        EvEditor(self.caller, load, save, key=f"{obj}/{attr}")
 
     def search_for_obj(self, objname):
         """
@@ -1878,7 +1892,7 @@ class CmdSetAttribute(ObjManipCommand):
                            "edit the current room description, use `set/edit here/desc` (or "
                            "use the `desc` command).")
                 return
-            self.edit_handler(obj, attrs[0])
+            self.edit_handler(obj, attrs[0], caller)
             return
         if not value:
             if self.rhs is None:

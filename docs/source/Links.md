@@ -34,7 +34,7 @@ a bridge to the official Evennia IRC channel.
 - [Discord live blog](https://discordapp.com/channels/517176782357528616/517176782781415434) of the
 _Blackbirds_ Evennia game project.
 - [Unreal Engine Evennia plugin](https://www.unrealengine.com/marketplace/en-US/slug/evennia-plugin)
-- an in-progress Unreal plugin for integrating Evennia with Epic Games' Unreal Engine.
+  an in-progress Unreal plugin for integrating Evennia with Epic Games' Unreal Engine.
 - [The dark net/March Hare MUD](https://github.com/thedarknet/evennia) from the 2019 [DEF CON
 27](https://www.defcon.org/html/defcon-27/dc-27-index.html) hacker conference in Paris. This is an
 Evennia game dir with batchcode to build the custom _Hackers_ style cyberspace zone with puzzles and
@@ -85,91 +85,91 @@ Python objects.
 ### General MUD forums and discussions 
 
 - [MUD Coder's Guild](https://mudcoders.com/) - A blog and [associated Slack
-channel](https://slack.mudcoders.com/) with discussions on MUD development.
-- [MuSoapbox](https://www.musoapbox.net/) - Very active Mu* game community mainly focused on MUSH-
-type gaming.
+  channel](https://slack.mudcoders.com/) with discussions on MUD development.
+- [MuSoapbox](https://www.musoapbox.net/) - Very active Mu* game community mainly focused on MUSH-type gaming.
 - [Imaginary Realities](http://journal.imaginary-realities.com/) - An e-magazine on game and MUD
-design that has several articles about Evennia. There is also an [archive of older
-issues](http://disinterest.org/resource/imaginary-realities/) from 1998-2001 that are still very
-relevant.
+  design that has several articles about Evennia. There is also an
+  [archive of older issues](http://disinterest.org/resource/imaginary-realities/)
+  from 1998-2001 that are still very relevant.
 - [Optional Realities](http://optionalrealities.com/) - Mud development discussion forums that has
-regular articles on MUD development focused on roleplay-intensive games. After a HD crash it's not
-as content-rich as it once was.
+  regular articles on MUD development focused on roleplay-intensive games. After a HD crash it's not
+  as content-rich as it once was.
 - [MudLab](http://mudlab.org/) - Mud design discussion forum
 - [MudConnector](http://www.mudconnect.com/) - Mud listing and forums
 - [MudBytes](http://www.mudbytes.net/) - Mud listing and forums
 - [Top Mud Sites](http://www.topmudsites.com/) - Mud listing and forums
 - [Planet Mud-Dev](http://planet-muddev.disinterest.org/) - A blog aggregator following blogs of
-current MUD development (including Evennia) around the 'net. Worth to put among your RSS
-subscriptions.
+  current MUD development (including Evennia) around the 'net. Worth to put among your RSS
+  subscriptions.
 - Mud Dev mailing list archive ([mirror](http://www.disinterest.org/resource/MUD-Dev/)) -
-Influential mailing list active 1996-2004. Advanced game design discussions.
+  Influential mailing list active 1996-2004. Advanced game design discussions.
 - [Mud-dev wiki](http://mud-dev.wikidot.com/) - A (very) slowly growing resource on MUD creation.
 - [Mud Client/Server Interaction](http://cryosphere.net/mud-protocol.html) - A page on classic MUD
-telnet protocols.
-- [Mud Tech's fun/cool but ...](https://gc-taylor.com/blog/2013/01/08/mud-tech-funcool-dont-forget-
-ship-damned-thing/) - Greg Taylor gives good advice on mud design.
+  telnet protocols.
+- [Mud Tech's fun/cool but ...](https://gc-taylor.com/blog/2013/01/08/mud-tech-funcool-dont-forget-ship-damned-thing/) -
+  Greg Taylor gives good advice on mud design.
 - [Lost Library of MOO](https://www.hayseed.net/MOO/) - Archive of scientific articles on mudding (in
 particular moo).
 - [Nick Gammon's hints thread](http://www.gammon.com.au/forum/bbshowpost.php?bbsubject_id=5959) -
 Contains a very useful list of things to think about when starting your new MUD.
 - [Lost Garden](http://www.lostgarden.com/) - A game development blog with long and interesting
-articles (not MUD-specific)
+  articles (not MUD-specific)
 - [What Games Are](http://whatgamesare.com/) - A blog about general game design (not MUD-specific)
 - [The Alexandrian](https://thealexandrian.net/) - A blog about tabletop roleplaying and board games,
-but with lots of general discussion about rule systems and game balance that could be applicable
-also for MUDs.
-- [Raph Koster's laws of game design](https://www.raphkoster.com/games/laws-of-online-world-
-design/the-laws-of-online-world-design/) - thought-provoking guidelines and things to think about
-when designing a virtual multiplayer world (Raph is known for *Ultima Online* among other things).
+  but with lots of general discussion about rule systems and game balance that could be applicable
+  also for MUDs.
+- [Raph Koster's laws of game design](https://www.raphkoster.com/games/laws-of-online-world-design/the-laws-of-online-world-design/) -
+  thought-provoking guidelines and things to think about when designing a virtual multiplayer world
+  (Raph is known for *Ultima Online* among other things).
 
 ### Literature
 
-- Richard Bartle *Designing Virtual Worlds*  ([amazon page](https://www.amazon.com/Designing-Virtual-
-Worlds-Richard-Bartle/dp/0131018167)) - Essential reading for the design of any persistent game
-world, written by the co-creator of the original game *MUD*. Published in 2003 but it's still as
-relevant now as when it came out. Covers everything you need to know and then some.
+- Richard Bartle *Designing Virtual Worlds* 
+  ([amazon page](https://www.amazon.com/Designing-Virtual-Worlds-Richard-Bartle/dp/0131018167)) -
+  Essential reading for the design of any persistent game
+  world, written by the co-creator of the original game *MUD*. Published in 2003 but it's still as
+  relevant now as when it came out. Covers everything you need to know and then some.
 - Zed A. Shaw *Learn Python the Hard way* ([homepage](https://learnpythonthehardway.org/)) - Despite
-the imposing name this book is for the absolute Python/programming beginner. One learns the language
-by gradually creating a small text game! It has been used by multiple users before moving on to
-Evennia. *Update: This used to be free to read online, this is no longer the case.*
-- David M. Beazley *Python Essential Reference (4th ed)* ([amazon
-page](https://www.amazon.com/Python-Essential-Reference-David-Beazley/dp/0672329786/)) - Our
-recommended book on Python; it not only efficiently summarizes the language but is also an excellent
-reference to the standard library for more experienced Python coders.
-- Luciano Ramalho, *Fluent Python* ([o'reilly
-page](https://shop.oreilly.com/product/0636920032519.do)) - This is an excellent book for experienced
-Python coders willing to take their code to the next level. A great read with a lot of useful info
-also for veteran Pythonistas.
-- Richard Cantillon *An Essay on Economic Theory* ([free
-pdf](https://mises.org/books/essay_on_economic_theory_cantillon.pdf)) - A very good English
-translation of *Essai sur la Nature du Commerce en Général*, one of the foundations of modern
-economic theory. Written in 1730 but the translation is annotated and the essay is actually very
-easy to follow also for a modern reader. Required reading if you think of implementing a sane game
-economic system.
+  the imposing name this book is for the absolute Python/programming beginner. One learns the language
+  by gradually creating a small text game! It has been used by multiple users before moving on to
+  Evennia. *Update: This used to be free to read online, this is no longer the case.*
+- David M. Beazley *Python Essential Reference (4th ed)*
+  ([amazon page](https://www.amazon.com/Python-Essential-Reference-David-Beazley/dp/0672329786/)) -
+  Our recommended book on Python; it not only efficiently summarizes the language but is also
+  an excellent reference to the standard library for more experienced Python coders.
+- Luciano Ramalho, *Fluent Python*
+  ([O'Reilly page](https://shop.oreilly.com/product/0636920032519.do)) -
+  This is an excellent book for experienced Python coders willing to take their code to the next level.
+  A great read with a lot of useful info also for veteran Pythonistas.
+- Richard Cantillon *An Essay on Economic Theory*
+  ([free pdf](https://mises.org/books/essay_on_economic_theory_cantillon.pdf)) - A very good English
+  translation of *Essai sur la Nature du Commerce en Général*, one of the foundations of modern
+  economic theory. Written in 1730 but the translation is annotated and the essay is actually very
+  easy to follow also for a modern reader. Required reading if you think of implementing a sane game
+  economic system.
 
 ### Frameworks
 
 - [Django's homepage](https://www.djangoproject.com/)
- - [Documentation](https://docs.djangoproject.com/en)
- - [Code](https://code.djangoproject.com/)
+  - [Documentation](https://docs.djangoproject.com/en)
+  - [Code](https://code.djangoproject.com/)
 - [Twisted homepage](https://twistedmatrix.com/)
- - [Documentation](https://twistedmatrix.com/documents/current/core/howto/index.html)
- - [Code](https://twistedmatrix.com/trac/browser)
+  - [Documentation](https://twistedmatrix.com/documents/current/core/howto/index.html)
+  - [Code](https://twistedmatrix.com/trac/browser)
 
 ### Tools
 
 - [GIT](https://git-scm.com/)
- - [Documentation](https://git-scm.com/documentation)
- - [Learn GIT in 15 minutes](https://try.github.io/levels/1/challenges/1) (interactive tutorial)
+  - [Documentation](https://git-scm.com/documentation)
+- [Learn GIT in 15 minutes](https://try.github.io/levels/1/challenges/1) (interactive tutorial)
  
 ### Python Info
 
 - [Python Website](https://www.python.org/)
- - [Documentation](https://www.python.org/doc/)
- - [Tutorial](https://docs.python.org/tut/tut.html)
- - [Library Reference](https://docs.python.org/lib/lib.html)
- - [Language Reference](https://docs.python.org/ref/ref.html)
- - [Python tips and tricks](https://www.siafoo.net/article/52)
- - [Jetbrains Python academy](https://hyperskill.org/onboarding?track=python) - free online
-programming curriculum for different skill levels
+  - [Documentation](https://www.python.org/doc/)
+  - [Tutorial](https://docs.python.org/tut/tut.html)
+  - [Library Reference](https://docs.python.org/lib/lib.html)
+  - [Language Reference](https://docs.python.org/ref/ref.html)
+- [Python tips and tricks](https://www.siafoo.net/article/52)
+- [Jetbrains Python academy](https://hyperskill.org/onboarding?track=python) -
+  free online programming curriculum for different skill levels

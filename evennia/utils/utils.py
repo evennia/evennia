@@ -24,12 +24,13 @@ from simpleeval import simple_eval
 from unicodedata import east_asian_width
 from twisted.internet.task import deferLater
 from twisted.internet.defer import returnValue  # noqa - used as import target
+from twisted.internet import threads, reactor
 from os.path import join as osjoin
 from inspect import ismodule, trace, getmembers, getmodule, getmro
 from collections import defaultdict, OrderedDict
-from twisted.internet import threads, reactor
 from django.conf import settings
 from django.utils import timezone
+from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
 from django.apps import apps
 from django.core.validators import validate_email as django_validate_email
@@ -44,6 +45,7 @@ ENCODINGS = settings.ENCODINGS
 
 _TASK_HANDLER = None
 _TICKER_HANDLER = None
+_STRIP_UNSAFE_TOKENS = None
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -2064,7 +2066,8 @@ class lazy_property:
         ```
 
     Once initialized, the `AttributeHandler` will be available as a
-    property "attributes" on the object.
+    property "attributes" on the object. This is read-only since
+    this functionality is pretty much exclusively used by handlers.
 
     """
 
@@ -2084,6 +2087,24 @@ class lazy_property:
             value = self.func(obj)
         obj.__dict__[self.__name__] = value
         return value
+
+    def __set__(self, obj, value):
+        """Protect against setting"""
+        handlername = self.__name__
+        raise AttributeError(
+            _("{obj}.{handlername} is a handler and can't be set directly. "
+              "To add values, use `{obj}.{handlername}.add()` instead.").format(
+                  obj=obj, handlername=handlername)
+        )
+
+    def __delete__(self, obj):
+        """Protect against deleting"""
+        handlername = self.__name__
+        raise AttributeError(
+            _("{obj}.{handlername} is a handler and can't be deleted directly. "
+              "To remove values, use `{obj}.{handlername}.remove()` instead.").format(
+                  obj=obj, handlername=handlername)
+        )
 
 
 _STRIP_ANSI = None
@@ -2569,3 +2590,41 @@ def safe_convert_to_types(converters, *args, raise_errors=True, **kwargs):
                     if raise_errors:
                         raise
     return args, kwargs
+
+
+def strip_unsafe_input(txt, session=None, bypass_perms=None):
+    """
+    Remove 'unsafe' text codes from text; these are used to elimitate
+    exploits in user-provided data, such as html-tags, line breaks etc.
+
+    Args:
+        txt (str): The text to clean.
+        session (Session, optional): A Session in order to determine if
+            the check should be bypassed by permission (will be checked
+            with the 'perm' lock, taking permission hierarchies into account).
+        bypass_perms (list, optional): Iterable of permission strings
+            to check for bypassing the strip. If not given, use
+            `settings.INPUT_CLEANUP_BYPASS_PERMISSIONS`.
+
+    Returns:
+        str: The cleaned string.
+
+    Notes:
+        The `INPUT_CLEANUP_BYPASS_PERMISSIONS` list defines what account
+        permissions are required to bypass this strip.
+
+    """
+    global _STRIP_UNSAFE_TOKENS
+    if not _STRIP_UNSAFE_TOKENS:
+        from evennia.utils.ansi import strip_unsafe_tokens as _STRIP_UNSAFE_TOKENS
+
+    if session:
+        obj = session.puppet if session.puppet else session.account
+        bypass_perms = bypass_perms or settings.INPUT_CLEANUP_BYPASS_PERMISSIONS
+        if obj.permissions.check(*bypass_perms):
+            return txt
+
+    # remove html codes
+    txt = strip_tags(txt)
+    txt = _STRIP_UNSAFE_TOKENS(txt)
+    return txt
