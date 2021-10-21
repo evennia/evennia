@@ -34,6 +34,7 @@ _IDMAPPER = None
 
 # limit symbol import for API
 __all__ = (
+    "CmdAccounts",
     "CmdReload",
     "CmdReset",
     "CmdShutdown",
@@ -43,6 +44,7 @@ __all__ = (
     "CmdTime",
     "CmdServerLoad",
     "CmdTasks",
+    "CmdTickers",
 )
 
 

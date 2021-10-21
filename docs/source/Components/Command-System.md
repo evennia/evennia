@@ -1,9 +1,9 @@
 # Command System
 
-- [Commands](./Commands) 
-- [Command Sets](./Command-Sets)
-- [Command Auto-help](./Help-System#command-auto-help-system)
+- [Commands](./Commands.md)
+- [Command Sets](./Command-Sets.md)
+- [Command Auto-help](./Help-System.md#command-auto-help-system)
 
 See also:
-- [Default Command Help](api:evennia.commands.default#modules)
-- [Adding Command Tutorial](../Howto/Starting/Part1/Adding-Commands)
+- [Default Commands](./Default-Commands.md)
+- [Adding Command Tutorial](../Howto/Starting/Part1/Adding-Commands.md)

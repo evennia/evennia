@@ -44,7 +44,7 @@ wasn't generated for you):
 # URL patterns for the character app
 
 from django.conf.urls import url
-from web.character.views import sheet 
+from web.character.views import sheet
 
 urlpatterns = [
     url(r'^sheet/(?P<object_id>\d+)/$', sheet, name="sheet")
@@ -222,7 +222,7 @@ As an optional final step, you can also change your character typeclass to have 
 ```
 Doing so will give you a 'view on site' button in the top right of the Django Admin Objects
 changepage that links to your new character sheet, and allow you to get the link to a character's
-page by using {{ object.get_absolute_url }} in any template where you have a given object.
+page by using `{{ object.get_absolute_url }}` in any template where you have a given object.
 
 *Now that you've made a basic page and app with Django, you may want to read the full Django
 tutorial to get a better idea of what it can do. [You can find Django's tutorial

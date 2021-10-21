@@ -10,7 +10,7 @@ determine a character's burden weight for travel speed...   The total mass of an
 contribute to the force of a weapon swing, or a speeding meteor to give it a potential striking
 force.
 
-#### Objects
+## Objects
 
 Now that we have reasons for keeping track of object mass, let's look at the default object class
 inside your mygame/typeclasses/objects.py and see how easy it is to total up mass from an object and
@@ -36,7 +36,7 @@ default for Heavy types to something much larger than 1 gram or whatever unit yo
 non-default mass would be stored on the `mass` [[Attributes]] of the objects.
 
 
-#### Characters and rooms
+## Characters and rooms
 
 You can add a `get_mass` definition to characters and rooms, also.
 
@@ -57,7 +57,7 @@ else:
     pass  # Danger! Alarm sounds, cable snaps, elevator stops...
 ```
 
-#### Inventory
+## Inventory
 Example of listing mass of items in your inventory:
 
 ```python

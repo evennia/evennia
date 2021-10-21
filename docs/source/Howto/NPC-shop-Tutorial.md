@@ -1,6 +1,6 @@
 # NPC shop Tutorial
 
-This tutorial will describe how to make an NPC-run shop. We will make use of the [EvMenu](../Components/EvMenu)
+This tutorial will describe how to make an NPC-run shop. We will make use of the [EvMenu](../Components/EvMenu.md)
 system to present shoppers with a menu where they can buy things from the store's stock.
 
 Our shop extends over two rooms - a "front" room open to the shop's customers and a locked "store
@@ -19,13 +19,13 @@ compare it to the `gold` Attribute of the customer. If enough gold is available,
 deducted and the goods transferred from the store room to the inventory of the customer.
  - We will lock the store room so that only people with the right key can get in there.
 
-### The shop menu
+## The shop menu
 
 We want to show a menu to the customer where they can list, examine and buy items in the store. This
 menu should change depending on what is currently for sale. Evennia's *EvMenu* utility will manage
-the menu for us. It's a good idea to [read up on EvMenu](../Components/EvMenu) if you are not familiar with it.
+the menu for us. It's a good idea to [read up on EvMenu](../Components/EvMenu.md) if you are not familiar with it.
 
-#### Designing the menu
+### Designing the menu
 
 The shopping menu's design is straightforward. First we want the main screen. You get this when you
 enter a shop and use the `browse` or `buy` command:
@@ -64,7 +64,7 @@ You cannot afford 5 gold for A rusty sword!
 ```
 After this you should be back to the top level of the shopping menu again and can continue browsing.
 
-#### Coding the menu
+### Coding the menu
 
 EvMenu defines the *nodes* (each menu screen with options) as normal Python functions. Each node
 must be able to change on the fly depending on what items are currently for sale. EvMenu will
@@ -164,10 +164,10 @@ need to return anything. In `buy_ware_result` we determine if the customer can a
 give proper return messages. This is also where we actually move the bought item into the inventory
 of the customer.
 
-#### The command to start the menu
+### The command to start the menu
 
 We could *in principle* launch the shopping menu the moment a customer steps into our shop room, but
-this would probably be considered pretty annoying. It's better to create a [Command](../Components/Commands) for
+this would probably be considered pretty annoying. It's better to create a [Command](../Components/Commands.md) for
 customers to explicitly wanting to shop around.
 
 ```python
@@ -200,7 +200,7 @@ class CmdBuy(Command):
 This will launch the menu. The `EvMenu` instance is initialized with the path to this very module -
 since the only global functions available in this module are our menu nodes, this will work fine
 (you could also have put those in a separate module). We now just need to put this command in a
-[CmdSet](../Components/Command-Sets) so we can add it correctly to the game:
+[CmdSet](../Components/Command-Sets.md) so we can add it correctly to the game:
 
 ```python
 from evennia import CmdSet
@@ -210,7 +210,7 @@ class ShopCmdSet(CmdSet):
         self.add(CmdBuy())
 ```
 
-### Building the shop
+## Building the shop
 
 There are really only two things that separate our shop from any other Room:
 
@@ -219,7 +219,7 @@ There are really only two things that separate our shop from any other Room:
 the shop.
 
 For testing we could easily add these features manually to a room using `@py` or other admin
-commands. Just to show how it can be done we'll instead make a custom [Typeclass](../Components/Typeclasses) for
+commands. Just to show how it can be done we'll instead make a custom [Typeclass](../Components/Typeclasses.md) for
 the shop room and make a small command that builders can use to build both the shop and the
 storeroom at once.
 
@@ -300,7 +300,7 @@ default-cmdset) before you can use it. Once having created the shop you can now 
 `@open` a new exit to it. You could also easily expand the above command to automatically create
 exits to and from the new shop from your current location.
 
-To avoid customers walking in and stealing everything, we create a [Lock](../Components/Locks) on the storage
+To avoid customers walking in and stealing everything, we create a [Lock](../Components/Locks.md) on the storage
 door. It's a simple lock that requires the one entering to carry an object named
 `<shopname>-storekey`. We even create such a key object and drop it in the shop for the new shop
 keeper to pick up.
@@ -312,7 +312,7 @@ you need to come up with a more robust lock-key solution.
 You could add better default descriptions as part of the `@buildshop` command or leave descriptions
 this up to the Builder.
 
-### The shop is open for business!
+## The shop is open for business!
 
 We now have a functioning shop and an easy way for Builders to create it. All you need now is to
 `@open` a new exit from the rest of the game into the shop and put some sell-able items in the store
@@ -328,7 +328,7 @@ would then be gone and the counter be wrong - the shop would pass us the next it
 
 Fixing these issues are left as an exercise.
 
-If you want to keep the shop fully NPC-run you could add a [Script](../Components/Scripts) to restock the shop's
+If you want to keep the shop fully NPC-run you could add a [Script](../Components/Scripts.md) to restock the shop's
 store room regularly. This shop example could also easily be owned by a human Player (run for them
 by a hired NPC) - the shop owner would get the key to the store room and be responsible for keeping
 it well stocked.

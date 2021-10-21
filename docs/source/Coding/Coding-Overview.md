@@ -7,24 +7,24 @@ to you, but some things may still be useful.
 
 ## Find your way 
 
-- [Directory-Overview](../Howto/Starting/Part1/Gamedir-Overview)
-- [Quirks of Evennia](./Quirks)
+- [Directory-Overview](../Howto/Starting/Part1/Gamedir-Overview.md)
+- [Quirks of Evennia](./Quirks.md)
 
 ## Setting up a workflow
 
-- [Setting up PyCharm](./Setting-up-PyCharm)
-- [Using Version-Control](./Version-Control)
-- [Updating Evennia sources](./Updating-Your-Game)
+- [Setting up PyCharm](./Setting-up-PyCharm.md)
+- [Using Version-Control](./Version-Control.md)
+- [Updating Evennia sources](./Updating-Your-Game.md)
 
 ## Coding away
 
-- [Coding Introduction](./Coding-Introduction)
-- [Ways to Debug](./Debugging)
-- [Adding unit-tests](./Unit-Testing)
-- [Things to remember when importing from evennia](./Flat-API)
+- [Coding Introduction](./Coding-Introduction.md)
+- [Ways to Debug](./Debugging.md)
+- [Adding unit-tests](./Unit-Testing.md)
+- [Things to remember when importing from evennia](./Flat-API.md)
 
 ## Advanced concepts 
 
-- [Continuous Integration](./Continuous-Integration)
-  - [Using Travis](./Using-Travis)
-- [Profiling](./Profiling)
+- [Continuous Integration](./Continuous-Integration.md)
+  - [Using Travis](./Using-Travis.md)
+- [Profiling](./Profiling.md)

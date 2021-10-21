@@ -1,6 +1,6 @@
 # Contrib modules
 
-Contribs are found in [evennia/contrib/](api:evennia.contrib) and are optional game-specific code-snippets
+Contribs are found in [evennia/contrib/](evennia.contrib) and are optional game-specific code-snippets
 or even full systems you can use for your game. They are contributed by the Evennia community and
 released under the same license as Evennia itself. Each contrib has its own installation instructions.
 Bugs are reported to the Evennia [issue tracker](github:issue) as usual.
@@ -46,7 +46,7 @@ Contribs modifying locations, movement or helping to creating rooms.
 Adds an XYZgrid to Evennia, with map-display and pathfinding. Created via map
 strings and maintained outside of the game via Evennia launch commands.
 
-- [XYZGrid documentation](./XYZGrid)
+- [XYZGrid documentation](./XYZGrid.md)
 
 ### Extended Room
 
@@ -60,7 +60,7 @@ An expanded Room typeclass with multiple descriptions for time and season as wel
 
 Build a game area based on a 2D "graphical" unicode map. Supports asymmetric exits.
 
-- [Static in-game map](./Static-In-Game-Map)
+- [Static in-game map](./Static-In-Game-Map.md)
 
 ### Simple Door
 
@@ -80,7 +80,7 @@ Custom Exit class that takes different time to pass depending on if you are walk
 
 Make infinitely large wilderness areas with dynamically created locations.
 
-- [Dynamic in-game map](./Dynamic-In-Game-Map)
+- [Dynamic in-game map](./Dynamic-In-Game-Map.md)
 
 ----
 
@@ -100,9 +100,9 @@ A safe and effective barter-system for any game. Allows safe trading of any good
 
 A full, extendable crafting system.
 
-- [Crafting overview](./Crafting)
-- [Crafting API documentation](api:evennia.contrib.crafting.crafting)
-- [Example of a sword crafting tree](api:evennia.contrib.crafting.example_recipes)
+- [Crafting overview](./Crafting.md)
+- [Crafting API documentation](evennia.contrib.crafting.crafting)
+- [Example of a sword crafting tree](evennia.contrib.crafting.example_recipes)
 
 ### Dice
 
@@ -174,15 +174,15 @@ A simple system for creating an EvMenu that presents a player with a highly cust
 
 Allow Builders to add Python-scripted events to their objects (OBS-not for untrusted users!)
 
-- [A voice-operated elevator using events](./A-voice-operated-elevator-using-events)
-- [Dialogues using events](./Dialogues-in-events)
+- [A voice-operated elevator using events](./A-voice-operated-elevator-using-events.md)
+- [Dialogues using events](./Dialogues-in-events.md)
 
 ### Menu-builder
 
 A tool for building using an in-game menu instead of the normal build commands. Meant to
 be expanded for the needs of your game.
 
-- [Building Menus](./Building-menus)
+- [Building Menus](./Building-menus.md)
 
 ### Security/Auditing
 
@@ -271,7 +271,7 @@ A folder of basic example objects, commands and scripts.
 
 The Evennia single-player sole quest. Made to be analyzed to learn.
 
-- [The tutorial world introduction](../Howto/Starting/Part1/Tutorial-World-Introduction)
+- [The tutorial world introduction](../Howto/Starting/Part1/Tutorial-World-Introduction.md)
 
 ----
 
@@ -300,7 +300,7 @@ is maintained by Tehom in its own repository so bug reports should be directed t
 
 - [Arxcode repository on github](https://github.com/Arx-Game/arxcode)
 - [Arxcode issue tracker](https://github.com/Arx-Game/arxcode/issues)
-- [Arxcode installation help](./Arxcode-installing-help) - this may not always be fully up-to-date with
+- [Arxcode installation help](./Arxcode-installing-help.md) - this may not always be fully up-to-date with
   latest Evennia. Report your findings!
 
 ### Evscaperoom
@@ -310,7 +310,7 @@ is maintained by Tehom in its own repository so bug reports should be directed t
 A full engine for making multiplayer 'escape-rooms' completely in code.
 This is based on the 2019 MUD Game jam winner *Evscaperoom*.
 
-- [contrib/evscaperoom](api:evennia.contrib.evscaperoom) - game engine to make your own escape rooms.
+- [contrib/evscaperoom](evennia.contrib.evscaperoom) - game engine to make your own escape rooms.
 - [https://demo.evennia.com](https://demo.evennia.com) - a full installation of the original game can
   be played by entering the *evscaperoom* exit in the first Limbo room.
 - https://github.com/Griatch/evscaperoom - the original game's source code (warning for spoilers if you
@@ -319,17 +319,17 @@ This is based on the 2019 MUD Game jam winner *Evscaperoom*.
 
 
 
-```toctree::
-    :hidden:
+```{toctree}
+:hidden:
 
-    ./Crafting
-    ../api/evennia.contrib.crafting.crafting
-    ../api/evennia.contrib.crafting.example_recipes
-    ./A-voice-operated-elevator-using-events
-    ./Dialogues-in-events
-    ./Dynamic-In-Game-Map
-    ./Static-In-Game-Map
-    ../Howto/Starting/Part1/Tutorial-World-Introduction
-    ./Building-menus
+./Crafting
+../api/evennia.contrib.crafting.crafting
+../api/evennia.contrib.crafting.example_recipes
+./A-voice-operated-elevator-using-events
+./Dialogues-in-events
+./Dynamic-In-Game-Map
+./Static-In-Game-Map
+../Howto/Starting/Part1/Tutorial-World-Introduction
+./Building-menus
 
 ```

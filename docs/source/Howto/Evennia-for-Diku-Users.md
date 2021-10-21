@@ -14,7 +14,7 @@ all that important for a text-based game. The main advantages of Python are an e
 development cycle and easy ways to create game systems. Doing the same with C can take many times
 more code and be harder to make stable and maintainable.
 
-### Core Differences
+## Core Differences
 
 - As mentioned, the main difference between Evennia and a Diku-derived codebase is that Evennia is
 written purely in Python. Since Python is an interpreted language there is no compile stage. It is
@@ -28,7 +28,7 @@ while writing to a flatfile it may become corrupt and the data lost. A proper da
 not susceptible to this - at no point is the data in a state where it cannot be recovered. Databases
 are also highly optimized for querying large data sets efficiently.
 
-### Some Familiar Things
+## Some Familiar Things
 
 Diku expresses the character object referenced normally by:
 
@@ -63,7 +63,7 @@ class CmdMyCmd(Command):
     """
     This is a Command Evennia Object
     """
-    
+
     [...]
 
     def func(self):
@@ -136,7 +136,7 @@ Puff~
 Puff the Fractal Dragon is here, contemplating a higher reality.
 ~
    Is that some type of differential curve involving some strange, and unknown
-calculus that she seems to be made out of?  
+calculus that she seems to be made out of?
 ~
 516106 0 0 0 2128 0 0 0 1000 E
 34 9 -10 6d6+340 5d5+5
@@ -145,7 +145,7 @@ calculus that she seems to be made out of?
 BareHandAttack: 12
 E
 T 95
-``` 
+```
 Each line represents something that the MUD reads in and does something with it. This isn't easy to
 read, but let's see if we can emulate this as a dictionary to be stored on a database script created
 in Evennia.

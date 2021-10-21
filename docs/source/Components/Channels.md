@@ -7,8 +7,8 @@ _Channels_ allows Evennia's to act as a fancy chat program. When a player is
 connected to a channel, sending a message to it will automatically distribute
 it to every other subscriber.
 
-Channels can be used both for chats between [Accounts](./Accounts) and between
-[Objects](./Objects) (usually Characters).  Chats could be both OOC
+Channels can be used both for chats between [Accounts](./Accounts.md) and between
+[Objects](./Objects.md) (usually Characters).  Chats could be both OOC
 (out-of-character) or IC (in-charcter) in nature.  Some examples:
 
 - A support channel for contacting staff (OOC)
@@ -20,7 +20,7 @@ Channels can be used both for chats between [Accounts](./Accounts) and between
 - Group telephathy (IC)
 - Walkie talkies (IC)
 
-```versionchanged:: 1.0
+```{versionchanged} 1.0
 
   Channel system changed to use a central 'channel' command and nicks instead of
   auto-generated channel-commands and -cmdset. ChannelHandler was removed.
@@ -30,7 +30,8 @@ Channels can be used both for chats between [Accounts](./Accounts) and between
 ## Using channels in-game
 
 In the default command set, channels are all handled via the mighty
-[channel command](api:evennia.commands.default.comms.CmdChannel), `channel` (or
+[channel
+command](evennia.commands.default.comms.CmdChannel), `channel` (or
 `chan`).  By default, this command will assume all entities dealing with
 channels are `Accounts`.
 
@@ -66,7 +67,7 @@ system automatically sets up an personal alias so you can do this instead:
 
     public Hello world
 
-```warning::
+```{warning}
 
   This shortcut will not work if the channel-name has spaces in it.
   So channels with long names should make sure to provide a one-word alias as
@@ -91,7 +92,7 @@ But you can also use your alias with the `channel` command:
 
     channel foo Hello world!
 
-> What happens when aliasing is that a [nick](./Nicks) is created that maps your
+> What happens when aliasing is that a [nick](./Nicks.md) is created that maps your
 > alias + argument onto calling the `channel` command. So when you enter `foo hello`,
 > what the server sees is actually `channel foo = hello`. The system is also
 > clever enough to know that whenever you search for channels, your channel-nicks
@@ -140,10 +141,10 @@ Banning adds the user to the channels blacklist. This means they will not be
 able to _rejoin_ if you boot them. You will need to run `channel/boot` to
 actually kick them out.
 
-See the [Channel command](api:evennia.commands.default.comms.CmdChannel) api
+See the [Channel command](evennia.commands.default.comms.CmdChannel) api
 docs (and in-game help) for more details.
 
-Admin-level users can also modify channel's [locks](./Locks):
+Admin-level users can also modify channel's [locks](./Locks.md):
 
     channel/lock buildchannel = listen:all();send:perm(Builders)
 
@@ -158,7 +159,7 @@ Channels use three lock-types by default:
 
 #### Restricting channel administration
 
-By default everyone can use the channel command ([evennia.commands.default.comms.CmdChannel](api:evennia.commands.default.comms.CmdChannel))
+By default everyone can use the channel command ([evennia.commands.default.comms.CmdChannel](evennia.commands.default.comms.CmdChannel))
 to create channels and will then control the channels they created (to boot/ban
 people etc). If you as a developer does not want regular players to do this
 (perhaps you want only staff to be able to spawn new channels), you can
@@ -170,7 +171,7 @@ The default `help` command has the following `locks` property:
     locks = "cmd:not perm(channel_banned); admin:all(); manage:all(); changelocks: perm(Admin)"
 ```
 
-This is a regular [lockstring](./Locks).
+This is a regular [lockstring](./Locks.md).
 
 - `cmd: pperm(channel_banned)` - The `cmd` locktype is the standard one used for all Commands.
   an accessing object failing this will not even know that the command exists. The `pperm()` lockfunc
@@ -204,14 +205,14 @@ access-denied error when trying to use use these switches.
 
 ## Allowing Characters to use Channels
 
-The default `channel` command ([evennia.commands.default.comms.CmdChannel](api:evennia.commands.default.comms.CmdChannel))
-sits in the `Account` [command set](./Command-Sets). It is set up such that it will
+The default `channel` command ([evennia.commands.default.comms.CmdChannel](evennia.commands.default.comms.CmdChannel))
+sits in the `Account` [command set](./Command-Sets.md). It is set up such that it will
 always operate on `Accounts`, even if you were to add it to the
 `CharacterCmdSet`.
 
 It's a one-line change to make this command accept non-account callers. But for
 convenience we provide a version for Characters/Objects. Just import
-[evennia.commands.default.comms.CmdObjectChannel](api:evennia.commands.default.comms.CmdObjectChannel)
+[evennia.commands.default.comms.CmdObjectChannel](evennia.commands.default.comms.CmdObjectChannel)
 and inherit from that instead.
 
 ## Customizing channel output and behavior
@@ -248,13 +249,13 @@ For most common changes, the default channel, the recipient hooks and possibly
 overriding the `channel` command will get you very far. But you can also tweak
 channels themselves.
 
-Channels are [Typeclassed](./Typeclasses) entities. This means they are
-persistent in the database, can have [attributes](./Attributes) and [Tags](./Tags)
+Channels are [Typeclassed](./Typeclasses.md) entities. This means they are
+persistent in the database, can have [attributes](./Attributes.md) and [Tags](./Tags.md)
 and can be easily extended.
 
 To change which channel typeclass Evennia uses for default commands, change
 `settings.BASE_CHANNEL_TYPECLASS`. The base command class is
-[`evennia.comms.comms.DefaultChannel`](api:evennia.comms.comms.DefaultChannel).
+[`evennia.comms.comms.DefaultChannel`](evennia.comms.comms.DefaultChannel).
 There is an empty child class in `mygame/typeclasses/channels.py`, same
 as for other typelass-bases.
 
@@ -299,11 +300,11 @@ details.
 
 ## Channel logging
 
-```versionchanged:: 0.7
+```{versionchanged} 0.7
 
   Channels changed from using Msg to TmpMsg and optional log files.
 ```
-```versionchanged:: 1.0
+```{versionchanged} 1.0
 
   Channels stopped supporting Msg and TmpMsg, using only log files.
 ```
@@ -325,7 +326,7 @@ channel's `at_post_channel_msg` method.
 
 Channels have all the standard properties of a Typeclassed entity (`key`,
 `aliases`, `attributes`, `tags`, `locks` etc). This is not an exhaustive list;
-see the [Channel api docs](api:evennia.comms.comms.DefaultChannel) for details.
+see the [Channel api docs](evennia.comms.comms.DefaultChannel) for details.
 
 - `send_to_online_only` - this class boolean defaults to `True` and is a
   sensible optimization since people offline people will not see the message anyway.
@@ -334,8 +335,8 @@ see the [Channel api docs](api:evennia.comms.comms.DefaultChannel) for details.
   `mygame/server/logs/`). You should usually not change this.
 - `channel_prefix_string` - this property is a string to easily change how
   the channel is prefixed. It takes the `channelname` format key. Default is `"[{channelname}] "`
-  and produces output like `[public] ...``.
-- `subscriptions` - this is the [SubscriptionHandler](api:evennia.comms.comms#SubscriptionHandler), which
+  and produces output like `[public] ...`.
+- `subscriptions` - this is the [SubscriptionHandler](evennia.comms.models.SubscriptionHandler), which
   has methods `has`, `add`, `remove`, `all`, `clear` and also `online` (to get
   only actually online channel-members).
 - `wholist`, `mutelist`, `banlist` are properties that return a list of subscribers,
@@ -345,7 +346,7 @@ see the [Channel api docs](api:evennia.comms.comms.DefaultChannel) for details.
   This pattern accepts an `{alias}` formatting marker. Don't mess with this unless you really
   want to change how channels work.
 - `channel_msg_nick_replacement` - this is a string on the [nick replacement
-- form](Nicks). It accepts the `{channelname}` formatting tag. This is strongly tied to the
+- form](./Nicks.md). It accepts the `{channelname}` formatting tag. This is strongly tied to the
   `channel` command and is by default `channel {channelname} = $1`.
 
 Notable `Channel` hooks:

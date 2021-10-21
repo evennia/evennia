@@ -1,8 +1,8 @@
-## Clickable links
+# Clickable links
 
 Evennia supports clickable links for clients that supports it. This marks certain text so it can be
-clicked by a mouse and either trigger a given Evennia command, or open a URL in an external web 
-browser. To support clickable links, Evennia requires the webclient or an third-party telnet client 
+clicked by a mouse and either trigger a given Evennia command, or open a URL in an external web
+browser. To support clickable links, Evennia requires the webclient or an third-party telnet client
 with [MXP](http://www.zuggsoft.com/zmud/mxp.htm) support (*Note: Evennia only supports clickable links, no other MXP features*).
 
 - `|lc` to start the link, by defining the command to execute.

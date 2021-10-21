@@ -26,7 +26,7 @@ Evennia is *fully persistent*, that means things you drop on the ground somewher
 there a dozen server reboots later. Through Django we support a large variety of different database
 systems (a database is created for you automatically if you use the defaults).
 
-We also include a growing list of *optional* [contribs](Contribs/Contrib-Overview) you can use for your game 
+We also include a growing list of *optional* [contribs](Contribs/Contrib-Overview.md) you can use for your game 
 would you want something to build from. 
 
 Using the full power of Python throughout the server offers some distinct advantages. All your
@@ -38,7 +38,7 @@ implementations indeed.
 Out of the box, Evennia gives you a 'talker'-type of game; you can walk around, chat, build rooms and objects,
 do basic roleplaying and administration. The server ships with a default set of player commands that are 
 similar to the MUX command set. We *do not* aim specifically to be a MUX server, but we had to pick some 
-default to go with (see [this](Concepts/Soft-Code) for more about our original motivations). It's easy to 
+default to go with (see [this](Concepts/Soft-Code.md) for more about our original motivations). It's easy to 
 remove or add commands, or to have the command syntax mimic other systems, like Diku, LP, MOO and so on.
 Or why not create a new and better command system of your own design.
 
@@ -49,11 +49,11 @@ connect to the demo via your telnet client you can do so at `demo.evennia.com`, 
 
 Once you installed Evennia yourself it comes with its own tutorial - this shows off some of the
 possibilities _and_ gives you a small single-player quest to play. The tutorial takes only one
-single in-game command to install as explained [here](Howto/Starting/Part1/Tutorial-World-Introduction).
+single in-game command to install as explained [here](Howto/Starting/Part1/Tutorial-World-Introduction.md).
 
 ## What you need to know to work with Evennia
 
-Assuming you have Evennia working (see the [quick start instructions](Setup/Setup-Quickstart)) and have
+Assuming you have Evennia working (see the [quick start instructions](Setup/Setup-Quickstart.md)) and have
 gotten as far as to start the server and connect to it with the client of your choice, here's what
 you need to know depending on your skills and needs.
 
@@ -71,11 +71,11 @@ Evennia's source code is extensively documented and is [viewable
 online](https://github.com/evennia/evennia). We also have a comprehensive [online
 manual](https://evennia.com/docs) with lots of examples. But while Python is
 considered a very easy programming language to get into, you do have a learning curve to climb if
-you are new to programming. Evennia's [Starting-tutorial](Howto/Starting/Part1/Starting-Part1) has a [basic introduction
-to Python](Howto/Starting/Part1/Python-basic-introduction) but you should probably also sit down 
+you are new to programming. Evennia's [Starting-tutorial](Howto/Starting/Part1/Starting-Part1.md) has a [basic introduction
+to Python](Howto/Starting/Part1/Python-basic-introduction.md) but you should probably also sit down 
 with a full Python beginner's tutorial at some point (there are plenty of them on
 the web if you look around). See also our [link
-page](Links#wiki-litterature) for some reading suggestions. To efficiently code your dream game in
+page](./Links.md) for some reading suggestions. To efficiently code your dream game in
 Evennia you don't need to be a Python guru, but you do need to be able to read example code
 containing at least these basic Python features:
 
@@ -92,8 +92,8 @@ programming](https://www.tutorialspoint.com/python/python_classes_objects.htm), 
 [Classes](https://docs.python.org/tutorial/classes.html), their methods and properties
 
 Obviously, the more things you feel comfortable with, the easier time you'll have to find your way.
-With just basic knowledge you should be able to define your own [Commands](Components/Commands), create custom
-[Objects](Components/Objects) as well as make your world come alive with basic [Scripts](Components/Scripts). You can
+With just basic knowledge you should be able to define your own [Commands](Components/Commands.md), create custom
+[Objects](Components/Objects.md) as well as make your world come alive with basic [Scripts](Components/Scripts.md). You can
 definitely build a whole advanced and customized game from extending Evennia's examples only.
 
 ### I know my Python stuff and I am willing to use it!
@@ -110,8 +110,8 @@ presence (a website and a mud web client) to play around with ...
 
 ### Where to from here?
 
-From here you can continue browsing the [online documentation]([online documentation](index:Evennia-documentation)) to
-find more info about Evennia. Or you can jump into the [Tutorials](Howto/Howto-Overview) and get your hands
+From here you can continue browsing the [online documentation](./index.md) to
+find more info about Evennia. Or you can jump into the [Tutorials](Howto/Howto-Overview.md) and get your hands
 dirty with code right away. You can also read the lead developer's [dev blog](https://evennia.blogspot.com/) for many tidbits and snippets about Evennia's development and
 structure.
 
@@ -124,9 +124,9 @@ chat](https://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE
 on IRC. This allows you to chat directly with other developers new and old as well as with the devs
 of Evennia itself. This chat is logged (you can find links on https://www.evennia.com) and can also
 be searched from the same place for discussion topics you are interested in.
-2. Read the [Game Planning](Howto/Starting/Part2/Game-Planning) wiki page. It gives some ideas for your work flow and the
+2. Read the [Game Planning](Howto/Starting/Part2/Game-Planning.md) wiki page. It gives some ideas for your work flow and the
 state of mind you should aim for - including cutting down the scope of your game for its first
 release.
-3. Do the [Tutorial for basic MUSH-like game](Howto/Starting/Part3/Tutorial-for-basic-MUSH-like-game) carefully from
+3. Do the [Tutorial for basic MUSH-like game](Howto/Starting/Part3/Tutorial-for-basic-MUSH-like-game.md) carefully from
 beginning to end and try to understand what does what. Even if you are not interested in a MUSH for
 your own game, you will end up with a small (very small) game that you can build or learn from.

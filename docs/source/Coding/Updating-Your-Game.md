@@ -2,9 +2,9 @@
 
 
 Fortunately, it's extremely easy to keep your Evennia server up-to-date. If you haven't already, see
-the [Getting Started guide](../Setup/Setup-Quickstart) and get everything running.
+the [Getting Started guide](../Setup/Setup-Quickstart.md) and get everything running.
 
-### Updating with the latest Evennia code changes
+## Updating with the latest Evennia code changes
 
 Very commonly we make changes to the Evennia code to improve things. There are many ways to get told
 when to update: You can subscribe to the RSS feed or manually check up on the feeds from
@@ -30,7 +30,7 @@ the new code affect your game. If you want to be really sure you should run a fu
 so that both Server and Portal can restart (this will disconnect everyone though, so if you know the
 Portal has had no updates you don't have to do that).
 
-### Upgrading Evennia dependencies
+## Upgrading Evennia dependencies
 
 On occasion we update the versions of third-party libraries Evennia depend on (or we may add a new
 dependency). This will be announced on the mailing list/forum. If you run into errors when starting
@@ -40,8 +40,8 @@ version that should not be used in production.
 
 Upgrading `evennia` will automatically fetch all the latest packages that it now need. First `cd` to
 your cloned `evennia` folder. Make sure your `virtualenv` is active and use
-    
-    pip install --upgrade -e . 
+
+    pip install --upgrade -e .
 
 Remember the period (`.`) at the end - that applies the upgrade to the current location (your
 `evennia` dir).
@@ -55,7 +55,7 @@ source-code changes.
 Follow the upgrade output to make sure it finishes without errors. To check what packages are
 currently available in your python environment after the upgrade, use
 
-    pip list  
+    pip list
 
 This will show you the version of all installed packages. The `evennia` package will also show the
 location of its source code.
@@ -72,13 +72,13 @@ When the database schema changes, you just go to your game folder and run
      evennia migrate
 
 > Hint: If the `evennia` command is not found, you most likely need to activate your
-[virtualenv](../Glossary#virtualenv).
+[virtualenv](../Glossary.md#virtualenv).
 
 ## Resetting your database
 
 Should you ever want to start over completely from scratch, there is no need to re-download Evennia
 or anything like that. You just need to clear your database. Once you are done, you just rebuild it
-from scratch by running 
+from scratch by running
 
     evennia migrate
 
@@ -131,4 +131,4 @@ automatically for you. Basically, whenever the schema changes we distribute smal
 "migrations" with the source. Those tell the system exactly how to implement the change so you don't
 have to do so manually. When a migration has been added we will tell you so on Evennia's mailing
 lists and in commit messages -
-you then just run `evennia migrate` to be up-to-date again. 
+you then just run `evennia migrate` to be up-to-date again.

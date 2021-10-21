@@ -51,11 +51,11 @@ evennia database is `evennia dbshell`. Linux users should look for the `sqlite3`
 distro while Mac/Windows should get the [sqlite-tools package from this
 page](https://sqlite.org/download.html).
 
-To inspect the default Evennia database (once it's been created), go to your game dir and do 
+To inspect the default Evennia database (once it's been created), go to your game dir and do
 
 ```bash
     sqlite3 server/evennia.db3
-    # or 
+    # or
     evennia dbshell
 ```
 
@@ -68,7 +68,7 @@ See [here](https://gist.github.com/vincent178/10889334) for a cheat-sheet of com
 While not as fast as SQLite for normal usage, it will scale better than SQLite, especially if your
 game has an very large database and/or extensive web presence through a separate server process.
 
-### Install and initial setup of PostgreSQL 
+### Install and initial setup of PostgreSQL
 
 First, install the posgresql server. Version `9.6` is tested with Evennia. Packages are readily
 available for all distributions. You need to also get the `psql` client (this is called `postgresql-
@@ -85,16 +85,16 @@ Next, start the postgres client:
     psql -U postgres --password
 ```
 
-```warning::
+```{warning}
 
   With the `--password` argument, Postgres should prompt you for a password.
   If it won't, replace that with `-p yourpassword` instead. Do not use the `-p` argument unless you
   have to since the resulting command, and your password, will be logged in the shell history.
 ```
 
-This will open a console to the postgres service using the psql client. 
+This will open a console to the postgres service using the psql client.
 
-On the psql command line: 
+On the psql command line:
 
 ```sql
 CREATE USER evennia WITH PASSWORD 'somepassword';
@@ -107,7 +107,7 @@ ALTER ROLE evennia SET default_transaction_isolation TO 'read committed';
 ALTER ROLE evennia SET timezone TO 'UTC';
 
 GRANT ALL PRIVILEGES ON DATABASE evennia TO evennia;
--- Other useful commands: 
+-- Other useful commands:
 --  \l       (list all databases and permissions)
 --  \q       (exit)
 
@@ -123,7 +123,7 @@ again to recreate the database and grant privileges.
 
 ### Evennia PostgreSQL configuration
 
-Edit `mygame/server/conf/secret_settings.py and add the following section: 
+Edit `mygame/server/conf/secret_settings.py and add the following section:
 
 ```python
 #
@@ -156,7 +156,7 @@ database.
 
 ### Advanced Postgresql Usage (Remote Server)
 
-```warning::
+```{warning}
 
   The example below is for a server within a private network that is not open to
   the Internet.  Be sure to understand the details before making any changes to
@@ -197,7 +197,7 @@ listen_address = 'localhost'    # What IP address(es) to listen on;
                                 # defaults to 'localhost'; use '*' for all
 ```
 
-```warning::
+```{warning}
   Misconfiguring the wrong cluster may cause problems
   with existing clusters.
 ```
@@ -207,7 +207,7 @@ Also, note the line with `port =` and keep the port number in mind.
 Set `listen_addresses` to `'*'`.  This permits postgresql to accept connections
 on any interface.
 
-```warning::
+```{warning}
   Setting `listen_addresses` to `'*'` opens a port on all interfaces.  If your
   server has access to the Internet, ensure your firewall is configured
   appropriately to limit access to this port as necessary.  (You may also list
@@ -226,7 +226,7 @@ Add a line with:
 host    all             all             0.0.0.0/0               md5
 ```
 
-```warning::
+```{warning}
   This permits incoming connections from *all* IPs.  See
   the PosgreSQL documentation on how to limit this.
 ```
@@ -282,7 +282,7 @@ GRANT ALL PRIVILEGES ON evennia.* TO 'evennia'@'localhost';
 FLUSH PRIVILEGES;
 -- use 'exit' to quit client
 ```
-[Here](https://gist.github.com/hofmannsven/9164408) is a mysql command cheat sheet. 
+[Here](https://gist.github.com/hofmannsven/9164408) is a mysql command cheat sheet.
 
 Above we created a new local user and database (we called both 'evennia' here, you can name them
 what you prefer). We set the character set to `utf8` to avoid an issue with prefix character length
@@ -313,9 +313,9 @@ your settings as below.
     DATABASES = {
        'default': {
            'ENGINE': 'django.db.backends.mysql',
-           'NAME': 'evennia', 
-           'USER': 'evennia', 
-           'PASSWORD': 'somepassword', 
+           'NAME': 'evennia',
+           'USER': 'evennia',
+           'PASSWORD': 'somepassword',
            'HOST': 'localhost',  # or an IP Address that your DB is hosted on
            'PORT': '', # use default port
        }

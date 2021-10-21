@@ -26,6 +26,7 @@ CHANNEL_DEFAULT_TYPECLASS = class_from_module(
 # limit symbol import for API
 __all__ = (
     "CmdChannel",
+    "CmdObjectChannel",
 
     "CmdAddCom",
     "CmdDelCom",

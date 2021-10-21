@@ -5,15 +5,15 @@ Evennia offers a powerful in-game line editor in `evennia.utils.eveditor.EvEdito
 mimicking the well-known VI line editor. It offers line-by-line editing, undo/redo, line deletes,
 search/replace, fill, dedent and more.
 
-### Launching the editor
+## Launching the editor
 
-The editor is created as follows: 
+The editor is created as follows:
 
 ```python
 from evennia.utils.eveditor import EvEditor
 
-EvEditor(caller, 
-         loadfunc=None, savefunc=None, quitfunc=None, 
+EvEditor(caller,
+         loadfunc=None, savefunc=None, quitfunc=None,
          key="")
 ```
 
@@ -29,7 +29,7 @@ cleanup and exit messages to the user must be handled by this function.
 It has no other mechanical function.
  - `persistent` (default `False`): if set to `True`, the editor will survive a reboot.
 
-### Example of usage
+## Example of usage
 
 This is an example command for setting a specific Attribute using the editor.
 
@@ -39,7 +39,7 @@ from evennia.utils import eveditor
 
 class CmdSetTestAttr(Command):
     """
-    Set the "test" Attribute using 
+    Set the "test" Attribute using
     the line editor.
 
     Usage:
@@ -60,12 +60,12 @@ class CmdSetTestAttr(Command):
             caller.msg("Editor exited")
         key = f"{self.caller}/test"
         # launch the editor
-        eveditor.EvEditor(self.caller, 
-                          loadfunc=load, savefunc=save, quitfunc=quit, 
-                          key=key)            
+        eveditor.EvEditor(self.caller,
+                          loadfunc=load, savefunc=save, quitfunc=quit,
+                          key=key)
 ```
 
-### Persistent editor
+## Persistent editor
 
 If you set the `persistent` keyword to `True` when creating the editor, it will remain open even
 when reloading the game.  In order to be persistent, an editor needs to have its callback functions
@@ -90,7 +90,7 @@ def quit(caller):
 
 class CmdSetTestAttr(Command):
     """
-    Set the "test" Attribute using 
+    Set the "test" Attribute using
     the line editor.
 
     Usage:
@@ -102,12 +102,12 @@ class CmdSetTestAttr(Command):
         "Set up the callbacks and launch the editor"
         key = f"{self.caller}/test"
         # launch the editor
-        eveditor.EvEditor(self.caller, 
-                          loadfunc=load, savefunc=save, quitfunc=quit, 
-                          key=key, persistent=True)            
+        eveditor.EvEditor(self.caller,
+                          loadfunc=load, savefunc=save, quitfunc=quit,
+                          key=key, persistent=True)
 ```
 
-### Line editor usage
+## Line editor usage
 
 The editor mimics the `VIM` editor as best as possible. The below is an excerpt of the return from
 the in-editor help command (`:h`).
@@ -154,7 +154,7 @@ the in-editor help command (`:h`).
     <txt> - longer string, usually not needed to be enclosed in quotes.
 ```
 
-### The EvEditor to edit code
+## The EvEditor to edit code
 
 The `EvEditor` is also used to edit some Python code in Evennia.  The `@py` command supports an
 `/edit` switch that will open the EvEditor in code mode.  This mode isn't significantly different

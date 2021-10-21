@@ -1,14 +1,14 @@
 # Crafting system contrib
 
 _Contrib by Griatch 2020_
-```versionadded:: 1.0
+```{versionadded} 1.0
 ```
 
 This contrib implements a full Crafting system that can be expanded and modified to fit your game.
 
-- See the [evennia/contrib/crafting/crafting.py API](api:evennia.contrib.crafting.crafting) for installation
+- See the [evennia/contrib/crafting/crafting.py API](evennia.contrib.crafting.crafting) for installation
   instructrions.
-- See the [sword example](api:evennia.contrib.crafting.example_recipes) for an example of how to design
+- See the [sword example](evennia.contrib.crafting.example_recipes) for an example of how to design
   a crafting tree for crafting a sword from base elements.
 
 From in-game it uses the new `craft` command:
@@ -45,7 +45,7 @@ result = craft(caller, "recipename", *inputs)
 
 ```
 Here, `caller` is the one doing the crafting and `*inputs` is any combination of consumables and/or tool
-Objects. The system will identify which is which by the [Tags](../Components/Tags) on them (see below)
+Objects. The system will identify which is which by the [Tags](../Components/Tags.md) on them (see below)
 The `result` is always a list.
 
 ## Adding new recipes
@@ -84,7 +84,7 @@ class WoodenPuppetRecipe(CraftingRecipe):
 
 ```
 
-This specifies which tags to look for in the inputs. It defines a [Prototype](../Components/Prototypes)
+This specifies which tags to look for in the inputs. It defines a [Prototype](../Components/Prototypes.md)
 for the recipe to use to spawn the result on the fly (a recipe could spawn more than one result if needed).
 Instead of specifying the full prototype-dict, you could also just provide a list of `prototype_key`s to
 existing prototypes you have.
@@ -93,7 +93,7 @@ After reloading the server, this recipe would now be available to use. To try it
 create materials and tools to insert into the recipe.
 
 
-The recipe analyzes inputs, looking for [Tags](../Components/Tags) with specific tag-categories.
+The recipe analyzes inputs, looking for [Tags](../Components/Tags.md) with specific tag-categories.
 The tag-category used can be set per-recipe using the (`.consumable_tag_category` and
 `.tool_tag_category` respectively). The defaults are `crafting_material` and `crafting_tool`. For
 the puppet we need one object with the `wood` tag and another with the `knife` tag:
@@ -152,7 +152,7 @@ in `settings.CRAFTING_RECIPE_MODULES`.
 
 Even without modifying more than the class properties, there are a lot of options to set on
 the `CraftingRecipe` class. Easiest is to refer to the
-[CraftingRecipe api documentation](evennia.contrib.crafting.crafting.html#evennia.contrib.crafting.crafting.CraftingRecipe).
+[CraftingRecipe api documentation](evennia.contrib.crafting.crafting.CraftingRecipe).
 For example, you can customize the validation-error messages, decide if the ingredients have
 to be exactly right, if a failure still consumes the ingredients or not, and much more.
 
@@ -211,7 +211,7 @@ if we succed. We would of course make this a lot more immersive and detailed in 
 principle you could customize each recipe just the way you want it, but you could also inherit from
 a central parent like this to cut down on work.
 
-The [sword recipe example module](api:evennia.contrib.crafting.example_recipes) also shows an example
+The [sword recipe example module](evennia.contrib.crafting.example_recipes) also shows an example
 of a random skill-check being implemented in a parent and then inherited for multiple use.
 
 ## Even more customization

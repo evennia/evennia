@@ -5,18 +5,18 @@ need to adopt some best practices as well as find a good place to start to learn
 
 Here are some pointers to get you going.
 
-### Start with the tutorial
+## Start with the tutorial
 
-It's highly recommended that you jump in on the [Starting Tutorial](../Howto/Starting/Part1/Starting-Part1). Even if 
+It's highly recommended that you jump in on the [Starting Tutorial](../Howto/Starting/Part1/Starting-Part1.md). Even if
 you only the beginning or some part of it, it covers much of the things needed to get started.
 
-### Python
+## Python
 
 Evennia is developed using Python. Even if you are more of a designer than a coder, it is wise to
 learn how to read and understand basic Python code. If you are new to Python, or need a refresher,
-take a look at our [Python introduction](../Howto/Starting/Part1/Python-basic-introduction).
+take a look at our [Python introduction](../Howto/Starting/Part1/Python-basic-introduction.md).
 
-### Explore Evennia interactively
+## Explore Evennia interactively
 
 When new to Evennia it can be hard to find things or figure out what is available. Evennia offers a
 special interactive python shell that allows you to experiment and try out things. It's recommended
@@ -35,13 +35,13 @@ This will open an Evennia-aware python shell (using ipython). From within this s
     evennia.<TAB>
 
 That is, enter `evennia.` and press the `<TAB>` key. This will show you all the resources made
-available at the top level of Evennia's  "flat API". See the [flat API](../Evennia-API) page for more
+available at the top level of Evennia's  "flat API". See the [flat API](../Evennia-API.md) page for more
 info on how to explore it efficiently.
 
-#### Jupyter Notebook Support
+### Jupyter Notebook Support
 
 You can also explore evennia interactively in a [Jupyter notebook](https://jupyter.readthedocs.io/en/latest/index.html#). This offers
-an in-browser view of your code similar to Matlab or similar programs. There are 
+an in-browser view of your code similar to Matlab or similar programs. There are
 a few extra steps that must be taken in order for this to work:
 
     # [open a new console/terminal]
@@ -51,7 +51,7 @@ a few extra steps that must be taken in order for this to work:
 
 Next, `cd` to your game folder. _It's important that you are in the _root_ of this folder for the next command_:
 
-    evennia shell_plus --notebook & 
+    evennia shell_plus --notebook &
 
 The `&` at the end starts the process as a background process on Linux/Unix.
 Skip it if your OS doesn't support this syntax. Your browser should now open
@@ -59,7 +59,7 @@ with the Jupyter interface. If not, open a browser to the link given on the
 command line.
 
 In the window, open the `new` menu in the top right and start a `Django Shell-Plus` notebook (or
-open an existing one if you had one from before). In the first cell you must initialize 
+open an existing one if you had one from before). In the first cell you must initialize
 Evennia like so:
 
 ```python
@@ -71,13 +71,13 @@ _Note that the above initialization must be run every time a new new notebook/ke
 
 After this you can import and access all of the Evennia system, same as with `evennia shell`.
 
-#### More exploration
+### More exploration
 
-You can complement your exploration by peeking at the sections of the much more detailed 
-[Evennia Component overview](../Components/Components-Overview). The [Tutorials](../Howto/Howto-Overview) section also contains a growing collection
+You can complement your exploration by peeking at the sections of the much more detailed
+[Evennia Component overview](../Components/Components-Overview.md). The [Tutorials](../Howto/Howto-Overview.md) section also contains a growing collection
 of system- or implementation-specific help.
 
-### Use a python syntax checker
+## Use a python syntax checker
 
 Evennia works by importing your own modules and running them as part of the server. Whereas Evennia
 should just gracefully tell you what errors it finds, it can nevertheless be a good idea for you to
@@ -89,12 +89,12 @@ many python syntax checkers out there. A fast and easy one is
 every possible problem - some bugs or problems will only appear when you actually run the code. But
 using such a checker can be a good start to weed out the simple problems.
 
-### Plan before you code
+## Plan before you code
 
-Before you start coding away at your dream game, take a look at our [Game Planning](../Howto/Starting/Part2/Game-Planning)
+Before you start coding away at your dream game, take a look at our [Game Planning](../Howto/Starting/Part2/Game-Planning.md)
 page. It might hopefully help you avoid some common pitfalls and time sinks.
 
-### Code in your game folder, not in the evennia/ repository
+## Code in your game folder, not in the evennia/ repository
 
 As part of the Evennia setup you will create a game folder to host your game code. This is your
 home. You should *never* need to modify anything in the `evennia` library (anything you download
@@ -103,9 +103,9 @@ it out into your game folder and edit it there.
 
 If you find that Evennia doesn't support some functionality you need, make a [Feature
 Request](github:issue) about it. Same goes for [bugs][bug]. If you add features or fix bugs
-yourself, please consider [Contributing](../Contributing) your changes upstream!
+yourself, please consider [Contributing](../Contributing.md) your changes upstream!
 
-### Learn to read tracebacks
+## Learn to read tracebacks
 
 Python is very good at reporting when and where things go wrong. A *traceback* shows everything you
 need to know about crashing code. The text can be pretty long, but you usually are only interested
@@ -124,7 +124,7 @@ module holding your custom class. Since such a module is not valid Python, Evenn
 all. Instead of crashing, Evennia will then print the full traceback to the terminal/console and
 temporarily fall back to the safe `DefaultObject` until you fix the problem and reload.
 
-### Docs are here to help you
+## Docs are here to help you
 
 Some people find reading documentation extremely dull and shun it out of principle. That's your
 call, but reading docs really *does* help you, promise! Evennia's documentation is pretty thorough
@@ -133,7 +133,7 @@ can't find the answer in the docs, don't be shy to ask questions! The [discussio
 group](https://sites.google.com/site/evenniaserver/discussions) and the [irc
 chat](https://webchat.freenode.net/?channels=evennia) are also there for you.
 
-### The most important point
+## The most important point
 
 And finally, of course, have fun!
 

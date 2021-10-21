@@ -20,7 +20,7 @@ Given the path to a Typeclass, there are three ways to create an instance of it:
    This is the recommended way if you are trying to create things in Python. The first argument can either be 
    the class _or_ the python-path to the typeclass, like `"path.to.SomeTypeClass"`. It can also be `None` in which 
    case the Evennia default will be used. While all the creation methods
-   are available on `evennia`, they are actually implemented in [evennia/utils/create.py](api:evennia.utils.create).
+   are available on `evennia`, they are actually implemented in [evennia/utils/create.py](../../../api/evennia.utils.create.md).
 - Finally, you can create objects using an in-game command, such as
 
         create/drop obj:path.to.SomeTypeClass
