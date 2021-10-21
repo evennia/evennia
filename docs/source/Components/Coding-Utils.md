@@ -29,13 +29,13 @@ If you need to search for objects in a code module you can use the functions in
      obj = search_object(objname)
 ```
 
-- [evennia.search_account](../wiki/evennia.accounts.manager#accountdbmanagersearch_account)
-- [evennia.search_object](../wiki/evennia.objects.manager#objectdbmanagersearch_object)
-- [evennia.search_object_by_tag](../wiki/evennia.utils.search#search_object_by_tag)
-- [evennia.search_script](../wiki/evennia.scripts.manager#scriptdbmanagersearch_script)
-- [evennia.search_channel](../wiki/evennia.comms.managers#channeldbmanagersearch_channel)
-- [evennia.search_message](../wiki/evennia.comms.managers#msgmanagersearch_message)
-- [evennia.search_help](../wiki/evennia.help.manager#helpentrymanagersearch_help)
+- [`evennia.search_account`](evennia.accounts.manager.AccountDBManager.search_account)
+- [`evennia.search_object`](evennia.objects.manager.ObjectDBManager.search_object)
+- [`evennia.search(object)_by_tag`](evennia.utils.search.search_tag)
+- [`evennia.search_script`](evennia.scripts.manager.ScriptDBManager.search_script)
+- [`evennia.search_channel`](evennia.comms.managers.ChannelDBManager.search_channel)
+- [`evennia.search_message`](evennia.comms.managers.MsgManager.search_message)
+- [`evennia.search_help`](evennia.help.manager.HelpEntryManager.search_help)
 
 Note that these latter methods will always return a `list` of results, even if the list has one or
 zero entries.
@@ -50,12 +50,12 @@ entities directly in code (for example when defining new create commands).
    myobj = evennia.create_objects("game.gamesrc.objects.myobj.MyObj", key="MyObj")
 ```
 
-- [evennia.create_account](../wiki/evennia.utils.create#create_account)
-- [evennia.create_object](../wiki/evennia.utils.create#create_object)
-- [evennia.create_script](../wiki/evennia.utils.create#create_script)
-- [evennia.create_channel](../wiki/evennia.utils.create#create_channel)
-- [evennia.create_help_entry](../wiki/evennia.utils.create#create_help_entry)
-- [evennia.create_message](../wiki/evennia.utils.create#create_message)
+- [`evennia.create_account`](evennia.utils.create.create_account)
+- [`evennia.create_object`](evennia.utils.create.create_object)
+- [`evennia.create_script`](evennia.utils.create.create_script)
+- [`evennia.create_channel`](evennia.utils.create.create_channel)
+- [`evennia.create_help_entry`](evennia.utils.create.create_help_entry)
+- [`evennia.create_message`](evennia.utils.create.create_message)
 
 Each of these create-functions have a host of arguments to further customize the created entity. See
 `evennia/utils/create.py` for more information.
@@ -137,7 +137,7 @@ setting `TIME_GAME_EPOCH` sets the starting game epoch (in seconds). The functio
 you desire for your game. You can use the `@time` command to view the server time info.
 
 You can also *schedule* things to happen at specific in-game times using the
-[gametime.schedule](github:evennia.utils.gametime#schedule) function:
+[gametime.schedule](evennia.utils.gametime.schedule) function:
 
 ```python
 import evennia
@@ -181,13 +181,13 @@ number of seconds. This is a very light wrapper over a Twisted
 non-persistently, which means that if the server is `@reload`ed before the delay is over, the
 callback will never run (the server forgets it). If setting `persistent` to True, the delay will be
 stored in the database and survive a `@reload` - but for this to work it is susceptible to the same
-limitations incurred when saving to an [Attribute](./Attributes).
+limitations incurred when saving to an [Attribute](./Attributes.md).
 
 The `deferred` return object can usually be ignored, but calling its `.cancel()` method will abort
 the delay prematurely.
 
 `utils.delay` is the lightest form of delayed call in Evennia. For other way to create time-bound
-tasks, see the [TickerHandler](./TickerHandler) and [Scripts](./Scripts).
+tasks, see the [TickerHandler](./TickerHandler.md) and [Scripts](./Scripts.md).
 
 > Note that many delayed effects can be achieved without any need for an active timer. For example
 if you have a trait that should recover a point every 5 seconds you might just need its value when
@@ -203,7 +203,7 @@ classes, instances or python-paths-to-classes.
 
 Note that Python code should usually work with [duck
 typing](https://en.wikipedia.org/wiki/Duck_typing). But in Evennia's case it can sometimes be useful
-to check if an object inherits from a given [Typeclass](./Typeclasses) as a way of identification. Say
+to check if an object inherits from a given [Typeclass](./Typeclasses.md) as a way of identification. Say
 for example that we have a typeclass *Animal*. This has a subclass *Felines* which in turn has a
 subclass *HouseCat*. Maybe there are a bunch of other animal types too, like horses and dogs. Using
 `inherits_from` will allow you to check for all animals in one go:
@@ -274,17 +274,17 @@ need to send byte-data over the wire, `to_str` is the only one you'll need.
 The difference from Python's in-built `str()` and `bytes()` operators are that
 the Evennia ones makes use of the `ENCODINGS` setting and will try very hard to
 never raise a traceback but instead echo errors through logging. See
-[here](../Concepts/Text-Encodings) for more info.
+[here](../Concepts/Text-Encodings.md) for more info.
 
 ### Ansi Coloring Tools
-- [evennia.ansi](api:evennia.utils.ansi)
+- [evennia.utils.ansi](evennia.utils.ansi)
 
 ## Display utilities
 ### Making ascii tables
 
-The [EvTable](github:evennia.utils.evtable#evtable) class (`evennia/utils/evtable.py`) can be used
+The [EvTable](evennia.utils.evtable.EvTable) class (`evennia/utils/evtable.py`) can be used
 to create correctly formatted text tables. There is also
-[EvForm](github:evennia.utils.evform#evform) (`evennia/utils/evform.py`). This reads a fixed-format
+[EvForm](evennia.utils.evform.EvForm) (`evennia/utils/evform.py`). This reads a fixed-format
 text template from a file in order to create any level of sophisticated ascii layout.  Both evtable
 and evform have lots of options and inputs so see the header of each module for help.
 
@@ -294,4 +294,4 @@ ANSI colour. PrettyTable can be found in `evennia/utils/prettytable/`.  See its 
 instructions.
 
 ### Menus
-- [evennia.EvMenu](github:evennia.utils.evmenu#evmenu)
+- [evennia.EvMenu](evennia.utils.evmenu.EvMenu)

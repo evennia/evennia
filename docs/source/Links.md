@@ -2,7 +2,7 @@
 
 *A list of resources that may be useful for Evennia users and developers.*
 
-### Official Evennia links
+## Official Evennia links
 
 - [evennia.com](https://www.evennia.com) - Main Evennia portal page. Links to all corners of Evennia.
 - [Evennia github page](https://github.com/evennia/evennia) - Download code and read documentation.
@@ -21,7 +21,7 @@ offline in html, PDF or epub formats.
 - [Evennia on PyPi](https://pypi.python.org/pypi/Evennia-MUD-Server/)
 - [Evennia subreddit](https://www.reddit.com/r/Evennia/) (not much there yet though)
 
-### Third-party Evennia utilities and resources
+## Third-party Evennia utilities and resources
 
 *For publicly available games running on Evennia, add and find those in the [Evennia game
 index](http://games.evennia.com) instead!*
@@ -29,7 +29,7 @@ index](http://games.evennia.com) instead!*
 - [Discord Evennia channel](https://discord.gg/NecFePw) - This is a fan-driven Discord channel with
 a bridge to the official Evennia IRC channel.
 
---- 
+---
 
 - [Discord live blog](https://discordapp.com/channels/517176782357528616/517176782781415434) of the
 _Blackbirds_ Evennia game project.
@@ -76,13 +76,13 @@ learning](http://news.mit.edu/2015/learning-language-playing-computer-games-0924
 ([PDF](https://people.csail.mit.edu/karthikn/pdfs/mud-play15.pdf)) - MIT research paper using Evennia
 to train AIs.
 
-### Other useful mud development resources
+## Other useful mud development resources
 
 - [ROM area reader](https://github.com/ctoth/area_reader) - Parser for converting ROM area files to
 Python objects.
 - [Gossip MUD chat network](https://gossip.haus/)
 
-### General MUD forums and discussions 
+## General MUD forums and discussions
 
 - [MUD Coder's Guild](https://mudcoders.com/) - A blog and [associated Slack
   channel](https://slack.mudcoders.com/) with discussions on MUD development.
@@ -122,9 +122,9 @@ Contains a very useful list of things to think about when starting your new MUD.
   thought-provoking guidelines and things to think about when designing a virtual multiplayer world
   (Raph is known for *Ultima Online* among other things).
 
-### Literature
+## Literature
 
-- Richard Bartle *Designing Virtual Worlds* 
+- Richard Bartle *Designing Virtual Worlds*
   ([amazon page](https://www.amazon.com/Designing-Virtual-Worlds-Richard-Bartle/dp/0131018167)) -
   Essential reading for the design of any persistent game
   world, written by the co-creator of the original game *MUD*. Published in 2003 but it's still as
@@ -148,7 +148,7 @@ Contains a very useful list of things to think about when starting your new MUD.
   easy to follow also for a modern reader. Required reading if you think of implementing a sane game
   economic system.
 
-### Frameworks
+## Frameworks
 
 - [Django's homepage](https://www.djangoproject.com/)
   - [Documentation](https://docs.djangoproject.com/en)
@@ -157,13 +157,13 @@ Contains a very useful list of things to think about when starting your new MUD.
   - [Documentation](https://twistedmatrix.com/documents/current/core/howto/index.html)
   - [Code](https://twistedmatrix.com/trac/browser)
 
-### Tools
+## Tools
 
 - [GIT](https://git-scm.com/)
   - [Documentation](https://git-scm.com/documentation)
-- [Learn GIT in 15 minutes](https://try.github.io/levels/1/challenges/1) (interactive tutorial)
- 
-### Python Info
+  - [Learn GIT in 15 minutes](https://try.github.io/levels/1/challenges/1) (interactive tutorial)
+
+## Python Info
 
 - [Python Website](https://www.python.org/)
   - [Documentation](https://www.python.org/doc/)

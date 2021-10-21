@@ -1,7 +1,7 @@
 # A voice operated elevator using events
 
 
-- Previous tutorial: [Adding dialogues in events](./Dialogues-in-events)
+- Previous tutorial: [Adding dialogues in events](./Dialogues-in-events.md)
 
 This tutorial will walk you through the steps to create a voice-operated elevator, using the [in-
 game Python
@@ -97,7 +97,7 @@ things to decorate it a bit.
 But what we want now is to be able to say "1", "2" or "3" and have the elevator move in that
 direction.
 
-If you have read [the previous tutorial about adding dialogues in events](./Dialogues-in-events), you
+If you have read [the previous tutorial about adding dialogues in events](./Dialogues-in-events.md), you
 may remember what we need to do.  If not, here's a summary: we need to run some code when somebody
 speaks in the room.  So we need to create a callback (the callback will contain our lines of code).
 We just need to know on which event this should be set.  You can enter `call here` to see the
@@ -433,4 +433,4 @@ to consider adding the code in the source itself.  Another possibility is to cal
 with the expected behavior, which makes porting code very easy.  This side of chained events will be
 shown in the next tutorial.
 
-- Previous tutorial: [Adding dialogues in events](./Dialogues-in-events)
+- Previous tutorial: [Adding dialogues in events](./Dialogues-in-events.md)

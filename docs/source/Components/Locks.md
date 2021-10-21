@@ -2,9 +2,9 @@
 
 
 For most games it is a good idea to restrict what people can do. In Evennia such restrictions are
-applied and checked by something called *locks*. All Evennia entities ([Commands](./Commands),
-[Objects](./Objects), [Scripts](./Scripts), [Accounts](./Accounts), [Help System](./Help-System),
-[messages](./Communications#Msg) and [channels](./Communications#Channels)) are accessed through locks.
+applied and checked by something called *locks*. All Evennia entities ([Commands](./Commands.md),
+[Objects](./Objects.md), [Scripts](./Scripts.md), [Accounts](./Accounts.md), [Help System](./Help-System.md),
+[messages](./Msg.md) and [channels](./Channels.md)) are accessed through locks.
 
 A lock can be thought of as an "access rule" restricting a particular use of an Evennia entity.
 Whenever another entity wants that kind of access the lock will analyze that entity in different
@@ -92,9 +92,9 @@ the default command set) actually checks for, as in the example of `delete` abov
 
 Below are the access_types checked by the default commandset.
 
-- [Commands](./Commands)
+- [Commands](./Commands.md)
   - `cmd` - this defines who may call this command at all.
-- [Objects](./Objects):
+- [Objects](./Objects.md):
   - `control` - who is the "owner" of the object. Can set locks, delete it etc. Defaults to the
 creator of the object.
   - `call` - who may call Object-commands stored on this Object except for the Object itself. By
@@ -109,26 +109,26 @@ something like `call:false()`.
   - `get`- who may pick up the object and carry it around.
   - `puppet` - who may "become" this object and control it as their "character".
   - `attrcreate` - who may create new attributes on the object (default True)
-- [Characters](./Objects#Characters):
+- [Characters](./Objects.md#characters):
   - Same as for Objects
-- [Exits](./Objects#Exits):
+- [Exits](./Objects.md#exits):
   - Same as for Objects
   - `traverse` - who may pass the exit.
-- [Accounts](./Accounts):
+- [Accounts](./Accounts.md):
   - `examine` - who may examine the account's properties.
   - `delete` - who may delete the account.
   - `edit` - who may edit the account's attributes and properties.
   - `msg` - who may send messages to the account.
   - `boot` - who may boot the account.
-- [Attributes](./Attributes): (only checked by `obj.secure_attr`)
+- [Attributes](./Attributes.md): (only checked by `obj.secure_attr`)
   - `attrread` - see/access attribute
   - `attredit` - change/delete attribute
-- [Channels](./Communications#Channels):
+- [Channels](./Channels.md):
   - `control` - who is administrating the channel. This means the ability to delete the channel,
 boot listeners etc.
   - `send` - who may send to the channel.
   - `listen` - who may subscribe and listen to the channel.
-- [HelpEntry](./Help-System):
+- [HelpEntry](./Help-System.md):
   - `examine` - who may view this help entry (usually everyone)
   - `edit` - who may edit this help entry.
 
@@ -214,10 +214,10 @@ Some useful default lockfuncs (see `src/locks/lockfuncs.py` for more):
 - `false()/none()/superuser()` - give access to none. Superusers bypass the check entirely and are
 thus the only ones who will pass this check.
 - `perm(perm)` - this tries to match a given `permission` property, on an Account firsthand, on a
-Character second. See [below](./Locks#permissions).
+Character second. See [below](./Permissions.md).
 - `perm_above(perm)` - like `perm` but requires a "higher" permission level than the one given.
 - `id(num)/dbref(num)` - checks so the access_object has a certain dbref/id.
-- `attr(attrname)` - checks if a certain [Attribute](./Attributes) exists on accessing_object.
+- `attr(attrname)` - checks if a certain [Attribute](./Attributes.md) exists on accessing_object.
 - `attr(attrname, value)` - checks so an attribute exists on accessing_object *and* has the given
 value.
 - `attr_gt(attrname, value)` - checks so accessing_object has a value larger (`>`) than the given
@@ -250,7 +250,7 @@ a Lock lookup.
 ## Default locks
 
 Evennia sets up a few basic locks on all new objects and accounts (if we didn't, noone would have
-any access to anything from the start).  This is all defined in the root [Typeclasses](./Typeclasses)
+any access to anything from the start).  This is all defined in the root [Typeclasses](./Typeclasses.md)
 of the respective entity, in the hook method `basetype_setup()` (which you usually don't want to
 edit unless you want to change how basic stuff like rooms and exits store their internal variables).
 This is called once, before `at_object_creation`, so just put them in the latter method on your
@@ -300,7 +300,7 @@ whereas only Admins and the creator may delete it. Everyone can pick it up.
 
 ## A complete example of setting locks on an object
 
-Assume we have two objects - one is ourselves (not superuser) and the other is an [Object](./Objects)
+Assume we have two objects - one is ourselves (not superuser) and the other is an [Object](./Objects.md)
 called `box`.
 
      > create/drop box
@@ -326,7 +326,7 @@ This is defined in `evennia/commands/default/general.py`. In its code we find th
 ```
 
 So the `get` command looks for a lock with the type *get* (not so surprising). It also looks for an
-[Attribute](./Attributes) on the checked object called _get_err_msg_ in order to return a customized
+[Attribute](./Attributes.md) on the checked object called _get_err_msg_ in order to return a customized
 error message. Sounds good! Let's start by setting that on the box:
 
      > set box/get_err_msg = You are not strong enough to lift this box.

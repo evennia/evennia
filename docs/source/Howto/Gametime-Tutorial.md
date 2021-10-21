@@ -7,7 +7,7 @@ names for its time units or might even use a completely custom calendar. You don
 game time system at all. But if you do, Evennia offers basic tools to handle these various
 situations. This tutorial will walk you through these features.
 
-### A game time with a standard calendar
+## A game time with a standard calendar
 
 Many games let their in-game time run faster or slower than real time, but still use our normal
 real-world calendar. This is common both for games set in present day as well as for games in
@@ -21,7 +21,7 @@ automatically handled by the system.
 Evennia's game time features assume a standard calendar (see the relevant section below for a custom
 calendar).
 
-#### Setting up game time for a standard calendar
+### Setting up game time for a standard calendar
 
 All is done through the settings.  Here are the settings you should use if you want a game time with
 a standard calendar:
@@ -91,14 +91,14 @@ The line that is most relevant here is the game time epoch.  You see it shown at
 this point forward, the game time keeps increasing.  If you keep typing `@time`, you'll see the game
 time updated correctly... and going (by default) twice as fast as the real time.
 
-#### Time-related events
+### Time-related events
 
 The `gametime` utility also has a way to schedule game-related events, taking into account your game
 time, and assuming a standard calendar (see below for the same feature with a custom calendar).  For
 instance, it can be used to have a specific message every (in-game) day at 6:00 AM showing how the
 sun rises.
 
-The function `schedule()` should be used here.  It will create a [script](../Components/Scripts) with some
+The function `schedule()` should be used here.  It will create a [script](../Components/Scripts.md) with some
 additional features to make sure the script is always executed when the game time matches the given
 parameters.
 
@@ -110,12 +110,12 @@ repeatedly.
 - Additional keyword arguments `sec`, `min`, `hour`, `day`, `month` and `year` to describe the time
 to schedule.  If the parameter isn't given, it assumes the current time value of this specific unit.
 
-Here is a short example for making the sun rise every day: 
+Here is a short example for making the sun rise every day:
 
 ```python
 # in a file ingame_time.py in mygame/world/
 
-from evennia.utils import gametime 
+from evennia.utils import gametime
 from typeclasses.rooms import Room
 
 def at_sunrise():
@@ -166,7 +166,7 @@ days.
 Evennia handles custom calendars through an optional *contrib* module, called `custom_gametime`.
 Contrary to the normal `gametime` module described above it is not active by default.
 
-#### Setting up the custom calendar
+### Setting up the custom calendar
 
 In our first example of the Shire calendar, used by hobbits in books by Tolkien, we don't really
 need the notion of weeks... but we need the notion of months having 30 days, not 28.
@@ -194,7 +194,7 @@ configuration:  instead, we skip from days to months directly.
 In order for this setting to work properly, remember all units have to be multiples of the previous
 units.  If you create "day", it needs to be multiple of hours, for instance.
 
-So for our example, our settings may look like this: 
+So for our example, our settings may look like this:
 
 ```python
 # in a file settings.py in mygame/server/conf
@@ -263,7 +263,7 @@ Don't forget to add it in your CharacterCmdSet to see this command:
 ```python
 # in mygame/commands/default_cmdset.py
 
-from commands.gametime import CmdTime   # <-- Add 
+from commands.gametime import CmdTime   # <-- Add
 
 # ...
 
@@ -280,7 +280,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         Populates the cmdset
         """
         super().at_cmdset_creation()
-        # ... 
+        # ...
         self.add(CmdTime())   # <- Add
 ```
 
@@ -293,7 +293,7 @@ it, you might see something like:
 You could display it a bit more prettily with names for months and perhaps even days, if you want.
 And if "months" are called "moons" in your game, this is where you'd add that.
 
-#### Time-related events in custom gametime
+## Time-related events in custom gametime
 
 The `custom_gametime` module also has a way to schedule game-related events, taking into account
 your game time (and your custom calendar).  It can be used to have a specific message every day at

@@ -5,7 +5,7 @@ This is a small tutorial for customizing your character objects, using the examp
 turn on and off ANSI color parsing as an example.  `@options NOCOLOR=True` will now do what this
 tutorial shows, but the tutorial subject can be applied to other toggles you may want, as well.
 
-In the Building guide's [Colors](../Concepts/TextTags#coloured-text) page you can learn how to add color to your
+In the Building guide's [Colors](../Concepts/Colors.md) page you can learn how to add color to your
 game by using special markup. Colors enhance the gaming experience, but not all users want color.
 Examples would be users working from clients that don't support color, or people with various seeing
 disabilities that rely on screen readers to play your game. Also, whereas Evennia normally
@@ -26,7 +26,7 @@ configuration system for your characters. This is the basic sequence:
 Create a new module in `mygame/typeclasses` named, for example, `mycharacter.py`. Alternatively you
 can simply add a new class to 'mygamegame/typeclasses/characters.py'.
 
-In your new module(or characters.py), create a new [Typeclass](../Components/Typeclasses) inheriting from
+In your new module(or characters.py), create a new [Typeclass](../Components/Typeclasses.md) inheriting from
 `evennia.DefaultCharacter`. We will also import `evennia.utils.ansi`, which we will use later.
 
 ```python
@@ -39,7 +39,7 @@ In your new module(or characters.py), create a new [Typeclass](../Components/Typ
             self.db.config_color = True
 ```
 
-Above we set a simple config value as an [Attribute](../Components/Attributes).
+Above we set a simple config value as an [Attribute](../Components/Attributes.md).
 
 Let's make sure that new characters are created of this type. Edit your
 `mygame/server/conf/settings.py` file and add/change `BASE_CHARACTER_TYPECLASS` to point to your new
@@ -158,7 +158,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
 
 ## More colors
 
-Apart from ANSI colors, Evennia also supports **Xterm256** colors (See [Colors](../Concepts/TextTags#colored-
+Apart from ANSI colors, Evennia also supports **Xterm256** colors (See [Colors](../Concepts/TextTags.md#colored-
 text)). The `msg()` method supports the `xterm256` keyword for manually activating/deactiving
 xterm256. It should be easy to expand the above example to allow players to customize xterm256
 regardless of if Evennia thinks their client supports it or not.

@@ -28,9 +28,9 @@ Before we continue, let’s make a brief detour. Evennia is very flexible about 
 more flexible about using and adding commands to those objects. Here are some ground rules well
 worth remembering for the remainder of this article:
 
-- The [Account](../Components/Accounts) represents the real person logging in and has no game-world existence.
-- Any [Object](../Components/Objects) can be puppeted by an Account (with proper permissions).
-- [Characters](../Components/Objects#characters), [Rooms](../Components/Objects#rooms), and [Exits](../Components/Objects#exits) are just
+- The [Account](../Components/Accounts.md) represents the real person logging in and has no game-world existence.
+- Any [Object](../Components/Objects.md) can be puppeted by an Account (with proper permissions).
+- [Characters](../Components/Objects.md#characters), [Rooms](../Components/Objects.md#rooms), and [Exits](../Components/Objects.md#exits) are just
 children of normal Objects.
 - Any Object can be inside another (except if it creates a loop).
 - Any Object can store custom sets of commands on it. Those commands can:
@@ -121,7 +121,7 @@ about the missiles being fired and has different `key` and `aliases`. We leave
 that up to you to create as an exercise. You could have it print "WOOSH! The
 mech launches missiles against <target>!", for example.
 
-Now we shove our commands into a command set. A [Command Set](../Components/Command-Sets) (CmdSet) is a container
+Now we shove our commands into a command set. A [Command Set](../Components/Command-Sets.md) (CmdSet) is a container
 holding any number of commands. The command set is what we will store on the mech.
 
 ```python
@@ -174,7 +174,7 @@ This is great for testing. The way we added it, the MechCmdSet will even go away
 server. Now we want to make the mech an actual object “type” so we can create mechs without those
 extra steps. For this we need to create a new Typeclass.
 
-A [Typeclass](../Components/Typeclasses) is a near-normal Python class that stores its existence to the database
+A [Typeclass](../Components/Typeclasses.md) is a near-normal Python class that stores its existence to the database
 behind the scenes. A Typeclass is created in a normal Python source file:
 
 ```python

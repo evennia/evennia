@@ -28,7 +28,7 @@ from evennia.comms import managers
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.utils import crop, make_iter, lazy_property
 
-__all__ = ("Msg", "TempMsg", "ChannelDB")
+__all__ = ("Msg", "TempMsg", "ChannelDB", "SubscriptionHandler")
 
 
 _GA = object.__getattribute__

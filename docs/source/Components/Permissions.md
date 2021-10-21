@@ -1,15 +1,15 @@
 # Permissions
 
 A *permission* is simply a text string stored in the handler `permissions` on `Objects`
-and `Accounts`. Think of it as a specialized sort of [Tag](./Tags) - one specifically dedicated
-to access checking. They are thus often tightly coupled to [Locks](./Locks).
+and `Accounts`. Think of it as a specialized sort of [Tag](./Tags.md) - one specifically dedicated
+to access checking. They are thus often tightly coupled to [Locks](./Locks.md).
 Permission strings are not case-sensitive, so "Builder" is the same as "builder"
 etc.
 
 Permissions are used as a convenient way to structure access levels and
 hierarchies. It is set by the `perm` command and checked by the
 `PermissionHandler.check` method as well as by the specially the `perm()` and
-`pperm()` [lock functions](./Locks).
+`pperm()` [lock functions](./Locks.md).
 
 All new accounts are given a default set of permissions defined by
 `settings.PERMISSION_ACCOUNT_DEFAULT`.
@@ -22,7 +22,7 @@ In-game, you use the `perm` command to add and remove permissions
      perm/account/del Tommy = Builders
 
 Note the use of the `/account` switch. It means you assign the permission to the
-[Accounts](./Accounts) Tommy instead of any [Character](./Objects) that also
+[Accounts](./Accounts.md) Tommy instead of any [Character](./Objects.md) that also
 happens to be named "Tommy".
 
 There can be reasons for putting permissions on Objects (especially NPCS), but
@@ -32,7 +32,7 @@ of which Character they are currently puppeting. This is especially important to
 remember when assigning permissions from the *hierarchy tree* (see below), as an
 Account's permissions will overrule that of its character. So to be sure to
 avoid confusion you should generally put hierarchy permissions on the Account,
-not on their Characters (but see also [quelling](./Locks#Quelling)).
+not on their Characters (but see also [quelling](#quelling)).
 
 In code, you add/remove Permissions via the `PermissionHandler`, which sits on all
 typeclassed entities as the property `.permissions`:
@@ -73,7 +73,7 @@ that permission to pass.
 ## Checking permissions
 
 It's important to note that you check for the permission of a *puppeted*
-[Object](./Objects) (like a Character), the check will always first use the
+[Object](./Objects.md) (like a Character), the check will always first use the
 permissions of any `Account` connected to that Object before checking for
 permissions on the Object. In the case of hierarchical permissions (Admins,
 Builders etc), the Account permission will always be used (this stops an Account
@@ -99,7 +99,7 @@ _PermissionHandler_, stored as `.permissions`  on all typeclassed entities.
 Using the `.check` method is the way to go, it will take hierarchical
 permissions into account, check accounts/sessions etc.
 
-```warning
+```{warning}
 
     Don't confuse `.permissions.check()` with `.permissions.has()`. The .has()
     method checks if a string is defined specifically on that PermissionHandler.
@@ -111,7 +111,7 @@ permissions into account, check accounts/sessions etc.
 ### Lock funcs
 
 While the `PermissionHandler` offers a simple way to check perms, [Lock
-strings](Locks) offers a mini-language for describing how something is accessed.
+strings](./Locks.md) offers a mini-language for describing how something is accessed.
 The `perm()` _lock function_ is the main tool for using Permissions in locks.
 
 Let's say we have a `red_key` object. We also have red chests that we want to
@@ -152,7 +152,6 @@ There are several variations to the default `perm` lockfunc:
 - `pperm` - looks *only* for permissions on `Accounts`, never at any puppeted
   objects (regardless of hierarchical perm or not).
 - `pperm_above` - like `perm_above`, but for Accounts only.
-
 
 ### Some examples
 

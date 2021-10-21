@@ -1,54 +1,54 @@
 # Core Components
 
 These are the 'building blocks' out of which Evennia is built. This documentation is complementary to, and often goes deeper
-than, the doc-strings of each component in the [API](../Evennia-API).
+than, the doc-strings of each component in the [API](../Evennia-API.md).
 
-## Database entites 
+## Database entites
 
-- [Typeclasses](./Typeclasses)
-  - [Sessions](./Sessions)
-  - [Acccounts](./Accounts)
-    - [Guests](../Concepts/Guest-Logins)
-  - [Objects](./Objects)
-  - [Scripts](./Scripts)
-  - [Channels and Messages](./Communications)
-- [Attributes](./Attributes)
-- [Nicks](./Nicks)
-- [Tags](./Tags)
-- [Spawner and prototypes](./Prototypes)
-- [Help entries](./Help-System)
+- [Typeclasses](./Typeclasses.md)
+  - [Sessions](./Sessions.md)
+  - [Acccounts](./Accounts.md)
+    - [Guests](../Concepts/Guest-Logins.md)
+  - [Objects](./Objects.md)
+  - [Scripts](./Scripts.md)
+  - [Channels and Messages](./Communications.md)
+- [Attributes](./Attributes.md)
+- [Nicks](./Nicks.md)
+- [Tags](./Tags.md)
+- [Spawner and prototypes](./Prototypes.md)
+- [Help entries](./Help-System.md)
 
-## Commands 
+## Commands
 
-- [Command system](./Command-System)
-    - [Commands](./Commands)
-    - [Command-Sets](./Command-Sets)
-    - [The Connection Screen](./Connection-Screen)
-    - [Available default Commands](api:evennia.commands.default#modules)
-- [Batch-Processors](./Batch-Processors)
-  - [Batch-Code-Processor](./Batch-Code-Processor)
-  - [Batch-Command-Processor](./Batch-Command-Processor)
+- [Available Default Commands](./Default-Commands.md)
+- [Command system](./Command-System.md)
+    - [Commands](./Commands.md)
+    - [Command-Sets](./Command-Sets.md)
+    - [The Connection Screen](./Connection-Screen.md)
+- [Batch-Processors](./Batch-Processors.md)
+  - [Batch-Code-Processor](./Batch-Code-Processor.md)
+  - [Batch-Command-Processor](./Batch-Command-Processor.md)
 
 ## Utils and tools
 
-- [Misc Utils](./Coding-Utils)
-- [EvEditor](./EvEditor)
-- [EvMenu](./EvMenu)
-- [EvMore](./EvMore)
-- [MonitorHandler](./MonitorHandler)
-- [TickerHandler](./TickerHandler)
-- [Lock system](./Locks)
-- [FuncParser](./FuncParser)
+- [Misc Utils](./Coding-Utils.md)
+- [EvEditor](./EvEditor.md)
+- [EvMenu](./EvMenu.md)
+- [EvMore](./EvMore.md)
+- [MonitorHandler](./MonitorHandler.md)
+- [TickerHandler](./TickerHandler.md)
+- [Lock system](./Locks.md)
+- [FuncParser](./FuncParser.md)
 
 ## Server and network
 
-- [Portal](./Portal-And-Server)
-  - [Inputfuncs](./Inputfuncs)
-  - [Outputfuncs](./Outputfuncs)
-  - [Protocols](../Concepts/Custom-Protocols)
-- [Server](./Server)
-  - [Server conf object](./Server-Conf)
-- [Webserver](./Webserver)
-  - [Webclient](./Webclient)
-  - [Bootstrap](./Bootstrap-Components-and-Utilities)
-- [Signals](./Signals)
+- [Portal](./Portal-And-Server.md)
+  - [Inputfuncs](./Inputfuncs.md)
+  - [Outputfuncs](./Outputfuncs.md)
+  - [Protocols](../Concepts/Custom-Protocols.md)
+- [Server](./Server.md)
+  - [Server conf object](../Setup/Server-Conf.md)
+- [Webserver](./Webserver.md)
+  - [Webclient](./Webclient.md)
+  - [Bootstrap](./Bootstrap-Components-and-Utilities.md)
+- [Signals](./Signals.md)

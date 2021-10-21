@@ -90,9 +90,9 @@ a new `README.md` file within that directory.
 amount of game-style-specific code. Assume your code will be applied to a very different game than
 you had in mind when creating it.
 * To make the licensing situation clear we assume all contributions are released with the same
-[license as Evennia](./Licensing). If this is not possible for some reason, talk to us and we'll
+[license as Evennia](./Licensing.md). If this is not possible for some reason, talk to us and we'll
 handle it on a case-by-case basis.
-* Your contribution must be covered by [unit tests](Coding/Unit-Testing). Having unit tests will both help
+* Your contribution must be covered by [unit tests](Coding/Unit-Testing.md). Having unit tests will both help
 make your code more stable and make sure small changes does not break it without it being noticed,
 it will also help us test its functionality and merge it quicker. If your contribution is a single
 module, you can add your unit tests to `evennia/contribs/tests.py`. If your contribution is bigger

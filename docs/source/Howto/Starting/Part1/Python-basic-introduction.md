@@ -5,7 +5,7 @@ which is a mature and professional programming language that is very fast to wor
 
 That said, even though Python is widely considered easy to learn, we can only cover the most immediately
 important aspects of Python in this series of starting tutorials. Hopefully we can get you started
-but then you'll need to continue learning from there. See our [link section](../../../Links) for finding
+but then you'll need to continue learning from there. See our [link section](../../../Links.md) for finding
 more reference material and dedicated Python tutorials.
 
 > While this will be quite basic if you are an experienced developer, you may want to at least
@@ -17,7 +17,7 @@ superuser powers back:
        unquell
 
 
-### Evennia Hello world
+## Evennia Hello world
 
 The `py` Command (or `!`, which is an alias) allows you as a superuser to execute raw Python from in-
 game. This is useful for quick testing. From the game's input line, enter the following:
@@ -25,7 +25,7 @@ game. This is useful for quick testing. From the game's input line, enter the fo
     > py print("Hello World!")
 
 
-```sidebar:: Command input
+```{sidebar} Command input
 
     The line with `>` indicates input to enter in-game, while the lines below are the
     expected return from that input.
@@ -43,7 +43,7 @@ Python accepts both. A third variant is triple-quotes (`"""..."""` or `'''...'''
 lines and are common for larger text-blocks. The way we use the `py` command right now only supports
 single-line input however.
 
-### Making some text 'graphics'
+## Making some text 'graphics'
 
 When making a text-game you will, unsurprisingly, be working a lot with text. Even if you have the occational
 button or even graphical element, the normal process is for the user to input commands as
@@ -72,7 +72,8 @@ is to use the `.format` _method_ of the string:
     > py print("This is a {} idea!".format("good"))
     This is a good idea!
 
-```sidebar:: Functions and Methods
+```{eval-rst}
+.. sidebar:: Functions and Methods
 
     Function:
         Something that performs and action when you `call` it with zero or more `arguments`. A function
@@ -111,7 +112,7 @@ To separate two Python instructions on the same line, you use the semi-colon, `;
     > py a = "awesome sauce" ; print("This is {}!".format(a))
     This is awesome sauce!
 
-```warning:: MUD clients and semi-colon
+```{warning} MUD clients and semi-colon
 
     Some MUD clients use the semi-colon `;` to split client-inputs
     into separate sends. If so, the above will give an error. Most clients allow you to
@@ -169,7 +170,7 @@ gives the normal text color. You can also use RGB (Red-Green-Blue) values from 0
 
 Use the commands `color ansi` or `color xterm` to see which colors are available. Experiment!
 
-### Importing code from other modules
+## Importing code from other modules
 
 As we saw in the previous sections, we used `.format` to format strings and `me.msg` to access
 the `msg` method on `me`. This use of the full-stop character is used to access all sorts of resources,
@@ -191,7 +192,7 @@ For now, only add one line to `test.py`:
 print("Hello World!")
 ```
 
-```sidebar:: Python module
+```{sidebar} Python module
 
     This is a text file with the `.py` file ending. A module
     contains Python source code and from within Python one can
@@ -306,7 +307,7 @@ print our text. We can now redo this as many times as we want without having to 
     > py import world.test ; world.test.hello_world()
     Hello world!
 
-### Sending text to others
+## Sending text to others
 
 The `print` command is a standard Python structure. We can use that here in the `py` command since
 we can se the output. It's great for debugging and quick testing. But if you need to send a text
@@ -332,7 +333,7 @@ For now, `print` and `me.msg` behaves the same, just remember that `print` is ma
 debugging and `.msg()` will be more useful for you in the future.
 
 
-### Parsing Python errors
+## Parsing Python errors
 
 Let's try this new text-sending in the function we just created.  Go back to
 your `test.py` file and Replace the function with this instead:
@@ -355,7 +356,7 @@ File "./world/test.py", line 2, in hello_world
 NameError: name 'me' is not defined
 ```
 
-```sidebar:: Errors in the logs
+```{sidebar} Errors in the logs
 
     In regular use, tracebacks will often appear in the log rather than
     in the game. Use `evennia --log` to view the log in the terminal. Make
@@ -386,7 +387,7 @@ reserved word (as mentioned, it's just something Evennia came up with for conven
 command). As far as the module is concerned `me` is an unfamiliar name, appearing out of nowhere.
 Hence the `NameError`.
 
-### Passing arguments to functions
+## Passing arguments to functions
 
 We know that `me` exists at the point when we run the `py` command, because we can do `py me.msg("Hello World!")`
 with no problem. So let's _pass_ that me along to the function so it knows what it should be.
@@ -419,7 +420,7 @@ suitable targets.
 >and the concept of _Leap before you Look_.
 
 
-### Finding others to send to
+## Finding others to send to
 
 Let's wrap up this first Python `py` crash-course by finding someone else to send to.
 
@@ -431,7 +432,7 @@ On the game command-line, let's create a mirror:
 
     > create/drop mirror:contrib.tutorial_examples.mirror.TutorialMirror
 
-```sidebar:: Creating objects
+```{sidebar} Creating objects
 
     The `create` command was first used to create boxes in the
     `Building Stuff <Building-Quickstart>`_ tutorial. Note how it
@@ -466,7 +467,7 @@ Make sure you are in the same location as the mirror and try:
 `me.search("name")` will, by default, search and _return_ an object with the given name found in _the same location_
 as the `me` object is. If it can't find anything you'll see an error.
 
-```sidebar:: Function returns
+```{sidebar} Function returns
 
     Whereas a function like `print` only prints its arguments, it's very common
     for functions/methods to `return` a result of some kind. Think of the function
@@ -490,7 +491,7 @@ The mirror is useful for testing  because its `.msg` method just echoes whatever
 would be to talk to a player character, in which case the text you sent would have appeared in their game client.
 
 
-### Multi-line py
+## Multi-line py
 
 So far we have use `py` in single-line mode, using `;` to separate multiple inputs. This is very convenient
 when you want to do some quick testing. But you can also start a full multi-line Python interactive interpreter
@@ -524,7 +525,7 @@ the `>>>`). For brevity in this tutorual we'll turn the echo off. First exit `py
     [GCC 8.2.0] on Linux
     [py mode - quit() to exit]
 
-```sidebar:: interactive py
+```{sidebar} interactive py
 
     - Start with `py`.
     - Use `py/noecho` if you don't want your input to be echoed for every line.
@@ -602,7 +603,7 @@ get at the first of them (counting starts from 0).
 
 Use `Ctrl-D` (`Cmd-D` on Mac) or `quit()` to exit the Python console.
 
-### ipython
+## ipython
 
 The default Python shell is quite limited and ugly. It's *highly* recommended to install `ipython` instead. This
 is a much nicer, third-party Python interpreter with colors and many usability improvements.
@@ -614,8 +615,7 @@ If `ipython` is installed, `evennia shell` will use it automatically.
     evennia shell
     ...
     IPython 7.4.0 -- An enhanced Interactive Python. Type '?' for help
-    In [1]: 
-You now have Tab-completion:
+    In [1]: You now have Tab-completion:
 
     > import evennia
     > evennia.<TAB>
@@ -631,7 +631,7 @@ want to see the entire source code.
 
 As for the normal python interpreter, use `Ctrl-D`/`Cmd-D` or `quit()` to exit ipython.
 
-```important:: Persistent code
+```{important} Persistent code
 
     Common for both `py` and `python`/`ipython` is that the code you write is not persistent - it will
     be gone after you shut down the interpreter (but ipython will remember your input history). For making long-lasting
@@ -639,7 +639,7 @@ As for the normal python interpreter, use `Ctrl-D`/`Cmd-D` or `quit()` to exit i
 ```
 
 
-## Conclusions
+# Conclusions
 
 This covers quite a lot of basic Python usage. We printed and formatted strings, defined our own
 first function, fixed an error and even searched and talked to a mirror! Being able to access

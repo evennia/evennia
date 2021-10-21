@@ -121,7 +121,7 @@ question. And maybe you’ll find that you have a better feeling for the answer 
   
 Once you are out of the starting tutorial, you'll be off to do your own thing.
   
-- The starting tutorial cannot cover everything. Skim through the [Evennia docs](../../../index).
+- The starting tutorial cannot cover everything. Skim through the [Evennia docs](../../../index.md).
   Even if you don't read everything, it gives you a feeling for what's available should you need
   to look for something later. Make sure to use the search function.
 - You can now start by expanding on the tutorial-game we will have created. In the last part there 

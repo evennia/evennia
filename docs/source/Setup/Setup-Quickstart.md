@@ -7,11 +7,11 @@ in complete isolation if you want, without needing any access to the internet.
 ## Installation
 
 Evennia supports Python 3.7 to 3.9. As with most Python packages, using a
-[virtualenv](../Glossary#virtualenv) is recommended in order to keep your
+[virtualenv](../Glossary.md#virtualenv) is recommended in order to keep your
 installation independent from the system libraries. It's _not_ recommended
 to install Evennia as superuser.
 
-```warning::
+```{warning}
 
    This is not yet available. Switch to the 0.9.5 version of these docs to install Evennia.
 ```
@@ -22,8 +22,8 @@ Make sure the `evennia` command works. Use `evennia -h` for usage help (or read 
 
 If you are having trouble, want to install in some other way (like with Docker)
 or want to contribute to Evennia itself, check out the [Extended Installation
-instructions](./Extended-Installation).  It also has a [troubleshooting
-section](./Extended-Installation#Troubleshooting) for different operating
+instructions](./Extended-Installation.md).  It also has a [troubleshooting
+section](./Extended-Installation.md#troubleshooting) for different operating
 systems.
 
 
@@ -96,4 +96,4 @@ Full stop of the server (will need to use `start` to activate it again):
 
 ## The Next step
 
-Why not head into the [Starting Tutorial](../Howto/Starting/Part1/Starting-Part1) to learn how to start making your new game!
+Why not head into the [Starting Tutorial](../Howto/Starting/Part1/Starting-Part1.md) to learn how to start making your new game!
