@@ -57,3 +57,8 @@ class TestDbSerialize(TestCase):
         self.assertEqual(self.obj.db.test, [{1: 0}, {0: 1}])
         self.obj.db.test.sort(key=lambda d: str(d))
         self.assertEqual(self.obj.db.test, [{0: 1}, {1: 0}])
+
+    def test_dict(self):
+        self.obj.db.test = {'a': True}
+        self.obj.db.test.update({'b': False})
+        self.assertEqual(self.obj.db.test, {'a': True, 'b': False})
