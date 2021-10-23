@@ -203,6 +203,10 @@ class _SaverMutable(object):
                 dat = _SaverDict(_parent=parent)
                 dat._data.update((key, process_tree(val, dat)) for key, val in item.items())
                 return dat
+            elif dtype == defaultdict:
+                dat = _SaverDefaultDict(item.default_factory, _parent=parent)
+                dat._data.update((key, process_tree(val, dat)) for key, val in item.items())
+                return dat
             elif dtype == set:
                 dat = _SaverSet(_parent=parent)
                 dat._data.update(process_tree(val, dat) for val in item)
@@ -221,6 +225,7 @@ class _SaverMutable(object):
         return self._data.__iter__()
 
     def __getitem__(self, key):
+        # breakpoint()
         return self._data.__getitem__(key)
 
     def __eq__(self, other):
@@ -303,6 +308,22 @@ class _SaverDict(_SaverMutable, MutableMapping):
     @_save
     def update(self, *args, **kwargs):
         self._data.update(*args, **kwargs)
+
+
+class _SaverDefaultDict(_SaverDict):
+    """
+    A defaultdict that stores changes to an attribute when updated
+    """
+
+    def __init__(self, factory, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._data = defaultdict(factory)
+        self.default_factory = factory
+
+    # @_save
+    def __getitem__(self, key):
+        # breakpoint()
+        return self._data[key]
 
 
 class _SaverSet(_SaverMutable, MutableSet):
@@ -399,6 +420,7 @@ _DESERIALIZE_MAPPING = {
     _SaverSet.__name__: set,
     _SaverOrderedDict.__name__: OrderedDict,
     _SaverDeque.__name__: deque,
+    _SaverDefaultDict.__name__: defaultdict,
 }
 
 
@@ -410,10 +432,13 @@ def deserialize(obj):
     """
 
     def _iter(obj):
+        # breakpoint()
         typ = type(obj)
         tname = typ.__name__
         if tname in ("_SaverDict", "dict"):
             return {_iter(key): _iter(val) for key, val in obj.items()}
+        if tname in ("_SaverDefaultDict", "defaultdict"):
+            return defaultdict({_iter(key): _iter(val) for key, val in obj.items()})
         elif tname in _DESERIALIZE_MAPPING:
             return _DESERIALIZE_MAPPING[tname](_iter(val) for val in obj)
         elif is_iter(obj):
@@ -565,6 +590,7 @@ def to_pickle(data):
 
     def process_item(item):
         """Recursive processor and identification of data"""
+        # breakpoint()
         dtype = type(item)
         if dtype in (str, int, float, bool, bytes, SafeString):
             return item
@@ -574,6 +600,8 @@ def to_pickle(data):
             return [process_item(val) for val in item]
         elif dtype in (dict, _SaverDict):
             return dict((process_item(key), process_item(val)) for key, val in item.items())
+        elif dtype in (defaultdict, _SaverDefaultDict):
+            return defaultdict(item.default_factory, ((process_item(key), process_item(val)) for key, val in item.items()))
         elif dtype in (set, _SaverSet):
             return set(process_item(val) for val in item)
         elif dtype in (OrderedDict, _SaverOrderedDict):
@@ -625,6 +653,7 @@ def from_pickle(data, db_obj=None):
 
     def process_item(item):
         """Recursive processor and identification of data"""
+        # breakpoint()
         dtype = type(item)
         if dtype in (str, int, float, bool, bytes, SafeString):
             return item
@@ -637,6 +666,8 @@ def from_pickle(data, db_obj=None):
             return tuple(process_item(val) for val in item)
         elif dtype == dict:
             return dict((process_item(key), process_item(val)) for key, val in item.items())
+        elif dtype == defaultdict:
+            return defaultdict(item.default_factory, ((process_item(key), process_item(val)) for key, val in item.items()))
         elif dtype == set:
             return set(process_item(val) for val in item)
         elif dtype == OrderedDict:
@@ -654,6 +685,7 @@ def from_pickle(data, db_obj=None):
 
     def process_tree(item, parent):
         """Recursive processor, building a parent-tree from iterable data"""
+        # breakpoint()
         dtype = type(item)
         if dtype in (str, int, float, bool, bytes, SafeString):
             return item
@@ -668,6 +700,12 @@ def from_pickle(data, db_obj=None):
             return dat
         elif dtype == dict:
             dat = _SaverDict(_parent=parent)
+            dat._data.update(
+                (process_item(key), process_tree(val, dat)) for key, val in item.items()
+            )
+            return dat
+        elif dtype == defaultdict:
+            dat = _SaverDefaultDict(item.default_factory, _parent=parent)
             dat._data.update(
                 (process_item(key), process_tree(val, dat)) for key, val in item.items()
             )
@@ -711,6 +749,12 @@ def from_pickle(data, db_obj=None):
                 (process_item(key), process_tree(val, dat)) for key, val in data.items()
             )
             return dat
+        elif dtype == defaultdict:
+            dat = _SaverDefaultDict(data.default_factory, _db_obj=db_obj)
+            dat._data.update(
+                (process_item(key), process_tree(val, dat)) for key, val in data.items()
+            )
+            return dat
         elif dtype == set:
             dat = _SaverSet(_db_obj=db_obj)
             dat._data.update(process_tree(val, dat) for val in data)
@@ -725,6 +769,8 @@ def from_pickle(data, db_obj=None):
             dat = _SaverDeque(_db_obj=db_obj)
             dat._data.extend(process_item(val) for val in data)
             return dat
+        else:
+            raise ValueError(f"Unsupported type {dtype}")
     return process_item(data)
 
 
