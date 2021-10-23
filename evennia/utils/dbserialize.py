@@ -769,8 +769,6 @@ def from_pickle(data, db_obj=None):
             dat = _SaverDeque(_db_obj=db_obj)
             dat._data.extend(process_item(val) for val in data)
             return dat
-        else:
-            raise ValueError(f"Unsupported type {dtype}")
     return process_item(data)
 
 
