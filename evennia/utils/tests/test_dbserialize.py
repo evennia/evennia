@@ -15,7 +15,6 @@ class TestDbSerialize(TestCase):
     def setUp(self):
         self.obj = DefaultObject(db_key="Tester",)
         self.obj.save()
-        print(f"setUp {self.obj}")
 
     def test_constants(self):
         self.obj.db.test = 1
@@ -66,9 +65,22 @@ class TestDbSerialize(TestCase):
 
     def test_defaultdict(self):
         from collections import defaultdict
+        # baseline behavior for a defaultdict
+        _dd = defaultdict(list)
+        _dd['a']
+        self.assertTrue('a' in _dd)
+        self.assertEqual(_dd, {'a': []})
         dd = defaultdict(list)
+        # behavior after defaultdict is set as attribute
         self.obj.db.test = dd
         self.obj.db.test['a']
+        self.assertTrue('a' in self.obj.db.test)
         self.assertEqual(self.obj.db.test, {'a': []})
+
+        # none of the following matter as test failed by now
         self.obj.db.test['a'].append(1)
+        self.assertEqual(self.obj.db.test, {'a': [1]})
+        self.obj.db.test['a'].append(2)
         self.assertEqual(self.obj.db.test, {'a': [1, 2]})
+        self.obj.db.test['a'].append(3)
+        self.assertEqual(self.obj.db.test, {'a': [1, 2, 3]})
