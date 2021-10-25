@@ -66,9 +66,6 @@ class TestComponents(EvenniaTest):
         self.char1.test_b.at_post_puppet = mock.Mock()
         self.char1.test_b.at_post_unpuppet = mock.Mock()
         self.char1.at_post_puppet()
-        assert self.char1.test_b.at_post_puppet.assert_called()
-
         self.char1.at_post_unpuppet(self.account)
-        assert self.char1.test_b.at_post_unpuppet.assert_called()
-
-# TODO Need to test callback hooks (on modify)
+        self.char1.test_b.at_post_puppet.assert_called()
+        self.char1.test_b.at_post_unpuppet.assert_called()
