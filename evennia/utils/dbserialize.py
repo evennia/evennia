@@ -438,7 +438,7 @@ def deserialize(obj):
         if tname in ("_SaverDict", "dict"):
             return {_iter(key): _iter(val) for key, val in obj.items()}
         if tname in ("_SaverDefaultDict", "defaultdict"):
-            return defaultdict({_iter(key): _iter(val) for key, val in obj.items()})
+            return defaultdict(obj.default_factory, {_iter(key): _iter(val) for key, val in obj.items()})
         elif tname in _DESERIALIZE_MAPPING:
             return _DESERIALIZE_MAPPING[tname](_iter(val) for val in obj)
         elif is_iter(obj):
