@@ -9,21 +9,28 @@ This helps writing isolated code and reusing it over multiple objects.
 
 - To enable component support for a typeclass,
    import and inherit the ComponentHolderMixin, similar to this
-  `from evennia.contrib.components import ComponentHolderMixin`
-  `class Character(ComponentHolderMixin, DefaultCharacter):`
+  ```
+  from evennia.contrib.components import ComponentHolderMixin
+  class Character(ComponentHolderMixin, DefaultCharacter):
+  ```
 
 - Components need to inherit the Component class and must be registered to the listing
     Example:
-    `from evennia.contrib.components import Component, listing`
-    `@listing.register`
-    `class Health(Component):`
+    ```
+    from evennia.contrib.components import Component, listing
+    @listing.register
+    class Health(Component):
+        name = "health"
+    ```
 
 - Components may define DBFields at the class level
     Example:
-    `from evennia.contrib.components import Component, listing, DBField`
-    `@listing.register`
-    `class Health(Component):`
-    `   health = DBField('health', default_value=1)`
+    ```
+    from evennia.contrib.components import Component, listing, DBField
+    @listing.register
+    class Health(Component):
+        health = DBField('health', default_value=1)
+    ```
 
     Note that default_value is optional and may be a callable such as `dict`
 
@@ -33,11 +40,12 @@ This helps writing isolated code and reusing it over multiple objects.
   The plug the import of that package early, for example in your typeclasses's __init__
 
 """
-
+import abc
 import inspect
+import itertools
 
+from evennia.contrib.components import listing
 from evennia.utils import logger
-from zfmud.game.components import listing
 
 UNSET = object()
 
@@ -51,7 +59,7 @@ class ComponentHolderMixin(object):
     They will be of None value if not present in the class components or runtime components.
     """
 
-    class_components = {}
+    class_components = []
 
     def at_init(self):
         self.component_instances = {}
@@ -69,7 +77,7 @@ class ComponentHolderMixin(object):
         """
         self.db.runtime_components = []
         super(ComponentHolderMixin, self).at_object_creation()
-        for component_class in self.class_components.values():
+        for component_class in self.class_components:
             if inspect.isclass(component_class):
                 component_instance = component_class.default_create(self)
             else:
@@ -100,7 +108,7 @@ class ComponentHolderMixin(object):
         """
         Loads components from DB values and sets them as usable attributes on the object
         """
-        for component_class in self.class_components.values():
+        for component_class in self.class_components:
             component_name = component_class.name
             component_instance = component_class.load(self)
             setattr(self, component_name, component_instance)
@@ -123,7 +131,7 @@ class ComponentHolderMixin(object):
         """
         Registers new components as runtime or replaces an existing component.
         """
-        if component.name in self.class_components or component.name in runtime_component_names:
+        if component.name in self.class_component_names or component.name in self.runtime_component_names:
             existing_component = getattr(self, component.name, None)
             if existing_component:
                 existing_component.unregister_component()
@@ -137,7 +145,7 @@ class ComponentHolderMixin(object):
         """
         Unregisters a component, only works for runtime components
         """
-        if component.name in self.class_components:
+        if component.name in self.class_components_names:
             raise ValueError("Cannot unregister class components.")
 
         component.on_unregister(self)
@@ -159,39 +167,57 @@ class ComponentHolderMixin(object):
         return self.db.runtime_components
 
     @property
+    def class_component_names(self):
+        # TODO Improve
+        return (c.name for c in self.class_components)
+
+    @property
     def component_instances(self):
         # TODO Maybe this should be stored in a permanent list
         runtime_component_names = self.db.runtime_components
-        all_instances = []
-        runtime_instances = (
-            getattr(self, name, None)
-            for name in runtime_component_names
-        )
-        class_instances = (
-            getattr(self, component.name, None) for component in self.class_components
-        )
-        all_instances.extend(runtime_instances)
-        all_instances.extend(class_instances)
+        class_component_names = self.class_component_names
+        instances = []
+        for component_name in itertools.chain(runtime_component_names, class_component_names):
+            instance = getattr(self, component_name, None)
+            if instance:
+                instances.append(instance)
 
-        return all_instances
+        return instances
 
 
-class Component(object):
-    name = ""
+class Component(metaclass=abc.ABCMeta):
+    @property
+    @abc.abstractmethod
+    def name(self):
+        pass
 
-    def __init__(self, host):
+    def __init__(self, host=None):
+        # TODO Passing a host here is to prevent TDB TNDB from creating
+        # TODO Without host, this should instantiate this component's TDB and TNDB
+        # TODO Should this be the default create?
         self.host = host
         self._db_fields = self._get_db_field_names()
 
     @classmethod
-    def default_create(cls, game_object):
+    def as_template(cls, **kwargs):
+        new = cls.default_create(None, **kwargs)
+        return new
+
+
+    @classmethod
+    def default_create(cls, game_object, **kwargs):
         """
         This is called when the game_object is created
          and should return the base initialized state of a component.
         """
         new = cls(game_object)
         for field_name in new._db_fields:
-            cls.__dict__[field_name].assign_default_value(new)
+            # TODO AttributeHandler has a batch_add that might give better performance
+            provided_value = kwargs.get(field_name)
+            if provided_value is not None:
+                setattr(new, field_name, provided_value)
+            else:
+                cls.__dict__[field_name].assign_default_value(new)
 
         return new
 
@@ -226,6 +252,7 @@ class Component(object):
         return cls(game_object)
 
     def _get_db_field_names(self):
+        # TODO This does not include inherited DB Fields, to investigate
         return tuple(name for name, attribute in type(self).__dict__.items()
                      if isinstance(attribute, DBField))
 
@@ -233,6 +260,8 @@ class Component(object):
         return ((name, getattr(self, name, None)) for name in self._db_fields)
 
     def on_register(self, host):
+        # TODO This here should fetch the host's db, ndb or use its own ndb
+        # TODO using its own ndb shud copyover
         if not self.host:
             self.host = host
         else:
@@ -243,6 +272,11 @@ class Component(object):
             raise ValueError("Component attempted to unregister from the wrong host.")
         self.host = None
 
+    def at_post_puppet(self, *args, **kwargs):
+        pass
+
+    def at_post_unpuppet(self, *args, **kwargs):
+        pass
 
 class DBField(object):
     """
