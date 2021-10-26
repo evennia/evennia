@@ -14,6 +14,8 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -47,7 +49,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="more-about-commands">
+  <section class="tex2jax_ignore mathjax_ignore" id="more-about-commands">
 <h1>More about Commands<a class="headerlink" href="#more-about-commands" title="Permalink to this headline">¶</a></h1>
 <p>In this lesson we learn some basics about parsing the input of Commands. We will
 also learn how to add, modify and extend Evennia’s default commands.</p>
@@ -56,61 +58,19 @@ also learn how to add, modify and extend Evennia’s default commands.</p>
 <p>In the last lesson we made a <code class="docutils literal notranslate"><span class="pre">hit</span></code> Command and hit a dragon with it. You should have the code
 from that still around.</p>
 <p>Let’s expand our simple <code class="docutils literal notranslate"><span class="pre">hit</span></code> command to accept a little more complex input:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hit</span> <span class="o">&lt;</span><span class="n">target</span><span class="o">&gt;</span> <span class="p">[[</span><span class="k">with</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">weapon</span><span class="o">&gt;</span><span class="p">]</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>hit &lt;target&gt; [[with] &lt;weapon&gt;]
 </pre></div>
 </div>
 <p>That is, we want to support all of these forms</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hit</span> <span class="n">target</span>
-<span class="n">hit</span> <span class="n">target</span> <span class="n">weapon</span>
-<span class="n">hit</span> <span class="n">target</span> <span class="k">with</span> <span class="n">weapon</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>hit target
+hit target weapon
+hit target with weapon
 </pre></div>
 </div>
 <p>If you don’t specify a weapon you’ll use your fists. It’s also nice to be able to skip “with” if
 you are in a hurry. Time to modify <code class="docutils literal notranslate"><span class="pre">mygame/commands/mycommands.py</span></code> again. Let us break out the parsing
 a little, in a new method <code class="docutils literal notranslate"><span class="pre">parse</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">#...</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#...</span>
 
 <span class="k">class</span> <span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -153,18 +113,19 @@ a little, in a new method <code class="docutils literal notranslate"><span class
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You hit </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">weaponstr</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
         <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You got hit by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">weaponstr</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
 <span class="c1"># ...</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>The <code class="docutils literal notranslate"><span class="pre">parse</span></code> method is called before <code class="docutils literal notranslate"><span class="pre">func</span></code> and has access to all the same on-command variables as in <code class="docutils literal notranslate"><span class="pre">func</span></code>. Using
 <code class="docutils literal notranslate"><span class="pre">parse</span></code> not only makes things a little easier to read, it also means you can easily let other Commands <em>inherit</em>
 your parsing - if you wanted some other Command to also understand input on the form <code class="docutils literal notranslate"><span class="pre">&lt;arg&gt;</span> <span class="pre">with</span> <span class="pre">&lt;arg&gt;</span></code> you’d inherit
 from this class and just implement the <code class="docutils literal notranslate"><span class="pre">func</span></code> needed for that command without implementing <code class="docutils literal notranslate"><span class="pre">parse</span></code> anew.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Tuples and Lists</p>
-<ul class="simple">
-<li><p>A <cite>list</cite> is written as <cite>[a, b, c, d, …]</cite>. You can add and grow/shrink a list after it was first created.</p></li>
-<li><p>A <cite>tuple</cite> is written as <cite>(a, b, c, d, …)</cite>. A tuple cannot be modified once it is created.</p></li>
-</ul>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>- A `list` is written as `[a, b, c, d, ...]`. You can add and grow/shrink a list after it was first created.
+- A `tuple` is written as `(a, b, c, d, ...)`. A tuple cannot be modified once it is created.
+</pre></div>
+</div>
 </aside>
 <ul>
 <li><p><strong>Line 14</strong> - We do the stripping of <code class="docutils literal notranslate"><span class="pre">self.args</span></code> once and for all here. We also store the stripped version back
@@ -215,7 +176,7 @@ use this to create a <code class="docutils literal notranslate"><span class="pre
 <li><p><strong>Lines 41-42</strong> - We merge the <code class="docutils literal notranslate"><span class="pre">weaponstr</span></code> with our attack text.</p></li>
 </ul>
 <p>Let’s try it out!</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; reload
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
 &gt; hit smaug with sword
 Could not find &#39;sword&#39;.
 You hit smaug with bare fists!
@@ -224,13 +185,13 @@ You hit smaug with bare fists!
 <p>Oops, our <code class="docutils literal notranslate"><span class="pre">self.caller.search(self.weapon)</span></code> is telling us that it found no sword. Since we are not <code class="docutils literal notranslate"><span class="pre">return</span></code>ing
 in this situation (like we do if failing to find <code class="docutils literal notranslate"><span class="pre">target</span></code>) we still continue fighting with our bare hands.
 This won’t do. Let’s make ourselves a sword.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create</span> <span class="n">sword</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; create sword
 </pre></div>
 </div>
 <p>Since we didn’t specify <code class="docutils literal notranslate"><span class="pre">/drop</span></code>, the sword will end up in our inventory and can seen with the <code class="docutils literal notranslate"><span class="pre">i</span></code> or
 <code class="docutils literal notranslate"><span class="pre">inventory</span></code> command. The <code class="docutils literal notranslate"><span class="pre">.search</span></code> helper will still find it there. There is no need to reload to see this
 change (no code changed, only stuff in the database).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; hit smaug with sword
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; hit smaug with sword
 You hit smaug with sword!
 </pre></div>
 </div>
@@ -238,49 +199,51 @@ You hit smaug with sword!
 <section id="adding-a-command-to-an-object">
 <h2>Adding a Command to an object<a class="headerlink" href="#adding-a-command-to-an-object" title="Permalink to this headline">¶</a></h2>
 <p>The commands of a cmdset attached to an object with <code class="docutils literal notranslate"><span class="pre">obj.cmdset.add()</span></code> will by default be made available to that object
-but <em>also to those in the same location as that object</em>. If you did the <a class="reference internal" href="Building-Quickstart.html"><span class="doc">Building introduction</span></a>
-you’ve seen an example of this with the “Red Button” object. The <a class="reference internal" href="Tutorial-World-Introduction.html"><span class="doc">Tutorial world</span></a>
+but <em>also to those in the same location as that object</em>. If you did the <a class="reference internal" href="Building-Quickstart.html"><span class="doc std std-doc">Building introduction</span></a>
+you’ve seen an example of this with the “Red Button” object. The <a class="reference internal" href="Tutorial-World-Introduction.html"><span class="doc std std-doc">Tutorial world</span></a>
 also has many examples of objects with commands on them.</p>
 <p>To show how this could work, let’s put our ‘hit’ Command on our simple <code class="docutils literal notranslate"><span class="pre">sword</span></code> object from the previous section.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;sword&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;commands.mycommands.MyCmdSet&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; self.search(&quot;sword&quot;).cmdset.add(&quot;commands.mycommands.MyCmdSet&quot;, persistent=True)
 </pre></div>
 </div>
 <p>We find the sword (it’s still in our inventory so <code class="docutils literal notranslate"><span class="pre">self.search</span></code> should be able to find it), then
 add <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code> to it. This actually adds both <code class="docutils literal notranslate"><span class="pre">hit</span></code> and <code class="docutils literal notranslate"><span class="pre">echo</span></code> to the sword, which is fine.</p>
 <p>Let’s try to swing it!</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">hit</span>
-<span class="n">More</span> <span class="n">than</span> <span class="n">one</span> <span class="n">match</span> <span class="k">for</span> <span class="s1">&#39;hit&#39;</span> <span class="p">(</span><span class="n">please</span> <span class="n">narrow</span> <span class="n">target</span><span class="p">):</span>
-<span class="n">hit</span><span class="o">-</span><span class="mi">1</span> <span class="p">(</span><span class="n">sword</span> <span class="c1">#11)</span>
-<span class="n">hit</span><span class="o">-</span><span class="mi">2</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; hit
+More than one match for &#39;hit&#39; (please narrow target):
+hit-1 (sword #11)
+hit-2
 </pre></div>
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Multi-matches</p>
-<p>Some game engines will just pick the first hit when finding more than one.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Some game engines will just pick the first hit when finding more than one.
 Evennia will always give you a choice. The reason for this is that Evennia
-cannot know if <cite>hit</cite> and <cite>hit</cite> are different or the same - maybe it behaves
+cannot know if `hit` and `hit` are different or the same - maybe it behaves
 differently depending on the object it sits on? Besides, imagine if you had
-a red and a blue button both with the command <cite>push</cite> on it. Now you just write
-<cite>push</cite>. Wouldn’t you prefer to be asked <cite>which</cite> button you really wanted to push?</p>
+a red and a blue button both with the command `push` on it. Now you just write
+`push`. Wouldn&#39;t you prefer to be asked `which` button you really wanted to push?
+</pre></div>
+</div>
 </aside>
 <p>Woah, that didn’t go as planned. Evennia actually found <em>two</em> <code class="docutils literal notranslate"><span class="pre">hit</span></code> commands to didn’t know which one to use
 (<em>we</em> know they are the same, but Evennia can’t be sure of that). As we can see, <code class="docutils literal notranslate"><span class="pre">hit-1</span></code> is the one found on
 the sword. The other one is from adding <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code> to ourself earlier. It’s easy enough to tell Evennia which
 one you meant:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; hit-1
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; hit-1
 Who do you want to hit?
 &gt; hit-2
 Who do you want to hit?
 </pre></div>
 </div>
 <p>In this case we don’t need both command-sets, so let’s just keep the one on the sword:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; self.cmdset.remove(&quot;commands.mycommands.MyCmdSet&quot;)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; self.cmdset.remove(&quot;commands.mycommands.MyCmdSet&quot;)
 &gt; hit
 Who do you want to hit?
 </pre></div>
 </div>
 <p>Now try this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; tunnel n = kitchen
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; tunnel n = kitchen
 &gt; n
 &gt; drop sword
 &gt; s
@@ -300,12 +263,14 @@ for limiting the kind of things you can do with an object, including limiting ju
 it.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Locks</p>
-<p>Evennia Locks are defined as a mini-language defined in <cite>lockstrings</cite>. The lockstring
-is on a form <cite>&lt;situation&gt;:&lt;lockfuncs&gt;</cite>, where <cite>situation</cite> determines when this
-lock applies and the <cite>lockfuncs</cite> (there can be more than one) are run to determine
-if the lock-check passes or not depending on circumstance.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Evennia Locks are defined as a mini-language defined in `lockstrings`. The lockstring
+is on a form `&lt;situation&gt;:&lt;lockfuncs&gt;`, where `situation` determines when this
+lock applies and the `lockfuncs` (there can be more than one) are run to determine
+if the lock-check passes or not depending on circumstance.
+</pre></div>
+</div>
 </aside>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;sword&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;call:holds()&quot;</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.search(&quot;sword&quot;).locks.add(&quot;call:holds()&quot;)
 </pre></div>
 </div>
 <p>We added a new lock to the sword. The <em>lockstring</em> <code class="docutils literal notranslate"><span class="pre">&quot;call:holds()&quot;</span></code> means that you can only <em>call</em> commands on
@@ -314,16 +279,18 @@ this object if you are <em>holding</em> the object (that is, it’s in your inve
 first:</p>
 <aside class="sidebar">
 <p class="sidebar-title">quell/unquell</p>
-<p>Quelling allows you as a developer to take on the role of players with less
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Quelling allows you as a developer to take on the role of players with less
 priveleges. This is useful for testing and debugging, in particular since a
-superuser has a little <cite>too</cite> much power sometimes.
-Use <cite>unquell</cite> to get back to your normal self.</p>
+superuser has a little `too` much power sometimes.
+Use `unquell` to get back to your normal self.
+</pre></div>
+</div>
 </aside>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">quell</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; quell
 </pre></div>
 </div>
 <p>If the sword lies on the ground, try</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; hit
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; hit
 Command &#39;hit&#39; is not available. ..
 &gt; get sword
 &gt; hit
@@ -332,11 +299,11 @@ Command &#39;hit&#39; is not available. ..
 </div>
 <p>Finally, we get rid of ours sword so we have a clean slate with no more <code class="docutils literal notranslate"><span class="pre">hit</span></code> commands floating around.
 We can do that in two ways:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">delete</span> <span class="n">sword</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>delete sword
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;sword&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>py self.search(&quot;sword&quot;).delete()
 </pre></div>
 </div>
 </section>
@@ -355,55 +322,7 @@ All these commands are in just loaded on the default objects that Evennia provid
 </ul>
 <p>The thing must commonly modified is the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>.</p>
 <p>The default cmdset are defined in <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>. Open that file now:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">(module docstring)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -453,11 +372,13 @@ All these commands are in just loaded on the default objects that Evennia provid
         <span class="c1"># any commands you add below will overload the default ones</span>
         <span class="c1">#</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <aside class="sidebar">
 <p class="sidebar-title">super()</p>
-<p>The <cite>super()</cite> function refers to the parent of the current class and is commonly
-used to call same-named methods on the parent.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The `super()` function refers to the parent of the current class and is commonly
+used to call same-named methods on the parent.
+</pre></div>
+</div>
 </aside>
 <p><code class="docutils literal notranslate"><span class="pre">evennia.default_cmds</span></code> is a container that holds all of Evennia’s default commands and cmdsets. In this module
 we can see that this was imported and then a new child class was made for each cmdset. Each class looks familiar
@@ -468,22 +389,7 @@ This is what adds all the default commands to each CmdSet.</p>
 add a Command with the same <code class="docutils literal notranslate"><span class="pre">.key</span></code> as a default command, it would completely replace that original. So if you were
 to add a command with a key <code class="docutils literal notranslate"><span class="pre">look</span></code>, the original <code class="docutils literal notranslate"><span class="pre">look</span></code> command would be replaced by your own version.</p>
 <p>For now, let’s add our own <code class="docutils literal notranslate"><span class="pre">hit</span></code> and <code class="docutils literal notranslate"><span class="pre">echo</span></code> commands to the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
 
 <span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
 
@@ -499,28 +405,17 @@ to add a command with a key <code class="docutils literal notranslate"><span cla
         <span class="c1">#</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">CmdEcho</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">CmdHit</span><span class="p">)</span>
+
 </pre></div>
-</td></tr></table></div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; reload
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
 &gt; hit
 Who do you want to hit?
 </pre></div>
 </div>
 <p>Your new commands are now available for all player characters in the game. There is another way to add a bunch
 of commands at once, and that is to add a <em>CmdSet</em> to the other cmdset. All commands in that cmdset will then be added:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
 
 <span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
 
@@ -534,7 +429,7 @@ of commands at once, and that is to add a <em>CmdSet</em> to the other cmdset. A
         <span class="c1">#</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">MyCmdSet</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Which way you use depends on how much control you want, but if you already have a CmdSet,
 this is practical. A Command can be a part of any number of different CmdSets.</p>
 <section id="removing-commands">
@@ -544,22 +439,7 @@ this is practical. A Command can be a part of any number of different CmdSets.</
 <p>We already know that we use <code class="docutils literal notranslate"><span class="pre">cmdset.remove()</span></code> to remove a cmdset. It turns out you can
 do the same in <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation</span></code>. For example, let’s remove the default <code class="docutils literal notranslate"><span class="pre">get</span></code> Command
 from Evennia. We happen to know this can be found as <code class="docutils literal notranslate"><span class="pre">default_cmds.CmdGet</span></code>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
 <span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
 
 <span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
@@ -576,10 +456,10 @@ from Evennia. We happen to know this can be found as <code class="docutils liter
         <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdGet</span><span class="p">)</span>
 <span class="c1"># ...</span>
 </pre></div>
-</td></tr></table></div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">reload</span>
-<span class="o">&gt;</span> <span class="n">get</span>
-<span class="n">Command</span> <span class="s1">&#39;get&#39;</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">available</span> <span class="o">...</span>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
+&gt; get
+Command &#39;get&#39; is not available ...
 </pre></div>
 </div>
 </section>
@@ -591,15 +471,7 @@ command with the same <code class="docutils literal notranslate"><span class="pr
 <p>Let’s combine this with what we know about classes and
 how to <em>override</em> a parent class. Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/mycommands.py</span></code> and lets override
 that <code class="docutils literal notranslate"><span class="pre">CmdGet</span></code> command.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># up top, by the other imports</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># up top, by the other imports</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
 
 <span class="c1"># somewhere below</span>
@@ -608,8 +480,9 @@ that <code class="docutils literal notranslate"><span class="pre">CmdGet</span><
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span><span class="p">))</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <ul class="simple">
 <li><p><strong>Line2</strong>: We import <code class="docutils literal notranslate"><span class="pre">default_cmds</span></code> so we can get the parent class.
 We made a new class and we make it <em>inherit</em> <code class="docutils literal notranslate"><span class="pre">default_cmds.CmdGet</span></code>. We don’t
@@ -627,22 +500,7 @@ has a special function <code class="docutils literal notranslate"><span class="p
 </ul>
 <p>We now just have to add this so it replaces the default <code class="docutils literal notranslate"><span class="pre">get</span></code> command. Open
 <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> again:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
 <span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
 
 <span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
@@ -659,14 +517,16 @@ has a special function <code class="docutils literal notranslate"><span class="p
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">MyCmdGet</span><span class="p">)</span>
 <span class="c1"># ...</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <aside class="sidebar">
 <p class="sidebar-title">Another way</p>
-<p>Instead of adding <cite>MyCmdGet</cite> explicitly in default_cmdset.py,
-you could also add it to <cite>mycommands.MyCmdSet</cite> and let it be
-added automatically for you.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Instead of adding `MyCmdGet` explicitly in default_cmdset.py,
+you could also add it to `mycommands.MyCmdSet` and let it be
+added automatically for you.
+</pre></div>
+</div>
 </aside>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; reload
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
 &gt; get
 Get What?
 [smaug, fluffy, YourName, ...]
@@ -747,7 +607,7 @@ command on ourselves.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="More-on-Commands.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-rest-api">
+  <section class="tex2jax_ignore mathjax_ignore" id="evennia-rest-api">
 <h1>Evennia REST API<a class="headerlink" href="#evennia-rest-api" title="Permalink to this headline">¶</a></h1>
 <p>Evennia makes its database accessible via a REST API found on
 <a class="reference external" href="http://localhost:4001/api">http://localhost:4001/api</a> if running locally with
@@ -49,44 +51,44 @@ meant to be accessed in code, by other programs.</p>
 <p>The API is using <a class="reference external" href="https://www.django-rest-framework.org/">Django Rest Framework</a>. This automates the process
 of setting up <em>views</em> (Python code) to process the result of web requests.
 The process of retrieving data is similar to that explained on the
-<a class="reference internal" href="Webserver.html"><span class="doc">Webserver</span></a> page, except the views will here return <a class="reference external" href="https://en.wikipedia.org/wiki/JSON">JSON</a>
+<a class="reference internal" href="Webserver.html"><span class="doc std std-doc">Webserver</span></a> page, except the views will here return <a class="reference external" href="https://en.wikipedia.org/wiki/JSON">JSON</a>
 data for the resource you want. You can also <em>send</em> such JSON data
 in order to update the database from the outside.</p>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <p>To activate the API, add this to your settings file.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">REST_API_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>REST_API_ENABLED = True
 </pre></div>
 </div>
 <p>The main controlling setting is <code class="docutils literal notranslate"><span class="pre">REST_FRAMEWORK</span></code>, which is a dict. The keys
 <code class="docutils literal notranslate"><span class="pre">DEFAULT_LIST_PERMISSION</span></code> and <code class="docutils literal notranslate"><span class="pre">DEFAULT_CREATE_PERMISSIONS</span></code> control who may
 view and create new objects via the api respectively. By default, users with
-<a class="reference internal" href="Permissions.html"><span class="doc">‘Builder’-level permission</span></a> or higher may access both actions.</p>
+<a class="reference internal" href="Permissions.html"><span class="doc std std-doc">‘Builder’-level permission</span></a> or higher may access both actions.</p>
 <p>While the api is meant to be expanded upon, Evennia supplies several operations
 out of the box. If you click the <code class="docutils literal notranslate"><span class="pre">Autodoc</span></code> button in the upper right of the <code class="docutils literal notranslate"><span class="pre">/api</span></code>
 website you’ll get a fancy graphical presentation of the available endpoints.</p>
 <p>Here is an example of calling the api in Python using the standard <code class="docutils literal notranslate"><span class="pre">requests</span></code> library.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">requests</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://www.mygame.com/api&quot;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;MyUsername&quot;</span><span class="p">,</span> <span class="s2">&quot;password123&quot;</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-<span class="go">{&#39;accounts&#39;: &#39;http://www.mygame.com/api/accounts/&#39;,</span>
-<span class="go"> &#39;objects&#39;: &#39;http://www.mygame.com/api/objects/&#39;,</span>
-<span class="go">&#39;characters&#39;: &#39;http://www.mygame.comg/api/characters/&#39;,</span>
-<span class="go">&#39;exits&#39;: &#39;http://www.mygame.com/api/exits/&#39;,</span>
-<span class="go">&#39;rooms&#39;: &#39;http://www.mygame.com/api/rooms/&#39;,</span>
-<span class="go">&#39;scripts&#39;: &#39;http://www.mygame.com/api/scripts/&#39;</span>
-<span class="go">&#39;helpentries&#39;: &#39;http://www.mygame.com/api/helpentries/&#39; }</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; import requests
+&gt;&gt;&gt; response = requests.get(&quot;https://www.mygame.com/api&quot;, auth=(&quot;MyUsername&quot;, &quot;password123&quot;))
+&gt;&gt;&gt; response.json()
+{&#39;accounts&#39;: &#39;http://www.mygame.com/api/accounts/&#39;,
+ &#39;objects&#39;: &#39;http://www.mygame.com/api/objects/&#39;,
+&#39;characters&#39;: &#39;http://www.mygame.comg/api/characters/&#39;,
+&#39;exits&#39;: &#39;http://www.mygame.com/api/exits/&#39;,
+&#39;rooms&#39;: &#39;http://www.mygame.com/api/rooms/&#39;,
+&#39;scripts&#39;: &#39;http://www.mygame.com/api/scripts/&#39;
+&#39;helpentries&#39;: &#39;http://www.mygame.com/api/helpentries/&#39; }
 </pre></div>
 </div>
 <p>To list a specific type of object:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://www.mygame.com/api/objects&quot;</span><span class="p">,</span>
-<span class="go">                            auth=(&quot;Myusername&quot;, &quot;password123&quot;))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-<span class="go">{</span>
-<span class="go">&quot;count&quot;: 125,</span>
-<span class="go">&quot;next&quot;: &quot;https://www.mygame.com/api/objects/?limit=25&amp;offset=25&quot;,</span>
-<span class="go">&quot;previous&quot;: null,</span>
-<span class="go">&quot;results&quot; : [{&quot;db_key&quot;: &quot;A rusty longsword&quot;, &quot;id&quot;: 57, &quot;db_location&quot;: 213, ...}]}</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; response = requests.get(&quot;https://www.mygame.com/api/objects&quot;,
+                            auth=(&quot;Myusername&quot;, &quot;password123&quot;))
+&gt;&gt;&gt; response.json()
+{
+&quot;count&quot;: 125,
+&quot;next&quot;: &quot;https://www.mygame.com/api/objects/?limit=25&amp;offset=25&quot;,
+&quot;previous&quot;: null,
+&quot;results&quot; : [{&quot;db_key&quot;: &quot;A rusty longsword&quot;, &quot;id&quot;: 57, &quot;db_location&quot;: 213, ...}]}
 </pre></div>
 </div>
 <p>In the above example, it now displays the objects inside the “results” array,
@@ -97,21 +99,21 @@ parameters that can be added to the url to control the output.</p>
 <p>Other query parameters can be defined as <a class="reference external" href="https://www.django-rest-framework.org/api-guide/filtering/#filtering">filters</a> which allow you to
 further narrow the results. For example, to only get accounts with developer
 permissions:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://www.mygame.com/api/accounts/?permission=developer&quot;</span><span class="p">,</span>
-<span class="go">                            auth=(&quot;MyUserName&quot;, &quot;password123&quot;))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-<span class="go">{</span>
-<span class="go">&quot;count&quot;: 1,</span>
-<span class="go">&quot;results&quot;: [{&quot;username&quot;: &quot;bob&quot;,...}]</span>
-<span class="go">}</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; response = requests.get(&quot;https://www.mygame.com/api/accounts/?permission=developer&quot;,
+                            auth=(&quot;MyUserName&quot;, &quot;password123&quot;))
+&gt;&gt;&gt; response.json()
+{
+&quot;count&quot;: 1,
+&quot;results&quot;: [{&quot;username&quot;: &quot;bob&quot;,...}]
+}
 </pre></div>
 </div>
-<p>Now suppose that you want to use the API to create an <a class="reference internal" href="Objects.html"><span class="doc">Object</span></a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;db_key&quot;</span><span class="p">:</span> <span class="s2">&quot;A shiny sword&quot;</span><span class="p">}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;https://www.mygame.com/api/objects&quot;</span><span class="p">,</span>
-<span class="go">                             data=data, auth=(&quot;Anotherusername&quot;, &quot;mypassword&quot;))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-<span class="go">{&quot;db_key&quot;: &quot;A shiny sword&quot;, &quot;id&quot;: 214, &quot;db_location&quot;: None, ...}</span>
+<p>Now suppose that you want to use the API to create an <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; data = {&quot;db_key&quot;: &quot;A shiny sword&quot;}
+&gt;&gt;&gt; response = requests.post(&quot;https://www.mygame.com/api/objects&quot;,
+                             data=data, auth=(&quot;Anotherusername&quot;, &quot;mypassword&quot;))
+&gt;&gt;&gt; response.json()
+{&quot;db_key&quot;: &quot;A shiny sword&quot;, &quot;id&quot;: 214, &quot;db_location&quot;: None, ...}
 </pre></div>
 </div>
 <p>Here we made a HTTP POST request to the <code class="docutils literal notranslate"><span class="pre">/api/objects</span></code> endpoint with the <code class="docutils literal notranslate"><span class="pre">db_key</span></code>
@@ -119,11 +121,11 @@ we wanted. We got back info for the newly created object. You can now make
 another request with PUT (replace everything) or PATCH (replace only what you
 provide). By providing the id to the endpoint (<code class="docutils literal notranslate"><span class="pre">/api/objects/214</span></code>),
 we make sure to update the right sword:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;db_key&quot;</span><span class="p">:</span> <span class="s2">&quot;An even SHINIER sword&quot;</span><span class="p">,</span> <span class="s2">&quot;db_location&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;https://www.mygame.com/api/objects/214&quot;</span><span class="p">,</span>
-<span class="go">                            data=data, auth=(&quot;Anotherusername&quot;, &quot;mypassword&quot;))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-<span class="go">{&quot;db_key&quot;: &quot;An even SHINIER sword&quot;, &quot;id&quot;: 214, &quot;db_location&quot;: 50, ...}</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; data = {&quot;db_key&quot;: &quot;An even SHINIER sword&quot;, &quot;db_location&quot;: 50}
+&gt;&gt;&gt; response = requests.put(&quot;https://www.mygame.com/api/objects/214&quot;,
+                            data=data, auth=(&quot;Anotherusername&quot;, &quot;mypassword&quot;))
+&gt;&gt;&gt; response.json()
+{&quot;db_key&quot;: &quot;An even SHINIER sword&quot;, &quot;id&quot;: 214, &quot;db_location&quot;: 50, ...}
 </pre></div>
 </div>
 <p>In most cases, you won’t be making API requests to the backend with Python,
@@ -137,7 +139,7 @@ the native <a class="reference external" href="https://developer.mozilla.org/en-
 <p>Overall, reading up on <a class="reference external" href="https://www.django-rest-framework.org/api-guide/viewsets">Django Rest Framework ViewSets</a> and
 other parts of their documentation is required for expanding and
 customizing the API.</p>
-<p>Check out the <a class="reference internal" href="Website.html"><span class="doc">Website</span></a> page for help on how to override code, templates
+<p>Check out the <a class="reference internal" href="Website.html"><span class="doc std std-doc">Website</span></a> page for help on how to override code, templates
 and static files.</p>
 <ul class="simple">
 <li><p>API templates (for the web-display) is located in <code class="docutils literal notranslate"><span class="pre">evennia/web/api/templates/rest_framework/</span></code> (it must
@@ -146,7 +148,7 @@ be named such to allow override of the original REST framework templates).</p></
 <li><p>The api code is located in <code class="docutils literal notranslate"><span class="pre">evennia/web/api/</span></code> - the <code class="docutils literal notranslate"><span class="pre">url.py</span></code> file here is responsible for
 collecting all view-classes.</p></li>
 </ul>
-<p>Contrary to other web components, there is no pre-made urls.py set up for
+<p>Contrary to other web components, there is no pre-made <a class="reference external" href="http://urls.py">urls.py</a> set up for
 <code class="docutils literal notranslate"><span class="pre">mygame/web/api/</span></code>. This is because the registration of models with the api is
 strongly integrated with the REST api functionality. Easiest is probably to
 copy over <code class="docutils literal notranslate"><span class="pre">evennia/web/api/urls.py</span></code> and modify it in place.</p>
@@ -202,7 +204,7 @@ copy over <code class="docutils literal notranslate"><span class="pre">evennia/w
 <h3>Versions</h3>
 <ul>
   <li><a href="Web-API.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

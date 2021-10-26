@@ -13,6 +13,8 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -50,7 +52,7 @@
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.managers</span> <span class="kn">import</span> <span class="n">TypedObjectManager</span><span class="p">,</span> <span class="n">TypeclassManager</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">string_partial_matching</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ObjectManager&quot;</span><span class="p">,)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ObjectManager&quot;</span><span class="p">,</span> <span class="s2">&quot;ObjectDBManager&quot;</span><span class="p">)</span>
 <span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
 
 <span class="c1"># delayed import</span>
@@ -61,7 +63,7 @@
 <span class="c1"># Try to use a custom way to parse id-tagged multimatches.</span>
 
 
-<span class="k">class</span> <span class="nc">ObjectDBManager</span><span class="p">(</span><span class="n">TypedObjectManager</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDBManager"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager">[docs]</a><span class="k">class</span> <span class="nc">ObjectDBManager</span><span class="p">(</span><span class="n">TypedObjectManager</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This ObjectManager implements methods for searching</span>
 <span class="sd">    and manipulating Objects directly from the database.</span>
@@ -95,7 +97,7 @@
 
     <span class="c1"># account related</span>
 
-    <span class="k">def</span> <span class="nf">get_object_with_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDBManager.get_object_with_account"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_object_with_account">[docs]</a>    <span class="k">def</span> <span class="nf">get_object_with_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Search for an object based on its account&#39;s name or dbref.</span>
 
@@ -142,9 +144,9 @@
                     <span class="p">[</span><span class="n">acct</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">acct</span> <span class="ow">in</span> <span class="n">acct_cands</span><span class="p">],</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">ret_index</span><span class="o">=</span><span class="kc">True</span>
                 <span class="p">)</span>
                 <span class="n">acct_cands</span> <span class="o">=</span> <span class="p">[</span><span class="n">acct_cands</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index_matches</span><span class="p">]</span>
-                <span class="k">return</span> <span class="n">obj_cands</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_account__id__in</span><span class="o">=</span><span class="n">acct_cands</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">obj_cands</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_account__id__in</span><span class="o">=</span><span class="n">acct_cands</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_objs_with_key_and_typeclass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oname</span><span class="p">,</span> <span class="n">otypeclass_path</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDBManager.get_objs_with_key_and_typeclass"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_key_and_typeclass">[docs]</a>    <span class="k">def</span> <span class="nf">get_objs_with_key_and_typeclass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oname</span><span class="p">,</span> <span class="n">otypeclass_path</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns objects based on simultaneous key and typeclass match.</span>
 
@@ -163,11 +165,11 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
             <span class="n">cand_restriction</span> <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="n">oname</span><span class="p">,</span> <span class="n">db_typeclass_path__exact</span><span class="o">=</span><span class="n">otypeclass_path</span><span class="p">)</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span></div>
 
     <span class="c1"># attr/property related</span>
 
-    <span class="k">def</span> <span class="nf">get_objs_with_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDBManager.get_objs_with_attr"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_attr">[docs]</a>    <span class="k">def</span> <span class="nf">get_objs_with_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get objects based on having a certain Attribute defined.</span>
 
@@ -185,9 +187,9 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">cand_restriction</span> <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="n">attribute_name</span><span class="p">))</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span>
             <span class="s2">&quot;id&quot;</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_objs_with_attr_value</span><span class="p">(</span>
+<div class="viewcode-block" id="ObjectDBManager.get_objs_with_attr_value"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_attr_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_objs_with_attr_value</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">,</span> <span class="n">attribute_value</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">typeclasses</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -223,9 +225,9 @@
             <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="n">attribute_name</span><span class="p">)</span>
             <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_value</span><span class="o">=</span><span class="n">attribute_value</span><span class="p">)</span>
         <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">results</span>
+        <span class="k">return</span> <span class="n">results</span></div>
 
-    <span class="k">def</span> <span class="nf">get_objs_with_db_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDBManager.get_objs_with_db_property"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_db_property">[docs]</a>    <span class="k">def</span> <span class="nf">get_objs_with_db_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all objects having a given db field property.</span>
 
@@ -247,9 +249,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">cand_restriction</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">Q</span><span class="p">(</span><span class="o">**</span><span class="n">querykwargs</span><span class="p">))</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">))</span>
         <span class="k">except</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">FieldError</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[]</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
 
-    <span class="k">def</span> <span class="nf">get_objs_with_db_property_value</span><span class="p">(</span>
+<div class="viewcode-block" id="ObjectDBManager.get_objs_with_db_property_value"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_db_property_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_objs_with_db_property_value</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">,</span> <span class="n">property_value</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">typeclasses</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -285,9 +287,9 @@
                 <span class="s2">&quot;The property &#39;</span><span class="si">%s</span><span class="s2">&#39; does not support search criteria of the type </span><span class="si">%s</span><span class="s2">.&quot;</span>
                 <span class="o">%</span> <span class="p">(</span><span class="n">property_name</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">property_value</span><span class="p">))</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="p">[]</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
 
-    <span class="k">def</span> <span class="nf">get_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">excludeobj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDBManager.get_contents"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_contents">[docs]</a>    <span class="k">def</span> <span class="nf">get_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">excludeobj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all objects that has a location set to this one.</span>
 
@@ -302,9 +304,9 @@
         <span class="n">exclude_restriction</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">Q</span><span class="p">(</span><span class="n">pk__in</span><span class="o">=</span><span class="p">[</span><span class="n">_GA</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">excludeobj</span><span class="p">)])</span> <span class="k">if</span> <span class="n">excludeobj</span> <span class="k">else</span> <span class="n">Q</span><span class="p">()</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_location</span><span class="o">=</span><span class="n">location</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">exclude_restriction</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_location</span><span class="o">=</span><span class="n">location</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">exclude_restriction</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_objs_with_key_or_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">typeclasses</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDBManager.get_objs_with_key_or_alias"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_key_or_alias">[docs]</a>    <span class="k">def</span> <span class="nf">get_objs_with_key_or_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">typeclasses</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            ostring (str): A search criterion.</span>
@@ -386,11 +388,11 @@
             <span class="k">if</span> <span class="n">index_matches</span><span class="p">:</span>
                 <span class="c1"># it&#39;s possible to have multiple matches to the same Object, we must weed those out</span>
                 <span class="k">return</span> <span class="nb">list</span><span class="p">({</span><span class="n">alias_candidates</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">index_matches</span><span class="p">})</span>
-            <span class="k">return</span> <span class="p">[]</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
 
     <span class="c1"># main search methods and helper functions</span>
 
-    <span class="k">def</span> <span class="nf">search_object</span><span class="p">(</span>
+<div class="viewcode-block" id="ObjectDBManager.search_object"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.search_object">[docs]</a>    <span class="k">def</span> <span class="nf">search_object</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">searchdata</span><span class="p">,</span>
         <span class="n">attribute_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -528,7 +530,7 @@
                 <span class="n">matches</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># return a list (possibly empty)</span>
-        <span class="k">return</span> <span class="n">matches</span>
+        <span class="k">return</span> <span class="n">matches</span></div>
 
     <span class="c1"># alias for backwards compatibility</span>
     <span class="n">object_search</span> <span class="o">=</span> <span class="n">search_object</span>
@@ -537,7 +539,7 @@
     <span class="c1">#</span>
     <span class="c1"># ObjectManager Copy method</span>
 
-    <span class="k">def</span> <span class="nf">copy_object</span><span class="p">(</span>
+<div class="viewcode-block" id="ObjectDBManager.copy_object"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.copy_object">[docs]</a>    <span class="k">def</span> <span class="nf">copy_object</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">original_object</span><span class="p">,</span>
         <span class="n">new_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -627,15 +629,15 @@
         <span class="p">)</span>
         <span class="n">new_object</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="n">tags</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">new_object</span>
+        <span class="k">return</span> <span class="n">new_object</span></div>
 
-    <span class="k">def</span> <span class="nf">clear_all_sessids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDBManager.clear_all_sessids"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.clear_all_sessids">[docs]</a>    <span class="k">def</span> <span class="nf">clear_all_sessids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clear the db_sessid field of all objects having also the</span>
 <span class="sd">        db_account field set.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_sessid__isnull</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">db_sessid</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_sessid__isnull</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">db_sessid</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="ObjectManager"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectManager">[docs]</a><span class="k">class</span> <span class="nc">ObjectManager</span><span class="p">(</span><span class="n">ObjectDBManager</span><span class="p">,</span> <span class="n">TypeclassManager</span><span class="p">):</span>
@@ -674,7 +676,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="manager.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

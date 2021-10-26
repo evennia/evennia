@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="web-client">
+  <section class="tex2jax_ignore mathjax_ignore" id="web-client">
 <h1>Web Client<a class="headerlink" href="#web-client" title="Permalink to this headline">¶</a></h1>
 <p>Evennia comes with a MUD client accessible from a normal web browser. During development you can try
 it at <code class="docutils literal notranslate"><span class="pre">http://localhost:4001/webclient</span></code>. The client consists of several parts, all under
@@ -75,7 +77,7 @@ your browser cache, and see if your edit shows up.</strong></p>
 <code class="docutils literal notranslate"><span class="pre">mygame/web/template_overrides/webclient/base.html</span></code> and  editing it to add your new plugin.</p>
 </section>
 </section>
-<section id="evennia-web-client-api-from-evennia-js">
+<section class="tex2jax_ignore mathjax_ignore" id="evennia-web-client-api-from-evennia-js">
 <h1>Evennia Web Client API (from evennia.js)<a class="headerlink" href="#evennia-web-client-api-from-evennia-js" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Evennia.init(</span> <span class="pre">opts</span> <span class="pre">)</span></code></p></li>
@@ -86,7 +88,7 @@ your browser cache, and see if your edit shows up.</strong></p>
 <li><p><code class="docutils literal notranslate"><span class="pre">log()</span></code></p></li>
 </ul>
 </section>
-<section id="plugin-manager-api-from-webclient-gui-js">
+<section class="tex2jax_ignore mathjax_ignore" id="plugin-manager-api-from-webclient-gui-js">
 <h1>Plugin Manager API (from webclient_gui.js)<a class="headerlink" href="#plugin-manager-api-from-webclient-gui-js" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">options</span></code> Object, Stores key/value ‘state’ that can be used by plugins to coordinate behavior.</p></li>
@@ -99,7 +101,7 @@ your browser cache, and see if your edit shows up.</strong></p>
 </li>
 </ul>
 </section>
-<section id="plugin-callbacks-api">
+<section class="tex2jax_ignore mathjax_ignore" id="plugin-callbacks-api">
 <h1>Plugin callbacks API<a class="headerlink" href="#plugin-callbacks-api" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">init()</span></code> – The only required callback</p></li>
@@ -123,7 +125,7 @@ their callback for this event called.  This enables things like the up/down arro
 history.js plugin to always occur before the default_in.js plugin adds that key to the current input
 buffer.</p>
 </section>
-<section id="example-default-plugins-plugins-js">
+<section class="tex2jax_ignore mathjax_ignore" id="example-default-plugins-plugins-js">
 <h1>Example/Default Plugins (plugins/*.js)<a class="headerlink" href="#example-default-plugins-plugins-js" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">clienthelp.js</span></code> Defines onOptionsUI from the options2 plugin.  This is a mostly empty plugin to
@@ -158,7 +160,7 @@ while the tab is hidden.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">popups.js</span></code> Provides default popups/Dialog UI for other plugins to use.</p></li>
 </ul>
 </section>
-<section id="writing-your-own-plugins">
+<section class="tex2jax_ignore mathjax_ignore" id="writing-your-own-plugins">
 <h1>Writing your own Plugins<a class="headerlink" href="#writing-your-own-plugins" title="Permalink to this headline">¶</a></h1>
 <p>So, you love the functionality of the webclient, but your game has specific
 types of text that need to be separated out into their own space, visually.
@@ -348,7 +350,7 @@ window.plugin_handler.add(&quot;myplugin&quot;, myplugin);
 <h3>Versions</h3>
 <ul>
   <li><a href="Webclient.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

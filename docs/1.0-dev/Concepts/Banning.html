@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="banning">
+  <section class="tex2jax_ignore mathjax_ignore" id="banning">
 <h1>Banning<a class="headerlink" href="#banning" title="Permalink to this headline">¶</a></h1>
 <p>Whether due to abuse, blatant breaking of your rules, or some other reason, you will eventually find
 no other recourse but to kick out a particularly troublesome player. The default command set has
@@ -52,19 +54,19 @@ have tried to be nice. Now you just want this troll gone.</p>
 <section id="name-ban">
 <h3>Name ban<a class="headerlink" href="#name-ban" title="Permalink to this headline">¶</a></h3>
 <p>The easiest recourse is to block the account YouSuck from ever connecting again.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">ban</span> <span class="n">YouSuck</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> ban YouSuck
 </pre></div>
 </div>
 <p>This will lock the name YouSuck (as well as ‘yousuck’ and any other capitalization combination), and
 next time they try to log in with this name the server will not let them!</p>
 <p>You can also give a reason so you remember later why this was a good thing (the banned account will
 never see this)</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">ban</span> <span class="n">YouSuck</span><span class="p">:</span><span class="n">This</span> <span class="ow">is</span> <span class="n">just</span> <span class="n">a</span> <span class="n">troll</span><span class="o">.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> ban YouSuck:This is just a troll.
 </pre></div>
 </div>
 <p>If you are sure this is just a spam account, you might even consider deleting the player account
 outright:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">accounts</span><span class="o">/</span><span class="n">delete</span> <span class="n">YouSuck</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> accounts/delete YouSuck
 </pre></div>
 </div>
 <p>Generally, banning the name is the easier and safer way to stop the use of an account – if you
@@ -77,13 +79,13 @@ up. They can just create a new account YouSuckMore and be back at it. One way to
 for them is to tell the server to not allow connections from their particular IP address.</p>
 <p>First, when the offending account is online, check which IP address they use. This you can do with
 the <code class="docutils literal notranslate"><span class="pre">who</span></code> command, which will show you something like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">Account</span> <span class="n">Name</span>     <span class="n">On</span> <span class="k">for</span>     <span class="n">Idle</span>     <span class="n">Room</span>     <span class="n">Cmds</span>     <span class="n">Host</span>          
- <span class="n">YouSuckMore</span>      <span class="mi">01</span><span class="p">:</span><span class="mi">12</span>      <span class="mi">2</span><span class="n">m</span>       <span class="mi">22</span>       <span class="mi">212</span>      <span class="mf">237.333.0.223</span> 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> Account Name     On for     Idle     Room     Cmds     Host          
+ YouSuckMore      01:12      2m       22       212      237.333.0.223 
 </pre></div>
 </div>
 <p>The “Host” bit is the IP address from which the account is connecting. Use this to define the ban
 instead of the name:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">ban</span> <span class="mf">237.333.0.223</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> ban 237.333.0.223
 </pre></div>
 </div>
 <p>This will stop YouSuckMore connecting from their computer. Note however that IP address might change
@@ -92,7 +94,7 @@ changing computers. You can make a more general ban by putting asterisks <code c
 groups of three digits in the address. So if you figure out that !YouSuckMore mainly connects from
 237.333.0.223, 237.333.0.225, and 237.333.0.256 (only changes in their subnet), it might be an idea
 to put down a ban like this to include any number in that subnet:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">ban</span> <span class="mf">237.333.0</span><span class="o">.*</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> ban 237.333.0.*
 </pre></div>
 </div>
 <p>You should combine the IP ban with a name-ban too of course, so the account YouSuckMore is truly
@@ -105,28 +107,28 @@ blocking out innocent players who just happen to connect from the same subnet as
 <h2>Booting<a class="headerlink" href="#booting" title="Permalink to this headline">¶</a></h2>
 <p>YouSuck is not really noticing all this banning yet though - and won’t until having logged out and
 trying to log back in again. Let’s help the troll along.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">boot</span> <span class="n">YouSuck</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> boot YouSuck
 </pre></div>
 </div>
 <p>Good riddance. You can give a reason for booting too (to be echoed to the player before getting
 kicked out).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">boot</span> <span class="n">YouSuck</span><span class="p">:</span><span class="n">Go</span> <span class="n">troll</span> <span class="n">somewhere</span> <span class="k">else</span><span class="o">.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> boot YouSuck:Go troll somewhere else.
 </pre></div>
 </div>
 <section id="lifting-a-ban">
 <h3>Lifting a ban<a class="headerlink" href="#lifting-a-ban" title="Permalink to this headline">¶</a></h3>
 <p>Use the <code class="docutils literal notranslate"><span class="pre">unban</span></code> (or <code class="docutils literal notranslate"><span class="pre">ban</span></code>) command without any arguments and you will see a list of all currently
 active bans:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Active</span> <span class="n">bans</span>
-<span class="nb">id</span>   <span class="n">name</span><span class="o">/</span><span class="n">ip</span>       <span class="n">date</span>                      <span class="n">reason</span> 
-<span class="mi">1</span>    <span class="n">yousuck</span>       <span class="n">Fri</span> <span class="n">Jan</span> <span class="mi">3</span> <span class="mi">23</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">22</span> <span class="mi">2020</span>   <span class="n">This</span> <span class="ow">is</span> <span class="n">just</span> <span class="n">a</span> <span class="n">Troll</span><span class="o">.</span>
-<span class="mi">2</span>    <span class="mf">237.333.0</span><span class="o">.*</span>   <span class="n">Fri</span> <span class="n">Jan</span> <span class="mi">3</span> <span class="mi">23</span><span class="p">:</span><span class="mi">01</span><span class="p">:</span><span class="mi">03</span> <span class="mi">2020</span>   <span class="n">YouSuck</span><span class="s1">&#39;s IP.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Active bans
+id   name/ip       date                      reason 
+1    yousuck       Fri Jan 3 23:00:22 2020   This is just a Troll.
+2    237.333.0.*   Fri Jan 3 23:01:03 2020   YouSuck&#39;s IP.
 </pre></div>
 </div>
 <p>Use the <code class="docutils literal notranslate"><span class="pre">id</span></code> from this list to find out which ban to lift.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">unban</span> <span class="mi">2</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> unban 2
   
-<span class="n">Cleared</span> <span class="n">ban</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">237.333.0</span><span class="o">.*</span>
+Cleared ban 2: 237.333.0.*
 </pre></div>
 </div>
 </section>
@@ -150,14 +152,14 @@ is not what you want in this case.</p></li>
 <li><p><strong>unban 34</strong> – Remove ban with id #34</p></li>
 <li><p><strong>cboot mychannel = thomas</strong> – Boot a subscriber from a channel you control</p></li>
 <li><p><strong>clock mychannel = control:perm(Admin);listen:all();send:all()</strong> – Fine control of access to
-your channel using <a class="reference internal" href="../Components/Locks.html"><span class="doc">lock definitions</span></a>.</p></li>
+your channel using <a class="reference internal" href="../Components/Locks.html"><span class="doc std std-doc">lock definitions</span></a>.</p></li>
 </ul>
 <p>Locking a specific command (like <code class="docutils literal notranslate"><span class="pre">page</span></code>) is accomplished like so:</p>
 <ol class="simple">
 <li><p>Examine the source of the command. <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/commands/default/comms.py#L686">The default <code class="docutils literal notranslate"><span class="pre">page</span></code> command class</a> has the lock
 string <strong>“cmd:not pperm(page_banned)”</strong>. This means that unless the player has the ‘permission’
 “page_banned” they can use this command. You can assign any lock string to allow finer customization
-in your commands. You might look for the value of an <a class="reference internal" href="../Components/Attributes.html"><span class="doc">Attribute</span></a> or <a class="reference internal" href="../Components/Tags.html"><span class="doc">Tag</span></a>, your
+in your commands. You might look for the value of an <a class="reference internal" href="../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a> or <a class="reference internal" href="../Components/Tags.html"><span class="doc std std-doc">Tag</span></a>, your
 current location etc.</p></li>
 <li><p><strong>perm/account thomas = page_banned</strong> – Give the account the ‘permission’ which causes (in this
 case) the lock to fail.</p></li>
@@ -238,7 +240,7 @@ objects on the fly. For advanced users.</p></li>
 <h3>Versions</h3>
 <ul>
   <li><a href="Banning.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

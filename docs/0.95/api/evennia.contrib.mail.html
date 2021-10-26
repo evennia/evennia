@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.mail &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.mail</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.mail">
+<span id="evennia-contrib-mail"></span><h1>evennia.contrib.mail<a class="headerlink" href="#module-evennia.contrib.mail" title="Permalink to this headline">¶</a></h1>
+<p>In-Game Mail system</p>
+<p>Evennia Contribution - grungies1138 2016</p>
+<p>A simple Brandymail style &#64;mail system that uses the Msg class from Evennia
+Core. It has two Commands, both of which can be used on their own:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>CmdMail - this should sit on the Account cmdset and makes the &#64;mail command</p></li>
+</ul>
+<blockquote>
+<div><p>available both IC and OOC. Mails will always go to Accounts (other players).</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>CmdMailCharacter - this should sit on the Character cmdset and makes the &#64;mail</p></li>
+</ul>
+<blockquote>
+<div><p>command ONLY available when puppeting a character. Mails will be sent to other
+Characters only and will not be available when OOC.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>If adding <em>both</em> commands to their respective cmdsets, you’ll get two separate</p></li>
+</ul>
+<blockquote>
+<div><p>IC and OOC mailing systems, with different lists of mail for IC and OOC modes.</p>
+</div></blockquote>
+</div></blockquote>
+<p>Installation:</p>
+<p>Install one or both of the following (see above):</p>
+<ul>
+<li><p>CmdMail (IC + OOC mail, sent between players)</p>
+<blockquote>
+<div><p># mygame/commands/default_cmds.py</p>
+<p>from evennia.contrib import mail</p>
+<dl class="simple">
+<dt># in AccountCmdSet.at_cmdset_creation:</dt><dd><p>self.add(mail.CmdMail())</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>CmdMailCharacter (optional, IC only mail, sent between characters)</p>
+<blockquote>
+<div><p># mygame/commands/default_cmds.py</p>
+<p>from evennia.contrib import mail</p>
+<dl class="simple">
+<dt># in CharacterCmdSet.at_cmdset_creation:</dt><dd><p>self.add(mail.CmdMailCharacter())</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ul>
+<p>Once installed, use <strong>help mail</strong> in game for help with the mail command. Use
+&#64;ic/&#64;ooc to switch in and out of IC/OOC modes.</p>
+<dl class="py class">
+<dt id="evennia.contrib.mail.CmdMail">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.mail.</code><code class="sig-name descname">CmdMail</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mail.html#CmdMail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mail.CmdMail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxAccountCommand" title="evennia.commands.default.muxcommand.MuxAccountCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxAccountCommand</span></code></a></p>
+<p>Communicate with others by sending mail.</p>
+<dl>
+<dt>Usage:</dt><dd><p>&#64;mail       - Displays all the mail an account has in their mailbox
+&#64;mail &lt;#&gt;   - Displays a specific message
+&#64;mail &lt;accounts&gt;=&lt;subject&gt;/&lt;message&gt;</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Sends a message to the comma separated list of accounts.</p></li>
+</ul>
+</div></blockquote>
+<p>&#64;mail/delete &lt;#&gt; - Deletes a specific message
+&#64;mail/forward &lt;account list&gt;=&lt;#&gt;[/&lt;Message&gt;]</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Forwards an existing message to the specified list of accounts,
+original message is delivered with optional Message prepended.</p></li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt>&#64;mail/reply &lt;#&gt;=&lt;message&gt;</dt><dd><ul class="simple">
+<li><p>Replies to a message #. Prepends message to the original
+message text.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt>Switches:</dt><dd><p>delete  - deletes a message
+forward - forward a received message to another object with an optional message attached.
+reply   - Replies to a received message, appending the original message to the bottom.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>&#64;mail 2
+&#64;mail Griatch=New mail/Hey man, I am sending you a message!
+&#64;mail/delete 6
+&#64;mail/forward feend78 Griatch=4/You guys should read this.
+&#64;mail/reply 9=Thanks for the info!</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.mail.CmdMail.key">
+<code class="sig-name descname">key</code><em class="property"> = '&#64;mail'</em><a class="headerlink" href="#evennia.contrib.mail.CmdMail.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.mail.CmdMail.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['mail']</em><a class="headerlink" href="#evennia.contrib.mail.CmdMail.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.mail.CmdMail.lock">
+<code class="sig-name descname">lock</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.mail.CmdMail.lock" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.mail.CmdMail.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.mail.CmdMail.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.mail.CmdMail.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mail.html#CmdMail.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mail.CmdMail.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add convenience check to know if caller is an Account or not since this cmd
+will be able to add to either Object- or Account level.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.mail.CmdMail.search_targets">
+<code class="sig-name descname">search_targets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">namelist</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mail.html#CmdMail.search_targets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mail.CmdMail.search_targets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search a list of targets of the same type as caller.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>Object</em><em> or </em><em>Account</em>) – The type of object to search.</p></li>
+<li><p><strong>namelist</strong> (<em>list</em>) – List of strings for objects to search for.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>targetlist (Queryset)</em> – Any target matches.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.mail.CmdMail.get_all_mail">
+<code class="sig-name descname">get_all_mail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mail.html#CmdMail.get_all_mail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mail.CmdMail.get_all_mail" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Returns a list of all the messages where the caller is a recipient. These</dt><dd><p>are all messages tagged with tags of the <strong>mail</strong> category.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>messages (QuerySet)</em> – Matching Msg objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.mail.CmdMail.send_mail">
+<code class="sig-name descname">send_mail</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">recipients</span></em>, <em class="sig-param"><span class="n">subject</span></em>, <em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mail.html#CmdMail.send_mail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mail.CmdMail.send_mail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function for sending new mail.  Also useful for sending notifications
+from objects or systems.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>recipients</strong> (<em>list</em>) – list of Account or Character objects to receive
+the newly created mails.</p></li>
+<li><p><strong>subject</strong> (<em>str</em>) – The header or subject of the message to be delivered.</p></li>
+<li><p><strong>message</strong> (<em>str</em>) – The body of the message being sent.</p></li>
+<li><p><strong>caller</strong> (<em>obj</em>) – The object (or Account or Character) that is sending the message.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.mail.CmdMail.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mail.html#CmdMail.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mail.CmdMail.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do the main command functionality</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.mail.CmdMail.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.mail.CmdMail.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.mail.CmdMailCharacter">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.mail.</code><code class="sig-name descname">CmdMailCharacter</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mail.html#CmdMailCharacter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mail.CmdMailCharacter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.mail.CmdMail" title="evennia.contrib.mail.CmdMail"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.mail.CmdMail</span></code></a></p>
+<p>Communicate with others by sending mail.</p>
+<dl>
+<dt>Usage:</dt><dd><p>&#64;mail       - Displays all the mail an account has in their mailbox
+&#64;mail &lt;#&gt;   - Displays a specific message
+&#64;mail &lt;accounts&gt;=&lt;subject&gt;/&lt;message&gt;</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Sends a message to the comma separated list of accounts.</p></li>
+</ul>
+</div></blockquote>
+<p>&#64;mail/delete &lt;#&gt; - Deletes a specific message
+&#64;mail/forward &lt;account list&gt;=&lt;#&gt;[/&lt;Message&gt;]</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Forwards an existing message to the specified list of accounts,
+original message is delivered with optional Message prepended.</p></li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt>&#64;mail/reply &lt;#&gt;=&lt;message&gt;</dt><dd><ul class="simple">
+<li><p>Replies to a message #. Prepends message to the original
+message text.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt>Switches:</dt><dd><p>delete  - deletes a message
+forward - forward a received message to another object with an optional message attached.
+reply   - Replies to a received message, appending the original message to the bottom.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>&#64;mail 2
+&#64;mail Griatch=New mail/Hey man, I am sending you a message!
+&#64;mail/delete 6
+&#64;mail/forward feend78 Griatch=4/You guys should read this.
+&#64;mail/reply 9=Thanks for the info!</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.mail.CmdMailCharacter.account_caller">
+<code class="sig-name descname">account_caller</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.mail.CmdMailCharacter.account_caller" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.mail.CmdMailCharacter.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['mail']</em><a class="headerlink" href="#evennia.contrib.mail.CmdMailCharacter.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.mail.CmdMailCharacter.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.mail.CmdMailCharacter.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.mail.CmdMailCharacter.key">
+<code class="sig-name descname">key</code><em class="property"> = '&#64;mail'</em><a class="headerlink" href="#evennia.contrib.mail.CmdMailCharacter.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.mail.CmdMailCharacter.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.mail.CmdMailCharacter.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.mail.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.contrib.mail.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.contrib.mail.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.mail</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.security.auditing.tests &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.security.auditing.tests</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.security.auditing.tests</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module containing the test cases for the Audit system.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Anything</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="c1"># Configure session auditing settings - TODO: This is bad practice that leaks over to other tests</span>
+<span class="n">settings</span><span class="o">.</span><span class="n">AUDIT_CALLBACK</span> <span class="o">=</span> <span class="s2">&quot;evennia.security.contrib.auditing.outputs.to_syslog&quot;</span>
+<span class="n">settings</span><span class="o">.</span><span class="n">AUDIT_IN</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">settings</span><span class="o">.</span><span class="n">AUDIT_OUT</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">settings</span><span class="o">.</span><span class="n">AUDIT_ALLOW_SPARSE</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1"># Configure settings to use custom session - TODO: This is bad practice, changing global settings</span>
+<span class="n">settings</span><span class="o">.</span><span class="n">SERVER_SESSION_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.contrib.security.auditing.server.AuditedServerSession&quot;</span>
+
+
+<div class="viewcode-block" id="AuditingTest"><a class="viewcode-back" href="../../../../../api/evennia.contrib.security.auditing.tests.html#evennia.contrib.security.auditing.tests.AuditingTest">[docs]</a><span class="k">class</span> <span class="nc">AuditingTest</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="AuditingTest.test_mask"><a class="viewcode-back" href="../../../../../api/evennia.contrib.security.auditing.tests.html#evennia.contrib.security.auditing.tests.AuditingTest.test_mask">[docs]</a>    <span class="k">def</span> <span class="nf">test_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make sure the &#39;mask&#39; function is properly masking potentially sensitive</span>
+<span class="sd">        information from strings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">safe_cmds</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;/say hello to my little friend&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;@ccreate channel = for channeling&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;@create/drop some stuff&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;@create rock&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;@create a pretty shirt : evennia.contrib.clothing.Clothing&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;@charcreate johnnyefhiwuhefwhef&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;Command &quot;@logout&quot; is not available. Maybe you meant &quot;@color&quot; or &quot;@cboot&quot;?&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;/me says, &quot;what is the password?&quot;&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;say the password is plugh&quot;</span><span class="p">,</span>
+            <span class="c1"># Unfortunately given the syntax, there is no way to discern the</span>
+            <span class="c1"># latter of these as sensitive</span>
+            <span class="s2">&quot;@create pretty sunset&quot;</span> <span class="s2">&quot;@create johnny password123&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;{&quot;text&quot;: &quot;Command </span><span class="se">\&#39;</span><span class="s1">do stuff</span><span class="se">\&#39;</span><span class="s1"> is not available. Type &quot;help&quot; for help.&quot;}&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">safe_cmds</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">cmd</span><span class="p">),</span> <span class="n">cmd</span><span class="p">)</span>
+
+        <span class="n">unsafe_cmds</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;something - new password set to &#39;asdfghjk&#39;.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;something - new password set to &#39;********&#39;.&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;someone has changed your password to &#39;something&#39;.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;someone has changed your password to &#39;*********&#39;.&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;connect johnny password123&quot;</span><span class="p">,</span> <span class="s2">&quot;connect johnny ***********&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;concnct johnny password123&quot;</span><span class="p">,</span> <span class="s2">&quot;concnct johnny ***********&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;concnct johnnypassword123&quot;</span><span class="p">,</span> <span class="s2">&quot;concnct *****************&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;connect &quot;johnny five&quot; &quot;password 123&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;connect &quot;johnny five&quot; **************&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;connect johnny &quot;password 123&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;connect johnny **************&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;create johnny password123&quot;</span><span class="p">,</span> <span class="s2">&quot;create johnny ***********&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;@password password1234 = password2345&quot;</span><span class="p">,</span> <span class="s2">&quot;@password ***************************&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;@password password1234 password2345&quot;</span><span class="p">,</span> <span class="s2">&quot;@password *************************&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;@passwd password1234 = password2345&quot;</span><span class="p">,</span> <span class="s2">&quot;@passwd ***************************&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;@userpassword johnny = password234&quot;</span><span class="p">,</span> <span class="s2">&quot;@userpassword johnny = ***********&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;craete johnnypassword123&quot;</span><span class="p">,</span> <span class="s2">&quot;craete *****************&quot;</span><span class="p">),</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;Command &#39;conncect teddy teddy&#39; is not available. Maybe you meant </span><span class="se">\&quot;</span><span class="s2">@encode</span><span class="se">\&quot;</span><span class="s2">?&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Command &#39;conncect ******** ********&#39; is not available. Maybe you meant </span><span class="se">\&quot;</span><span class="s2">@encode</span><span class="se">\&quot;</span><span class="s2">?&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;{&#39;text&#39;: u&#39;Command </span><span class="se">\\</span><span class="s2">&#39;conncect jsis dfiidf</span><span class="se">\\</span><span class="s2">&#39; is not available. Type </span><span class="se">\&quot;</span><span class="s2">help</span><span class="se">\&quot;</span><span class="s2"> for help.&#39;}&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;{&#39;text&#39;: u&#39;Command </span><span class="se">\\</span><span class="s2">&#39;conncect jsis ********</span><span class="se">\\</span><span class="s2">&#39; is not available. Type </span><span class="se">\&quot;</span><span class="s2">help</span><span class="se">\&quot;</span><span class="s2"> for help.&#39;}&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">unsafe</span><span class="p">,</span> <span class="n">safe</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">unsafe_cmds</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot; &lt;Masked: .+&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">unsafe</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">safe</span><span class="p">)</span>
+
+        <span class="c1"># Make sure scrubbing is not being abused to evade monitoring</span>
+        <span class="n">secrets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;say password password password; ive got a secret that i cant explain&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;whisper johnny = password</span><span class="se">\n</span><span class="s2"> let&#39;s lynch the landlord&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;say connect johnny password1234|the secret life of arabia&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;@password eval(</span><span class="se">\&quot;</span><span class="s2">__import__(&#39;os&#39;).system(&#39;clear&#39;)</span><span class="se">\&quot;</span><span class="s2">, {&#39;__builtins__&#39;:</span><span class="si">{}</span><span class="s2">})&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">secret</span> <span class="ow">in</span> <span class="n">secrets</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">secret</span><span class="p">),</span> <span class="n">secret</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AuditingTest.test_audit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.security.auditing.tests.html#evennia.contrib.security.auditing.tests.AuditingTest.test_audit">[docs]</a>    <span class="k">def</span> <span class="nf">test_audit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make sure the &#39;audit&#39; function is returning a dictionary based on values</span>
+<span class="sd">        parsed from the Session object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">audit</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;client&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;hello&quot;</span><span class="p">]])</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">log</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;direction&quot;</span><span class="p">,</span> <span class="s2">&quot;protocol&quot;</span><span class="p">,</span> <span class="s2">&quot;application&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">obj</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;direction&quot;</span><span class="p">:</span> <span class="s2">&quot;RCV&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;protocol&quot;</span><span class="p">:</span> <span class="s2">&quot;telnet&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;application&quot;</span><span class="p">:</span> <span class="n">Anything</span><span class="p">,</span>  <span class="c1"># this will change if running tests from the game dir</span>
+                <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;hello&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Make sure OOB data is being recorded</span>
+        <span class="n">log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">audit</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="s2">&quot;client&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;connect johnny password123&quot;</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;hp=20|st=10|ma=15&quot;</span><span class="p">,</span> <span class="n">pane</span><span class="o">=</span><span class="mi">2</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span> <span class="s2">&quot;connect johnny ***********&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="s2">&quot;prompt&quot;</span><span class="p">],</span> <span class="s2">&quot;hp=20|st=10|ma=15&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="s2">&quot;pane&quot;</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="tests.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.security.auditing.tests</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

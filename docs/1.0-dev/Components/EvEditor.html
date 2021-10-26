@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="eveditor">
+  <section class="tex2jax_ignore mathjax_ignore" id="eveditor">
 <h1>EvEditor<a class="headerlink" href="#eveditor" title="Permalink to this headline">¶</a></h1>
 <p>Evennia offers a powerful in-game line editor in <code class="docutils literal notranslate"><span class="pre">evennia.utils.eveditor.EvEditor</span></code>. This editor,
 mimicking the well-known VI line editor. It offers line-by-line editing, undo/redo, line deletes,
@@ -46,17 +48,13 @@ search/replace, fill, dedent and more.</p>
 <section id="launching-the-editor">
 <h2>Launching the editor<a class="headerlink" href="#launching-the-editor" title="Permalink to this headline">¶</a></h2>
 <p>The editor is created as follows:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
 
-<span class="n">EvEditor</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> 
-         <span class="n">loadfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">savefunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quitfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+<span class="n">EvEditor</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span>
+         <span class="n">loadfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">savefunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quitfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
          <span class="n">key</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">caller</span></code> (Object or Account): The user of the editor.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">loadfunc</span></code> (callable, optional): This is a function called when the editor is first started. It
@@ -74,40 +72,12 @@ It has no other mechanical function.</p></li>
 <section id="example-of-usage">
 <h2>Example of usage<a class="headerlink" href="#example-of-usage" title="Permalink to this headline">¶</a></h2>
 <p>This is an example command for setting a specific Attribute using the editor.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">eveditor</span>
 
 <span class="k">class</span> <span class="nc">CmdSetTestAttr</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Set the &quot;test&quot; Attribute using </span>
+<span class="sd">    Set the &quot;test&quot; Attribute using</span>
 <span class="sd">    the line editor.</span>
 
 <span class="sd">    Usage:</span>
@@ -128,11 +98,11 @@ It has no other mechanical function.</p></li>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Editor exited&quot;</span><span class="p">)</span>
         <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="si">}</span><span class="s2">/test&quot;</span>
         <span class="c1"># launch the editor</span>
-        <span class="n">eveditor</span><span class="o">.</span><span class="n">EvEditor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> 
-                          <span class="n">loadfunc</span><span class="o">=</span><span class="n">load</span><span class="p">,</span> <span class="n">savefunc</span><span class="o">=</span><span class="n">save</span><span class="p">,</span> <span class="n">quitfunc</span><span class="o">=</span><span class="n">quit</span><span class="p">,</span> 
-                          <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>            
+        <span class="n">eveditor</span><span class="o">.</span><span class="n">EvEditor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span>
+                          <span class="n">loadfunc</span><span class="o">=</span><span class="n">load</span><span class="p">,</span> <span class="n">savefunc</span><span class="o">=</span><span class="n">save</span><span class="p">,</span> <span class="n">quitfunc</span><span class="o">=</span><span class="n">quit</span><span class="p">,</span>
+                          <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 <section id="persistent-editor">
 <h2>Persistent editor<a class="headerlink" href="#persistent-editor" title="Permalink to this headline">¶</a></h2>
@@ -140,38 +110,7 @@ It has no other mechanical function.</p></li>
 when reloading the game.  In order to be persistent, an editor needs to have its callback functions
 (<code class="docutils literal notranslate"><span class="pre">loadfunc</span></code>, <code class="docutils literal notranslate"><span class="pre">savefunc</span></code> and <code class="docutils literal notranslate"><span class="pre">quitfunc</span></code>) as top-level functions defined in the module.  Since these
 functions will be stored, Python will need to find them.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">eveditor</span>
 
 <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
@@ -188,7 +127,7 @@ functions will be stored, Python will need to find them.</p>
 
 <span class="k">class</span> <span class="nc">CmdSetTestAttr</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Set the &quot;test&quot; Attribute using </span>
+<span class="sd">    Set the &quot;test&quot; Attribute using</span>
 <span class="sd">    the line editor.</span>
 
 <span class="sd">    Usage:</span>
@@ -200,11 +139,11 @@ functions will be stored, Python will need to find them.</p>
         <span class="s2">&quot;Set up the callbacks and launch the editor&quot;</span>
         <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="si">}</span><span class="s2">/test&quot;</span>
         <span class="c1"># launch the editor</span>
-        <span class="n">eveditor</span><span class="o">.</span><span class="n">EvEditor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> 
-                          <span class="n">loadfunc</span><span class="o">=</span><span class="n">load</span><span class="p">,</span> <span class="n">savefunc</span><span class="o">=</span><span class="n">save</span><span class="p">,</span> <span class="n">quitfunc</span><span class="o">=</span><span class="n">quit</span><span class="p">,</span> 
-                          <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>            
+        <span class="n">eveditor</span><span class="o">.</span><span class="n">EvEditor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span>
+                          <span class="n">loadfunc</span><span class="o">=</span><span class="n">load</span><span class="p">,</span> <span class="n">savefunc</span><span class="o">=</span><span class="n">save</span><span class="p">,</span> <span class="n">quitfunc</span><span class="o">=</span><span class="n">quit</span><span class="p">,</span>
+                          <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 <section id="line-editor-usage">
 <h2>Line editor usage<a class="headerlink" href="#line-editor-usage" title="Permalink to this headline">¶</a></h2>
@@ -330,7 +269,7 @@ editor can be useful if you want to test the code you have typed but add new lin
 <h3>Versions</h3>
 <ul>
   <li><a href="EvEditor.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -122,7 +124,7 @@
 <dl class="py method">
 <dt id="evennia.contrib.xyzgrid.tests.TestMap1.test_get_visual_range__scan_1">
 <code class="sig-name descname">test_get_visual_range__scan_1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.xyzgrid.tests.TestMap1.test_get_visual_range__scan_1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test displaying a part of the map around a central point [with coord=(1, 0), expectstr=’ <a href="#id17"><span class="problematic" id="id18">|\n-#', expectlst=[[' ', '|</span></a>’], [‘-’, ‘#’]]].</p>
+<dd><p>Test displaying a part of the map around a central point [with coord=(1, 0), expectstr=’ <a href="#id1"><span class="problematic" id="id2">|\n-#', expectlst=[[' ', '|</span></a>’], [‘-’, ‘#’]]].</p>
 </dd></dl>
 
 <dl class="py method">
@@ -134,7 +136,7 @@
 <dl class="py method">
 <dt id="evennia.contrib.xyzgrid.tests.TestMap1.test_get_visual_range__scan_3">
 <code class="sig-name descname">test_get_visual_range__scan_3</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.xyzgrid.tests.TestMap1.test_get_visual_range__scan_3" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test displaying a part of the map around a central point [with coord=(1, 1), expectstr=’-#n <a href="#id19"><span class="problematic" id="id20">|', expectlst=[['-', '#'], [' ', '|</span></a>’]]].</p>
+<dd><p>Test displaying a part of the map around a central point [with coord=(1, 1), expectstr=’-#n <a href="#id3"><span class="problematic" id="id4">|', expectlst=[['-', '#'], [' ', '|</span></a>’]]].</p>
 </dd></dl>
 
 <dl class="py method">
@@ -147,7 +149,7 @@ character &#64;-symbol in that spot.</p>
 <dl class="py method">
 <dt id="evennia.contrib.xyzgrid.tests.TestMap1.test_get_visual_range__scan__character_1">
 <code class="sig-name descname">test_get_visual_range__scan__character_1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.xyzgrid.tests.TestMap1.test_get_visual_range__scan__character_1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test displaying a part of the map around a central point, showing the [with coord=(1, 0), expectstr=’ <a href="#id21"><span class="problematic" id="id22">|\n-&#64;', expectlst=[[' ', '|</span></a>’], [‘-’, ‘&#64;’]]]
+<dd><p>Test displaying a part of the map around a central point, showing the [with coord=(1, 0), expectstr=’ <a href="#id5"><span class="problematic" id="id6">|\n-&#64;', expectlst=[[' ', '|</span></a>’], [‘-’, ‘&#64;’]]]
 character &#64;-symbol in that spot.</p>
 </dd></dl>
 
@@ -161,7 +163,7 @@ character &#64;-symbol in that spot.</p>
 <dl class="py method">
 <dt id="evennia.contrib.xyzgrid.tests.TestMap1.test_get_visual_range__scan__character_3">
 <code class="sig-name descname">test_get_visual_range__scan__character_3</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.xyzgrid.tests.TestMap1.test_get_visual_range__scan__character_3" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test displaying a part of the map around a central point, showing the [with coord=(1, 1), <a class="reference external" href="mailto:expectstr='-&#37;&#52;&#48;n">expectstr=’-<span>&#64;</span>n</a> <a href="#id23"><span class="problematic" id="id24">|', expectlst=[['-', '&#64;'], [' ', '|</span></a>’]]]
+<dd><p>Test displaying a part of the map around a central point, showing the [with coord=(1, 1), <a class="reference external" href="mailto:expectstr='-&#37;&#52;&#48;n">expectstr=’-<span>&#64;</span>n</a> <a href="#id7"><span class="problematic" id="id8">|', expectlst=[['-', '&#64;'], [' ', '|</span></a>’]]]
 character &#64;-symbol in that spot.</p>
 </dd></dl>
 
@@ -1116,13 +1118,13 @@ character &#64;-symbol in that spot.</p>
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.xyzgrid.tests.</code><code class="sig-name descname">TestMapStressTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/xyzgrid/tests.html#TestMapStressTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.xyzgrid.tests.TestMapStressTest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
 <p>Performance test of map patfinder and visualizer.</p>
-<p><a href="#id25"><span class="problematic" id="id26">|x|x|x|x|</span></a>
+<p><a href="#id9"><span class="problematic" id="id10">|x|x|x|x|</span></a>
 -#-#-#-#
 ——–
-<a href="#id27"><span class="problematic" id="id28">|x|x|x|x|</span></a>
+<a href="#id11"><span class="problematic" id="id12">|x|x|x|x|</span></a>
 -#-#-#-#
 ——–
-<a href="#id29"><span class="problematic" id="id30">|x|x|x|x|</span></a>
+<a href="#id13"><span class="problematic" id="id14">|x|x|x|x|</span></a>
 -#-#-#-#
 ——–
 …</p>
@@ -1343,7 +1345,7 @@ different visibility distances.</p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/api/evennia.contrib.xyzgrid.tests.rst.txt"
+      <li><a href="../_sources/api/evennia.contrib.xyzgrid.tests.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -1360,7 +1362,7 @@ different visibility distances.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.xyzgrid.tests.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

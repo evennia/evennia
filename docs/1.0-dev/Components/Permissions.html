@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,28 +40,28 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="permissions">
+  <section class="tex2jax_ignore mathjax_ignore" id="permissions">
 <h1>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h1>
 <p>A <em>permission</em> is simply a text string stored in the handler <code class="docutils literal notranslate"><span class="pre">permissions</span></code> on <code class="docutils literal notranslate"><span class="pre">Objects</span></code>
-and <code class="docutils literal notranslate"><span class="pre">Accounts</span></code>. Think of it as a specialized sort of <a class="reference internal" href="Tags.html"><span class="doc">Tag</span></a> - one specifically dedicated
-to access checking. They are thus often tightly coupled to <a class="reference internal" href="Locks.html"><span class="doc">Locks</span></a>.
+and <code class="docutils literal notranslate"><span class="pre">Accounts</span></code>. Think of it as a specialized sort of <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tag</span></a> - one specifically dedicated
+to access checking. They are thus often tightly coupled to <a class="reference internal" href="Locks.html"><span class="doc std std-doc">Locks</span></a>.
 Permission strings are not case-sensitive, so “Builder” is the same as “builder”
 etc.</p>
 <p>Permissions are used as a convenient way to structure access levels and
 hierarchies. It is set by the <code class="docutils literal notranslate"><span class="pre">perm</span></code> command and checked by the
 <code class="docutils literal notranslate"><span class="pre">PermissionHandler.check</span></code> method as well as by the specially the <code class="docutils literal notranslate"><span class="pre">perm()</span></code> and
-<code class="docutils literal notranslate"><span class="pre">pperm()</span></code> <a class="reference internal" href="Locks.html"><span class="doc">lock functions</span></a>.</p>
+<code class="docutils literal notranslate"><span class="pre">pperm()</span></code> <a class="reference internal" href="Locks.html"><span class="doc std std-doc">lock functions</span></a>.</p>
 <p>All new accounts are given a default set of permissions defined by
 <code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_ACCOUNT_DEFAULT</span></code>.</p>
 <section id="managing-permissions">
 <h2>Managing Permissions<a class="headerlink" href="#managing-permissions" title="Permalink to this headline">¶</a></h2>
 <p>In-game, you use the <code class="docutils literal notranslate"><span class="pre">perm</span></code> command to add and remove permissions</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">perm</span><span class="o">/</span><span class="n">account</span> <span class="n">Tommy</span> <span class="o">=</span> <span class="n">Builders</span>
- <span class="n">perm</span><span class="o">/</span><span class="n">account</span><span class="o">/</span><span class="k">del</span> <span class="n">Tommy</span> <span class="o">=</span> <span class="n">Builders</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> perm/account Tommy = Builders
+ perm/account/del Tommy = Builders
 </pre></div>
 </div>
 <p>Note the use of the <code class="docutils literal notranslate"><span class="pre">/account</span></code> switch. It means you assign the permission to the
-<a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a> Tommy instead of any <a class="reference internal" href="Objects.html"><span class="doc">Character</span></a> that also
+<a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a> Tommy instead of any <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Character</span></a> that also
 happens to be named “Tommy”.</p>
 <p>There can be reasons for putting permissions on Objects (especially NPCS), but
 for granting powers to players, you should usually put the permission on the
@@ -68,29 +70,26 @@ of which Character they are currently puppeting. This is especially important to
 remember when assigning permissions from the <em>hierarchy tree</em> (see below), as an
 Account’s permissions will overrule that of its character. So to be sure to
 avoid confusion you should generally put hierarchy permissions on the Account,
-not on their Characters (but see also <a class="reference external" href="Components/Locks.html#Quelling">quelling</a>).</p>
+not on their Characters (but see also <a class="reference internal" href="#quelling"><span class="std std-doc">quelling</span></a>).</p>
 <p>In code, you add/remove Permissions via the <code class="docutils literal notranslate"><span class="pre">PermissionHandler</span></code>, which sits on all
 typeclassed entities as the property <code class="docutils literal notranslate"><span class="pre">.permissions</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Builders&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Builders&quot;</span><span class="p">)</span>
     <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;cool_guy&quot;</span><span class="p">)</span>
     <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Blacksmith&quot;</span><span class="p">)</span>
     <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;Blacksmith&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 <section id="the-permission-hierarchy">
 <h2>The permission hierarchy<a class="headerlink" href="#the-permission-hierarchy" title="Permalink to this headline">¶</a></h2>
 <p>Selected permission strings can be organized in a <em>permission hierarchy</em> by editing the tuple
 <code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_HIERARCHY</span></code>.  Evennia’s default permission hierarchy is as follows
 (in increasing order of power):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">Player</span>           <span class="c1"># can chat and send tells (default level) (lowest)</span>
- <span class="n">Helper</span>           <span class="c1"># can edit help files</span>
- <span class="n">Builder</span>          <span class="c1"># can edit the world</span>
- <span class="n">Admin</span>            <span class="c1"># can administrate accounts</span>
- <span class="n">Developer</span>        <span class="c1"># like superuser but affected by locks (highest)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> Player           # can chat and send tells (default level) (lowest)
+ Helper           # can edit help files
+ Builder          # can edit the world
+ Admin            # can administrate accounts
+ Developer        # like superuser but affected by locks (highest)
 </pre></div>
 </div>
 <p>(Besides being case-insensitive, hierarchical permissions also understand the
@@ -109,7 +108,7 @@ that permission to pass.</p>
 <section id="checking-permissions">
 <h2>Checking permissions<a class="headerlink" href="#checking-permissions" title="Permalink to this headline">¶</a></h2>
 <p>It’s important to note that you check for the permission of a <em>puppeted</em>
-<a class="reference internal" href="Objects.html"><span class="doc">Object</span></a> (like a Character), the check will always first use the
+<a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a> (like a Character), the check will always first use the
 permissions of any <code class="docutils literal notranslate"><span class="pre">Account</span></code> connected to that Object before checking for
 permissions on the Object. In the case of hierarchical permissions (Admins,
 Builders etc), the Account permission will always be used (this stops an Account
@@ -121,61 +120,46 @@ the Object itself.</p>
 <h3>Checking with obj.permissions.check()<a class="headerlink" href="#checking-with-obj-permissions-check" title="Permalink to this headline">¶</a></h3>
 <p>The simplest way to check if an entity has a permission is to check its
 <em>PermissionHandler</em>, stored as <code class="docutils literal notranslate"><span class="pre">.permissions</span></code>  on all typeclassed entities.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;Builder&quot;</span><span class="p">):</span>
-    <span class="c1"># allow builder to do stuff</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if obj.permissions.check(&quot;Builder&quot;):
+    # allow builder to do stuff
 
-<span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;Blacksmith&quot;</span><span class="p">,</span> <span class="s2">&quot;Warrior&quot;</span><span class="p">):</span>
-    <span class="c1"># do stuff for blacksmiths OR warriors</span>
+if obj.permissions.check(&quot;Blacksmith&quot;, &quot;Warrior&quot;):
+    # do stuff for blacksmiths OR warriors
 
-<span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;Blacksmith&quot;</span><span class="p">,</span> <span class="s2">&quot;Warrior&quot;</span><span class="p">,</span> <span class="n">require_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="c1"># only for those that are both blacksmiths AND warriors</span>
+if obj.permissions.check(&quot;Blacksmith&quot;, &quot;Warrior&quot;, require_all=True):
+    # only for those that are both blacksmiths AND warriors
 </pre></div>
 </div>
 <p>Using the <code class="docutils literal notranslate"><span class="pre">.check</span></code> method is the way to go, it will take hierarchical
 permissions into account, check accounts/sessions etc.</p>
-<div class="highlight-warning notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
-    Don&#39;t confuse `.permissions.check()` with `.permissions.has()`. The .has()
-    method checks if a string is defined specifically on that PermissionHandler.
-    It will not consider permission-hierarchy, puppeting etc. `.has` can be useful
-    if you are manipulating permissions, but use `.check` for access checking.
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Don&#39;t confuse `.permissions.check()` with `.permissions.has()`. The .has()
+method checks if a string is defined specifically on that PermissionHandler.
+It will not consider permission-hierarchy, puppeting etc. `.has` can be useful
+if you are manipulating permissions, but use `.check` for access checking.
 </pre></div>
-</td></tr></table></div>
+</div>
+</div>
 </section>
 <section id="lock-funcs">
 <h3>Lock funcs<a class="headerlink" href="#lock-funcs" title="Permalink to this headline">¶</a></h3>
-<p>While the <code class="docutils literal notranslate"><span class="pre">PermissionHandler</span></code> offers a simple way to check perms, <a class="reference internal" href="Locks.html"><span class="doc">Lock
+<p>While the <code class="docutils literal notranslate"><span class="pre">PermissionHandler</span></code> offers a simple way to check perms, <a class="reference internal" href="Locks.html"><span class="doc std std-doc">Lock
 strings</span></a> offers a mini-language for describing how something is accessed.
 The <code class="docutils literal notranslate"><span class="pre">perm()</span></code> <em>lock function</em> is the main tool for using Permissions in locks.</p>
 <p>Let’s say we have a <code class="docutils literal notranslate"><span class="pre">red_key</span></code> object. We also have red chests that we want to
 unlock with this key.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">perm</span> <span class="n">red_key</span> <span class="o">=</span> <span class="n">unlocks_red_chests</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>perm red_key = unlocks_red_chests
 </pre></div>
 </div>
 <p>This gives the <code class="docutils literal notranslate"><span class="pre">red_key</span></code> object the permission “unlocks_red_chests”. Next we
 lock our red chests:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">lock</span> <span class="n">red</span> <span class="n">chest</span> <span class="o">=</span> <span class="n">unlock</span><span class="p">:</span><span class="n">perm</span><span class="p">(</span><span class="n">unlocks_red_chests</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>lock red chest = unlock:perm(unlocks_red_chests)
 </pre></div>
 </div>
 <p>When trying to unlock the red chest with this key, the chest Typeclass could
 then take the key and do an access check:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in some typeclass file where chest is defined</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in some typeclass file where chest is defined</span>
 
 <span class="k">class</span> <span class="nc">TreasureChest</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
 
@@ -189,8 +173,9 @@ then take the key and do an access check:</p>
       <span class="k">else</span><span class="p">:</span>
           <span class="n">who</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The key fits! The chest opens.&quot;</span><span class="p">)</span>
           <span class="c1"># ...</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>There are several variations to the default <code class="docutils literal notranslate"><span class="pre">perm</span></code> lockfunc:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">perm_above</span></code> - requires a hierarchical permission <em>higher</em> than the one
@@ -203,24 +188,14 @@ objects (regardless of hierarchical perm or not).</p></li>
 <section id="some-examples">
 <h3>Some examples<a class="headerlink" href="#some-examples" title="Permalink to this headline">¶</a></h3>
 <p>Adding permissions and checking with locks</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Builder&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Builder&quot;</span><span class="p">)</span>
     <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;cool_guy&quot;</span><span class="p">)</span>
     <span class="n">account</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;enter:perm_above(Player) and perm(cool_guy)&quot;</span><span class="p">)</span>
     <span class="n">account</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">obj1</span><span class="p">,</span> <span class="s2">&quot;enter&quot;</span><span class="p">)</span> <span class="c1"># this returns True!</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>An example of a puppet with a connected account:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Player&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Player&quot;</span><span class="p">)</span>
     <span class="n">puppet</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Builders&quot;</span><span class="p">)</span>
     <span class="n">puppet</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;cool_guy&quot;</span><span class="p">)</span>
     <span class="n">obj2</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;enter:perm_above(Accounts) and perm(cool_guy)&quot;</span><span class="p">)</span>
@@ -229,7 +204,7 @@ objects (regardless of hierarchical perm or not).</p></li>
                                  <span class="c1"># is lower than Account&#39;s perm, and perm takes</span>
                                  <span class="c1"># precedence.</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 </section>
 <section id="superusers">
@@ -313,7 +288,7 @@ affectable by locks.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Permissions.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

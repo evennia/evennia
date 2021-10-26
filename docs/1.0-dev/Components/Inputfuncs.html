@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,22 +40,22 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="inputfuncs">
+  <section class="tex2jax_ignore mathjax_ignore" id="inputfuncs">
 <h1>Inputfuncs<a class="headerlink" href="#inputfuncs" title="Permalink to this headline">¶</a></h1>
-<p>An <em>inputfunc</em> is an Evennia function that handles a particular input (an <a class="reference internal" href="../Concepts/OOB.html"><span class="doc">inputcommand</span></a>) from
-the client. The inputfunc is the last destination for the inputcommand along the <a class="reference external" href="Components/Messagepath#the-ingoing-message-path">ingoing message
-path</a>. The inputcommand always has the form <code class="docutils literal notranslate"><span class="pre">(commandname,</span> <span class="pre">(args),</span> <span class="pre">{kwargs})</span></code> and Evennia will use this to try to find and call an inputfunc on the form</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">commandname</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<p>An <em>inputfunc</em> is an Evennia function that handles a particular input (an <a class="reference internal" href="../Concepts/OOB.html"><span class="doc std std-doc">inputcommand</span></a>) from
+the client. The inputfunc is the last destination for the inputcommand along the <a class="reference internal" href="../Concepts/Messagepath.html#the-ingoing-message-path"><span class="std std-doc">ingoing message
+path</span></a>. The inputcommand always has the form <code class="docutils literal notranslate"><span class="pre">(commandname,</span> <span class="pre">(args),</span> <span class="pre">{kwargs})</span></code> and Evennia will use this to try to find and call an inputfunc on the form</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">commandname</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># ...</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Or, if no match was found, it will call an inputfunc named “default” on this form</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># cmdname is the name of the mismatched inputcommand</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <section id="adding-your-own-inputfuncs">
 <h2>Adding your own inputfuncs<a class="headerlink" href="#adding-your-own-inputfuncs" title="Permalink to this headline">¶</a></h2>
 <p>This is simple. Add a function on the above form to <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/inputfuncs.py</span></code>. Your
@@ -76,7 +78,7 @@ ones.</p>
 </ul>
 <p>This is the most common of inputcommands, and the only one supported by every traditional mud. The
 argument is usually what the user sent from their command line. Since all text input from the user
-like this is considered a <a class="reference internal" href="Commands.html"><span class="doc">Command</span></a>, this inputfunc will do things like nick-replacement
+like this is considered a <a class="reference internal" href="Commands.html"><span class="doc std std-doc">Command</span></a>, this inputfunc will do things like nick-replacement
 and then pass on the input to the central Commandhandler.</p>
 </section>
 <section id="echo">
@@ -171,12 +173,12 @@ to expand. By default the following values can be retrieved:</p>
 <section id="repeat">
 <h3>repeat<a class="headerlink" href="#repeat" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>Input: <code class="docutils literal notranslate"><span class="pre">(&quot;repeat&quot;,</span> <span class="pre">(),</span> <span class="pre">{&quot;callback&quot;:funcname,</span>&#160; <span class="pre">&quot;interval&quot;:</span> <span class="pre">secs,</span> <span class="pre">&quot;stop&quot;:</span> <span class="pre">False})</span></code></p></li>
+<li><p>Input: <code class="docutils literal notranslate"><span class="pre">(&quot;repeat&quot;,</span> <span class="pre">(),</span> <span class="pre">{&quot;callback&quot;:funcname,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">&quot;interval&quot;:</span> <span class="pre">secs,</span> <span class="pre">&quot;stop&quot;:</span> <span class="pre">False})</span></code></p></li>
 <li><p>Output: Depends on the repeated function. Will return <code class="docutils literal notranslate"><span class="pre">(&quot;text&quot;,</span> <span class="pre">(repeatlist),{}</span></code> with a list of
 accepted names if given an unfamiliar callback name.</p></li>
 </ul>
 <p>This will tell evennia to repeatedly call a named function at a given interval. Behind the scenes
-this will set up a <a class="reference internal" href="TickerHandler.html"><span class="doc">Ticker</span></a>. Only previously acceptable functions are possible to
+this will set up a <a class="reference internal" href="TickerHandler.html"><span class="doc std std-doc">Ticker</span></a>. Only previously acceptable functions are possible to
 repeat-call in this way, you’ll need to overload this inputfunc to add the ones you want to offer.
 By default only two example functions are allowed, “test1” and “test2”, which will just echo a text
 back at the given interval. Stop the repeat by sending <code class="docutils literal notranslate"><span class="pre">&quot;stop&quot;:</span> <span class="pre">True</span></code> (note that you must include
@@ -185,7 +187,7 @@ both the callback name and interval for Evennia to know what to stop).</p>
 <section id="unrepeat">
 <h3>unrepeat<a class="headerlink" href="#unrepeat" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>Input: <code class="docutils literal notranslate"><span class="pre">(&quot;unrepeat&quot;,</span> <span class="pre">(),</span> <span class="pre">(&quot;callback&quot;:funcname,</span>&#160; <span class="pre">&quot;interval&quot;:</span> <span class="pre">secs)</span></code></p></li>
+<li><p>Input: <code class="docutils literal notranslate"><span class="pre">(&quot;unrepeat&quot;,</span> <span class="pre">(),</span> <span class="pre">(&quot;callback&quot;:funcname,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">&quot;interval&quot;:</span> <span class="pre">secs)</span></code></p></li>
 <li><p>Output: None</p></li>
 </ul>
 <p>This is a convenience wrapper for sending “stop” to the <code class="docutils literal notranslate"><span class="pre">repeat</span></code> inputfunc.</p>
@@ -198,7 +200,7 @@ both the callback name and interval for Evennia to know what to stop).</p>
 </ul>
 <p>This sets up on-object monitoring of Attributes or database fields. Whenever the field or Attribute
 changes in any way, the outputcommand will be sent. This is using the
-<a class="reference internal" href="MonitorHandler.html"><span class="doc">MonitorHandler</span></a> behind the scenes. Pass the “stop” key to stop monitoring. Note
+<a class="reference internal" href="MonitorHandler.html"><span class="doc std std-doc">MonitorHandler</span></a> behind the scenes. Pass the “stop” key to stop monitoring. Note
 that you must supply the name also when stopping to let the system know which monitor should be
 cancelled.</p>
 <p>Only fields/attributes in a whitelist are allowed to be used, you have to overload this function to
@@ -283,7 +285,7 @@ add more. By default the following fields/attributes can be monitored:</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Inputfuncs.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

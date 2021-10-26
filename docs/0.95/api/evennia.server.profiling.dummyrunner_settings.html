@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.server.profiling.dummyrunner_settings &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.profiling.dummyrunner_settings</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.server.profiling.dummyrunner_settings">
+<span id="evennia-server-profiling-dummyrunner-settings"></span><h1>evennia.server.profiling.dummyrunner_settings<a class="headerlink" href="#module-evennia.server.profiling.dummyrunner_settings" title="Permalink to this headline">¶</a></h1>
+<p>Settings and actions for the dummyrunner</p>
+<p>This module defines dummyrunner settings and sets up
+the actions available to dummy accounts.</p>
+<p>The settings are global variables:</p>
+<p>TIMESTEP - time in seconds between each ‘tick’
+CHANCE_OF_ACTION - chance 0-1 of action happening
+CHANCE_OF_LOGIN - chance 0-1 of login happening
+TELNET_PORT - port to use, defaults to settings.TELNET_PORT
+ACTIONS - see below</p>
+<p>ACTIONS is a tuple</p>
+<p>(login_func, logout_func, (0.3, func1), (0.1, func2) … )</p>
+<p>where the first entry is the function to call on first connect, with a
+chance of occurring given by CHANCE_OF_LOGIN. This function is usually
+responsible for logging in the account. The second entry is always
+called when the dummyrunner disconnects from the server and should
+thus issue a logout command.  The other entries are tuples (chance,
+func). They are picked randomly, their commonality based on the
+cumulative chance given (the chance is normalized between all options
+so if will still work also if the given chances don’t add up to 1).
+Since each function can return a list of game-command strings, each
+function may result in multiple operations.</p>
+<p>An action-function is called with a “client” argument which is a
+reference to the dummy client currently performing the action. It
+returns a string or a list of command strings to execute.  Use the
+client object for optionally saving data between actions.</p>
+<p>The client object has the following relevant properties and methods:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>key - an optional client key. This is only used for dummyrunner output.</dt><dd><p>Default is “Dummy-&lt;cid&gt;”</p>
+</dd>
+</dl>
+</li>
+<li><p>cid - client id</p></li>
+<li><p>gid - globally unique id, hashed with time stamp</p></li>
+<li><p>istep - the current step</p></li>
+<li><p>exits - an empty list. Can be used to store exit names</p></li>
+<li><p>objs - an empty list. Can be used to store object names</p></li>
+<li><dl class="simple">
+<dt>counter() - returns a unique increasing id, hashed with time stamp</dt><dd><p>to make it unique also between dummyrunner instances.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>The return should either be a single command string or a tuple of
+command strings. This list of commands will always be executed every
+TIMESTEP with a chance given by CHANCE_OF_ACTION by in the order given
+(no randomness) and allows for setting up a more complex chain of
+commands (such as creating an account and logging in).</p>
+<p>—</p>
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner_settings.c_login">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner_settings.</code><code class="sig-name descname">c_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner_settings.html#c_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner_settings.c_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>logins to the game</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner_settings.c_login_nodig">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner_settings.</code><code class="sig-name descname">c_login_nodig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner_settings.html#c_login_nodig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner_settings.c_login_nodig" title="Permalink to this definition">¶</a></dt>
+<dd><p>logins, don’t dig its own room</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner_settings.c_logout">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner_settings.</code><code class="sig-name descname">c_logout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner_settings.html#c_logout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner_settings.c_logout" title="Permalink to this definition">¶</a></dt>
+<dd><p>logouts of the game</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner_settings.c_looks">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner_settings.</code><code class="sig-name descname">c_looks</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner_settings.html#c_looks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner_settings.c_looks" title="Permalink to this definition">¶</a></dt>
+<dd><p>looks at various objects</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner_settings.c_examines">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner_settings.</code><code class="sig-name descname">c_examines</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner_settings.html#c_examines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner_settings.c_examines" title="Permalink to this definition">¶</a></dt>
+<dd><p>examines various objects</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner_settings.c_idles">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner_settings.</code><code class="sig-name descname">c_idles</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner_settings.html#c_idles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner_settings.c_idles" title="Permalink to this definition">¶</a></dt>
+<dd><p>idles</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner_settings.c_help">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner_settings.</code><code class="sig-name descname">c_help</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner_settings.html#c_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner_settings.c_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>reads help files</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner_settings.c_digs">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner_settings.</code><code class="sig-name descname">c_digs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner_settings.html#c_digs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner_settings.c_digs" title="Permalink to this definition">¶</a></dt>
+<dd><p>digs a new room, storing exit names on client</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner_settings.c_creates_obj">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner_settings.</code><code class="sig-name descname">c_creates_obj</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner_settings.html#c_creates_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner_settings.c_creates_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates normal objects, storing their name on client</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner_settings.c_creates_button">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner_settings.</code><code class="sig-name descname">c_creates_button</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner_settings.html#c_creates_button"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner_settings.c_creates_button" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates example button, storing name on client</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner_settings.c_socialize">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner_settings.</code><code class="sig-name descname">c_socialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner_settings.html#c_socialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner_settings.c_socialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>socializechats on channel</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner_settings.c_moves">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner_settings.</code><code class="sig-name descname">c_moves</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner_settings.html#c_moves"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner_settings.c_moves" title="Permalink to this definition">¶</a></dt>
+<dd><p>moves to a previously created room, using the stored exits</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner_settings.c_moves_n">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner_settings.</code><code class="sig-name descname">c_moves_n</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner_settings.html#c_moves_n"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner_settings.c_moves_n" title="Permalink to this definition">¶</a></dt>
+<dd><p>move through north exit if available</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner_settings.c_moves_s">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner_settings.</code><code class="sig-name descname">c_moves_s</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner_settings.html#c_moves_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner_settings.c_moves_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>move through south exit if available</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.server.profiling.dummyrunner_settings.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.server.profiling.dummyrunner_settings.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.server.profiling.dummyrunner_settings.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.profiling.dummyrunner_settings</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

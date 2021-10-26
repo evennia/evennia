@@ -1,17 +1,17 @@
 # Using the game and building stuff
 
-In this lesson we will test out what we can do in-game out-of-the-box. Evennia ships with 
-[around 90 default commands](api:evennia.commands.default#modules), and while you can override those as you please, 
+In this lesson we will test out what we can do in-game out-of-the-box. Evennia ships with
+[around 90 default commands](../../../Components/Default-Commands.md), and while you can override those as you please,
 they can be quite useful.
 
-Connect and log into your new game and you will end up in the "Limbo" location. This 
+Connect and log into your new game and you will end up in the "Limbo" location. This
 is the only room in the game at this point. Let's explore the commands a little.
 
-The default commands has syntax [similar to MUX](../../../Concepts/Using-MUX-as-a-Standard):
+The default commands has syntax [similar to MUX](../../../Concepts/Using-MUX-as-a-Standard.md):
 
      command[/switch/switch...] [arguments ...]
 
-An example would be 
+An example would be
 
      create/drop box
 
@@ -21,32 +21,32 @@ or more inputs to the commands. It's common to use an equal sign (`=`) when assi
 an object.
 
 > Are you used to commands starting with @, like @create? That will work too. Evennia simply ignores
-> the preceeding @. 
+> the preceeding @.
 
 ## Getting help
 
-    help 
-    
-Will give you a list of all commands available to you. Use 
+    help
+
+Will give you a list of all commands available to you. Use
 
     help <commandname>
-    
-to see the in-game help for that command. 
+
+to see the in-game help for that command.
 
 ## Looking around
 
-The most common comman is 
+The most common comman is
 
     look
-    
-This will show you the description of the current location. `l` is an alias. 
+
+This will show you the description of the current location. `l` is an alias.
 
 When targeting objects in commands you have two special labels you can use, `here` for the current
-room or `me`/`self` to point back to yourself. So 
+room or `me`/`self` to point back to yourself. So
 
     look me
 
-will give you your own description. `look here` is, in this case, the same as plain `look`. 
+will give you your own description. `look here` is, in this case, the same as plain `look`.
 
 
 ## Stepping Down From Godhood
@@ -81,9 +81,9 @@ This created a new 'box' (of the default object type) in your inventory. Use the
 
     name box = very large box;box;very;crate
 
-```warning:: MUD clients and semi-colon
+```{warning} MUD clients and semi-colon
 
-    Some traditional MUD clients use the semi-colon `;` to separate client inputs. If so, 
+    Some traditional MUD clients use the semi-colon `;` to separate client inputs. If so,
     the above line will give an error. You need to change your client to use another command-separator
     or to put it in 'verbatim' mode. If you still have trouble, use the Evennia web client instead.
 
@@ -99,8 +99,8 @@ used the `alias` command.
 
 We are currently carrying the box. Let's drop it (there is also a short cut to create and drop in
 one go by using the `/drop` switch, for example `create/drop box`).
- 
-    drop box 
+
+    drop box
 
 Hey presto - there it is on the ground, in all its normality.
 
@@ -109,7 +109,7 @@ Hey presto - there it is on the ground, in all its normality.
 This will show some technical details about the box object. For now we will ignore what this
 information means.
 
-Try to `look` at the box to see the (default) description. 
+Try to `look` at the box to see the (default) description.
 
     look box
     You see nothing special.
@@ -125,20 +125,20 @@ dropped in the room, then try this:
 
     lock box = get:false()
 
-Locks represent a rather [big topic](../../../Components/Locks), but for now that will do what we want. This will lock
+Locks represent a rather [big topic](../../../Components/Locks.md), but for now that will do what we want. This will lock
 the box so noone can lift it. The exception is superusers, they override all locks and will pick it
 up anyway. Make sure you are quelling your superuser powers and try to get the box now:
 
     > get box
     You can't get that.
 
-Think thís default error message looks dull? The `get` command looks for an [Attribute](../../../Components/Attributes)
+Think thís default error message looks dull? The `get` command looks for an [Attribute](../../../Components/Attributes.md)
 named `get_err_msg` for returning a nicer error message (we just happen to know this, you would need
 to peek into the
 [code](https://github.com/evennia/evennia/blob/master/evennia/commands/default/general.py#L235) for
 the `get` command to find out.). You set attributes using the `set` command:
 
-    set box/get_err_msg = It's way too heavy for you to lift. 
+    set box/get_err_msg = It's way too heavy for you to lift.
 
 Try to get it now and you should see a nicer error message echoed back to you. To see what this
 message string is in the future, you can use 'examine.'
@@ -149,12 +149,12 @@ Examine will return the value of attributes, including color codes. `examine her
 the raw description of your current room (including color codes), so that you can copy-and-paste to
 set its description to something else.
 
-You create new Commands (or modify existing ones) in Python outside the game. We will get to that 
-later, in the [Commands tutorial](./Adding-Commands).
+You create new Commands (or modify existing ones) in Python outside the game. We will get to that
+later, in the [Commands tutorial](./Adding-Commands.md).
 
 ## Get a Personality
 
-[Scripts](../../../Components/Scripts) are powerful out-of-character objects useful for many "under the hood" things.
+[Scripts](../../../Components/Scripts.md) are powerful out-of-character objects useful for many "under the hood" things.
 One of their optional abilities is to do things on a timer. To try out a first script, let's put one
 on ourselves. There is an example script in `evennia/contrib/tutorial_examples/bodyfunctions.py`
 that is called `BodyFunctions`. To add this to us we will use the `script` command:
@@ -162,16 +162,16 @@ that is called `BodyFunctions`. To add this to us we will use the `script` comma
     script self = tutorial_examples.bodyfunctions.BodyFunctions
 
 This string will tell Evennia to dig up the Python code at the place we indicate. It already knows
-to look in the `contrib/` folder, so we don't have to give the full path. 
+to look in the `contrib/` folder, so we don't have to give the full path.
 
-> Note also how we use `.` instead of `/` (or `\` on Windows). This is a so-called "Python path". In a Python-path, 
+> Note also how we use `.` instead of `/` (or `\` on Windows). This is a so-called "Python path". In a Python-path,
 > you separate the parts of the path with `.` and skip the `.py` file-ending. Importantly, it also allows you to point to
-Python code _inside_ files, like the `BodyFunctions` class inside `bodyfunctions.py` (we'll get to classes later). 
-These "Python-paths" are used extensively throughout Evennia. 
+Python code _inside_ files, like the `BodyFunctions` class inside `bodyfunctions.py` (we'll get to classes later).
+These "Python-paths" are used extensively throughout Evennia.
 
 Wait a while and you will notice yourself starting making random observations ...
 
-    script self 
+    script self
 
 This will show details about scripts on yourself (also `examine` works). You will see how long it is
 until it "fires" next. Don't be alarmed if nothing happens when the countdown reaches zero - this
@@ -183,14 +183,14 @@ When you are tired of your character's "insights", kill the script with
     script/stop self = tutorial_examples.bodyfunctions.BodyFunctions
 
 You create your own scripts in Python, outside the game; the path you give to `script` is literally
-the Python path to your script file. The [Scripts](../../../Components/Scripts) page explains more details.
+the Python path to your script file. The [Scripts](../../../Components/Scripts.md) page explains more details.
 
 ## Pushing Your Buttons
 
 If we get back to the box we made, there is only so much fun you can have with it at this point. It's
 just a dumb generic object. If you renamed it to `stone` and changed its description, noone would be
-the wiser. However, with the combined use of custom [Typeclasses](../../../Components/Typeclasses), [Scripts](../../../Components/Scripts)
-and object-based [Commands](../../../Components/Commands), you could expand it and other items to be as unique, complex
+the wiser. However, with the combined use of custom [Typeclasses](../../../Components/Typeclasses.md), [Scripts](../../../Components/Scripts.md)
+and object-based [Commands](../../../Components/Commands.md), you could expand it and other items to be as unique, complex
 and interactive as you want.
 
 Let's take an example. So far we have only created objects that use the default object typeclass
@@ -206,18 +206,18 @@ The same way we did with the Script Earler, we specify a "Python-path" to the Py
 to use for creating the object. There you go - one red button.
 
 The RedButton is an example object intended to show off a few of Evennia's features. You will find
-that the [Typeclass](../../../Components/Typeclasses) and [Commands](../../../Components/Commands) controlling it are 
-inside [evennia/contrib/tutorial_examples](api:evennia.contrib.tutorial_examples)
+that the [Typeclass](../../../Components/Typeclasses.md) and [Commands](../../../Components/Commands.md) controlling it are
+inside [evennia/contrib/tutorial_examples](../../../api/evennia.contrib.tutorial_examples.md)
 
-If you wait for a while (make sure you dropped it!) the button will blink invitingly. 
+If you wait for a while (make sure you dropped it!) the button will blink invitingly.
 
-Why don't you try to push it ...? 
+Why don't you try to push it ...?
 
-Surely a big red button is meant to be pushed. 
+Surely a big red button is meant to be pushed.
 
 You know you want to.
 
-```warning:: Don't press the invitingly blinking red button.
+```{warning} Don't press the invitingly blinking red button.
 ```
 
 ## Making Yourself a House
@@ -242,14 +242,14 @@ also up/down and in/out). It's called `tunnel`:
 This will create a new room "cliff" with an exit "southwest" leading there and a path "northeast"
 leading back from the cliff to your current location.
 
-You can create new exits from where you are, using the `open` command: 
+You can create new exits from where you are, using the `open` command:
 
     open north;n = house
 
 This opens an exit `north` (with an alias `n`) to the previously created room `house`.
 
 If you have many rooms named `house` you will get a list of matches and have to select which one you
-want to link to. 
+want to link to.
 
 Follow the north exit to your 'house' or `teleport` to it:
 
@@ -274,7 +274,7 @@ _large box_ to our house.
         very large box is leaving Limbo, heading for house.
         Teleported very large box -> house.
 
-We can still find the box by using find: 
+We can still find the box by using find:
 
     find box
         One Match(#1-#8):
@@ -291,15 +291,15 @@ We are getting tired of the box. Let's destroy it.
 
     destroy box
 
-It will ask you for confirmation. Once you give it, the box will be gone. 
+It will ask you for confirmation. Once you give it, the box will be gone.
 
 You can destroy many objects in one go by giving a comma-separated list of objects (or a range
 of #dbrefs, if they are not in the same location) to the command.
 
 ## Adding a Help Entry
 
-The Command-help is something you modify in Python code. We'll get to that when we get to how to 
-add Commands. But you can also add regular help entries, for example to explain something about 
+The Command-help is something you modify in Python code. We'll get to that when we get to how to
+add Commands. But you can also add regular help entries, for example to explain something about
 the history of your game world:
 
     sethelp/add History = At the dawn of time ...
@@ -308,5 +308,5 @@ You will now find your new `History` entry in the `help` list and read your help
 
 ## Adding a World
 
-After this brief introduction to building and using in-game commands you may be ready to see a more fleshed-out 
+After this brief introduction to building and using in-game commands you may be ready to see a more fleshed-out
 example. Evennia comes with a tutorial world for you to explore. We will try that out in the next section.

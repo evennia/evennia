@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,33 +40,15 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="tutorial-npcs-listening">
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-npcs-listening">
 <h1>Tutorial NPCs listening<a class="headerlink" href="#tutorial-npcs-listening" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial shows the implementation of an NPC object that responds to characters speaking in
 their location. In this example the NPC parrots what is said, but any actions could be triggered
 this way.</p>
 <p>It is assumed that you already know how to create custom room and character typeclasses, please see
-the <a class="reference internal" href="Starting/Part3/Tutorial-for-basic-MUSH-like-game.html"><span class="doc">Basic Game tutorial</span></a> if you haven’t already done this.</p>
+the <a class="reference internal" href="Starting/Part3/Tutorial-for-basic-MUSH-like-game.html"><span class="doc std std-doc">Basic Game tutorial</span></a> if you haven’t already done this.</p>
 <p>What we will need is simply a new NPC typeclass that can react when someone speaks.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/npc.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/npc.py</span>
 
 <span class="kn">from</span> <span class="nn">characters</span> <span class="kn">import</span> <span class="n">Character</span>
 <span class="k">class</span> <span class="nc">Npc</span><span class="p">(</span><span class="n">Character</span><span class="p">):</span>
@@ -84,37 +68,10 @@ the <a class="reference internal" href="Starting/Part3/Tutorial-for-basic-MUSH-l
         <span class="c1"># we&#39;ll make use of this in .msg() below</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">from_obj</span><span class="si">}</span><span class="s2"> said: &#39;</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>When someone in the room speaks to this NPC, its <code class="docutils literal notranslate"><span class="pre">msg</span></code> method will be called. We will modify the
 NPCs <code class="docutils literal notranslate"><span class="pre">.msg</span></code> method to catch says so the NPC can respond.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/npc.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/npc.py</span>
 
 <span class="kn">from</span> <span class="nn">characters</span> <span class="kn">import</span> <span class="n">Character</span>
 <span class="k">class</span> <span class="nc">Npc</span><span class="p">(</span><span class="n">Character</span><span class="p">):</span>
@@ -143,7 +100,7 @@ NPCs <code class="docutils literal notranslate"><span class="pre">.msg</span></c
         <span class="c1"># get any feedback from the server (not even the results of look)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> 
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>So if the NPC gets a say and that say is not coming from the NPC itself, it will echo it using the
 <code class="docutils literal notranslate"><span class="pre">at_heard_say</span></code> hook. Some things of note in the above example:</p>
 <ul class="simple">
@@ -169,9 +126,9 @@ returning anything to them!</p></li>
 </div>
 <p>(you could also give the path as <code class="docutils literal notranslate"><span class="pre">typeclasses.npc.Npc</span></code>, but Evennia will look into the <code class="docutils literal notranslate"><span class="pre">typeclasses</span></code>
 folder automatically so this is a little shorter).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">say</span> <span class="n">hi</span>
-<span class="n">You</span> <span class="n">say</span><span class="p">,</span> <span class="s2">&quot;hi&quot;</span>
-<span class="n">Guild</span> <span class="n">Master</span> <span class="n">says</span><span class="p">,</span> <span class="s2">&quot;Anna said: &#39;hi&#39;&quot;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; say hi
+You say, &quot;hi&quot;
+Guild Master says, &quot;Anna said: &#39;hi&#39;&quot;
 </pre></div>
 </div>
 <section id="assorted-notes">
@@ -233,7 +190,7 @@ Which way to go depends on the design requirements of your particular game.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Tutorial-NPCs-listening.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

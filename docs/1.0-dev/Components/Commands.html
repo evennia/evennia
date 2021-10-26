@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,21 +40,21 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="commands">
+  <section class="tex2jax_ignore mathjax_ignore" id="commands">
 <h1>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h1>
-<p>Commands are intimately linked to <a class="reference internal" href="Command-Sets.html"><span class="doc">Command Sets</span></a> and you need to read that page too to
+<p>Commands are intimately linked to <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">Command Sets</span></a> and you need to read that page too to
 be familiar with how the command system works. The two pages were split for easy reading.</p>
 <p>The basic way for users to communicate with the game is through <em>Commands</em>. These can be commands
 directly related to the game world such as <em>look</em>, <em>get</em>, <em>drop</em> and so on, or administrative
 commands such as <em>examine</em> or <em>&#64;dig</em>.</p>
-<p>The <a class="reference external" href="../api/evennia.commands.default.html#modules">default commands</a> coming with Evennia are ‘MUX-like’ in that they use &#64;
+<p>The <a class="reference internal" href="Default-Commands.html"><span class="doc std std-doc">default commands</span></a> coming with Evennia are ‘MUX-like’ in that they use &#64;
 for admin commands, support things like switches, syntax with the ‘=’ symbol etc, but there is
 nothing that prevents you from implementing a completely different command scheme for your game. You
 can find the default commands in <code class="docutils literal notranslate"><span class="pre">evennia/commands/default</span></code>. You should not edit these directly -
 they will be updated by the Evennia team as new features are added. Rather you should look to them
 for inspiration and inherit your own designs from them.</p>
 <p>There are two components to having a command running - the <em>Command</em> class and the
-<a class="reference internal" href="Command-Sets.html"><span class="doc">Command Set</span></a> (command sets were split into a separate wiki page for ease of reading).</p>
+<a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">Command Set</span></a> (command sets were split into a separate wiki page for ease of reading).</p>
 <ol class="simple">
 <li><p>A <em>Command</em> is a python class containing all the functioning code for what a command does - for
 example, a <em>get</em> command would contain code for picking up objects.</p></li>
@@ -64,8 +66,8 @@ object in various ways. Consider a “Tree” object with a cmdset defining the 
 <em>chop down</em>. Or a “Clock” with a cmdset containing the single command <em>check time</em>.</p></li>
 </ol>
 <p>This page goes into full detail about how to use Commands. To fully use them you must also read the
-page detailing <a class="reference internal" href="Command-Sets.html"><span class="doc">Command Sets</span></a>.  There is also a step-by-step
-<a class="reference internal" href="../Howto/Starting/Part1/Adding-Commands.html"><span class="doc">Adding Command Tutorial</span></a> that will get you started quickly without the
+page detailing <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">Command Sets</span></a>.  There is also a step-by-step
+<a class="reference internal" href="../Howto/Starting/Part1/Adding-Commands.html"><span class="doc std std-doc">Adding Command Tutorial</span></a> that will get you started quickly without the
 extra explanations.</p>
 <section id="defining-commands">
 <h2>Defining Commands<a class="headerlink" href="#defining-commands" title="Permalink to this headline">¶</a></h2>
@@ -74,18 +76,7 @@ extra explanations.</p>
 Evennia actually inherit from a child of <code class="docutils literal notranslate"><span class="pre">Command</span></code> called <code class="docutils literal notranslate"><span class="pre">MuxCommand</span></code> - this is the class that
 knows all the mux-like syntax like <code class="docutils literal notranslate"><span class="pre">/switches</span></code>, splitting by “=” etc.  Below we’ll avoid mux-
 specifics and use the base <code class="docutils literal notranslate"><span class="pre">Command</span></code> class directly.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># basic Command definition</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># basic Command definition</span>
     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
     <span class="k">class</span> <span class="nc">MyCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
@@ -98,16 +89,9 @@ specifics and use the base <code class="docutils literal notranslate"><span clas
        <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
            <span class="c1"># executing the command here</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Here is a minimalistic command with no custom parsing:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
     <span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
         <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;echo&quot;</span>
@@ -115,8 +99,9 @@ specifics and use the base <code class="docutils literal notranslate"><span clas
         <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="c1"># echo the caller&#39;s input back to the caller</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Echo: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>You define a new command by assigning a few class-global properties on your inherited class and
 overloading one or two hook functions. The full gritty mechanic behind how commands work are found
 towards the end of this page; for now you only need to know that the command handler creates an
@@ -128,18 +113,18 @@ assigns the new command instance a few useful properties that you can assume to 
 of this since this will also assign appropriate <code class="docutils literal notranslate"><span class="pre">caller</span></code>, <code class="docutils literal notranslate"><span class="pre">session</span></code>, <code class="docutils literal notranslate"><span class="pre">sessid</span></code> and <code class="docutils literal notranslate"><span class="pre">account</span></code>
 properties on the command body at runtime. Most often the calling type is <code class="docutils literal notranslate"><span class="pre">Session</span></code>.</p>
 <ul class="simple">
-<li><p>A <a class="reference internal" href="Sessions.html"><span class="doc">Session</span></a>. This is by far the most common case when a user is entering a command in
+<li><p>A <a class="reference internal" href="Sessions.html"><span class="doc std std-doc">Session</span></a>. This is by far the most common case when a user is entering a command in
 their client.</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">caller</span></code> - this is set to the puppeted <a class="reference internal" href="Objects.html"><span class="doc">Object</span></a> if such an object exists. If no
+<li><p><code class="docutils literal notranslate"><span class="pre">caller</span></code> - this is set to the puppeted <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a> if such an object exists. If no
 puppet is found, <code class="docutils literal notranslate"><span class="pre">caller</span></code> is set equal to <code class="docutils literal notranslate"><span class="pre">account</span></code>. Only if an Account is not found either (such as
 before being logged in) will this be set to the Session object itself.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">session</span></code> - a reference to the <a class="reference internal" href="Sessions.html"><span class="doc">Session</span></a> object itself.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">session</span></code> - a reference to the <a class="reference internal" href="Sessions.html"><span class="doc std std-doc">Session</span></a> object itself.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sessid</span></code> - <code class="docutils literal notranslate"><span class="pre">sessid.id</span></code>, a unique integer identifier of the session.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">account</span></code> - the <a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a> object connected to this Session. None if not logged in.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">account</span></code> - the <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Account</span></a> object connected to this Session. None if not logged in.</p></li>
 </ul>
 </li>
-<li><p>An <a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a>. This only happens if <code class="docutils literal notranslate"><span class="pre">account.execute_cmd()</span></code> was used. No Session
+<li><p>An <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Account</span></a>. This only happens if <code class="docutils literal notranslate"><span class="pre">account.execute_cmd()</span></code> was used. No Session
 information can be obtained in this case.</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">caller</span></code> - this is set to the puppeted Object if such an object can be determined (without
@@ -150,7 +135,7 @@ this is equal to <code class="docutils literal notranslate"><span class="pre">ac
 <li><p><code class="docutils literal notranslate"><span class="pre">account</span></code> - Set to the Account object.</p></li>
 </ul>
 </li>
-<li><p>An <a class="reference internal" href="Objects.html"><span class="doc">Object</span></a>. This only happens if <code class="docutils literal notranslate"><span class="pre">object.execute_cmd()</span></code> was used (for example by an
+<li><p>An <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a>. This only happens if <code class="docutils literal notranslate"><span class="pre">object.execute_cmd()</span></code> was used (for example by an
 NPC).</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">caller</span></code> - This is set to the calling Object in question.</p></li>
@@ -177,18 +162,18 @@ it the following properties:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">caller</span></code> - The character BigGuy, in this example. This is a reference to the object executing the
 command. The value of this depends on what type of object is calling the command; see the previous
 section.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">session</span></code> - the <a class="reference internal" href="Sessions.html"><span class="doc">Session</span></a> Bob uses to connect to the game and control BigGuy (see also
+<li><p><code class="docutils literal notranslate"><span class="pre">session</span></code> - the <a class="reference internal" href="Sessions.html"><span class="doc std std-doc">Session</span></a> Bob uses to connect to the game and control BigGuy (see also
 previous section).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sessid</span></code> - the unique id of <code class="docutils literal notranslate"><span class="pre">self.session</span></code>, for quick lookup.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">account</span></code> - the <a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a> Bob (see previous section).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">account</span></code> - the <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Account</span></a> Bob (see previous section).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cmdstring</span></code> - the matched key for the command. This would be <em>look</em> in our example.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">args</span></code> - this is the rest of the string, except the command name. So if the string entered was
-<em>look at sword</em>, <code class="docutils literal notranslate"><span class="pre">args</span></code> would be “ <em>at sword</em>”. Note the space kept - Evennia would correctly
+<em>look at sword</em>, <code class="docutils literal notranslate"><span class="pre">args</span></code> would be ” <em>at sword</em>”. Note the space kept - Evennia would correctly
 interpret <code class="docutils literal notranslate"><span class="pre">lookat</span> <span class="pre">sword</span></code> too. This is useful for things like <code class="docutils literal notranslate"><span class="pre">/switches</span></code> that should not use space.
 In the <code class="docutils literal notranslate"><span class="pre">MuxCommand</span></code> class used for default commands, this space is stripped. Also see the
 <code class="docutils literal notranslate"><span class="pre">arg_regex</span></code> property if you want to enforce a space to make <code class="docutils literal notranslate"><span class="pre">lookat</span> <span class="pre">sword</span></code> give a command-not-found
 error.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">obj</span></code> - the game <a class="reference internal" href="Objects.html"><span class="doc">Object</span></a> on which this command is defined.  This need not be the caller,
+<li><p><code class="docutils literal notranslate"><span class="pre">obj</span></code> - the game <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a> on which this command is defined.  This need not be the caller,
 but since <code class="docutils literal notranslate"><span class="pre">look</span></code> is a common (default) command, this is probably defined directly on <em>BigGuy</em> - so
 <code class="docutils literal notranslate"><span class="pre">obj</span></code> will point to BigGuy.  Otherwise <code class="docutils literal notranslate"><span class="pre">obj</span></code> could be an Account or any interactive object with
 commands defined on it, like in the example of the “check time” command defined on a “Clock” object.</p></li>
@@ -208,7 +193,7 @@ not
 used, but they could be used to implement alternate help-display systems.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">.client_width()</span></code> - Shortcut for getting the client’s screen-width. Note that not all clients will
 truthfully report this value - that case the <code class="docutils literal notranslate"><span class="pre">settings.DEFAULT_SCREEN_WIDTH</span></code> will be returned.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.styled_table(*args,</span> <span class="pre">**kwargs)</span></code> - This returns an [EvTable](api:evennia.utils#module-
+<li><p><code class="docutils literal notranslate"><span class="pre">.styled_table(*args,</span> <span class="pre">**kwargs)</span></code> - This returns an [EvTable](module-
 evennia.utils.evtable) styled based on the
 session calling this command. The args/kwargs are the same as for EvTable, except styling defaults
 are set.</p></li>
@@ -229,7 +214,7 @@ key can consist of more than one word, like “press button” or “pull left l
 either matches. This is important for merging cmdsets described below.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">aliases</span></code> (optional list) - a list of alternate names for the command (<code class="docutils literal notranslate"><span class="pre">[&quot;glance&quot;,</span> <span class="pre">&quot;see&quot;,</span> <span class="pre">&quot;l&quot;]</span></code>).
 Same name rules as for <code class="docutils literal notranslate"><span class="pre">key</span></code> applies.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">locks</span></code> (string) - a <a class="reference internal" href="Locks.html"><span class="doc">lock definition</span></a>, usually on the form <code class="docutils literal notranslate"><span class="pre">cmd:&lt;lockfuncs&gt;</span></code>. Locks is a
+<li><p><code class="docutils literal notranslate"><span class="pre">locks</span></code> (string) - a <a class="reference internal" href="Locks.html"><span class="doc std std-doc">lock definition</span></a>, usually on the form <code class="docutils literal notranslate"><span class="pre">cmd:&lt;lockfuncs&gt;</span></code>. Locks is a
 rather big topic, so until you learn more about locks, stick to giving the lockstring <code class="docutils literal notranslate"><span class="pre">&quot;cmd:all()&quot;</span></code>
 to make the command available to everyone (if you don’t provide a lock string, this will be assigned
 for you).</p></li>
@@ -241,9 +226,9 @@ by the next command by retrieving <code class="docutils literal notranslate"><sp
 or replace the storage.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">arg_regex</span></code> (optional raw string): Used to force the parser to limit itself and tell it when the
 command-name ends and arguments begin (such as requiring this to be a space or a /switch). This is
-done with a regular expression. <a class="reference external" href="Components/Commands.html#on-arg_regex">See the arg_regex section</a> for the details.</p></li>
+done with a regular expression. <a class="reference internal" href="#on-arg-regex"><span class="std std-doc">See the arg_regex section</span></a> for the details.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">auto_help</span></code> (optional boolean). Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>. This allows for turning off the
-<a class="reference external" href="Components/Help-System.html#command-auto-help-system">auto-help system</a> on a per-command basis. This could be useful if you
+<a class="reference internal" href="Help-System.html#command-auto-help-system"><span class="std std-doc">auto-help system</span></a> on a per-command basis. This could be useful if you
 either want to write your help entries manually or hide the existence of a command from <code class="docutils literal notranslate"><span class="pre">help</span></code>’s
 generated list.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">is_exit</span></code> (bool) - this marks the command as being used for an in-game exit. This is, by default,
@@ -279,49 +264,10 @@ from this method will be returned from the execution as a Twisted Deferred.</p><
 </ul>
 <p>Finally, you should always make an informative <a class="reference external" href="https://www.python.org/dev/peps/pep-0257/#what-is-a-docstring">doc
 string</a> (<code class="docutils literal notranslate"><span class="pre">__doc__</span></code>) at the top of
-your class. This string is dynamically read by the <a class="reference internal" href="Help-System.html"><span class="doc">Help System</span></a> to create the help
+your class. This string is dynamically read by the <a class="reference internal" href="Help-System.html"><span class="doc std std-doc">Help System</span></a> to create the help
 entry for this command. You should decide on a way to format your help and stick to that.</p>
 <p>Below is how you define a simple alternative “<code class="docutils literal notranslate"><span class="pre">smile</span></code>” command:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
 <span class="k">class</span> <span class="nc">CmdSmile</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -356,13 +302,14 @@ entry for this command. You should decide on a way to format your help and stick
             <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> smiles&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">target</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span> 
-                <span class="k">return</span> 
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
+                <span class="k">return</span>
             <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> smiles at </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
 
         <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>The power of having commands as classes and to separate <code class="docutils literal notranslate"><span class="pre">parse()</span></code> and <code class="docutils literal notranslate"><span class="pre">func()</span></code>
 lies in the ability to inherit functionality without having to parse every
 command individually. For example, as mentioned the default commands all
@@ -371,7 +318,7 @@ that understands all the specifics of MUX-like commands. Almost none of the
 default commands thus need to implement <code class="docutils literal notranslate"><span class="pre">parse()</span></code> at all, but can assume the
 incoming string is already split up and parsed in suitable ways by its parent.</p>
 <p>Before you can actually use the command in your game, you must now store it
-within a <em>command set</em>. See the <a class="reference internal" href="Command-Sets.html"><span class="doc">Command Sets</span></a> page.</p>
+within a <em>command set</em>. See the <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">Command Sets</span></a> page.</p>
 </section>
 <section id="on-arg-regex">
 <h3>On arg_regex<a class="headerlink" href="#on-arg-regex" title="Permalink to this headline">¶</a></h3>
@@ -408,17 +355,7 @@ will however still fire the other hook methods of the Command in sequence. That�
 want but sometimes it may be useful to just abort the command, for example if you find some
 unacceptable input in your parse method. To exit the command this way you can raise
 <code class="docutils literal notranslate"><span class="pre">evennia.InterruptCommand</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">InterruptCommand</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">InterruptCommand</span>
 
 <span class="k">class</span> <span class="nc">MyCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
@@ -429,8 +366,9 @@ unacceptable input in your parse method. To exit the command this way you can ra
        <span class="c1"># if this fires, `func()` and `at_post_cmd` will not</span>
        <span class="c1"># be called at all</span>
        <span class="k">raise</span> <span class="n">InterruptCommand</span><span class="p">()</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 <section id="pauses-in-commands">
 <h2>Pauses in commands<a class="headerlink" href="#pauses-in-commands" title="Permalink to this headline">¶</a></h2>
@@ -448,28 +386,7 @@ pause for you if you <code class="docutils literal notranslate"><span class="pre
 else.</p>
 </div></blockquote>
 <p>Here’s an example of a command using a small pause of five seconds between messages:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
 <span class="k">class</span> <span class="nc">CmdWait</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -492,7 +409,7 @@ else.</p>
         <span class="k">yield</span> <span class="mi">2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;... And now another 2 seconds have passed.&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>The important line is the <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">5</span></code> and <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">2</span></code> lines. It will tell Evennia to pause execution
 here and not continue until the number of seconds given has passed.</p>
 <p>There are two things to remember when using <code class="docutils literal notranslate"><span class="pre">yield</span></code> in your Command’s <code class="docutils literal notranslate"><span class="pre">func</span></code> method:</p>
@@ -514,28 +431,11 @@ to mix <code class="docutils literal notranslate"><span class="pre">yield</span>
 use Python’s <code class="docutils literal notranslate"><span class="pre">input</span></code> in your command, for it would freeze Evennia for
 everyone while waiting for that user to input their text. Inside a Command’s
 <code class="docutils literal notranslate"><span class="pre">func</span></code> method, the following syntax can also be used:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">answer</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="s2">&quot;Your question&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">answer</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="s2">&quot;Your question&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Here’s a very simple example:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdConfirm</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdConfirm</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A dummy command to show confirmation.</span>
@@ -554,14 +454,14 @@ everyone while waiting for that user to input their text. Inside a Command’s
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No!&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This time, when the user enters the ‘confirm’ command, she will be asked if she wants to go on.
 Entering ‘yes’ or “y” (regardless of case) will give the first reply, otherwise the second reply
 will show.</p>
 <blockquote>
 <div><p>Note again that the <code class="docutils literal notranslate"><span class="pre">yield</span></code> keyword does not store state.  If the game reloads while waiting for
 the user to answer, the user will have to start over. It is not a good idea to use <code class="docutils literal notranslate"><span class="pre">yield</span></code> for
-important or complex choices, a persistent <a class="reference internal" href="EvMenu.html"><span class="doc">EvMenu</span></a> might be more appropriate in this case.</p>
+important or complex choices, a persistent <a class="reference internal" href="EvMenu.html"><span class="doc std std-doc">EvMenu</span></a> might be more appropriate in this case.</p>
 </div></blockquote>
 </section>
 <section id="system-commands">
@@ -589,7 +489,7 @@ display the “Huh?” error message.</p></li>
 matches.</p></li>
 <li><p>User is not allowed to execute the command (<code class="docutils literal notranslate"><span class="pre">syscmdkeys.CMD_NOPERM</span></code>) - Default is to display the
 “Huh?” error message.</p></li>
-<li><p>Channel (<code class="docutils literal notranslate"><span class="pre">syscmdkeys.CMD_CHANNEL</span></code>) - This is a <a class="reference internal" href="Communications.html"><span class="doc">Channel</span></a> name of a channel you are
+<li><p>Channel (<code class="docutils literal notranslate"><span class="pre">syscmdkeys.CMD_CHANNEL</span></code>) - This is a <a class="reference internal" href="Communications.html"><span class="doc std std-doc">Channel</span></a> name of a channel you are
 subscribing to - Default is to relay the command’s argument to that channel. Such commands are
 created by the Comm system on the fly depending on your subscriptions.</p></li>
 <li><p>New session connection (<code class="docutils literal notranslate"><span class="pre">syscmdkeys.CMD_LOGINSTART</span></code>). This command name should be put in the
@@ -599,13 +499,7 @@ called on the server (default is to show the login screen).</p></li>
 <p>Below is an example of redefining what happens when the account doesn’t provide any input (e.g. just
 presses return). Of course the new system command must be added to a cmdset as well before it will
 work.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">syscmdkeys</span><span class="p">,</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">syscmdkeys</span><span class="p">,</span> <span class="n">Command</span>
 
     <span class="k">class</span> <span class="nc">MyNoInputCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
         <span class="s2">&quot;Usage: Just press return, I dare you&quot;</span>
@@ -613,26 +507,23 @@ work.</p>
         <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Don&#39;t just press return like that, talk to me!&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 <section id="dynamic-commands">
 <h2>Dynamic Commands<a class="headerlink" href="#dynamic-commands" title="Permalink to this headline">¶</a></h2>
 <p><em>Note: This is an advanced topic.</em></p>
 <p>Normally Commands are created as fixed classes and used without modification. There are however
 situations when the exact key, alias or other properties is not possible (or impractical) to pre-
-code (<a class="reference external" href="Components/Commands.html#Exits">Exits</a> is an example of this).</p>
+code (<a class="reference internal" href="#exits"><span class="std std-doc">Exits</span></a> is an example of this).</p>
 <p>To create a command with a dynamic call signature, first define the command body normally in a class
 (set your <code class="docutils literal notranslate"><span class="pre">key</span></code>, <code class="docutils literal notranslate"><span class="pre">aliases</span></code> to default values), then use the following call (assuming the command
 class you created is named <code class="docutils literal notranslate"><span class="pre">MyCommand</span></code>):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">cmd</span> <span class="o">=</span> <span class="n">MyCommand</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;newname&quot;</span><span class="p">,</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="n">cmd</span> <span class="o">=</span> <span class="n">MyCommand</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;newname&quot;</span><span class="p">,</span>
                      <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;test2&quot;</span><span class="p">],</span>
                      <span class="n">locks</span><span class="o">=</span><span class="s2">&quot;cmd:all()&quot;</span><span class="p">,</span>
                      <span class="o">...</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p><em>All</em> keyword arguments you give to the Command constructor will be stored as a property on the
 command object. This will overload existing properties defined on the parent class.</p>
 <p>Normally you would define your class and only overload things like <code class="docutils literal notranslate"><span class="pre">key</span></code> and <code class="docutils literal notranslate"><span class="pre">aliases</span></code> at run-time.
@@ -642,9 +533,9 @@ make your command completely customized at run-time.</p>
 <section id="exits">
 <h2>Exits<a class="headerlink" href="#exits" title="Permalink to this headline">¶</a></h2>
 <p><em>Note: This is an advanced topic.</em></p>
-<p>Exits are examples of the use of a <a class="reference external" href="Components/Commands.html#Dynamic_Commands">Dynamic Command</a>.</p>
-<p>The functionality of <a class="reference internal" href="Objects.html"><span class="doc">Exit</span></a> objects in Evennia is not hard-coded in the engine. Instead
-Exits are normal <a class="reference internal" href="Typeclasses.html"><span class="doc">typeclassed</span></a> objects that auto-create a <a class="reference external" href="Components/Commands.html#CmdSets">CmdSet</a> on
+<p>Exits are examples of the use of a <a class="reference internal" href="#dynamic-commands"><span class="std std-doc">Dynamic Command</span></a>.</p>
+<p>The functionality of <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Exit</span></a> objects in Evennia is not hard-coded in the engine. Instead
+Exits are normal <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">typeclassed</span></a> objects that auto-create a <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">CmdSet</span></a> on
 themselves when they load. This cmdset has a single dynamically created Command with the same
 properties (key, aliases and locks) as the Exit object itself. When entering the name of the exit,
 this dynamic exit-command is triggered and (after access checks) moves the Character to the exit’s
@@ -668,16 +559,7 @@ so that you can back-reference the previous arguments etc.</p>
 <div><p>Note: On a server reload, all Commands are rebuilt and memory is flushed.</p>
 </div></blockquote>
 <p>To show this in practice, consider this command:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdTestID</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdTestID</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;testid&quot;</span>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -687,8 +569,9 @@ so that you can back-reference the previous arguments etc.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">xval</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Command memory ID: </span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> (xval=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">xval</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Adding this to the default character cmdset gives a result like this in-game:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">testid</span>
 <span class="n">Command</span> <span class="n">memory</span> <span class="n">ID</span><span class="p">:</span> <span class="mi">140313967648552</span> <span class="p">(</span><span class="n">xval</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -710,6 +593,7 @@ keyword argument, will assign that keyword argument as a property on this paricu
     <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MyCommand</span><span class="p">(</span><span class="n">myvar</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">foo</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+
 </pre></div>
 </div>
 <p>This will start the <code class="docutils literal notranslate"><span class="pre">MyCommand</span></code> with <code class="docutils literal notranslate"><span class="pre">myvar</span></code> and <code class="docutils literal notranslate"><span class="pre">foo</span></code> set as properties (accessable as <code class="docutils literal notranslate"><span class="pre">self.myvar</span></code>
@@ -740,9 +624,9 @@ cmdset, ignore.</p></li>
 <li><p>CmdSets defined on the current account, if caller is a puppeted object.</p></li>
 <li><p>CmdSets defined on the Session itself.</p></li>
 <li><p>The active CmdSets of eventual objects in the same location (if any). This includes commands
-on <a class="reference external" href="Components/Objects.html#Exits">Exits</a>.</p></li>
+on <a class="reference internal" href="Objects.html#exits"><span class="std std-doc">Exits</span></a>.</p></li>
 <li><p>Sets of dynamically created <em>System commands</em> representing available
-<a class="reference external" href="Components/Communications.html#Channels">Communications</a>.</p></li>
+<a class="reference internal" href="Channels.html"><span class="doc std std-doc">Communications</span></a></p></li>
 </ul>
 </li>
 <li><p>All CmdSets <em>of the same priority</em> are merged together in groups.  Grouping avoids order-
@@ -783,17 +667,13 @@ doing useful things.</p></li>
 <a class="reference external" href="https://twistedmatrix.com/documents/current/core/howto/defer.html">deferred</a>.
 Evennia does not use this return value at all by default. If you do, you must
 thus do so asynchronously, using callbacks.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="c1"># in command class func()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="c1"># in command class func()</span>
      <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Returned is </span><span class="si">{</span><span class="n">ret</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
      <span class="n">deferred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command</span><span class="p">(</span><span class="s2">&quot;longrunning&quot;</span><span class="p">)</span>
      <span class="n">deferred</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This is probably not relevant to any but the most advanced/exotic designs (one might use it to
 create a “nested” command structure for example).</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">save_for_next</span></code> class variable can be used to implement state-persistent commands. For example
@@ -869,7 +749,7 @@ on.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Commands.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

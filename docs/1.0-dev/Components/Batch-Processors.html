@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="batch-processors">
+  <section class="tex2jax_ignore mathjax_ignore" id="batch-processors">
 <h1>Batch Processors<a class="headerlink" href="#batch-processors" title="Permalink to this headline">¶</a></h1>
 <p>Building a game world is a lot of work, especially when starting out. Rooms should be created,
 descriptions have to be written, objects must be detailed and placed in their proper places. In many
@@ -72,8 +74,8 @@ just list in-game commands in a text file. The code-processor on the other hand 
 powerful but also more complex - it lets you use Evennia’s API to code your world in full-fledged
 Python code.</p>
 <ul class="simple">
-<li><p>The <a class="reference internal" href="Batch-Command-Processor.html"><span class="doc">Batch Command Processor</span></a></p></li>
-<li><p>The <a class="reference internal" href="Batch-Code-Processor.html"><span class="doc">Batch Code Processor</span></a></p></li>
+<li><p>The <a class="reference internal" href="Batch-Command-Processor.html"><span class="doc std std-doc">Batch Command Processor</span></a></p></li>
+<li><p>The <a class="reference internal" href="Batch-Code-Processor.html"><span class="doc std std-doc">Batch Code Processor</span></a></p></li>
 </ul>
 <p>If you plan to use international characters in your batchfiles you are wise to read about <em>file
 encodings</em> below.</p>
@@ -103,7 +105,7 @@ work will the server give up and return an error message.</p>
 need to add the editor’s encoding to Evennia’s <code class="docutils literal notranslate"><span class="pre">ENCODINGS</span></code> list. If you are unsure, write a test
 file with lots of non-ASCII letters in the editor of your choice, then import to make sure it works
 as it should.</p>
-<p>More help with encodings can be found in the entry <a class="reference internal" href="../Concepts/Text-Encodings.html"><span class="doc">Text Encodings</span></a> and also in the
+<p>More help with encodings can be found in the entry <a class="reference internal" href="../Concepts/Text-Encodings.html"><span class="doc std std-doc">Text Encodings</span></a> and also in the
 Wikipedia article <a class="reference external" href="https://en.wikipedia.org/wiki/Text_encodings">here</a>.</p>
 <p><strong>A footnote for the batch-code processor</strong>: Just because <em>Evennia</em> can parse your file and your
 fancy special characters, doesn’t mean that <em>Python</em> allows their use. Python syntax only allows
@@ -160,7 +162,7 @@ allowed.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Batch-Processors.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

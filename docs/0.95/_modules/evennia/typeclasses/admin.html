@@ -1,0 +1,450 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.typeclasses.admin &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.typeclasses.admin</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.typeclasses.admin</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">Tag</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.picklefield</span> <span class="kn">import</span> <span class="n">PickledFormField</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">from_pickle</span><span class="p">,</span> <span class="n">_SaverSet</span>
+
+
+<div class="viewcode-block" id="TagAdmin"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.TagAdmin">[docs]</a><span class="k">class</span> <span class="nc">TagAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A django Admin wrapper for Tags.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_category&quot;</span><span class="p">,</span> <span class="s2">&quot;db_tagtype&quot;</span><span class="p">)</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_category&quot;</span><span class="p">,</span> <span class="s2">&quot;db_tagtype&quot;</span><span class="p">,</span> <span class="s2">&quot;db_data&quot;</span><span class="p">)</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_category&quot;</span><span class="p">,</span> <span class="s2">&quot;db_tagtype&quot;</span><span class="p">,</span> <span class="s2">&quot;db_data&quot;</span><span class="p">)</span>
+    <span class="n">list_filter</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;db_tagtype&quot;</span><span class="p">,)</span></div>
+
+
+<div class="viewcode-block" id="TagForm"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.TagForm">[docs]</a><span class="k">class</span> <span class="nc">TagForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This form overrides the base behavior of the ModelForm that would be used for a</span>
+<span class="sd">    Tag-through-model.  Since the through-models only have access to the foreignkeys of the Tag and</span>
+<span class="sd">    the Object that they&#39;re attached to, we need to spoof the behavior of it being a form that would</span>
+<span class="sd">    correspond to its tag, or the creation of a tag. Instead of being saved, we&#39;ll call to the</span>
+<span class="sd">    Object&#39;s handler, which will handle the creation, change, or deletion of a tag for us, as well</span>
+<span class="sd">    as updating the handler&#39;s cache so that all changes are instantly updated in-game.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">tag_key</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Tag Name&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;This is the main key identifier&quot;</span>
+    <span class="p">)</span>
+    <span class="n">tag_category</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Category&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Used for grouping tags. Unset (default) gives a category of None&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">tag_type</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Type&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Internal use. Either unset, &quot;alias&quot; or &quot;permission&quot;&#39;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">tag_data</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Data&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Usually unused. Intended for eventual info about the tag itself&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="TagForm.Meta"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.TagForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;tag_key&quot;</span><span class="p">,</span> <span class="s2">&quot;tag_category&quot;</span><span class="p">,</span> <span class="s2">&quot;tag_data&quot;</span><span class="p">,</span> <span class="s2">&quot;tag_type&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TagForm.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.TagForm.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         If we have a tag, then we&#39;ll prepopulate our instance with the fields we&#39;d expect it</span>
+<span class="sd">         to have based on the tag. tag_key, tag_category, tag_type, and tag_data all refer to</span>
+<span class="sd">         the corresponding tag fields. The initial data of the form fields will similarly be</span>
+<span class="sd">         populated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">tagkey</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">tagcategory</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">tagtype</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">tagdata</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">,</span> <span class="s2">&quot;tag&quot;</span><span class="p">):</span>
+            <span class="n">tagkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">db_key</span>
+            <span class="n">tagcategory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">db_category</span>
+            <span class="n">tagtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">db_tagtype</span>
+            <span class="n">tagdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">db_data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;tag_key&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">initial</span> <span class="o">=</span> <span class="n">tagkey</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;tag_category&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">initial</span> <span class="o">=</span> <span class="n">tagcategory</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;tag_type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">initial</span> <span class="o">=</span> <span class="n">tagtype</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;tag_data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">initial</span> <span class="o">=</span> <span class="n">tagdata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">tag_key</span> <span class="o">=</span> <span class="n">tagkey</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">tag_category</span> <span class="o">=</span> <span class="n">tagcategory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">tag_type</span> <span class="o">=</span> <span class="n">tagtype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">tag_data</span> <span class="o">=</span> <span class="n">tagdata</span></div>
+
+<div class="viewcode-block" id="TagForm.save"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.TagForm.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        One thing we want to do here is the or None checks, because forms are saved with an empty</span>
+<span class="sd">        string rather than null from forms, usually, and the Handlers may handle empty strings</span>
+<span class="sd">        differently than None objects. So for consistency with how things are handled in game,</span>
+<span class="sd">        we&#39;ll try to make sure that empty form fields will be None, rather than &#39;&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># we are spoofing a tag for the Handler that will be called</span>
+        <span class="c1"># instance = super().save(commit=False)</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">tag_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;tag_key&quot;</span><span class="p">]</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">tag_category</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;tag_category&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="kc">None</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">tag_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;tag_type&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="kc">None</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">tag_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;tag_data&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">instance</span></div></div>
+
+
+<div class="viewcode-block" id="TagFormSet"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.TagFormSet">[docs]</a><span class="k">class</span> <span class="nc">TagFormSet</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">BaseInlineFormSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Formset handles all the inline forms that are grouped together on the change page of the</span>
+<span class="sd">    corresponding object. All the tags will appear here, and we&#39;ll save them by overriding the</span>
+<span class="sd">    formset&#39;s save method. The forms will similarly spoof their save methods to return an instance</span>
+<span class="sd">    which hasn&#39;t been saved to the database, but have the relevant fields filled out based on the</span>
+<span class="sd">    contents of the cleaned form. We&#39;ll then use that to call to the handler of the corresponding</span>
+<span class="sd">    Object, where the handler is an AliasHandler, PermissionsHandler, or TagHandler, based on the</span>
+<span class="sd">    type of tag.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TagFormSet.save"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.TagFormSet.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">get_handler</span><span class="p">(</span><span class="n">finished_object</span><span class="p">):</span>
+            <span class="n">related</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">finished_object</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_field</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">tagtype</span> <span class="o">=</span> <span class="n">finished_object</span><span class="o">.</span><span class="n">tag_type</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">tagtype</span> <span class="o">=</span> <span class="n">finished_object</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">db_tagtype</span>
+            <span class="k">if</span> <span class="n">tagtype</span> <span class="o">==</span> <span class="s2">&quot;alias&quot;</span><span class="p">:</span>
+                <span class="n">handler_name</span> <span class="o">=</span> <span class="s2">&quot;aliases&quot;</span>
+            <span class="k">elif</span> <span class="n">tagtype</span> <span class="o">==</span> <span class="s2">&quot;permission&quot;</span><span class="p">:</span>
+                <span class="n">handler_name</span> <span class="o">=</span> <span class="s2">&quot;permissions&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">handler_name</span> <span class="o">=</span> <span class="s2">&quot;tags&quot;</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">related</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">)</span>
+
+        <span class="n">instances</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># self.deleted_objects is a list created when super of save is called, we&#39;ll remove those</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">deleted_objects</span><span class="p">:</span>
+            <span class="n">handler</span> <span class="o">=</span> <span class="n">get_handler</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">tag_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">tag_category</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">:</span>
+            <span class="n">handler</span> <span class="o">=</span> <span class="n">get_handler</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">tag_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">instance</span><span class="o">.</span><span class="n">tag_category</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">instance</span><span class="o">.</span><span class="n">tag_data</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TagInline"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.TagInline">[docs]</a><span class="k">class</span> <span class="nc">TagInline</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">TabularInline</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A handler for inline Tags. This class should be subclassed in the admin of your models,</span>
+<span class="sd">    and the &#39;model&#39; and &#39;related_field&#39; class attributes must be set. model should be the</span>
+<span class="sd">    through model (ObjectDB_db_tag&#39;, for example), while related field should be the name</span>
+<span class="sd">    of the field on that through model which points to the model being used: &#39;objectdb&#39;,</span>
+<span class="sd">    &#39;msg&#39;, &#39;accountdb&#39;, etc.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Set this to the through model of your desired M2M when subclassing.</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">TagForm</span>
+    <span class="n">formset</span> <span class="o">=</span> <span class="n">TagFormSet</span>
+    <span class="n">related_field</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Must be &#39;objectdb&#39;, &#39;accountdb&#39;, &#39;msg&#39;, etc. Set when subclassing</span>
+    <span class="c1"># raw_id_fields = (&#39;tag&#39;,)</span>
+    <span class="c1"># readonly_fields = (&#39;tag&#39;,)</span>
+    <span class="n">extra</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="TagInline.get_formset"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.TagInline.get_formset">[docs]</a>    <span class="k">def</span> <span class="nf">get_formset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get_formset has to return a class, but we need to make the class that we return</span>
+<span class="sd">        know about the related_field that we&#39;ll use. Returning the class itself rather than</span>
+<span class="sd">        a proxy isn&#39;t threadsafe, since it&#39;d be the base class and would change if multiple</span>
+<span class="sd">        people used the admin at the same time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">formset</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_formset</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">class</span> <span class="nc">ProxyFormset</span><span class="p">(</span><span class="n">formset</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+        <span class="n">ProxyFormset</span><span class="o">.</span><span class="n">related_field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_field</span>
+        <span class="k">return</span> <span class="n">ProxyFormset</span></div></div>
+
+
+<div class="viewcode-block" id="AttributeForm"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.AttributeForm">[docs]</a><span class="k">class</span> <span class="nc">AttributeForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This form overrides the base behavior of the ModelForm that would be used for a Attribute-through-model.</span>
+<span class="sd">    Since the through-models only have access to the foreignkeys of the Attribute and the Object that they&#39;re</span>
+<span class="sd">    attached to, we need to spoof the behavior of it being a form that would correspond to its Attribute,</span>
+<span class="sd">    or the creation of an Attribute. Instead of being saved, we&#39;ll call to the Object&#39;s handler, which will handle</span>
+<span class="sd">    the creation, change, or deletion of an Attribute for us, as well as updating the handler&#39;s cache so that all</span>
+<span class="sd">    changes are instantly updated in-game.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">attr_key</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Attribute Name&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="s2">&quot;Enter Attribute Name Here&quot;</span>
+    <span class="p">)</span>
+    <span class="n">attr_category</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Category&quot;</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;type of attribute, for sorting&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">128</span>
+    <span class="p">)</span>
+    <span class="n">attr_value</span> <span class="o">=</span> <span class="n">PickledFormField</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Value to pickle/save&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">attr_type</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Type&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Internal use. Either unset (normal Attribute) or &quot;nick&quot;&#39;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">attr_lockstring</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Locks&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Lock string on the form locktype:lockdef;lockfunc:lockdef;...&quot;</span><span class="p">,</span>
+        <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">Textarea</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rows&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;cols&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">}),</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="AttributeForm.Meta"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.AttributeForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;attr_key&quot;</span><span class="p">,</span> <span class="s2">&quot;attr_value&quot;</span><span class="p">,</span> <span class="s2">&quot;attr_category&quot;</span><span class="p">,</span> <span class="s2">&quot;attr_lockstring&quot;</span><span class="p">,</span> <span class="s2">&quot;attr_type&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AttributeForm.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.AttributeForm.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         If we have an Attribute, then we&#39;ll prepopulate our instance with the fields we&#39;d expect it</span>
+<span class="sd">         to have based on the Attribute. attr_key, attr_category, attr_value, attr_type,</span>
+<span class="sd">         and attr_lockstring all refer to the corresponding Attribute fields. The initial data of the form fields will</span>
+<span class="sd">         similarly be populated.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">attr_key</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">attr_category</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">attr_value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">attr_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">attr_lockstring</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">,</span> <span class="s2">&quot;attribute&quot;</span><span class="p">):</span>
+            <span class="n">attr_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">db_key</span>
+            <span class="n">attr_category</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">db_category</span>
+            <span class="n">attr_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">db_value</span>
+            <span class="n">attr_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">db_attrtype</span>
+            <span class="n">attr_lockstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">db_lock_storage</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;attr_key&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">initial</span> <span class="o">=</span> <span class="n">attr_key</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;attr_category&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">initial</span> <span class="o">=</span> <span class="n">attr_category</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;attr_type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">initial</span> <span class="o">=</span> <span class="n">attr_type</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;attr_value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">initial</span> <span class="o">=</span> <span class="n">attr_value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;attr_lockstring&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">initial</span> <span class="o">=</span> <span class="n">attr_lockstring</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">attr_key</span> <span class="o">=</span> <span class="n">attr_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">attr_category</span> <span class="o">=</span> <span class="n">attr_category</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">attr_value</span> <span class="o">=</span> <span class="n">attr_value</span>
+
+        <span class="c1"># prevent from being transformed to str</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_value</span><span class="p">,</span> <span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">_SaverSet</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;attr_value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">deserialized_value</span> <span class="o">=</span> <span class="n">from_pickle</span><span class="p">(</span><span class="n">attr_value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">attr_type</span> <span class="o">=</span> <span class="n">attr_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">attr_lockstring</span> <span class="o">=</span> <span class="n">attr_lockstring</span></div>
+
+<div class="viewcode-block" id="AttributeForm.save"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.AttributeForm.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        One thing we want to do here is the or None checks, because forms are saved with an empty</span>
+<span class="sd">        string rather than null from forms, usually, and the Handlers may handle empty strings</span>
+<span class="sd">        differently than None objects. So for consistency with how things are handled in game,</span>
+<span class="sd">        we&#39;ll try to make sure that empty form fields will be None, rather than &#39;&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># we are spoofing an Attribute for the Handler that will be called</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">attr_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;attr_key&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="s2">&quot;no_name_entered_for_attribute&quot;</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">attr_category</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;attr_category&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="kc">None</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">attr_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;attr_value&quot;</span><span class="p">]</span>
+        <span class="c1"># convert the serialized string value into an object, if necessary, for AttributeHandler</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">attr_value</span> <span class="o">=</span> <span class="n">from_pickle</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">attr_value</span><span class="p">)</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">attr_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;attr_type&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="kc">None</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">attr_lockstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;attr_lockstring&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">instance</span></div>
+
+<div class="viewcode-block" id="AttributeForm.clean_attr_value"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.AttributeForm.clean_attr_value">[docs]</a>    <span class="k">def</span> <span class="nf">clean_attr_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prevent certain data-types from being cleaned due to literal_eval</span>
+<span class="sd">        failing on them. Otherwise they will be turned into str.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;attr_value&quot;</span><span class="p">]</span>
+        <span class="n">initial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">attr_value</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">initial</span><span class="p">,</span> <span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">_SaverSet</span><span class="p">,</span> <span class="n">datetime</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">initial</span>
+        <span class="k">return</span> <span class="n">data</span></div></div>
+
+
+<div class="viewcode-block" id="AttributeFormSet"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.AttributeFormSet">[docs]</a><span class="k">class</span> <span class="nc">AttributeFormSet</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">BaseInlineFormSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Attribute version of TagFormSet, as above.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AttributeFormSet.save"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.AttributeFormSet.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">get_handler</span><span class="p">(</span><span class="n">finished_object</span><span class="p">):</span>
+            <span class="n">related</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">finished_object</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_field</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">attrtype</span> <span class="o">=</span> <span class="n">finished_object</span><span class="o">.</span><span class="n">attr_type</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">attrtype</span> <span class="o">=</span> <span class="n">finished_object</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">db_attrtype</span>
+            <span class="k">if</span> <span class="n">attrtype</span> <span class="o">==</span> <span class="s2">&quot;nick&quot;</span><span class="p">:</span>
+                <span class="n">handler_name</span> <span class="o">=</span> <span class="s2">&quot;nicks&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">handler_name</span> <span class="o">=</span> <span class="s2">&quot;attributes&quot;</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">related</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">)</span>
+
+        <span class="n">instances</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">deleted_objects</span><span class="p">:</span>
+            <span class="c1"># self.deleted_objects is a list created when super of save is called, we&#39;ll remove those</span>
+            <span class="n">handler</span> <span class="o">=</span> <span class="n">get_handler</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">attr_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">attr_category</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">:</span>
+            <span class="n">handler</span> <span class="o">=</span> <span class="n">get_handler</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+
+            <span class="n">value</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">attr_value</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                    <span class="n">instance</span><span class="o">.</span><span class="n">attr_key</span><span class="p">,</span>
+                    <span class="n">value</span><span class="p">,</span>
+                    <span class="n">category</span><span class="o">=</span><span class="n">instance</span><span class="o">.</span><span class="n">attr_category</span><span class="p">,</span>
+                    <span class="n">strattr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">lockstring</span><span class="o">=</span><span class="n">instance</span><span class="o">.</span><span class="n">attr_lockstring</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="c1"># catch errors in nick templates and continue</span>
+                <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+                <span class="k">continue</span></div></div>
+
+
+<div class="viewcode-block" id="AttributeInline"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.AttributeInline">[docs]</a><span class="k">class</span> <span class="nc">AttributeInline</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">TabularInline</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A handler for inline Attributes. This class should be subclassed in the admin of your models,</span>
+<span class="sd">    and the &#39;model&#39; and &#39;related_field&#39; class attributes must be set. model should be the</span>
+<span class="sd">    through model (ObjectDB_db_tag&#39;, for example), while related field should be the name</span>
+<span class="sd">    of the field on that through model which points to the model being used: &#39;objectdb&#39;,</span>
+<span class="sd">    &#39;msg&#39;, &#39;accountdb&#39;, etc.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Set this to the through model of your desired M2M when subclassing.</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">AttributeForm</span>
+    <span class="n">formset</span> <span class="o">=</span> <span class="n">AttributeFormSet</span>
+    <span class="n">related_field</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Must be &#39;objectdb&#39;, &#39;accountdb&#39;, &#39;msg&#39;, etc. Set when subclassing</span>
+    <span class="c1"># raw_id_fields = (&#39;attribute&#39;,)</span>
+    <span class="c1"># readonly_fields = (&#39;attribute&#39;,)</span>
+    <span class="n">extra</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="AttributeInline.get_formset"><a class="viewcode-back" href="../../../api/evennia.typeclasses.admin.html#evennia.typeclasses.admin.AttributeInline.get_formset">[docs]</a>    <span class="k">def</span> <span class="nf">get_formset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get_formset has to return a class, but we need to make the class that we return</span>
+<span class="sd">        know about the related_field that we&#39;ll use. Returning the class itself rather than</span>
+<span class="sd">        a proxy isn&#39;t threadsafe, since it&#39;d be the base class and would change if multiple</span>
+<span class="sd">        people used the admin at the same time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">formset</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_formset</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">class</span> <span class="nc">ProxyFormset</span><span class="p">(</span><span class="n">formset</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+        <span class="n">ProxyFormset</span><span class="o">.</span><span class="n">related_field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_field</span>
+        <span class="k">return</span> <span class="n">ProxyFormset</span></div></div>
+
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Tag</span><span class="p">,</span> <span class="n">TagAdmin</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="admin.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.typeclasses.admin</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

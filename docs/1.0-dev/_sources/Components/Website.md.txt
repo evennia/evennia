@@ -1,14 +1,14 @@
 # Game website
 
-When Evennia starts it will also start a [Webserver](./Webserver) as part of the
-[Server](./Portal-And-Server) process. This uses [Django](https://docs.djangoproject.com) 
+When Evennia starts it will also start a [Webserver](./Webserver.md) as part of the
+[Server](./Portal-And-Server.md) process. This uses [Django](https://docs.djangoproject.com)
 to present a simple but functional default game website.  With the default setup,
-open your browser to [localhost:4001](http://localhost:4001) or [127.0.0.1:4001](http://127.0.0.1:4001) 
+open your browser to [localhost:4001](http://localhost:4001) or [127.0.0.1:4001](http://127.0.0.1:4001)
 to see it.
 
 The website allows existing players to log in using an account-name and
 password they previously used to register with the game. If a user logs in with
-the [Webclient](./Webclient) they will also log into the website and vice-versa.
+the [Webclient](./Webclient.md) they will also log into the website and vice-versa.
 So if you are logged into the website, opening the webclient will automatically
 log you into the game as that account.
 
@@ -28,15 +28,15 @@ In the top menu you can find
   show a list of all channels available to you and allow you to view the latest
   discussions. Most channels require logging in, but the `Public` channel can
   also be viewed by non-loggedin users.
-- _Help_ - This ties the in-game [Help system](./Help-System) to the website. All
+- _Help_ - This ties the in-game [Help system](./Help-System.md) to the website. All
   database-based help entries that are publicly available or accessible to your
   account can be read. This is a good way to present a body of help for people
   to read outside of the game.
-- _Play Online_ - This opens the [Webclient](./Webclient) in the browser.
+- _Play Online_ - This opens the [Webclient](./Webclient.md) in the browser.
 - _Admin_ The [Web admin](Web admin) will only show if you are logged in.
 - _Log in/out_ - Allows you to authenticate using the same credentials you use
   in the game.
-- _Register_ - Allows you to register a new account. This is the same as 
+- _Register_ - Allows you to register a new account. This is the same as
   creating a new account upon first logging into the game).
 
 ## Modifying the default Website
@@ -52,7 +52,7 @@ You'll mostly be doing so in your settings file
 > DEBUG mode leaks memory (for retaining debug info) and is *not* safe to use
 > for a production game!
 
-As explained on the [Webserver](./Webserver) page, the process for getting a web
+As explained on the [Webserver](./Webserver.md) page, the process for getting a web
 page is
 
 1. Web browser sends HTTP request to server with an URL
@@ -115,7 +115,7 @@ This is the layout of the `mygame/web/` folder relevant for the website:
 
 ```
 
-```versionchanged:: 1.0
+```{versionchanged} 1.0
 
   Game folders created with older versions of Evennia will lack most of this
   convenient `mygame/web/` layout. If you use a game dir from an older version,
@@ -139,7 +139,7 @@ version rather than it using the original.
 
 ## Examples of commom web changes
 
-```important::
+```{important}
 
   Django is a very mature web-design framework. There are endless
   internet-tutorials, courses and books available to explain how to use Django.
@@ -206,8 +206,8 @@ There's a lot more information to be found in the [Django template language docu
 
 ### Change webpage colors and styling
 
-You can tweak the [CSS](https://en.wikipedia.org/wiki/Cascading_Style_Sheets) of the entire 
-website. If you investigate the `evennia/web/templates/website/base.html` file you'll see that we 
+You can tweak the [CSS](https://en.wikipedia.org/wiki/Cascading_Style_Sheets) of the entire
+website. If you investigate the `evennia/web/templates/website/base.html` file you'll see that we
 use the [Bootstrap
 4](https://getbootstrap.com/docs/4.6/getting-started/introduction/) toolkit.
 
@@ -220,8 +220,8 @@ The website's custom CSS is found in
 empty) `custom.css` in the same location. You can override either, but it may
 be easier to revert your changes if you only add things to `custom.css`.
 
-Copy the CSS file you want to modify to the corresponding location in `mygame/web`. 
-Modify it and reload the server to see your changes. 
+Copy the CSS file you want to modify to the corresponding location in `mygame/web`.
+Modify it and reload the server to see your changes.
 
 You can also apply static files without reloading, but running this in the
 terminal:
@@ -233,8 +233,8 @@ terminal:
 > Note that before you see new CSS files applied you may need to refresh your
 > browser without cache (Ctrl-F5 in Firefox, for example).
 
-As an example, add/copy `custom.css` to `mygame/web/static/website/css/` and 
-add the following: 
+As an example, add/copy `custom.css` to `mygame/web/static/website/css/` and
+add the following:
 
 
 ```css
@@ -271,14 +271,14 @@ look in `evennia/web/website/urls.py`. Here we find the following line:
 
 ```
 
-The first `""` is the empty url - root - what you get if you just enter `localhost:4001/` 
+The first `""` is the empty url - root - what you get if you just enter `localhost:4001/`
 with no extra path. As expected, this leads to the index page. By looking at the imports
-we find the view is in in `evennia/web/website/views/index.py`. 
+we find the view is in in `evennia/web/website/views/index.py`.
 
-Copy this file to the corresponding location in `mygame/web`. Then tweak your `mygame/web/website/urls.py` 
+Copy this file to the corresponding location in `mygame/web`. Then tweak your `mygame/web/website/urls.py`
 file to point to the new file:
 
-```python 
+```python
 # in mygame/web/website/urls.py
 
 # ...
@@ -292,8 +292,8 @@ urlpatterns = [
 # ...
 
 ```
-    
-So we just import `index` from the new location and point to it. After a reload 
+
+So we just import `index` from the new location and point to it. After a reload
 the front page will now redirect to use your copy rather than the original.
 
 The frontpage view is a class `EvenniaIndexView`. This is a [Django class-based view](https://docs.djangoproject.com/en/3.2/topics/class-based-views/).
@@ -321,7 +321,7 @@ your copy. Just remember to reload.
 ### Using Flat Pages
 
 The absolutely simplest way to add a new web page is to use the `Flat Pages`
-app available in the [Web Admin](./Web-Admin). The page will appear with the same
+app available in the [Web Admin](./Web-Admin.md). The page will appear with the same
 styling as the rest of the site.
 
 For the `Flat pages` module to work you must first set up a _Site_ (or
@@ -337,7 +337,7 @@ experimentation, add the domain `localhost:4001`. Note the `id` of the domain
 Next you create new pages easily.
 
 - Go the `Flat Pages` web admin and choose to add a new flat page.
-- Set the url. If you want the page to appear as e.g. `localhost:4001/test/`, then 
+- Set the url. If you want the page to appear as e.g. `localhost:4001/test/`, then
   add `/test/` here. You need to add both leading and trailing slashes.
 - Set `Title` to the name of the page.
 - The `Content` is the HTML content of the body of the page. Go wild!
@@ -348,16 +348,16 @@ You can now go to `localhost:4001/test/` and see your new page!
 
 ### Add Custom new page
 
-The `Flat Pages` page doesn't allow for (much) dynamic content and customization. For 
+The `Flat Pages` page doesn't allow for (much) dynamic content and customization. For
 this you need to add the needed components yourself.
 
 Let's see how to make a `/test/` page from scratch.
 
-- Add a new `test.html` file under `mygame/web/templates/website/`. Easiest is to base 
-  this off an existing file. Make sure to `{% extend base.html %}` if you want to 
+- Add a new `test.html` file under `mygame/web/templates/website/`. Easiest is to base
+  this off an existing file. Make sure to `{% extend base.html %}` if you want to
   get the same styling as the rest of your site.
-- Add a new view `testview.py` under `mygame/web/website/views/` (don't name it `test.py` or 
-  Django/Evennia will think it contains unit tests). Add a view there to process 
+- Add a new view `testview.py` under `mygame/web/website/views/` (don't name it `test.py` or
+  Django/Evennia will think it contains unit tests). Add a view there to process
   your page. This is a minimal view to start from (read much more [in the Django docs](https://docs.djangoproject.com/en/3.2/topics/class-based-views/)):
 
     ```python
@@ -385,7 +385,7 @@ Let's see how to make a `/test/` page from scratch.
         path("test/", testview.MyTestView.as_view())
     ]
 
-    ``` 
+    ```
 - Reload the server and your new page is available. You can now continue to add
   all sorts of advanced dynamic content through your view and template!
 
@@ -395,13 +395,13 @@ Let's see how to make a `/test/` page from scratch.
 All the pages created so far deal with _presenting_ information to the user.
 It's also possible for the user to _input_ data on the page through _forms_. An
 example would be a page of fields and sliders you fill in to create a
-character, with a big 'Submit' button at the bottom. 
+character, with a big 'Submit' button at the bottom.
 
 Firstly, this must be represented in HTML. The `<form> ... </form>` is a
 standard HTML element you need to add to your template. It also has some other
 requirements, such as `<input>` and often Javascript components as well (but
 usually Django will help with this). If you are unfamiliar with how HTML forms
-work, [read about them here](https://docs.djangoproject.com/en/3.2/topics/forms/#html-forms). 
+work, [read about them here](https://docs.djangoproject.com/en/3.2/topics/forms/#html-forms).
 
 The basic gist of it is that when you click to 'submit' the form, a POST HTML
 request will be sent to the server containing the data the user entered. It's
@@ -412,9 +412,9 @@ On the backend side, we need to specify the logic for validating and processing
 the form data. This is done by the `Form` [Django class](https://docs.djangoproject.com/en/3.2/topics/forms/#forms-in-django).
 This specifies _fields_ on itself that define how to validate that piece of data.
 
-The form is then linked into the view-class by adding `form_class = MyFormClass` to 
+The form is then linked into the view-class by adding `form_class = MyFormClass` to
 the view (next to `template_name`).
 
-There are several example forms in `evennia/web/website/forms.py`. It's also a good 
+There are several example forms in `evennia/web/website/forms.py`. It's also a good
 idea to read [Building a form in Django](https://docs.djangoproject.com/en/3.2/topics/forms/#building-a-form-in-django)
 on the Django website - it covers all you need.

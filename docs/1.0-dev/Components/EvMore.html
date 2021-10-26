@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evmore">
+  <section class="tex2jax_ignore mathjax_ignore" id="evmore">
 <h1>EvMore<a class="headerlink" href="#evmore" title="Permalink to this headline">¶</a></h1>
 <p>When sending a very long text to a user client, it might scroll beyond of the height of the client
 window. The <code class="docutils literal notranslate"><span class="pre">evennia.utils.evmore.EvMore</span></code> class gives the user the in-game ability to only view one
@@ -47,14 +49,12 @@ page of text at a time. It is usually used via its access function, <code class=
 <section id="using-evmore">
 <h2>Using EvMore<a class="headerlink" href="#using-evmore" title="Permalink to this headline">¶</a></h2>
 <p>To use the pager, just pass the long text through it:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evmore</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evmore</span>
 
 <span class="n">evmore</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="n">long_text</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
-<p>Where receiver is an <a class="reference internal" href="Objects.html"><span class="doc">Object</span></a> or a <a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a>. If the text is longer than the
+</div>
+<p>Where receiver is an <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a> or a <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Account</span></a>. If the text is longer than the
 client’s screen height (as determined by the NAWS handshake or by <code class="docutils literal notranslate"><span class="pre">settings.CLIENT_DEFAULT_HEIGHT</span></code>)
 the pager will show up, something like this:</p>
 <blockquote>
@@ -123,7 +123,7 @@ paging.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="EvMore.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

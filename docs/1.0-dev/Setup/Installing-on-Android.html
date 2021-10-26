@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="installing-on-android">
+  <section class="tex2jax_ignore mathjax_ignore" id="installing-on-android">
 <h1>Installing on Android<a class="headerlink" href="#installing-on-android" title="Permalink to this headline">¶</a></h1>
 <p>This page describes how to install and run the Evennia server on an Android phone. This will involve
 installing a slew of third-party programs from the Google Play store, so make sure you are okay with
@@ -100,18 +102,18 @@ following command:</p>
 </div>
 <p>(these tell clang, the C compiler, where to find the bits for zlib when building Pillow)</p>
 <p>Install the latest Evennia in a way that lets you edit the source</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(evenv) $ pip install --upgrade -e &#39;git+https://github.com/evennia/evennia#egg=evennia&#39; 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(evenv) $ pip install --upgrade -e &#39;git+https://github.com/evennia/evennia#egg=evennia&#39;
 </pre></div>
 </div>
 <p>This step will possibly take quite a while - we are downloading Evennia and are then installing it,
 building all of the requirements for Evennia to run. If you run into trouble on this step, please
-see <a class="reference external" href="Setup/Installing-on-Android.html#troubleshooting">Troubleshooting</a>.</p>
+see <a class="reference internal" href="#troubleshooting"><span class="std std-doc">Troubleshooting</span></a>.</p>
 <p>You can go to the dir where Evennia is installed with <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">$VIRTUAL_ENV/src/evennia</span></code>. <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">grep</span> <span class="pre">(something)</span></code> can be handy, as can <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">diff</span></code></p>
 </section>
 <section id="final-steps">
 <h3>Final steps<a class="headerlink" href="#final-steps" title="Permalink to this headline">¶</a></h3>
 <p>At this point, Evennia is installed on your phone! You can now continue with the original
-<a class="reference internal" href="Setup-Quickstart.html"><span class="doc">Setup Quickstart</span></a> instruction, we repeat them here for clarity.</p>
+<a class="reference internal" href="Setup-Quickstart.html"><span class="doc std std-doc">Setup Quickstart</span></a> instruction, we repeat them here for clarity.</p>
 <p>To start a new game:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(evenv) $ evennia --init mygame
 (evenv) $ ls
@@ -124,7 +126,7 @@ mygame evenv
 (evenv) $ evennia start
 </pre></div>
 </div>
-<p>Your game should now be running! Open a web browser at http://localhost:4001 or point a telnet
+<p>Your game should now be running! Open a web browser at <a class="reference external" href="http://localhost:4001">http://localhost:4001</a> or point a telnet
 client to localhost:4000 and log in with the user you created.</p>
 </section>
 </section>
@@ -137,7 +139,7 @@ virtualenv as well as are in your game’s directory. You can then run evennia s
 (evenv) $ evennia start
 </pre></div>
 </div>
-<p>You may wish to look at the <a class="reference external" href="Setup/Getting-Started#linux-install">Linux Instructions</a> for more.</p>
+<p>You may wish to look at the <a class="reference internal" href="Extended-Installation.html#linux-install"><span class="std std-doc">Linux Instructions</span></a> for more.</p>
 </section>
 <section id="caveats">
 <h2>Caveats<a class="headerlink" href="#caveats" title="Permalink to this headline">¶</a></h2>
@@ -220,7 +222,7 @@ killed if your phone is heavily taxed. Termux seems to keep a notification up to
 <h3>Versions</h3>
 <ul>
   <li><a href="Installing-on-Android.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

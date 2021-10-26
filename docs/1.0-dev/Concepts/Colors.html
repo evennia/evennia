@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="colors">
+  <section class="tex2jax_ignore mathjax_ignore" id="colors">
 <h1>Colors<a class="headerlink" href="#colors" title="Permalink to this headline">¶</a></h1>
 <p><em>Note that the Documentation does not display colour the way it would look on the screen.</em></p>
 <p>Color can be a very useful tool for your game. It can be used to increase readability and make your
@@ -51,7 +53,7 @@ desired. Some clients don’t even support color - text games are also played wi
 equipment by people who are blind or have otherwise diminished eyesight.</p>
 <p>So a good rule of thumb is to use colour to enhance your game but don’t <em>rely</em> on it to display
 critical information. If you are coding the game, you can add functionality to let users disable
-colours as they please, as described <a class="reference internal" href="../Howto/Manually-Configuring-Color.html"><span class="doc">here</span></a>.</p>
+colours as they please, as described <a class="reference internal" href="../Howto/Manually-Configuring-Color.html"><span class="doc std std-doc">here</span></a>.</p>
 <p>To see which colours your client support, use the default <code class="docutils literal notranslate"><span class="pre">&#64;color</span></code> command. This will list all
 available colours for ANSI and Xterm256 along with the codes you use for them. You can find a list
 of all the parsed <code class="docutils literal notranslate"><span class="pre">ANSI</span></code>-colour codes in <code class="docutils literal notranslate"><span class="pre">evennia/utils/ansi.py</span></code>.</p>
@@ -63,7 +65,7 @@ available in all but the most ancient mud clients. The ANSI colours are <strong>
 first letter except for black which is abbreviated with the letter <strong>x</strong>. In ANSI there are “bright”
 and “normal” (darker) versions of each color, adding up to a total of 16 colours to use for
 foreground text. There are also 8 “background” colours. These have no bright alternative in ANSI
-(but Evennia uses the <a class="reference external" href="Concepts/TextTags.html#xterm256-colours">Xterm256</a> extension behind the scenes to offer
+(but Evennia uses the <a class="reference internal" href="#xterm256-colours"><span class="std std-doc">Xterm256</span></a> extension behind the scenes to offer
 them anyway).</p>
 <p>To colour your text you put special tags in it. Evennia will parse these and convert them to the
 correct markup for the client used. If the user’s client/console/display supports ANSI colour, they
@@ -71,10 +73,10 @@ will see the text in the specified colour, otherwise the tags will be stripped (
 This works also for non-terminal clients, such as the webclient. For the webclient, Evennia will
 translate the codes to HTML RGB colors.</p>
 <p>Here is an example of the tags in action:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">|</span><span class="n">rThis</span> <span class="n">text</span> <span class="ow">is</span> <span class="n">bright</span> <span class="n">red</span><span class="o">.|</span><span class="n">n</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">normal</span> <span class="n">text</span><span class="o">.</span>
- <span class="o">|</span><span class="n">RThis</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">dark</span> <span class="n">red</span> <span class="n">text</span><span class="o">.|</span><span class="n">n</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">normal</span> <span class="n">text</span><span class="o">.</span>
- <span class="o">|</span><span class="p">[</span><span class="n">rThis</span> <span class="n">text</span> <span class="n">has</span> <span class="n">red</span> <span class="n">background</span><span class="o">.|</span><span class="n">n</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">normal</span> <span class="n">text</span><span class="o">.</span>
- <span class="o">|</span><span class="n">b</span><span class="o">|</span><span class="p">[</span><span class="n">yThis</span> <span class="ow">is</span> <span class="n">bright</span> <span class="n">blue</span> <span class="n">text</span> <span class="n">on</span> <span class="n">yellow</span> <span class="n">background</span><span class="o">.|</span><span class="n">n</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">normal</span> <span class="n">text</span><span class="o">.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> |rThis text is bright red.|n This is normal text.
+ |RThis is a dark red text.|n This is normal text.
+ |[rThis text has red background.|n This is normal text.
+ |b|[yThis is bright blue text on yellow background.|n This is normal text.
 </pre></div>
 </div>
 <ul class="simple">
@@ -101,7 +103,7 @@ set bright/normal explicitly.  Technically, <code class="docutils literal notran
 <blockquote>
 <div><p>Note: The ANSI standard does not actually support bright backgrounds like <code class="docutils literal notranslate"><span class="pre">|[r</span></code> - the standard
 only supports “normal” intensity backgrounds.  To get around this Evennia instead implements these
-as <a class="reference external" href="Concepts/TextTags.html#xterm256-colours">Xterm256 colours</a> behind the scenes. If the client does not support
+as <a class="reference internal" href="#xterm256-colours"><span class="std std-doc">Xterm256 colours</span></a> behind the scenes. If the client does not support
 Xterm256 the ANSI colors will be used instead and there will be no visible difference between using
 upper- and lower-case background tags.</p>
 </div></blockquote>
@@ -113,7 +115,7 @@ it by preceding its <code class="docutils literal notranslate"><span class="pre"
 <p>This will output the raw <code class="docutils literal notranslate"><span class="pre">|r</span></code> without any color change. This can also be necessary if you are doing
 ansi art that uses <code class="docutils literal notranslate"><span class="pre">|</span></code> with a letter directly following it.</p>
 <p>Use the command</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@color</span> <span class="n">ansi</span> 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@color ansi
 </pre></div>
 </div>
 <p>to get a list of all supported ANSI colours and the tags used to produce them.</p>
@@ -167,21 +169,20 @@ actually change the background color instead of the foreground:</p>
 Tags) tutorial. But most of the time you might be better off to simply avoid <code class="docutils literal notranslate"><span class="pre">|*</span></code> and mark your text
 manually instead.</p>
 </section>
-</section>
 <section id="xterm256-colours">
-<h2>Xterm256 Colours<a class="headerlink" href="#xterm256-colours" title="Permalink to this headline">¶</a></h2>
+<h3>Xterm256 Colours<a class="headerlink" href="#xterm256-colours" title="Permalink to this headline">¶</a></h3>
 <p>The <em>Xterm256</em> standard is a colour scheme that supports 256 colours for text and/or background.
 While this offers many more possibilities than traditional ANSI colours, be wary that too many text
 colors will be confusing to the eye. Also, not all clients support Xterm256 - these will instead see
 the closest equivalent ANSI color. You can mix Xterm256 tags with ANSI tags as you please.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|</span><span class="mi">555</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">pure</span> <span class="n">white</span> <span class="n">text</span><span class="o">.|</span><span class="n">n</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">normal</span> <span class="n">text</span><span class="o">.</span>
-<span class="o">|</span><span class="mi">230</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">olive</span> <span class="n">green</span> <span class="n">text</span><span class="o">.</span>
-<span class="o">|</span><span class="p">[</span><span class="mi">300</span> <span class="n">This</span> <span class="n">text</span> <span class="n">has</span> <span class="n">a</span> <span class="n">dark</span> <span class="n">red</span> <span class="n">background</span><span class="o">.</span>
-<span class="o">|</span><span class="mi">005</span><span class="o">|</span><span class="p">[</span><span class="mi">054</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">dark</span> <span class="n">blue</span> <span class="n">text</span> <span class="n">on</span> <span class="n">a</span> <span class="n">bright</span> <span class="n">cyan</span> <span class="n">background</span><span class="o">.</span>
-<span class="o">|=</span><span class="n">a</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">greyscale</span> <span class="n">value</span><span class="p">,</span> <span class="n">equal</span> <span class="n">to</span> <span class="n">black</span><span class="o">.</span>
-<span class="o">|=</span><span class="n">m</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">greyscale</span> <span class="n">value</span><span class="p">,</span> <span class="n">midway</span> <span class="n">between</span> <span class="n">white</span> <span class="ow">and</span> <span class="n">black</span><span class="o">.</span>
-<span class="o">|=</span><span class="n">z</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">greyscale</span> <span class="n">value</span><span class="p">,</span> <span class="n">equal</span> <span class="n">to</span> <span class="n">white</span><span class="o">.</span>
-<span class="o">|</span><span class="p">[</span><span class="o">=</span><span class="n">m</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">background</span> <span class="n">greyscale</span> <span class="n">value</span><span class="o">.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>|555 This is pure white text.|n This is normal text.
+|230 This is olive green text.
+|[300 This text has a dark red background.
+|005|[054 This is dark blue text on a bright cyan background.
+|=a This is a greyscale value, equal to black.
+|=m This is a greyscale value, midway between white and black.
+|=z This is a greyscale value, equal to white.
+|[=m This is a background greyscale value.
 </pre></div>
 </div>
 <ul class="simple">
@@ -198,7 +199,7 @@ four gray tones between solid black and white (<code class="docutils literal not
 <li><p><code class="docutils literal notranslate"><span class="pre">|[=#</span></code> - this works in the same way but produces background gray scale tones.</p></li>
 </ul>
 <p>If you have a client that supports Xterm256, you can use</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@color</span> <span class="n">xterm256</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@color xterm256
 </pre></div>
 </div>
 <p>to get a table of all the 256 colours and the codes that produce them. If the table looks broken up
@@ -207,9 +208,10 @@ You can use the <code class="docutils literal notranslate"><span class="pre">&#6
 client told Evennia what it supports - if not, and you know what your client supports, you may have
 to activate some features manually.</p>
 </section>
+</section>
 <section id="more-reading">
 <h2>More reading<a class="headerlink" href="#more-reading" title="Permalink to this headline">¶</a></h2>
-<p>There is an <a class="reference internal" href="../Howto/Understanding-Color-Tags.html"><span class="doc">Understanding Color Tags</span></a> tutorial which expands on the
+<p>There is an <a class="reference internal" href="../Howto/Understanding-Color-Tags.html"><span class="doc std std-doc">Understanding Color Tags</span></a> tutorial which expands on the
 use of ANSI color tags and the pitfalls of mixing ANSI and Xterms256 color tags in the same context.</p>
 </section>
 </section>
@@ -239,9 +241,9 @@ use of ANSI color tags and the pitfalls of mixing ANSI and Xterms256 color tags 
 <li><a class="reference internal" href="#">Colors</a><ul>
 <li><a class="reference internal" href="#ansi-colours">ANSI colours</a><ul>
 <li><a class="reference internal" href="#caveats-of">Caveats of <code class="docutils literal notranslate"><span class="pre">|*</span></code></a></li>
+<li><a class="reference internal" href="#xterm256-colours">Xterm256 Colours</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#xterm256-colours">Xterm256 Colours</a></li>
 <li><a class="reference internal" href="#more-reading">More reading</a></li>
 </ul>
 </li>
@@ -267,7 +269,7 @@ use of ANSI color tags and the pitfalls of mixing ANSI and Xterms256 color tags 
 <h3>Versions</h3>
 <ul>
   <li><a href="Colors.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

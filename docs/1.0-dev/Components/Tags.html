@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="tags">
+  <section class="tex2jax_ignore mathjax_ignore" id="tags">
 <h1>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h1>
 <p>A common task of a game designer is to organize and find groups of objects and do operations on
 them. A classic example is to have a weather script affect all “outside” rooms. Another would be for
@@ -48,10 +50,10 @@ currently dead.</p>
 <p><em>Tags</em> are short text labels that you attach to objects so as to easily be able to retrieve and
 group them. An Evennia entity can be tagged with any number of Tags. On the database side, Tag
 entities are <em>shared</em> between all objects with that tag. This makes them very efficient but also
-fundamentally different from <a class="reference internal" href="Attributes.html"><span class="doc">Attributes</span></a>, each of which always belongs to one <em>single</em>
+fundamentally different from <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a>, each of which always belongs to one <em>single</em>
 object.</p>
 <p>In Evennia, Tags are technically also used to implement <code class="docutils literal notranslate"><span class="pre">Aliases</span></code> (alternative names for objects)
-and <code class="docutils literal notranslate"><span class="pre">Permissions</span></code> (simple strings for <a class="reference internal" href="Locks.html"><span class="doc">Locks</span></a> to check for).</p>
+and <code class="docutils literal notranslate"><span class="pre">Permissions</span></code> (simple strings for <a class="reference internal" href="Locks.html"><span class="doc std std-doc">Locks</span></a> to check for).</p>
 <section id="properties-of-tags-and-aliases-and-permissions">
 <h2>Properties of Tags (and Aliases and Permissions)<a class="headerlink" href="#properties-of-tags-and-aliases-and-permissions" title="Permalink to this headline">¶</a></h2>
 <p>Tags are <em>unique</em>. This means that there is only ever one Tag object with a given key and category.</p>
@@ -61,7 +63,7 @@ unique key + category combination.</p>
 </div></blockquote>
 <p>When Tags are assigned to game entities, these entities are actually sharing the same Tag. This
 means that Tags are not suitable for storing information about a single object - use an
-<a class="reference internal" href="Attributes.html"><span class="doc">Attribute</span></a> for this instead. Tags are a lot more limited than Attributes but this also
+<a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attribute</span></a> for this instead. Tags are a lot more limited than Attributes but this also
 makes them very quick to lookup in the database - this is the whole point.</p>
 <p>Tags have the following properties, stored in the database:</p>
 <ul class="simple">
@@ -88,18 +90,10 @@ free up the <em>category</em> property for any use you desire.</p></li>
 </section>
 <section id="adding-removing-tags">
 <h2>Adding/Removing Tags<a class="headerlink" href="#adding-removing-tags" title="Permalink to this headline">¶</a></h2>
-<p>You can tag any <em>typeclassed</em> object, namely <a class="reference internal" href="Objects.html"><span class="doc">Objects</span></a>, <a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a>,
-<a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a> and <a class="reference internal" href="Communications.html"><span class="doc">Channels</span></a>. General tags are added by the <em>Taghandler</em>.  The
+<p>You can tag any <em>typeclassed</em> object, namely <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>, <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a>,
+<a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a> and <a class="reference internal" href="Communications.html"><span class="doc std std-doc">Channels</span></a>. General tags are added by the <em>Taghandler</em>.  The
 tag handler is accessed as a property <code class="docutils literal notranslate"><span class="pre">tags</span></code> on the relevant entity:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">)</span>
      <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;luxurious&quot;</span><span class="p">)</span>
      <span class="n">myroom</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;dungeon#01&quot;</span><span class="p">)</span>
      <span class="n">myscript</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;weather&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;climate&quot;</span><span class="p">)</span>
@@ -109,13 +103,13 @@ tag handler is accessed as a property <code class="docutils literal notranslate"
      <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">)</span> 
      <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>    
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Adding a new tag will either create a new Tag or re-use an already existing one. Note that there are
 <em>two</em> “furniture” tags, one with a <code class="docutils literal notranslate"><span class="pre">None</span></code> category, and one with the “luxurious” category.</p>
 <p>When using <code class="docutils literal notranslate"><span class="pre">remove</span></code>, the <code class="docutils literal notranslate"><span class="pre">Tag</span></code> is not deleted but are just disconnected from the tagged object. This
 makes for very quick operations. The <code class="docutils literal notranslate"><span class="pre">clear</span></code> method removes (disconnects) all Tags from the object.
 You can also use the default <code class="docutils literal notranslate"><span class="pre">&#64;tag</span></code> command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@tag</span> <span class="n">mychair</span> <span class="o">=</span> <span class="n">furniture</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @tag mychair = furniture
 </pre></div>
 </div>
 <p>This tags the chair with a ‘furniture’ Tag (the one with a <code class="docutils literal notranslate"><span class="pre">None</span></code> category).</p>
@@ -124,24 +118,7 @@ You can also use the default <code class="docutils literal notranslate"><span cl
 <h2>Searching for objects with a given tag<a class="headerlink" href="#searching-for-objects-with-a-given-tag" title="Permalink to this headline">¶</a></h2>
 <p>Usually tags are used as a quick way to find tagged database entities. You can retrieve all objects
 with a given Tag like this in code:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">import</span> <span class="nn">evennia</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">import</span> <span class="nn">evennia</span>
      
      <span class="c1"># all methods return Querysets</span>
 
@@ -160,7 +137,7 @@ with a given Tag like this in code:</p>
      <span class="c1"># search for accounts</span>
      <span class="n">accounts</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_tag_account</span><span class="p">(</span><span class="s2">&quot;guestaccount&quot;</span><span class="p">)</span>          
 </pre></div>
-</td></tr></table></div>
+</div>
 <blockquote>
 <div><p>Note that searching for just “furniture” will only return the objects tagged with the “furniture”
 tag that
@@ -172,18 +149,7 @@ one match. You can treat querysets as lists and iterate over them, or continue b
 queries with them.</p>
 <p>Remember when searching that not setting a category means setting it to <code class="docutils literal notranslate"><span class="pre">None</span></code> - this does <em>not</em>
 mean that category is undefined, rather <code class="docutils literal notranslate"><span class="pre">None</span></code> is considered the default, unnamed category.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span> 
 
 <span class="n">myobj1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>  <span class="c1"># implies category=None</span>
 <span class="n">myobj2</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
@@ -195,10 +161,11 @@ mean that category is undefined, rather <code class="docutils literal notranslat
 <span class="n">objs</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_tag</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
 <span class="c1"># or</span>
 <span class="n">objs</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_tag</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
+
 </pre></div>
-</td></tr></table></div>
-<p>There is also an in-game command that deals with assigning and using (<a class="reference internal" href="Objects.html"><span class="doc">Object-</span></a>) tags:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@tag</span><span class="o">/</span><span class="n">search</span> <span class="n">furniture</span>
+</div>
+<p>There is also an in-game command that deals with assigning and using (<a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object-</span></a>) tags:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @tag/search furniture
 </pre></div>
 </div>
 </section>
@@ -207,17 +174,13 @@ mean that category is undefined, rather <code class="docutils literal notranslat
 <p>Aliases and Permissions are implemented using normal TagHandlers that simply save Tags with a
 different <code class="docutils literal notranslate"><span class="pre">tagtype</span></code>. These handlers are named <code class="docutils literal notranslate"><span class="pre">aliases</span></code> and <code class="docutils literal notranslate"><span class="pre">permissions</span></code> on all Objects. They are
 used in the same way as Tags above:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">boy</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;rascal&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">boy</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;rascal&quot;</span><span class="p">)</span>
     <span class="n">boy</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Builders&quot;</span><span class="p">)</span>
     <span class="n">boy</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;Builders&quot;</span><span class="p">)</span>
 
     <span class="n">all_aliases</span> <span class="o">=</span> <span class="n">boy</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>and so on. Similarly to how <code class="docutils literal notranslate"><span class="pre">&#64;tag</span></code> works in-game, there is also the <code class="docutils literal notranslate"><span class="pre">&#64;perm</span></code> command for assigning
 permissions and <code class="docutils literal notranslate"><span class="pre">&#64;alias</span></code> command for aliases.</p>
 </section>
@@ -230,7 +193,7 @@ making a new category. So think hard before deciding you really need to categori
 use tag categories to make sure to separate tags created with this system from any other tags
 created elsewhere. You can then supply custom search methods that <em>only</em> find objects tagged with
 tags of that category. An example of this
-is found in the <a class="reference internal" href="../Concepts/Zones.html"><span class="doc">Zone tutorial</span></a>.</p>
+is found in the <a class="reference internal" href="../Concepts/Zones.html"><span class="doc std std-doc">Zone tutorial</span></a>.</p>
 </section>
 </section>
 
@@ -286,7 +249,7 @@ is found in the <a class="reference internal" href="../Concepts/Zones.html"><spa
 <h3>Versions</h3>
 <ul>
   <li><a href="Tags.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

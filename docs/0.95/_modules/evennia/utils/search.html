@@ -1,0 +1,470 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.utils.search &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.search</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.utils.search</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is a convenient container gathering all the main</span>
+<span class="sd">search methods for the various database tables.</span>
+
+<span class="sd">It is intended to be used e.g. as</span>
+
+<span class="sd">&gt; from evennia.utils import search</span>
+<span class="sd">&gt; match = search.objects(...)</span>
+
+<span class="sd">Note that this is not intended to be a complete listing of all search</span>
+<span class="sd">methods! You need to refer to the respective manager to get all</span>
+<span class="sd">possible search methods. To get to the managers from your code, import</span>
+<span class="sd">the database model and call its &#39;objects&#39; property.</span>
+
+<span class="sd">Also remember that all commands in this file return lists (also if</span>
+<span class="sd">there is only one match) unless noted otherwise.</span>
+
+<span class="sd">Example: To reach the search method &#39;get_object_with_account&#39;</span>
+<span class="sd">         in evennia/objects/managers.py:</span>
+
+<span class="sd">&gt; from evennia.objects.models import ObjectDB</span>
+<span class="sd">&gt; match = Object.objects.get_object_with_account(...)</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Import the manager methods to be wrapped</span>
+
+<span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="kn">import</span> <span class="n">OperationalError</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+
+<span class="c1"># limit symbol import from API</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;search_object&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;search_account&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;search_script&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;search_message&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;search_channel&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;search_help_entry&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;search_tag&quot;</span><span class="p">,</span>  <span class="c1"># object-tag</span>
+    <span class="s2">&quot;search_script_tag&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;search_account_tag&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;search_channel_tag&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># import objects this way to avoid circular import problems</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">ObjectDB</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;objects&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;objectdb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+    <span class="n">AccountDB</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;accounts&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;accountdb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+    <span class="n">ScriptDB</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;scripts&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;scriptdb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+    <span class="n">Msg</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;comms&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;msg&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+    <span class="n">ChannelDB</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;comms&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;channeldb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+    <span class="n">HelpEntry</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;helpentry&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+    <span class="n">Tag</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;typeclasses&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;tag&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+<span class="k">except</span> <span class="n">OperationalError</span><span class="p">:</span>
+    <span class="c1"># this is a fallback used during tests/doc building</span>
+   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t initialize search managers - db not set up.&quot;</span><span class="p">)</span>
+   <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+   <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+   <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
+   <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span><span class="p">,</span> <span class="n">ChannelDB</span>
+   <span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span>
+   <span class="kn">from</span> <span class="nn">evennia.typeclasses.tags</span> <span class="kn">import</span> <span class="n">Tag</span>
+
+<span class="c1"># -------------------------------------------------------------------</span>
+<span class="c1"># Search manager-wrappers</span>
+<span class="c1"># -------------------------------------------------------------------</span>
+
+<span class="c1">#</span>
+<span class="c1"># Search objects as a character</span>
+<span class="c1">#</span>
+<span class="c1"># NOTE: A more powerful wrapper of this method</span>
+<span class="c1">#  is reachable from within each command class</span>
+<span class="c1">#  by using self.caller.search()!</span>
+<span class="c1">#</span>
+<span class="c1">#    def object_search(self, ostring=None,</span>
+<span class="c1">#                      attribute_name=None,</span>
+<span class="c1">#                      typeclass=None,</span>
+<span class="c1">#                      candidates=None,</span>
+<span class="c1">#                      exact=True):</span>
+<span class="c1">#</span>
+<span class="c1">#        Search globally or in a list of candidates and return results.</span>
+<span class="c1">#        The result is always a list of Objects (or the empty list)</span>
+<span class="c1">#</span>
+<span class="c1">#        Arguments:</span>
+<span class="c1">#        ostring: (str) The string to compare names against. By default (if</span>
+<span class="c1">#                  not attribute_name is set), this will search object.key</span>
+<span class="c1">#                  and object.aliases in order. Can also be on the form #dbref,</span>
+<span class="c1">#                  which will, if exact=True be matched against primary key.</span>
+<span class="c1">#        attribute_name: (str): Use this named ObjectAttribute to match ostring</span>
+<span class="c1">#                        against, instead of the defaults.</span>
+<span class="c1">#        typeclass (str or TypeClass): restrict matches to objects having</span>
+<span class="c1">#                  this typeclass. This will help speed up global searches.</span>
+<span class="c1">#        candidates (list obj ObjectDBs): If supplied, search will only be</span>
+<span class="c1">#                  performed among the candidates in this list. A common list</span>
+<span class="c1">#                  of candidates is the contents of the current location.</span>
+<span class="c1">#        exact (bool): Match names/aliases exactly or partially. Partial</span>
+<span class="c1">#                  matching matches the beginning of words in the names/aliases,</span>
+<span class="c1">#                  using a matching routine to separate multiple matches in</span>
+<span class="c1">#                  names with multiple components (so &quot;bi sw&quot; will match</span>
+<span class="c1">#                  &quot;Big sword&quot;). Since this is more expensive than exact</span>
+<span class="c1">#                  matching, it is recommended to be used together with</span>
+<span class="c1">#                  the objlist keyword to limit the number of possibilities.</span>
+<span class="c1">#                  This keyword has no meaning if attribute_name is set.</span>
+<span class="c1">#</span>
+<span class="c1">#        Returns:</span>
+<span class="c1">#        A list of matching objects (or a list with one unique match)</span>
+<span class="c1">#    def object_search(self, ostring, caller=None,</span>
+<span class="c1">#                      candidates=None,</span>
+<span class="c1">#                      attribute_name=None):</span>
+<span class="c1">#</span>
+<span class="n">search_object</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">object_search</span>
+<span class="n">search_objects</span> <span class="o">=</span> <span class="n">search_object</span>
+<span class="n">object_search</span> <span class="o">=</span> <span class="n">search_object</span>
+<span class="n">objects</span> <span class="o">=</span> <span class="n">search_objects</span>
+
+<span class="c1">#</span>
+<span class="c1"># Search for accounts</span>
+<span class="c1">#</span>
+<span class="c1"># account_search(self, ostring)</span>
+
+<span class="c1">#     Searches for a particular account by name or</span>
+<span class="c1">#     database id.</span>
+<span class="c1">#</span>
+<span class="c1">#     ostring = a string or database id.</span>
+<span class="c1">#</span>
+
+<span class="n">search_account</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">account_search</span>
+<span class="n">search_accounts</span> <span class="o">=</span> <span class="n">search_account</span>
+<span class="n">account_search</span> <span class="o">=</span> <span class="n">search_account</span>
+<span class="n">accounts</span> <span class="o">=</span> <span class="n">search_accounts</span>
+
+<span class="c1">#</span>
+<span class="c1">#   Searching for scripts</span>
+<span class="c1">#</span>
+<span class="c1"># script_search(self, ostring, obj=None, only_timed=False)</span>
+<span class="c1">#</span>
+<span class="c1">#     Search for a particular script.</span>
+<span class="c1">#</span>
+<span class="c1">#     ostring - search criterion - a script ID or key</span>
+<span class="c1">#     obj - limit search to scripts defined on this object</span>
+<span class="c1">#     only_timed - limit search only to scripts that run</span>
+<span class="c1">#                  on a timer.</span>
+<span class="c1">#</span>
+
+<span class="n">search_script</span> <span class="o">=</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">script_search</span>
+<span class="n">search_scripts</span> <span class="o">=</span> <span class="n">search_script</span>
+<span class="n">script_search</span> <span class="o">=</span> <span class="n">search_script</span>
+<span class="n">scripts</span> <span class="o">=</span> <span class="n">search_scripts</span>
+<span class="c1">#</span>
+<span class="c1"># Searching for communication messages</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># message_search(self, sender=None, receiver=None, channel=None, freetext=None)</span>
+<span class="c1">#</span>
+<span class="c1">#     Search the message database for particular messages. At least one</span>
+<span class="c1">#     of the arguments must be given to do a search.</span>
+<span class="c1">#</span>
+<span class="c1">#     sender - get messages sent by a particular account</span>
+<span class="c1">#     receiver - get messages received by a certain account</span>
+<span class="c1">#     channel - get messages sent to a particular channel</span>
+<span class="c1">#     freetext - Search for a text string in a message.</span>
+<span class="c1">#                NOTE: This can potentially be slow, so make sure to supply</span>
+<span class="c1">#                one of the other arguments to limit the search.</span>
+<span class="c1">#</span>
+
+<span class="n">search_message</span> <span class="o">=</span> <span class="n">Msg</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">message_search</span>
+<span class="n">search_messages</span> <span class="o">=</span> <span class="n">search_message</span>
+<span class="n">message_search</span> <span class="o">=</span> <span class="n">search_message</span>
+<span class="n">messages</span> <span class="o">=</span> <span class="n">search_messages</span>
+
+<span class="c1">#</span>
+<span class="c1"># Search for Communication Channels</span>
+<span class="c1">#</span>
+<span class="c1"># channel_search(self, ostring)</span>
+<span class="c1">#</span>
+<span class="c1">#     Search the channel database for a particular channel.</span>
+<span class="c1">#</span>
+<span class="c1">#     ostring - the key or database id of the channel.</span>
+<span class="c1">#     exact -  requires an exact ostring match (not case sensitive)</span>
+<span class="c1">#</span>
+
+<span class="n">search_channel</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">channel_search</span>
+<span class="n">search_channels</span> <span class="o">=</span> <span class="n">search_channel</span>
+<span class="n">channel_search</span> <span class="o">=</span> <span class="n">search_channel</span>
+<span class="n">channels</span> <span class="o">=</span> <span class="n">search_channels</span>
+
+<span class="c1">#</span>
+<span class="c1"># Find help entry objects.</span>
+<span class="c1">#</span>
+<span class="c1"># search_help(self, ostring, help_category=None)</span>
+<span class="c1">#</span>
+<span class="c1">#     Retrieve a search entry object.</span>
+<span class="c1">#</span>
+<span class="c1">#     ostring - the help topic to look for</span>
+<span class="c1">#     category - limit the search to a particular help topic</span>
+<span class="c1">#</span>
+
+<span class="n">search_help</span> <span class="o">=</span> <span class="n">HelpEntry</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">search_help</span>
+<span class="n">search_help_entry</span> <span class="o">=</span> <span class="n">search_help</span>
+<span class="n">search_help_entries</span> <span class="o">=</span> <span class="n">search_help</span>
+<span class="n">help_entry_search</span> <span class="o">=</span> <span class="n">search_help</span>
+<span class="n">help_entries</span> <span class="o">=</span> <span class="n">search_help</span>
+
+
+<span class="c1"># Locate Attributes</span>
+
+<span class="c1">#    search_object_attribute(key, category, value, strvalue) (also search_attribute works)</span>
+<span class="c1">#    search_account_attribute(key, category, value, strvalue) (also search_attribute works)</span>
+<span class="c1">#    search_script_attribute(key, category, value, strvalue) (also search_attribute works)</span>
+<span class="c1">#    search_channel_attribute(key, category, value, strvalue) (also search_attribute works)</span>
+
+<span class="c1"># Note that these return the object attached to the Attribute,</span>
+<span class="c1"># not the attribute object itself (this is usually what you want)</span>
+
+
+<span class="k">def</span> <span class="nf">search_object_attribute</span><span class="p">(</span>
+    <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attrtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="k">return</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_attribute</span><span class="p">(</span>
+        <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="n">strvalue</span><span class="p">,</span> <span class="n">attrtype</span><span class="o">=</span><span class="n">attrtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">search_account_attribute</span><span class="p">(</span>
+    <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attrtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="k">return</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_attribute</span><span class="p">(</span>
+        <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="n">strvalue</span><span class="p">,</span> <span class="n">attrtype</span><span class="o">=</span><span class="n">attrtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">search_script_attribute</span><span class="p">(</span>
+    <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attrtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="k">return</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_attribute</span><span class="p">(</span>
+        <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="n">strvalue</span><span class="p">,</span> <span class="n">attrtype</span><span class="o">=</span><span class="n">attrtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">search_channel_attribute</span><span class="p">(</span>
+    <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attrtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="k">return</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_attribute</span><span class="p">(</span>
+        <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="n">strvalue</span><span class="p">,</span> <span class="n">attrtype</span><span class="o">=</span><span class="n">attrtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+
+
+<span class="c1"># search for attribute objects</span>
+<span class="n">search_attribute_object</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_attribute</span>
+
+<span class="c1"># Locate Tags</span>
+
+<span class="c1">#    search_object_tag(key=None, category=None) (also search_tag works)</span>
+<span class="c1">#    search_account_tag(key=None, category=None)</span>
+<span class="c1">#    search_script_tag(key=None, category=None)</span>
+<span class="c1">#    search_channel_tag(key=None, category=None)</span>
+
+<span class="c1"># Note that this returns the object attached to the tag, not the tag</span>
+<span class="c1"># object itself (this is usually what you want)</span>
+
+
+<span class="k">def</span> <span class="nf">search_object_by_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find object based on tag or category.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        key (str, optional): The tag key to search for.</span>
+<span class="sd">        category (str, optional): The category of tag</span>
+<span class="sd">            to search for. If not set, uncategorized</span>
+<span class="sd">            tags will be searched.</span>
+<span class="sd">        tagtype (str, optional): &#39;type&#39; of Tag, by default</span>
+<span class="sd">            this is either `None` (a normal Tag), `alias` or</span>
+<span class="sd">            `permission`. This always apply to all queried tags.</span>
+<span class="sd">        kwargs (any): Other optional parameter that may be supported</span>
+<span class="sd">            by the manager method.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        matches (list): List of Objects with tags matching</span>
+<span class="sd">            the search criteria, or an empty list if no</span>
+<span class="sd">            matches were found.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="n">tagtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="n">search_tag</span> <span class="o">=</span> <span class="n">search_object_by_tag</span>  <span class="c1"># this is the most common case</span>
+
+
+<div class="viewcode-block" id="search_account_tag"><a class="viewcode-back" href="../../../api/evennia.utils.search.html#evennia.utils.search.search_account_tag">[docs]</a><span class="k">def</span> <span class="nf">search_account_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find account based on tag or category.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        key (str, optional): The tag key to search for.</span>
+<span class="sd">        category (str, optional): The category of tag</span>
+<span class="sd">            to search for. If not set, uncategorized</span>
+<span class="sd">            tags will be searched.</span>
+<span class="sd">        tagtype (str, optional): &#39;type&#39; of Tag, by default</span>
+<span class="sd">            this is either `None` (a normal Tag), `alias` or</span>
+<span class="sd">            `permission`. This always apply to all queried tags.</span>
+<span class="sd">        kwargs (any): Other optional parameter that may be supported</span>
+<span class="sd">            by the manager method.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        matches (list): List of Accounts with tags matching</span>
+<span class="sd">            the search criteria, or an empty list if no</span>
+<span class="sd">            matches were found.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="n">tagtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="search_script_tag"><a class="viewcode-back" href="../../../api/evennia.utils.search.html#evennia.utils.search.search_script_tag">[docs]</a><span class="k">def</span> <span class="nf">search_script_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find script based on tag or category.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        key (str, optional): The tag key to search for.</span>
+<span class="sd">        category (str, optional): The category of tag</span>
+<span class="sd">            to search for. If not set, uncategorized</span>
+<span class="sd">            tags will be searched.</span>
+<span class="sd">        tagtype (str, optional): &#39;type&#39; of Tag, by default</span>
+<span class="sd">            this is either `None` (a normal Tag), `alias` or</span>
+<span class="sd">            `permission`. This always apply to all queried tags.</span>
+<span class="sd">        kwargs (any): Other optional parameter that may be supported</span>
+<span class="sd">            by the manager method.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        matches (list): List of Scripts with tags matching</span>
+<span class="sd">            the search criteria, or an empty list if no</span>
+<span class="sd">            matches were found.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="n">tagtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="search_channel_tag"><a class="viewcode-back" href="../../../api/evennia.utils.search.html#evennia.utils.search.search_channel_tag">[docs]</a><span class="k">def</span> <span class="nf">search_channel_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find channel based on tag or category.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        key (str, optional): The tag key to search for.</span>
+<span class="sd">        category (str, optional): The category of tag</span>
+<span class="sd">            to search for. If not set, uncategorized</span>
+<span class="sd">            tags will be searched.</span>
+<span class="sd">        tagtype (str, optional): &#39;type&#39; of Tag, by default</span>
+<span class="sd">            this is either `None` (a normal Tag), `alias` or</span>
+<span class="sd">            `permission`. This always apply to all queried tags.</span>
+<span class="sd">        kwargs (any): Other optional parameter that may be supported</span>
+<span class="sd">            by the manager method.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        matches (list): List of Channels with tags matching</span>
+<span class="sd">            the search criteria, or an empty list if no</span>
+<span class="sd">            matches were found.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="n">tagtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="c1"># search for tag objects (not the objects they are attached to</span>
+<span class="n">search_tag_object</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_tag</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="search.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.search</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

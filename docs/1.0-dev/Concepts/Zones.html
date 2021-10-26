@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="zones">
+  <section class="tex2jax_ignore mathjax_ignore" id="zones">
 <h1>Zones<a class="headerlink" href="#zones" title="Permalink to this headline">¶</a></h1>
 <p>Say you create a room named <em>Meadow</em> in your nice big forest MUD.  That’s all nice and dandy, but
 what if you, in the other end of that forest want another <em>Meadow</em>? As a game creator, this can
@@ -58,29 +60,28 @@ part should be easy to retrieve.</p>
 <p>Many MUD codebases hardcode zones as part of the engine and database.  Evennia does no such
 distinction due to the fact that rooms themselves are meant to be customized to any level anyway.
 Below is a suggestion for how to implement zones in Evennia.</p>
-<p>All objects in Evennia can hold any number of <a class="reference internal" href="../Components/Tags.html"><span class="doc">Tags</span></a>. Tags are short labels that you attach to
+<p>All objects in Evennia can hold any number of <a class="reference internal" href="../Components/Tags.html"><span class="doc std std-doc">Tags</span></a>. Tags are short labels that you attach to
 objects. They make it very easy to retrieve groups of objects. An object can have any number of
 different tags. So let’s attach the relevant tag to our forest:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">forestobj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;magicalforest&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;zone&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="n">forestobj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;magicalforest&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;zone&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>You could add this manually, or automatically during creation somehow (you’d need to modify your
 &#64;dig command for this, most likely). You can also use the default <code class="docutils literal notranslate"><span class="pre">&#64;tag</span></code> command during building:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@tag</span> <span class="n">forestobj</span> <span class="o">=</span> <span class="n">magicalforest</span> <span class="p">:</span> <span class="n">zone</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @tag forestobj = magicalforest : zone
 </pre></div>
 </div>
 <p>Henceforth you can then easily retrieve only objects with a given tag:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">import</span> <span class="nn">evennia</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">import</span> <span class="nn">evennia</span>
      <span class="n">rooms</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_tag</span><span class="p">(</span><span class="s2">&quot;magicalforest&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;zone&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 <section id="using-typeclasses-and-inheritance-for-zoning">
 <h2>Using typeclasses and inheritance for zoning<a class="headerlink" href="#using-typeclasses-and-inheritance-for-zoning" title="Permalink to this headline">¶</a></h2>
 <p>The tagging or aliasing systems above don’t instill any sort of functional difference between a
 magical forest room and a normal one - they are just arbitrary ways to mark objects for quick
-retrieval later. Any functional differences must be expressed using <a class="reference internal" href="../Components/Typeclasses.html"><span class="doc">Typeclasses</span></a>.</p>
+retrieval later. Any functional differences must be expressed using <a class="reference internal" href="../Components/Typeclasses.html"><span class="doc std std-doc">Typeclasses</span></a>.</p>
 <p>Of course, an alternative way to implement zones themselves is to have all rooms/objects in a zone
 inherit from a given typeclass parent - and then limit your searches to objects inheriting from that
 given parent. The effect would be similar but you’d need to expand the search functionality to
@@ -137,7 +138,7 @@ properly search the inheritance tree.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Zones.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

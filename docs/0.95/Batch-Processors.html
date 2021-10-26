@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Batch Processors &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Batch Processors</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="batch-processors">
+<h1>Batch Processors<a class="headerlink" href="#batch-processors" title="Permalink to this headline">¶</a></h1>
+<p>Building a game world is a lot of work, especially when starting out. Rooms should be created,
+descriptions have to be written, objects must be detailed and placed in their proper places. In many
+traditional MUD setups you had to do all this online, line by line, over a telnet session.</p>
+<p>Evennia already moves away from much of this by shifting the main coding work to external Python
+modules. But also building would be helped if one could do some or all of it externally. Enter
+Evennia’s <em>batch processors</em> (there are two of them). The processors allows you, as a game admin, to
+build your game completely offline in normal text files (<em>batch files</em>) that the processors
+understands. Then, when you are ready, you use the processors to read it all into Evennia (and into
+the database) in one go.</p>
+<p>You can of course still build completely online should you want to - this is certainly the easiest
+way to go when learning and for small build projects. But for major building work, the advantages of
+using the batch-processors are many:</p>
+<ul class="simple">
+<li><p>It’s hard to compete with the comfort of a modern desktop text editor; Compared to a traditional
+MUD line input, you can get much better overview and many more features. Also, accidentally pressing
+Return won’t immediately commit things to the database.</p></li>
+<li><p>You might run external spell checkers on your batch files. In the case of one of the batch-
+processors (the one that deals with Python code), you could also run external debuggers and code
+analyzers on your file to catch problems before feeding it to Evennia.</p></li>
+<li><p>The batch files (as long as you keep them) are records of your work. They make a natural starting
+point for quickly re-building your world should you ever decide to start over.</p></li>
+<li><p>If you are an Evennia developer, using a batch file is a fast way to setup a test-game after
+having reset the database.</p></li>
+<li><p>The batch files might come in useful should you ever decide to distribute all or part of your
+world to others.</p></li>
+</ul>
+<p>There are two batch processors, the Batch-<em>command</em> processor and the Batch-<em>code</em> processor. The
+first one is the simpler of the two. It doesn’t require any programming knowledge - you basically
+just list in-game commands in a text file. The code-processor on the other hand is much more
+powerful but also more complex - it lets you use Evennia’s API to code your world in full-fledged
+Python code.</p>
+<ul class="simple">
+<li><p>The <a class="reference internal" href="Batch-Command-Processor.html"><span class="doc std std-doc">Batch Command Processor</span></a></p></li>
+<li><p>The <a class="reference internal" href="Batch-Code-Processor.html"><span class="doc std std-doc">Batch Code Processor</span></a></p></li>
+</ul>
+<p>If you plan to use international characters in your batchfiles you are wise to read about <em>file
+encodings</em> below.</p>
+<section id="a-note-on-file-encodings">
+<h2>A note on File Encodings<a class="headerlink" href="#a-note-on-file-encodings" title="Permalink to this headline">¶</a></h2>
+<p>As mentioned, both the processors take text files as input and then proceed to process them. As long
+as you stick to the standard <a class="reference external" href="http://en.wikipedia.org/wiki/Ascii">ASCII</a> character set (which means
+the normal English characters, basically) you should not have to worry much about this section.</p>
+<p>Many languages however use characters outside the simple <code class="docutils literal notranslate"><span class="pre">ASCII</span></code> table. Common examples are various
+apostrophes and umlauts but also completely different symbols like those of the greek or cyrillic
+alphabets.</p>
+<p>First, we should make it clear that Evennia itself handles international characters just fine. It
+(and Django) uses <a class="reference external" href="http://en.wikipedia.org/wiki/Unicode">unicode</a> strings internally.</p>
+<p>The problem is that when reading a text file like the batchfile, we need to know how to decode the
+byte-data stored therein to universal unicode. That means we need an <em>encoding</em> (a mapping) for how
+the file stores its data. There are many, many byte-encodings used around the world, with opaque
+names such as <code class="docutils literal notranslate"><span class="pre">Latin-1</span></code>, <code class="docutils literal notranslate"><span class="pre">ISO-8859-3</span></code> or <code class="docutils literal notranslate"><span class="pre">ARMSCII-8</span></code> to pick just a few examples. Problem is that
+it’s practially impossible to determine which encoding was used to save a file just by looking at it
+(it’s just a bunch of bytes!). You have to <em>know</em>.</p>
+<p>With this little introduction it should be clear that Evennia can’t guess but has to <em>assume</em> an
+encoding when trying to load a batchfile. The text editor and Evennia must speak the same “language”
+so to speak. Evennia will by default first try the international <code class="docutils literal notranslate"><span class="pre">UTF-8</span></code> encoding, but you can have
+Evennia try any sequence of different encodings by customizing the <code class="docutils literal notranslate"><span class="pre">ENCODINGS</span></code> list in your settings
+file. Evennia will use the first encoding in the list that do not raise any errors. Only if none
+work will the server give up and return an error message.</p>
+<p>You can often change the text editor encoding (this depends on your editor though), otherwise you
+need to add the editor’s encoding to Evennia’s <code class="docutils literal notranslate"><span class="pre">ENCODINGS</span></code> list. If you are unsure, write a test
+file with lots of non-ASCII letters in the editor of your choice, then import to make sure it works
+as it should.</p>
+<p>More help with encodings can be found in the entry <a class="reference internal" href="Text-Encodings.html"><span class="doc std std-doc">Text Encodings</span></a> and also in the
+Wikipedia article <a class="reference external" href="http://en.wikipedia.org/wiki/Text_encodings">here</a>.</p>
+<p><strong>A footnote for the batch-code processor</strong>: Just because <em>Evennia</em> can parse your file and your
+fancy special characters, doesn’t mean that <em>Python</em> allows their use. Python syntax only allows
+international characters inside <em>strings</em>. In all other source code only <code class="docutils literal notranslate"><span class="pre">ASCII</span></code> set characters are
+allowed.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Batch Processors</a><ul>
+<li><a class="reference internal" href="#a-note-on-file-encodings">A note on File Encodings</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Batch-Processors.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Batch-Processors.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Batch Processors</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

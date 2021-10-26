@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="making-evennia-https-and-wss-secure-websockets-play-nicely-together">
+  <section class="tex2jax_ignore mathjax_ignore" id="making-evennia-https-and-wss-secure-websockets-play-nicely-together">
 <h1>Making Evennia, HTTPS and WSS (Secure Websockets) play nicely together<a class="headerlink" href="#making-evennia-https-and-wss-secure-websockets-play-nicely-together" title="Permalink to this headline">¶</a></h1>
 <p>A modern public-facing website should these days be served via encrypted
 connections. So <code class="docutils literal notranslate"><span class="pre">https:</span></code> rather than <code class="docutils literal notranslate"><span class="pre">http:</span></code> for the website and
@@ -54,17 +56,17 @@ practices.</p>
 your server.  Essentially, Evennia will think it’s only running locally (on
 localhost, IP 127.0.0.1) while the proxy will transparently map that to the
 “real” outgoing ports and handle HTTPS/WSS for us.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>         <span class="n">Evennia</span>
-            <span class="o">|</span>
-<span class="p">(</span><span class="n">inside</span><span class="o">-</span><span class="n">only</span> <span class="n">local</span> <span class="n">IP</span><span class="o">/</span><span class="n">ports</span> <span class="n">serving</span> <span class="n">HTTP</span><span class="o">/</span><span class="n">WS</span><span class="p">)</span>
-            <span class="o">|</span>
-          <span class="n">Proxy</span>
-            <span class="o">|</span>
-<span class="p">(</span><span class="n">outside</span><span class="o">-</span><span class="n">visible</span> <span class="n">public</span> <span class="n">IP</span><span class="o">/</span><span class="n">ports</span> <span class="n">serving</span> <span class="n">HTTPS</span><span class="o">/</span><span class="n">WSS</span><span class="p">)</span>
-            <span class="o">|</span>
-         <span class="n">Firewall</span>
-            <span class="o">|</span>
-         <span class="n">Internet</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>         Evennia
+            |
+(inside-only local IP/ports serving HTTP/WS)
+            |
+          Proxy
+            |
+(outside-visible public IP/ports serving HTTPS/WSS)
+            |
+         Firewall
+            |
+         Internet
 </pre></div>
 </div>
 <p>These instructions assume you run a server with Unix/Linux (very common if you
@@ -102,18 +104,17 @@ previously).</p></li>
 <li><p>Open port 4002 in firewall (we’ll use the same number for both internal-
 and external ports, the proxy will only show the safe one serving wss).</p></li>
 </ul>
-</section>
 <section id="getting-certificates">
-<h1>Getting certificates<a class="headerlink" href="#getting-certificates" title="Permalink to this headline">¶</a></h1>
+<h2>Getting certificates<a class="headerlink" href="#getting-certificates" title="Permalink to this headline">¶</a></h2>
 <p>Certificates guarantee that you are you. Easiest is to get this with
 <a class="reference external" href="https://letsencrypt.org/getting-started/">Letsencrypt</a> and the
 <a class="reference external" href="https://certbot.eff.org/instructions">Certbot</a> program. Certbot has a lot of
 install instructions for various operating systems. Here’s for Debian/Ubuntu:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">certbot</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>sudo apt install certbot
 </pre></div>
 </div>
 <p>Make sure to stop Evennia and that no port-80 using service is running, then</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">certbot</span> <span class="n">certonly</span> <span class="o">--</span><span class="n">standalone</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>sudo certbot certonly --standalone
 </pre></div>
 </div>
 <p>You will get some questions you need to answer, such as an email to send
@@ -124,6 +125,7 @@ critical files for our purposes are <code class="docutils literal notranslate"><
 <p>Certbot sets up a cron-job/systemd job to regularly renew the certificate. To
 check this works, try</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">certbot</span> <span class="n">renew</span> <span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span>
+
 </pre></div>
 </div>
 <p>The certificate is only valid for 3 months at a time, so make sure this test
@@ -138,9 +140,9 @@ lines are needed.</p></li>
 </ol>
 <p>We could do this by copy&amp;pasting in a text editor, but here’s how to do it with
 shell commands (replace the example paths with your own):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">letsencrypt</span><span class="o">/</span><span class="n">live</span><span class="o">/</span><span class="n">my</span><span class="o">.</span><span class="n">awesomegame</span><span class="o">.</span><span class="n">com</span><span class="o">/</span>
-<span class="n">sudo</span> <span class="n">cp</span> <span class="n">privkey</span><span class="o">.</span><span class="n">pem</span> <span class="n">my</span><span class="o">.</span><span class="n">awesomegame</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">pem</span>
-<span class="n">sudo</span> <span class="n">cat</span> <span class="n">fullchain</span><span class="o">.</span><span class="n">pem</span> <span class="o">&gt;&gt;</span> <span class="n">my</span><span class="o">.</span><span class="n">awesomegame</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">pem</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd /etc/letsencrypt/live/my.awesomegame.com/
+sudo cp privkey.pem my.awesomegame.com.pem
+sudo cat fullchain.pem &gt;&gt; my.awesomegame.com.pem
 </pre></div>
 </div>
 <p>The new <code class="docutils literal notranslate"><span class="pre">my.awesomegame.com.pem</span></code> file (or whatever you named it) is what we will
@@ -151,14 +153,14 @@ But HAProxy will not see this because it is looking at the combined file that
 will still have the old <code class="docutils literal notranslate"><span class="pre">fullchain.pem</span></code> appended to it.</p>
 <p>We’ll set up an automated task to rebuild the <code class="docutils literal notranslate"><span class="pre">.pem</span></code> file regularly by
 using the <code class="docutils literal notranslate"><span class="pre">cron</span></code> program of Unix/Linux.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">crontab</span> <span class="o">-</span><span class="n">e</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>crontab -e
 </pre></div>
 </div>
 <p>An editor will open to the  crontab file. Add the following at the bottom (all
 on one line, and change the paths to your own!):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="mi">5</span> <span class="o">*</span> <span class="o">*</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">letsencrypt</span><span class="o">/</span><span class="n">live</span><span class="o">/</span><span class="n">my</span><span class="o">.</span><span class="n">awesomegame</span><span class="o">.</span><span class="n">com</span><span class="o">/</span> <span class="o">&amp;&amp;</span>
-    <span class="n">cp</span> <span class="n">privkey</span><span class="o">.</span><span class="n">pem</span> <span class="n">my</span><span class="o">.</span><span class="n">awesomegame</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">pem</span> <span class="o">&amp;&amp;</span>
-    <span class="n">cat</span> <span class="n">fullchain</span><span class="o">.</span><span class="n">pem</span> <span class="o">&gt;&gt;</span> <span class="n">my</span><span class="o">.</span><span class="n">awesomegame</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">pem</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>0 5 * * * cd /etc/letsencrypt/live/my.awesomegame.com/ &amp;&amp;
+    cp privkey.pem my.awesomegame.com.pem &amp;&amp;
+    cat fullchain.pem &gt;&gt; my.awesomegame.com.pem
 </pre></div>
 </div>
 <p>Save and close the editor. Every night at 05:00 (5 AM), the
@@ -167,13 +169,13 @@ the <code class="docutils literal notranslate"><span class="pre">fullchain.pem</
 be enough time to make sure HaProxy never sees an outdated certificate.</p>
 </section>
 <section id="installing-and-configuring-haproxy">
-<h1>Installing and configuring HAProxy<a class="headerlink" href="#installing-and-configuring-haproxy" title="Permalink to this headline">¶</a></h1>
+<h2>Installing and configuring HAProxy<a class="headerlink" href="#installing-and-configuring-haproxy" title="Permalink to this headline">¶</a></h2>
 <p>Installing HaProxy is usually as simple as:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Debian derivatives (Ubuntu, Mint etc)</span>
-<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">haproxy</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Debian derivatives (Ubuntu, Mint etc)
+sudo apt install haproxy
 
-<span class="c1"># Redhat derivatives (dnf instead of yum for very recent Fedora distros)</span>
-<span class="n">sudo</span> <span class="n">yum</span> <span class="n">install</span> <span class="n">haproxy</span>
+# Redhat derivatives (dnf instead of yum for very recent Fedora distros)
+sudo yum install haproxy
 </pre></div>
 </div>
 <p>Configuration of HAProxy is done in a single file. This can be located wherever
@@ -187,33 +189,7 @@ put in your own values.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">4002</span></code> is the default Evennia websocket port (we use the same number for
 the outgoing wss port, so this should be open in firewall).</p></li>
 </ul>
-<div class="highlight-shell notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># base stuff to set up haproxy</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># base stuff to set up haproxy</span>
 global
     log /dev/log local0
     chroot /var/lib/haproxy
@@ -241,25 +217,26 @@ listen evennia-secure-websocket
     timeout server 10m
     timeout connect 5m
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 <section id="putting-it-all-together">
-<h1>Putting it all together<a class="headerlink" href="#putting-it-all-together" title="Permalink to this headline">¶</a></h1>
+<h2>Putting it all together<a class="headerlink" href="#putting-it-all-together" title="Permalink to this headline">¶</a></h2>
 <p>Get back to the Evennia game dir and edit mygame/server/conf/settings.py. Add:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WEBSERVER_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">]</span>
-<span class="n">WEBSOCKET_CLIENT_INTERFACE</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1&#39;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>WEBSERVER_INTERFACES = [&#39;127.0.0.1&#39;]
+WEBSOCKET_CLIENT_INTERFACE = &#39;127.0.0.1&#39;
 </pre></div>
 </div>
 <p>and</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WEBSOCKET_CLIENT_URL</span><span class="o">=</span><span class="s2">&quot;wss://my.awesomegame.com:4002/&quot;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>WEBSOCKET_CLIENT_URL=&quot;wss://my.awesomegame.com:4002/&quot;
 </pre></div>
 </div>
 <p>Make sure to reboot (stop + start) evennia completely:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">reboot</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia reboot
 </pre></div>
 </div>
 <p>Finally you start the proxy:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">haproxy</span> <span class="o">-</span><span class="n">f</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">the</span><span class="o">/</span><span class="n">above</span><span class="o">/</span><span class="n">haproxy</span><span class="o">.</span><span class="n">cfg</span>
+
 </pre></div>
 </div>
 <p>Make sure you can connect to your game from your browser and that you end up
@@ -268,26 +245,27 @@ with an <code class="docutils literal notranslate"><span class="pre">https://</s
 background. Stop the proxy with <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> and make sure to uncomment the line <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">daemon</span></code> in the config file.</p>
 <p>If you have no other proxies running on your server, you can copy your
 haproxy.conf file to the system-wide settings:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">cp</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">the</span><span class="o">/</span><span class="n">above</span><span class="o">/</span><span class="n">haproxy</span><span class="o">.</span><span class="n">cfg</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">haproxy</span><span class="o">/</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>sudo cp /path/to/the/above/haproxy.cfg /etc/haproxy/
 </pre></div>
 </div>
 <p>The proxy will now start on reload and you can control it with</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">service</span> <span class="n">haproxy</span> <span class="n">start</span><span class="o">|</span><span class="n">stop</span><span class="o">|</span><span class="n">restart</span><span class="o">|</span><span class="n">status</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>sudo service haproxy start|stop|restart|status
 </pre></div>
 </div>
 <p>If you don’t want to copy stuff into <code class="docutils literal notranslate"><span class="pre">/etc/</span></code> you can also run the haproxy purely
 out of your current location by running it with <code class="docutils literal notranslate"><span class="pre">cron</span></code> on server restart. Open
 the crontab again:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">crontab</span> <span class="o">-</span><span class="n">e</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>sudo crontab -e
 </pre></div>
 </div>
 <p>Add a new line to the end of the file:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@reboot</span> <span class="n">haproxy</span> <span class="o">-</span><span class="n">f</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">the</span><span class="o">/</span><span class="n">above</span><span class="o">/</span><span class="n">haproxy</span><span class="o">.</span><span class="n">cfg</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@reboot haproxy -f /path/to/the/above/haproxy.cfg
 </pre></div>
 </div>
 <p>Save the file and haproxy should start up automatically when you reboot the
 server. Next just restart the proxy manually a last time - with <code class="docutils literal notranslate"><span class="pre">daemon</span></code>
 uncommented in the config file, it will now start as a background process.</p>
+</section>
 </section>
 
 
@@ -312,10 +290,12 @@ uncommented in the config file, it will now start as a background process.</p>
 <script>$('#searchbox').show(0);</script>
 <p><h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Making Evennia, HTTPS and WSS (Secure Websockets) play nicely together</a></li>
+<li><a class="reference internal" href="#">Making Evennia, HTTPS and WSS (Secure Websockets) play nicely together</a><ul>
 <li><a class="reference internal" href="#getting-certificates">Getting certificates</a></li>
 <li><a class="reference internal" href="#installing-and-configuring-haproxy">Installing and configuring HAProxy</a></li>
 <li><a class="reference internal" href="#putting-it-all-together">Putting it all together</a></li>
+</ul>
+</li>
 </ul>
 
   <div role="note" aria-label="source link">
@@ -338,7 +318,7 @@ uncommented in the config file, it will now start as a background process.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="HAProxy-Config.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

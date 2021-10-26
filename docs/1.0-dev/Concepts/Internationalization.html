@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="internationalization">
+  <section class="tex2jax_ignore mathjax_ignore" id="internationalization">
 <h1>Internationalization<a class="headerlink" href="#internationalization" title="Permalink to this headline">¶</a></h1>
 <p><em>Internationalization</em> (often abbreviated <em>i18n</em> since there are 18 characters
 between the first “i” and the last “n” in that word) allows Evennia’s core
@@ -103,36 +105,40 @@ updated after May 2021 will be missing some translations.</p>
 </tr>
 </tbody>
 </table>
-<p>Language translations are found in the <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/locale">evennia/locale</a>
+<p>Language translations are found in the <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/locale/">evennia/locale</a>
 folder. Read below if you want to help improve an existing translation of
 contribute a new one.</p>
 <section id="changing-server-language">
 <h2>Changing server language<a class="headerlink" href="#changing-server-language" title="Permalink to this headline">¶</a></h2>
 <p>Change language by adding the following to your <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>
 file:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">USE_I18N</span> <span class="o">=</span> <span class="kc">True</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">USE_I18N</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">LANGUAGE_CODE</span> <span class="o">=</span> <span class="s1">&#39;en&#39;</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Here <code class="docutils literal notranslate"><span class="pre">'en'</span></code> (the default English) should be changed to the abbreviation for one
 of the supported languages found in <code class="docutils literal notranslate"><span class="pre">locale/</span></code> (and in the list above). Restart
 the server to activate i18n.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>Even for a ‘fully translated’ language you will still see English text
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Even for a &#39;fully translated&#39; language you will still see English text
 in many places when you start Evennia. This is because we expect you (the
 developer) to know English (you are reading this manual after all). So we
-translate <em>hard-coded strings that the end player may see</em> - things you
-can’t easily change from your mygame/ folder. Outputs from Commands and
-Typeclasses are generally <em>not</em> translated, nor are console/log outputs.</p>
+translate *hard-coded strings that the end player may see* - things you
+can&#39;t easily change from your mygame/ folder. Outputs from Commands and
+Typeclasses are generally *not* translated, nor are console/log outputs.
+</pre></div>
+</div>
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Windows users</p>
-<p>If you get errors concerning <cite>gettext</cite> or <cite>xgettext</cite> on Windows,
-see the <a class="reference external" href="https://docs.djangoproject.com/en/3.2/topics/i18n/translation/#gettext-on-windows">Django documentation</a>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>If you get errors concerning `gettext` or `xgettext` on Windows,
+see the `Django documentation &lt;https://docs.djangoproject.com/en/3.2/topics/i18n/translation/#gettext-on-windows&gt;`_
 A self-installing and up-to-date version of gettext for Windows (32/64-bit) is
-available on <a class="reference external" href="https://github.com/mlocati/gettext-iconv-windows">Github</a></p>
+available on `Github &lt;https://github.com/mlocati/gettext-iconv-windows&gt;`_
+</pre></div>
+</div>
 </aside>
 </section>
 <section id="translating-evennia">
@@ -145,18 +151,18 @@ has translated it yet.  Alternatively you might have the language but find the
 translation bad … You are welcome to help improve the situation!</p>
 <p>To start a new translation you need to first have cloned the Evennia repositry
 with GIT and activated a python virtualenv as described on the
-<a class="reference internal" href="../Setup/Setup-Quickstart.html"><span class="doc">Setup Quickstart</span></a> page.</p>
+<a class="reference internal" href="../Setup/Setup-Quickstart.html"><span class="doc std std-doc">Setup Quickstart</span></a> page.</p>
 <p>Go to <code class="docutils literal notranslate"><span class="pre">evennia/evennia/</span></code> - that is, not your game dir, but inside the <code class="docutils literal notranslate"><span class="pre">evennia/</span></code>
 repo itself. If you see the <code class="docutils literal notranslate"><span class="pre">locale/</span></code> folder you are in the right place.  Make
 sure your <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> is active so the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command is available. Then run</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">evennia</span> <span class="n">makemessages</span> <span class="o">--</span><span class="n">locale</span> <span class="o">&lt;</span><span class="n">language</span><span class="o">-</span><span class="n">code</span><span class="o">&gt;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia makemessages --locale &lt;language-code&gt;
 </pre></div>
 </div>
 <p>where <code class="docutils literal notranslate"><span class="pre">&lt;language-code&gt;</span></code> is the <a class="reference external" href="http://www.science.co.il/Language/Codes.asp">two-letter locale code</a>
 for the language you want to translate, like ‘sv’ for Swedish or ‘es’ for
 Spanish. After a moment it will tell you the language has been processed.  For
 instance:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">evennia</span> <span class="n">makemessages</span> <span class="o">--</span><span class="n">locale</span> <span class="n">sv</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia makemessages --locale sv
 </pre></div>
 </div>
 <p>If you started a new language, a new folder for that language will have emerged
@@ -168,14 +174,14 @@ want.</p>
 find there. You can edit this with a normal text editor but it is easiest if
 you use a special po-file editor from the web (search the web for “po editor”
 for many free alternatives), for example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="p">[</span><span class="n">gtranslator</span><span class="p">](</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">wiki</span><span class="o">.</span><span class="n">gnome</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">Apps</span><span class="o">/</span><span class="n">Gtranslator</span><span class="p">)</span>
-<span class="o">-</span> <span class="p">[</span><span class="n">poeditor</span><span class="p">](</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">poeditor</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>- [gtranslator](https://wiki.gnome.org/Apps/Gtranslator)
+- [poeditor](https://poeditor.com/)
 </pre></div>
 </div>
 <p>The concept of translating is simple, it’s just a matter of taking the english
 strings you find in the <code class="docutils literal notranslate"><span class="pre">**.po</span></code> file and add your language’s translation best
 you can. Once you are done, run</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`evennia compilemessages`
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>`evennia compilemessages`
 </pre></div>
 </div>
 <p>This will compile all languages. Check your language and also check back to your
@@ -190,15 +196,15 @@ not your thing) you can also attach it to a new post in our forums.</p>
 are to be used in <code class="docutils literal notranslate"><span class="pre">.format()</span></code> python operations. While you can change the
 <em>order</em>  of these if it makes more sense in your language, you must <em>not</em>
 translate the variables in these formatting tags - Python will look for them!</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Original</span><span class="p">:</span> <span class="s2">&quot;|G</span><span class="si">{key}</span><span class="s2"> connected|n&quot;</span>
-<span class="n">Swedish</span><span class="p">:</span>  <span class="s2">&quot;|G</span><span class="si">{key}</span><span class="s2"> anslöt|n&quot;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Original: &quot;|G{key} connected|n&quot;
+Swedish:  &quot;|G{key} anslöt|n&quot;
 </pre></div>
 </div>
 <p>You must also retain line breaks <em>at the start and end</em> of a message, if any
 (your po-editor should stop you if you don’t). Try to also end with the same
 sentence delimiter (if that makes sense in your language).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Original</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">(Unsuccessfull tried &#39;</span><span class="si">{path}</span><span class="s2">&#39;).&quot;</span>
-<span class="n">Swedish</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Misslyckades med att nå &#39;</span><span class="si">{path}</span><span class="s2">&#39;).&quot;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Original: &quot;\n(Unsuccessfull tried &#39;{path}&#39;).&quot;
+Swedish: &quot;\nMisslyckades med att nå &#39;{path}&#39;).&quot;
 </pre></div>
 </div>
 <p>Finally, try to get a feel for who a string is for. If a special technical term
@@ -207,10 +213,10 @@ outside of a <code class="docutils literal notranslate"><span class="pre">{...}<
 English, clarity is more important. Many languages may also use the English term
 normally and reaching for a translation may make the result sound awkward
 instead.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Original</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Error loading cmdset: No cmdset class &#39;</span><span class="si">{classname}</span><span class="s2">&#39; in &#39;</span><span class="si">{path}</span><span class="s2">&#39;.</span>
-           \<span class="n">n</span><span class="p">(</span><span class="n">Traceback</span> <span class="n">was</span> <span class="n">logged</span> <span class="p">{</span><span class="n">timestamp</span><span class="p">})</span><span class="s2">&quot;</span>
-<span class="n">Swedish</span><span class="p">:</span>  <span class="s2">&quot;Fel medan cmdset laddades: Ingen cmdset-klass med namn &#39;</span><span class="si">{classname}</span><span class="s2">&#39; i </span><span class="si">{path}</span><span class="s2">.</span>
-           \<span class="n">n</span><span class="p">(</span><span class="n">Traceback</span> <span class="n">loggades</span> <span class="p">{</span><span class="n">timestamp</span><span class="p">})</span><span class="s2">&quot;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Original: &quot;\nError loading cmdset: No cmdset class &#39;{classname}&#39; in &#39;{path}&#39;.
+           \n(Traceback was logged {timestamp})&quot;
+Swedish:  &quot;Fel medan cmdset laddades: Ingen cmdset-klass med namn &#39;{classname}&#39; i {path}.
+           \n(Traceback loggades {timestamp})&quot;
 </pre></div>
 </div>
 </section>
@@ -269,7 +275,7 @@ instead.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Internationalization.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

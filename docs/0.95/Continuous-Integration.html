@@ -1,0 +1,379 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Continuous Integration &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Continuous Integration</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="continuous-integration">
+<h1>Continuous Integration<a class="headerlink" href="#continuous-integration" title="Permalink to this headline">¶</a></h1>
+<p>One of the advantages of Evennia over traditional MUSH development systems is that Evennia is
+capable of integrating into enterprise level integration environments and source control. Because of
+this, it can also be the subject of automation for additional convenience, allowing a more
+streamlined development environment.</p>
+<section id="what-is-continuous-integration">
+<h2>What is Continuous Integration?<a class="headerlink" href="#what-is-continuous-integration" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.thoughtworks.com/continuous-integration">Continuous Integration (CI)</a> is a development
+practice that requires developers to integrate code into a shared repository several times a day.
+Each check-in is then verified by an automated build, allowing teams to detect problems early.</p>
+<p>For Evennia, continuous integration allows an automated build process to:</p>
+<ul class="simple">
+<li><p>Pull down a latest build from Source Control.</p></li>
+<li><p>Run migrations on the backing SQL database.</p></li>
+<li><p>Automate additional unique tasks for that project.</p></li>
+<li><p>Run unit tests.</p></li>
+<li><p>Publish those files to the server directory</p></li>
+<li><p>Reload the game.</p></li>
+</ul>
+</section>
+<section id="preparation">
+<h2>Preparation<a class="headerlink" href="#preparation" title="Permalink to this headline">¶</a></h2>
+<p>To prepare a CI environment for your <code class="docutils literal notranslate"><span class="pre">MU*</span></code>, it will be necessary to set up some prerequisite
+software for your server.</p>
+<p>Among those you will need:</p>
+<ul class="simple">
+<li><p>A Continuous Integration Environment.</p>
+<ul>
+<li><p>I recommend <a class="reference external" href="https://www.jetbrains.com/teamcity/">TeamCity</a> which has an in-depth <a class="reference external" href="https://confluence.jetbrains.com/display/TCD8/Installing+and+Configuring+the+TeamCity+Server">Setup
+Guide</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="Version-Control.html"><span class="doc std std-doc">Source Control</span></a></p>
+<ul>
+<li><p>This could be Git or SVN or any other available SC.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="linux-teamcity-setup">
+<h2>Linux TeamCity Setup<a class="headerlink" href="#linux-teamcity-setup" title="Permalink to this headline">¶</a></h2>
+<p>For this part of the guide, an example setup will be provided for administrators running a TeamCity
+build integration environment on Linux.</p>
+<p>After meeting the preparation steps for your specific environment, log on to your teamcity interface
+at <code class="docutils literal notranslate"><span class="pre">http://&lt;your</span> <span class="pre">server&gt;:8111/</span></code>.</p>
+<p>Create a new project named “Evennia” and in it construct a new template called continuous-
+integration.</p>
+<section id="a-quick-overview">
+<h3>A Quick Overview<a class="headerlink" href="#a-quick-overview" title="Permalink to this headline">¶</a></h3>
+<p>Templates are fancy objects in TeamCity that allow an administrator to define build steps that are
+shared between one or more build projects. Assigning a VCS Root (Source Control) is unnecessary at
+this stage, primarily you’ll be worrying about the build steps and your default parameters (both
+visible on the tabs to the left.)</p>
+</section>
+<section id="template-setup">
+<h3>Template Setup<a class="headerlink" href="#template-setup" title="Permalink to this headline">¶</a></h3>
+<p>In this template, you’ll be outlining the steps necessary to build your specific game. (A number of
+sample scripts are provided under this section below!) Click Build Steps and prepare your general
+flow. For this example, we will be doing a few basic example steps:</p>
+<ul class="simple">
+<li><p>Transforming the <a class="reference external" href="http://Settings.py">Settings.py</a> file</p>
+<ul>
+<li><p>We do this to update ports or other information that make your production environment unique
+from your development environment.</p></li>
+</ul>
+</li>
+<li><p>Making migrations and migrating the game database.</p></li>
+<li><p>Publishing the game files.</p></li>
+<li><p>Reloading the server.</p></li>
+</ul>
+<p>For each step we’ll being use the “Command Line Runner” (a fancy name for a shell script executor).</p>
+<ul>
+<li><p>Create a build step with the name: Transform Configuration</p></li>
+<li><p>For the script add:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1"># Replaces the game configuration with one</span>
+<span class="c1"># appropriate for this deployment.</span>
+
+<span class="nv">CONFIG</span><span class="o">=</span><span class="s2">&quot;%system.teamcity.build.checkoutDir%/server/conf/settings.py&quot;</span>
+<span class="nv">MYCONF</span><span class="o">=</span><span class="s2">&quot;%system.teamcity.build.checkoutDir%/server/conf/my.cnf&quot;</span>
+
+sed -e <span class="s1">&#39;s/TELNET_PORTS = [4000]/TELNET_PORTS = [%game.ports%]/g&#39;</span> <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span> &gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>.tmp <span class="o">&amp;&amp;</span> mv
+</pre></div>
+</div>
+</li>
+</ul>
+<p>“<span class="math notranslate nohighlight">\(CONFIG&quot;.tmp &quot;\)</span>CONFIG”
+sed -e ‘s/WEBSERVER_PORTS = [(4001, 4002)]/WEBSERVER_PORTS = [%game.webports%]/g’ “<span class="math notranslate nohighlight">\(CONFIG&quot; &gt;
+&quot;\)</span>CONFIG”.tmp &amp;&amp; mv “<span class="math notranslate nohighlight">\(CONFIG&quot;.tmp &quot;\)</span>CONFIG”</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># settings.py MySQL DB configuration
+echo Configuring Game Database...
+echo &quot;&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;######################################################################&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;# MySQL Database Configuration&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;######################################################################&quot; &gt;&gt; &quot;$CONFIG&quot;
+
+echo &quot;DATABASES = {&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;   &#39;default&#39;: {&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;       &#39;ENGINE&#39;: &#39;django.db.backends.mysql&#39;,&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;       &#39;OPTIONS&#39;: {&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;           &#39;read_default_file&#39;: &#39;server/conf/my.cnf&#39;,&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;       },&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;   }&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;}&quot; &gt;&gt; &quot;$CONFIG&quot;
+
+# Create the My.CNF file.
+echo &quot;[client]&quot; &gt;&gt; &quot;$MYCONF&quot;
+echo &quot;database = %mysql.db%&quot; &gt;&gt; &quot;$MYCONF&quot;
+echo &quot;user = %mysql.user%&quot; &gt;&gt; &quot;$MYCONF&quot;
+echo &quot;password = %mysql.pass%&quot; &gt;&gt; &quot;$MYCONF&quot;
+echo &quot;default-character-set = utf8&quot; &gt;&gt; &quot;$MYCONF&quot;
+```
+</pre></div>
+</div>
+<p>If you look at the parameters side of the page after saving this script, you’ll notice that some new
+parameters have been populated for you. This is because we’ve included new teamcity configuration
+parameters that are populated when the build itself is ran. When creating projects that inherit this
+template, we’ll be able to fill in or override those parameters for project-specific configuration.</p>
+<ul>
+<li><p>Go ahead and create another build step called “Make Database Migration”</p>
+<ul class="simple">
+<li><p>If you’re using SQLLite on your game, it will be prudent to change working directory on this
+step to: %game.dir%</p></li>
+</ul>
+</li>
+<li><p>In this script include:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1"># Update the DB migration</span>
+
+<span class="nv">LOGDIR</span><span class="o">=</span><span class="s2">&quot;server/logs&quot;</span>
+
+. %evenv.dir%/bin/activate
+
+<span class="c1"># Check that the logs directory exists.</span>
+<span class="k">if</span> <span class="o">[</span> ! -d <span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="c1"># Control will enter here if $LOGDIR doesn&#39;t exist.</span>
+  mkdir <span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span>
+<span class="k">fi</span>
+
+evennia makemigrations
+</pre></div>
+</div>
+</li>
+<li><p>Create yet another build step, this time named: “Execute Database Migration”:</p>
+<ul>
+<li><p>If you’re using SQLLite on your game, it will be prudent to change working directory on this
+step to: %game.dir%</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1"># Apply the database migration.</span>
+
+<span class="nv">LOGDIR</span><span class="o">=</span><span class="s2">&quot;server/logs&quot;</span>
+
+. %evenv.dir%/bin/activate
+
+<span class="c1"># Check that the logs directory exists.</span>
+<span class="k">if</span> <span class="o">[</span> ! -d <span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="c1"># Control will enter here if $LOGDIR doesn&#39;t exist.</span>
+  mkdir <span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span>
+<span class="k">fi</span>
+
+evennia migrate
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+</ul>
+<p>Our next build step is where we actually publish our build. Up until now, all work on game has been
+done in a ‘work’ directory on TeamCity’s build agent. From that directory we will now copy our files
+to where our game actually exists on the local server.</p>
+<ul>
+<li><p>Create a new build step called “Publish Build”:</p>
+<ul>
+<li><p>If you’re using SQLLite on your game, be sure to order this step ABOVE the Database Migration
+steps. The build order will matter!</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1"># Publishes the build to the proper build directory.</span>
+
+<span class="nv">DIRECTORY</span><span class="o">=</span><span class="s2">&quot;%game.dir%&quot;</span>
+
+<span class="k">if</span> <span class="o">[</span> ! -d <span class="s2">&quot;</span><span class="nv">$DIRECTORY</span><span class="s2">&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="c1"># Control will enter here if $DIRECTORY doesn&#39;t exist.</span>
+  mkdir <span class="s2">&quot;</span><span class="nv">$DIRECTORY</span><span class="s2">&quot;</span>
+<span class="k">fi</span>
+
+<span class="c1"># Copy all the files.</span>
+cp -ruv %teamcity.build.checkoutDir%/* <span class="s2">&quot;</span><span class="nv">$DIRECTORY</span><span class="s2">&quot;</span>
+chmod -R <span class="m">775</span> <span class="s2">&quot;</span><span class="nv">$DIRECTORY</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+</ul>
+<p>Finally the last script will reload our game for us.</p>
+<ul>
+<li><p>Create a new script called “Reload Game”:</p>
+<ul>
+<li><p>The working directory on this build step will be: %game.dir%</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1"># Apply the database migration.</span>
+
+<span class="nv">LOGDIR</span><span class="o">=</span><span class="s2">&quot;server/logs&quot;</span>
+<span class="nv">PIDDIR</span><span class="o">=</span><span class="s2">&quot;server/server.pid&quot;</span>
+
+. %evenv.dir%/bin/activate
+
+<span class="c1"># Check that the logs directory exists.</span>
+<span class="k">if</span> <span class="o">[</span> ! -d <span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="c1"># Control will enter here if $LOGDIR doesn&#39;t exist.</span>
+  mkdir <span class="s2">&quot;</span><span class="nv">$LOGDIR</span><span class="s2">&quot;</span>
+<span class="k">fi</span>
+
+<span class="c1"># Check that the server is running.</span>
+<span class="k">if</span> <span class="o">[</span> -d <span class="s2">&quot;</span><span class="nv">$PIDDIR</span><span class="s2">&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="c1"># Control will enter here if the game is running.</span>
+  evennia reload
+<span class="k">fi</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+</ul>
+<p>Now the template is ready for use! It would be useful this time to revisit the parameters page and
+set the evenv parameter to the directory where your virtualenv exists: IE “/srv/mush/evenv”.</p>
+</section>
+<section id="creating-the-project">
+<h3>Creating the Project<a class="headerlink" href="#creating-the-project" title="Permalink to this headline">¶</a></h3>
+<p>Now it’s time for the last few steps to set up a CI environment.</p>
+<ul class="simple">
+<li><p>Return to the Evennia Project overview/administration page.</p></li>
+<li><p>Create a new Sub-Project called “Production”</p>
+<ul>
+<li><p>This will be the category that holds our actual game.</p></li>
+</ul>
+</li>
+<li><p>Create a new Build Configuration in Production with the name of your MUSH.</p>
+<ul>
+<li><p>Base this configuration off of the continuous-integration template we made earlier.</p></li>
+</ul>
+</li>
+<li><p>In the build configuration, enter VCS roots and create a new VCS root that points to the
+branch/version control that you are using.</p></li>
+<li><p>Go to the parameters page and fill in the undefined parameters for your specific configuration.</p></li>
+<li><p>If you wish for the CI to run every time a commit is made, go to the VCS triggers and add one for
+“On Every Commit”.</p></li>
+</ul>
+<p>And you’re done! At this point, you can return to the project overview page and queue a new build
+for your game. If everything was set up correctly, the build will complete successfully. Additional
+build steps could be added or removed at this point, adding some features like Unit Testing or more!</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Continuous Integration</a><ul>
+<li><a class="reference internal" href="#what-is-continuous-integration">What is Continuous Integration?</a></li>
+<li><a class="reference internal" href="#preparation">Preparation</a></li>
+<li><a class="reference internal" href="#linux-teamcity-setup">Linux TeamCity Setup</a><ul>
+<li><a class="reference internal" href="#a-quick-overview">A Quick Overview</a></li>
+<li><a class="reference internal" href="#template-setup">Template Setup</a></li>
+<li><a class="reference internal" href="#creating-the-project">Creating the Project</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Continuous-Integration.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Continuous-Integration.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Continuous Integration</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

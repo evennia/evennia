@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,16 +40,16 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="game-website">
+  <section class="tex2jax_ignore mathjax_ignore" id="game-website">
 <h1>Game website<a class="headerlink" href="#game-website" title="Permalink to this headline">¶</a></h1>
-<p>When Evennia starts it will also start a <a class="reference internal" href="Webserver.html"><span class="doc">Webserver</span></a> as part of the
-<a class="reference internal" href="Portal-And-Server.html"><span class="doc">Server</span></a> process. This uses <a class="reference external" href="https://docs.djangoproject.com">Django</a>
+<p>When Evennia starts it will also start a <a class="reference internal" href="Webserver.html"><span class="doc std std-doc">Webserver</span></a> as part of the
+<a class="reference internal" href="Portal-And-Server.html"><span class="doc std std-doc">Server</span></a> process. This uses <a class="reference external" href="https://docs.djangoproject.com">Django</a>
 to present a simple but functional default game website.  With the default setup,
 open your browser to <a class="reference external" href="http://localhost:4001">localhost:4001</a> or <a class="reference external" href="http://127.0.0.1:4001">127.0.0.1:4001</a>
 to see it.</p>
 <p>The website allows existing players to log in using an account-name and
 password they previously used to register with the game. If a user logs in with
-the <a class="reference internal" href="Webclient.html"><span class="doc">Webclient</span></a> they will also log into the website and vice-versa.
+the <a class="reference internal" href="Webclient.html"><span class="doc std std-doc">Webclient</span></a> they will also log into the website and vice-versa.
 So if you are logged into the website, opening the webclient will automatically
 log you into the game as that account.</p>
 <p>The default website shows a “Welcome!” page with a few links to useful
@@ -66,11 +68,11 @@ users.</p></li>
 show a list of all channels available to you and allow you to view the latest
 discussions. Most channels require logging in, but the <code class="docutils literal notranslate"><span class="pre">Public</span></code> channel can
 also be viewed by non-loggedin users.</p></li>
-<li><p><em>Help</em> - This ties the in-game <a class="reference internal" href="Help-System.html"><span class="doc">Help system</span></a> to the website. All
+<li><p><em>Help</em> - This ties the in-game <a class="reference internal" href="Help-System.html"><span class="doc std std-doc">Help system</span></a> to the website. All
 database-based help entries that are publicly available or accessible to your
 account can be read. This is a good way to present a body of help for people
 to read outside of the game.</p></li>
-<li><p><em>Play Online</em> - This opens the <a class="reference internal" href="Webclient.html"><span class="doc">Webclient</span></a> in the browser.</p></li>
+<li><p><em>Play Online</em> - This opens the <a class="reference internal" href="Webclient.html"><span class="doc std std-doc">Webclient</span></a> in the browser.</p></li>
 <li><p><em>Admin</em> The [Web admin](Web admin) will only show if you are logged in.</p></li>
 <li><p><em>Log in/out</em> - Allows you to authenticate using the same credentials you use
 in the game.</p></li>
@@ -90,7 +92,7 @@ in your browser instead of generic 404 or 500 error pages. Just remember that
 DEBUG mode leaks memory (for retaining debug info) and is <em>not</em> safe to use
 for a production game!</p>
 </div></blockquote>
-<p>As explained on the <a class="reference internal" href="Webserver.html"><span class="doc">Webserver</span></a> page, the process for getting a web
+<p>As explained on the <a class="reference internal" href="Webserver.html"><span class="doc std std-doc">Webserver</span></a> page, the process for getting a web
 page is</p>
 <ol class="simple">
 <li><p>Web browser sends HTTP request to server with an URL</p></li>
@@ -124,6 +126,7 @@ structure (leaving out stuff not relevant to the website):</p>
         <span class="p">(</span><span class="n">python</span> <span class="n">files</span> <span class="n">related</span> <span class="n">to</span> <span class="n">website</span><span class="p">)</span>
 
     <span class="n">urls</span><span class="o">.</span><span class="n">py</span>
+
 </pre></div>
 </div>
 <p>The top-level <code class="docutils literal notranslate"><span class="pre">web/urls.py</span></code> file ‘includes’ the <code class="docutils literal notranslate"><span class="pre">web/website/urls.py</span></code> file -
@@ -144,13 +147,14 @@ that way all the website-related url-handling is kept in the same place.</p>
         <span class="n">views</span><span class="o">/</span>
 
     <span class="n">urls</span><span class="o">.</span><span class="n">py</span>
+
 </pre></div>
 </div>
 <div class="versionchanged">
 <p><span class="versionmodified changed">Changed in version 1.0: </span>Game folders created with older versions of Evennia will lack most of this
-convenient <cite>mygame/web/</cite> layout. If you use a game dir from an older version,
-you should copy over the missing <cite>evennia/game_template/web/</cite> folders from
-there, as well as the main urls.py file.</p>
+convenient <code class="docutils literal notranslate"><span class="pre">mygame/web/</span></code> layout. If you use a game dir from an older version,
+you should copy over the missing <code class="docutils literal notranslate"><span class="pre">evennia/game_template/web/</span></code> folders from
+there, as well as the main <a class="reference external" href="http://urls.py">urls.py</a> file.</p>
 </div>
 <p>As you can see, the <code class="docutils literal notranslate"><span class="pre">mygame/web/</span></code> folder is a copy of the <code class="docutils literal notranslate"><span class="pre">evennia/web/</span></code> folder
 structure except the <code class="docutils literal notranslate"><span class="pre">mygame</span></code> folders are mostly empty.</p>
@@ -176,8 +180,8 @@ So these examples only serve as a first primer to get you started.</p>
 <p>The website’s title and blurb are simply changed by tweaking
 <code class="docutils literal notranslate"><span class="pre">settings.SERVERNAME</span></code> and <code class="docutils literal notranslate"><span class="pre">settings.GAME_SLOGAN</span></code>. Your settings file is in
 <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>, just set/add</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SERVERNAME</span> <span class="o">=</span> <span class="s2">&quot;My Awesome Game&quot;</span>
-<span class="n">GAME_SLOGAN</span> <span class="o">=</span> <span class="s2">&quot;The best game in the world&quot;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SERVERNAME = &quot;My Awesome Game&quot;
+GAME_SLOGAN = &quot;The best game in the world&quot;
 </pre></div>
 </div>
 </section>
@@ -241,7 +245,7 @@ be easier to revert your changes if you only add things to <code class="docutils
 Modify it and reload the server to see your changes.</p>
 <p>You can also apply static files without reloading, but running this in the
 terminal:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">collectstatic</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="nb">input</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia collectstatic --no-input
 </pre></div>
 </div>
 <p>(this is run automatically when reloading the server).</p>
@@ -251,13 +255,7 @@ browser without cache (Ctrl-F5 in Firefox, for example).</p>
 </div></blockquote>
 <p>As an example, add/copy <code class="docutils literal notranslate"><span class="pre">custom.css</span></code> to <code class="docutils literal notranslate"><span class="pre">mygame/web/static/website/css/</span></code> and
 add the following:</p>
-<div class="highlight-css notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">.</span><span class="nc">navbar</span> <span class="p">{</span>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="p">.</span><span class="nc">navbar</span> <span class="p">{</span>
   <span class="k">background-color</span><span class="p">:</span> <span class="mh">#7a3d54</span><span class="p">;</span>
 <span class="p">}</span>
 
@@ -265,7 +263,7 @@ add the following:</p>
   <span class="k">background-color</span><span class="p">:</span> <span class="mh">#7a3d54</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Reload and your website now has a red theme!</p>
 <blockquote>
 <div><p>Hint: Learn to use your web browser’s <a class="reference external" href="https://torquemag.io/2020/06/browser-developer-tools-tutorial/">Developer tools</a>.
@@ -277,35 +275,21 @@ the .css file only when you want to make the changes permanent.</p>
 <h3>Change front page functionality<a class="headerlink" href="#change-front-page-functionality" title="Permalink to this headline">¶</a></h3>
 <p>The logic is all in the view. To find where the index-page view is found, we
 look in <code class="docutils literal notranslate"><span class="pre">evennia/web/website/urls.py</span></code>. Here we find the following line:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in evennia/web/website/urls.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evennia/web/website/urls.py</span>
 
   <span class="o">...</span>
   <span class="c1"># website front page</span>
   <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">.</span><span class="n">EvenniaIndexView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">),</span>
   <span class="o">...</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>The first <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> is the empty url - root - what you get if you just enter <code class="docutils literal notranslate"><span class="pre">localhost:4001/</span></code>
 with no extra path. As expected, this leads to the index page. By looking at the imports
 we find the view is in in <code class="docutils literal notranslate"><span class="pre">evennia/web/website/views/index.py</span></code>.</p>
 <p>Copy this file to the corresponding location in <code class="docutils literal notranslate"><span class="pre">mygame/web</span></code>. Then tweak your <code class="docutils literal notranslate"><span class="pre">mygame/web/website/urls.py</span></code>
 file to point to the new file:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/web/website/urls.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/web/website/urls.py</span>
 
 <span class="c1"># ...</span>
 
@@ -316,8 +300,9 @@ file to point to the new file:</p>
 
 <span class="p">]</span>
 <span class="c1"># ...</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>So we just import <code class="docutils literal notranslate"><span class="pre">index</span></code> from the new location and point to it. After a reload
 the front page will now redirect to use your copy rather than the original.</p>
 <p>The frontpage view is a class <code class="docutils literal notranslate"><span class="pre">EvenniaIndexView</span></code>. This is a <a class="reference external" href="https://docs.djangoproject.com/en/3.2/topics/class-based-views/">Django class-based view</a>.
@@ -344,7 +329,7 @@ your copy. Just remember to reload.</p>
 <section id="using-flat-pages">
 <h3>Using Flat Pages<a class="headerlink" href="#using-flat-pages" title="Permalink to this headline">¶</a></h3>
 <p>The absolutely simplest way to add a new web page is to use the <code class="docutils literal notranslate"><span class="pre">Flat</span> <span class="pre">Pages</span></code>
-app available in the <a class="reference internal" href="Web-Admin.html"><span class="doc">Web Admin</span></a>. The page will appear with the same
+app available in the <a class="reference internal" href="Web-Admin.html"><span class="doc std std-doc">Web Admin</span></a>. The page will appear with the same
 styling as the rest of the site.</p>
 <p>For the <code class="docutils literal notranslate"><span class="pre">Flat</span> <span class="pre">pages</span></code> module to work you must first set up a <em>Site</em> (or
 domain) to use. You only need to this once.</p>
@@ -380,33 +365,19 @@ get the same styling as the rest of your site.</p></li>
 <li><p>Add a new view <code class="docutils literal notranslate"><span class="pre">testview.py</span></code> under <code class="docutils literal notranslate"><span class="pre">mygame/web/website/views/</span></code> (don’t name it <code class="docutils literal notranslate"><span class="pre">test.py</span></code> or
 Django/Evennia will think it contains unit tests). Add a view there to process
 your page. This is a minimal view to start from (read much more <a class="reference external" href="https://docs.djangoproject.com/en/3.2/topics/class-based-views/">in the Django docs</a>):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/web/website/views/testview.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/web/website/views/testview.py</span>
 
 <span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">TemplateView</span>
 
 <span class="k">class</span> <span class="nc">MyTestView</span><span class="p">(</span><span class="n">TemplateView</span><span class="p">):</span>
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/test.html&quot;</span>
 
+
 </pre></div>
-</td></tr></table></div>
+</div>
 </li>
 <li><p>Finally, point to your view from the <code class="docutils literal notranslate"><span class="pre">mygame/web/website/urls.py</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/web/website/urls.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/web/website/urls.py</span>
 
 <span class="c1"># ...</span>
 <span class="kn">from</span> <span class="nn">web.website.views</span> <span class="kn">import</span> <span class="n">testview</span>
@@ -416,8 +387,9 @@ your page. This is a minimal view to start from (read much more <a class="refere
     <span class="c1"># we can skip the initial / here</span>
     <span class="n">path</span><span class="p">(</span><span class="s2">&quot;test/&quot;</span><span class="p">,</span> <span class="n">testview</span><span class="o">.</span><span class="n">MyTestView</span><span class="o">.</span><span class="n">as_view</span><span class="p">())</span>
 <span class="p">]</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 </li>
 <li><p>Reload the server and your new page is available. You can now continue to add
 all sorts of advanced dynamic content through your view and template!</p></li>
@@ -513,7 +485,7 @@ on the Django website - it covers all you need.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Website.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

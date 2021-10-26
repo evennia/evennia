@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,9 +40,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="npc-shop-tutorial">
+  <section class="tex2jax_ignore mathjax_ignore" id="npc-shop-tutorial">
 <h1>NPC shop Tutorial<a class="headerlink" href="#npc-shop-tutorial" title="Permalink to this headline">¶</a></h1>
-<p>This tutorial will describe how to make an NPC-run shop. We will make use of the <a class="reference internal" href="../Components/EvMenu.html"><span class="doc">EvMenu</span></a>
+<p>This tutorial will describe how to make an NPC-run shop. We will make use of the <a class="reference internal" href="../Components/EvMenu.html"><span class="doc std std-doc">EvMenu</span></a>
 system to present shoppers with a menu where they can buy things from the store’s stock.</p>
 <p>Our shop extends over two rooms - a “front” room open to the shop’s customers and a locked “store
 room” holding the wares the shop should be able to sell. We aim for the following features:</p>
@@ -62,7 +64,7 @@ deducted and the goods transferred from the store room to the inventory of the c
 <h2>The shop menu<a class="headerlink" href="#the-shop-menu" title="Permalink to this headline">¶</a></h2>
 <p>We want to show a menu to the customer where they can list, examine and buy items in the store. This
 menu should change depending on what is currently for sale. Evennia’s <em>EvMenu</em> utility will manage
-the menu for us. It’s a good idea to <a class="reference internal" href="../Components/EvMenu.html"><span class="doc">read up on EvMenu</span></a> if you are not familiar with it.</p>
+the menu for us. It’s a good idea to <a class="reference internal" href="../Components/EvMenu.html"><span class="doc std std-doc">read up on EvMenu</span></a> if you are not familiar with it.</p>
 <section id="designing-the-menu">
 <h3>Designing the menu<a class="headerlink" href="#designing-the-menu" title="Permalink to this headline">¶</a></h3>
 <p>The shopping menu’s design is straightforward. First we want the main screen. You get this when you
@@ -103,33 +105,7 @@ particular item:</p>
 must be able to change on the fly depending on what items are currently for sale. EvMenu will
 automatically make the <code class="docutils literal notranslate"><span class="pre">quit</span></code> command available to us so we won’t add that manually. For compactness
 we will put everything needed for our shop in one module, <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/npcshop.py</span></code>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/npcshop.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/npcshop.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evmenu</span>
 
@@ -157,7 +133,7 @@ we will put everything needed for our shop in one module, <code class="docutils 
                         <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;menunode_inspect_and_buy&quot;</span><span class="p">})</span>
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>In this code we assume the caller to be <em>inside</em> the shop when accessing the menu. This means we can
 access the shop room via <code class="docutils literal notranslate"><span class="pre">caller.location</span></code> and get its <code class="docutils literal notranslate"><span class="pre">key</span></code> to display as the shop’s name. We also
 assume the shop has an Attribute <code class="docutils literal notranslate"><span class="pre">storeroom</span></code> we can use to get to our stock. We loop over our goods
@@ -165,41 +141,7 @@ to build up the menu’s options.</p>
 <p>Note that <em>all options point to the same menu node</em> called <code class="docutils literal notranslate"><span class="pre">menunode_inspect_and_buy</span></code>! We can’t know
 which goods will be available to sale so we rely on this node to modify itself depending on the
 circumstances. Let’s create it now.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># further down in mygame/typeclasses/npcshop.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># further down in mygame/typeclasses/npcshop.py</span>
 
 <span class="k">def</span> <span class="nf">menunode_inspect_and_buy</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">):</span>
     <span class="s2">&quot;Sets up the buy menu screen.&quot;</span>
@@ -235,7 +177,7 @@ circumstances. Let’s create it now.</p>
 
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>In this menu node we make use of the <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> argument to the node. This is the text the menu
 user entered on the <em>previous</em> node to get here. Since we only allow numbered options in our menu,
 <code class="docutils literal notranslate"><span class="pre">raw_input</span></code> must be an number for the player to get to this point. So we convert it to an integer
@@ -253,32 +195,9 @@ of the customer.</p>
 <section id="the-command-to-start-the-menu">
 <h3>The command to start the menu<a class="headerlink" href="#the-command-to-start-the-menu" title="Permalink to this headline">¶</a></h3>
 <p>We could <em>in principle</em> launch the shopping menu the moment a customer steps into our shop room, but
-this would probably be considered pretty annoying. It’s better to create a <a class="reference internal" href="../Components/Commands.html"><span class="doc">Command</span></a> for
+this would probably be considered pretty annoying. It’s better to create a <a class="reference internal" href="../Components/Commands.html"><span class="doc std std-doc">Command</span></a> for
 customers to explicitly wanting to shop around.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/npcshop.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/npcshop.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
@@ -303,22 +222,18 @@ customers to explicitly wanting to shop around.</p>
                       <span class="s2">&quot;typeclasses.npcshop&quot;</span><span class="p">,</span>
                       <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;menunode_shopfront&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This will launch the menu. The <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> instance is initialized with the path to this very module -
 since the only global functions available in this module are our menu nodes, this will work fine
 (you could also have put those in a separate module). We now just need to put this command in a
-<a class="reference internal" href="../Components/Command-Sets.html"><span class="doc">CmdSet</span></a> so we can add it correctly to the game:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
+<a class="reference internal" href="../Components/Command-Sets.html"><span class="doc std std-doc">CmdSet</span></a> so we can add it correctly to the game:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 
 <span class="k">class</span> <span class="nc">ShopCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdBuy</span><span class="p">())</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 </section>
 <section id="building-the-shop">
@@ -330,75 +245,10 @@ since the only global functions available in this module are our menu nodes, thi
 the shop.</p></li>
 </ul>
 <p>For testing we could easily add these features manually to a room using <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> or other admin
-commands. Just to show how it can be done we’ll instead make a custom <a class="reference internal" href="../Components/Typeclasses.html"><span class="doc">Typeclass</span></a> for
+commands. Just to show how it can be done we’ll instead make a custom <a class="reference internal" href="../Components/Typeclasses.html"><span class="doc std std-doc">Typeclass</span></a> for
 the shop room and make a small command that builders can use to build both the shop and the
 storeroom at once.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># bottom of mygame/typeclasses/npcshop.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># bottom of mygame/typeclasses/npcshop.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">DefaultObject</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
@@ -465,7 +315,7 @@ storeroom at once.</p>
         <span class="c1"># inform the builder about progress</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The shop </span><span class="si">{</span><span class="n">shop</span><span class="si">}</span><span class="s2"> was created!&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Our typeclass is simple and so is our <code class="docutils literal notranslate"><span class="pre">buildshop</span></code> command. The command (which is for Builders only)
 just takes the name of the shop and builds the front room and a store room to go with it (always
 named <code class="docutils literal notranslate"><span class="pre">&quot;&lt;shopname&gt;-storage&quot;</span></code>. It connects the rooms with a two-way exit. You need to add
@@ -473,7 +323,7 @@ named <code class="docutils literal notranslate"><span class="pre">&quot;&lt;sho
 default-cmdset) before you can use it. Once having created the shop you can now <code class="docutils literal notranslate"><span class="pre">&#64;teleport</span></code> to it or
 <code class="docutils literal notranslate"><span class="pre">&#64;open</span></code> a new exit to it. You could also easily expand the above command to automatically create
 exits to and from the new shop from your current location.</p>
-<p>To avoid customers walking in and stealing everything, we create a <a class="reference internal" href="../Components/Locks.html"><span class="doc">Lock</span></a> on the storage
+<p>To avoid customers walking in and stealing everything, we create a <a class="reference internal" href="../Components/Locks.html"><span class="doc std std-doc">Lock</span></a> on the storage
 door. It’s a simple lock that requires the one entering to carry an object named
 <code class="docutils literal notranslate"><span class="pre">&lt;shopname&gt;-storekey</span></code>. We even create such a key object and drop it in the shop for the new shop
 keeper to pick up.</p>
@@ -502,7 +352,7 @@ could then buy them for 1 gold.</p></li>
 would then be gone and the counter be wrong - the shop would pass us the next item in the list.</p></li>
 </ul>
 <p>Fixing these issues are left as an exercise.</p>
-<p>If you want to keep the shop fully NPC-run you could add a <a class="reference internal" href="../Components/Scripts.html"><span class="doc">Script</span></a> to restock the shop’s
+<p>If you want to keep the shop fully NPC-run you could add a <a class="reference internal" href="../Components/Scripts.html"><span class="doc std std-doc">Script</span></a> to restock the shop’s
 store room regularly. This shop example could also easily be owned by a human Player (run for them
 by a hired NPC) - the shop owner would get the key to the store room and be responsible for keeping
 it well stocked.</p>
@@ -564,7 +414,7 @@ it well stocked.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="NPC-shop-Tutorial.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

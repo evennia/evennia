@@ -14,6 +14,8 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="implementing-a-game-rule-system">
+  <section class="tex2jax_ignore mathjax_ignore" id="implementing-a-game-rule-system">
 <h1>Implementing a game rule system<a class="headerlink" href="#implementing-a-game-rule-system" title="Permalink to this headline">¶</a></h1>
 <p>The simplest way to create an online roleplaying game (at least from a code perspective) is to
 simply grab a paperback RPG rule book, get a staff of game masters together and start to run scenes
@@ -79,23 +81,21 @@ makes it easier to change and update things in one place later.</p></li>
 values for Health, a list of skills etc, store those things on the Character - don’t store how to
 roll or change them.</p></li>
 <li><p>Next is to determine just how you want to store things on your Objects and Characters. You can
-choose to either store things as individual <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc">Attributes</span></a>, like <code class="docutils literal notranslate"><span class="pre">character.db.STR=34</span></code> and
+choose to either store things as individual <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc std std-doc">Attributes</span></a>, like <code class="docutils literal notranslate"><span class="pre">character.db.STR=34</span></code> and
 <code class="docutils literal notranslate"><span class="pre">character.db.Hunting_skill=20</span></code>. But you could also use some custom storage method, like a
 dictionary <code class="docutils literal notranslate"><span class="pre">character.db.skills</span> <span class="pre">=</span> <span class="pre">{&quot;Hunting&quot;:34,</span> <span class="pre">&quot;Fishing&quot;:20,</span> <span class="pre">...}</span></code>. A much more fancy solution is
 to look at the Ainneve <a class="reference external" href="https://github.com/evennia/ainneve/blob/master/world/traits.py">Trait
 handler</a>. Finally you could even go
-with a <a class="reference internal" href="../../../Concepts/New-Models.html"><span class="doc">custom django model</span></a>. Which is the better depends on your game and the
+with a <a class="reference internal" href="../../../Concepts/New-Models.html"><span class="doc std std-doc">custom django model</span></a>. Which is the better depends on your game and the
 complexity of your system.</p></li>
 <li><p>Make a clear <a class="reference external" href="https://en.wikipedia.org/wiki/Application_programming_interface">API</a> into your
 rules. That is, make methods/functions that you feed with, say, your Character and which skill you
 want to check. That is, you want something similar to this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">world</span> <span class="kn">import</span> <span class="n">rules</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">world</span> <span class="kn">import</span> <span class="n">rules</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">roll_skill</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="s2">&quot;hunting&quot;</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">roll_challenge</span><span class="p">(</span><span class="n">character1</span><span class="p">,</span> <span class="n">character2</span><span class="p">,</span> <span class="s2">&quot;swords&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </li>
 </ul>
 <p>You might need to make these functions more or less complex depending on your game. For example the
@@ -158,21 +158,7 @@ value goes up by 2 points and <code class="docutils literal notranslate"><span c
 <h3>Character<a class="headerlink" href="#character" title="Permalink to this headline">¶</a></h3>
 <p>The Character typeclass is simple. It goes in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>. There is already
 an empty <code class="docutils literal notranslate"><span class="pre">Character</span></code> class there that Evennia will look to and use.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
 
 <span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
@@ -188,7 +174,7 @@ an empty <code class="docutils literal notranslate"><span class="pre">Character<
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">STR</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p><code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> the server to load up the new code. Doing <code class="docutils literal notranslate"><span class="pre">examine</span> <span class="pre">self</span></code> will however <em>not</em> show the new
 Attributes on yourself. This is because the <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> hook is only called on <em>new</em>
 Characters. Your Character was already created and will thus not have them. To force a reload, use
@@ -201,75 +187,7 @@ the following command:</p>
 <section id="rule-module">
 <h3>Rule module<a class="headerlink" href="#rule-module" title="Permalink to this headline">¶</a></h3>
 <p>This is a module <code class="docutils literal notranslate"><span class="pre">mygame/world/rules.py</span></code>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
 
 <span class="k">def</span> <span class="nf">roll_hit</span><span class="p">():</span>
     <span class="s2">&quot;Roll 1d100&quot;</span>
@@ -339,7 +257,7 @@ the following command:</p>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">RunTimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skillname </span><span class="si">{</span><span class="n">skillname</span><span class="si">}</span><span class="s2"> not found.&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>These few functions implement the entirety of our simple rule system.  We have a function to check
 the “defeat” condition and reset the <code class="docutils literal notranslate"><span class="pre">HP</span></code> back to 100 again. We define a generic “skill” function.
 Multiple skills could all be added with the same signature; our <code class="docutils literal notranslate"><span class="pre">SKILLS</span></code> dictionary makes it easy to
@@ -348,30 +266,7 @@ function <code class="docutils literal notranslate"><span class="pre">roll_chall
 <p>In this example, the skill function actually does a lot - it not only rolls results, it also informs
 everyone of their results via <code class="docutils literal notranslate"><span class="pre">character.msg()</span></code> calls.</p>
 <p>Here is an example of usage in a game command:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 <span class="kn">from</span> <span class="nn">world</span> <span class="kn">import</span> <span class="n">rules</span>
 
 <span class="k">class</span> <span class="nc">CmdAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
@@ -396,7 +291,7 @@ everyone of their results via <code class="docutils literal notranslate"><span c
         <span class="k">if</span> <span class="n">target</span><span class="p">:</span>
             <span class="n">rules</span><span class="o">.</span><span class="n">roll_challenge</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="s2">&quot;combat&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Note how simple the command becomes and how generic you can make it.  It becomes simple to offer any
 number of Combat commands by just extending this functionality - you can easily roll challenges and
 pick different skills to check. And if you ever decided to, say, change how to determine hit chance,
@@ -460,7 +355,7 @@ your <code class="docutils literal notranslate"><span class="pre">rules</span></
 <h3>Versions</h3>
 <ul>
   <li><a href="Implementing-a-game-rule-system.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

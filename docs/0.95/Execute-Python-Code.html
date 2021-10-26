@@ -1,0 +1,240 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Execute Python Code &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Execute Python Code</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="execute-python-code">
+<h1>Execute Python Code<a class="headerlink" href="#execute-python-code" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> command supplied with the default command set of Evennia allows you to execute Python
+commands directly from inside the game.  An alias to <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> is simply “<code class="docutils literal notranslate"><span class="pre">!</span></code>”. <em>Access to the <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code>
+command should be severely restricted</em>. This is no joke - being able to execute arbitrary Python
+code on the server is not something you should entrust to just anybody.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@py 1+2
+&lt;&lt;&lt; 3
+</pre></div>
+</div>
+<section id="available-variables">
+<h2>Available variables<a class="headerlink" href="#available-variables" title="Permalink to this headline">¶</a></h2>
+<p>A few local variables are made available when running <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code>. These offer entry into the running
+system.</p>
+<ul class="simple">
+<li><p><strong>self</strong> / <strong>me</strong> - the calling object (i.e. you)</p></li>
+<li><p><strong>here</strong> - the current caller’s location</p></li>
+<li><p><strong>obj</strong> - a dummy <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a> instance</p></li>
+<li><p><strong>evennia</strong> - Evennia’s <a class="reference internal" href="Evennia-API.html"><span class="doc std std-doc">flat API</span></a> - through this you can access all of Evennia.</p></li>
+</ul>
+<p>For accessing other objects in the same room you need to use <code class="docutils literal notranslate"><span class="pre">self.search(name)</span></code>. For objects in
+other locations, use one of the <code class="docutils literal notranslate"><span class="pre">evennia.search_*</span></code> methods. See [below](./Execute-Python-Code.md#finding-
+objects).</p>
+</section>
+<section id="returning-output">
+<h2>Returning output<a class="headerlink" href="#returning-output" title="Permalink to this headline">¶</a></h2>
+<p>This is an example where we import and test one of Evennia’s utilities found in
+<code class="docutils literal notranslate"><span class="pre">src/utils/utils.py</span></code>, but also accessible through <code class="docutils literal notranslate"><span class="pre">ev.utils</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@py from ev import utils; utils.time_format(33333)
+&lt;&lt;&lt; Done.
+</pre></div>
+</div>
+<p>Note that we didn’t get any return value, all we where told is that the code finished executing
+without error. This is often the case in more complex pieces of code which has no single obvious
+return value.  To see the output from the <code class="docutils literal notranslate"><span class="pre">time_format()</span></code> function we need to tell the system to
+echo it to us explicitly with <code class="docutils literal notranslate"><span class="pre">self.msg()</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@py from ev import utils; self.msg(str(utils.time_format(33333)))
+09:15
+&lt;&lt;&lt; Done.
+</pre></div>
+</div>
+<blockquote>
+<div><p>Warning: When using the <code class="docutils literal notranslate"><span class="pre">msg</span></code> function wrap our argument in <code class="docutils literal notranslate"><span class="pre">str()</span></code> to convert it into a string
+above. This is not strictly necessary for most types of data (Evennia will usually convert to a
+string behind the scenes for you). But for <em>lists</em> and <em>tuples</em> you will be confused by the output
+if you don’t wrap them in <code class="docutils literal notranslate"><span class="pre">str()</span></code>: only the first item of the iterable will be returned. This is
+because doing <code class="docutils literal notranslate"><span class="pre">msg(text)</span></code> is actually just a convenience shortcut; the full argument that <code class="docutils literal notranslate"><span class="pre">msg</span></code>
+accepts is something called an <em>outputfunc</em> on the form <code class="docutils literal notranslate"><span class="pre">(cmdname,</span> <span class="pre">(args),</span> <span class="pre">{kwargs})</span></code> (see <a class="reference internal" href="Messagepath.html"><span class="doc std std-doc">the
+message path</span></a> for more info). Sending a list/tuple confuses Evennia to think you are
+sending such a structure. Converting it to a string however makes it clear it should just be
+displayed as-is.</p>
+</div></blockquote>
+<p>If you were to use Python’s standard <code class="docutils literal notranslate"><span class="pre">print</span></code>, you will see the result in your current <code class="docutils literal notranslate"><span class="pre">stdout</span></code> (your
+terminal by default, otherwise your log file).</p>
+</section>
+<section id="finding-objects">
+<h2>Finding objects<a class="headerlink" href="#finding-objects" title="Permalink to this headline">¶</a></h2>
+<p>A common use for <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> is to explore objects in the database, for debugging and performing specific
+operations that are not covered by a particular command.</p>
+<p>Locating an object is best done using <code class="docutils literal notranslate"><span class="pre">self.search()</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@py self.search(&quot;red_ball&quot;)
+&lt;&lt;&lt; Ball
+
+@py self.search(&quot;red_ball&quot;).db.color = &quot;red&quot;
+&lt;&lt;&lt; Done.
+
+@py self.search(&quot;red_ball&quot;).db.color
+&lt;&lt;&lt; red
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">self.search()</span></code> is by far the most used case, but you can also search other database tables for
+other Evennia entities like scripts or configuration entities. To do this you can use the generic
+search entries found in <code class="docutils literal notranslate"><span class="pre">ev.search_*</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@py evennia.search_script(&quot;sys_game_time&quot;)
+&lt;&lt;&lt; [&lt;src.utils.gametime.GameTime object at 0x852be2c&gt;]
+</pre></div>
+</div>
+<p>(Note that since this becomes a simple statement, we don’t have to wrap it in <code class="docutils literal notranslate"><span class="pre">self.msg()</span></code> to get
+the output). You can also use the database model managers directly (accessible through the <code class="docutils literal notranslate"><span class="pre">objects</span></code>
+properties of database models or as <code class="docutils literal notranslate"><span class="pre">evennia.managers.*</span></code>). This is a bit more flexible since it
+gives you access to the full range of database search methods defined in each manager.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@py evennia.managers.scripts.script_search(&quot;sys_game_time&quot;)
+&lt;&lt;&lt; [&lt;src.utils.gametime.GameTime object at 0x852be2c&gt;]
+</pre></div>
+</div>
+<p>The managers are useful for all sorts of database studies.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@py ev.managers.configvalues.all()
+&lt;&lt;&lt; [&lt;ConfigValue: default_home]&gt;, &lt;ConfigValue:site_name&gt;, ...]
+</pre></div>
+</div>
+</section>
+<section id="testing-code-outside-the-game">
+<h2>Testing code outside the game<a class="headerlink" href="#testing-code-outside-the-game" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> has the advantage of operating inside a running server (sharing the same process), where you
+can test things in real time. Much of this <em>can</em> be done from the outside too though.</p>
+<p>In a terminal, cd to the top of your game directory (this bit is important since we need access to
+your config file) and run</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia shell
+</pre></div>
+</div>
+<p>Your default Python interpreter will start up, configured to be able to work with and import all
+modules of your Evennia installation. From here you can explore the database and test-run individual
+modules as desired.</p>
+<p>It’s recommended that you get a more fully featured Python interpreter like
+<a class="reference external" href="http://ipython.scipy.org/moin/">iPython</a>. If you use a virtual environment, you can just get it
+with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">ipython</span></code>. IPython allows you to better work over several lines, and also has a lot
+of other editing features, such as tab-completion and <code class="docutils literal notranslate"><span class="pre">__doc__</span></code>-string reading.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ evennia shell
+
+IPython 0.10 -- An enhanced Interactive Python
+...
+
+In [1]: import evennia
+In [2]: evennia.managers.objects.all()
+Out[3]: [&lt;ObjectDB: Harry&gt;, &lt;ObjectDB: Limbo&gt;, ...]
+</pre></div>
+</div>
+<p>See the page about the <a class="reference internal" href="Evennia-API.html"><span class="doc std std-doc">Evennia-API</span></a> for more things to explore.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Execute Python Code</a><ul>
+<li><a class="reference internal" href="#available-variables">Available variables</a></li>
+<li><a class="reference internal" href="#returning-output">Returning output</a></li>
+<li><a class="reference internal" href="#finding-objects">Finding objects</a></li>
+<li><a class="reference internal" href="#testing-code-outside-the-game">Testing code outside the game</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Execute-Python-Code.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Execute-Python-Code.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Execute Python Code</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

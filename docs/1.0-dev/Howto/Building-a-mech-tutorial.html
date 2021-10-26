@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="building-a-mech-tutorial">
+  <section class="tex2jax_ignore mathjax_ignore" id="building-a-mech-tutorial">
 <h1>Building a mech tutorial<a class="headerlink" href="#building-a-mech-tutorial" title="Permalink to this headline">¶</a></h1>
 <blockquote>
 <div><p>This page was adapted from the article “Building a Giant Mech in Evennia” by Griatch, published in
@@ -49,16 +51,16 @@ this is a version adopted to be compatible with the latest Evennia.</p>
 <h2>Creating the Mech<a class="headerlink" href="#creating-the-mech" title="Permalink to this headline">¶</a></h2>
 <p>Let us create a functioning giant mech using the Python MUD-creation system Evennia. Everyone likes
 a giant mech, right? Start in-game as a character with build privileges (or the superuser).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@create</span><span class="o">/</span><span class="n">drop</span> <span class="n">Giant</span> <span class="n">Mech</span> <span class="p">;</span> <span class="n">mech</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@create/drop Giant Mech ; mech
 </pre></div>
 </div>
 <p>Boom. We created a Giant Mech Object and dropped it in the room. We also gave it an alias <em>mech</em>.
 Let’s describe it.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@desc</span> <span class="n">mech</span> <span class="o">=</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">huge</span> <span class="n">mech</span><span class="o">.</span> <span class="n">It</span> <span class="n">has</span> <span class="n">missiles</span> <span class="ow">and</span> <span class="n">stuff</span><span class="o">.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@desc mech = This is a huge mech. It has missiles and stuff.
 </pre></div>
 </div>
 <p>Next we define who can “puppet” the mech object.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@lock</span> <span class="n">mech</span> <span class="o">=</span> <span class="n">puppet</span><span class="p">:</span><span class="nb">all</span><span class="p">()</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@lock mech = puppet:all()
 </pre></div>
 </div>
 <p>This makes it so that everyone can control the mech. More mechs to the people! (Note that whereas
@@ -68,9 +70,9 @@ whatever interface style you prefer.)</p>
 more flexible about using and adding commands to those objects. Here are some ground rules well
 worth remembering for the remainder of this article:</p>
 <ul class="simple">
-<li><p>The <a class="reference internal" href="../Components/Accounts.html"><span class="doc">Account</span></a> represents the real person logging in and has no game-world existence.</p></li>
-<li><p>Any <a class="reference internal" href="../Components/Objects.html"><span class="doc">Object</span></a> can be puppeted by an Account (with proper permissions).</p></li>
-<li><p><a class="reference external" href="Components/Objects.html#characters">Characters</a>, <a class="reference external" href="Components/Objects.html#rooms">Rooms</a>, and <a class="reference external" href="Components/Objects.html#exits">Exits</a> are just
+<li><p>The <a class="reference internal" href="../Components/Accounts.html"><span class="doc std std-doc">Account</span></a> represents the real person logging in and has no game-world existence.</p></li>
+<li><p>Any <a class="reference internal" href="../Components/Objects.html"><span class="doc std std-doc">Object</span></a> can be puppeted by an Account (with proper permissions).</p></li>
+<li><p><a class="reference internal" href="../Components/Objects.html#characters"><span class="std std-doc">Characters</span></a>, <a class="reference internal" href="../Components/Objects.html#rooms"><span class="std std-doc">Rooms</span></a>, and <a class="reference internal" href="../Components/Objects.html#exits"><span class="std std-doc">Exits</span></a> are just
 children of normal Objects.</p></li>
 <li><p>Any Object can be inside another (except if it creates a loop).</p></li>
 <li><p>Any Object can store custom sets of commands on it. Those commands can:</p>
@@ -87,14 +89,14 @@ commands on a puppeted Object explicitly override them.</p></li>
 puppet-access to do so). As mentioned above, the bog-standard Character class is in fact like any
 Object: it is auto-puppeted when logging in and just has a command set on it containing the normal
 in-game commands, like look, inventory, get and so on.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@ic</span> <span class="n">mech</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@ic mech
 </pre></div>
 </div>
 <p>You just jumped out of your Character and <em>are</em> now the mech! If people look at you in-game, they
 will look at a mech. The problem at this point is that the mech Object has no commands of its own.
 The usual things like look, inventory and get sat on the Character object, remember? So at the
 moment the mech is not quite as cool as it could be.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@ic</span> <span class="o">&lt;</span><span class="n">Your</span> <span class="n">old</span> <span class="n">Character</span><span class="o">&gt;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@ic &lt;Your old Character&gt;
 </pre></div>
 </div>
 <p>You just jumped back to puppeting your normal, mundane Character again. All is well.</p>
@@ -107,45 +109,7 @@ the one with the <code class="docutils literal notranslate"><span class="pre">&#
 <h3>Arming the Mech<a class="headerlink" href="#arming-the-mech" title="Permalink to this headline">¶</a></h3>
 <p>Let us make the mech a little more interesting. In our favorite text editor, we will create some new
 mech-suitable commands. In Evennia, commands are defined as Python classes.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in a new file mygame/commands/mechcommands.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in a new file mygame/commands/mechcommands.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
@@ -184,8 +148,9 @@ mech-suitable commands. In Evennia, commands are defined as Python classes.</p>
 <span class="k">class</span> <span class="nc">CmdLaunch</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="c1"># make your own &#39;launch&#39;-command here as an exercise!</span>
     <span class="c1"># (it&#39;s very similar to the &#39;shoot&#39; command above).</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This is saved as a normal Python module (let’s call it <code class="docutils literal notranslate"><span class="pre">mechcommands.py</span></code>), in a place Evennia looks
 for such modules (<code class="docutils literal notranslate"><span class="pre">mygame/commands/</span></code>). This command will trigger when the player gives the command
 “shoot”, “fire,” or even “fire!” with an exclamation mark. The mech can shoot in the air or at a
@@ -196,23 +161,9 @@ space we won’t describe it here; it looks the same except it returns a text
 about the missiles being fired and has different <code class="docutils literal notranslate"><span class="pre">key</span></code> and <code class="docutils literal notranslate"><span class="pre">aliases</span></code>. We leave
 that up to you to create as an exercise. You could have it print “WOOSH! The
 mech launches missiles against <target>!”, for example.</p>
-<p>Now we shove our commands into a command set. A <a class="reference internal" href="../Components/Command-Sets.html"><span class="doc">Command Set</span></a> (CmdSet) is a container
+<p>Now we shove our commands into a command set. A <a class="reference internal" href="../Components/Command-Sets.html"><span class="doc std std-doc">Command Set</span></a> (CmdSet) is a container
 holding any number of commands. The command set is what we will store on the mech.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in the same file mygame/commands/mechcommands.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in the same file mygame/commands/mechcommands.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
@@ -228,20 +179,20 @@ holding any number of commands. The command set is what we will store on the mec
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdShoot</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdLaunch</span><span class="p">())</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This simply groups all the commands we want. We add our new shoot/launch commands. Let’s head back
 into the game. For testing we will manually attach our new CmdSet to the mech.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;mech&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;commands.mechcommands.MechCmdSet&quot;</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@py self.search(&quot;mech&quot;).cmdset.add(&quot;commands.mechcommands.MechCmdSet&quot;)
 </pre></div>
 </div>
 <p>This is a little Python snippet (run from the command line as an admin) that searches for the mech
 in our current location and attaches our new MechCmdSet to it. What we add is actually the Python
 path to our cmdset class. Evennia will import and initialize it behind the scenes.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@ic</span> <span class="n">mech</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@ic mech
 </pre></div>
 </div>
 <p>We are back as the mech! Let’s do some shooting!</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>fire!
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>fire!
 BOOM! The mech fires its gun in the air!
 </pre></div>
 </div>
@@ -262,24 +213,9 @@ location (not just by puppeting it). We’ll solve this with a <em>lock</em> in 
 This is great for testing. The way we added it, the MechCmdSet will even go away if we reload the
 server. Now we want to make the mech an actual object “type” so we can create mechs without those
 extra steps. For this we need to create a new Typeclass.</p>
-<p>A <a class="reference internal" href="../Components/Typeclasses.html"><span class="doc">Typeclass</span></a> is a near-normal Python class that stores its existence to the database
+<p>A <a class="reference internal" href="../Components/Typeclasses.html"><span class="doc std std-doc">Typeclass</span></a> is a near-normal Python class that stores its existence to the database
 behind the scenes. A Typeclass is created in a normal Python source file:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in the new file mygame/typeclasses/mech.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in the new file mygame/typeclasses/mech.py</span>
 
 <span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
 <span class="kn">from</span> <span class="nn">commands.mechcommands</span> <span class="kn">import</span> <span class="n">MechCmdSet</span>
@@ -296,7 +232,7 @@ behind the scenes. A Typeclass is created in a normal Python source file:</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;puppet:all();call:false()&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a huge mech. It has missiles and stuff.&quot;</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>For convenience we include the full contents of the default <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code> in there. This will
 make a Character’s normal commands available to the mech. We also add the mech-commands from before,
 making sure they are stored persistently in the database. The locks specify that anyone can puppet
@@ -306,14 +242,14 @@ able to shoot.</p>
 set and the correct lock. We set a default description, but you would probably change this with
 <code class="docutils literal notranslate"><span class="pre">&#64;desc</span></code> to individualize your mechs as you build them.</p>
 <p>Back in the game, just exit the old mech (<code class="docutils literal notranslate"><span class="pre">&#64;ic</span></code> back to your old character) then do</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@create</span><span class="o">/</span><span class="n">drop</span> <span class="n">The</span> <span class="n">Bigger</span> <span class="n">Mech</span> <span class="p">;</span> <span class="n">bigmech</span> <span class="p">:</span> <span class="n">mech</span><span class="o">.</span><span class="n">Mech</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@create/drop The Bigger Mech ; bigmech : mech.Mech
 </pre></div>
 </div>
 <p>We create a new, bigger mech with an alias bigmech. Note how we give the python-path to our
 Typeclass at the end — this tells Evennia to create the new object based on that class (we don’t
 have to give the full path in our game dir <code class="docutils literal notranslate"><span class="pre">typeclasses.mech.Mech</span></code> because Evennia knows to look in
 the <code class="docutils literal notranslate"><span class="pre">typeclasses</span></code> folder already). A shining new mech will appear in the room! Just use</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@ic</span> <span class="n">bigmech</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@ic bigmech
 </pre></div>
 </div>
 <p>to take it on a test drive.</p>
@@ -387,7 +323,7 @@ shooting goodness would be made available to you only when you enter it.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Building-a-mech-tutorial.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

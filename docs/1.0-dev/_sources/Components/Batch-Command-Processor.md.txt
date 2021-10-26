@@ -1,7 +1,7 @@
 # Batch Command Processor
 
 
-For an introduction and motivation to using batch processors, see [here](./Batch-Processors). This
+For an introduction and motivation to using batch processors, see [here](./Batch-Processors.md). This
 page describes the Batch-*command* processor. The Batch-*code* one is covered [here](Batch-Code-
 Processor).
 
@@ -152,7 +152,7 @@ when creating the file, so that you can 'walk' (or teleport) to the right places
 This also means there are several pitfalls when designing and adding certain types of objects. Here
 are some examples:
 
-- *Rooms that change your [Command Set](./Command-Sets)*: Imagine that you build a 'dark' room, which
+- *Rooms that change your [Command Set](./Command-Sets.md)*: Imagine that you build a 'dark' room, which
 severely limits the cmdsets of those entering it (maybe you have to find the light switch to
 proceed). In your batch script you would create this room, then teleport to it - and promptly be
 shifted into the dark state where none of your normal build commands work ...
@@ -172,7 +172,7 @@ The fact that you build as 'yourself' can also be considered an advantage howeve
 decide to change the default command to allow others than superusers to call the processor. Since
 normal access-checks are still performed, a malevolent builder with access to the processor should
 not be able to do all that much damage (this is the main drawback of the [Batch Code
-Processor](Batch-Code-Processor))
+Processor](./Batch-Code-Processor.md))
 
 - [GNU Emacs](https://www.gnu.org/software/emacs/) users might find it interesting to use emacs'
 *evennia mode*. This is an Emacs major mode found in `evennia/utils/evennia-mode.el`. It offers

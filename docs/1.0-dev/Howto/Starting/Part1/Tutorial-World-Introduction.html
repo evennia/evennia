@@ -14,6 +14,8 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -47,12 +49,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="the-tutorial-world">
+  <section class="tex2jax_ignore mathjax_ignore" id="the-tutorial-world">
 <h1>The Tutorial World<a class="headerlink" href="#the-tutorial-world" title="Permalink to this headline">¶</a></h1>
-<p>The <em>Tutorial World</em> is a small and functioning MUD-style game world shipped with Evennia.<br />It’s a small showcase of what is possible. It can also be useful for those who have an easier
+<p>The <em>Tutorial World</em> is a small and functioning MUD-style game world shipped with Evennia.
+It’s a small showcase of what is possible. It can also be useful for those who have an easier
 time learning by deconstructing existing code.</p>
 <p>Stand in the Limbo room and install it with</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">batchcommand</span> <span class="n">tutorial_world</span><span class="o">.</span><span class="n">build</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>batchcommand tutorial_world.build
 </pre></div>
 </div>
 <p>What this does is to run the build script
@@ -61,7 +64,7 @@ This is pretty much just a list of build-commands executed in sequence by the <c
 Wait for the building to complete and don’t run it twice. A new exit should have appeared named <em>Tutorial</em>.</p>
 <p>The game consists of a single-player quest and has some 20 rooms that you can explore as you seek
 to discover the whereabouts of a mythical weapon. Make sure you don’t play as superuser:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">quell</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>quell
 </pre></div>
 </div>
 <p>Enter the new exit by writing <code class="docutils literal notranslate"><span class="pre">tutorial</span></code>. Enjoy! If you succeed you will eventually
@@ -121,15 +124,19 @@ Either way you should now be back in Limbo, able to reflect on the experience.</
 </ul>
 <aside class="sidebar">
 <p class="sidebar-title">Extra Credit</p>
-<p>If you have previous programming experience (or after you have gone
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>If you have previous programming experience (or after you have gone
 through this Starter tutorial) it may be instructive to dig a little deeper into the Tutorial-world
 code to learn how it achieves what it does. The code is heavily documented.
-You can find all the code in <a class="reference external" href="../../api/evennia.contrib.tutorial_world.html">evennia/contrib/tutorial_world</a>,
-the build-script is <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/contrib/tutorial_world/build.ev">here</a>.</p>
-<p>When reading and learning from the code, however, keep in mind that <em>Tutorial World</em> was created with a very
+You can find all the code in `evennia/contrib/tutorial_world &lt;../../api/evennia.contrib.tutorial_world.html&gt;`_,
+the build-script is `here &lt;https://github.com/evennia/evennia/blob/master/evennia/contrib/tutorial_world/build.ev&gt;`_.
+
+
+When reading and learning from the code, however, keep in mind that *Tutorial World* was created with a very
 specific goal in mind: to install easily and to not permanently modify the rest of the server. It therefore
 goes to some length to use only temporary solutions and to clean up after itself. This is not something
-you will usually need to worry about when making your own game.</p>
+you will usually need to worry about when making your own game.
+</pre></div>
+</div>
 </aside>
 <p>Quite a lot of stuff crammed in such a small area!</p>
 </section>
@@ -138,14 +145,14 @@ you will usually need to worry about when making your own game.</p>
 <p>Once are done playing with the tutorial world, let’s uninstall it.
 Uninstalling the tutorial world basically means deleting all the rooms and objects it consists of.
 Make sure you are back in Limbo, then</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">find</span> <span class="n">tut</span><span class="c1">#01</span>
- <span class="n">find</span> <span class="n">tut</span><span class="c1">#16</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> find tut#01
+ find tut#16
 </pre></div>
 </div>
 <p>This should locate the first and last rooms created by <code class="docutils literal notranslate"><span class="pre">build.ev</span></code> - <em>Intro</em> and <em>Outro</em>. If you
 installed normally, everything created between these two numbers should be part of the tutorial.
 Note their #dbref numbers, for example 5 and 80. Next we just delete all objects in that range:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="k">del</span> <span class="mi">5</span><span class="o">-</span><span class="mi">80</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> del 5-80
 </pre></div>
 </div>
 <p>You will see some errors since some objects are auto-deleted and so cannot be found when the delete
@@ -216,7 +223,7 @@ move on with how to access this power through code.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Tutorial-World-Introduction.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

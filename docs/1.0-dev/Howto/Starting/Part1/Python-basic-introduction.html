@@ -14,6 +14,8 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -47,13 +49,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="starting-to-code-evennia">
+  <section class="tex2jax_ignore mathjax_ignore" id="starting-to-code-evennia">
 <h1>Starting to code Evennia<a class="headerlink" href="#starting-to-code-evennia" title="Permalink to this headline">¶</a></h1>
 <p>Time to dip our toe into some coding! Evennia is written and extended in <a class="reference external" href="https://python.org">Python</a>,
 which is a mature and professional programming language that is very fast to work with.</p>
 <p>That said, even though Python is widely considered easy to learn, we can only cover the most immediately
 important aspects of Python in this series of starting tutorials. Hopefully we can get you started
-but then you’ll need to continue learning from there. See our <a class="reference internal" href="../../../Links.html"><span class="doc">link section</span></a> for finding
+but then you’ll need to continue learning from there. See our <a class="reference internal" href="../../../Links.html"><span class="doc std std-doc">link section</span></a> for finding
 more reference material and dedicated Python tutorials.</p>
 <blockquote>
 <div><p>While this will be quite basic if you are an experienced developer, you may want to at least
@@ -61,23 +63,25 @@ stay around for the first few sections where we cover how to run Python from ins
 </div></blockquote>
 <p>First, if you were quelling yourself to play the tutorial world, make sure to get your
 superuser powers back:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">unquell</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>   unquell
 </pre></div>
 </div>
 <section id="evennia-hello-world">
 <h2>Evennia Hello world<a class="headerlink" href="#evennia-hello-world" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">py</span></code> Command (or <code class="docutils literal notranslate"><span class="pre">!</span></code>, which is an alias) allows you as a superuser to execute raw Python from in-
 game. This is useful for quick testing. From the game’s input line, enter the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;Hello World!&quot;)
 </pre></div>
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Command input</p>
-<p>The line with <cite>&gt;</cite> indicates input to enter in-game, while the lines below are the
-expected return from that input.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The line with `&gt;` indicates input to enter in-game, while the lines below are the
+expected return from that input.
+</pre></div>
+</div>
 </aside>
 <p>You will see</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; print(&quot;Hello world!&quot;)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; print(&quot;Hello world!&quot;)
 Hello World!
 </pre></div>
 </div>
@@ -95,24 +99,24 @@ button or even graphical element, the normal process is for the user to input co
 text and get text back. As we saw above, a piece of text is called a <em>string</em> in Python and is enclosed in
 either single- or double-quotes.</p>
 <p>Strings can be added together:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This is a &quot;</span> <span class="o">+</span> <span class="s2">&quot;breaking change.&quot;</span><span class="p">)</span>
-<span class="n">This</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">breaking</span> <span class="n">change</span><span class="o">.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;This is a &quot; + &quot;breaking change.&quot;)
+This is a breaking change.
 </pre></div>
 </div>
 <p>A string multiplied with a number will repeat that string as many times:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;|&quot;</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">40</span> <span class="o">+</span> <span class="s2">&quot;|&quot;</span><span class="p">)</span>
-<span class="o">|----------------------------------------|</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;|&quot; + &quot;-&quot; * 40 + &quot;|&quot;)
+|----------------------------------------|
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;A&quot; + &quot;a&quot; * 5 + &quot;rgh!&quot;)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;A&quot; + &quot;a&quot; * 5 + &quot;rgh!&quot;)
 Aaaaaargh!
 </pre></div>
 </div>
 <p>While combining different strings is useful, even more powerful is the ability to modify the contents
 of the string in-place. There are several ways to do this in Python and we’ll show two of them here. The first
 is to use the <code class="docutils literal notranslate"><span class="pre">.format</span></code> <em>method</em> of the string:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;This is a {} idea!&quot;.format(&quot;good&quot;))
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;This is a {} idea!&quot;.format(&quot;good&quot;))
 This is a good idea!
 </pre></div>
 </div>
@@ -130,12 +134,12 @@ is stand-alone in a python module, like <cite>print()</cite></p>
 sits and can thus affect it in various ways. You access it with the period <code class="docutils literal notranslate"><span class="pre">.</span></code>. In this case, the
 string has a resource <code class="docutils literal notranslate"><span class="pre">format(...)</span></code> that modifies it. More specifically, it replaced the <code class="docutils literal notranslate"><span class="pre">{}</span></code> marker
 inside the string with the value passed to the format. You can do so many times:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;This is a {} idea!&quot;.format(&quot;bad&quot;))
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;This is a {} idea!&quot;.format(&quot;bad&quot;))
 This is a bad idea!
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;This is the {} and {} {} idea!&quot;.format(&quot;first&quot;, &quot;second&quot;, &quot;great&quot;))
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;This is the {} and {} {} idea!&quot;.format(&quot;first&quot;, &quot;second&quot;, &quot;great&quot;))
 This is the first and second great idea!
 </pre></div>
 </div>
@@ -147,23 +151,25 @@ little more about errors in the next section, for now just fix until it prints a
 <p>Here we passed three comma-separated strings as <em>arguments</em> to the string’s <code class="docutils literal notranslate"><span class="pre">format</span></code> method. These
 replaced the <code class="docutils literal notranslate"><span class="pre">{}</span></code> markers in the same order as they were given.</p>
 <p>The input does not have to be strings either:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;STR: </span><span class="si">{}</span><span class="s2">, DEX: </span><span class="si">{}</span><span class="s2">, INT: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
-<span class="n">STR</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="n">DEX</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="n">INT</span><span class="p">:</span> <span class="mi">8</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;STR: {}, DEX: {}, INT: {}&quot;.format(12, 14, 8))
+STR: 12, DEX: 14, INT: 8
 </pre></div>
 </div>
 <p>To separate two Python instructions on the same line, you use the semi-colon, <code class="docutils literal notranslate"><span class="pre">;</span></code>. Try this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py a = &quot;awesome sauce&quot; ; print(&quot;This is {}!&quot;.format(a))
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py a = &quot;awesome sauce&quot; ; print(&quot;This is {}!&quot;.format(a))
 This is awesome sauce!
 </pre></div>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>MUD clients and semi-colon</p>
-<p>Some MUD clients use the semi-colon <cite>;</cite> to split client-inputs
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Some MUD clients use the semi-colon `;` to split client-inputs
 into separate sends. If so, the above will give an error. Most clients allow you to
-run in ‘verbatim’ mode or to remap to use some other separator than <cite>;</cite>. If you still have
-trouble, just use the Evennia web client for now. In real Python code you’ll pretty much never use
-the semi-colon.</p>
+run in &#39;verbatim&#39; mode or to remap to use some other separator than `;`. If you still have
+trouble, just use the Evennia web client for now. In real Python code you&#39;ll pretty much never use
+the semi-colon.
+</pre></div>
+</div>
 </div>
 <p>What happened here was that we <em>assigned</em> the string <code class="docutils literal notranslate"><span class="pre">&quot;awesome</span> <span class="pre">sauce&quot;</span></code> to a <em>variable</em> we chose
 to name <code class="docutils literal notranslate"><span class="pre">a</span></code>. In the next statement, Python remembered what <code class="docutils literal notranslate"><span class="pre">a</span></code> was and we passed that into <code class="docutils literal notranslate"><span class="pre">format()</span></code>
@@ -171,8 +177,8 @@ to get the output. If you replaced the value of <code class="docutils literal no
 instead.</p>
 <p>Here’s the stat-example again, moving the stats to variables (here we just set them, but in a real
 game they may be changed over time, or modified by circumstance):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">stren</span><span class="p">,</span> <span class="n">dex</span><span class="p">,</span> <span class="n">intel</span> <span class="o">=</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">8</span> <span class="p">;</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;STR: </span><span class="si">{}</span><span class="s2">, DEX: </span><span class="si">{dex}</span><span class="s2">, INT: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stren</span><span class="p">,</span> <span class="n">dex</span><span class="p">,</span> <span class="n">intel</span><span class="p">))</span>
-<span class="n">STR</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span> <span class="n">DEX</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="n">INT</span><span class="p">:</span> <span class="mi">8</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py stren, dex, intel = 13, 14, 8 ; print(&quot;STR: {}, DEX: {dex}, INT: {}&quot;.format(stren, dex, intel))
+STR: 13, DEX: 14, INT: 8
 </pre></div>
 </div>
 <p>The point is that even if the values of the stats change, the print() statement would not change - it just keeps
@@ -180,30 +186,30 @@ pretty-printing whatever is given to it.</p>
 <p>Using <code class="docutils literal notranslate"><span class="pre">.format()</span></code> is convenient (and there is a <a class="reference external" href="https://www.w3schools.com/python/ref_string_format.asp">lot more</a>
 you can do with it). But the <em>f-string</em> can be even more convenient. An
 f-string looks like a normal string … except there is an <code class="docutils literal notranslate"><span class="pre">f</span></code> front of it, like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sa">f</span><span class="s2">&quot;this is now an f-string.&quot;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>f&quot;this is now an f-string.&quot;
 </pre></div>
 </div>
 <p>An f-string on its own is just like any other string. But let’s redo the example we did before, using an f-string:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py a = &quot;awesome sauce&quot; ; print(f&quot;This is {a}!&quot;)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py a = &quot;awesome sauce&quot; ; print(f&quot;This is {a}!&quot;)
 This is awesome sauce!
 </pre></div>
 </div>
 <p>We could just insert that <code class="docutils literal notranslate"><span class="pre">a</span></code> variable directly into the f-string using <code class="docutils literal notranslate"><span class="pre">{a}</span></code>. Fewer parentheses to
 remember and arguable easier to read as well.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">stren</span><span class="p">,</span> <span class="n">dex</span><span class="p">,</span> <span class="n">intel</span> <span class="o">=</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">8</span> <span class="p">;</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;STR: </span><span class="si">{</span><span class="n">stren</span><span class="si">}</span><span class="s2">, DEX: </span><span class="si">{</span><span class="n">dex</span><span class="si">}</span><span class="s2">, INT: </span><span class="si">{</span><span class="n">intel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="n">STR</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span> <span class="n">DEX</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="n">INT</span><span class="p">:</span> <span class="mi">8</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py stren, dex, intel = 13, 14, 8 ; print(f&quot;STR: {stren}, DEX: {dex}, INT: {intel}&quot;)
+STR: 13, DEX: 14, INT: 8
 </pre></div>
 </div>
 <p>We will be exploring more complex string concepts when we get to creating Commands and need to
 parse and understand player input.</p>
 <p>Python itself knows nothing about colored text, this is an Evennia thing. Evennia supports the
 standard color schemes of traditional MUDs.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;|rThis is red text!|n This is normal color.&quot;</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;|rThis is red text!|n This is normal color.&quot;)
 </pre></div>
 </div>
 <p>Adding that <code class="docutils literal notranslate"><span class="pre">|r</span></code> at the start will turn our output bright red. <code class="docutils literal notranslate"><span class="pre">|R</span></code> will make it dark red. <code class="docutils literal notranslate"><span class="pre">|n</span></code>
 gives the normal text color. You can also use RGB (Red-Green-Blue) values from 0-5 (Xterm256 colors):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;|043This is a blue-green color.|[530|003 This is dark blue text on orange background.&quot;</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py print(&quot;|043This is a blue-green color.|[530|003 This is dark blue text on orange background.&quot;)
 </pre></div>
 </div>
 <blockquote>
@@ -226,19 +232,21 @@ structure should look:</p>
 </pre></div>
 </div>
 <p>For now, only add one line to <code class="docutils literal notranslate"><span class="pre">test.py</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <aside class="sidebar">
 <p class="sidebar-title">Python module</p>
-<p>This is a text file with the <cite>.py</cite> file ending. A module
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>This is a text file with the `.py` file ending. A module
 contains Python source code and from within Python one can
-access its contents by importing it via its python-path.</p>
+access its contents by importing it via its python-path.
+</pre></div>
+</div>
 </aside>
 <p>Don’t forget to <em>save</em> the file. We just created our first Python <em>module</em>!
 To use this in-game we have to <em>import</em> it. Try this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="kn">import</span> <span class="nn">world.test</span>
-<span class="n">Hello</span> <span class="n">World</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py import world.test
+Hello World
 </pre></div>
 </div>
 <p>If you make some error (we’ll cover how to handle errors below), fix the error in the module and
@@ -252,7 +260,7 @@ path - Evennia handles this for us.</p>
 <p>When you import the module, the top “level” of it will execute. In this case, it will immediately
 print “Hello World”.</p>
 <p>Now try to run this a second time:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="kn">import</span> <span class="nn">world.test</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py import world.test
 </pre></div>
 </div>
 <p>You will <em>not</em> see any output this second time or any subsequent times! This is not a bug. Rather
@@ -260,11 +268,11 @@ it is because of how Python importing works - it stores all imported modules and
 avoid importing them more than once. So your <code class="docutils literal notranslate"><span class="pre">print</span></code> will only run the first time, when the module
 is first imported.</p>
 <p>Try this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">reload</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
 </pre></div>
 </div>
 <p>And then</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py import world.test
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py import world.test
 Hello World!
 </pre></div>
 </div>
@@ -275,16 +283,14 @@ not very useful.</p>
 <div><p>We’ll get back to more advanced ways to import code in later tutorial sections - this is an
 important topic. But for now, let’s press on and resolve this particular problem.</p>
 </div></blockquote>
-</section>
 <section id="our-first-own-function">
-<h2>Our first own function<a class="headerlink" href="#our-first-own-function" title="Permalink to this headline">¶</a></h2>
+<h3>Our first own function<a class="headerlink" href="#our-first-own-function" title="Permalink to this headline">¶</a></h3>
 <p>We want to be able to print our hello-world message at any time, not just once after a server
 reload. Change your <code class="docutils literal notranslate"><span class="pre">mygame/world/test.py</span></code> file to look like this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>As we are moving to multi-line Python code, there are some important things to remember:</p>
 <ul class="simple">
 <li><p>Capitalization matters in Python. It must be <code class="docutils literal notranslate"><span class="pre">def</span></code> and not <code class="docutils literal notranslate"><span class="pre">DEF</span></code>, <code class="docutils literal notranslate"><span class="pre">who</span></code> is not the same as <code class="docutils literal notranslate"><span class="pre">Who</span></code>.</p></li>
@@ -310,14 +316,14 @@ start at least at this indentation level.</p></li>
 </ul>
 <p>Now let’s try this out. First <code class="docutils literal notranslate"><span class="pre">reload</span></code> your game to have it pick up
 our updated Python module, then import it.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">reload</span>
-<span class="o">&gt;</span> <span class="n">py</span> <span class="kn">import</span> <span class="nn">world.test</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
+&gt; py import world.test
 </pre></div>
 </div>
 <p>Nothing happened! That is because the function in our module won’t do anything just by importing it (this
 is what we wanted). It will only act when we <em>call</em> it. So we need to first import the module and then access the
 function within:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py import world.test ; world.test.hello_world()
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py import world.test ; world.test.hello_world()
 Hello world!
 </pre></div>
 </div>
@@ -328,19 +334,20 @@ own ends.</p>
 accessed the <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> function <em>inside</em> the newly imported module.</p>
 <p>By adding <code class="docutils literal notranslate"><span class="pre">()</span></code> to the <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> function we <em>call</em> it, that is we run the body of the function and
 print our text. We can now redo this as many times as we want without having to <code class="docutils literal notranslate"><span class="pre">reload</span></code> in between:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py import world.test ; world.test.hello_world()
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py import world.test ; world.test.hello_world()
 Hello world!
 &gt; py import world.test ; world.test.hello_world()
 Hello world!
 </pre></div>
 </div>
 </section>
+</section>
 <section id="sending-text-to-others">
 <h2>Sending text to others<a class="headerlink" href="#sending-text-to-others" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">print</span></code> command is a standard Python structure. We can use that here in the <code class="docutils literal notranslate"><span class="pre">py</span></code> command since
 we can se the output. It’s great for debugging and quick testing. But if you need to send a text
 to an actual player, <code class="docutils literal notranslate"><span class="pre">print</span></code> won’t do, because it doesn’t know <em>who</em> to send to. Try this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py me.msg(&quot;Hello world!&quot;)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py me.msg(&quot;Hello world!&quot;)
 Hello world!
 </pre></div>
 </div>
@@ -361,30 +368,29 @@ debugging and <code class="docutils literal notranslate"><span class="pre">.msg(
 <h2>Parsing Python errors<a class="headerlink" href="#parsing-python-errors" title="Permalink to this headline">¶</a></h2>
 <p>Let’s try this new text-sending in the function we just created.  Go back to
 your <code class="docutils literal notranslate"><span class="pre">test.py</span></code> file and Replace the function with this instead:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
     <span class="n">me</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Save your file and <code class="docutils literal notranslate"><span class="pre">reload</span></code> your server to tell Evennia to re-import new code,
 then run it like before:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">&gt;</span> <span class="n">py</span> <span class="kn">import</span> <span class="nn">world.test</span> <span class="p">;</span> <span class="n">world</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">hello_world</span><span class="p">()</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; py import world.test ; world.test.hello_world()
 </pre></div>
 </div>
 <p>No go - this time you get an error!</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">File</span> <span class="s2">&quot;./world/test.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">2</span><span class="p">,</span> <span class="ow">in</span> <span class="n">hello_world</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">File</span> <span class="s2">&quot;./world/test.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">2</span><span class="p">,</span> <span class="ow">in</span> <span class="n">hello_world</span>
     <span class="n">me</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
 <span class="ne">NameError</span><span class="p">:</span> <span class="n">name</span> <span class="s1">&#39;me&#39;</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">defined</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <aside class="sidebar">
 <p class="sidebar-title">Errors in the logs</p>
-<p>In regular use, tracebacks will often appear in the log rather than
-in the game. Use <cite>evennia –log</cite> to view the log in the terminal. Make
-sure to scroll back if you expect an error and don’t see it. Use
-<cite>Ctrl-C</cite> (or <cite>Cmd-C</cite> on Mac) to exit the log-view.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>In regular use, tracebacks will often appear in the log rather than
+in the game. Use `evennia --log` to view the log in the terminal. Make
+sure to scroll back if you expect an error and don&#39;t see it. Use
+`Ctrl-C` (or `Cmd-C` on Mac) to exit the log-view.
+</pre></div>
+</div>
 </aside>
 <p>This is called a <em>traceback</em>. Python’s errors are very friendly and will most of the time tell you
 exactly what and where things go wrong. It’s important that you learn to parse tracebacks so you
@@ -411,15 +417,14 @@ Hence the <code class="docutils literal notranslate"><span class="pre">NameError
 <p>We know that <code class="docutils literal notranslate"><span class="pre">me</span></code> exists at the point when we run the <code class="docutils literal notranslate"><span class="pre">py</span></code> command, because we can do <code class="docutils literal notranslate"><span class="pre">py</span> <span class="pre">me.msg(&quot;Hello</span> <span class="pre">World!&quot;)</span></code>
 with no problem. So let’s <em>pass</em> that me along to the function so it knows what it should be.
 Go back to your <code class="docutils literal notranslate"><span class="pre">test.py</span></code> and change it to this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">who</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">who</span><span class="p">):</span>
     <span class="n">who</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>We now added an <em>argument</em> to the function. We could have named it anything. Whatever <code class="docutils literal notranslate"><span class="pre">who</span></code> is,
 we will call a method <code class="docutils literal notranslate"><span class="pre">.msg()</span></code> on it.</p>
 <p>As usual, <code class="docutils literal notranslate"><span class="pre">reload</span></code> the server to make sure the new code is available.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py import world.test ; world.test.hello_world(me)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py import world.test ; world.test.hello_world(me)
 Hello World!
 </pre></div>
 </div>
@@ -445,27 +450,29 @@ and the concept of <em>Leap before you Look</em>.</p>
 object called the <code class="docutils literal notranslate"><span class="pre">TutorialMirror</span></code>. The mirror will echo whatever is being sent to it to
 the room it is in.</p>
 <p>On the game command-line, let’s create a mirror:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create</span><span class="o">/</span><span class="n">drop</span> <span class="n">mirror</span><span class="p">:</span><span class="n">contrib</span><span class="o">.</span><span class="n">tutorial_examples</span><span class="o">.</span><span class="n">mirror</span><span class="o">.</span><span class="n">TutorialMirror</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; create/drop mirror:contrib.tutorial_examples.mirror.TutorialMirror
 </pre></div>
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Creating objects</p>
-<p>The <cite>create</cite> command was first used to create boxes in the
-<a class="reference external" href="Building-Quickstart">Building Stuff</a> tutorial. Note how it
-uses a “python-path” to describe where to load the mirror’s code from.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The `create` command was first used to create boxes in the
+`Building Stuff &lt;Building-Quickstart&gt;`_ tutorial. Note how it
+uses a &quot;python-path&quot; to describe where to load the mirror&#39;s code from.
+</pre></div>
+</div>
 </aside>
 <p>A mirror should appear in your location.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">look</span> <span class="n">mirror</span>
-<span class="n">mirror</span> <span class="n">shows</span> <span class="n">your</span> <span class="n">reflection</span><span class="p">:</span>
-<span class="n">This</span> <span class="ow">is</span> <span class="n">User</span> <span class="c1">#1</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; look mirror
+mirror shows your reflection:
+This is User #1
 </pre></div>
 </div>
 <p>What you are seeing is actually your own avatar in the game, the same thing that is available as <code class="docutils literal notranslate"><span class="pre">me</span></code> in the <code class="docutils literal notranslate"><span class="pre">py</span></code>
 command.</p>
 <p>What we are aiming for now is the equivalent of <code class="docutils literal notranslate"><span class="pre">mirror.msg(&quot;Mirror</span> <span class="pre">Mirror</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">wall&quot;)</span></code>. But the first thing that
 comes to mind will not work:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">mirror</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Mirror, Mirror on the wall ...&quot;</span><span class="p">)</span>
-<span class="ne">NameError</span><span class="p">:</span> <span class="n">name</span> <span class="s1">&#39;mirror&#39;</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">defined</span><span class="o">.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py mirror.msg(&quot;Mirror, Mirror on the wall ...&quot;)
+NameError: name &#39;mirror&#39; is not defined.
 </pre></div>
 </div>
 <p>This is not surprising: Python knows nothing about “mirrors” or locations or anything. The <code class="docutils literal notranslate"><span class="pre">me</span></code> we’ve been using
@@ -473,29 +480,31 @@ is, as mentioned, just a convenient thing the Evennia devs makes available to th
 predict that you wanted to talk to mirrors.</p>
 <p>Instead we will need to <em>search</em> for that <code class="docutils literal notranslate"><span class="pre">mirror</span></code> object before we can send to it.
 Make sure you are in the same location as the mirror and try:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">me</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;mirror&quot;</span><span class="p">)</span>
-<span class="n">mirror</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py me.search(&quot;mirror&quot;)
+mirror
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">me.search(&quot;name&quot;)</span></code> will, by default, search and <em>return</em> an object with the given name found in <em>the same location</em>
 as the <code class="docutils literal notranslate"><span class="pre">me</span></code> object is. If it can’t find anything you’ll see an error.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Function returns</p>
-<p>Whereas a function like <cite>print</cite> only prints its arguments, it’s very common
-for functions/methods to <cite>return</cite> a result of some kind. Think of the function
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Whereas a function like `print` only prints its arguments, it&#39;s very common
+for functions/methods to `return` a result of some kind. Think of the function
 as a machine - you put something in and out comes a result you can use. In the case
-of <cite>me.search</cite>, it will perform a database search and spit out the object it finds.</p>
+of `me.search`, it will perform a database search and spit out the object it finds.
+</pre></div>
+</div>
 </aside>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">me</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;dummy&quot;</span><span class="p">)</span>
-<span class="n">Could</span> <span class="ow">not</span> <span class="n">find</span> <span class="s1">&#39;dummy&#39;</span><span class="o">.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py me.search(&quot;dummy&quot;)
+Could not find &#39;dummy&#39;.
 </pre></div>
 </div>
 <p>Wanting to find things in the same location is very common, but as we continue we’ll
 find that Evennia provides ample tools for tagging, searching and finding things from all over your game.</p>
 <p>Now that we know how to find the ‘mirror’ object, we just need to use that instead of <code class="docutils literal notranslate"><span class="pre">me</span></code>!</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">mirror</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;mirror&quot;</span><span class="p">)</span> <span class="p">;</span> <span class="n">mirror</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Mirror, Mirror on the wall ...&quot;</span><span class="p">)</span>
-<span class="n">mirror</span> <span class="n">echoes</span> <span class="n">back</span> <span class="n">to</span> <span class="n">you</span><span class="p">:</span>
-<span class="s2">&quot;Mirror, Mirror on the wall ...&quot;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py mirror = self.search(&quot;mirror&quot;) ; mirror.msg(&quot;Mirror, Mirror on the wall ...&quot;)
+mirror echoes back to you:
+&quot;Mirror, Mirror on the wall ...&quot;
 </pre></div>
 </div>
 <p>The mirror is useful for testing  because its <code class="docutils literal notranslate"><span class="pre">.msg</span></code> method just echoes whatever is sent to it back to the room. More common
@@ -506,57 +515,57 @@ would be to talk to a player character, in which case the text you sent would ha
 <p>So far we have use <code class="docutils literal notranslate"><span class="pre">py</span></code> in single-line mode, using <code class="docutils literal notranslate"><span class="pre">;</span></code> to separate multiple inputs. This is very convenient
 when you want to do some quick testing. But you can also start a full multi-line Python interactive interpreter
 inside Evennia.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span>
-<span class="n">Evennia</span> <span class="n">Interactive</span> <span class="n">Python</span> <span class="n">mode</span>
-<span class="n">Python</span> <span class="mf">3.7.1</span> <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">Oct</span> <span class="mi">22</span> <span class="mi">2018</span><span class="p">,</span> <span class="mi">11</span><span class="p">:</span><span class="mi">21</span><span class="p">:</span><span class="mi">55</span><span class="p">)</span>
-<span class="p">[</span><span class="n">GCC</span> <span class="mf">8.2.0</span><span class="p">]</span> <span class="n">on</span> <span class="n">Linux</span>
-<span class="p">[</span><span class="n">py</span> <span class="n">mode</span> <span class="o">-</span> <span class="n">quit</span><span class="p">()</span> <span class="n">to</span> <span class="n">exit</span><span class="p">]</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py
+Evennia Interactive Python mode
+Python 3.7.1 (default, Oct 22 2018, 11:21:55)
+[GCC 8.2.0] on Linux
+[py mode - quit() to exit]
 </pre></div>
 </div>
 <p>(the details of the output will vary with your Python version and OS). You are now in python interpreter mode. It means
 that <em>everything</em> you insert from now on will become a line of Python (you can no longer look around or do other
 commands).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World&quot;</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; print(&quot;Hello World&quot;)
 
-<span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World&quot;</span><span class="p">)</span>
-<span class="n">Hello</span> <span class="n">World</span>
-<span class="p">[</span><span class="n">py</span> <span class="n">mode</span> <span class="o">-</span> <span class="n">quit</span><span class="p">()</span> <span class="n">to</span> <span class="n">exit</span><span class="p">]</span>
+&gt;&gt;&gt; print(&quot;Hello World&quot;)
+Hello World
+[py mode - quit() to exit]
 </pre></div>
 </div>
 <p>Note that we didn’t need to put <code class="docutils literal notranslate"><span class="pre">py</span></code> in front now. The system will also echo your input (that’s the bit after
 the <code class="docutils literal notranslate"><span class="pre">&gt;&gt;&gt;</span></code>). For brevity in this tutorual we’ll turn the echo off. First exit <code class="docutils literal notranslate"><span class="pre">py</span></code> and then start again with the
 <code class="docutils literal notranslate"><span class="pre">/noecho</span></code> flag.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">quit</span><span class="p">()</span>
-<span class="n">Closing</span> <span class="n">the</span> <span class="n">Python</span> <span class="n">console</span><span class="o">.</span>
-<span class="o">&gt;</span> <span class="n">py</span><span class="o">/</span><span class="n">noecho</span>
-<span class="n">Evennia</span> <span class="n">Interactive</span> <span class="n">Python</span> <span class="n">mode</span> <span class="p">(</span><span class="n">no</span> <span class="n">echoing</span> <span class="n">of</span> <span class="n">prompts</span><span class="p">)</span>
-<span class="n">Python</span> <span class="mf">3.7.1</span> <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">Oct</span> <span class="mi">22</span> <span class="mi">2018</span><span class="p">,</span> <span class="mi">11</span><span class="p">:</span><span class="mi">21</span><span class="p">:</span><span class="mi">55</span><span class="p">)</span>
-<span class="p">[</span><span class="n">GCC</span> <span class="mf">8.2.0</span><span class="p">]</span> <span class="n">on</span> <span class="n">Linux</span>
-<span class="p">[</span><span class="n">py</span> <span class="n">mode</span> <span class="o">-</span> <span class="n">quit</span><span class="p">()</span> <span class="n">to</span> <span class="n">exit</span><span class="p">]</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; quit()
+Closing the Python console.
+&gt; py/noecho
+Evennia Interactive Python mode (no echoing of prompts)
+Python 3.7.1 (default, Oct 22 2018, 11:21:55)
+[GCC 8.2.0] on Linux
+[py mode - quit() to exit]
 </pre></div>
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">interactive py</p>
-<ul class="simple">
-<li><p>Start with <cite>py</cite>.</p></li>
-<li><p>Use <cite>py/noecho</cite> if you don’t want your input to be echoed for every line.</p></li>
-<li><p>All your inputs will now be interpreted as Python code.</p></li>
-<li><p>Exit with <cite>quit()</cite>.</p></li>
-</ul>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>- Start with `py`.
+- Use `py/noecho` if you don&#39;t want your input to be echoed for every line.
+- All your inputs will now be interpreted as Python code.
+- Exit with `quit()`.
+</pre></div>
+</div>
 </aside>
 <p>We can now enter multi-line Python code:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;Test&quot;</span>
-<span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This is a </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">}</span>
-<span class="n">This</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">Test</span><span class="o">.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; a = &quot;Test&quot;
+&gt; print(f&quot;This is a {a}.&quot;}
+This is a Test.
 </pre></div>
 </div>
 <p>Let’s try to define a function:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">who</span><span class="p">,</span> <span class="n">txt</span><span class="p">):</span>
-<span class="o">...</span>
-<span class="o">&gt;</span>     <span class="n">who</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
-<span class="o">...</span>
-<span class="o">&gt;</span>
-<span class="p">[</span><span class="n">py</span> <span class="n">mode</span> <span class="o">-</span> <span class="n">quit</span><span class="p">()</span> <span class="n">to</span> <span class="n">exit</span><span class="p">]</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; def hello_world(who, txt):
+...
+&gt;     who.msg(txt)
+...
+&gt;
+[py mode - quit() to exit]
 </pre></div>
 </div>
 <p>Some important things above:</p>
@@ -570,21 +579,21 @@ for Python to know it’s part of the function body.</p></li>
 the normal prompt on how to exit returns, we know we are done.</p></li>
 </ul>
 <p>Now we have defined a new function. Let’s try it out:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; hello_world(me, &quot;Hello world to me!&quot;)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; hello_world(me, &quot;Hello world to me!&quot;)
 Hello world to me!
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">me</span></code> is still available to us, so we pass that as the <code class="docutils literal notranslate"><span class="pre">who</span></code> argument, along with a little longer
 string. Let’s combine this with searching for the mirror.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">mirror</span> <span class="o">=</span> <span class="n">me</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;mirror&quot;</span><span class="p">)</span>
-<span class="o">&gt;</span> <span class="n">hello_world</span><span class="p">(</span><span class="n">mirror</span><span class="p">,</span> <span class="s2">&quot;Mirror, Mirror on the wall ...&quot;</span><span class="p">)</span>
-<span class="n">mirror</span> <span class="n">echoes</span> <span class="n">back</span> <span class="n">to</span> <span class="n">you</span><span class="p">:</span>
-<span class="s2">&quot;Mirror, Mirror on the wall ...&quot;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; mirror = me.search(&quot;mirror&quot;)
+&gt; hello_world(mirror, &quot;Mirror, Mirror on the wall ...&quot;)
+mirror echoes back to you:
+&quot;Mirror, Mirror on the wall ...&quot;
 </pre></div>
 </div>
 <p>Exit the <code class="docutils literal notranslate"><span class="pre">py</span></code> mode with</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">quit</span><span class="p">()</span>
-<span class="n">Closing</span> <span class="n">the</span> <span class="n">Python</span> <span class="n">console</span><span class="o">.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; quit()
+Closing the Python console.
 </pre></div>
 </div>
 </section>
@@ -601,8 +610,8 @@ is available).</p>
 </ul>
 <p>A Python shell opens. This works like <code class="docutils literal notranslate"><span class="pre">py</span></code> did inside the game, with the exception that you don’t have
 <code class="docutils literal notranslate"><span class="pre">me</span></code> available out of the box. If you want <code class="docutils literal notranslate"><span class="pre">me</span></code>, you need to first find yourself:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="kn">import</span> <span class="nn">evennia</span>
-<span class="o">&gt;</span> <span class="n">me</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;YourChar&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; import evennia
+&gt; me = evennia.search_object(&quot;YourChar&quot;)[0]
 </pre></div>
 </div>
 <p>Here we make use of one of evennia’s search functions, available by importing <code class="docutils literal notranslate"><span class="pre">evennia</span></code> directly.
@@ -613,29 +622,28 @@ We will cover more advanced searching later, but suffice to say, you put your ow
 get at the first of them (counting starts from 0).</p>
 </div></blockquote>
 <p>Use <code class="docutils literal notranslate"><span class="pre">Ctrl-D</span></code> (<code class="docutils literal notranslate"><span class="pre">Cmd-D</span></code> on Mac) or <code class="docutils literal notranslate"><span class="pre">quit()</span></code> to exit the Python console.</p>
+</section>
 <section id="ipython">
-<h3>ipython<a class="headerlink" href="#ipython" title="Permalink to this headline">¶</a></h3>
+<h2>ipython<a class="headerlink" href="#ipython" title="Permalink to this headline">¶</a></h2>
 <p>The default Python shell is quite limited and ugly. It’s <em>highly</em> recommended to install <code class="docutils literal notranslate"><span class="pre">ipython</span></code> instead. This
 is a much nicer, third-party Python interpreter with colors and many usability improvements.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">ipython</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install ipython
 </pre></div>
 </div>
 <p>If <code class="docutils literal notranslate"><span class="pre">ipython</span></code> is installed, <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">shell</span></code> will use it automatically.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">shell</span>
-<span class="o">...</span>
-<span class="n">IPython</span> <span class="mf">7.4.0</span> <span class="o">--</span> <span class="n">An</span> <span class="n">enhanced</span> <span class="n">Interactive</span> <span class="n">Python</span><span class="o">.</span> <span class="n">Type</span> <span class="s1">&#39;?&#39;</span> <span class="k">for</span> <span class="n">help</span>
-<span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> 
-</pre></div>
-</div>
-<p>You now have Tab-completion:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="kn">import</span> <span class="nn">evennia</span>
-<span class="o">&gt;</span> <span class="n">evennia</span><span class="o">.&lt;</span><span class="n">TAB</span><span class="o">&gt;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia shell
+...
+IPython 7.4.0 -- An enhanced Interactive Python. Type &#39;?&#39; for help
+In [1]: You now have Tab-completion:
+
+&gt; import evennia
+&gt; evennia.&lt;TAB&gt;
 </pre></div>
 </div>
 <p>That is, enter <code class="docutils literal notranslate"><span class="pre">evennia.</span></code> and then press the TAB key - you will be given a list of all the resources
 available on the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> object. This is great for exploring what Evennia has to offer. For example,
 use your arrow keys to scroll to <code class="docutils literal notranslate"><span class="pre">search_object()</span></code> to fill it in.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; evennia.search_object?
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; evennia.search_object?
 </pre></div>
 </div>
 <p>Adding a <code class="docutils literal notranslate"><span class="pre">?</span></code> and pressing return will give you the full documentation for <code class="docutils literal notranslate"><span class="pre">.search_object</span></code>. Use <code class="docutils literal notranslate"><span class="pre">??</span></code> if you
@@ -644,21 +652,22 @@ want to see the entire source code.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>Persistent code</p>
-<p>Common for both <cite>py</cite> and <cite>python</cite>/<cite>ipython</cite> is that the code you write is not persistent - it will
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Common for both `py` and `python`/`ipython` is that the code you write is not persistent - it will
 be gone after you shut down the interpreter (but ipython will remember your input history). For making long-lasting
-Python code, we need to save it in a Python module, like we did for <cite>world/test.py</cite>.</p>
+Python code, we need to save it in a Python module, like we did for `world/test.py`.
+</pre></div>
+</div>
 </div>
 </section>
 </section>
-<section id="conclusions">
-<h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
+<section class="tex2jax_ignore mathjax_ignore" id="conclusions">
+<h1>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h1>
 <p>This covers quite a lot of basic Python usage. We printed and formatted strings, defined our own
 first function, fixed an error and even searched and talked to a mirror! Being able to access
 python inside and outside of the game is an important skill for testing and debugging, but in
 practice you will be writing most your code in Python modules.</p>
 <p>To that end we also created a first new Python module in the <code class="docutils literal notranslate"><span class="pre">mygame/</span></code> game dir, then imported and used it.
 Now let’s look at the rest of the stuff you’ve got going on inside that <code class="docutils literal notranslate"><span class="pre">mygame/</span></code> folder …</p>
-</section>
 </section>
 
 
@@ -686,20 +695,20 @@ Now let’s look at the rest of the stuff you’ve got going on inside that <cod
 <li><a class="reference internal" href="#">Starting to code Evennia</a><ul>
 <li><a class="reference internal" href="#evennia-hello-world">Evennia Hello world</a></li>
 <li><a class="reference internal" href="#making-some-text-graphics">Making some text ‘graphics’</a></li>
-<li><a class="reference internal" href="#importing-code-from-other-modules">Importing code from other modules</a></li>
+<li><a class="reference internal" href="#importing-code-from-other-modules">Importing code from other modules</a><ul>
 <li><a class="reference internal" href="#our-first-own-function">Our first own function</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#sending-text-to-others">Sending text to others</a></li>
 <li><a class="reference internal" href="#parsing-python-errors">Parsing Python errors</a></li>
 <li><a class="reference internal" href="#passing-arguments-to-functions">Passing arguments to functions</a></li>
 <li><a class="reference internal" href="#finding-others-to-send-to">Finding others to send to</a></li>
 <li><a class="reference internal" href="#multi-line-py">Multi-line py</a></li>
-<li><a class="reference internal" href="#other-ways-to-test-python-code">Other ways to test Python code</a><ul>
+<li><a class="reference internal" href="#other-ways-to-test-python-code">Other ways to test Python code</a></li>
 <li><a class="reference internal" href="#ipython">ipython</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#conclusions">Conclusions</a></li>
-</ul>
-</li>
 </ul>
 
   <h4>Previous topic</h4>
@@ -728,7 +737,7 @@ Now let’s look at the rest of the stuff you’ve got going on inside that <cod
 <h3>Versions</h3>
 <ul>
   <li><a href="Python-basic-introduction.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

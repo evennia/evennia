@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Building Permissions &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Building Permissions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="building-permissions">
+<h1>Building Permissions<a class="headerlink" href="#building-permissions" title="Permalink to this headline">¶</a></h1>
+<p><em>OBS: This gives only a brief introduction to the access system. Locks and permissions are fully
+detailed</em> <a class="reference internal" href="Locks.html"><span class="doc std std-doc">here</span></a>.</p>
+<section id="the-super-user">
+<h2>The super user<a class="headerlink" href="#the-super-user" title="Permalink to this headline">¶</a></h2>
+<p>There are strictly speaking two types of users in Evennia, the <em>super user</em> and everyone else. The
+superuser is the first user you create, object <code class="docutils literal notranslate"><span class="pre">#1</span></code>. This is the all-powerful server-owner account.
+Technically the superuser not only has access to everything, it <em>bypasses</em> the permission checks
+entirely. This makes the superuser impossible to lock out, but makes it unsuitable to actually play-
+test the game’s locks and restrictions with (see <code class="docutils literal notranslate"><span class="pre">&#64;quell</span></code> below). Usually there is no need to have
+but one superuser.</p>
+</section>
+<section id="assigning-permissions">
+<h2>Assigning permissions<a class="headerlink" href="#assigning-permissions" title="Permalink to this headline">¶</a></h2>
+<p>Whereas permissions can be used for anything, those put in <code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_HIERARCHY</span></code> will have
+a ranking relative each other as well. We refer to these types of permissions as <em>hierarchical
+permissions</em>. When building locks to check these permissions, the <code class="docutils literal notranslate"><span class="pre">perm()</span></code> <a class="reference internal" href="Locks.html"><span class="doc std std-doc">lock function</span></a> is
+used. By default Evennia creates the following hierarchy (spelled exactly like this):</p>
+<ol class="simple">
+<li><p><strong>Developers</strong> basically have the same access as superusers except that they do <em>not</em> sidestep
+the Permission system. Assign only to really trusted server-admin staff since this level gives
+access both to server reload/shutdown functionality as well as (and this may be more critical) gives
+access to the all-powerful <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> command that allows the execution of arbitrary Python code on the
+command line.</p></li>
+<li><p><strong>Admins</strong> can do everything <em>except</em> affecting the server functions themselves. So an Admin
+couldn’t reload or shutdown the server for example. They also cannot execute arbitrary Python code
+on the console or import files from the hard drive.</p></li>
+<li><p><strong>Builders</strong> - have all the build commands, but cannot affect other accounts or mess with the
+server.</p></li>
+<li><p><strong>Helpers</strong> are almost like a normal <em>Player</em>, but they can also add help files to the database.</p></li>
+<li><p><strong>Players</strong> is the default group that new players end up in. A new player have permission to use
+tells and to use and create new channels.</p></li>
+</ol>
+<p>A user having a certain level of permission automatically have access to locks specifying access of
+a lower level.</p>
+<p>To assign a new permission from inside the game, you need to be able to use the <code class="docutils literal notranslate"><span class="pre">&#64;perm</span></code> command.
+This is an <em>Developer</em>-level command, but it could in principle be made lower-access since it only
+allows assignments equal or lower to your current level (so you cannot use it to escalate your own
+permission level).  So, assuming you yourself have <em>Developer</em> access (or is superuser), you  assign
+a new account “Tommy” to your core staff with the command</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@perm/account Tommy = Developer
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@perm *Tommy = Developer
+</pre></div>
+</div>
+<p>We use a switch or the <code class="docutils literal notranslate"><span class="pre">*name</span></code> format to make sure to put the permission on the <em>Account</em> and not on
+any eventual <em>Character</em> that may also be named “Tommy”. This is usually what you want since the
+Account will then remain an Developer regardless of which Character they are currently controlling.
+To limit permission to a per-Character level you should instead use <em>quelling</em> (see below). Normally
+permissions can be any string, but for these special hierarchical permissions you can also use
+plural (“Developer” and “Developers” both grant the same powers).</p>
+</section>
+<section id="quelling-your-permissions">
+<h2>Quelling your permissions<a class="headerlink" href="#quelling-your-permissions" title="Permalink to this headline">¶</a></h2>
+<p>When developing it can be useful to check just how things would look had your permission-level been
+lower. For this you can use <em>quelling</em>.  Normally, when you puppet a Character you are using your
+Account-level permission. So even if your Character only has <em>Accounts</em> level permissions, your
+<em>Developer</em>-level Account will take precedence. With the <code class="docutils literal notranslate"><span class="pre">&#64;quell</span></code> command you can change so that the
+Character’s permission takes precedence instead:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @quell
+</pre></div>
+</div>
+<p>This will allow you to test out the game using the current Character’s permission level. A developer
+or builder can thus in principle maintain several test characters, all using different permission
+levels. Note that you cannot escalate your permissions this way; If the Character happens to have a
+<em>higher</em> permission level than the Account, the <em>Account’s</em> (lower) permission will still be used.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Building Permissions</a><ul>
+<li><a class="reference internal" href="#the-super-user">The super user</a></li>
+<li><a class="reference internal" href="#assigning-permissions">Assigning permissions</a></li>
+<li><a class="reference internal" href="#quelling-your-permissions">Quelling your permissions</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Building-Permissions.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Building-Permissions.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Building Permissions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

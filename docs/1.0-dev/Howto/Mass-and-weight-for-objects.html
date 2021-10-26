@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="mass-and-weight-for-objects">
+  <section class="tex2jax_ignore mathjax_ignore" id="mass-and-weight-for-objects">
 <h1>Mass and weight for objects<a class="headerlink" href="#mass-and-weight-for-objects" title="Permalink to this headline">¶</a></h1>
 <p>An easy addition to add dynamic variety to your world objects is to give them some mass.  Why mass
 and not weight? Weight varies in setting; for example things on the Moon weigh 1/6 as much.  On
@@ -52,13 +54,7 @@ force.</p>
 <p>Now that we have reasons for keeping track of object mass, let’s look at the default object class
 inside your mygame/typeclasses/objects.py and see how easy it is to total up mass from an object and
 its contents.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># inside your mygame/typeclasses/objects.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># inside your mygame/typeclasses/objects.py</span>
 
 <span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
 <span class="c1"># [...]</span>
@@ -66,7 +62,7 @@ its contents.</p>
         <span class="n">mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mass&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># Default objects have 1 unit mass.</span>
         <span class="k">return</span> <span class="n">mass</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">get_mass</span><span class="p">()</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Adding the <code class="docutils literal notranslate"><span class="pre">get_mass</span></code> definition to the objects you want to sum up the masses for is done with
 Python’s “sum” function which operates on all the contents, in this case by summing them to
 return a total mass value.</p>
@@ -84,54 +80,18 @@ gold bricks, you might wonder if this elevator’s going to move, and how fast.<
 <code class="docutils literal notranslate"><span class="pre">&#64;set</span> <span class="pre">elevator/mass=1000000</span></code>, we’re <code class="docutils literal notranslate"><span class="pre">&#64;set</span> <span class="pre">me/mass=85000</span></code> and our armor is <code class="docutils literal notranslate"><span class="pre">&#64;set</span> <span class="pre">armor/mass=50000</span></code>.
 We’re each carrying 20 gold bars each <code class="docutils literal notranslate"><span class="pre">&#64;set</span> <span class="pre">gold</span> <span class="pre">bar/mass=12400</span></code> then step into the elevator and see
 the following message in the elevator’s appearance: <code class="docutils literal notranslate"><span class="pre">Elevator</span> <span class="pre">weight</span> <span class="pre">and</span> <span class="pre">contents</span> <span class="pre">should</span> <span class="pre">not</span> <span class="pre">exceed</span> <span class="pre">3</span> <span class="pre">metric</span> <span class="pre">tons.</span></code> Are we safe?  Maybe not if you consider dynamic loading. But at rest:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Elevator object knows when it checks itself:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Elevator object knows when it checks itself:</span>
 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mass</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">3000000</span><span class="p">:</span>
     <span class="k">pass</span>  <span class="c1"># Elevator functions as normal.</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="k">pass</span>  <span class="c1"># Danger! Alarm sounds, cable snaps, elevator stops...</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 <section id="inventory">
 <h2>Inventory<a class="headerlink" href="#inventory" title="Permalink to this headline">¶</a></h2>
 <p>Example of listing mass of items in your inventory:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdInventory</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdInventory</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    view inventory</span>
 <span class="sd">    Usage:</span>
@@ -164,8 +124,9 @@ the following message in the elevator’s appearance: <code class="docutils lite
                 <span class="p">])</span>
             <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|wYou are carrying:</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 </section>
 
@@ -219,7 +180,7 @@ the following message in the elevator’s appearance: <code class="docutils lite
 <h3>Versions</h3>
 <ul>
   <li><a href="Mass-and-weight-for-objects.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

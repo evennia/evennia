@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Command Cooldown &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Command Cooldown</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="command-cooldown">
+<h1>Command Cooldown<a class="headerlink" href="#command-cooldown" title="Permalink to this headline">¶</a></h1>
+<p>Some types of games want to limit how often a command can be run. If a
+character casts the spell <em>Firestorm</em>, you might not want them to spam that
+command over and over. Or in an advanced combat system, a massive swing may
+offer a chance of lots of damage at the cost of not being able to re-do it for
+a while. Such effects are called <em>cooldowns</em>.</p>
+<p>This page exemplifies a very resource-efficient way to do cooldowns. A more
+‘active’ way is to use asynchronous delays as in the <a class="reference internal" href="Command-Duration.html#blocking-commands"><span class="std std-doc">command duration
+tutorial</span></a>, the two might be useful to
+combine if you want to echo some message to the user after the cooldown ends.</p>
+<section id="non-persistent-cooldown">
+<h2>Non-persistent cooldown<a class="headerlink" href="#non-persistent-cooldown" title="Permalink to this headline">¶</a></h2>
+<p>This little recipe will limit how often a particular command can be run. Since
+Commands are class instances, and those are cached in memory, a command
+instance will remember things you store on it. So just store the current time
+of execution! Next time the command is run, it just needs to check if it has
+that time stored, and compare it with the current time to see if a desired
+delay has passed.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+    
+<span class="k">class</span> <span class="nc">CmdSpellFirestorm</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Spell - Firestorm</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      cast firestorm &lt;target&gt;</span>
+<span class="sd">    </span>
+<span class="sd">    This will unleash a storm of flame. You can only release one</span>
+<span class="sd">    firestorm every five minutes (assuming you have the mana).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;cast firestorm&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:isFireMage()&quot;</span>
+        
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Implement the spell&quot;</span>
+    
+        <span class="c1"># check cooldown (5 minute cooldown)</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;lastcast&quot;</span><span class="p">)</span> <span class="ow">and</span> \
+                <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">lastcast</span> <span class="o">&lt;</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;You cannot cast this spell again yet.&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="k">return</span>
+    
+        <span class="c1">#[the spell effect is implemented]</span>
+    
+        <span class="c1"># if the spell was successfully cast, store the casting time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lastcast</span> <span class="o">=</span> <span class="n">now</span>
+</pre></div>
+</div>
+<p>We just check the <code class="docutils literal notranslate"><span class="pre">lastcast</span></code> flag, and update it if everything works out.
+Simple and very effective since everything is just stored in memory. The
+drawback of this simple scheme is that it’s non-persistent. If you do
+<code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code>, the cache is cleaned and all such ongoing cooldowns will be
+forgotten. It is also limited only to this one command, other commands cannot
+(easily) check for this value.</p>
+</section>
+<section id="persistent-cooldown">
+<h2>Persistent cooldown<a class="headerlink" href="#persistent-cooldown" title="Permalink to this headline">¶</a></h2>
+<p>This is essentially the same mechanism as the simple one above, except we use
+the database to store the information which means the cooldown will survive a
+server reload/reboot. Since commands themselves have no representation in the
+database, you need to use the caster for the storage.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># inside the func() of CmdSpellFirestorm as above</span>
+
+    <span class="c1"># check cooldown (5 minute cooldown)</span>
+            
+    <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">lastcast</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">firestorm_lastcast</span>
+            
+    <span class="k">if</span> <span class="n">lastcast</span> <span class="ow">and</span> <span class="n">now</span> <span class="o">-</span> <span class="n">lastcast</span> <span class="o">&lt;</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;You need to wait before casting this spell again.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">return</span>
+      
+    <span class="c1">#[the spell effect is implemented]</span>
+    
+    <span class="c1"># if the spell was successfully cast, store the casting time</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">firestorm_lastcast</span> <span class="o">=</span> <span class="n">now</span>
+</pre></div>
+</div>
+<p>Since we are storing as an <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attribute</span></a>, we need to identify the
+variable as <code class="docutils literal notranslate"><span class="pre">firestorm_lastcast</span></code> so we are sure we get the right one (we’ll
+likely have other skills with cooldowns after all). But this method of
+using cooldowns also has the advantage of working <em>between</em> commands - you can
+for example let all fire-related spells check the same cooldown to make sure
+the casting of <em>Firestorm</em> blocks all fire-related spells for a while. Or, in
+the case of taking that big swing with the sword, this could now block all
+other types of attacks for a while before the warrior can recover.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Command Cooldown</a><ul>
+<li><a class="reference internal" href="#non-persistent-cooldown">Non-persistent cooldown</a></li>
+<li><a class="reference internal" href="#persistent-cooldown">Persistent cooldown</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Command-Cooldown.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Command-Cooldown.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Command Cooldown</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

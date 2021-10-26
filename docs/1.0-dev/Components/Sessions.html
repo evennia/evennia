@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,19 +40,19 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="sessions">
+  <section class="tex2jax_ignore mathjax_ignore" id="sessions">
 <h1>Sessions<a class="headerlink" href="#sessions" title="Permalink to this headline">¶</a></h1>
 <p>An Evennia <em>Session</em> represents one single established connection to the server. Depending on the
 Evennia session, it is possible for a person to connect multiple times, for example using different
 clients in multiple windows. Each such connection is represented by a session object.</p>
-<p>A session object has its own <a class="reference internal" href="Command-Sets.html"><span class="doc">cmdset</span></a>, usually the “unloggedin” cmdset. This is what
+<p>A session object has its own <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">cmdset</span></a>, usually the “unloggedin” cmdset. This is what
 is used to show the login screen and to handle commands to create a new account (or
-<a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a> in evennia lingo) read initial help and to log into the game with an existing
+<a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Account</span></a> in evennia lingo) read initial help and to log into the game with an existing
 account. A session object can either be “logged in” or not.  Logged in means that the user has
 authenticated. When this happens the session is associated with an Account object (which is what
 holds account-centric stuff). The account can then in turn puppet any number of objects/characters.</p>
 <blockquote>
-<div><p>Warning: A Session is not <em>persistent</em> - it is not a <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclass</span></a> and has no
+<div><p>Warning: A Session is not <em>persistent</em> - it is not a <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclass</span></a> and has no
 connection to the database. The Session will go away when a user disconnects and you will lose any
 custom data on it if the server reloads. The <code class="docutils literal notranslate"><span class="pre">.db</span></code> handler on Sessions is there to present a uniform
 API (so you can assume <code class="docutils literal notranslate"><span class="pre">.db</span></code> exists even if you don’t know if you receive an Object or a Session),
@@ -64,13 +66,13 @@ lose in a reload. You have been warned.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">sessid</span></code> - The unique session-id. This is an integer starting from 1.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">address</span></code> - The connected client’s address. Different protocols give different information here.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">logged_in</span></code> - <code class="docutils literal notranslate"><span class="pre">True</span></code> if the user authenticated to this session.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">account</span></code> - The <a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a> this Session is attached to. If not logged in yet, this is
+<li><p><code class="docutils literal notranslate"><span class="pre">account</span></code> - The <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Account</span></a> this Session is attached to. If not logged in yet, this is
 <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">puppet</span></code> - The <a class="reference internal" href="Objects.html"><span class="doc">Character/Object</span></a> currently puppeted by this Account/Session combo. If
+<li><p><code class="docutils literal notranslate"><span class="pre">puppet</span></code> - The <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Character/Object</span></a> currently puppeted by this Account/Session combo. If
 not logged in or in OOC mode, this is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ndb</span></code> - The <a class="reference internal" href="Attributes.html"><span class="doc">Non-persistent Attribute</span></a> handler.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ndb</span></code> - The <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Non-persistent Attribute</span></a> handler.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">db</span></code> - As noted above, Sessions don’t have regular Attributes. This is an alias to <code class="docutils literal notranslate"><span class="pre">ndb</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cmdset</span></code> - The Session’s <a class="reference internal" href="Command-Sets.html"><span class="doc">CmdSetHandler</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cmdset</span></code> - The Session’s <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">CmdSetHandler</span></a></p></li>
 </ul>
 <p>Session statistics are mainly used internally by Evennia.</p>
 <ul class="simple">
@@ -135,7 +137,7 @@ transparently detect which session was triggering the command (if any) and redir
 <code class="docutils literal notranslate"><span class="pre">command.msg()</span></code> is often the safest bet.</p>
 <p>You can get the <code class="docutils literal notranslate"><span class="pre">session</span></code> in two main ways:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a> and <a class="reference internal" href="Objects.html"><span class="doc">Objects</span></a> (including Characters) have a <code class="docutils literal notranslate"><span class="pre">sessions</span></code> property.
+<li><p><a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a> and <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a> (including Characters) have a <code class="docutils literal notranslate"><span class="pre">sessions</span></code> property.
 This is a <em>handler</em> that tracks all Sessions attached to or puppeting them. Use e.g.
 <code class="docutils literal notranslate"><span class="pre">accounts.sessions.get()</span></code> to get a list of Sessions attached to that entity.</p></li>
 <li><p>A Command instance has a <code class="docutils literal notranslate"><span class="pre">session</span></code> property that always points back to the Session that triggered
@@ -166,7 +168,7 @@ changes carefully.</p>
 <section id="portal-and-server-sessions">
 <h2>Portal and Server Sessions<a class="headerlink" href="#portal-and-server-sessions" title="Permalink to this headline">¶</a></h2>
 <p><em>Note: This is considered an advanced topic. You don’t need to know this on a first read-through.</em></p>
-<p>Evennia is split into two parts, the <a class="reference internal" href="Portal-And-Server.html"><span class="doc">Portal and the Server</span></a>. Each side tracks
+<p>Evennia is split into two parts, the <a class="reference internal" href="Portal-And-Server.html"><span class="doc std std-doc">Portal and the Server</span></a>. Each side tracks
 its own Sessions, syncing them to each other.</p>
 <p>The “Session” we normally refer to is actually the <code class="docutils literal notranslate"><span class="pre">ServerSession</span></code>. Its counter-part on the Portal
 side is the <code class="docutils literal notranslate"><span class="pre">PortalSession</span></code>. Whereas the server sessions deal with game states, the portal session
@@ -192,7 +194,7 @@ its mirror Server session and vice versa.</p>
 make sure the corresponding Server Session is also deleted.</p></li>
 <li><p>The Player quits from inside the game, killing the Server Session.  The Server then syncs with the
 Portal to make sure to close the Portal connection cleanly.</p></li>
-<li><p>The Server is rebooted/reset/shutdown - The Server Sessions are copied over (”saved”) to the
+<li><p>The Server is rebooted/reset/shutdown - The Server Sessions are copied over (“saved”) to the
 Portal side. When the Server comes back up, this data is returned by the Portal so the two are again
 in sync. This way an Account’s login status and other connection-critical things can survive a
 server reboot (assuming the Portal is not stopped at the same time, obviously).</p></li>
@@ -203,7 +205,7 @@ server reboot (assuming the Portal is not stopped at the same time, obviously).<
 <p>Both the Portal and Server each have a <em>sessionhandler</em> to manage the connections. These handlers
 are global entities contain all methods for relaying data across the AMP bridge. All types of
 Sessions hold a reference to their respective Sessionhandler (the property is called
-<code class="docutils literal notranslate"><span class="pre">sessionhandler</span></code>) so they can relay data. See <a class="reference internal" href="../Concepts/Custom-Protocols.html"><span class="doc">protocols</span></a> for more info
+<code class="docutils literal notranslate"><span class="pre">sessionhandler</span></code>) so they can relay data. See <a class="reference internal" href="../Concepts/Custom-Protocols.html"><span class="doc std std-doc">protocols</span></a> for more info
 on building new protocols.</p>
 <p>To get all Sessions in the game (i.e. all currently connected clients), you access the server-side
 Session handler, which you get by</p>
@@ -273,7 +275,7 @@ module for details on the capabilities of the <code class="docutils literal notr
 <h3>Versions</h3>
 <ul>
   <li><a href="Sessions.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

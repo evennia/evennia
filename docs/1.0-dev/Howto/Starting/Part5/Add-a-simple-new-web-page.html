@@ -14,6 +14,8 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="add-a-simple-new-web-page">
+  <section class="tex2jax_ignore mathjax_ignore" id="add-a-simple-new-web-page">
 <h1>Add a simple new web page<a class="headerlink" href="#add-a-simple-new-web-page" title="Permalink to this headline">¶</a></h1>
 <p>Evennia leverages <a class="reference external" href="https://docs.djangoproject.com">Django</a> which is a web development framework.
 Huge professional websites are made in Django and there is extensive documentation (and books) on it
@@ -56,19 +58,14 @@ cool stuff with the page in the view, like adding dynamic content or change it o
 <code class="docutils literal notranslate"><span class="pre">mygame/web</span></code> folder and add a new module there named <code class="docutils literal notranslate"><span class="pre">story.py</span></code> (you could also put it in its own
 folder if you wanted to be neat. Don’t forget to add an empty <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you do, to tell
 Python you can import from the new folder). Here’s how it looks:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/web/story.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/web/story.py</span>
 
 <span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
 
 <span class="k">def</span> <span class="nf">storypage</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;story.html&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This view takes advantage of a shortcut provided to use by Django, <em>render</em>. This shortcut gives the
 template some information from the request, for instance, the game name, and then renders it.</p>
 </section>
@@ -79,17 +76,7 @@ Django parlance). You can specify such places in your settings (see the <code cl
 <code class="docutils literal notranslate"><span class="pre">default_settings.py</span></code> for more info), but here we’ll use an existing one. Go to
 <code class="docutils literal notranslate"><span class="pre">mygame/template/overrides/website/</span></code> and create a page <code class="docutils literal notranslate"><span class="pre">story.html</span></code> there.</p>
 <p>This is not a HTML tutorial, so we’ll go simple:</p>
-<div class="highlight-html notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>{% extends &quot;base.html&quot; %}
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>{% extends &quot;base.html&quot; %}
 {% block content %}
 <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;row&quot;</span><span class="p">&gt;</span>
   <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;col&quot;</span><span class="p">&gt;</span>
@@ -101,16 +88,10 @@ Django parlance). You can specify such places in your settings (see the <code cl
 <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
 {% endblock %}
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Since we’ve used the <em>render</em> shortcut, Django will allow us to extend our base styles easily.</p>
 <p>If you’d rather not take advantage of Evennia’s base styles, you can do something like this instead:</p>
-<div class="highlight-html notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
   <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>A story about a tree<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>
@@ -118,7 +99,7 @@ Django parlance). You can specify such places in your settings (see the <code cl
   <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 <section id="the-url">
 <h2>The URL<a class="headerlink" href="#the-url" title="Permalink to this headline">¶</a></h2>
@@ -130,13 +111,7 @@ Open it now.</p>
 <p>Django looks for the variable <code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code> in this file. You want to add your new pattern to the
 <code class="docutils literal notranslate"><span class="pre">custom_patterns</span></code> list we have prepared - that is then merged with the default <code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code>. Here’s
 how it could look:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">web</span> <span class="kn">import</span> <span class="n">story</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">web</span> <span class="kn">import</span> <span class="n">story</span>
 
 <span class="c1"># ...</span>
 
@@ -144,7 +119,7 @@ how it could look:</p>
     <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;story&#39;</span><span class="p">,</span> <span class="n">story</span><span class="o">.</span><span class="n">storypage</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Story&#39;</span><span class="p">),</span>
 <span class="p">]</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>That is, we import our story view module from where we created it earlier and then create an <code class="docutils literal notranslate"><span class="pre">url</span></code>
 instance. The first argument to <code class="docutils literal notranslate"><span class="pre">url</span></code> is the pattern of the url we want to find (<code class="docutils literal notranslate"><span class="pre">&quot;story&quot;</span></code>) (this is
 a regular expression if you are familiar with those) and then our view function we want to direct
@@ -203,7 +178,7 @@ to.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Add-a-simple-new-web-page.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

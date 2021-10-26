@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-for-roleplaying-sessions">
+  <section class="tex2jax_ignore mathjax_ignore" id="evennia-for-roleplaying-sessions">
 <h1>Evennia for roleplaying sessions<a class="headerlink" href="#evennia-for-roleplaying-sessions" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial will explain how to set up a realtime or play-by-post tabletop style game using a
 fresh Evennia server.</p>
@@ -63,11 +65,11 @@ simultaneously, regardless of location.</p></li>
 defaults for our particular use-case. Below we will flesh out these components from start to finish.</p>
 <section id="starting-out">
 <h2>Starting out<a class="headerlink" href="#starting-out" title="Permalink to this headline">¶</a></h2>
-<p>We will assume you start from scratch. You need Evennia installed, as per the <a class="reference internal" href="../Setup/Setup-Quickstart.html"><span class="doc">Setup Quickstart</span></a>
+<p>We will assume you start from scratch. You need Evennia installed, as per the <a class="reference internal" href="../Setup/Setup-Quickstart.html"><span class="doc std std-doc">Setup Quickstart</span></a>
 instructions. Initialize a new game directory with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">init</span> <span class="pre">&lt;gamedirname&gt;</span></code>. In this tutorial we assume your game dir is simply named <code class="docutils literal notranslate"><span class="pre">mygame</span></code>. You can use the
 default database and keep all other settings to default for now. Familiarize yourself with the
 <code class="docutils literal notranslate"><span class="pre">mygame</span></code> folder before continuing. You might want to browse the
-<a class="reference internal" href="Starting/Part1/Starting-Part1.html"><span class="doc">First Steps Coding</span></a> tutorial, just to see roughly where things are modified.</p>
+<a class="reference internal" href="Starting/Part1/Starting-Part1.html"><span class="doc std std-doc">First Steps Coding</span></a> tutorial, just to see roughly where things are modified.</p>
 </section>
 <section id="the-game-master-role">
 <h2>The Game Master role<a class="headerlink" href="#the-game-master-role" title="Permalink to this headline">¶</a></h2>
@@ -80,7 +82,7 @@ to show your renewed GM status to the other accounts.</p></li>
 </ul>
 <section id="the-permission-hierarchy">
 <h3>The permission hierarchy<a class="headerlink" href="#the-permission-hierarchy" title="Permalink to this headline">¶</a></h3>
-<p>Evennia has the following <a class="reference external" href="Concepts/Building-Permissions.html#assigning-permissions">permission hierarchy</a> out of
+<p>Evennia has the following <a class="reference internal" href="../Concepts/Building-Permissions.html#assigning-permissions"><span class="std std-doc">permission hierarchy</span></a> out of
 the box: <em>Players, Helpers, Builders, Admins</em> and finally <em>Developers</em>. We could change these but
 then we’d need to update our Default commands to use the changes. We want to keep this simple, so
 instead we map our different roles on top of this permission ladder.</p>
@@ -97,7 +99,7 @@ everyone.</p></li>
 restart/shutdown the server as well as changing the permission levels.</p></li>
 </ol>
 <blockquote>
-<div><p>The <a class="reference external" href="Concepts/Building-Permissions.html#the-super-user">superuser</a> is not part of the hierarchy and actually
+<div><p>The <a class="reference internal" href="../Concepts/Building-Permissions.html#the-super-user"><span class="std std-doc">superuser</span></a> is not part of the hierarchy and actually
 completely bypasses it. We’ll assume server admin(s) will “just” be Developers.</p>
 </div></blockquote>
 </section>
@@ -136,36 +138,11 @@ its name will have the string<code class="docutils literal notranslate"><span cl
 <section id="character-modification">
 <h4>Character modification<a class="headerlink" href="#character-modification" title="Permalink to this headline">¶</a></h4>
 <p>Let’s first start by customizing the Character. We recommend you browse the beginning of the
-<a class="reference internal" href="../Components/Accounts.html"><span class="doc">Account</span></a> page to make sure you know how Evennia differentiates between the OOC “Account
+<a class="reference internal" href="../Components/Accounts.html"><span class="doc std std-doc">Account</span></a> page to make sure you know how Evennia differentiates between the OOC “Account
 objects” (not to be confused with the <code class="docutils literal notranslate"><span class="pre">Accounts</span></code> permission, which is just a string specifying your
 access) and the IC “Character objects”.</p>
 <p>Open <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code> and modify the default <code class="docutils literal notranslate"><span class="pre">Character</span></code> class:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/characters.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/characters.py</span>
 
 <span class="c1"># [...]</span>
 
@@ -192,12 +169,12 @@ access) and the IC “Character objects”.</p>
 
         <span class="k">return</span> <span class="n">name</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Above, we change how the Character’s name is displayed: If the account controlling this Character is
 a GM, we attach the string <code class="docutils literal notranslate"><span class="pre">(GM)</span></code> to the Character’s name so everyone can tell who’s the boss. If we
 ourselves are Developers or GM’s we will see database ids attached to Characters names, which can
 help if doing database searches against Characters of exactly the same name. We base the “gm-
-ingness” on having an flag (an <a class="reference internal" href="../Components/Attributes.html"><span class="doc">Attribute</span></a>) named <code class="docutils literal notranslate"><span class="pre">is_gm</span></code>. We’ll make sure new GM’s
+ingness” on having an flag (an <a class="reference internal" href="../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a>) named <code class="docutils literal notranslate"><span class="pre">is_gm</span></code>. We’ll make sure new GM’s
 actually get this flag below.</p>
 <blockquote>
 <div><p><strong>Extra exercise:</strong> This will only show the <code class="docutils literal notranslate"><span class="pre">(GM)</span></code> text on <em>Characters</em> puppeted by a GM account,
@@ -208,69 +185,11 @@ that is, it will show only to those in the same location. If we wanted it to als
 </section>
 <section id="new-gm-ungm-command">
 <h4>New &#64;gm/&#64;ungm command<a class="headerlink" href="#new-gm-ungm-command" title="Permalink to this headline">¶</a></h4>
-<p>We will describe in some detail how to create and add an Evennia <a class="reference internal" href="../Components/Commands.html"><span class="doc">command</span></a> here with the
+<p>We will describe in some detail how to create and add an Evennia <a class="reference internal" href="../Components/Commands.html"><span class="doc std std-doc">command</span></a> here with the
 hope that we don’t need to be as detailed when adding commands in the future. We will build on
 Evennia’s default “mux-like” commands here.</p>
 <p>Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code> and add a new Command class at the bottom:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/command.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/command.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
 
@@ -329,8 +248,9 @@ Evennia’s default “mux-like” commands here.</p>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Account </span><span class="si">{</span><span class="n">account</span><span class="si">}</span><span class="s2"> is no longer a GM.&quot;</span><span class="p">)</span>
                 <span class="n">account</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are no longer a GM (changed by </span><span class="si">{</span><span class="n">caller</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
                 <span class="k">del</span> <span class="n">account</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_gm</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>All the command does is to locate the account target and assign it the <code class="docutils literal notranslate"><span class="pre">Admins</span></code> permission if we
 used <code class="docutils literal notranslate"><span class="pre">&#64;gm</span></code> or revoke it if using the <code class="docutils literal notranslate"><span class="pre">&#64;ungm</span></code> alias. We also set/unset the <code class="docutils literal notranslate"><span class="pre">is_gm</span></code> Attribute that is
 expected by our new <code class="docutils literal notranslate"><span class="pre">Character.get_display_name</span></code> method from earlier.</p>
@@ -341,16 +261,7 @@ to act accordingly. Either way works, practicality and coding style decides whic
 <p>To actually make this command available (only to Developers, due to the lock on it), we add it to
 the default Account command set. Open the file <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and find the
 <code class="docutils literal notranslate"><span class="pre">AccountCmdSet</span></code> class:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/default_cmdsets.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/default_cmdsets.py</span>
 
 <span class="c1"># [...]</span>
 <span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">CmdMakeGM</span>
@@ -360,8 +271,9 @@ the default Account command set. Open the file <code class="docutils literal not
     <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># [...]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdMakeGM</span><span class="p">())</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Finally, issue the <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> command to update the server to your changes. Developer-level players
 (or the superuser) should now have the <code class="docutils literal notranslate"><span class="pre">&#64;gm/&#64;ungm</span></code> command available.</p>
 </section>
@@ -384,24 +296,13 @@ We will here show two examples using the <em>EvTable</em> and <em>EvForm</em> ut
 Commands to edit and display the output from those utilities.</p>
 <blockquote>
 <div><p>Note that due to the limitations of the wiki, no color is used in any of the examples. See
-<a class="reference internal" href="../Concepts/TextTags.html"><span class="doc">the text tag documentation</span></a> for how to add color to the tables and forms.</p>
+<a class="reference internal" href="../Concepts/TextTags.html"><span class="doc std std-doc">the text tag documentation</span></a> for how to add color to the tables and forms.</p>
 </div></blockquote>
 <section id="making-a-sheet-with-evtable">
 <h4>Making a sheet with EvTable<a class="headerlink" href="#making-a-sheet-with-evtable" title="Permalink to this headline">¶</a></h4>
 <p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evtable">EvTable</a> is a text-table generator. It helps with displaying text in
 ordered rows and columns. This is an example of using it in code:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># this can be tried out in a Python shell like iPython</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># this can be tried out in a Python shell like iPython</span>
 
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evtable</span>
 
@@ -414,7 +315,7 @@ ordered rows and columns. This is an example of using it in code:</p>
                            <span class="p">[</span><span class="n">STR</span><span class="p">,</span> <span class="n">CON</span><span class="p">,</span> <span class="n">DEX</span><span class="p">,</span> <span class="n">INT</span><span class="p">,</span> <span class="n">WIS</span><span class="p">,</span> <span class="n">CHA</span><span class="p">]</span>
                         <span class="p">],</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">border</span><span class="o">=</span><span class="s2">&quot;incols&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Above, we create a two-column table by supplying the two columns directly. We also tell the table to
 be right-aligned and to use the “incols” border type (borders drawns only in between columns). The
 <code class="docutils literal notranslate"><span class="pre">EvTable</span></code> class takes a lot of arguments for customizing its look, you can see <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evtable#evtable__init__">some of the possible
@@ -423,18 +324,7 @@ could also retroactively add new columns and rows to it with <code class="docuti
 <code class="docutils literal notranslate"><span class="pre">table.add_column()</span></code>: if necessary the table will expand with empty rows/columns to always remain
 rectangular.</p>
 <p>The result from printing the above table will be</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">table_string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">table_string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">table_string</span><span class="p">)</span>
 
@@ -447,7 +337,7 @@ rectangular.</p>
   <span class="n">WIS</span> <span class="o">|</span>     <span class="mi">9</span>
   <span class="n">CHA</span> <span class="o">|</span>    <span class="mi">13</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This is a minimalistic but effective Character sheet. By combining the <code class="docutils literal notranslate"><span class="pre">table_string</span></code> with other
 strings one could build up a reasonably full graphical representation of a Character. For more
 advanced layouts we’ll look into EvForm next.</p>
@@ -455,7 +345,7 @@ advanced layouts we’ll look into EvForm next.</p>
 <section id="making-a-sheet-with-evform">
 <h4>Making a sheet with EvForm<a class="headerlink" href="#making-a-sheet-with-evform" title="Permalink to this headline">¶</a></h4>
 <p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evform">EvForm</a> allows the creation of a two-dimensional “graphic” made by
-text characters. On this surface, one marks and tags rectangular regions (”cells”) to be filled with
+text characters. On this surface, one marks and tags rectangular regions (“cells”) to be filled with
 content. This content can be either normal strings or <code class="docutils literal notranslate"><span class="pre">EvTable</span></code> instances (see the previous section,
 one such instance would be the <code class="docutils literal notranslate"><span class="pre">table</span></code> variable in that example).</p>
 <p>In the case of a Character sheet, these cells would be comparable to a line or box where you could
@@ -468,32 +358,7 @@ too small for it, the EvTable will do its best to try to resize to fit, but will
 to cropping its data or even give an error if too small to fit any data.</p>
 <p>An EvForm is defined in a Python module. Create a new file <code class="docutils literal notranslate"><span class="pre">mygame/world/charsheetform.py</span></code> and
 modify it thus:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">#coding=utf-8</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#coding=utf-8</span>
 
 <span class="c1"># in mygame/world/charsheetform.py</span>
 
@@ -520,7 +385,7 @@ modify it thus:</p>
 <span class="s2">+--------------------------------------+</span>
 <span class="s2">&quot;&quot;&quot;</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>The <code class="docutils literal notranslate"><span class="pre">#coding</span></code> statement (which must be put on the very first line to work) tells Python to use the
 utf-8 encoding for the file. Using the <code class="docutils literal notranslate"><span class="pre">FORMCHAR</span></code> and <code class="docutils literal notranslate"><span class="pre">TABLECHAR</span></code> we define what single-character we
 want to use to “mark” the regions of the character sheet holding cells and tables respectively.
@@ -533,24 +398,7 @@ would identify a cell/table. The smallest identifiable cell/table area is 3 char
 including the identifier (for example <code class="docutils literal notranslate"><span class="pre">x2x</span></code>).</p>
 </div></blockquote>
 <p>Now we will map content to this form.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># again, this can be tested in a Python shell</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># again, this can be tested in a Python shell</span>
 
 <span class="c1"># hard-code this info here, later we&#39;ll ask the</span>
 <span class="c1"># account for this info. We will re-use the &#39;table&#39;</span>
@@ -569,7 +417,7 @@ including the identifier (for example <code class="docutils literal notranslate"
 <span class="n">form</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">cells</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">:</span><span class="n">NAME</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">:</span> <span class="n">ADVANTAGES</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">:</span> <span class="n">DISADVANTAGES</span><span class="p">},</span>
          <span class="n">tables</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;2&quot;</span><span class="p">:</span><span class="n">table</span><span class="p">})</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>We create some RP-sounding input and re-use the <code class="docutils literal notranslate"><span class="pre">table</span></code> variable from the previous <code class="docutils literal notranslate"><span class="pre">EvTable</span></code>
 example.</p>
 <blockquote>
@@ -578,9 +426,9 @@ directly into the <code class="docutils literal notranslate"><span class="pre">E
 above. Note however that the very first line of the <code class="docutils literal notranslate"><span class="pre">FORM</span></code> string is ignored, so start with a <code class="docutils literal notranslate"><span class="pre">\n</span></code>.</p>
 </div></blockquote>
 <p>We then map those to the cells of the form:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">.--------------------------------------.</span>
 <span class="o">|</span>                                      <span class="o">|</span>
 <span class="o">|</span> <span class="n">Name</span><span class="p">:</span> <span class="n">John</span><span class="p">,</span> <span class="n">the</span> <span class="n">wise</span> <span class="n">old</span> <span class="n">admin</span> <span class="k">with</span> <span class="o">|</span>
@@ -610,46 +458,7 @@ inserted <code class="docutils literal notranslate"><span class="pre">\n</span><
 <h3>Tie a Character sheet to a Character<a class="headerlink" href="#tie-a-character-sheet-to-a-character" title="Permalink to this headline">¶</a></h3>
 <p>We will assume we go with the <code class="docutils literal notranslate"><span class="pre">EvForm</span></code> example above. We now need to attach this to a Character so
 it can be modified. For this we will modify our <code class="docutils literal notranslate"><span class="pre">Character</span></code> class a little more:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/character.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/character.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evform</span><span class="p">,</span> <span class="n">evtable</span>
 
@@ -689,8 +498,9 @@ it can be modified. For this we will modify our <code class="docutils literal no
                               <span class="n">cells</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
                                      <span class="s2">&quot;3&quot;</span><span class="p">:</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;advantages&quot;</span><span class="p">],</span>
                                      <span class="s2">&quot;4&quot;</span><span class="p">:</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;disadvantages&quot;</span><span class="p">]})</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Use <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> to make this change available to all <em>newly created</em> Characters. <em>Already existing</em>
 Characters will <em>not</em> have the charsheet defined, since <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> is only called once.
 The easiest to force an existing Character to re-fire its <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> is to use the
@@ -703,76 +513,7 @@ The easiest to force an existing Character to re-fire its <code class="docutils 
 <h3>Command for Account to change Character sheet<a class="headerlink" href="#command-for-account-to-change-character-sheet" title="Permalink to this headline">¶</a></h3>
 <p>We will add a command to edit the sections of our Character sheet. Open
 <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># at the end of mygame/commands/command.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># at the end of mygame/commands/command.py</span>
 
 <span class="n">ALLOWED_ATTRS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;con&quot;</span><span class="p">,</span> <span class="s2">&quot;dex&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;wis&quot;</span><span class="p">,</span> <span class="s2">&quot;cha&quot;</span><span class="p">)</span>
 <span class="n">ALLOWED_FIELDNAMES</span> <span class="o">=</span> <span class="n">ALLOWED_ATTRS</span> <span class="o">+</span> \
@@ -842,8 +583,9 @@ The easiest to force an existing Character to re-fire its <code class="docutils 
             <span class="n">caller</span><span class="o">.</span><span class="n">chardata</span><span class="p">[</span><span class="n">fieldname</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">update_charsheet</span><span class="p">()</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fieldname</span><span class="si">}</span><span class="s2"> was set to </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Most of this command is error-checking to make sure the right type of data was input. Note how the
 <code class="docutils literal notranslate"><span class="pre">sheet_locked</span></code> Attribute is checked and will return if not set.</p>
 <p>This command you import into <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and add to the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>,
@@ -853,79 +595,7 @@ in the same way the <code class="docutils literal notranslate"><span class="pre"
 <h3>Commands for GM to change Character sheet<a class="headerlink" href="#commands-for-gm-to-change-character-sheet" title="Permalink to this headline">¶</a></h3>
 <p>Game masters use basically the same input as Players do to edit a character sheet, except they can
 do it on other players than themselves. They are also not stopped by any <code class="docutils literal notranslate"><span class="pre">sheet_locked</span></code> flags.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># continuing in mygame/commands/command.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># continuing in mygame/commands/command.py</span>
 
 <span class="k">class</span> <span class="nc">CmdGMsheet</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -999,7 +669,7 @@ do it on other players than themselves. They are also not stopped by any <code c
             <span class="c1"># just display</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">charsheet</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>The <code class="docutils literal notranslate"><span class="pre">&#64;gmsheet</span></code> command takes an additional argument to specify which Character’s character sheet to
 edit. It also takes <code class="docutils literal notranslate"><span class="pre">/lock</span></code> and <code class="docutils literal notranslate"><span class="pre">/unlock</span></code> switches to block the Player from tweaking their sheet.</p>
 <p>Before this can be used, it should be added to the default <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code> in the same way as the
@@ -1023,7 +693,7 @@ implemented.</p>
 <section id="rooms">
 <h2>Rooms<a class="headerlink" href="#rooms" title="Permalink to this headline">¶</a></h2>
 <p>Evennia comes with rooms out of the box, so no extra work needed. A GM will automatically have all
-needed building commands available. A fuller go-through is found in the <a class="reference internal" href="Starting/Part1/Building-Quickstart.html"><span class="doc">Building tutorial</span></a>.
+needed building commands available. A fuller go-through is found in the <a class="reference internal" href="Starting/Part1/Building-Quickstart.html"><span class="doc std std-doc">Building tutorial</span></a>.
 Here are some useful highlights:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&#64;dig</span> <span class="pre">roomname;alias</span> <span class="pre">=</span> <span class="pre">exit_there;alias,</span> <span class="pre">exit_back;alias</span></code> - this is the basic command for digging
@@ -1043,7 +713,7 @@ access after the fact.</p>
 </section>
 <section id="channels">
 <h2>Channels<a class="headerlink" href="#channels" title="Permalink to this headline">¶</a></h2>
-<p>Evennia comes with <a class="reference external" href="Components/Communications.html#Channels">Channels</a> in-built and they are described fully in the
+<p>Evennia comes with <a class="reference internal" href="../Components/Channels.html"><span class="doc std std-doc">Channels</span></a> in-built and they are described fully in the
 documentation. For brevity, here are the relevant commands for normal use:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&#64;ccreate</span> <span class="pre">new_channel;alias;alias</span> <span class="pre">=</span> <span class="pre">short</span> <span class="pre">description</span></code> - Creates a new channel.</p></li>
@@ -1143,7 +813,7 @@ when the message was sent.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Evennia-for-roleplaying-sessions.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

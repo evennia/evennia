@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,30 +40,19 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="using-travis">
+  <section class="tex2jax_ignore mathjax_ignore" id="using-travis">
 <h1>Using Travis<a class="headerlink" href="#using-travis" title="Permalink to this headline">¶</a></h1>
 <p>Evennia uses <a class="reference external" href="https://travis-ci.org/">Travis CI</a> to check that it’s building successfully after every
 commit to its Github repository (you can for example see the <code class="docutils literal notranslate"><span class="pre">build:</span> <span class="pre">passing</span></code> badge at the top of
 Evennia’s <a class="reference external" href="https://github.com/evennia/evennia">Readme file</a>). If your game is open source on Github
-you may also use Travis for free. See [the Travis docs](https://docs.travis-ci.com/user/getting-
+you may also use Travis for free. See [the Travis docs](<a class="reference external" href="https://docs.travis-ci.com/user/getting-">https://docs.travis-ci.com/user/getting-</a>
 started/) for how to get started.</p>
 <p>After logging in you will get to point Travis to your repository on github. One further thing you
 need to set up yourself is a Travis config file named <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code> (note the initial period <code class="docutils literal notranslate"><span class="pre">.</span></code>).
 This should be created in the root of your game directory. The idea with this file is that it
 describes what Travis needs to import and build in order to create an instance of Evennia from
 scratch and then run validation tests on it. Here is an example:</p>
-<div class="highlight-yaml notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nt">language</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">language</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python</span>
 <span class="nt">python</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="s">&quot;2.7&quot;</span>
 <span class="nt">install</span><span class="p">:</span>
@@ -74,7 +65,7 @@ scratch and then run validation tests on it. Here is an example:</p>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">evennia test evennia</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">evennia test</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This will tell travis how to download Evennia, install it, set up a database and then run the test
 suite.
 You need to add this file to git (<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span> <span class="pre">.travis.yml</span></code>) and then commit your changes before Travis
@@ -124,7 +115,7 @@ fitting your game.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Using-Travis.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

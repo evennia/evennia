@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,10 +40,10 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="parsing-command-arguments-theory-and-best-practices">
+  <section class="tex2jax_ignore mathjax_ignore" id="parsing-command-arguments-theory-and-best-practices">
 <h1>Parsing command arguments, theory and best practices<a class="headerlink" href="#parsing-command-arguments-theory-and-best-practices" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial will elaborate on the many ways one can parse command arguments.  The first step after
-<a class="reference internal" href="Starting/Part1/Adding-Commands.html"><span class="doc">adding a command</span></a> usually is to parse its arguments.  There are lots of
+<a class="reference internal" href="Starting/Part1/Adding-Commands.html"><span class="doc std std-doc">adding a command</span></a> usually is to parse its arguments.  There are lots of
 ways to do it, but some are indeed better than others and this tutorial will try to present them.</p>
 <p>If you’re a Python beginner, this tutorial might help you a lot.  If you’re already familiar with
 Python syntax, this tutorial might still contain useful information.  There are still a lot of
@@ -92,22 +94,7 @@ access the command arguments in <code class="docutils literal notranslate"><span
 <section id="self-args">
 <h3>self.args<a class="headerlink" href="#self-args" title="Permalink to this headline">¶</a></h3>
 <p>To begin with, look at this example:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdTest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdTest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test command.</span>
@@ -124,7 +111,7 @@ access the command arguments in <code class="docutils literal notranslate"><span
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You have entered: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>If you add this command and test it, you will receive exactly what you have entered without any
 parsing:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">test</span> <span class="n">Whatever</span>
@@ -139,29 +126,14 @@ you receive from the game server.</p>
 </div></blockquote>
 <p>Notice two things here:</p>
 <ol class="simple">
-<li><p>The left space between our command key (”test”, here) and our command argument is not removed.
+<li><p>The left space between our command key (“test”, here) and our command argument is not removed.
 That’s why there are two spaces in our output at line 2.  Try entering something like “testok”.</p></li>
 <li><p>Even if you don’t enter command arguments, the command will still be called with an empty string
 in <code class="docutils literal notranslate"><span class="pre">self.args</span></code>.</p></li>
 </ol>
 <p>Perhaps a slight modification to our code would be appropriate to see what’s happening.  We will
 force Python to display the command arguments as a debug string using a little shortcut.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdTest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdTest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test command.</span>
@@ -178,7 +150,7 @@ force Python to display the command arguments as a debug string using a little s
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You have entered: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">!r}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>The only line we have changed is the last one, and we have added <code class="docutils literal notranslate"><span class="pre">!r</span></code> between our braces to tell
 Python to print the debug version of the argument (the repr-ed version).  Let’s see the result:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">test</span> <span class="n">Whatever</span>
@@ -217,14 +189,7 @@ string.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">rstrip</span></code>: same thing but only removes from the right end (right strip) of the string.</p></li>
 </ul>
 <p>Some Python examples might help:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;   this is &#39;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="c1"># remove spaces by default</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;   this is &#39;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="c1"># remove spaces by default</span>
 <span class="go">&#39;this is&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;   What if I&#39;m right?   &quot;</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span> <span class="c1"># strip spaces from the left</span>
 <span class="go">&quot;What if I&#39;m right?   &quot;</span>
@@ -233,29 +198,10 @@ string.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;&quot;Now, what is it?&quot;&#39;</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;?&#39;</span><span class="p">)</span> <span class="c1"># removes &#39;&quot;&#39; and &#39;?&#39; from both ends</span>
 <span class="go">&#39;Now, what is it&#39;</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Usually, since we don’t need the space separator, but still want our command to work if there’s no
 separator, we call <code class="docutils literal notranslate"><span class="pre">lstrip</span></code> on the command arguments:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdTest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdTest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test command.</span>
@@ -276,7 +222,7 @@ separator, we call <code class="docutils literal notranslate"><span class="pre">
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You have entered: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">!r}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <blockquote>
 <div><p>We are now beginning to override the command’s <code class="docutils literal notranslate"><span class="pre">parse</span></code> method, which is typically useful just for
 argument parsing.  This method is executed before <code class="docutils literal notranslate"><span class="pre">func</span></code> and so <code class="docutils literal notranslate"><span class="pre">self.args</span></code> in <code class="docutils literal notranslate"><span class="pre">func()</span></code> will contain
@@ -321,41 +267,7 @@ You played 1, you have won!
 <p>If that’s your first command, it’s a good opportunity to try to write it.  A command with a simple
 and finite role always is a good starting choice.  Here’s how we could (first) write it… but it
 won’t work as is, I warn you:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
@@ -391,7 +303,7 @@ won’t work as is, I warn you:</p>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You played </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">, you have lost.&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>If you try this code, Python will complain that you try to compare a number with a string: <code class="docutils literal notranslate"><span class="pre">figure</span></code>
 is a number and <code class="docutils literal notranslate"><span class="pre">self.args</span></code> is a string and can’t be compared as-is in Python.  Python doesn’t do
 “implicit converting” as some languages do.  By the way, this might be annoying sometimes, and other
@@ -404,50 +316,7 @@ the string and it returns an integer, if it could.  If it can’t, it will raise
 we’ll need to catch that.  However, we also have to indicate to Evennia that, should the number be
 invalid, no further parsing should be done.  Here’s a new attempt at our command with this
 converting:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
 
@@ -492,7 +361,7 @@ converting:</p>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You played </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">entered</span><span class="si">}</span><span class="s2">, you have lost.&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Before enjoying the result, let’s examine the <code class="docutils literal notranslate"><span class="pre">parse</span></code> method a little more: what it does is try to
 convert the entered argument from a <code class="docutils literal notranslate"><span class="pre">str</span></code> to an <code class="docutils literal notranslate"><span class="pre">int</span></code>.  This might fail (if a user enters <code class="docutils literal notranslate"><span class="pre">roll</span> <span class="pre">something</span></code>).  In such a case, Python raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> exception.  We catch it in our
 <code class="docutils literal notranslate"><span class="pre">try/except</span></code> block, send a message to the user and raise the <code class="docutils literal notranslate"><span class="pre">InterruptCommand</span></code> exception in
@@ -507,51 +376,7 @@ positive number between 1 and 6.  And the user can enter <code class="docutils l
 that matter, the game still works.  It might be worth addressing.  Again, you could write a
 condition to do that, but since we’re catching an exception, we might end up with something cleaner
 by grouping:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
 
@@ -597,7 +422,7 @@ by grouping:</p>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You played </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">entered</span><span class="si">}</span><span class="s2">, you have lost.&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Using grouped exceptions like that makes our code easier to read, but if you feel more comfortable
 checking, afterward, that the number the user entered is in the right range, you can do so in a
 latter condition.</p>
@@ -616,20 +441,20 @@ numbers?  First the number of dice to roll, then the guess?</p>
 <div><p>You won’t win often if you roll 5 dice but that’s for the example.</p>
 </div></blockquote>
 <p>So we would like to interpret a command like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">roll</span> <span class="mi">3</span> <span class="mi">12</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; roll 3 12
 </pre></div>
 </div>
 <p>(To be understood: roll 3 dice, my guess is the total number will be 12.)</p>
 <p>What we need is to cut our command argument, which is a <code class="docutils literal notranslate"><span class="pre">str</span></code>, break it at the space (we use the
 space as a delimiter).  Python provides the <code class="docutils literal notranslate"><span class="pre">str.split</span></code> method which we’ll use.  Again, here are
 some examples from the Python interpreter:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;3 12&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
-<span class="go">[&#39;3&#39;, &#39;12&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;a command with several arguments&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
-<span class="go">[&#39;a&#39;, &#39;command&#39;, &#39;with&#39;, &#39;several&#39;, &#39;arguments&#39;]</span>
-<span class="go">&gt;&gt;&gt;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; args = &quot;3 12&quot;
+&gt;&gt;&gt; args.split(&quot; &quot;)
+[&#39;3&#39;, &#39;12&#39;]
+&gt;&gt;&gt; args = &quot;a command with several arguments&quot;
+&gt;&gt;&gt; args.split(&quot; &quot;)
+[&#39;a&#39;, &#39;command&#39;, &#39;with&#39;, &#39;several&#39;, &#39;arguments&#39;]
+&gt;&gt;&gt;
 </pre></div>
 </div>
 <p>As you can see, <code class="docutils literal notranslate"><span class="pre">str.split</span></code> will “convert” our strings into a list of strings.  The specified
@@ -637,24 +462,24 @@ argument (<code class="docutils literal notranslate"><span class="pre">&quot;</s
 sees a delimiter, it takes whatever is before this delimiter and append it to a list.</p>
 <p>The point here is that <code class="docutils literal notranslate"><span class="pre">str.split</span></code> will be used to split our argument.  But, as you can see from the
 above output, we can never be sure of the length of the list at this point:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;something&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
-<span class="go">[&#39;something&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
-<span class="go">[&#39;&#39;]</span>
-<span class="go">&gt;&gt;&gt;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; args = &quot;something&quot;
+&gt;&gt;&gt; args.split(&quot; &quot;)
+[&#39;something&#39;]
+&gt;&gt;&gt; args = &quot;&quot;
+&gt;&gt;&gt; args.split(&quot; &quot;)
+[&#39;&#39;]
+&gt;&gt;&gt;
 </pre></div>
 </div>
 <p>Again we could use a condition to check the number of split arguments, but Python offers a better
 approach, making use of its exception mechanism.  We’ll give a second argument to <code class="docutils literal notranslate"><span class="pre">str.split</span></code>, the
 maximum number of splits to do.  Let’s see an example, this feature might be confusing at first
 glance:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;that is something great&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># one split, that is a list with two elements (before, after)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; args = &quot;that is something great&quot;
+&gt;&gt;&gt; args.split(&quot; &quot;, 1) # one split, that is a list with two elements (before, after)
 </pre></div>
 </div>
-<p>[’that’, ‘is something great’]</p>
+<p>[‘that’, ‘is something great’]</p>
 <blockquote>
 <div><blockquote>
 <div></div></blockquote>
@@ -667,10 +492,10 @@ after the separator).</p>
 <div><p>What will happen if Python can’t split the number of times we ask?</p>
 </div></blockquote>
 <p>It won’t:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;whatever&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># there isn&#39;t even a space here...</span>
-<span class="go">[&#39;whatever&#39;]</span>
-<span class="go">&gt;&gt;&gt;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; args = &quot;whatever&quot;
+&gt;&gt;&gt; args.split(&quot; &quot;, 1) # there isn&#39;t even a space here...
+[&#39;whatever&#39;]
+&gt;&gt;&gt;
 </pre></div>
 </div>
 <p>This is one moment I would have hoped for an exception and didn’t get one.  But there’s another way
@@ -678,72 +503,7 @@ which will raise an exception if there is an error: variable unpacking.</p>
 <p>We won’t talk about this feature in details here.  It would be complicated.  But the code is really
 straightforward to use.  Let’s take our example of the roll command but let’s add a first argument:
 the number of dice to roll.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
 
@@ -810,19 +570,15 @@ the number of dice to roll.</p>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You played </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">guess</span><span class="si">}</span><span class="s2">, you have lost.&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>The beginning of the <code class="docutils literal notranslate"><span class="pre">parse()</span></code> method is what interests us most:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
     <span class="n">number</span><span class="p">,</span> <span class="n">guess</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Invalid usage.  Enter two numbers separated by a space.&quot;</span><span class="p">)</span>
     <span class="k">raise</span> <span class="n">InterruptCommand</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>We split the argument using <code class="docutils literal notranslate"><span class="pre">str.split</span></code> but we capture the result in two variables.  Python is smart
 enough to know that we want what’s left of the space in the first variable, what’s right of the
 space in the second variable.  If there is not even a space in the string, Python will raise a
@@ -839,14 +595,14 @@ the beginning of it.</p>
 <p>We have used a space as a delimiter.  This is absolutely not necessary.  You might remember that
 most default Evennia commands can take an <code class="docutils literal notranslate"><span class="pre">=</span></code> sign as a delimiter.  Now you know how to parse them
 as well:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cmd_key</span> <span class="o">=</span> <span class="s2">&quot;tel&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cmd_args</span> <span class="o">=</span> <span class="s2">&quot;book = chest&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">cmd_args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)</span> <span class="c1"># mighht raise ValueError!</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">left</span>
-<span class="go">&#39;book &#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">right</span>
-<span class="go">&#39; chest&#39;</span>
-<span class="go">&gt;&gt;&gt;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; cmd_key = &quot;tel&quot;
+&gt;&gt;&gt; cmd_args = &quot;book = chest&quot;
+&gt;&gt;&gt; left, right = cmd_args.split(&quot;=&quot;) # mighht raise ValueError!
+&gt;&gt;&gt; left
+&#39;book &#39;
+&gt;&gt;&gt; right
+&#39; chest&#39;
+&gt;&gt;&gt;
 </pre></div>
 </div>
 </section>
@@ -857,21 +613,13 @@ necessary but they can be set if more information is needed.  I will not provide
 code here but just enough code to show the mechanism in Python:</p>
 <p>Again, we’ll use <code class="docutils literal notranslate"><span class="pre">str.split</span></code>, knowing that we might not have any delimiter at all.  For instance,
 the player could enter the “tel” command like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">tel</span> <span class="n">book</span>
-<span class="o">&gt;</span> <span class="n">tell</span> <span class="n">book</span> <span class="o">=</span> <span class="n">chest</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; tel book
+&gt; tell book = chest
 </pre></div>
 </div>
 <p>The equal sign is optional along with whatever is specified after it.  A possible solution in our
 <code class="docutils literal notranslate"><span class="pre">parse</span></code> method would be:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
 
         <span class="c1"># = is optional</span>
@@ -881,7 +629,7 @@ the player could enter the “tel” command like this:</p>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">args</span>
             <span class="n">destination</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This code would place everything the user entered in <code class="docutils literal notranslate"><span class="pre">obj</span></code> if she didn’t specify any equal sign.
 Otherwise, what’s before the equal sign will go in <code class="docutils literal notranslate"><span class="pre">obj</span></code>, what’s after the equal sign will go in
 <code class="docutils literal notranslate"><span class="pre">destination</span></code>.  This makes for quick testing after that, more robust code with less conditions that
@@ -889,7 +637,7 @@ might too easily break your code if you’re not careful.</p>
 <blockquote>
 <div><p>Again, here we specified a maximum numbers of splits.  If the users enters:</p>
 </div></blockquote>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">tel</span> <span class="n">book</span> <span class="o">=</span> <span class="n">chest</span> <span class="o">=</span> <span class="n">chair</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; tel book = chest = chair
 </pre></div>
 </div>
 <p>Then <code class="docutils literal notranslate"><span class="pre">destination</span></code> will contain: <code class="docutils literal notranslate"><span class="pre">&quot;</span> <span class="pre">chest</span> <span class="pre">=</span> <span class="pre">chair&quot;</span></code>.  This is often desired, but it’s up to you to
@@ -905,7 +653,7 @@ having <code class="docutils literal notranslate"><span class="pre">&quot;book&q
 about… what is this <code class="docutils literal notranslate"><span class="pre">&quot;book&quot;</span></code>?</p>
 <p>To get an object from a string, we perform an Evennia search.  Evennia provides a <code class="docutils literal notranslate"><span class="pre">search</span></code> method on
 all typeclassed objects (you will most likely use the one on characters or accounts).  This method
-supports a very wide array of arguments and has <a class="reference internal" href="Starting/Part1/Searching-Things.html"><span class="doc">its own tutorial</span></a>.
+supports a very wide array of arguments and has <a class="reference internal" href="Starting/Part1/Searching-Things.html"><span class="doc std std-doc">its own tutorial</span></a>.
 Some examples of useful cases follow:</p>
 <section id="local-searches">
 <h3>Local searches<a class="headerlink" href="#local-searches" title="Permalink to this headline">¶</a></h3>
@@ -915,34 +663,24 @@ a session command, though that’s not as frequent).  The <code class="docutils 
 caller.</p>
 <p>Let’s take the same example of our little “tel” command.  The user can specify an object as
 argument:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>We then need to “convert” this string into an Evennia object.  The Evennia object will be searched
 in the caller’s location and its contents by default (that is to say, if the command has been
 entered by a character, it will search the object in the character’s room and the character’s
 inventory).</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>We specify only one argument to the <code class="docutils literal notranslate"><span class="pre">search</span></code> method here: the string to search.  If Evennia finds a
 match, it will return it and we keep it in the <code class="docutils literal notranslate"><span class="pre">obj</span></code> attribute.  If it can’t find anything, it will
 return <code class="docutils literal notranslate"><span class="pre">None</span></code> so we need to check for that:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
@@ -950,7 +688,7 @@ return <code class="docutils literal notranslate"><span class="pre">None</span><
             <span class="c1"># A proper error message has already been sent to the caller</span>
             <span class="k">raise</span> <span class="n">InterruptCommand</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>That’s it.  After this condition, you know that whatever is in <code class="docutils literal notranslate"><span class="pre">self.obj</span></code> is a valid Evennia object
 (another character, an object, an exit…).</p>
 </section>
@@ -959,16 +697,7 @@ return <code class="docutils literal notranslate"><span class="pre">None</span><
 <p>By default, Evennia will handle the case when more than one match is found in the search.  The user
 will be asked to narrow down and re-enter the command.  You can, however, ask to be returned the
 list of matches and handle this list yourself:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
 
         <span class="n">objs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -979,7 +708,7 @@ list of matches and handle this list yourself:</p>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># Take the first match even if there are several</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>All we have changed to obtain a list is a keyword argument in the <code class="docutils literal notranslate"><span class="pre">search</span></code> method: <code class="docutils literal notranslate"><span class="pre">quiet</span></code>.  If set
 to <code class="docutils literal notranslate"><span class="pre">True</span></code>,  then errors are ignored and a list is always returned, so we need to handle it as such.
 Notice in this example, <code class="docutils literal notranslate"><span class="pre">self.obj</span></code> will contain a valid object too, but if several matches are
@@ -990,13 +719,11 @@ found, <code class="docutils literal notranslate"><span class="pre">self.obj</sp
 <p>By default, Evennia will perform a local search, that is, a search limited by the location in which
 the caller is.  If you want to perform a global search (search in the entire database), just set the
 <code class="docutils literal notranslate"><span class="pre">global_search</span></code> keyword argument to <code class="docutils literal notranslate"><span class="pre">True</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 </section>
 <section id="conclusion">
@@ -1076,7 +803,7 @@ code.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Parsing-commands-tutorial.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

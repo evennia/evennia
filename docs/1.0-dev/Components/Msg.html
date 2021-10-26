@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,9 +40,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="msg">
+  <section class="tex2jax_ignore mathjax_ignore" id="msg">
 <h1>Msg<a class="headerlink" href="#msg" title="Permalink to this headline">¶</a></h1>
-<p>The <a class="reference external" href="../api/evennia.comms.models.Msg.html">Msg</a> object represents a database-saved
+<p>The <a class="reference internal" href="../api/evennia.comms.models.html#evennia.comms.models.Msg" title="evennia.comms.models.Msg"><span class="xref myst py py-class">Msg</span></a> object represents a database-saved
 piece of communication. Think of it as a discrete piece of email - it contains
 a message, some metadata and will always have a sender and one or more
 recipients.</p>
@@ -54,38 +56,29 @@ good uses for <code class="docutils literal notranslate"><span class="pre">Msg</
 </ul>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>A <cite>Msg</cite> does not have any in-game representation. So if you want to use them
+<p>A <code class="docutils literal notranslate"><span class="pre">Msg</span></code> does not have any in-game representation. So if you want to use them
 to represent in-game mail/letters, the physical letters would never be
 visible in a room (possible to steal, spy on etc) unless you make your
 spy-system access the Msgs directly (or go to the trouble of spawning an
 actual in-game letter-object based on the Msg)</p>
 </div>
 <div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 1.0: </span>Channels dropped Msg-support. Now only used in <cite>page</cite> command by default.</p>
+<p><span class="versionmodified changed">Changed in version 1.0: </span>Channels dropped Msg-support. Now only used in <code class="docutils literal notranslate"><span class="pre">page</span></code> command by default.</p>
 </div>
 <section id="msg-in-code">
 <h2>Msg in code<a class="headerlink" href="#msg-in-code" title="Permalink to this headline">¶</a></h2>
 <p>The Msg is intended to be used exclusively in code, to build other game systems. It is <em>not</em>
-a <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclassed</span></a> entity, which means it cannot (easily) be overridden. It
-doesn’t support Attributes (but it <em>does</em> support <a class="reference internal" href="Tags.html"><span class="doc">Tags</span></a>). It tries to be lean
+a <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclassed</span></a> entity, which means it cannot (easily) be overridden. It
+doesn’t support Attributes (but it <em>does</em> support <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tags</span></a>). It tries to be lean
 and small since a new one is created for every message.</p>
 <p>You create a new message with <code class="docutils literal notranslate"><span class="pre">evennia.create_message</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_message</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_message</span>
     <span class="n">message</span> <span class="o">=</span> <span class="n">create_message</span><span class="p">(</span><span class="n">senders</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span>
                              <span class="n">locks</span><span class="o">=...</span><span class="p">,</span> <span class="n">tags</span><span class="o">=...</span><span class="p">,</span> <span class="n">header</span><span class="o">=...</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>You can search for <code class="docutils literal notranslate"><span class="pre">Msg</span></code> objects in various ways:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">search_message</span><span class="p">,</span> <span class="n">Msg</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>  <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">search_message</span><span class="p">,</span> <span class="n">Msg</span>
 
   <span class="c1"># args are optional. Only a single sender/receiver should be passed</span>
   <span class="n">messages</span> <span class="o">=</span> <span class="n">search_message</span><span class="p">(</span><span class="n">sender</span><span class="o">=...</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=...</span><span class="p">,</span> <span class="n">freetext</span><span class="o">=...</span><span class="p">,</span> <span class="n">dbref</span><span class="o">=...</span><span class="p">)</span>
@@ -93,13 +86,14 @@ and small since a new one is created for every message.</p>
   <span class="c1"># get all messages for a given sender/receiver</span>
   <span class="n">messages</span> <span class="o">=</span> <span class="n">Msg</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_msg_by_sender</span><span class="p">(</span><span class="n">sender</span><span class="p">)</span>
   <span class="n">messages</span> <span class="o">=</span> <span class="n">Msg</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_msg_by_receiver</span><span class="p">(</span><span class="n">recipient</span><span class="p">)</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <section id="properties-on-msg">
 <h3>Properties on Msg<a class="headerlink" href="#properties-on-msg" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">senders</span></code> - there must always be at least one sender. This is a set of</p></li>
-<li><p><a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a>, <a class="reference internal" href="Objects.html"><span class="doc">Object</span></a>, <a class="reference internal" href="Scripts.html"><span class="doc">Script</span></a>
+<li><p><a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Account</span></a>, <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a>, <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Script</span></a>
 or <code class="docutils literal notranslate"><span class="pre">str</span></code> in any combination (but usually a message only targets one type).
 Using a <code class="docutils literal notranslate"><span class="pre">str</span></code> for a sender indicates it’s an ‘external’ sender and
 and can be used to point to a sender that is not a typeclassed entity. This is not used by default
@@ -107,17 +101,17 @@ and what this would be depends on the system (it could be a unique id or a
 python-path, for example). While most systems expect a single sender, it’s
 possible to have any number of them.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">receivers</span></code> - these are the ones to see the Msg. These are again any combination of
-<a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a>, <a class="reference internal" href="Objects.html"><span class="doc">Object</span></a> or <a class="reference internal" href="Scripts.html"><span class="doc">Script</span></a> or <code class="docutils literal notranslate"><span class="pre">str</span></code> (an ‘external’ receiver).
+<a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Account</span></a>, <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a> or <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Script</span></a> or <code class="docutils literal notranslate"><span class="pre">str</span></code> (an ‘external’ receiver).
 It’s in principle possible to have zero receivers but most usages of Msg expects one or more.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">header</span></code> - this is an optional text field that can contain meta-information about the message. For
 an email-like system it would be the subject line. This can be independently searched, making
 this a powerful place for quickly finding messages.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">message</span></code> - the actual text being sent.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">date_sent</span></code> - this is auto-set to the time the Msg was created (and thus presumably sent).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">locks</span></code> - the Evennia <a class="reference internal" href="Locks.html"><span class="doc">lock handler</span></a>. Use with <code class="docutils literal notranslate"><span class="pre">locks.add()</span></code> etc and check locks with <code class="docutils literal notranslate"><span class="pre">msg.access()</span></code>
+<li><p><code class="docutils literal notranslate"><span class="pre">locks</span></code> - the Evennia <a class="reference internal" href="Locks.html"><span class="doc std std-doc">lock handler</span></a>. Use with <code class="docutils literal notranslate"><span class="pre">locks.add()</span></code> etc and check locks with <code class="docutils literal notranslate"><span class="pre">msg.access()</span></code>
 like for all other lockable entities. This can be used to limit access to the contents
 of the Msg. The default lock-type to check is <code class="docutils literal notranslate"><span class="pre">'read'</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">hide_from</span></code> - this is an optional list of <a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a> or <a class="reference internal" href="Objects.html"><span class="doc">Objects</span></a> that
+<li><p><code class="docutils literal notranslate"><span class="pre">hide_from</span></code> - this is an optional list of <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a> or <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a> that
 will not see this Msg. This relationship is available mainly for optimization
 reasons since it allows quick filtering of messages not intended for a given
 target.</p></li>
@@ -126,7 +120,7 @@ target.</p></li>
 </section>
 <section id="tempmsg">
 <h2>TempMsg<a class="headerlink" href="#tempmsg" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="../api/evennia.comms.models.TempMsg.html">evennia.comms.models.TempMsg</a> is an object
+<p><a class="reference internal" href="../api/evennia.comms.models.html#evennia.comms.models.TempMsg" title="evennia.comms.models.TempMsg"><span class="xref myst py py-class">evennia.comms.models.TempMsg</span></a> is an object
 that implements the same API as the regular <code class="docutils literal notranslate"><span class="pre">Msg</span></code>, but which has no database
 component (and thus cannot be searched). It’s meant to plugged into systems
 expecting a <code class="docutils literal notranslate"><span class="pre">Msg</span></code> but where you just want to process the message without saving
@@ -186,7 +180,7 @@ it.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Msg.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

@@ -58,7 +58,7 @@ through the launcher:
 This will start Evennia with the Server component running (in daemon mode) under
 cProfile. You could instead try `--profile` with the `portal` argument to
 profile the Portal (you would then need to
-[start the Server separately](../Setup/Start-Stop-Reload)).
+[start the Server separately](../Setup/Start-Stop-Reload.md)).
 
 Please note that while the profiler is running, your process will use a lot more
 memory than usual.  Memory usage is even likely to climb over time. So don't
@@ -127,7 +127,7 @@ game with simulated players (aka "bots" or "dummies"). Once connected, these
 dummies will semi-randomly perform various tasks from a list of possible
 actions.  Use `Ctrl-C` to stop the Dummyrunner.
 
-```warning::
+```{warning}
 
     You should not run the Dummyrunner on a production database. It
     will spawn many objects and also needs to run with general permissions.

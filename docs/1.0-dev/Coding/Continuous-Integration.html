@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="continuous-integration">
+  <section class="tex2jax_ignore mathjax_ignore" id="continuous-integration">
 <h1>Continuous Integration<a class="headerlink" href="#continuous-integration" title="Permalink to this headline">¶</a></h1>
 <p>One of the advantages of Evennia over traditional MUSH development systems is that Evennia is
 capable of integrating into enterprise level integration environments and source control. Because of
@@ -71,7 +73,7 @@ software for your server.</p>
 Guide</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="Version-Control.html"><span class="doc">Source Control</span></a></p>
+<li><p><a class="reference internal" href="Version-Control.html"><span class="doc std std-doc">Source Control</span></a></p>
 <ul>
 <li><p>This could be Git or SVN or any other available SC.</p></li>
 </ul>
@@ -99,7 +101,7 @@ visible on the tabs to the left.)</p>
 sample scripts are provided under this section below!) Click Build Steps and prepare your general
 flow. For this example, we will be doing a few basic example steps:</p>
 <ul class="simple">
-<li><p>Transforming the Settings.py file</p>
+<li><p>Transforming the <a class="reference external" href="http://Settings.py">Settings.py</a> file</p>
 <ul>
 <li><p>We do this to update ports or other information that make your production environment unique
 from your development environment.</p></li>
@@ -113,14 +115,7 @@ from your development environment.</p></li>
 <ul>
 <li><p>Create a build step with the name: Transform Configuration</p></li>
 <li><p>For the script add:</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="c1"># Replaces the game configuration with one </span>
 <span class="c1"># appropriate for this deployment.</span>
 
@@ -129,13 +124,13 @@ from your development environment.</p></li>
 
 sed -e <span class="s1">&#39;s/TELNET_PORTS = [4000]/TELNET_PORTS = [%game.ports%]/g&#39;</span> <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span> &gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>.tmp <span class="o">&amp;&amp;</span> mv
 </pre></div>
-</td></tr></table></div>
+</div>
 </li>
 </ul>
-<p>“$CONFIG”.tmp “$CONFIG”
-sed -e ‘s/WEBSERVER_PORTS = [(4001, 4002)]/WEBSERVER_PORTS = [%game.webports%]/g’ “$CONFIG” &gt;
-“$CONFIG”.tmp &amp;&amp; mv “$CONFIG”.tmp “$CONFIG”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># settings.py MySQL DB configuration
+<p>“<span class="math notranslate nohighlight">\(CONFIG&quot;.tmp &quot;\)</span>CONFIG”
+sed -e ‘s/WEBSERVER_PORTS = [(4001, 4002)]/WEBSERVER_PORTS = [%game.webports%]/g’ “<span class="math notranslate nohighlight">\(CONFIG&quot; &gt;
+&quot;\)</span>CONFIG”.tmp &amp;&amp; mv “<span class="math notranslate nohighlight">\(CONFIG&quot;.tmp &quot;\)</span>CONFIG”</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># settings.py MySQL DB configuration
 echo Configuring Game Database...
 echo &quot;&quot; &gt;&gt; &quot;$CONFIG&quot;
 echo &quot;######################################################################&quot; &gt;&gt; &quot;$CONFIG&quot;
@@ -172,20 +167,7 @@ step to: %game.dir%</p></li>
 </ul>
 </li>
 <li><p>In this script include:</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="c1"># Update the DB migration</span>
 
 <span class="nv">LOGDIR</span><span class="o">=</span><span class="s2">&quot;server/logs&quot;</span>
@@ -200,26 +182,13 @@ step to: %game.dir%</p></li>
 
 evennia makemigrations
 </pre></div>
-</td></tr></table></div>
+</div>
 </li>
 <li><p>Create yet another build step, this time named: “Execute Database Migration”:</p>
 <ul>
 <li><p>If you’re using SQLLite on your game, it will be prudent to change working directory on this
 step to: %game.dir%</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="c1"># Apply the database migration.</span>
 
 <span class="nv">LOGDIR</span><span class="o">=</span><span class="s2">&quot;server/logs&quot;</span>
@@ -234,7 +203,7 @@ step to: %game.dir%</p>
 
 evennia migrate
 </pre></div>
-</td></tr></table></div>
+</div>
 </li>
 </ul>
 </li>
@@ -247,19 +216,7 @@ to where our game actually exists on the local server.</p>
 <ul>
 <li><p>If you’re using SQLLite on your game, be sure to order this step ABOVE the Database Migration
 steps. The build order will matter!</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="c1"># Publishes the build to the proper build directory.</span>
 
 <span class="nv">DIRECTORY</span><span class="o">=</span><span class="s2">&quot;%game.dir%&quot;</span>
@@ -273,7 +230,7 @@ steps. The build order will matter!</p>
 cp -ruv %teamcity.build.checkoutDir%/* <span class="s2">&quot;</span><span class="nv">$DIRECTORY</span><span class="s2">&quot;</span>
 chmod -R <span class="m">775</span> <span class="s2">&quot;</span><span class="nv">$DIRECTORY</span><span class="s2">&quot;</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </li>
 </ul>
 </li>
@@ -283,25 +240,7 @@ chmod -R <span class="m">775</span> <span class="s2">&quot;</span><span class="n
 <li><p>Create a new script called “Reload Game”:</p>
 <ul>
 <li><p>The working directory on this build step will be: %game.dir%</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="c1"># Apply the database migration.</span>
 
 <span class="nv">LOGDIR</span><span class="o">=</span><span class="s2">&quot;server/logs&quot;</span>
@@ -321,7 +260,7 @@ chmod -R <span class="m">775</span> <span class="s2">&quot;</span><span class="n
   evennia reload
 <span class="k">fi</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </li>
 </ul>
 </li>
@@ -412,7 +351,7 @@ build steps could be added or removed at this point, adding some features like U
 <h3>Versions</h3>
 <ul>
   <li><a href="Continuous-Integration.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

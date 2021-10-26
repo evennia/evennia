@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,36 +40,29 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="client-support-grid">
+  <section class="tex2jax_ignore mathjax_ignore" id="client-support-grid">
 <h1>Client Support Grid<a class="headerlink" href="#client-support-grid" title="Permalink to this headline">¶</a></h1>
 <p>This grid tries to gather info about different MU clients when used with Evennia.
 If you want to report a problem, update an entry or add a client, make a
 new <a class="reference external" href="https://github.com/evennia/evennia/issues/new/choose">documentation issue</a> for it. Everyone’s encouraged to report their findings.</p>
-<section id="legend">
-<h2>Legend:<a class="headerlink" href="#legend" title="Permalink to this headline">¶</a></h2>
+<section id="client-grid">
+<h2>Client Grid<a class="headerlink" href="#client-grid" title="Permalink to this headline">¶</a></h2>
+<p>Legend:</p>
 <ul class="simple">
 <li><p><strong>Name</strong>: The name of the client. Also note if it’s OS-specific.</p></li>
 <li><p><strong>Version</strong>: Which version or range of client versions were tested.</p></li>
 <li><p><strong>Comments</strong>: Any quirks on using this client with Evennia should be added here.</p></li>
 </ul>
-</section>
-<section id="client-grid">
-<h2>Client Grid<a class="headerlink" href="#client-grid" title="Permalink to this headline">¶</a></h2>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 11%" />
-<col style="width: 62%" />
-</colgroup>
+<table class="colwidths-auto docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Version</p></th>
+<th class="head"><p>Version tested</p></th>
 <th class="head"><p>Comments</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference external" href="../Components/Webclient.html">Evennia Webclient</a></p></td>
-<td><p>0.9</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../Components/Webclient.html"><span class="doc std std-doc">Evennia Webclient</span></a></p></td>
+<td><p>1.0+</p></td>
 <td><p>Evennia-specific</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="http://tintin.sourceforge.net/">tintin++</a></p></td>
@@ -90,15 +85,21 @@ new <a class="reference external" href="https://github.com/evennia/evennia/issue
 <td><p>v3</p></td>
 <td><p><em>UNTESTED</em></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference external" href="https://www.potatomushclient.com/">Potato</a></p></td>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.potatomushclient.com/">Potato</a>_</p></td>
 <td><p>2.0.0b16</p></td>
-<td><p>No MXP, MCCP support. Win 32bit does not understand
-“localhost”, must use <cite>127.0.0.1</cite>.</p></td>
+<td><p>No MXP, MCCP support. Win 32bit does not understand</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference external" href="https://www.mudlet.org/">Mudlet</a></p></td>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p>“localhost”, must use <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.mudlet.org/">Mudlet</a></p></td>
 <td><p>3.4+</p></td>
-<td><p>No known issues. Some older versions showed &lt;&gt; as html
-under MXP.</p></td>
+<td><p>No known issues. Some older versions showed &lt;&gt; as html</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p>under MXP.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://archive.org/details/tucows_196173_SimpleMU_MU_Client">SimpleMU</a> (Win)</p></td>
 <td><p>full</p></td>
@@ -114,45 +115,63 @@ under MXP.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="http://www.beipmu.com/">BeipMU</a> (Win)</p></td>
 <td><p>3.0.255</p></td>
-<td><p>No MXP support. Best to enable “MUD prompt handling”, disable
-“Handle HTML tags”.</p></td>
+<td><p>No MXP support. Best to enable “MUD prompt handling”, disable</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference external" href="https://itunes.apple.com/us/app/mudrammer-a-modern-mud-client/id597157072">MudRammer</a> (IOS)</p></td>
+<tr class="row-even"><td><p></p></td>
+<td><p></p></td>
+<td><p>“Handle HTML tags”.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://itunes.apple.com/us/app/mudrammer-a-modern-mud-client/id597157072">MudRammer</a> (IOS)</p></td>
 <td><p>1.8.7</p></td>
 <td><p>Bad Telnet Protocol compliance: displays spurious characters.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference external" href="https://itunes.apple.com/us/app/mudmaster/id341160033">MUDMaster</a></p></td>
+<tr class="row-even"><td><p><a class="reference external" href="https://itunes.apple.com/us/app/mudmaster/id341160033">MUDMaster</a></p></td>
 <td><p>1.3.1</p></td>
 <td><p><em>UNTESTED</em></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference external" href="https://bt.happygoatstudios.com/">BlowTorch</a> (Andr)</p></td>
+<tr class="row-odd"><td><p><a class="reference external" href="https://bt.happygoatstudios.com/">BlowTorch</a> (Andr)</p></td>
 <td><p>1.1.3</p></td>
 <td><p>Telnet NOP displays as spurious character.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference external" href="https://play.google.com/store/apps/details?id=com.crap.mukluk">Mukluk</a> (Andr)</p></td>
+<tr class="row-even"><td><p><a class="reference external" href="https://play.google.com/store/apps/details?id=com.crap.mukluk">Mukluk</a> (Andr)</p></td>
 <td><p>2015.11.20</p></td>
-<td><p>Telnet NOP displays as spurious character. Has UTF-8/Emoji
-support.</p></td>
+<td><p>Telnet NOP displays as spurious character. Has UTF-8/Emoji</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p>support.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://github.com/GNOME/gnome-mud">Gnome-MUD</a> (Unix)</p></td>
 <td><p>0.11.2</p></td>
-<td><p>Telnet handshake errors. First (only) attempt at logging in
-fails.</p></td>
+<td><p>Telnet handshake errors. First (only) attempt at logging in</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference external" href="https://spyrit.ierne.eu.org/">Spyrit</a></p></td>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p>fails.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://spyrit.ierne.eu.org/">Spyrit</a></p></td>
 <td><p>0.4</p></td>
 <td><p>No MXP, OOB support.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference external" href="https://jamochamud.org/">JamochaMUD</a></p></td>
+<tr class="row-odd"><td><p><a class="reference external" href="https://jamochamud.org/">JamochaMUD</a></p></td>
 <td><p>5.2</p></td>
 <td><p>Does not support ANSI within MXP text.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference external" href="http://duckclient.com/">DuckClient</a> (Chrome)</p></td>
+<tr class="row-even"><td><p><a class="reference external" href="http://duckclient.com/">DuckClient</a> (Chrome)</p></td>
 <td><p>4.2</p></td>
-<td><p>No MXP support. Displays Telnet Go-Ahead and
-WILL SUPPRESS-GO-AHEAD as ù character. Also seems to run
-the <cite>version</cite> command on connection, which will not work in
-<cite>MULTISESSION_MODES</cite> above 1.</p></td>
+<td><p>No MXP support. Displays Telnet Go-Ahead and</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p>WILL SUPPRESS-GO-AHEAD as ù character. Also seems to run</p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p></p></td>
+<td><p>the <code class="docutils literal notranslate"><span class="pre">version</span></code> command on connection, which will not work in</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODES</span></code> above 1.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://www.kildclient.org/">KildClient</a></p></td>
 <td><p>2.11.1</p></td>
@@ -203,7 +222,6 @@ parameter to disable it for that Evennia account permanently.</p></li>
 <p><h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Client Support Grid</a><ul>
-<li><a class="reference internal" href="#legend">Legend:</a></li>
 <li><a class="reference internal" href="#client-grid">Client Grid</a></li>
 <li><a class="reference internal" href="#workarounds-for-client-issues">Workarounds for client issues:</a><ul>
 <li><a class="reference internal" href="#issue-telnet-nop-displays-as-spurious-character">Issue: Telnet NOP displays as spurious character.</a></li>
@@ -233,7 +251,7 @@ parameter to disable it for that Evennia account permanently.</p></li>
 <h3>Versions</h3>
 <ul>
   <li><a href="Client-Support-Grid.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

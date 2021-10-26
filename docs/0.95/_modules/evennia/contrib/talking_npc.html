@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.talking_npc &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.talking_npc</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.talking_npc</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Evennia Talkative NPC</span>
+
+<span class="sd">Contribution - Griatch 2011, grungies1138, 2016</span>
+
+<span class="sd">This is a static NPC object capable of holding a simple menu-driven</span>
+<span class="sd">conversation. It&#39;s just meant as an example. Create it by creating an</span>
+<span class="sd">object of typeclass contrib.talking_npc.TalkingNPC, For example using</span>
+<span class="sd">@create:</span>
+
+<span class="sd">    @create/drop John : contrib.talking_npc.TalkingNPC</span>
+
+<span class="sd">Walk up to it and give the talk command to strike up a conversation.</span>
+<span class="sd">If there are many talkative npcs in the same room you will get to</span>
+<span class="sd">choose which one&#39;s talk command to call (Evennia handles this</span>
+<span class="sd">automatically). This use of EvMenu is very simplistic; See EvMenu for</span>
+<span class="sd">a lot more complex possibilities.</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">default_cmds</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">EvMenu</span>
+
+
+<span class="c1"># Menu implementing the dialogue tree</span>
+
+
+<div class="viewcode-block" id="menu_start_node"><a class="viewcode-back" href="../../../api/evennia.contrib.talking_npc.html#evennia.contrib.talking_npc.menu_start_node">[docs]</a><span class="k">def</span> <span class="nf">menu_start_node</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&#39;Hello there, how can I help you?&#39;&quot;</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Hey, do you know what this &#39;Evennia&#39; thing is all about?&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;info1&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;What&#39;s your name, little NPC?&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;info2&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+
+
+<div class="viewcode-block" id="info1"><a class="viewcode-back" href="../../../api/evennia.contrib.talking_npc.html#evennia.contrib.talking_npc.info1">[docs]</a><span class="k">def</span> <span class="nf">info1</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&#39;Oh, Evennia is where you are right now! Don&#39;t you feel the power?&#39;&quot;</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Sure, *I* do, not sure how you do though. You are just an NPC.&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;info3&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Sure I do. What&#39;s yer name, NPC?&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;info2&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Ok, bye for now then.&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;END&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+
+
+<div class="viewcode-block" id="info2"><a class="viewcode-back" href="../../../api/evennia.contrib.talking_npc.html#evennia.contrib.talking_npc.info2">[docs]</a><span class="k">def</span> <span class="nf">info2</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&#39;My name is not really important ... I&#39;m just an NPC after all.&#39;&quot;</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;I didn&#39;t really want to know it anyhow.&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;info3&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Okay then, so what&#39;s this &#39;Evennia&#39; thing about?&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;info1&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+
+
+<div class="viewcode-block" id="info3"><a class="viewcode-back" href="../../../api/evennia.contrib.talking_npc.html#evennia.contrib.talking_npc.info3">[docs]</a><span class="k">def</span> <span class="nf">info3</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&#39;Well ... I&#39;m sort of busy so, have to go. NPC business. Important stuff. You wouldn&#39;t understand.&#39;&quot;</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Oookay ... I won&#39;t keep you. Bye.&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;END&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Wait, why don&#39;t you tell me your name first?&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;info2&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+
+
+<div class="viewcode-block" id="END"><a class="viewcode-back" href="../../../api/evennia.contrib.talking_npc.html#evennia.contrib.talking_npc.END">[docs]</a><span class="k">def</span> <span class="nf">END</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&#39;Goodbye, then.&#39;&quot;</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+
+
+<span class="c1">#</span>
+<span class="c1"># The talk command (sits on the NPC)</span>
+<span class="c1">#</span>
+
+
+<div class="viewcode-block" id="CmdTalk"><a class="viewcode-back" href="../../../api/evennia.contrib.talking_npc.html#evennia.contrib.talking_npc.CmdTalk">[docs]</a><span class="k">class</span> <span class="nc">CmdTalk</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">   Talks to an npc</span>
+
+<span class="sd">   Usage:</span>
+<span class="sd">     talk</span>
+
+<span class="sd">   This command is only available if a talkative non-player-character</span>
+<span class="sd">   (NPC) is actually present. It will strike up a conversation with</span>
+<span class="sd">   that NPC and give you options on what to talk about.</span>
+<span class="sd">   &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;talk&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
+
+<div class="viewcode-block" id="CmdTalk.func"><a class="viewcode-back" href="../../../api/evennia.contrib.talking_npc.html#evennia.contrib.talking_npc.CmdTalk.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Implements the command.&quot;</span>
+
+        <span class="c1"># self.obj is the NPC this is defined on</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;(You walk up and talk to </span><span class="si">%s</span><span class="s2">.)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="c1"># Initiate the menu. Change this if you are putting this on</span>
+        <span class="c1"># some other custom NPC class.</span>
+        <span class="n">EvMenu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;evennia.contrib.talking_npc&quot;</span><span class="p">,</span> <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;menu_start_node&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TalkingCmdSet"><a class="viewcode-back" href="../../../api/evennia.contrib.talking_npc.html#evennia.contrib.talking_npc.TalkingCmdSet">[docs]</a><span class="k">class</span> <span class="nc">TalkingCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="s2">&quot;Stores the talk command.&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;talkingcmdset&quot;</span>
+
+<div class="viewcode-block" id="TalkingCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.talking_npc.html#evennia.contrib.talking_npc.TalkingCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;populates the cmdset&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdTalk</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="TalkingNPC"><a class="viewcode-back" href="../../../api/evennia.contrib.talking_npc.html#evennia.contrib.talking_npc.TalkingNPC">[docs]</a><span class="k">class</span> <span class="nc">TalkingNPC</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This implements a simple Object using the talk command and using</span>
+<span class="sd">    the conversation defined above.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TalkingNPC.at_object_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.talking_npc.html#evennia.contrib.talking_npc.TalkingNPC.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;This is called when object is first created.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a talkative NPC.&quot;</span>
+        <span class="c1"># assign the talk command to npc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">TalkingCmdSet</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="talking_npc.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.talking_npc</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

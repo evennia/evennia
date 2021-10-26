@@ -13,6 +13,8 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -70,7 +72,7 @@
 <span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">crop</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">lazy_property</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Msg&quot;</span><span class="p">,</span> <span class="s2">&quot;TempMsg&quot;</span><span class="p">,</span> <span class="s2">&quot;ChannelDB&quot;</span><span class="p">)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Msg&quot;</span><span class="p">,</span> <span class="s2">&quot;TempMsg&quot;</span><span class="p">,</span> <span class="s2">&quot;ChannelDB&quot;</span><span class="p">,</span> <span class="s2">&quot;SubscriptionHandler&quot;</span><span class="p">)</span>
 
 
 <span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
@@ -559,7 +561,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<span class="k">class</span> <span class="nc">SubscriptionHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="SubscriptionHandler"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.SubscriptionHandler">[docs]</a><span class="k">class</span> <span class="nc">SubscriptionHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This handler manages subscriptions to the</span>
 <span class="sd">    channel and hides away which type of entity is</span>
@@ -567,7 +569,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="SubscriptionHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.SubscriptionHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the handler</span>
 
@@ -576,7 +578,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="kc">None</span></div>
 
     <span class="k">def</span> <span class="nf">_recache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{</span>
@@ -592,7 +594,7 @@
             <span class="p">}</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
+<div class="viewcode-block" id="SubscriptionHandler.has"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.SubscriptionHandler.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the given entity subscribe to this channel</span>
 
@@ -608,9 +610,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_recache</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">entity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span>
+        <span class="k">return</span> <span class="n">entity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span></div>
 
-    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
+<div class="viewcode-block" id="SubscriptionHandler.add"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.SubscriptionHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Subscribe an entity to this channel.</span>
 
@@ -632,9 +634,9 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_object_subscriptions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">subscriber</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;AccountDB&quot;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_account_subscriptions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">subscriber</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_recache</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_recache</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
+<div class="viewcode-block" id="SubscriptionHandler.remove"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.SubscriptionHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a subscriber from the channel.</span>
 
@@ -651,9 +653,9 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_account_subscriptions</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;ObjectDB&quot;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_object_subscriptions</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_recache</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_recache</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SubscriptionHandler.all"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.SubscriptionHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all subscriptions to this channel.</span>
 
@@ -664,11 +666,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_recache</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span></div>
 
     <span class="n">get</span> <span class="o">=</span> <span class="nb">all</span>  <span class="c1"># alias</span>
 
-    <span class="k">def</span> <span class="nf">online</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SubscriptionHandler.online"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.SubscriptionHandler.online">[docs]</a>    <span class="k">def</span> <span class="nf">online</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all online accounts from our cache</span>
 <span class="sd">        Returns:</span>
@@ -693,16 +695,16 @@
             <span class="n">subs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">recache_needed</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_recache</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">subs</span>
+        <span class="k">return</span> <span class="n">subs</span></div>
 
-    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SubscriptionHandler.clear"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.SubscriptionHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove all subscribers from channel.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_account_subscriptions</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_object_subscriptions</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="kc">None</span></div></div>
 
 
 <div class="viewcode-block" id="ChannelDB"><a class="viewcode-back" href="../../../api/evennia.comms.models.html#evennia.comms.models.ChannelDB">[docs]</a><span class="k">class</span> <span class="nc">ChannelDB</span><span class="p">(</span><span class="n">TypedObject</span><span class="p">):</span>
@@ -787,7 +789,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="models.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

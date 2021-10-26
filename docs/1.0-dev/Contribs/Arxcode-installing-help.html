@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="arxcode-installing-help">
+  <section class="tex2jax_ignore mathjax_ignore" id="arxcode-installing-help">
 <h1>Arxcode installing help<a class="headerlink" href="#arxcode-installing-help" title="Permalink to this headline">¶</a></h1>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
@@ -50,7 +52,7 @@ Arx on github</a>. This is a treasure-trove for developers wanting
 to pick ideas or even get a starting game to build on. These instructions are based on the Arx-code
 released as of <em>Aug 12, 2018</em>.</p>
 <p>If you are not familiar with what Evennia is, you can read
-<a class="reference internal" href="../Evennia-Introduction.html"><span class="doc">an introduction here</span></a>.</p>
+<a class="reference internal" href="../Evennia-Introduction.html"><span class="doc std std-doc">an introduction here</span></a>.</p>
 <p>It’s not too hard to run Arx from the sources (of course you’ll start with an empty database) but
 since part of Arx has grown organically, it doesn’t follow standard Evennia paradigms everywhere.
 This page covers one take on installing and setting things up while making your new Arx-based game
@@ -60,13 +62,13 @@ better match with the vanilla Evennia install.</p>
 <h2>Installing Evennia<a class="headerlink" href="#installing-evennia" title="Permalink to this headline">¶</a></h2>
 <p>Firstly, set aside a folder/directory on your drive for everything to follow.</p>
 <p>You need to start by installing <a class="reference external" href="https://www.evennia.com">Evennia</a> by following most of the
-<a class="reference internal" href="../Setup/Setup-Quickstart.html"><span class="doc">Getting Started Instructions</span></a> for your OS. The difference is that you need to <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/TehomCD/evennia.git</span></code> instead of Evennia’s repo because Arx uses TehomCD’s older
+<a class="reference internal" href="../Setup/Setup-Quickstart.html"><span class="doc std std-doc">Getting Started Instructions</span></a> for your OS. The difference is that you need to <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/TehomCD/evennia.git</span></code> instead of Evennia’s repo because Arx uses TehomCD’s older
 Evennia 0.8 <a class="reference external" href="https://github.com/TehomCD/evennia">fork</a>, notably still using Python2. This detail is
 important if referring to newer Evennia documentation.</p>
 <p>If you are new to Evennia it’s <em>highly</em> recommended that you run through the
 instructions in full - including initializing and starting a new empty game and connecting to it.
 That way you can be sure Evennia works correctly as a base line. If you have trouble, make sure to
-read the <a class="reference external" href="Contribs/Getting-Started#troubleshooting">Troubleshooting instructions</a> for your
+read the <a class="reference internal" href="../Setup/Extended-Installation.html#troubleshooting"><span class="std std-doc">Troubleshooting instructions</span></a> for your
 operating system. You can also drop into our
 <a class="reference external" href="https://groups.google.com/forum/#%21forum/evennia">forums</a>, join <code class="docutils literal notranslate"><span class="pre">#evennia</span></code> on <code class="docutils literal notranslate"><span class="pre">irc.freenode.net</span></code>
 or chat from the linked <a class="reference external" href="https://discord.gg/NecFePw">Discord Server</a>.</p>
@@ -75,6 +77,7 @@ structure in your set-aside folder:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vienv</span><span class="o">/</span>
 <span class="n">evennia</span><span class="o">/</span>
 <span class="n">mygame</span><span class="o">/</span>
+
 </pre></div>
 </div>
 <p>Here <code class="docutils literal notranslate"><span class="pre">mygame</span></code> is the empty game you created during the Evennia install, with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">--init</span></code>. Go to
@@ -87,13 +90,13 @@ to compare to.</p>
 <section id="clone-the-arxcode-repo">
 <h3>Clone the arxcode repo<a class="headerlink" href="#clone-the-arxcode-repo" title="Permalink to this headline">¶</a></h3>
 <p>Cd to the root of your directory and clone the released source code from github:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">Arx</span><span class="o">-</span><span class="n">Game</span><span class="o">/</span><span class="n">arxcode</span><span class="o">.</span><span class="n">git</span> <span class="n">myarx</span> 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/Arx-Game/arxcode.git myarx
 </pre></div>
 </div>
 <p>A new folder <code class="docutils literal notranslate"><span class="pre">myarx</span></code> should appear next to the ones you already had. You could rename this to
 something else if you want.</p>
 <p>Cd into <code class="docutils literal notranslate"><span class="pre">myarx</span></code>. If you wonder about the structure of the game dir, you can
-<a class="reference internal" href="../Howto/Starting/Part1/Gamedir-Overview.html"><span class="doc">read more about it here</span></a>.</p>
+<a class="reference internal" href="../Howto/Starting/Part1/Gamedir-Overview.html"><span class="doc std std-doc">read more about it here</span></a>.</p>
 </section>
 <section id="clean-up-settings">
 <h3>Clean up settings<a class="headerlink" href="#clean-up-settings" title="Permalink to this headline">¶</a></h3>
@@ -104,7 +107,7 @@ way but remove the secret-handling and replace it with the normal Evennia method
 <code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;...&quot;&quot;&quot;</span></code>) is just help text. Wipe everything underneath that and make it look like this instead
 (don’t forget to save):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">base_settings</span> <span class="kn">import</span> <span class="o">*</span>
-    
+
 <span class="n">TELNET_PORTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4000</span><span class="p">]</span>
 <span class="n">SERVERNAME</span> <span class="o">=</span> <span class="s2">&quot;MyArx&quot;</span>
 <span class="n">GAME_SLOGAN</span> <span class="o">=</span> <span class="s2">&quot;The cool game&quot;</span>
@@ -125,9 +128,10 @@ the game a name. The slogan changes the sub-text shown under the name of your ga
 header. You can tweak these to your own liking later.</p>
 <p>Next, create a new, empty file <code class="docutils literal notranslate"><span class="pre">secret_settings.py</span></code> in the same location as the <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> file.
 This can just contain the following:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">SECRET_KEY</span> <span class="o">=</span> <span class="s2">&quot;sefsefiwwj3 jnwidufhjw4545_oifej whewiu hwejfpoiwjrpw09&amp;4er43233fwefwfw&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SECRET_KEY</span> <span class="o">=</span> <span class="s2">&quot;sefsefiwwj3 jnwidufhjw4545_oifej whewiu hwejfpoiwjrpw09&amp;4er43233fwefwfw&quot;</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Replace the long random string with random ASCII characters of your own. The secret key should not
 be shared.</p>
 <p>Next, open <code class="docutils literal notranslate"><span class="pre">myarx/server/conf/base_settings.py</span></code> in your text editor. We want to remove/comment out
@@ -146,7 +150,7 @@ relevant to us.</p>
 <code class="docutils literal notranslate"><span class="pre">pypiwin32==219</span></code> - it’s only needed on Windows and will give an error on other platforms.</p>
 </div></blockquote>
 <p>Make sure your <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> is active, then run</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install -r requirements.txt
 </pre></div>
 </div>
 <p>The needed Python packages will be installed for you.</p>
@@ -155,21 +159,21 @@ relevant to us.</p>
 <h3>Adding logs/ folder<a class="headerlink" href="#adding-logs-folder" title="Permalink to this headline">¶</a></h3>
 <p>The Arx repo does not contain the <code class="docutils literal notranslate"><span class="pre">myarx/server/logs/</span></code> folder Evennia expects for storing server
 logs. This is simple to add:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># linux/mac</span>
-<span class="n">mkdir</span> <span class="n">server</span><span class="o">/</span><span class="n">logs</span>
-<span class="c1"># windows</span>
-<span class="n">mkdir</span> <span class="n">server</span>\<span class="n">logs</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># linux/mac
+mkdir server/logs
+# windows
+mkdir server\logs
 </pre></div>
 </div>
 </section>
 <section id="setting-up-the-database-and-starting">
 <h3>Setting up the database and starting<a class="headerlink" href="#setting-up-the-database-and-starting" title="Permalink to this headline">¶</a></h3>
 <p>From the <code class="docutils literal notranslate"><span class="pre">myarx</span></code> folder, run</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">migrate</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia migrate
 </pre></div>
 </div>
 <p>This creates the database and will step through all database migrations needed.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">start</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia start
 </pre></div>
 </div>
 <p>If all goes well Evennia will now start up, running Arx! You can connect to it on <code class="docutils literal notranslate"><span class="pre">localhost</span></code> (or
@@ -229,9 +233,9 @@ identical to the ones above), it’s possible to get Evennia running under Anaco
 process is a little bit trickier.</p>
 <p>Make sure you have:</p>
 <ul class="simple">
-<li><p>Git for Windows               https://git-scm.com/download/win</p></li>
-<li><p>Anaconda for Windows          https://www.anaconda.com/distribution/</p></li>
-<li><p>VC++ Compiler for Python 2.7  https://aka.ms/vcpython27</p></li>
+<li><p>Git for Windows               <a class="reference external" href="https://git-scm.com/download/win">https://git-scm.com/download/win</a></p></li>
+<li><p>Anaconda for Windows          <a class="reference external" href="https://www.anaconda.com/distribution/">https://www.anaconda.com/distribution/</a></p></li>
+<li><p>VC++ Compiler for Python 2.7  <a class="reference external" href="https://aka.ms/vcpython27">https://aka.ms/vcpython27</a></p></li>
 </ul>
 <p>conda update conda
 conda create -n arx python=2.7
@@ -245,8 +249,8 @@ cd Arx</p>
 <p>Replace the SSH git clone links below with your own github forks.
 If you don’t plan to change Evennia at all, you can use the
 evennia/evennia.git repo instead of a forked one.</p>
-<p>git clone git&#64;github.com:<youruser>/evennia.git
-git clone git&#64;github.com:<youruser>/arxcode.git</p>
+<p>git clone <a class="reference external" href="mailto:git&#37;&#52;&#48;github&#46;com">git<span>&#64;</span>github<span>&#46;</span>com</a>:<youruser>/evennia.git
+git clone <a class="reference external" href="mailto:git&#37;&#52;&#48;github&#46;com">git<span>&#64;</span>github<span>&#46;</span>com</a>:<youruser>/arxcode.git</p>
 <p>Evennia is a package itself, so we want to install it and all of its
 prerequisites, after switching to the appropriately-tagged branch for
 Arxcode.</p>
@@ -255,22 +259,22 @@ git checkout tags/v0.7 -b arx-master
 pip install -e .</p>
 <p>Arx has some dependencies of its own, so now we’ll go install them
 As it is not a package, we’ll use the normal requirements file.</p>
-<p>cd ../arxcode
+<p>cd …/arxcode
 pip install -r requirements.txt</p>
 <p>The git repo doesn’t include the empty log directory and Evennia is unhappy if you
 don’t have it, so while still in the arxcode directory…</p>
 <p>mkdir server/logs</p>
-<p>Now hit https://github.com/evennia/evennia/wiki/Arxcode-installing-help and
+<p>Now hit <a class="reference external" href="https://github.com/evennia/evennia/wiki/Arxcode-installing-help">https://github.com/evennia/evennia/wiki/Arxcode-installing-help</a> and
 change the setup stuff as in the ‘Clean up settings’ section.</p>
 <p>Then we will create our default database…</p>
-<p>../evennia/bin/windows/evennia.bat migrate</p>
+<p>…/evennia/bin/windows/evennia.bat migrate</p>
 <p>…and do the first run. You need winpty because Windows does not have a TTY/PTY
 by default, and so the Python console input commands (used for prompts on first
 run) will fail and you will end up in an unhappy place. Future runs, you should
 not need winpty.</p>
-<p>winpty ../evennia/bin/windows/evennia.bat start</p>
+<p>winpty …/evennia/bin/windows/evennia.bat start</p>
 <p>Once this is done, you should have your Evennia server running Arxcode up
-on localhost at port 4000, and the webserver at http://localhost:4001/</p>
+on localhost at port 4000, and the webserver at <a class="reference external" href="http://localhost:4001/">http://localhost:4001/</a></p>
 <p>And you are done! Huzzah!</p>
 </section>
 </section>
@@ -334,7 +338,7 @@ on localhost at port 4000, and the webserver at http://localhost:4001/</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Arxcode-installing-help.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

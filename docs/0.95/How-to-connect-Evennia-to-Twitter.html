@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>How to connect Evennia to Twitter &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">How to connect Evennia to Twitter</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="how-to-connect-evennia-to-twitter">
+<h1>How to connect Evennia to Twitter<a class="headerlink" href="#how-to-connect-evennia-to-twitter" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="http://en.wikipedia.org/wiki/twitter">Twitter</a> is an online social networking service that enables
+users to send and read short 280-character messages called “tweets”. Following is a short tutorial
+explaining how to enable users to send tweets from inside Evennia.</p>
+<section id="configuring-twitter">
+<h2>Configuring Twitter<a class="headerlink" href="#configuring-twitter" title="Permalink to this headline">¶</a></h2>
+<p>You must first have a Twitter account. Log in and register an App at the <a class="reference external" href="https://apps.twitter.com/">Twitter Dev
+Site</a>. Make sure you enable access to “write” tweets!</p>
+<p>To tweet from Evennia you will need both the “API Token” and the “API secret” strings as well as the
+“Access Token” and “Access Secret” strings.</p>
+<p>Twitter changed their requirements to require a Mobile number on the Twitter account to register new
+apps with write access.  If you’re unable to do this, please see <a class="reference external" href="https://dev.twitter.com/notifications/new-apps-registration">this Dev
+post</a> which describes how to get around
+it.</p>
+</section>
+<section id="install-the-twitter-python-module">
+<h2>Install the twitter python module<a class="headerlink" href="#install-the-twitter-python-module" title="Permalink to this headline">¶</a></h2>
+<p>To use Twitter you must install the <a class="reference external" href="https://pypi.python.org/pypi/twitter">Twitter</a> Python module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">python</span><span class="o">-</span><span class="n">twitter</span>
+</pre></div>
+</div>
+</section>
+<section id="a-basic-tweet-command">
+<h2>A basic tweet command<a class="headerlink" href="#a-basic-tweet-command" title="Permalink to this headline">¶</a></h2>
+<p>Evennia doesn’t have a <code class="docutils literal notranslate"><span class="pre">tweet</span></code> command out of the box so you need to write your own little
+<a class="reference internal" href="Commands.html"><span class="doc std std-doc">Command</span></a> in order to tweet. If you are unsure about how commands work and how to add
+them, it can be an idea to go through the <a class="reference internal" href="Adding-Command-Tutorial.html"><span class="doc std std-doc">Adding a Command Tutorial</span></a>
+before continuing.</p>
+<p>You can create the command in a separate command module (something like <code class="docutils literal notranslate"><span class="pre">mygame/commands/tweet.py</span></code>)
+or together with your other custom commands, as you prefer.</p>
+<p>This is how it can look:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">twitter</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+
+<span class="c1"># here you insert your unique App tokens</span>
+<span class="c1"># from the Twitter dev site</span>
+<span class="n">TWITTER_API</span> <span class="o">=</span> <span class="n">twitter</span><span class="o">.</span><span class="n">Api</span><span class="p">(</span><span class="n">consumer_key</span><span class="o">=</span><span class="s1">&#39;api_key&#39;</span><span class="p">,</span>
+                          <span class="n">consumer_secret</span><span class="o">=</span><span class="s1">&#39;api_secret&#39;</span><span class="p">,</span>
+                          <span class="n">access_token_key</span><span class="o">=</span><span class="s1">&#39;access_token_key&#39;</span><span class="p">,</span>
+                          <span class="n">access_token_secret</span><span class="o">=</span><span class="s1">&#39;access_token_secret&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">CmdTweet</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tweet a message</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      tweet &lt;message&gt;</span>
+
+<span class="sd">    This will send a Twitter tweet to a pre-configured Twitter account.</span>
+<span class="sd">    A tweet has a maximum length of 280 characters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;tweet&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:pperm(tweet) or pperm(Developers)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;This performs the tweet&quot;</span>
+ 
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">tweet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tweet</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: tweet &lt;message&gt;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+ 
+        <span class="n">tlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tlen</span> <span class="o">&gt;</span> <span class="mi">280</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Your tweet was </span><span class="si">%i</span><span class="s2"> chars long (max 280).&quot;</span> <span class="o">%</span> <span class="n">tlen</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># post the tweet</span>
+        <span class="n">TWITTER_API</span><span class="o">.</span><span class="n">PostUpdate</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
+
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You tweeted:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">tweet</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Be sure to substitute your own actual API/Access keys and secrets in the appropriate places.</p>
+<p>We default to limiting tweet access to players with <code class="docutils literal notranslate"><span class="pre">Developers</span></code>-level access <em>or</em> to those players
+that have the permission “tweet” (allow individual characters to tweet with <code class="docutils literal notranslate"><span class="pre">&#64;perm/player</span> <span class="pre">playername</span> <span class="pre">=</span> <span class="pre">tweet</span></code>). You may change the <a class="reference internal" href="Locks.html"><span class="doc std std-doc">lock</span></a> as you feel is appropriate. Change the overall
+permission to <code class="docutils literal notranslate"><span class="pre">Players</span></code> if you want everyone to be able to tweet.</p>
+<p>Now add this command to your default command set (e.g in <code class="docutils literal notranslate"><span class="pre">mygame/commands/defalt_cmdsets.py</span></code>”) and
+reload the server. From now on those with access can simply use <code class="docutils literal notranslate"><span class="pre">tweet</span> <span class="pre">&lt;message&gt;</span></code> to see the tweet
+posted from the game’s Twitter account.</p>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
+<p>This shows only a basic tweet setup, other things to do could be:</p>
+<ul class="simple">
+<li><p>Auto-Adding the character name to the tweet</p></li>
+<li><p>More error-checking of postings</p></li>
+<li><p>Changing locks to make tweeting open to more people</p></li>
+<li><p>Echo your tweets to an in-game channel</p></li>
+</ul>
+<p>Rather than using an explicit command you can set up a Script to send automatic tweets, for example
+to post updated game stats. See the <a class="reference internal" href="Tutorial-Tweeting-Game-Stats.html"><span class="doc std std-doc">Tweeting Game Stats tutorial</span></a> for
+help.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">How to connect Evennia to Twitter</a><ul>
+<li><a class="reference internal" href="#configuring-twitter">Configuring Twitter</a></li>
+<li><a class="reference internal" href="#install-the-twitter-python-module">Install the twitter python module</a></li>
+<li><a class="reference internal" href="#a-basic-tweet-command">A basic tweet command</a></li>
+<li><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/How-to-connect-Evennia-to-Twitter.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="How-to-connect-Evennia-to-Twitter.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">How to connect Evennia to Twitter</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

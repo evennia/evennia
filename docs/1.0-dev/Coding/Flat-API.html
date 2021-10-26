@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,31 +40,29 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="things-to-remember-about-the-flat-api">
+  <section class="tex2jax_ignore mathjax_ignore" id="things-to-remember-about-the-flat-api">
 <h1>Things to remember about the flat API<a class="headerlink" href="#things-to-remember-about-the-flat-api" title="Permalink to this headline">¶</a></h1>
 <p>The flat API is a series of ‘shortcuts’ on the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> main library root (defined in
-<code class="docutils literal notranslate"><span class="pre">evennia/__init__.py</span></code>). Its componentas are documented <a class="reference internal" href="../Evennia-API.html"><span class="doc">as part of the auto-documentation</span></a>.</p>
+<code class="docutils literal notranslate"><span class="pre">evennia/__init__.py</span></code>). Its componentas are documented <a class="reference internal" href="../Evennia-API.html"><span class="doc std std-doc">as part of the auto-documentation</span></a>.</p>
 <section id="to-remember-when-importing-from-evennia">
 <h2>To remember when importing from <code class="docutils literal notranslate"><span class="pre">evennia</span></code><a class="headerlink" href="#to-remember-when-importing-from-evennia" title="Permalink to this headline">¶</a></h2>
 <p>Properties on the root of the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> package are <em>not</em> modules in their own right. They are just
 shortcut properties stored in the <code class="docutils literal notranslate"><span class="pre">evennia/__init__.py</span></code> module. That means that you cannot use dot-
 notation to <code class="docutils literal notranslate"><span class="pre">import</span></code> nested module-names over <code class="docutils literal notranslate"><span class="pre">evennia</span></code>. The rule of thumb is that you cannot use
 <code class="docutils literal notranslate"><span class="pre">import</span></code> for more than one level down. Hence you can do</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">evennia</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">evennia</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">evennia</span><span class="o">.</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>or import one level down</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>but you <em>cannot</em> import two levels down</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia.default_cmds</span> <span class="kn">import</span> <span class="n">CmdLook</span> <span class="c1"># error!</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia.default_cmds</span> <span class="kn">import</span> <span class="n">CmdLook</span> <span class="c1"># error!</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This will give you an <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> telling you that the module <code class="docutils literal notranslate"><span class="pre">default_cmds</span></code> cannot be found -
 this is becasue <code class="docutils literal notranslate"><span class="pre">default_cmds</span></code> is just a <em>variable</em> stored in <code class="docutils literal notranslate"><span class="pre">evennia.__init__.py</span></code>; this cannot be
 imported from. If you really want full control over which level of package you import you can always
@@ -121,7 +121,7 @@ package imports from.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Flat-API.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

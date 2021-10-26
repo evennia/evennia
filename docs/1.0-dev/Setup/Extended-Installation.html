@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="getting-started">
+  <section class="tex2jax_ignore mathjax_ignore" id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <p>This will help you download, install and start Evennia for the first time.</p>
 <blockquote>
@@ -47,15 +49,15 @@ test out Evennia. Apart from downloading and updating you don’t even need an
 internet connection until you feel ready to share your game with the world.</p>
 </div></blockquote>
 <ul class="simple">
-<li><p><a class="reference external" href="Setup/Getting-Started#quick-start">Quick Start</a></p></li>
-<li><p><a class="reference external" href="Setup/Getting-Started#requirements">Requirements</a></p></li>
-<li><p><a class="reference external" href="Setup/Getting-Started#linux-install">Linux Install</a></p></li>
-<li><p><a class="reference external" href="Setup/Getting-Started#mac-install">Mac Install</a></p></li>
-<li><p><a class="reference external" href="Setup/Getting-Started#windows-install">Windows Install</a></p></li>
-<li><p><a class="reference internal" href="Running-Evennia-in-Docker.html"><span class="doc">Running in Docker</span></a></p></li>
-<li><p><a class="reference external" href="Setup/Getting-Started#where-to-go-next">Where to Go Next</a></p></li>
-<li><p><a class="reference external" href="Setup/Getting-Started#troubleshooting">Troubleshooting</a></p></li>
-<li><p><a class="reference internal" href="../Glossary.html"><span class="doc">Glossary of terms</span></a></p></li>
+<li><p><a class="reference internal" href="#quick-start"><span class="std std-doc">Quick Start</span></a></p></li>
+<li><p><a class="reference internal" href="#requirements"><span class="std std-doc">Requirements</span></a></p></li>
+<li><p><a class="reference internal" href="#linux-install"><span class="std std-doc">Linux Install</span></a></p></li>
+<li><p><a class="reference internal" href="#mac-install"><span class="std std-doc">Mac Install</span></a></p></li>
+<li><p><a class="reference internal" href="#windows-install"><span class="std std-doc">Windows Install</span></a></p></li>
+<li><p><a class="reference internal" href="Running-Evennia-in-Docker.html"><span class="doc std std-doc">Running in Docker</span></a></p></li>
+<li><p><a class="reference internal" href="#where-to-go-next"><span class="std std-doc">Where to Go Next</span></a></p></li>
+<li><p><a class="reference internal" href="#troubleshooting"><span class="std std-doc">Troubleshooting</span></a></p></li>
+<li><p><a class="reference internal" href="../Glossary.html"><span class="doc std std-doc">Glossary of terms</span></a></p></li>
 </ul>
 <section id="quick-start">
 <h2>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
@@ -77,7 +79,7 @@ Evennia should now be running and you can connect to it by pointing a web browse
 <code class="docutils literal notranslate"><span class="pre">http://localhost:4001</span></code> or a MUD telnet client to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> (use <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> if your OS does
 not recognize <code class="docutils literal notranslate"><span class="pre">localhost</span></code>).</p></li>
 </ol>
-<p>We also release <a class="reference internal" href="Running-Evennia-in-Docker.html"><span class="doc">Docker images</span></a>
+<p>We also release <a class="reference internal" href="Running-Evennia-in-Docker.html"><span class="doc std std-doc">Docker images</span></a>
 based on <code class="docutils literal notranslate"><span class="pre">master</span></code> and <code class="docutils literal notranslate"><span class="pre">develop</span></code> branches.</p>
 </section>
 <section id="requirements">
@@ -114,9 +116,9 @@ version is usually untested with Evennia)</p></li>
 <section id="linux-install">
 <h2>Linux Install<a class="headerlink" href="#linux-install" title="Permalink to this headline">¶</a></h2>
 <p>If you run into any issues during the installation and first start, please
-check out <a class="reference external" href="Setup/Getting-Started#linux-troubleshooting">Linux Troubleshooting</a>.</p>
+check out <a class="reference internal" href="#linux-troubleshooting"><span class="std std-doc">Linux Troubleshooting</span></a>.</p>
 <p>For Debian-derived systems (like Ubuntu, Mint etc), start a terminal and
-install the <a class="reference external" href="Setup/Getting-Started#requirements">dependencies</a>:</p>
+install the <a class="reference internal" href="#requirements"><span class="std std-doc">dependencies</span></a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
 <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">python3</span><span class="o">-</span><span class="n">dev</span> <span class="n">python3</span><span class="o">-</span><span class="n">setuptools</span> <span class="n">python3</span><span class="o">-</span><span class="n">git</span>
 <span class="n">python3</span><span class="o">-</span><span class="n">virtualenv</span> <span class="n">gcc</span>
@@ -124,6 +126,7 @@ install the <a class="reference external" href="Setup/Getting-Started#requiremen
 <span class="c1"># If you are using an Ubuntu version that defaults to Python3, like 18.04+, use this instead:</span>
 <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
 <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python3</span><span class="mf">.7</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">python3</span><span class="mf">.7</span><span class="o">-</span><span class="n">dev</span> <span class="n">python3</span><span class="o">-</span><span class="n">setuptools</span> <span class="n">virtualenv</span> <span class="n">gcc</span>
+
 </pre></div>
 </div>
 <p>Note that, the default Python version for your distribution may still not be Python3.7 after this.
@@ -143,8 +146,8 @@ development:</p>
 contains the source code though, it is not <em>installed</em> yet. To isolate the
 Evennia install and its dependencies from the rest of the system, it is good
 Python practice to install into a <em>virtualenv</em>. If you are unsure about what a
-virtualenv is and why it’s useful, see the <a class="reference external" href="Setup/Glossary#virtualenv">Glossary entry on
-virtualenv</a>.</p>
+virtualenv is and why it’s useful, see the <a class="reference internal" href="../Glossary.html#virtualenv"><span class="std std-doc">Glossary entry on
+virtualenv</span></a>.</p>
 <p>Run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-V</span></code> to see which version of Python your system defaults to.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># If your Linux defaults to Python3.7+:</span>
 <span class="n">virtualenv</span> <span class="n">evenv</span>
@@ -175,8 +178,8 @@ folders) and run</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="n">evennia</span>
 </pre></div>
 </div>
-<p>For more info about <code class="docutils literal notranslate"><span class="pre">pip</span></code>, see the <a class="reference external" href="Glossary.html#pip">Glossary entry on pip</a>. If
-install failed with any issues, see <a class="reference external" href="Setup/Getting-Started#linux-troubleshooting">Linux Troubleshooting</a>.</p>
+<p>For more info about <code class="docutils literal notranslate"><span class="pre">pip</span></code>, see the <a class="reference internal" href="../Glossary.html#pip"><span class="std std-doc">Glossary entry on pip</span></a>. If
+install failed with any issues, see <a class="reference internal" href="#linux-troubleshooting"><span class="std std-doc">Linux Troubleshooting</span></a>.</p>
 <p>Next we’ll start our new game, here called “mygame”. This will create yet
 another new folder where you will be creating your new game:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="o">--</span><span class="n">init</span> <span class="n">mygame</span>
@@ -189,8 +192,8 @@ another new folder where you will be creating your new game:</p>
     <span class="n">mygame</span><span class="o">/</span>
 </pre></div>
 </div>
-<p>You can <a class="reference external" href="Components/Server-Conf.html#settings-file">configure Evennia</a> extensively, for example
-to use a <a class="reference internal" href="Choosing-An-SQL-Server.html"><span class="doc">different database</span></a>. For now we’ll just stick
+<p>You can <a class="reference internal" href="Server-Conf.html#settings-file"><span class="std std-doc">configure Evennia</span></a> extensively, for example
+to use a <a class="reference internal" href="Choosing-An-SQL-Server.html"><span class="doc std std-doc">different database</span></a>. For now we’ll just stick
 to the defaults though.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">mygame</span>
 <span class="n">evennia</span> <span class="n">migrate</span>      <span class="c1"># (this creates the database)</span>
@@ -203,7 +206,7 @@ live in the terminal, use <code class="docutils literal notranslate"><span class
 </div></blockquote>
 <p>Your game should now be running! Open a web browser at <code class="docutils literal notranslate"><span class="pre">http://localhost:4001</span></code>
 or point a telnet client to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> and log in with the user you
-created. Check out <a class="reference external" href="Setup/Getting-Started#where-to-go-next">where to go next</a>.</p>
+created. Check out <a class="reference internal" href="#where-to-go-next"><span class="std std-doc">where to go next</span></a>.</p>
 </section>
 <section id="mac-install">
 <h2>Mac Install<a class="headerlink" href="#mac-install" title="Permalink to this headline">¶</a></h2>
@@ -211,7 +214,7 @@ created. Check out <a class="reference external" href="Setup/Getting-Started#whe
 <em>Applications-&gt;Utilities-&gt;Terminal</em>. <a class="reference external" href="https://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line">Here is an introduction to the Mac
 terminal</a>
 if you are unsure how it works. If you run into any issues during the
-installation, please check out <a class="reference external" href="Setup/Getting-Started#mac-troubleshooting">Mac Troubleshooting</a>.</p>
+installation, please check out <a class="reference internal" href="#mac-troubleshooting"><span class="std std-doc">Mac Troubleshooting</span></a>.</p>
 <ul class="simple">
 <li><p>Python should already be installed but you must make sure it’s a high enough version.
 (<a class="reference external" href="https://docs.python-guide.org/en/latest/starting/install/osx/">This</a> discusses
@@ -237,7 +240,7 @@ install gcc and the Python headers.</p></li>
 contains the source code though, it is not <em>installed</em> yet. To isolate the
 Evennia install and its dependencies from the rest of the system, it is good
 Python practice to install into a <em>virtualenv</em>. If you are unsure about what a
-virtualenv is and why it’s useful, see the <a class="reference external" href="Glossary.html#virtualenv">Glossary entry on virtualenv</a>.</p>
+virtualenv is and why it’s useful, see the <a class="reference internal" href="../Glossary.html#virtualenv"><span class="std std-doc">Glossary entry on virtualenv</span></a>.</p>
 <p>Run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-V</span></code> to check which Python your system defaults to.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># If your Mac defaults to Python3:</span>
 <span class="n">virtualenv</span> <span class="n">evenv</span>
@@ -267,8 +270,8 @@ folders) and run</p>
 <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="n">evennia</span>
 </pre></div>
 </div>
-<p>For more info about <code class="docutils literal notranslate"><span class="pre">pip</span></code>, see the <a class="reference external" href="Glossary.html#pip">Glossary entry on pip</a>. If
-install failed with any issues, see <a class="reference external" href="Setup/Getting-Started#mac-troubleshooting">Mac Troubleshooting</a>.</p>
+<p>For more info about <code class="docutils literal notranslate"><span class="pre">pip</span></code>, see the <a class="reference internal" href="../Glossary.html#pip"><span class="std std-doc">Glossary entry on pip</span></a>. If
+install failed with any issues, see <a class="reference internal" href="#mac-troubleshooting"><span class="std std-doc">Mac Troubleshooting</span></a>.</p>
 <p>Next we’ll start our new game. We’ll call it “mygame” here. This creates a new
 folder where you will be creating your new game:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="o">--</span><span class="n">init</span> <span class="n">mygame</span>
@@ -281,8 +284,8 @@ folder where you will be creating your new game:</p>
     <span class="n">mygame</span><span class="o">/</span>
 </pre></div>
 </div>
-<p>You can <a class="reference external" href="Components/Server-Conf.html#settings-file">configure Evennia</a> extensively, for example
-to use a <a class="reference internal" href="Choosing-An-SQL-Server.html"><span class="doc">different database</span></a>. We’ll go with the
+<p>You can <a class="reference internal" href="Server-Conf.html#settings-file"><span class="std std-doc">configure Evennia</span></a> extensively, for example
+to use a <a class="reference internal" href="Choosing-An-SQL-Server.html"><span class="doc std std-doc">different database</span></a>. We’ll go with the
 defaults here.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">mygame</span>
 <span class="n">evennia</span> <span class="n">migrate</span>  <span class="c1"># (this creates the database)</span>
@@ -295,12 +298,12 @@ live in the terminal, use <code class="docutils literal notranslate"><span class
 </div></blockquote>
 <p>Your game should now be running! Open a web browser at <code class="docutils literal notranslate"><span class="pre">http://localhost:4001</span></code>
 or point a telnet client to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> and log in with the user you
-created. Check out <a class="reference external" href="Setup/Getting-Started#where-to-go-next">where to go next</a>.</p>
+created. Check out <a class="reference internal" href="#where-to-go-next"><span class="std std-doc">where to go next</span></a>.</p>
 </section>
 <section id="windows-install">
 <h2>Windows Install<a class="headerlink" href="#windows-install" title="Permalink to this headline">¶</a></h2>
 <p>If you run into any issues during the installation, please check out
-<a class="reference external" href="Setup/Getting-Started#windows-troubleshooting">Windows Troubleshooting</a>.</p>
+<a class="reference internal" href="#windows-troubleshooting"><span class="std std-doc">Windows Troubleshooting</span></a>.</p>
 <blockquote>
 <div><p>If you are running Windows10, consider using the Windows Subsystem for Linux
 (<a class="reference external" href="https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux">WSL</a>) instead.
@@ -352,7 +355,7 @@ directory change.</p>
 contains the source code though, it is not <em>installed</em> yet. To isolate the
 Evennia install and its dependencies from the rest of the system, it is good
 Python practice to install into a <em>virtualenv</em>. If you are unsure about what a
-virtualenv is and why it’s useful, see the <a class="reference external" href="Glossary.html#virtualenv">Glossary entry on virtualenv</a>.</p>
+virtualenv is and why it’s useful, see the <a class="reference internal" href="../Glossary.html#virtualenv"><span class="std std-doc">Glossary entry on virtualenv</span></a>.</p>
 <p>In your console, try <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-V</span></code> to see which version of Python your system
 defaults to.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">virtualenv</span>
@@ -365,6 +368,7 @@ defaults to.</p>
 
 <span class="c1"># If you get an infinite spooling response, press CTRL + C to interrupt and try using:</span>
 <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">evenv</span>
+
 </pre></div>
 </div>
 <p>A new folder <code class="docutils literal notranslate"><span class="pre">evenv</span></code> will appear (we could have called it anything). This
@@ -375,6 +379,7 @@ with default Python packages on your system. Activate the virtualenv:</p>
 
 <span class="c1"># If you are using a PS Shell, Git Bash, or other, you can use the following:</span>
 <span class="o">.</span>\<span class="n">evenv</span>\<span class="n">scripts</span>\<span class="n">activate</span>
+
 </pre></div>
 </div>
 <p>The text <code class="docutils literal notranslate"><span class="pre">(evenv)</span></code> should appear next to your prompt to show the virtual
@@ -390,8 +395,8 @@ folders when you use the <code class="docutils literal notranslate"><span class=
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="n">evennia</span>
 </pre></div>
 </div>
-<p>For more info about <code class="docutils literal notranslate"><span class="pre">pip</span></code>, see the <a class="reference external" href="Glossary.html#pip">Glossary entry on pip</a>. If
-the install failed with any issues, see [Windows Troubleshooting](Getting-Started#windows-
+<p>For more info about <code class="docutils literal notranslate"><span class="pre">pip</span></code>, see the <a class="reference internal" href="../Glossary.html#pip"><span class="std std-doc">Glossary entry on pip</span></a>. If
+the install failed with any issues, see [Windows Troubleshooting](#windows-
 troubleshooting).
 Next we’ll start our new game, we’ll call it “mygame” here. This creates a new folder where you will
 be
@@ -406,8 +411,8 @@ creating your new game:</p>
     <span class="n">mygame</span>\
 </pre></div>
 </div>
-<p>You can <a class="reference external" href="Components/Server-Conf.html#settings-file">configure Evennia</a> extensively, for example
-to use a <a class="reference internal" href="Choosing-An-SQL-Server.html"><span class="doc">different database</span></a>. We’ll go with the
+<p>You can <a class="reference internal" href="Server-Conf.html#settings-file"><span class="std std-doc">configure Evennia</span></a> extensively, for example
+to use a <a class="reference internal" href="Choosing-An-SQL-Server.html"><span class="doc std std-doc">different database</span></a>. We’ll go with the
 defaults here.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">mygame</span>
 <span class="n">evennia</span> <span class="n">migrate</span>    <span class="c1"># (this creates the database)</span>
@@ -420,7 +425,7 @@ live in the terminal, use <code class="docutils literal notranslate"><span class
 </div></blockquote>
 <p>Your game should now be running! Open a web browser at <code class="docutils literal notranslate"><span class="pre">http://localhost:4001</span></code>
 or point a telnet client to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> and log in with the user you
-created. Check out <a class="reference external" href="Setup/Getting-Started#where-to-go-next">where to go next</a>.</p>
+created. Check out <a class="reference internal" href="#where-to-go-next"><span class="std std-doc">where to go next</span></a>.</p>
 </section>
 <section id="non-interactive-setup">
 <h2>Non-interactive setup<a class="headerlink" href="#non-interactive-setup" title="Permalink to this headline">¶</a></h2>
@@ -432,6 +437,7 @@ values as environment variables, <code class="docutils literal notranslate"><spa
 empty string.</p>
 <p>Use this to start Evennia (the envvars will be ignored on subsequent starts):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EVENNIA_SUPERUSER_USERNAME</span><span class="o">=</span><span class="n">Foo</span> <span class="n">EVENNIA_SUPERUSER_PASSWORD</span><span class="o">=</span><span class="n">MygreatPwd</span> <span class="n">evennia</span> <span class="n">start</span>
+
 </pre></div>
 </div>
 </section>
@@ -439,19 +445,19 @@ empty string.</p>
 <h2>Where to Go Next<a class="headerlink" href="#where-to-go-next" title="Permalink to this headline">¶</a></h2>
 <p>Welcome to Evennia! Your new game is fully functioning, but empty. If you just
 logged in, stand in the <code class="docutils literal notranslate"><span class="pre">Limbo</span></code> room and run</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@batchcommand</span> <span class="n">tutorial_world</span><span class="o">.</span><span class="n">build</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@batchcommand tutorial_world.build
 </pre></div>
 </div>
-<p>to build <a class="reference internal" href="../Howto/Starting/Part1/Tutorial-World-Introduction.html"><span class="doc">Evennia’s tutorial world</span></a> - it’s a small solo quest to
+<p>to build <a class="reference internal" href="../Howto/Starting/Part1/Tutorial-World-Introduction.html"><span class="doc std std-doc">Evennia’s tutorial world</span></a> - it’s a small solo quest to
 explore. Only run the instructed <code class="docutils literal notranslate"><span class="pre">&#64;batchcommand</span></code> once. You’ll get a lot of text scrolling by as the
 tutorial is built. Once done, the <code class="docutils literal notranslate"><span class="pre">tutorial</span></code> exit will have appeared out of Limbo - just write
 <code class="docutils literal notranslate"><span class="pre">tutorial</span></code> to enter it.</p>
 <p>Once you get back to <code class="docutils literal notranslate"><span class="pre">Limbo</span></code> from the tutorial (if you get stuck in the tutorial quest you can do
 <code class="docutils literal notranslate"><span class="pre">&#64;tel</span> <span class="pre">#2</span></code> to jump to Limbo), a good idea is to learn how to [start, stop and reload](Start-Stop-
 Reload) the Evennia server. You may also want to familiarize yourself with some
-<a class="reference internal" href="../Glossary.html"><span class="doc">commonly used terms in our Glossary</span></a>. After that, why not experiment with
-<a class="reference internal" href="../Howto/Starting/Part1/Building-Quickstart.html"><span class="doc">creating some new items and build some new rooms</span></a> out from Limbo.</p>
-<p>From here on, you could move on to do one of our <a class="reference internal" href="../Howto/Howto-Overview.html"><span class="doc">introductory tutorials</span></a> or simply dive
+<a class="reference internal" href="../Glossary.html"><span class="doc std std-doc">commonly used terms in our Glossary</span></a>. After that, why not experiment with
+<a class="reference internal" href="../Howto/Starting/Part1/Building-Quickstart.html"><span class="doc std std-doc">creating some new items and build some new rooms</span></a> out from Limbo.</p>
+<p>From here on, you could move on to do one of our <a class="reference internal" href="../Howto/Howto-Overview.html"><span class="doc std std-doc">introductory tutorials</span></a> or simply dive
 headlong into Evennia’s comprehensive <a class="reference external" href="https://github.com/evennia/evennia/wiki">manual</a>. While
 Evennia has no major game systems out of the box, we do supply a range of optional <em>contribs</em> that
 you can use or borrow from. They range from dice rolling and alternative color schemes to barter and
@@ -463,7 +469,7 @@ chat</a>
 forums</a>. You can also join the <a class="reference external" href="https://discord.gg/NecFePw">Discord
 Server</a>.</p>
 <p>Finally, if you are itching to help out or support Evennia (awesome!) have an
-issue to report or a feature to request, <a class="reference internal" href="../How-To-Get-And-Give-Help.html"><span class="doc">see here</span></a>.</p>
+issue to report or a feature to request, <a class="reference internal" href="../How-To-Get-And-Give-Help.html"><span class="doc std std-doc">see here</span></a>.</p>
 <p>Enjoy your stay!</p>
 </section>
 <section id="troubleshooting">
@@ -599,7 +605,7 @@ virus software interfering. Try disabling or changing your anti-virus software s
 <h3>Versions</h3>
 <ul>
   <li><a href="Extended-Installation.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

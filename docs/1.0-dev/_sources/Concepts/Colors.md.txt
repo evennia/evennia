@@ -1,7 +1,7 @@
 # Colors
 
 *Note that the Documentation does not display colour the way it would look on the screen.*
- 
+
 Color can be a very useful tool for your game. It can be used to increase readability and make your
 game more appealing visually.
 
@@ -14,13 +14,13 @@ equipment by people who are blind or have otherwise diminished eyesight.
 
 So a good rule of thumb is to use colour to enhance your game but don't *rely* on it to display
 critical information. If you are coding the game, you can add functionality to let users disable
-colours as they please, as described [here](../Howto/Manually-Configuring-Color).
+colours as they please, as described [here](../Howto/Manually-Configuring-Color.md).
 
 To see which colours your client support, use the default `@color` command. This will list all
 available colours for ANSI and Xterm256 along with the codes you use for them. You can find a list
 of all the parsed `ANSI`-colour codes in `evennia/utils/ansi.py`.
 
-### ANSI colours
+## ANSI colours
 
 Evennia supports the `ANSI` standard for text. This is by far the most supported MUD-color standard,
 available in all but the most ancient mud clients. The ANSI colours are **r**ed, **g**reen,
@@ -28,7 +28,7 @@ available in all but the most ancient mud clients. The ANSI colours are **r**ed,
 first letter except for black which is abbreviated with the letter **x**. In ANSI there are "bright"
 and "normal" (darker) versions of each color, adding up to a total of 16 colours to use for
 foreground text. There are also 8 "background" colours. These have no bright alternative in ANSI
-(but Evennia uses the [Xterm256](./TextTags#xterm256-colours) extension behind the scenes to offer
+(but Evennia uses the [Xterm256](#xterm256-colours) extension behind the scenes to offer
 them anyway).
 
 To colour your text you put special tags in it. Evennia will parse these and convert them to the
@@ -37,7 +37,7 @@ will see the text in the specified colour, otherwise the tags will be stripped (
 This works also for non-terminal clients, such as the webclient. For the webclient, Evennia will
 translate the codes to HTML RGB colors.
 
-Here is an example of the tags in action: 
+Here is an example of the tags in action:
 
      |rThis text is bright red.|n This is normal text.
      |RThis is a dark red text.|n This is normal text.
@@ -49,9 +49,9 @@ Here is an example of the tags in action:
 "normal". So `|g` is a bright green and `|G` is "normal" (darker) green.
 - `|[#` is used to add a background colour to the text. The case again specifies if it is "bright"
 or "normal", so `|[c` starts a bright cyan background and `|[C` a darker cyan background.
-- `|!#` is used to add foreground color without any enforced brightness/normal information. 
-    These are normal-intensity and are thus always given as uppercase, such as 
-    `|!R` for red. The difference between e.g. `|!R` and `|R` is that 
+- `|!#` is used to add foreground color without any enforced brightness/normal information.
+    These are normal-intensity and are thus always given as uppercase, such as
+    `|!R` for red. The difference between e.g. `|!R` and `|R` is that
     `|!R` will "inherit" the brightness setting from previously set color tags, whereas `|R` will
 always reset to the normal-intensity red. The `|#` format contains an implicit `|h`/`|H` tag in it:
 disabling highlighting when switching to a normal color, and enabling it for bright ones. So `|btest
@@ -67,7 +67,7 @@ set bright/normal explicitly.  Technically, `|h|!G` is identical to `|g`.
 
 > Note: The ANSI standard does not actually support bright backgrounds like `|[r` - the standard
 only supports "normal" intensity backgrounds.  To get around this Evennia instead implements these
-as [Xterm256 colours](./TextTags#xterm256-colours) behind the scenes. If the client does not support
+as [Xterm256 colours](#xterm256-colours) behind the scenes. If the client does not support
 Xterm256 the ANSI colors will be used instead and there will be no visible difference between using
 upper- and lower-case background tags.
 
@@ -83,11 +83,11 @@ ansi art that uses `|` with a letter directly following it.
 
 Use the command
 
-    @color ansi 
+    @color ansi
 
 to get a list of all supported ANSI colours and the tags used to produce them.
 
-A few additional ANSI codes are supported: 
+A few additional ANSI codes are supported:
 
 - `|/` A line break. You cannot put the normal Python `\n` line breaks in text entered inside the
 game (Evennia will filter this for security reasons). This is what you use instead: use the `|/`
@@ -100,7 +100,7 @@ space.
 - `|*` This will invert the current text/background colours. Can be useful to mark things (but see
 below).
 
-##### Caveats of `|*`
+### Caveats of `|*`
 
 The `|*` tag (inverse video) is an old ANSI standard and should usually not be used for more than to
 mark short snippets of text. If combined with other tags it comes with a series of potentially
@@ -113,11 +113,11 @@ until you declare another tag. This is an example:
     Normal text, |*reversed text|*, still reversed text.
     ```
 
-  that is, it will not reverse to normal at the second `|*`. You need to reset it manually: 
+  that is, it will not reverse to normal at the second `|*`. You need to reset it manually:
 
     ```
     Normal text, |*reversed text|n, normal again.
-    ```  
+    ```
 
 *  The `|*` tag does not take "bright" colors into account:
 
@@ -167,7 +167,7 @@ four gray tones between solid black and white (`|000`, `|111`, `|222`, `|333` an
 - `|[=#` - this works in the same way but produces background gray scale tones.
 
 If you have a client that supports Xterm256, you can use
-    
+
     @color xterm256
 
 to get a table of all the 256 colours and the codes that produce them. If the table looks broken up
@@ -178,6 +178,6 @@ to activate some features manually.
 
 ## More reading
 
-There is an [Understanding Color Tags](../Howto/Understanding-Color-Tags) tutorial which expands on the
+There is an [Understanding Color Tags](../Howto/Understanding-Color-Tags.md) tutorial which expands on the
 use of ANSI color tags and the pitfalls of mixing ANSI and Xterms256 color tags in the same context.
 

@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -47,7 +49,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="crafting-system-contrib">
+  <section class="tex2jax_ignore mathjax_ignore" id="crafting-system-contrib">
 <h1>Crafting system contrib<a class="headerlink" href="#crafting-system-contrib" title="Permalink to this headline">¶</a></h1>
 <p><em>Contrib by Griatch 2020</em></p>
 <div class="versionadded">
@@ -55,17 +57,16 @@
 </div>
 <p>This contrib implements a full Crafting system that can be expanded and modified to fit your game.</p>
 <ul class="simple">
-<li><p>See the <a class="reference external" href="../api/evennia.contrib.crafting.crafting.html">evennia/contrib/crafting/crafting.py API</a> for installation
+<li><p>See the <a class="reference internal" href="../api/evennia.contrib.crafting.crafting.html#evennia-contrib-crafting-crafting"><span class="std std-ref">evennia/contrib/crafting/crafting.py API</span></a> for installation
 instructrions.</p></li>
-<li><p>See the <a class="reference external" href="../api/evennia.contrib.crafting.example_recipes.html">sword example</a> for an example of how to design
+<li><p>See the <a class="reference internal" href="../api/evennia.contrib.crafting.example_recipes.html#evennia-contrib-crafting-example-recipes"><span class="std std-ref">sword example</span></a> for an example of how to design
 a crafting tree for crafting a sword from base elements.</p></li>
 </ul>
 <p>From in-game it uses the new <code class="docutils literal notranslate"><span class="pre">craft</span></code> command:</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>&gt; craft bread from flour, eggs, salt, water, yeast using oven, roller
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt; craft bread from flour, eggs, salt, water, yeast using oven, roller
 &gt; craft bandage from cloth using scissors
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>The syntax is <code class="docutils literal notranslate"><span class="pre">craft</span> <span class="pre">&lt;recipe&gt;</span> <span class="pre">[from</span> <span class="pre">&lt;ingredient&gt;,...][</span> <span class="pre">using</span> <span class="pre">&lt;tool&gt;,...]</span></code>.</p>
 <p>The above example uses the <code class="docutils literal notranslate"><span class="pre">bread</span></code> <em>recipe</em> and requires <code class="docutils literal notranslate"><span class="pre">flour</span></code>, <code class="docutils literal notranslate"><span class="pre">eggs</span></code>, <code class="docutils literal notranslate"><span class="pre">salt</span></code>, <code class="docutils literal notranslate"><span class="pre">water</span></code> and <code class="docutils literal notranslate"><span class="pre">yeast</span></code> objects
 to be in your inventory. These will be consumed as part of crafting (baking) the bread.</p>
@@ -79,15 +80,14 @@ the requirements of the recipe, a new <code class="docutils literal notranslate"
 <p>With a little creativity, the ‘recipe’ concept could be adopted to all sorts of things, like puzzles or
 magic systems.</p>
 <p>In code, you can craft using the <code class="docutils literal notranslate"><span class="pre">evennia.contrib.crafting.crafting.craft</span></code> function:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.crafting.crafting</span> <span class="kn">import</span> <span class="n">craft</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.crafting.crafting</span> <span class="kn">import</span> <span class="n">craft</span>
 
 <span class="n">result</span> <span class="o">=</span> <span class="n">craft</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;recipename&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">)</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Here, <code class="docutils literal notranslate"><span class="pre">caller</span></code> is the one doing the crafting and <code class="docutils literal notranslate"><span class="pre">*inputs</span></code> is any combination of consumables and/or tool
-Objects. The system will identify which is which by the <a class="reference internal" href="../Components/Tags.html"><span class="doc">Tags</span></a> on them (see below)
+Objects. The system will identify which is which by the <a class="reference internal" href="../Components/Tags.html"><span class="doc std std-doc">Tags</span></a> on them (see below)
 The <code class="docutils literal notranslate"><span class="pre">result</span></code> is always a list.</p>
 <section id="adding-new-recipes">
 <h2>Adding new recipes<a class="headerlink" href="#adding-new-recipes" title="Permalink to this headline">¶</a></h2>
@@ -96,26 +96,13 @@ implements the most common form of crafting - that using in-game objects. Each r
 which gets initialized with the consumables/tools you provide.</p>
 <p>For the <code class="docutils literal notranslate"><span class="pre">craft</span></code> command to find your custom recipes, you need to tell Evennia where they are. Add a new
 line to your <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> file, with a list to any new modules with recipe classes.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">CRAFT_RECIPE_MODULES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;world.myrecipes&quot;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CRAFT_RECIPE_MODULES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;world.myrecipes&quot;</span><span class="p">]</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>(You need to reload after adding this). All global-level classes in these modules (whose names don’t start
 with underscore) are considered by the system as viable recipes.</p>
 <p>Here we assume you created <code class="docutils literal notranslate"><span class="pre">mygame/world/myrecipes.py</span></code> to match the above example setting:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/world/myrecipes.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/world/myrecipes.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia.contrib.crafting.crafting</span> <span class="kn">import</span> <span class="n">CraftingRecipe</span>
 
@@ -129,27 +116,25 @@ with underscore) are considered by the system as viable recipes.</p>
          <span class="s2">&quot;typeclass&quot;</span><span class="p">:</span> <span class="s2">&quot;typeclasses.objects.decorations.Toys&quot;</span><span class="p">,</span>
          <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A small carved doll&quot;</span><span class="p">}</span>
     <span class="p">]</span>
+
 </pre></div>
-</td></tr></table></div>
-<p>This specifies which tags to look for in the inputs. It defines a <a class="reference internal" href="../Components/Prototypes.html"><span class="doc">Prototype</span></a>
+</div>
+<p>This specifies which tags to look for in the inputs. It defines a <a class="reference internal" href="../Components/Prototypes.html"><span class="doc std std-doc">Prototype</span></a>
 for the recipe to use to spawn the result on the fly (a recipe could spawn more than one result if needed).
 Instead of specifying the full prototype-dict, you could also just provide a list of <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code>s to
 existing prototypes you have.</p>
 <p>After reloading the server, this recipe would now be available to use. To try it we should
 create materials and tools to insert into the recipe.</p>
-<p>The recipe analyzes inputs, looking for <a class="reference internal" href="../Components/Tags.html"><span class="doc">Tags</span></a> with specific tag-categories.
+<p>The recipe analyzes inputs, looking for <a class="reference internal" href="../Components/Tags.html"><span class="doc std std-doc">Tags</span></a> with specific tag-categories.
 The tag-category used can be set per-recipe using the (<code class="docutils literal notranslate"><span class="pre">.consumable_tag_category</span></code> and
 <code class="docutils literal notranslate"><span class="pre">.tool_tag_category</span></code> respectively). The defaults are <code class="docutils literal notranslate"><span class="pre">crafting_material</span></code> and <code class="docutils literal notranslate"><span class="pre">crafting_tool</span></code>. For
 the puppet we need one object with the <code class="docutils literal notranslate"><span class="pre">wood</span></code> tag and another with the <code class="docutils literal notranslate"><span class="pre">knife</span></code> tag:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
 
 <span class="n">knife</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;Hobby knife&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;knife&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_tool&quot;</span><span class="p">)])</span>
 <span class="n">wood</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;Piece of wood&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="p">[(</span><span class="s2">&quot;wood&quot;</span><span class="p">,</span> <span class="s2">&quot;crafting_material&quot;</span><span class="p">)])</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Note that the objects can have any name, all that matters is the tag/tag-category. This means if a
 “bayonet” also had the “knife” crafting tag, it could also be used to carve a puppet. This is also
 potentially interesting for use in puzzles and to allow users to experiment and find alternatives to
@@ -161,39 +146,35 @@ know ingredients.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">seed</span></code> class-method will create simple dummy objects that fulfills the recipe’s requirements. This
 is great for testing.</p>
 <p>Assuming these objects were put in our inventory, we could now craft using the in-game command:</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>&gt; craft wooden puppet from wood using hobby knife
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt; craft wooden puppet from wood using hobby knife
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>In code we would do</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrub.crafting.crafting</span> <span class="kn">import</span> <span class="n">craft</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrub.crafting.crafting</span> <span class="kn">import</span> <span class="n">craft</span>
 <span class="n">puppet</span> <span class="o">=</span> <span class="n">craft</span><span class="p">(</span><span class="n">crafter</span><span class="p">,</span> <span class="s2">&quot;wooden puppet&quot;</span><span class="p">,</span> <span class="n">knife</span><span class="p">,</span> <span class="n">wood</span><span class="p">)</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>In the call to <code class="docutils literal notranslate"><span class="pre">craft</span></code>, the order of <code class="docutils literal notranslate"><span class="pre">knife</span></code> and <code class="docutils literal notranslate"><span class="pre">wood</span></code> doesn’t matter - the recipe will sort out which
 is which based on their tags.</p>
 </section>
 <section id="deeper-customization-of-recipes">
 <h2>Deeper customization of recipes<a class="headerlink" href="#deeper-customization-of-recipes" title="Permalink to this headline">¶</a></h2>
 <p>For customizing recipes further, it helps to understand how to use the recipe-class directly:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
     <span class="c1"># ...</span>
 
 <span class="n">tools</span><span class="p">,</span> <span class="n">consumables</span> <span class="o">=</span> <span class="n">MyRecipe</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
 <span class="n">recipe</span> <span class="o">=</span> <span class="n">MyRecipe</span><span class="p">(</span><span class="n">crafter</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">tools</span> <span class="o">+</span> <span class="n">consumables</span><span class="p">))</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">craft</span><span class="p">()</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This is useful for testing and allows you to use the class directly without adding it to a module
 in <code class="docutils literal notranslate"><span class="pre">settings.CRAFTING_RECIPE_MODULES</span></code>.</p>
 <p>Even without modifying more than the class properties, there are a lot of options to set on
 the <code class="docutils literal notranslate"><span class="pre">CraftingRecipe</span></code> class. Easiest is to refer to the
-<a class="reference external" href="Contribs/evennia.contrib.crafting.crafting.html#evennia.contrib.crafting.crafting.CraftingRecipe">CraftingRecipe api documentation</a>.
+<a class="reference internal" href="../api/evennia.contrib.crafting.crafting.html#evennia.contrib.crafting.crafting.CraftingRecipe" title="evennia.contrib.crafting.crafting.CraftingRecipe"><span class="xref myst py py-class">CraftingRecipe api documentation</span></a>.
 For example, you can customize the validation-error messages, decide if the ingredients have
 to be exactly right, if a failure still consumes the ingredients or not, and much more.</p>
 <p>For even more control you can override hooks in your own class:</p>
@@ -217,30 +198,7 @@ into each crafting hook. These are unused by default but could be used to custom
 <p>What the crafting system does not have out of the box is a ‘skill’ system - the notion of being able
 to fail the craft if you are not skilled enough. Just how skills work is game-dependent, so to add
 this you need to make your own recipe parent class and have your recipes inherit from this.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
 <span class="kn">from</span> <span class="nn">evennia.contrib.crafting.crafting</span> <span class="kn">import</span> <span class="n">CraftingRecipe</span>
 
 <span class="k">class</span> <span class="nc">SkillRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
@@ -265,12 +223,12 @@ this you need to make your own recipe parent class and have your recipes inherit
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not good enough to craft this. Better luck next time!&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">[]</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>In this example we introduce a <code class="docutils literal notranslate"><span class="pre">.difficulty</span></code> for the recipe and makes a ‘dice roll’ to see
 if we succed. We would of course make this a lot more immersive and detailed in a full game. In
 principle you could customize each recipe just the way you want it, but you could also inherit from
 a central parent like this to cut down on work.</p>
-<p>The <a class="reference external" href="../api/evennia.contrib.crafting.example_recipes.html">sword recipe example module</a> also shows an example
+<p>The <a class="reference internal" href="../api/evennia.contrib.crafting.example_recipes.html#evennia-contrib-crafting-example-recipes"><span class="std std-ref">sword recipe example module</span></a> also shows an example
 of a random skill-check being implemented in a parent and then inherited for multiple use.</p>
 </section>
 </section>
@@ -342,7 +300,7 @@ from this rather than the more opinionated <code class="docutils literal notrans
 <h3>Versions</h3>
 <ul>
   <li><a href="Crafting.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

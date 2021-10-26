@@ -1,0 +1,491 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Command Sets &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Command Sets</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="command-sets">
+<h1>Command Sets<a class="headerlink" href="#command-sets" title="Permalink to this headline">¶</a></h1>
+<p>Command Sets are intimately linked with <a class="reference internal" href="Commands.html"><span class="doc std std-doc">Commands</span></a> and you should be familiar with
+Commands before reading this page. The two pages were split for ease of reading.</p>
+<p>A <em>Command Set</em> (often referred to as a CmdSet or cmdset) is the basic unit for storing one or more
+<em>Commands</em>. A given Command can go into any number of different command sets. Storing Command
+classes in a command set is the way to make commands available to use in your game.</p>
+<p>When storing a CmdSet on an object, you will make the commands in that command set available to the
+object. An example is the default command set stored on new Characters. This command set contains
+all the useful commands, from <code class="docutils literal notranslate"><span class="pre">look</span></code> and <code class="docutils literal notranslate"><span class="pre">inventory</span></code> to <code class="docutils literal notranslate"><span class="pre">&#64;dig</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code>
+(<a class="reference internal" href="Locks.html#permissions"><span class="std std-doc">permissions</span></a> then limit which players may use them, but that’s a separate
+topic).</p>
+<p>When an account enters a command, cmdsets from the Account, Character, its location, and elsewhere
+are pulled together into a <em>merge stack</em>. This stack is merged together in a specific order to
+create a single “merged” cmdset, representing the pool of commands available at that very moment.</p>
+<p>An example would be a <code class="docutils literal notranslate"><span class="pre">Window</span></code> object that has a cmdset with two commands in it: <code class="docutils literal notranslate"><span class="pre">look</span> <span class="pre">through</span> <span class="pre">window</span></code> and <code class="docutils literal notranslate"><span class="pre">open</span> <span class="pre">window</span></code>. The command set would be visible to players in the room with the window,
+allowing them to use those commands only there. You could imagine all sorts of clever uses of this,
+like a <code class="docutils literal notranslate"><span class="pre">Television</span></code> object which had multiple commands for looking at it, switching channels and so
+on. The tutorial world included with Evennia showcases a dark room that replaces certain critical
+commands with its own versions because the Character cannot see.</p>
+<p>If you want a quick start into defining your first commands and using them with command sets, you
+can head over to the <a class="reference internal" href="Adding-Command-Tutorial.html"><span class="doc std std-doc">Adding Command Tutorial</span></a> which steps through things
+without the explanations.</p>
+<section id="defining-command-sets">
+<h2>Defining Command Sets<a class="headerlink" href="#defining-command-sets" title="Permalink to this headline">¶</a></h2>
+<p>A CmdSet is, as most things in Evennia, defined as a Python class inheriting from the correct parent
+(<code class="docutils literal notranslate"><span class="pre">evennia.CmdSet</span></code>, which is a shortcut to <code class="docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code>). The CmdSet class only
+needs to define one method, called <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation()</span></code>. All other class parameters are optional,
+but are used for more advanced set manipulation and coding (see the [merge rules](Command-
+Sets#merge-rules) section).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file mygame/commands/mycmdset.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
+
+<span class="c1"># this is a theoretical custom module with commands we</span>
+<span class="c1"># created previously: mygame/commands/mycommands.py</span>
+<span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
+
+<span class="k">class</span> <span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The only thing this method should need</span>
+<span class="sd">        to do is to add commands to the set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">MyCommand1</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">MyCommand2</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">MyCommand3</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>The CmdSet’s <code class="docutils literal notranslate"><span class="pre">add()</span></code> method can also take another CmdSet as input. In this case all the commands
+from that CmdSet will be appended to this one as if you added them line by line:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">():</span>
+        <span class="o">...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">AdditionalCmdSet</span><span class="p">)</span> <span class="c1"># adds all command from this set</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>If you added your command to an existing cmdset (like to the default cmdset), that set is already
+loaded into memory. You need to make the server aware of the code changes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@reload</span>
+</pre></div>
+</div>
+<p>You should now be able to use the command.</p>
+<p>If you created a new, fresh cmdset, this must be added to an object in order to make the commands
+within available. A simple way to temporarily test a cmdset on yourself is use the <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> command to
+execute a python snippet:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;commands.mycmdset.MyCmdSet&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will stay with you until you <code class="docutils literal notranslate"><span class="pre">&#64;reset</span></code> or <code class="docutils literal notranslate"><span class="pre">&#64;shutdown</span></code> the server, or you run</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;commands.mycmdset.MyCmdSet&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the example above, a specific Cmdset class is removed. Calling <code class="docutils literal notranslate"><span class="pre">delete</span></code> without arguments will
+remove the latest added cmdset.</p>
+<blockquote>
+<div><p>Note: Command sets added using <code class="docutils literal notranslate"><span class="pre">cmdset.add</span></code> are, by default, <em>not</em> persistent in the database.</p>
+</div></blockquote>
+<p>If you want the cmdset to survive a reload, you can do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">mycmdset</span><span class="o">.</span><span class="n">MyCmdSet</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or you could add the cmdset as the <em>default</em> cmdset:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">mycmdset</span><span class="o">.</span><span class="n">MyCmdSet</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>An object can only have one “default” cmdset (but can also have none). This is meant as a safe fall-
+back even if all other cmdsets fail or are removed. It is always persistent and will not be affected
+by <code class="docutils literal notranslate"><span class="pre">cmdset.delete()</span></code>. To remove a default cmdset you must explicitly call <code class="docutils literal notranslate"><span class="pre">cmdset.remove_default()</span></code>.</p>
+<p>Command sets are often added to an object in its <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> method. For more examples of
+adding commands, read the <a class="reference internal" href="Adding-Command-Tutorial.html"><span class="doc std std-doc">Step by step tutorial</span></a>. Generally you can
+customize which command sets are added to your objects by using <code class="docutils literal notranslate"><span class="pre">self.cmdset.add()</span></code> or
+<code class="docutils literal notranslate"><span class="pre">self.cmdset.add_default()</span></code>.</p>
+<blockquote>
+<div><p>Important: Commands are identified uniquely by key <em>or</em> alias (see <a class="reference internal" href="Commands.html"><span class="doc std std-doc">Commands</span></a>). If any
+overlap exists, two commands are considered identical. Adding a Command to a command set that
+already has an identical command will <em>replace</em> the previous command. This is very important. You
+must take this behavior into account when attempting to overload any default Evennia commands with
+your own. Otherwise, you may accidentally “hide” your own command in your command set when adding a
+new one that has a matching alias.</p>
+</div></blockquote>
+<section id="properties-on-command-sets">
+<h3>Properties on Command Sets<a class="headerlink" href="#properties-on-command-sets" title="Permalink to this headline">¶</a></h3>
+<p>There are several extra flags that you can set on CmdSets in order to modify how they work. All are
+optional and will be set to defaults otherwise.  Since many of these relate to <em>merging</em> cmdsets,
+you might want to read the [Adding and Merging Command Sets](./Command-Sets.md#adding-and-merging-
+command-sets) section for some of these to make sense.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code> (string) - an identifier for the cmdset. This is optional, but should be unique. It is used
+for display in lists, but also to identify special merging behaviours using the <code class="docutils literal notranslate"><span class="pre">key_mergetype</span></code>
+dictionary below.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mergetype</span></code> (string) - allows for one of the following string values: “<em>Union</em>”, “<em>Intersect</em>”,
+“<em>Replace</em>”, or “<em>Remove</em>”.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">priority</span></code> (int) - This defines the merge order of the merge stack - cmdsets will merge in rising
+order of priority with the highest priority set merging last. During a merger, the commands from the
+set with the higher priority will have precedence (just what happens depends on the <a class="reference internal" href="#adding-and-merging-command-sets"><span class="std std-doc">merge
+type</span></a>). If priority is identical, the order in the
+merge stack determines preference. The priority value must be greater or equal to <code class="docutils literal notranslate"><span class="pre">-100</span></code>. Most in-
+game sets should usually have priorities between <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">100</span></code>. Evennia default sets have priorities
+as follows (these can be changed if you want a different distribution):</p>
+<ul>
+<li><p>EmptySet: <code class="docutils literal notranslate"><span class="pre">-101</span></code> (should be lower than all other sets)</p></li>
+<li><p>SessionCmdSet: <code class="docutils literal notranslate"><span class="pre">-20</span></code></p></li>
+<li><p>AccountCmdSet: <code class="docutils literal notranslate"><span class="pre">-10</span></code></p></li>
+<li><p>CharacterCmdSet: <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
+<li><p>ExitCmdSet: <code class="docutils literal notranslate"> <span class="pre">101</span></code> (generally should always be available)</p></li>
+<li><p>ChannelCmdSet: <code class="docutils literal notranslate"><span class="pre">101</span></code> (should usually always be available) - since exits never accept
+arguments, there is no collision between exits named the same as a channel even though the commands
+“collide”.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_mergetype</span></code> (dict) - a dict of <code class="docutils literal notranslate"><span class="pre">key:mergetype</span></code> pairs. This allows this cmdset to merge
+differently with certain named cmdsets. If the cmdset to merge with has a <code class="docutils literal notranslate"><span class="pre">key</span></code> matching an entry in
+<code class="docutils literal notranslate"><span class="pre">key_mergetype</span></code>, it will not be merged according to the setting in <code class="docutils literal notranslate"><span class="pre">mergetype</span></code> but according to the
+mode in this dict. Please note that this is more complex than it may seem due to the <a class="reference internal" href="#adding-and-merging-command-sets"><span class="std std-doc">merge
+order</span></a> of command sets.  Please review that section
+before using <code class="docutils literal notranslate"><span class="pre">key_mergetype</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">duplicates</span></code> (bool/None default <code class="docutils literal notranslate"><span class="pre">None</span></code>) - this determines what happens when merging same-priority
+cmdsets containing same-key commands together. The<code class="docutils literal notranslate"><span class="pre">dupicate</span></code> option will <em>only</em> apply when merging
+the cmdset with this option onto one other cmdset with the same priority. The resulting cmdset will
+<em>not</em> retain this <code class="docutils literal notranslate"><span class="pre">duplicate</span></code> setting.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> (default): No duplicates are allowed and the cmdset being merged “onto” the old one
+will take precedence. The result will be unique commands. <em>However</em>, the system will assume this
+value to be <code class="docutils literal notranslate"><span class="pre">True</span></code> for cmdsets on Objects, to avoid dangerous clashes. This is usually the safe bet.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code>: Like <code class="docutils literal notranslate"><span class="pre">None</span></code> except the system will not auto-assume any value for cmdsets defined on
+Objects.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code>: Same-named, same-prio commands will merge into the same cmdset.  This will lead to a
+multimatch error (the user will get a list of possibilities in order to specify which command they
+meant). This is is useful e.g. for on-object cmdsets (example: There is a <code class="docutils literal notranslate"><span class="pre">red</span> <span class="pre">button</span></code> and a <code class="docutils literal notranslate"><span class="pre">green</span> <span class="pre">button</span></code> in the room. Both have a <code class="docutils literal notranslate"><span class="pre">press</span> <span class="pre">button</span></code> command, in cmdsets with the same priority. This
+flag makes sure that just writing <code class="docutils literal notranslate"><span class="pre">press</span> <span class="pre">button</span></code> will force the Player to define just which object’s
+command was intended).</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">no_objs</span></code> this is a flag for the cmdhandler that builds the set of commands available at every
+moment. It tells the handler not to include cmdsets from objects around the account (nor from rooms
+or inventory) when building the merged set. Exit commands will still be included. This option can
+have three values:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> (default): Passthrough of any value set explicitly earlier in the merge stack. If never
+set explicitly, this acts as <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code>/<code class="docutils literal notranslate"><span class="pre">False</span></code>: Explicitly turn on/off. If two sets with explicit <code class="docutils literal notranslate"><span class="pre">no_objs</span></code> are merged,
+priority determines what is used.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">no_exits</span></code> - this is a flag for the cmdhandler that builds the set of commands available at every
+moment. It tells the handler not to include cmdsets from exits. This flag can have three values:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> (default):  Passthrough of any value set explicitly earlier in the merge stack. If
+never set explicitly, this acts as <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code>/<code class="docutils literal notranslate"><span class="pre">False</span></code>: Explicitly turn on/off. If two sets with explicit <code class="docutils literal notranslate"><span class="pre">no_exits</span></code> are merged,
+priority determines what is used.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">no_channels</span></code> (bool) - this is a flag for the cmdhandler that builds the set of commands available
+at every moment. It tells the handler not to include cmdsets from available in-game channels. This
+flag can have three values:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> (default):  Passthrough of any value set explicitly earlier in the merge stack. If
+never set explicitly, this acts as <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code>/<code class="docutils literal notranslate"><span class="pre">False</span></code>: Explicitly turn on/off. If two sets with explicit <code class="docutils literal notranslate"><span class="pre">no_channels</span></code> are merged,
+priority determines what is used.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="command-sets-searched">
+<h2>Command Sets Searched<a class="headerlink" href="#command-sets-searched" title="Permalink to this headline">¶</a></h2>
+<p>When a user issues a command, it is matched against the [merged](./Command-Sets.md#adding-and-merging-
+command-sets) command sets available to the player at the moment. Which those are may change at any
+time (such as when the player walks into the room with the <code class="docutils literal notranslate"><span class="pre">Window</span></code> object described earlier).</p>
+<p>The currently valid command sets are collected from the following sources:</p>
+<ul class="simple">
+<li><p>The cmdsets stored on the currently active <a class="reference internal" href="Sessions.html"><span class="doc std std-doc">Session</span></a>. Default is the empty
+<code class="docutils literal notranslate"><span class="pre">SessionCmdSet</span></code> with merge priority <code class="docutils literal notranslate"><span class="pre">-20</span></code>.</p></li>
+<li><p>The cmdsets defined on the <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Account</span></a>. Default is the AccountCmdSet with merge priority
+<code class="docutils literal notranslate"><span class="pre">-10</span></code>.</p></li>
+<li><p>All cmdsets on the Character/Object (assuming the Account is currently puppeting such a
+Character/Object). Merge priority <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+<li><p>The cmdsets of all objects carried by the puppeted Character (checks the <code class="docutils literal notranslate"><span class="pre">call</span></code> lock). Will not be
+included if <code class="docutils literal notranslate"><span class="pre">no_objs</span></code> option is active in the merge stack.</p></li>
+<li><p>The cmdsets of the Character’s current location (checks the <code class="docutils literal notranslate"><span class="pre">call</span></code> lock). Will not be included if
+<code class="docutils literal notranslate"><span class="pre">no_objs</span></code> option is active in the merge stack.</p></li>
+<li><p>The cmdsets of objects in the current location (checks the <code class="docutils literal notranslate"><span class="pre">call</span></code> lock). Will not be included if
+<code class="docutils literal notranslate"><span class="pre">no_objs</span></code> option is active in the merge stack.</p></li>
+<li><p>The cmdsets of Exits in the location. Merge priority <code class="docutils literal notranslate"><span class="pre">+101</span></code>. Will not be included if <code class="docutils literal notranslate"><span class="pre">no_exits</span></code>
+<em>or</em> <code class="docutils literal notranslate"><span class="pre">no_objs</span></code> option is active in the merge stack.</p></li>
+<li><p>The <a class="reference internal" href="Communications.html"><span class="doc std std-doc">channel</span></a> cmdset containing commands for posting to all channels the account
+or character is currently connected to. Merge priority <code class="docutils literal notranslate"><span class="pre">+101</span></code>. Will not be included if <code class="docutils literal notranslate"><span class="pre">no_channels</span></code>
+option is active in the merge stack.</p></li>
+</ul>
+<p>Note that an object does not <em>have</em> to share its commands with its surroundings. A Character’s
+cmdsets should not be shared for example, or all other Characters would get multi-match errors just
+by being in the same room. The ability of an object to share its cmdsets is managed by its <code class="docutils literal notranslate"><span class="pre">call</span></code>
+<a class="reference internal" href="Locks.html"><span class="doc std std-doc">lock</span></a>. For example, <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Character objects</span></a> defaults to <code class="docutils literal notranslate"><span class="pre">call:false()</span></code> so that any
+cmdsets on them can only be accessed by themselves, not by other objects around them. Another
+example might be to lock an object with <code class="docutils literal notranslate"><span class="pre">call:inside()</span></code> to only make their commands available to
+objects inside them, or <code class="docutils literal notranslate"><span class="pre">cmd:holds()</span></code> to make their commands available only if they are held.</p>
+</section>
+<section id="adding-and-merging-command-sets">
+<h2>Adding and Merging Command Sets<a class="headerlink" href="#adding-and-merging-command-sets" title="Permalink to this headline">¶</a></h2>
+<p><em>Note: This is an advanced topic. It’s very useful to know about, but you might want to skip it if
+this is your first time learning about commands.</em></p>
+<p>CmdSets have the special ability that they can be <em>merged</em> together into new sets. Which of the
+ingoing commands end up in the merged set is defined by the <em>merge rule</em> and the relative
+<em>priorities</em> of the two sets.  Removing the latest added set will restore things back to the way it
+was before the addition.</p>
+<p>CmdSets are non-destructively stored in a stack inside the cmdset handler on the object. This stack
+is parsed to create the “combined” cmdset active at the moment. CmdSets from other sources are also
+included in the merger such as those on objects in the same room (like buttons to press) or those
+introduced by state changes (such as when entering a menu). The cmdsets are all ordered after
+priority and then merged together in <em>reverse order</em>. That is, the higher priority will be merged
+“onto” lower-prio ones. By defining a cmdset with a merge-priority between that of two other sets,
+you will make sure it will be merged in between them.
+The very first cmdset in this stack is called the <em>Default cmdset</em> and is protected from accidental
+deletion. Running <code class="docutils literal notranslate"><span class="pre">obj.cmdset.delete()</span></code> will never delete the default set. Instead one should add
+new cmdsets on top of the default to “hide” it, as described below.  Use the special
+<code class="docutils literal notranslate"><span class="pre">obj.cmdset.delete_default()</span></code> only if you really know what you are doing.</p>
+<p>CmdSet merging is an advanced feature useful for implementing powerful game effects. Imagine for
+example a player entering a dark room. You don’t want the player to be able to find everything in
+the room at a glance - maybe you even want them to have a hard time to find stuff in their backpack!
+You can then define a different CmdSet with commands that override the normal ones. While they are
+in the dark room, maybe the <code class="docutils literal notranslate"><span class="pre">look</span></code> and <code class="docutils literal notranslate"><span class="pre">inv</span></code> commands now just tell the player they cannot see
+anything! Another example would be to offer special combat commands only when the player is in
+combat. Or when being on a boat. Or when having taken the super power-up. All this can be done on
+the fly by merging command sets.</p>
+<section id="merge-rules">
+<h3>Merge Rules<a class="headerlink" href="#merge-rules" title="Permalink to this headline">¶</a></h3>
+<p>Basic rule is that command sets are merged in <em>reverse priority order</em>. That is, lower-prio sets are
+merged first and higher prio sets are merged “on top” of them. Think of it like a layered cake with
+the highest priority on top.</p>
+<p>To further understand how sets merge, we need to define some examples. Let’s call the first command
+set <strong>A</strong> and the second <strong>B</strong>. We assume <strong>B</strong> is the command set already active on our object and
+we will merge <strong>A</strong> onto <strong>B</strong>. In code terms this would be done by <code class="docutils literal notranslate"><span class="pre">object.cdmset.add(A)</span></code>.
+Remember, B is already active on <code class="docutils literal notranslate"><span class="pre">object</span></code> from before.</p>
+<p>We let the <strong>A</strong> set have higher priority than <strong>B</strong>. A priority is simply an integer number. As
+seen in the list above, Evennia’s default cmdsets have priorities in the range <code class="docutils literal notranslate"><span class="pre">-101</span></code> to <code class="docutils literal notranslate"><span class="pre">120</span></code>. You
+are usually safe to use a priority of <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code> for most game effects.</p>
+<p>In our examples, both sets contain a number of commands which we’ll identify by numbers, like <code class="docutils literal notranslate"><span class="pre">A1,</span> <span class="pre">A2</span></code> for set <strong>A</strong> and <code class="docutils literal notranslate"><span class="pre">B1,</span> <span class="pre">B2,</span> <span class="pre">B3,</span> <span class="pre">B4</span></code> for <strong>B</strong>. So for that example both sets contain commands
+with the same keys (or aliases) “1” and “2” (this could for example be “look” and “get” in the real
+game), whereas commands 3 and 4 are unique to <strong>B</strong>. To describe a merge between these sets, we
+would write <code class="docutils literal notranslate"><span class="pre">A1,A2</span> <span class="pre">+</span> <span class="pre">B1,B2,B3,B4</span> <span class="pre">=</span> <span class="pre">?</span></code> where <code class="docutils literal notranslate"><span class="pre">?</span></code> is a list of commands that depend on which merge
+type <strong>A</strong> has, and which relative priorities the two sets have. By convention, we read this
+statement as “New command set <strong>A</strong> is merged onto the old command set <strong>B</strong> to form <strong>?</strong>”.</p>
+<p>Below are the available merge types and how they work. Names are partly borrowed from <a class="reference external" href="http://en.wikipedia.org/wiki/Set_theory">Set
+theory</a>.</p>
+<ul>
+<li><p><strong>Union</strong> (default) - The two cmdsets are merged so that as many commands as possible from each
+cmdset ends up in the merged cmdset. Same-key commands are merged by priority.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>   # Union
+   A1,A2 + B1,B2,B3,B4 = A1,A2,B3,B4
+</pre></div>
+</div>
+</li>
+<li><p><strong>Intersect</strong> - Only commands found in <em>both</em> cmdsets (i.e. which have the same keys) end up in
+the merged cmdset, with the higher-priority cmdset replacing the lower one’s commands.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>   # Intersect
+   A1,A3,A5 + B1,B2,B4,B5 = A1,A5
+</pre></div>
+</div>
+</li>
+<li><p><strong>Replace</strong> -   The commands of the higher-prio cmdset completely replaces the lower-priority
+cmdset’s commands, regardless of if same-key commands exist or not.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>   # Replace
+   A1,A3 + B1,B2,B4,B5 = A1,A3
+</pre></div>
+</div>
+</li>
+<li><p><strong>Remove</strong> - The high-priority command sets removes same-key commands from the lower-priority
+cmdset. They are not replaced with anything, so this is a sort of filter that prunes the low-prio
+set using the high-prio one as a template.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>   # Remove
+   A1,A3 + B1,B2,B3,B4,B5 = B2,B4,B5
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Besides <code class="docutils literal notranslate"><span class="pre">priority</span></code> and <code class="docutils literal notranslate"><span class="pre">mergetype</span></code>, a command-set also takes a few other variables to control how
+they merge:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">duplicates</span></code> (bool) - determines what happens when two sets of equal priority merge. Default is
+that the new set in the merger  (i.e.  <strong>A</strong> above) automatically takes precedence. But if
+<em>duplicates</em> is true, the result will be a merger with more than one of each name match.  This will
+usually lead to the player receiving a multiple-match error higher up the road, but can be good for
+things like cmdsets on non-player objects in a room, to allow the system to warn that more than one
+‘ball’ in the room has the same ‘kick’ command defined on it and offer a chance to  select which
+ball to kick …  Allowing duplicates only makes sense for <em>Union</em> and <em>Intersect</em>, the setting is
+ignored for the other mergetypes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key_mergetypes</span></code> (dict) - allows the cmdset to define a unique mergetype for particular cmdsets,
+identified by their cmdset <code class="docutils literal notranslate"><span class="pre">key</span></code>.  Format is <code class="docutils literal notranslate"><span class="pre">{CmdSetkey:mergetype}</span></code>. Example:
+<code class="docutils literal notranslate"><span class="pre">{'Myevilcmdset','Replace'}</span></code> which would make sure for this set to always use ‘Replace’ on the
+cmdset with the key <code class="docutils literal notranslate"><span class="pre">Myevilcmdset</span></code> only, no matter what the main <code class="docutils literal notranslate"><span class="pre">mergetype</span></code> is set to.</p></li>
+</ul>
+<blockquote>
+<div><p>Warning: The <code class="docutils literal notranslate"><span class="pre">key_mergetypes</span></code> dictionary <em>can only work on the cmdset we merge onto</em>. When using
+<code class="docutils literal notranslate"><span class="pre">key_mergetypes</span></code> it is thus important to consider the merge priorities - you must make sure that you
+pick a priority <em>between</em> the cmdset you want to detect and the next higher one, if any. That is, if
+we define a cmdset with a high priority and set it to affect a cmdset that is far down in the merge
+stack, we would not “see” that set when it’s time for us to merge. Example: Merge stack is
+<code class="docutils literal notranslate"><span class="pre">A(prio=-10),</span> <span class="pre">B(prio=-5),</span> <span class="pre">C(prio=0),</span> <span class="pre">D(prio=5)</span></code>. We now merge a cmdset <code class="docutils literal notranslate"><span class="pre">E(prio=10)</span></code> onto this stack,
+with a <code class="docutils literal notranslate"><span class="pre">key_mergetype={&quot;B&quot;:&quot;Replace&quot;}</span></code>. But priorities dictate that we won’t be merged onto B, we
+will be merged onto E (which is a merger of the lower-prio sets at this point). Since we are merging
+onto E and not B, our <code class="docutils literal notranslate"><span class="pre">key_mergetype</span></code> directive won’t trigger. To make sure it works we must make
+sure we merge onto B.  Setting E’s priority to, say, -4 will make sure to merge it onto B and affect
+it appropriately.</p>
+</div></blockquote>
+<p>More advanced cmdset example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
+
+<span class="k">class</span> <span class="nc">MyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;MyCmdSet&quot;</span>
+    <span class="n">priority</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;Replace&quot;</span>
+    <span class="n">key_mergetypes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;MyOtherCmdSet&#39;</span><span class="p">:</span><span class="s1">&#39;Union&#39;</span><span class="p">}</span>
+    
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The only thing this method should need</span>
+<span class="sd">        to do is to add commands to the set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">MyCommand1</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">MyCommand2</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">MyCommand3</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="assorted-notes">
+<h3>Assorted Notes<a class="headerlink" href="#assorted-notes" title="Permalink to this headline">¶</a></h3>
+<p>It is very important to remember that two commands are compared <em>both</em> by their <code class="docutils literal notranslate"><span class="pre">key</span></code> properties
+<em>and</em> by their <code class="docutils literal notranslate"><span class="pre">aliases</span></code> properties. If either keys or one of their aliases match, the two commands
+are considered the <em>same</em>. So consider these two Commands:</p>
+<ul class="simple">
+<li><p>A Command with key “kick” and alias “fight”</p></li>
+<li><p>A Command with key “punch” also with an alias “fight”</p></li>
+</ul>
+<p>During the cmdset merging (which happens all the time since also things like channel commands and
+exits are merged in), these two commands will be considered <em>identical</em> since they share alias. It
+means only one of them will remain after the merger. Each will also be compared with all other
+commands having any combination of the keys and/or aliases “kick”, “punch” or “fight”.</p>
+<p>… So avoid duplicate aliases, it will only cause confusion.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Command Sets</a><ul>
+<li><a class="reference internal" href="#defining-command-sets">Defining Command Sets</a><ul>
+<li><a class="reference internal" href="#properties-on-command-sets">Properties on Command Sets</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#command-sets-searched">Command Sets Searched</a></li>
+<li><a class="reference internal" href="#adding-and-merging-command-sets">Adding and Merging Command Sets</a><ul>
+<li><a class="reference internal" href="#merge-rules">Merge Rules</a></li>
+<li><a class="reference internal" href="#assorted-notes">Assorted Notes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Command-Sets.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Command-Sets.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Command Sets</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

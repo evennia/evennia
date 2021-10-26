@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,10 +40,10 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="setting-up-pycharm">
+  <section class="tex2jax_ignore mathjax_ignore" id="setting-up-pycharm">
 <h1>Setting up PyCharm<a class="headerlink" href="#setting-up-pycharm" title="Permalink to this headline">¶</a></h1>
 </section>
-<section id="directions-for-setting-up-pycharm-with-evennia">
+<section class="tex2jax_ignore mathjax_ignore" id="directions-for-setting-up-pycharm-with-evennia">
 <h1>Directions for setting up PyCharm with Evennia<a class="headerlink" href="#directions-for-setting-up-pycharm-with-evennia" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference external" href="https://www.jetbrains.com/pycharm/">PyCharm</a> is a Python developer’s IDE from Jetbrains available
 for Windows, Mac and Linux. It is a commercial product but offer free trials, a scaled-down
@@ -86,7 +88,7 @@ or runner for some reason (or just learn how they work!), see Run Configuration 
 you restart you have to detach from the old and then reattach to the new process that was created.</p>
 </div></blockquote>
 <blockquote>
-<div><p>To make the process less tedious you can apply a filter in settings to show only the server.py
+<div><p>To make the process less tedious you can apply a filter in settings to show only the <a class="reference external" href="http://server.py">server.py</a>
 process in the list. To do that navigate to: <code class="docutils literal notranslate"><span class="pre">Settings/Preferences</span> <span class="pre">|</span> <span class="pre">Build,</span> <span class="pre">Execution,</span> <span class="pre">Deployment</span> <span class="pre">|</span> <span class="pre">Python</span> <span class="pre">Debugger</span></code> and then in <code class="docutils literal notranslate"><span class="pre">Attach</span> <span class="pre">to</span> <span class="pre">process</span></code> field put in: <code class="docutils literal notranslate"><span class="pre">twistd.exe&quot;</span> <span class="pre">--nodaemon</span></code>. This is an
 example for windows, I don’t have a working mac/linux box.
 <img alt="Example process filter configuration" src="https://i.imgur.com/vkSheR8.png" /></p>
@@ -210,7 +212,7 @@ still running in interactive mode.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Setting-up-PyCharm.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

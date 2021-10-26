@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="quirks">
+  <section class="tex2jax_ignore mathjax_ignore" id="quirks">
 <h1>Quirks<a class="headerlink" href="#quirks" title="Permalink to this headline">¶</a></h1>
 <p>This is a list of various quirks or common stumbling blocks that people often ask about or report
 when using (or trying to use) Evennia. They are not bugs.</p>
@@ -67,37 +69,33 @@ particular character.</p>
 <section id="mutable-attributes-and-their-connection-to-the-database">
 <h2>Mutable attributes and their connection to the database<a class="headerlink" href="#mutable-attributes-and-their-connection-to-the-database" title="Permalink to this headline">¶</a></h2>
 <p>When storing a mutable object (usually a list or a dictionary) in an Attribute</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="nb">object</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mylist</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="nb">object</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mylist</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>you should know that the connection to the database is retained also if you later extract that
 Attribute into another variable (what is stored and retrieved is actually a <code class="docutils literal notranslate"><span class="pre">PackedList</span></code> or a
 <code class="docutils literal notranslate"><span class="pre">PackedDict</span></code> that works just like their namesakes except they save themselves to the database when
 changed). So if you do</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">alist</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mylist</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="n">alist</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mylist</span>
      <span class="n">alist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>this updates the database behind the scenes, so both <code class="docutils literal notranslate"><span class="pre">alist</span></code> and <code class="docutils literal notranslate"><span class="pre">object.db.mylist</span></code> are now
 <code class="docutils literal notranslate"><span class="pre">[1,2,3,4]</span></code></p>
 <p>If you don’t want this, Evennia provides a way to stably disconnect the mutable from the database by
 use of <code class="docutils literal notranslate"><span class="pre">evennia.utils.dbserialize.deserialize</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">deserialize</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">deserialize</span>
 
      <span class="n">blist</span> <span class="o">=</span> <span class="n">deserialize</span><span class="p">(</span><span class="nb">object</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mylist</span><span class="p">)</span>
      <span class="n">blist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>The property <code class="docutils literal notranslate"><span class="pre">blist</span></code> is now <code class="docutils literal notranslate"><span class="pre">[1,2,3,4]</span></code> whereas <code class="docutils literal notranslate"><span class="pre">object.db.mylist</span></code> remains unchanged. If you want to
 update the database you’d need to explicitly re-assign the updated data to the <code class="docutils literal notranslate"><span class="pre">mylist</span></code> Attribute.</p>
 </section>
 <section id="commands-are-matched-by-name-or-alias">
 <h2>Commands are matched by name <em>or</em> alias<a class="headerlink" href="#commands-are-matched-by-name-or-alias" title="Permalink to this headline">¶</a></h2>
-<p>When merging <a class="reference internal" href="../Components/Commands.html"><span class="doc">command sets</span></a> it’s important to remember that command objects are identified
+<p>When merging <a class="reference internal" href="../Components/Commands.html"><span class="doc std std-doc">command sets</span></a> it’s important to remember that command objects are identified
 <em>both</em> by key <em>or</em> alias. So if you have a command with a key <code class="docutils literal notranslate"><span class="pre">look</span></code> and an alias <code class="docutils literal notranslate"><span class="pre">ls</span></code>, introducing
 another command with a key <code class="docutils literal notranslate"><span class="pre">ls</span></code> will be assumed by the system to be <em>identical</em> to the first one.
 This usually means merging cmdsets will overload one of them depending on priority. Whereas this is
@@ -141,11 +139,11 @@ Try to avoid doing so.</p>
 distributions (notably Ubuntu 16.04 LTS). Zope is a dependency of Twisted. The error manifests in
 the server not starting with an error that <code class="docutils literal notranslate"><span class="pre">zope.interface</span></code> is not found even though <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">list</span></code>
 shows it’s installed. The reason is a missing empty <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file at the root of the zope
-package. If the virtualenv is named “evenv” as suggested in the <a class="reference internal" href="../Setup/Setup-Quickstart.html"><span class="doc">Setup Quickstart</span></a>
+package. If the virtualenv is named “evenv” as suggested in the <a class="reference internal" href="../Setup/Setup-Quickstart.html"><span class="doc std std-doc">Setup Quickstart</span></a>
 instructions, use the following command to fix it:</p>
-<div class="highlight-shell notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>touch evenv/local/lib/python2.7/site-packages/zope/__init__.py
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>touch evenv/local/lib/python2.7/site-packages/zope/__init__.py
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This will create the missing file and things should henceforth work correctly.</p>
 </li>
 </ul>
@@ -206,7 +204,7 @@ instructions, use the following command to fix it:</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Quirks.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

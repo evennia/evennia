@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -44,7 +46,146 @@
 <dl class="py class">
 <dt id="evennia.scripts.manager.ScriptManager">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.scripts.manager.</code><code class="sig-name descname">ScriptManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/manager.html#ScriptManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.manager.ScriptManager" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.manager.ScriptDBManager</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.managers.TypeclassManager</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#evennia.scripts.manager.ScriptDBManager" title="evennia.scripts.manager.ScriptDBManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.manager.ScriptDBManager</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.managers.TypeclassManager</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.scripts.manager.ScriptDBManager">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.scripts.manager.</code><code class="sig-name descname">ScriptDBManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/manager.html#ScriptDBManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.manager.ScriptDBManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager" title="evennia.typeclasses.managers.TypedObjectManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.managers.TypedObjectManager</span></code></a></p>
+<p>This Scriptmanager implements methods for searching
+and manipulating Scripts directly from the database.</p>
+<p>Evennia-specific search methods (will return Typeclasses or
+lists of Typeclasses, whereas Django-general methods will return
+Querysets or database objects).</p>
+<p>dbref (converter)
+get_id  (or dbref_search)
+get_dbref_range
+object_totals
+typeclass_search
+get_all_scripts_on_obj
+get_all_scripts
+delete_script
+remove_non_persistent
+validate
+script_search (equivalent to evennia.search_script)
+copy_script</p>
+<dl class="py method">
+<dt id="evennia.scripts.manager.ScriptDBManager.get_all_scripts_on_obj">
+<code class="sig-name descname">get_all_scripts_on_obj</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/manager.html#ScriptDBManager.get_all_scripts_on_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.manager.ScriptDBManager.get_all_scripts_on_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find all Scripts related to a particular object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<em>Object</em>) – Object whose Scripts we are looking for.</p></li>
+<li><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – Script identifier - can be given as a
+dbref or name string. If given, only scripts matching the
+key on the object will be returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>matches (list)</em> – Matching scripts.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.manager.ScriptDBManager.get_all_scripts">
+<code class="sig-name descname">get_all_scripts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/manager.html#ScriptDBManager.get_all_scripts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.manager.ScriptDBManager.get_all_scripts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all scripts in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em><em> or </em><em>int</em><em>, </em><em>optional</em>) – Restrict result to only those
+with matching key or dbref.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>scripts (list)</em> – All scripts found, or those matching <strong>key</strong>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.manager.ScriptDBManager.delete_script">
+<code class="sig-name descname">delete_script</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dbref</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/manager.html#ScriptDBManager.delete_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.manager.ScriptDBManager.delete_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>This stops and deletes a specific script directly from the
+script database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dbref</strong> (<em>int</em>) – Database unique id.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This might be needed for global scripts not tied to a
+specific game object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.manager.ScriptDBManager.update_scripts_after_server_start">
+<code class="sig-name descname">update_scripts_after_server_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/manager.html#ScriptDBManager.update_scripts_after_server_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.manager.ScriptDBManager.update_scripts_after_server_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update/sync/restart/delete scripts after server shutdown/restart.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.manager.ScriptDBManager.search_script">
+<code class="sig-name descname">search_script</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ostring</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">only_timed</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/manager.html#ScriptDBManager.search_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.manager.ScriptDBManager.search_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search for a particular script.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ostring</strong> (<em>str</em>) – Search criterion - a script dbef or key.</p></li>
+<li><p><strong>obj</strong> (<em>Object</em><em>, </em><em>optional</em>) – Limit search to scripts defined on
+this object</p></li>
+<li><p><strong>only_timed</strong> (<em>bool</em>) – Limit search only to scripts that run
+on a timer.</p></li>
+<li><p><strong>typeclass</strong> (<em>class</em><em> or </em><em>str</em>) – Typeclass or path to typeclass.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.manager.ScriptDBManager.script_search">
+<code class="sig-name descname">script_search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ostring</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">only_timed</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.scripts.manager.ScriptDBManager.script_search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search for a particular script.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ostring</strong> (<em>str</em>) – Search criterion - a script dbef or key.</p></li>
+<li><p><strong>obj</strong> (<em>Object</em><em>, </em><em>optional</em>) – Limit search to scripts defined on
+this object</p></li>
+<li><p><strong>only_timed</strong> (<em>bool</em>) – Limit search only to scripts that run
+on a timer.</p></li>
+<li><p><strong>typeclass</strong> (<em>class</em><em> or </em><em>str</em>) – Typeclass or path to typeclass.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.manager.ScriptDBManager.copy_script">
+<code class="sig-name descname">copy_script</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">original_script</span></em>, <em class="sig-param"><span class="n">new_key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">new_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">new_locks</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/manager.html#ScriptDBManager.copy_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.manager.ScriptDBManager.copy_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make an identical copy of the original_script.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>original_script</strong> (<em>Script</em>) – The Script to copy.</p></li>
+<li><p><strong>new_key</strong> (<em>str</em><em>, </em><em>optional</em>) – Rename the copy.</p></li>
+<li><p><strong>new_obj</strong> (<em>Object</em><em>, </em><em>optional</em>) – Place copy on different Object.</p></li>
+<li><p><strong>new_locks</strong> (<em>str</em><em>, </em><em>optional</em>) – Give copy different locks from
+the original.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>script_copy (Script)</em> –</p>
+<dl class="simple">
+<dt>A new Script instance, copied from</dt><dd><p>the original.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -72,7 +213,7 @@
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/api/evennia.scripts.manager.rst.txt"
+      <li><a href="../_sources/api/evennia.scripts.manager.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -89,7 +230,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.scripts.manager.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/api/evennia.scripts.manager.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/api/evennia.scripts.manager.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

@@ -75,7 +75,7 @@ The `parse` method is called before `func` and has access to all the same on-com
 your parsing - if you wanted some other Command to also understand input on the form `<arg> with <arg>` you'd inherit
 from this class and just implement the `func` needed for that command without implementing `parse` anew.
 
-```sidebar:: Tuples and Lists
+```{sidebar} Tuples and Lists
 
     - A `list` is written as `[a, b, c, d, ...]`. You can add and grow/shrink a list after it was first created.
     - A `tuple` is written as `(a, b, c, d, ...)`. A tuple cannot be modified once it is created.
@@ -143,8 +143,8 @@ change (no code changed, only stuff in the database).
 ## Adding a Command to an object
 
 The commands of a cmdset attached to an object with `obj.cmdset.add()` will by default be made available to that object
-but _also to those in the same location as that object_. If you did the [Building introduction](./Building-Quickstart)
-you've seen an example of this with the "Red Button" object. The [Tutorial world](./Tutorial-World-Introduction)
+but _also to those in the same location as that object_. If you did the [Building introduction](./Building-Quickstart.md)
+you've seen an example of this with the "Red Button" object. The [Tutorial world](./Tutorial-World-Introduction.md)
 also has many examples of objects with commands on them.
 
 To show how this could work, let's put our 'hit' Command on our simple `sword` object from the previous section.
@@ -161,7 +161,7 @@ Let's try to swing it!
     hit-1 (sword #11)
     hit-2
 
-```sidebar:: Multi-matches
+```{sidebar} Multi-matches
 
     Some game engines will just pick the first hit when finding more than one.
     Evennia will always give you a choice. The reason for this is that Evennia
@@ -206,7 +206,7 @@ Let's get a little ahead of ourselves and make it so you have to _hold_ the swor
 be available. This involves a _Lock_. We've cover locks in more detail later, just know that they are useful
 for limiting the kind of things you can do with an object, including limiting just when you can call commands on
 it.
-```sidebar:: Locks
+```{sidebar} Locks
 
     Evennia Locks are defined as a mini-language defined in `lockstrings`. The lockstring
     is on a form `<situation>:<lockfuncs>`, where `situation` determines when this
@@ -221,7 +221,7 @@ this object if you are _holding_ the object (that is, it's in your inventory).
 
 For locks to work, you cannot be _superuser_, since the superuser passes all locks. You need to `quell` yourself
 first:
-```sidebar:: quell/unquell
+```{sidebar} quell/unquell
 
     Quelling allows you as a developer to take on the role of players with less
     priveleges. This is useful for testing and debugging, in particular since a
@@ -320,7 +320,7 @@ class SessionCmdSet(default_cmds.SessionCmdSet):
         #
 ```
 
-```sidebar:: super()
+```{sidebar} super()
 
     The `super()` function refers to the parent of the current class and is commonly
     used to call same-named methods on the parent.
@@ -474,7 +474,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(mycommands.MyCmdGet)
 # ...
 ```
-```sidebar:: Another way
+```{sidebar} Another way
 
     Instead of adding `MyCmdGet` explicitly in default_cmdset.py,
     you could also add it to `mycommands.MyCmdSet` and let it be

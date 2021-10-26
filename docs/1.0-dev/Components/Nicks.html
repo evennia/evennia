@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,9 +40,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="nicks">
+  <section class="tex2jax_ignore mathjax_ignore" id="nicks">
 <h1>Nicks<a class="headerlink" href="#nicks" title="Permalink to this headline">¶</a></h1>
-<p><em>Nicks</em>, short for <em>Nicknames</em> is a system allowing an object (usually a <a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a>) to
+<p><em>Nicks</em>, short for <em>Nicknames</em> is a system allowing an object (usually a <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Account</span></a>) to
 assign custom replacement names for other game entities.</p>
 <p>Nicks are not to be confused with <em>Aliases</em>. Setting an Alias on a game entity actually changes an
 inherent attribute on that entity, and everyone in the game will be able to use that alias to
@@ -56,38 +58,38 @@ default.</p></li>
 <li><p>accounts - replacement is only attempted when referring an account</p></li>
 </ul>
 <p>Here’s how to use it in the default command set (using the <code class="docutils literal notranslate"><span class="pre">nick</span></code> command):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">nick</span> <span class="n">ls</span> <span class="o">=</span> <span class="n">look</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> nick ls = look
 </pre></div>
 </div>
 <p>This is a good one for unix/linux users who are accustomed to using the <code class="docutils literal notranslate"><span class="pre">ls</span></code> command in their daily
 life. It is equivalent to <code class="docutils literal notranslate"><span class="pre">nick/inputline</span> <span class="pre">ls</span> <span class="pre">=</span> <span class="pre">look</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">nick</span><span class="o">/</span><span class="nb">object</span> <span class="n">mycar2</span> <span class="o">=</span> <span class="n">The</span> <span class="n">red</span> <span class="n">sports</span> <span class="n">car</span> 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> nick/object mycar2 = The red sports car 
 </pre></div>
 </div>
 <p>With this example, substitutions will only be done specifically for commands expecting an object
 reference, such as</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">look</span> <span class="n">mycar2</span> 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> look mycar2 
 </pre></div>
 </div>
 <p>becomes equivalent to “<code class="docutils literal notranslate"><span class="pre">look</span> <span class="pre">The</span> <span class="pre">red</span> <span class="pre">sports</span> <span class="pre">car</span></code>”.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">nick</span><span class="o">/</span><span class="n">accounts</span> <span class="n">tom</span> <span class="o">=</span> <span class="n">Thomas</span> <span class="n">Johnsson</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> nick/accounts tom = Thomas Johnsson
 </pre></div>
 </div>
 <p>This is useful for commands searching for accounts explicitly:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@find</span> <span class="o">*</span><span class="n">tom</span> 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @find *tom 
 </pre></div>
 </div>
 <p>One can use nicks to speed up input. Below we add ourselves a quicker way to build red buttons. In
 the future just writing <em>rb</em> will be enough to execute that whole long string.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">nick</span> <span class="n">rb</span> <span class="o">=</span> <span class="nd">@create</span> <span class="n">button</span><span class="p">:</span><span class="n">examples</span><span class="o">.</span><span class="n">red_button</span><span class="o">.</span><span class="n">RedButton</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> nick rb = @create button:examples.red_button.RedButton
 </pre></div>
 </div>
 <p>Nicks could also be used as the start for building a “recog” system suitable for an RP mud.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">nick</span><span class="o">/</span><span class="n">account</span> <span class="n">Arnold</span> <span class="o">=</span> <span class="n">The</span> <span class="n">mysterious</span> <span class="n">hooded</span> <span class="n">man</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> nick/account Arnold = The mysterious hooded man
 </pre></div>
 </div>
 <p>The nick replacer also supports unix-style <em>templating</em>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> nick build $1 $2 = @create/drop $1;$2
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> nick build $1 $2 = @create/drop $1;$2
 </pre></div>
 </div>
 <p>This will catch space separated arguments and store them in the the tags <code class="docutils literal notranslate"><span class="pre">$1</span></code> and <code class="docutils literal notranslate"><span class="pre">$2</span></code>, to be
@@ -108,25 +110,9 @@ to the right of it</em> - it will then receive everything up until the end of th
 <section id="coding-with-nicks">
 <h2>Coding with nicks<a class="headerlink" href="#coding-with-nicks" title="Permalink to this headline">¶</a></h2>
 <p>Nicks are stored as the <code class="docutils literal notranslate"><span class="pre">Nick</span></code> database model and are referred from the normal Evennia
-<a class="reference internal" href="Objects.html"><span class="doc">object</span></a> through the <code class="docutils literal notranslate"><span class="pre">nicks</span></code> property - this is known as the <em>NickHandler</em>. The NickHandler
+<a class="reference internal" href="Objects.html"><span class="doc std std-doc">object</span></a> through the <code class="docutils literal notranslate"><span class="pre">nicks</span></code> property - this is known as the <em>NickHandler</em>. The NickHandler
 offers effective error checking, searches and conversion.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># A command/channel nick:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># A command/channel nick:</span>
       <span class="n">obj</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;greetjack&quot;</span><span class="p">,</span> <span class="s2">&quot;tell Jack = Hello pal!&quot;</span><span class="p">)</span>
     
     <span class="c1"># An object nick:  </span>
@@ -144,16 +130,16 @@ offers effective error checking, searches and conversion.</p>
     <span class="c1"># delete a previous set nick</span>
       <span class="nb">object</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;rose&quot;</span><span class="p">,</span> <span class="n">nick_type</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>In a command definition you can reach the nick handler through <code class="docutils literal notranslate"><span class="pre">self.caller.nicks</span></code>. See the <code class="docutils literal notranslate"><span class="pre">nick</span></code>
 command in <code class="docutils literal notranslate"><span class="pre">evennia/commands/default/general.py</span></code> for more examples.</p>
-<p>As a last note, The Evennia <a class="reference internal" href="Communications.html"><span class="doc">channel</span></a> alias systems are using nicks with the
+<p>As a last note, The Evennia <a class="reference internal" href="Communications.html"><span class="doc std std-doc">channel</span></a> alias systems are using nicks with the
 <code class="docutils literal notranslate"><span class="pre">nick_type=&quot;channel&quot;</span></code> in order to allow users to create their own custom aliases to channels.</p>
 </section>
 </section>
-<section id="advanced-note">
+<section class="tex2jax_ignore mathjax_ignore" id="advanced-note">
 <h1>Advanced note<a class="headerlink" href="#advanced-note" title="Permalink to this headline">¶</a></h1>
-<p>Internally, nicks are <a class="reference internal" href="Attributes.html"><span class="doc">Attributes</span></a> saved with the <code class="docutils literal notranslate"><span class="pre">db_attrype</span></code> set to “nick” (normal
+<p>Internally, nicks are <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a> saved with the <code class="docutils literal notranslate"><span class="pre">db_attrype</span></code> set to “nick” (normal
 Attributes has this set to <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
 <p>The nick stores the replacement data in the Attribute.db_value field as a tuple with four fields
 <code class="docutils literal notranslate"><span class="pre">(regex_nick,</span> <span class="pre">template_string,</span> <span class="pre">raw_nick,</span> <span class="pre">raw_template)</span></code>. Here <code class="docutils literal notranslate"><span class="pre">regex_nick</span></code> is the converted regex
@@ -161,13 +147,11 @@ representation of the <code class="docutils literal notranslate"><span class="pr
 prepared for efficient replacement of any <code class="docutils literal notranslate"><span class="pre">$</span></code>- type markers. The <code class="docutils literal notranslate"><span class="pre">raw_nick</span></code> and <code class="docutils literal notranslate"><span class="pre">raw_template</span></code> are
 basically the unchanged strings you enter to the <code class="docutils literal notranslate"><span class="pre">nick</span></code> command (with unparsed <code class="docutils literal notranslate"><span class="pre">$</span></code> etc).</p>
 <p>If you need to access the tuple for some reason, here’s how:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nb">tuple</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nickname&quot;</span><span class="p">,</span> <span class="n">return_tuple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">tuple</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nickname&quot;</span><span class="p">,</span> <span class="n">return_tuple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="c1"># or, alternatively</span>
 <span class="nb">tuple</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nickname&quot;</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 
 
@@ -219,7 +203,7 @@ basically the unchanged strings you enter to the <code class="docutils literal n
 <h3>Versions</h3>
 <ul>
   <li><a href="Nicks.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

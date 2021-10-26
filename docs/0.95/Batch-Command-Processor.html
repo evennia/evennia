@@ -1,0 +1,297 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Batch Command Processor &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Batch Command Processor</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="batch-command-processor">
+<h1>Batch Command Processor<a class="headerlink" href="#batch-command-processor" title="Permalink to this headline">¶</a></h1>
+<p>For an introduction and motivation to using batch processors, see <a class="reference internal" href="Batch-Processors.html"><span class="doc std std-doc">here</span></a>. This
+page describes the Batch-<em>command</em> processor. The Batch-<em>code</em> one is covered [here](Batch-Code-
+Processor).</p>
+<section id="basic-usage">
+<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
+<p>The batch-command processor is a superuser-only function, invoked by</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; @batchcommand path.to.batchcmdfile
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">path.to.batchcmdfile</span></code> is the path to a <em>batch-command file</em> with the “<code class="docutils literal notranslate"><span class="pre">.ev</span></code>” file ending.
+This path is given like a python path relative to a folder you define to hold your batch files, set
+with <code class="docutils literal notranslate"><span class="pre">BATCH_IMPORT_PATH</span></code> in your settings. Default folder is (assuming your game is in the <code class="docutils literal notranslate"><span class="pre">mygame</span></code>
+folder) <code class="docutils literal notranslate"><span class="pre">mygame/world</span></code>. So if you want to run the example batch file in
+<code class="docutils literal notranslate"><span class="pre">mygame/world/batch_cmds.ev</span></code>, you could use</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; @batchcommand batch_cmds
+</pre></div>
+</div>
+<p>A batch-command file contains a list of Evennia in-game commands separated by comments. The
+processor will run the batch file from beginning to end. Note that <em>it will not stop if commands in
+it fail</em> (there is no universal way for the processor to know what a failure looks like for all
+different commands). So keep a close watch on the output, or use <em>Interactive mode</em> (see below) to
+run the file in a more controlled, gradual manner.</p>
+</section>
+<section id="the-batch-file">
+<h2>The batch file<a class="headerlink" href="#the-batch-file" title="Permalink to this headline">¶</a></h2>
+<p>The batch file is a simple plain-text file containing Evennia commands. Just like you would write
+them in-game, except you have more freedom with line breaks.</p>
+<p>Here are the rules of syntax of an <code class="docutils literal notranslate"><span class="pre">*.ev</span></code> file. You’ll find it’s really, really simple:</p>
+<ul class="simple">
+<li><p>All lines having the <code class="docutils literal notranslate"><span class="pre">#</span></code> (hash)-symbol <em>as the first one on the line</em> are considered <em>comments</em>.
+All non-comment lines are treated as a command and/or their arguments.</p></li>
+<li><p>Comment lines have an actual function – they mark the <em>end of the previous command definition</em>.
+So never put two commands directly after one another in the file - separate them with a comment, or
+the second of the two will be considered an argument to the first one. Besides, using plenty of
+comments is good practice anyway.</p></li>
+<li><p>A line that starts with the word <code class="docutils literal notranslate"><span class="pre">#INSERT</span></code> is a comment line but also signifies a special
+instruction. The syntax is <code class="docutils literal notranslate"><span class="pre">#INSERT</span> <span class="pre">&lt;path.batchfile&gt;</span></code> and tries to import a given batch-cmd file
+into this one. The inserted batch file (file ending <code class="docutils literal notranslate"><span class="pre">.ev</span></code>) will run normally from the point of the
+<code class="docutils literal notranslate"><span class="pre">#INSERT</span></code> instruction.</p></li>
+<li><p>Extra whitespace in a command definition is <em>ignored</em>.  - A completely empty line translates in to
+a line break in texts. Two empty lines thus means a new paragraph (this is obviously only relevant
+for commands accepting such formatting, such as the <code class="docutils literal notranslate"><span class="pre">&#64;desc</span></code> command).</p></li>
+<li><p>The very last command in the file is not required to end with a comment.</p></li>
+<li><p>You <em>cannot</em> nest another <code class="docutils literal notranslate"><span class="pre">&#64;batchcommand</span></code> statement into your batch file. If you want to link many
+batch-files together, use the <code class="docutils literal notranslate"><span class="pre">#INSERT</span></code> batch instruction instead. You also cannot launch the
+<code class="docutils literal notranslate"><span class="pre">&#64;batchcode</span></code> command from your batch file, the two batch processors are not compatible.</p></li>
+</ul>
+<p>Below is a version of the example file found in <code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorial_examples/batch_cmds.ev</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="c1">#</span>
+    <span class="c1"># This is an example batch build file for Evennia.</span>
+    <span class="c1">#</span>
+    
+    <span class="c1"># This creates a red button</span>
+    @create button:tutorial_examples.red_button.RedButton
+    <span class="c1"># (This comment ends input for @create)</span>
+    <span class="c1"># Next command. Let&#39;s create something.</span>
+    @set button/desc <span class="o">=</span>
+      This is a large red button. Now and <span class="k">then</span>
+      it flashes <span class="k">in</span> an evil, yet strangely tantalizing way.
+    
+      A big sign sits next to it. It says:
+
+    
+    -----------
+    
+     Press me!
+    
+    -----------
+
+    
+      ... It really begs to be pressed! You
+    know you want to!
+    
+    <span class="c1"># This inserts the commands from another batch-cmd file named</span>
+    <span class="c1"># batch_insert_file.ev.</span>
+    <span class="c1">#INSERT examples.batch_insert_file</span>
+    
+      
+    <span class="c1"># (This ends the @set command). Note that single line breaks</span>
+    <span class="c1"># and extra whitespace in the argument are ignored. Empty lines</span>
+    <span class="c1"># translate into line breaks in the output.</span>
+    <span class="c1"># Now let&#39;s place the button where it belongs (let&#39;s say limbo #2 is</span>
+    <span class="c1"># the evil lair in our example)</span>
+    @teleport <span class="c1">#2</span>
+    <span class="c1"># (This comments ends the @teleport command.)</span>
+    <span class="c1"># Now we drop it so others can see it.</span>
+    <span class="c1"># The very last command in the file needs not be ended with #.</span>
+    drop button
+</pre></div>
+</div>
+<p>To test this, run <code class="docutils literal notranslate"><span class="pre">&#64;batchcommand</span></code> on the file:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; @batchcommand contrib.tutorial_examples.batch_cmds
+</pre></div>
+</div>
+<p>A button will be created, described and dropped in Limbo. All commands will be executed by the user
+calling the command.</p>
+<blockquote>
+<div><p>Note that if you interact with the button, you might find that its description changes, loosing
+your custom-set description above. This is just the way this particular object works.</p>
+</div></blockquote>
+</section>
+<section id="interactive-mode">
+<h2>Interactive mode<a class="headerlink" href="#interactive-mode" title="Permalink to this headline">¶</a></h2>
+<p>Interactive mode allows you to more step-wise control over how the batch file is executed. This is
+useful for debugging and also if you have a large batch file and is only updating a small part of it
+– running the entire file again would be a waste of time (and in the case of <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code>-ing objects
+you would to end up with multiple copies of same-named objects, for example). Use <code class="docutils literal notranslate"><span class="pre">&#64;batchcommand</span></code>
+with the <code class="docutils literal notranslate"><span class="pre">/interactive</span></code> flag to enter interactive mode.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; @batchcommand/interactive tutorial_examples.batch_cmds
+</pre></div>
+</div>
+<p>You will see this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>01/04: @create button:tutorial_examples.red_button.RedButton  (hh for help)
+</pre></div>
+</div>
+<p>This shows that you are on the <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> command, the first out of only four commands in this batch
+file. Observe that the command <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> has <em>not</em> been actually processed at this point!</p>
+<p>To take a look at the full command you are about to run, use <code class="docutils literal notranslate"><span class="pre">ll</span></code> (a batch-processor version of
+<code class="docutils literal notranslate"><span class="pre">look</span></code>). Use <code class="docutils literal notranslate"><span class="pre">pp</span></code> to actually process the current command (this will actually <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> the button)
+– and make sure it worked as planned. Use <code class="docutils literal notranslate"><span class="pre">nn</span></code> (next) to go to the next command.  Use <code class="docutils literal notranslate"><span class="pre">hh</span></code> for a
+list of commands.</p>
+<p>If there are errors, fix them in the batch file, then use <code class="docutils literal notranslate"><span class="pre">rr</span></code> to reload the file. You will still be
+at the same command and can rerun it easily with <code class="docutils literal notranslate"><span class="pre">pp</span></code> as needed. This makes for a simple debug
+cycle. It also allows you to rerun individual troublesome commands - as mentioned, in a large batch
+file this can be very useful. Do note that in many cases, commands depend on the previous ones (e.g.
+if <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> in the example above had failed, the following commands would have had nothing to
+operate on).</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">nn</span></code> and <code class="docutils literal notranslate"><span class="pre">bb</span></code> (next and back) to step through the file; e.g. <code class="docutils literal notranslate"><span class="pre">nn</span> <span class="pre">12</span></code> will jump 12 steps forward
+(without processing any command in between). All normal commands of Evennia should work too while
+working in interactive mode.</p>
+</section>
+<section id="limitations-and-caveats">
+<h2>Limitations and Caveats<a class="headerlink" href="#limitations-and-caveats" title="Permalink to this headline">¶</a></h2>
+<p>The batch-command processor is great for automating smaller builds or for testing new commands and
+objects repeatedly without having to write so much. There are several caveats you have to be aware
+of when using the batch-command processor for building larger, complex worlds though.</p>
+<p>The main issue is that when you run a batch-command script you (<em>you</em>, as in your superuser
+character) are actually moving around in the game creating and building rooms in sequence, just as
+if you had been entering those commands manually, one by one. You have to take this into account
+when creating the file, so that you can ‘walk’ (or teleport) to the right places in order.</p>
+<p>This also means there are several pitfalls when designing and adding certain types of objects. Here
+are some examples:</p>
+<ul class="simple">
+<li><p><em>Rooms that change your <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">Command Set</span></a></em>: Imagine that you build a ‘dark’ room, which
+severely limits the cmdsets of those entering it (maybe you have to find the light switch to
+proceed). In your batch script you would create this room, then teleport to it - and promptly be
+shifted into the dark state where none of your normal build commands work …</p></li>
+<li><p><em>Auto-teleportation</em>: Rooms that automatically teleport those that enter them to another place
+(like a trap room, for example). You would be teleported away too.</p></li>
+<li><p><em>Mobiles</em>: If you add aggressive mobs, they might attack you, drawing you into combat. If they
+have AI they might even follow you around when building - or they might move away from you before
+you’ve had time to finish describing and equipping them!</p></li>
+</ul>
+<p>The solution to all these is to plan ahead. Make sure that superusers are never affected by whatever
+effects are in play. Add an on/off switch to objects and make sure it’s always set to <em>off</em> upon
+creation. It’s all doable, one just needs to keep it in mind.</p>
+</section>
+<section id="assorted-notes">
+<h2>Assorted notes<a class="headerlink" href="#assorted-notes" title="Permalink to this headline">¶</a></h2>
+<p>The fact that you build as ‘yourself’ can also be considered an advantage however, should you ever
+decide to change the default command to allow others than superusers to call the processor. Since
+normal access-checks are still performed, a malevolent builder with access to the processor should
+not be able to do all that much damage (this is the main drawback of the <a class="reference internal" href="Batch-Code-Processor.html"><span class="doc std std-doc">Batch Code
+Processor</span></a>)</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.gnu.org/software/emacs/">GNU Emacs</a> users might find it interesting to use emacs’
+<em>evennia mode</em>. This is an Emacs major mode found in <code class="docutils literal notranslate"><span class="pre">evennia/utils/evennia-mode.el</span></code>. It offers
+correct syntax highlighting and indentation with <code class="docutils literal notranslate"><span class="pre">&lt;tab&gt;</span></code> when editing <code class="docutils literal notranslate"><span class="pre">.ev</span></code> files in Emacs. See the
+header of that file for installation instructions.</p></li>
+<li><p><a class="reference external" href="http://www.vim.org/">VIM</a> users can use amfl’s <a class="reference external" href="https://github.com/amfl/vim-evennia">vim-evennia</a>
+mode instead, see its readme for install instructions.</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Batch Command Processor</a><ul>
+<li><a class="reference internal" href="#basic-usage">Basic Usage</a></li>
+<li><a class="reference internal" href="#the-batch-file">The batch file</a></li>
+<li><a class="reference internal" href="#interactive-mode">Interactive mode</a></li>
+<li><a class="reference internal" href="#limitations-and-caveats">Limitations and Caveats</a></li>
+<li><a class="reference internal" href="#assorted-notes">Assorted notes</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Batch-Command-Processor.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Batch-Command-Processor.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Batch Command Processor</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

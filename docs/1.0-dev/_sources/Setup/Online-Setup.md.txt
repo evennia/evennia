@@ -66,7 +66,7 @@ web services you are running through this router though.
 
 You can connect Evennia to the Internet without any changes to your settings. The default settings
 are easy to use but are not necessarily the safest. You can customize your online presence in your
-[settings file](../Components/Server-Conf#settings-file). To have Evennia recognize changed port settings you have
+[settings file](./Server-Conf.md#settings-file). To have Evennia recognize changed port settings you have
 to do a full `evennia reboot` to also restart the Portal and not just the Server component.
 
 Below is an example of a simple set of settings, mostly using the defaults. Evennia will require
@@ -179,7 +179,7 @@ AMP_PORT = 4006
 ```
 
 The `AMP_PORT` is required to work, since this is the internal port linking Evennia's 
-[Server and Portal](../Components/Portal-And-Server) components together. The other ports are encrypted ports that may be
+[Server and Portal](../Components/Portal-And-Server.md) components together. The other ports are encrypted ports that may be
 useful for custom protocols but are otherwise not used.
 
 ### Lockdown mode
@@ -202,7 +202,7 @@ To register, stand in your game dir, run
 
     evennia connections 
 
-and follow the instructions. See the [Game index page](./Evennia-Game-Index) for more details.
+and follow the instructions. See the [Game index page](./Evennia-Game-Index.md) for more details.
 
 ## SSL
 
@@ -249,8 +249,8 @@ also be based on your hosting choice. In a controlled/cPanel environment, you wi
 to use DNS verification.
 
 ## Relevant SSL Proxy Setup Information
-- [Apache webserver configuration](./Apache-Config) (optional)
-- [HAProxy Config](./HAProxy-Config)
+- [Apache webserver configuration](./Apache-Config.md) (optional)
+- [HAProxy Config](./HAProxy-Config.md)
 
 ## Hosting locally or remotely?
 
@@ -283,7 +283,7 @@ main internet connection terminated as a consequence.
 
 #### Setting up your own machine as a server
 
-[The first section](./Online-Setup#connecting-from-the-outside) of this page describes how to do this
+[The first section](./Online-Setup.md#connecting-from-the-outside) of this page describes how to do this
 and allow users to connect to the IP address of your machine/router.
 
 A complication with using a specific IP address like this is that your home IP might not remain the
@@ -344,7 +344,7 @@ game stays online. Many services guarantee a certain level of up-time and also d
 for you. Make sure to check, some offer lower rates in exchange for you yourself being fully
 responsible for your data/backups.
 - Usually offers a fixed domain name, so no need to mess with IP addresses.
-- May have the ability to easily deploy [docker](./Running-Evennia-in-Docker) versions of evennia
+- May have the ability to easily deploy [docker](./Running-Evennia-in-Docker.md) versions of evennia
 and/or your game.
 
 **Disadvantages**
@@ -362,7 +362,7 @@ Docker) to deploy your game to the remote server; it will likely ease installati
 Docker images may be a little confusing if you are completely new to them though.
 
 If not using docker, and assuming you know how to connect to your account over ssh/PuTTy, you should
-be able to follow the [Setup Quickstart](./Setup-Quickstart) instructions normally. You only need Python
+be able to follow the [Setup Quickstart](./Setup-Quickstart.md) instructions normally. You only need Python
 and GIT pre-installed; these should both be available on any servers (if not you should be able to
 easily ask for them to be installed). On a VPS or Cloud service you can install them yourself as
 needed.
@@ -382,40 +382,31 @@ region. You may find useful offers for "low cost" VPS hosting on [Low End Box][7
 There are all sorts of services available. Below are some international suggestions offered by
 Evennia users:
 
-Hosting name       |  Type          |  Lowest price  |  Comments
-:--------------:|:-------:---------------
-[silvren.com][1]   | Shell account | Free for MU*  | Private hobby provider so don't assume backups
-or expect immediate support. To ask for an account, connect with a MUD client to iweb.localecho.net,
-port 4201 and ask for "Jarin".
-[Digital Ocean][2] | VPS | $5/month | You can get a $50 credit if you use the referral link
-https://m.do.co/c/8f64fec2670c - if you do, once you've had it long enough to have paid $25 we will
-get that as a referral bonus to help Evennia development.
-[Amazon Web services][3] | Cloud | ~$5/month / on-demand | Free Tier first 12 months. Regions
-available around the globe.
-[Amazon Lightsail][9] | Cloud | $5/month | Free first month. AWS's new "fixed cost" offering. 
-[Genesis MUD hosting][4] | Shell account | $8/month | Dedicated MUD host with very limited memory
-offerings. As for 2017, runs a 13 years old Python version (2.4) so you'd need to either convince
-them to update or compile yourself. Note that Evennia needs *at least* the "Deluxe" package (50MB
-RAM) and probably *a lot* higher for a production game. This host is *not* recommended for Evennia.
-[Host1Plus][5] | VPS & Cloud | $4/month | $4-$8/month depending on length of sign-up period.
-[Scaleway][6] | Cloud | &euro;3/month / on-demand | EU based (Paris, Amsterdam). Smallest option
-provides 2GB RAM.
-[Prgmr][10] | VPS | $5/month | 1 month free with a year prepay. You likely want some experience with
-servers with this option as they don't have a lot of support.
-[Linode][11] | Cloud | $5/month / on-demand | Multiple regions. Smallest option provides 1GB RAM
-*Please help us expand this list.*
+| Hosting name       |  Type          |  Lowest price  |  Comments |
+|---|---| ---| --- |
+| [silvren.com][1]   | Shell account | Free for MU*  | Private hobby provider so don't assume backups or expect immediate support. To ask for an account,connect with a MUD client to iweb.localecho.net, port 4201 and ask for "Jarin". |
+| [Digital Ocean][2] | VPS | $5/month | You can get a $50 credit if you use the referral link https://m.do.co/c/8f64fec2670c - if you do, once you've had it long enough to have paid $25 we will get that as a referral bonus to help Evennia development.|
+| [Amazon Web services][3] | Cloud | ~$5/month / on-demand | Free Tier first 12 months. Regions available around the globe.|
+| [Amazon Lightsail][9] | Cloud | $5/month | Free first month. AWS's new "fixed cost" offering.|
+| [Genesis MUD hosting][4] | Shell account | $8/month | Dedicated MUD host with very limited memory offerings. As for 2017, runs a 13 years old Python version (2.4) so you'd need to either convince them to update or compile yourself. Note that Evennia needs *at least* the "Deluxe" package (50MB RAM) and probably *a lot* higher for a production game. This host is *not* recommended for Evennia.|
+| [Host1Plus][5] | VPS & Cloud | $4/month | $4-$8/month depending on length of sign-up period.
+| [Scaleway][6] | Cloud | &euro;3/month / on-demand | EU based (Paris, Amsterdam). Smallest option provides 2GB RAM. |
+| [Prgmr][10] | VPS | $5/month | 1 month free with a year prepay. You likely want some experience with servers with this option as they don't have a lot of support.|
+| [Linode][11] | Cloud | $5/month / on-demand | Multiple regions. Smallest option provides 1GB RAM|
+
+*Please help us expand this list.* 
 
 [1]: https://silvren.com
-[2](https://www.digitalocean.com/pricing)
-[3](https://aws.amazon.com/pricing/)
-[4](https://www.genesismuds.com/)
-[5](https://www.host1plus.com/)
-[6](https://www.scaleway.com/)
-[7](https://lowendbox.com/)
-[8](https://www.lowendtalk.com)
-[9](https://amazonlightsail.com)
-[10](https://prgmr.com/)
-[11](https://www.linode.com/)
+[2]: https://www.digitalocean.com/pricing
+[3]: https://aws.amazon.com/pricing/
+[4]: https://www.genesismuds.com/
+[5]: https://www.host1plus.com/
+[6]: https://www.scaleway.com/
+[7]: https://lowendbox.com/
+[8]: https://www.lowendtalk.com
+[9]: https://amazonlightsail.com
+[10]: https://prgmr.com/
+[11]: https://www.linode.com/
 
 ## Cloud9
 

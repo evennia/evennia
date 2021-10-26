@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,11 +40,11 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="objects">
+  <section class="tex2jax_ignore mathjax_ignore" id="objects">
 <h1>Objects<a class="headerlink" href="#objects" title="Permalink to this headline">¶</a></h1>
 <p>All in-game objects in Evennia, be it characters, chairs, monsters, rooms or hand grenades are
 represented by an Evennia <em>Object</em>. Objects form the core of Evennia and is probably what you’ll
-spend most time working with. Objects are <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclassed</span></a> entities.</p>
+spend most time working with. Objects are <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclassed</span></a> entities.</p>
 <section id="how-to-create-your-own-object-types">
 <h2>How to create your own object types<a class="headerlink" href="#how-to-create-your-own-object-types" title="Permalink to this headline">¶</a></h2>
 <p>An Evennia Object is, per definition, a Python class that includes <code class="docutils literal notranslate"><span class="pre">evennia.DefaultObject</span></code> among its
@@ -50,19 +52,7 @@ parents. In <code class="docutils literal notranslate"><span class="pre">mygame/
 <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> and that you can inherit from. You can put your new typeclass directly in that
 module or you could organize your code in some other way. Here we assume we make a new module
 <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/flowers.py</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/typeclasses/flowers.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/typeclasses/flowers.py</span>
 
     <span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
 
@@ -76,35 +66,34 @@ module or you could organize your code in some other way. Here we assume we make
             <span class="c1"># to object (silly example).</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a pretty rose with thorns.&quot;</span>     
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>You could save this in the <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/objects.py</span></code> (then you’d not need to import <code class="docutils literal notranslate"><span class="pre">Object</span></code>)
 or you can put it in a new module. Let’s say we do the latter, making a module
 <code class="docutils literal notranslate"><span class="pre">typeclasses/flowers.py</span></code>.  Now you just need to point to the class <em>Rose</em> with the <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> command
 to make a new rose:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@create</span><span class="o">/</span><span class="n">drop</span> <span class="n">MyRose</span><span class="p">:</span><span class="n">flowers</span><span class="o">.</span><span class="n">Rose</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @create/drop MyRose:flowers.Rose
 </pre></div>
 </div>
 <p>What the <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> command actually <em>does</em> is to use <code class="docutils literal notranslate"><span class="pre">evennia.create_object</span></code>. You can do the same
 thing yourself in code:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
     <span class="n">new_rose</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="s2">&quot;typeclasses.flowers.Rose&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;MyRose&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>(The <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> command will auto-append the most likely path to your typeclass, if you enter the
 call manually you have to give the full path to the class. The <code class="docutils literal notranslate"><span class="pre">create.create_object</span></code> function is
 powerful and should be used for all coded object creating (so this is what you use when defining
 your own building commands). Check out the <code class="docutils literal notranslate"><span class="pre">ev.create_*</span></code> functions for how to build other entities
-like <a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a>).</p>
+like <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a>).</p>
 <p>This particular Rose class doesn’t really do much, all it does it make sure the attribute
 <code class="docutils literal notranslate"><span class="pre">desc</span></code>(which is what the <code class="docutils literal notranslate"><span class="pre">look</span></code> command looks for) is pre-set, which is pretty pointless since you
 will usually want to change this at build time (using the <code class="docutils literal notranslate"><span class="pre">&#64;desc</span></code> command or using the
-<a class="reference internal" href="Prototypes.html"><span class="doc">Spawner</span></a>). The <code class="docutils literal notranslate"><span class="pre">Object</span></code> typeclass offers many more hooks that is available
+<a class="reference internal" href="Prototypes.html"><span class="doc std std-doc">Spawner</span></a>). The <code class="docutils literal notranslate"><span class="pre">Object</span></code> typeclass offers many more hooks that is available
 to use though - see next section.</p>
 </section>
 <section id="properties-and-functions-on-objects">
 <h2>Properties and functions on Objects<a class="headerlink" href="#properties-and-functions-on-objects" title="Permalink to this headline">¶</a></h2>
-<p>Beyond the properties assigned to all <a class="reference internal" href="Typeclasses.html"><span class="doc">typeclassed</span></a> objects (see that page for a list
+<p>Beyond the properties assigned to all <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">typeclassed</span></a> objects (see that page for a list
 of those), the Object also has the following custom properties:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">aliases</span></code> - a handler that allows you to add and remove aliases from this object. Use
@@ -113,12 +102,12 @@ of those), the Object also has the following custom properties:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">home</span></code> is a backup location. The main motivation is to have a safe place to move the object to if
 its <code class="docutils literal notranslate"><span class="pre">location</span></code> is destroyed. All objects should usually have a home location for safety.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">destination</span></code> - this holds a reference to another object this object links to in some way. Its
-main use is for <a class="reference external" href="Components/Objects.html#Exits">Exits</a>, it’s otherwise usually unset.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">nicks</span></code> - as opposed to aliases, a <a class="reference internal" href="Nicks.html"><span class="doc">Nick</span></a> holds a convenient nickname replacement for a
+main use is for <a class="reference internal" href="#exits"><span class="std std-doc">Exits</span></a>, it’s otherwise usually unset.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nicks</span></code> - as opposed to aliases, a <a class="reference internal" href="Nicks.html"><span class="doc std std-doc">Nick</span></a> holds a convenient nickname replacement for a
 real name, word or sequence, only valid for this object. This mainly makes sense if the Object is
 used as a game character - it can then store briefer shorts, example so as to quickly reference game
 commands or other characters. Use nicks.add(alias, realname) to add a new one.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">account</span></code> - this holds a reference to a connected <a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a> controlling this object (if
+<li><p><code class="docutils literal notranslate"><span class="pre">account</span></code> - this holds a reference to a connected <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Account</span></a> controlling this object (if
 any). Note that this is set also if the controlling account is <em>not</em> currently online - to test if
 an account is online, use the <code class="docutils literal notranslate"><span class="pre">has_account</span></code> property instead.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sessions</span></code> - if <code class="docutils literal notranslate"><span class="pre">account</span></code> field is set <em>and the account is online</em>, this is a list of all active
@@ -133,9 +122,9 @@ object set as their <code class="docutils literal notranslate"><span class="pre"
 </ul>
 <p>The last two properties are special:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">cmdset</span></code> - this is a handler that stores all <a class="reference external" href="Components/Commands.html#Command_Sets">command sets</a> defined on the
+<li><p><code class="docutils literal notranslate"><span class="pre">cmdset</span></code> - this is a handler that stores all <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">command sets</span></a> defined on the
 object (if any).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">scripts</span></code> - this is a handler that manages <a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a> attached to the object (if any).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scripts</span></code> - this is a handler that manages <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a> attached to the object (if any).</p></li>
 </ul>
 <p>The Object also has a host of useful utility functions. See the function headers in
 <code class="docutils literal notranslate"><span class="pre">src/objects/objects.py</span></code> for their arguments and more details.</p>
@@ -150,7 +139,7 @@ on).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">execute_cmd()</span></code> - Lets the object execute the given string as if it was given on the command line.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">move_to</span></code> - perform a full move of this object to a new location.  This is the main move method
 and will call all relevant hooks, do all checks etc.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">clear_exits()</span></code> - will delete all <a class="reference external" href="Components/Objects.html#Exits">Exits</a> to <em>and</em> from this object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear_exits()</span></code> - will delete all <a class="reference internal" href="#exits"><span class="std std-doc">Exits</span></a> to <em>and</em> from this object.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">clear_contents()</span></code> - this will not delete anything, but rather move all contents (except Exits) to
 their designated <code class="docutils literal notranslate"><span class="pre">Home</span></code> locations.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">delete()</span></code> - deletes this object, first calling <code class="docutils literal notranslate"><span class="pre">clear_exits()</span></code> and
@@ -159,8 +148,7 @@ their designated <code class="docutils literal notranslate"><span class="pre">Ho
 <p>The Object Typeclass defines many more <em>hook methods</em> beyond <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code>. Evennia calls
 these hooks at various points.  When implementing your custom objects, you will inherit from the
 base parent and overload these hooks with your own custom code. See <code class="docutils literal notranslate"><span class="pre">evennia.objects.objects</span></code> for an
-updated list of all the available hooks or the <a class="reference external" href="../api/evennia.objects.objects.html#defaultobject">API for DefaultObject
-here</a>.</p>
+updated list of all the available hooks or the <a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><span class="xref myst py py-class">API for DefaultObject here</span></a>.</p>
 </section>
 <section id="subclasses-of-object">
 <h2>Subclasses of <code class="docutils literal notranslate"><span class="pre">Object</span></code><a class="headerlink" href="#subclasses-of-object" title="Permalink to this headline">¶</a></h2>
@@ -171,10 +159,10 @@ recognized by the game engine (there is nothing stopping you from redefining the
 practice they are all pretty similar to the base Object.</p>
 <section id="characters">
 <h3>Characters<a class="headerlink" href="#characters" title="Permalink to this headline">¶</a></h3>
-<p>Characters are objects controlled by <a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a>. When a new Account
+<p>Characters are objects controlled by <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a>. When a new Account
 logs in to Evennia for the first time, a new <code class="docutils literal notranslate"><span class="pre">Character</span></code> object is created and
 the Account object is assigned to the <code class="docutils literal notranslate"><span class="pre">account</span></code> attribute. A <code class="docutils literal notranslate"><span class="pre">Character</span></code> object
-must have a <a class="reference external" href="Components/Commands.html#Command_Sets">Default Commandset</a> set on itself at
+must have a <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">Default Commandset</span></a> set on itself at
 creation, or the account will not be able to issue any commands! If you just
 inherit your own class from <code class="docutils literal notranslate"><span class="pre">evennia.DefaultCharacter</span></code> and make sure to use
 <code class="docutils literal notranslate"><span class="pre">super()</span></code> to call the parent methods you should be fine. In
@@ -195,19 +183,19 @@ you to modify.</p>
 <em>in</em> might be an exit, as well as <em>door</em>, <em>portal</em> or <em>jump out the window</em>. An exit has two things
 that separate them from other objects. Firstly, their <em>destination</em> property is set and points to a
 valid object. This fact makes it easy and fast to locate exits in the database. Secondly, exits
-define a special <a class="reference internal" href="Commands.html"><span class="doc">Transit Command</span></a> on themselves when they are created. This command is
+define a special <a class="reference internal" href="Commands.html"><span class="doc std std-doc">Transit Command</span></a> on themselves when they are created. This command is
 named the same as the exit object and will, when called, handle the practicalities of moving the
 character to the Exits’s <em>destination</em> - this allows you to just enter the name of the exit on its
 own to move around, just as you would expect.</p>
 <p>The exit functionality is all defined on the Exit typeclass, so you could in principle completely
 change how exits work in your game (it’s not recommended though, unless you really know what you are
-doing).  Exits are <a class="reference internal" href="Locks.html"><span class="doc">locked</span></a> using an access_type called <em>traverse</em> and also make use of a few
+doing). Exits are <a class="reference internal" href="Locks.html"><span class="doc std std-doc">locked</span></a> using an access_type called <em>traverse</em> and also make use of a few
 hook methods for giving feedback if the traversal fails.  See <code class="docutils literal notranslate"><span class="pre">evennia.DefaultExit</span></code> for more info.
 In <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/exits.py</span></code> there is an empty <code class="docutils literal notranslate"><span class="pre">Exit</span></code> class for you to modify.</p>
 <p>The process of traversing an exit is as follows:</p>
 <ol class="simple">
 <li><p>The traversing <code class="docutils literal notranslate"><span class="pre">obj</span></code> sends a command that matches the Exit-command name on the Exit object. The
-<a class="reference internal" href="Commands.html"><span class="doc">cmdhandler</span></a> detects this and triggers the command defined on the Exit. Traversal always
+<a class="reference internal" href="Commands.html"><span class="doc std std-doc">cmdhandler</span></a> detects this and triggers the command defined on the Exit. Traversal always
 involves the “source” (the current location) and the <code class="docutils literal notranslate"><span class="pre">destination</span></code> (this is stored on the Exit
 object).</p></li>
 <li><p>The Exit command checks the <code class="docutils literal notranslate"><span class="pre">traverse</span></code> lock on the Exit object</p></li>
@@ -288,7 +276,7 @@ and display this as an error message. If this is not found, the Exit will instea
 <h3>Versions</h3>
 <ul>
   <li><a href="Objects.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

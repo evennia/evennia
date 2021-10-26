@@ -7,7 +7,7 @@ sufficient for most use cases. But if you aim to build a large stand-alone syste
 your storage requirements into those may be more complex than you bargain for. Examples may be to
 store guild data for guild members to be able to change, tracking the flow of money across a game-
 wide economic system or implement other custom game systems that requires the storage of custom data
-in a quickly accessible way. Whereas [Tags](../Components/Tags) or [Scripts](../Components/Scripts) can handle many situations,
+in a quickly accessible way. Whereas [Tags](../Components/Tags.md) or [Scripts](../Components/Scripts.md) can handle many situations,
 sometimes things may be easier to handle by adding your own database model.
 
 ## Overview of database tables
@@ -81,7 +81,7 @@ you put `myapp` and don't forget the comma at the end of the tuple):
         evennia migrate
 
 This will add your new database table to the database. If you have put your game under version
-control (if not, [you should](../Coding/Version-Control)), don't forget to `git add myapp/*` to add all items
+control (if not, [you should](../Coding/Version-Control.md)), don't forget to `git add myapp/*` to add all items
 to version control.
 
 ## Defining your models
@@ -113,7 +113,7 @@ We create four fields: two character fields of limited length and one text field
 maximum length. Finally we create a field containing the current time of us creating this object.
 
 > The `db_date_created` field, with exactly this name, is *required* if you want to be able to store
-instances of your custom model in an Evennia [Attribute](../Components/Attributes). It will automatically be set
+instances of your custom model in an Evennia [Attribute](../Components/Attributes.md). It will automatically be set
 upon creation and can after that not be changed. Having this field will allow you to do e.g.
 `obj.db.myinstance = mydatastore`. If you know you'll never store your model instances in Attributes
 the `db_date_created` field is optional.

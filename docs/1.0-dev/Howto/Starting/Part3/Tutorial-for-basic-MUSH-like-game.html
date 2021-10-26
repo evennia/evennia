@@ -14,6 +14,8 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -38,14 +40,14 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="tutorial-for-basic-mush-like-game">
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-for-basic-mush-like-game">
 <h1>Tutorial for basic MUSH like game<a class="headerlink" href="#tutorial-for-basic-mush-like-game" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial lets you code a small but complete and functioning MUSH-like game in Evennia. A
 <a class="reference external" href="https://en.wikipedia.org/wiki/MUSH">MUSH</a> is, for our purposes, a class of roleplay-centric games
 focused on free form storytelling. Even if you are not interested in MUSH:es, this is still a good
 first game-type to try since it’s not so code heavy. You will be able to use the same principles for
 building other types of games.</p>
-<p>The tutorial starts from scratch. If you did the <a class="reference internal" href="../Part1/Starting-Part1.html"><span class="doc">First Steps Coding</span></a> tutorial
+<p>The tutorial starts from scratch. If you did the <a class="reference internal" href="../Part1/Starting-Part1.html"><span class="doc std std-doc">First Steps Coding</span></a> tutorial
 already you should have some ideas about how to do some of the steps already.</p>
 <p>The following are the (very simplistic and cut-down) features we will implement (this was taken from
 a feature request from a MUSH user new to Evennia). A Character in this system should:</p>
@@ -79,18 +81,7 @@ SQLite3 database.</p>
 <p>First thing is to choose how our Character class works. We don’t need to define a special NPC object
 – an NPC is after all just a Character without an Account currently controlling them.</p>
 <p>Make your changes in the <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code> file:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/characters.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/characters.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
 
@@ -103,19 +94,19 @@ SQLite3 database.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">power</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_score</span> <span class="o">=</span> <span class="mi">1</span>
 </pre></div>
-</td></tr></table></div>
-<p>We defined two new <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc">Attributes</span></a> <code class="docutils literal notranslate"><span class="pre">power</span></code> and <code class="docutils literal notranslate"><span class="pre">combat_score</span></code> and set them to default
+</div>
+<p>We defined two new <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc std std-doc">Attributes</span></a> <code class="docutils literal notranslate"><span class="pre">power</span></code> and <code class="docutils literal notranslate"><span class="pre">combat_score</span></code> and set them to default
 values. Make sure to <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> the server if you had it already running (you need to reload every
 time you update your python code, don’t worry, no accounts will be disconnected by the reload).</p>
 <p>Note that only <em>new</em> characters will see your new Attributes (since the <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> hook is
 called when the object is first created, existing Characters won’t have it).  To update yourself,
 run</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@typeclass</span><span class="o">/</span><span class="n">force</span> <span class="bp">self</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @typeclass/force self
 </pre></div>
 </div>
 <p>This resets your own typeclass (the <code class="docutils literal notranslate"><span class="pre">/force</span></code> switch is a safety measure to not do this
 accidentally), this means that <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> is re-run.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">examine</span> <span class="bp">self</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> examine self
 </pre></div>
 </div>
 <p>Under the “Persistent attributes” heading you should now find the new Attributes <code class="docutils literal notranslate"><span class="pre">power</span></code> and <code class="docutils literal notranslate"><span class="pre">score</span></code>
@@ -134,8 +125,8 @@ example, we could simply set an <code class="docutils literal notranslate"><span
 check it. Using this method however will make it easy to add more functionality later.</p>
 <p>What we need are the following:</p>
 <ul class="simple">
-<li><p>One character generation <a class="reference internal" href="../../../Components/Commands.html"><span class="doc">Command</span></a> to set the “Power” on the <code class="docutils literal notranslate"><span class="pre">Character</span></code>.</p></li>
-<li><p>A chargen <a class="reference internal" href="../../../Components/Command-Sets.html"><span class="doc">CmdSet</span></a> to hold this command. Lets call it <code class="docutils literal notranslate"><span class="pre">ChargenCmdset</span></code>.</p></li>
+<li><p>One character generation <a class="reference internal" href="../../../Components/Commands.html"><span class="doc std std-doc">Command</span></a> to set the “Power” on the <code class="docutils literal notranslate"><span class="pre">Character</span></code>.</p></li>
+<li><p>A chargen <a class="reference internal" href="../../../Components/Command-Sets.html"><span class="doc std std-doc">CmdSet</span></a> to hold this command. Lets call it <code class="docutils literal notranslate"><span class="pre">ChargenCmdset</span></code>.</p></li>
 <li><p>A custom <code class="docutils literal notranslate"><span class="pre">ChargenRoom</span></code> type that makes this set of commands available to players in such rooms.</p></li>
 <li><p>One such room to test things in.</p></li>
 </ul>
@@ -143,9 +134,9 @@ check it. Using this method however will make it easy to add more functionality 
 <h3>The +setpower command<a class="headerlink" href="#the-setpower-command" title="Permalink to this headline">¶</a></h3>
 <p>For this tutorial we will add all our new commands to <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code> but you could
 split your commands into multiple module if you prefered.</p>
-<p>For this tutorial character generation will only consist of one <a class="reference internal" href="../../../Components/Commands.html"><span class="doc">Command</span></a> to set the
+<p>For this tutorial character generation will only consist of one <a class="reference internal" href="../../../Components/Commands.html"><span class="doc std std-doc">Command</span></a> to set the
 Character s “power” stat. It will be called on the following MUSH-like form:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">+</span><span class="n">setpower</span> <span class="mi">4</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> +setpower 4
 </pre></div>
 </div>
 <p>Open <code class="docutils literal notranslate"><span class="pre">command.py</span></code> file. It contains documented empty templates for the base command and the
@@ -153,40 +144,7 @@ Character s “power” stat. It will be called on the following MUSH-like form:
 <code class="docutils literal notranslate"><span class="pre">MuxCommand</span></code> class offers some extra features like stripping whitespace that may be useful - if so,
 just import from that instead.</p>
 <p>Add the following to the end of the <code class="docutils literal notranslate"><span class="pre">command.py</span></code> file:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># end of command.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># end of command.py</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span> <span class="c1"># just for clarity; already imported above</span>
 
 <span class="k">class</span> <span class="nc">CmdSetPower</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
@@ -221,31 +179,21 @@ just import from that instead.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">power</span> <span class="o">=</span> <span class="n">power</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Your Power was set to </span><span class="si">{</span><span class="n">power</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This is a pretty straightforward command. We do some error checking, then set the power on ourself.
 We use a <code class="docutils literal notranslate"><span class="pre">help_category</span></code> of “mush” for all our commands, just so they are easy to find and separate
 in the help list.</p>
-<p>Save the file. We will now add it to a new <a class="reference internal" href="../../../Components/Command-Sets.html"><span class="doc">CmdSet</span></a> so it can be accessed (in a full
+<p>Save the file. We will now add it to a new <a class="reference internal" href="../../../Components/Command-Sets.html"><span class="doc std std-doc">CmdSet</span></a> so it can be accessed (in a full
 chargen system you would of course have more than one command here).</p>
 <p>Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and import your <code class="docutils literal notranslate"><span class="pre">command.py</span></code> module at the top. We also
 import the default <code class="docutils literal notranslate"><span class="pre">CmdSet</span></code> class for the next step:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 <span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">command</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Next scroll down and define a new command set (based on the base <code class="docutils literal notranslate"><span class="pre">CmdSet</span></code> class we just imported at
 the end of this file, to hold only our chargen-specific command(s):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># end of default_cmdsets.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># end of default_cmdsets.py</span>
 
 <span class="k">class</span> <span class="nc">ChargenCmdset</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -256,7 +204,7 @@ the end of this file, to hold only our chargen-specific command(s):</p>
         <span class="s2">&quot;This is called at initialization&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">CmdSetPower</span><span class="p">())</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>In the future you can add any number of commands to this cmdset, to expand your character generation
 system as you desire. Now we need to actually put that cmdset on something so it’s made available to
 users.  We could put it directly on the Character, but that would make it available all the time.
@@ -266,19 +214,7 @@ It’s cleaner to put it on a room, so it’s only available when players are in
 <h3>Chargen areas<a class="headerlink" href="#chargen-areas" title="Permalink to this headline">¶</a></h3>
 <p>We will create a simple Room typeclass to act as a template for all our Chargen areas. Edit
 <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/rooms.py</span></code> next:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">commands.default_cmdsets</span> <span class="kn">import</span> <span class="n">ChargenCmdset</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">commands.default_cmdsets</span> <span class="kn">import</span> <span class="n">ChargenCmdset</span>
 
 <span class="c1"># ...</span>
 <span class="c1"># down at the end of rooms.py</span>
@@ -292,10 +228,10 @@ It’s cleaner to put it on a room, so it’s only available when players are in
         <span class="s2">&quot;this is called only at first creation&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ChargenCmdset</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Note how new rooms created with this typeclass will always start with <code class="docutils literal notranslate"><span class="pre">ChargenCmdset</span></code> on themselves.
 Don’t forget the <code class="docutils literal notranslate"><span class="pre">persistent=True</span></code> keyword or you will lose the cmdset after a server reload. For
-more information about <a class="reference internal" href="../../../Components/Command-Sets.html"><span class="doc">Command Sets</span></a> and <a class="reference internal" href="../../../Components/Commands.html"><span class="doc">Commands</span></a>, see the respective
+more information about <a class="reference internal" href="../../../Components/Command-Sets.html"><span class="doc std std-doc">Command Sets</span></a> and <a class="reference internal" href="../../../Components/Commands.html"><span class="doc std std-doc">Commands</span></a>, see the respective
 links.</p>
 </section>
 <section id="testing-chargen">
@@ -305,7 +241,7 @@ your new python code added to the game. Check your terminal and fix any errors y
 traceback lists exactly where the error is found - look line numbers in files you have changed.</p>
 <p>We can’t test things unless we have some chargen areas to test. Log into the game (you should at
 this point be using the new, custom Character class). Let’s dig a chargen area to test.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@dig</span> <span class="n">chargen</span><span class="p">:</span><span class="n">rooms</span><span class="o">.</span><span class="n">ChargenRoom</span> <span class="o">=</span> <span class="n">chargen</span><span class="p">,</span><span class="n">finish</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @dig chargen:rooms.ChargenRoom = chargen,finish
 </pre></div>
 </div>
 <p>If you read the help for <code class="docutils literal notranslate"><span class="pre">&#64;dig</span></code> you will find that this will create a new room named <code class="docutils literal notranslate"><span class="pre">chargen</span></code>. The
@@ -319,13 +255,13 @@ as <code class="docutils literal notranslate"><span class="pre">chargen;characte
 an exit back here named <code class="docutils literal notranslate"><span class="pre">finish</span></code>. If you see errors at this stage, you must fix them in your code.
 <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code>
 between fixes. Don’t continue until the creation seems to have worked okay.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">chargen</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> chargen
 </pre></div>
 </div>
 <p>This should bring you to the chargen room. Being in there you should now have the <code class="docutils literal notranslate"><span class="pre">+setpower</span></code>
 command available, so test it out. When you leave (via the <code class="docutils literal notranslate"><span class="pre">finish</span></code> exit), the command will go away
 and trying <code class="docutils literal notranslate"><span class="pre">+setpower</span></code> should now give you a command-not-found error. Use <code class="docutils literal notranslate"><span class="pre">ex</span> <span class="pre">me</span></code> (as a privileged
-user) to check so the <code class="docutils literal notranslate"><span class="pre">Power</span></code> <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc">Attribute</span></a> has been set correctly.</p>
+user) to check so the <code class="docutils literal notranslate"><span class="pre">Power</span></code> <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a> has been set correctly.</p>
 <p>If things are not working, make sure your typeclasses and commands are free of bugs and that you
 have entered the paths to the various command sets and commands correctly. Check the logs or command
 line for tracebacks and errors.</p>
@@ -340,51 +276,12 @@ We also change the default <code class="docutils literal notranslate"><span clas
 <h3>Attacking with the +attack command<a class="headerlink" href="#attacking-with-the-attack-command" title="Permalink to this headline">¶</a></h3>
 <p>Attacking in this simple system means rolling a random “combat score” influenced by the <code class="docutils literal notranslate"><span class="pre">power</span></code> stat
 set during Character generation:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; +attack
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; +attack
 You +attack with a combat score of 12!
 </pre></div>
 </div>
 <p>Go back to <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code> and add the command to the end like this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
 
 <span class="c1"># ...</span>
 
@@ -425,15 +322,15 @@ You +attack with a combat score of 12!
             <span class="n">c_score</span><span class="o">=</span><span class="n">combat_score</span><span class="p">,</span>
         <span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>What we do here is simply to generate a “combat score” using Python’s inbuilt <code class="docutils literal notranslate"><span class="pre">random.randint()</span></code>
 function. We then store that and echo the result to everyone involved.</p>
 <p>To make the <code class="docutils literal notranslate"><span class="pre">+attack</span></code> command available to you in game, go back to
 <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and scroll down to the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code> class. At the correct
 place add this line:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">CmdAttack</span><span class="p">())</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">CmdAttack</span><span class="p">())</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p><code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> Evennia and the <code class="docutils literal notranslate"><span class="pre">+attack</span></code> command should be available to you. Run it and use e.g. <code class="docutils literal notranslate"><span class="pre">&#64;ex</span></code> to
 make sure the <code class="docutils literal notranslate"><span class="pre">combat_score</span></code> attribute is saved correctly.</p>
 </section>
@@ -443,9 +340,9 @@ make sure the <code class="docutils literal notranslate"><span class="pre">comba
 adding a second command named something like <code class="docutils literal notranslate"><span class="pre">+combatscores</span></code>, but we will instead let the default
 <code class="docutils literal notranslate"><span class="pre">look</span></code> command do the heavy lifting for us and display our scores as part of its normal output, like
 this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span>  <span class="n">look</span> <span class="n">Tom</span>
-<span class="n">Tom</span> <span class="p">(</span><span class="n">combat</span> <span class="n">score</span><span class="p">:</span> <span class="mi">3</span><span class="p">)</span>
-<span class="n">This</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">great</span> <span class="n">warrior</span><span class="o">.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;  look Tom
+Tom (combat score: 3)
+This is a great warrior.
 </pre></div>
 </div>
 <p>We don’t actually have to modify the <code class="docutils literal notranslate"><span class="pre">look</span></code> command itself however. To understand why, take a look
@@ -462,30 +359,7 @@ implementation of <code class="docutils literal notranslate"><span class="pre">r
 <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L1438">here</a>).  If you
 want to make bigger changes you could copy &amp; paste the whole default thing into our overloading
 method. In our case the change is small though:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     [...]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -510,7 +384,7 @@ method. In our case the change is small though:</p>
             <span class="n">text</span> <span class="o">+=</span> <span class="n">cscore</span>
         <span class="k">return</span> <span class="n">text</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>What we do is to simply let the default <code class="docutils literal notranslate"><span class="pre">return_appearance</span></code> do its thing (<code class="docutils literal notranslate"><span class="pre">super</span></code> will call the
 parent’s version of the same method). We then split out the first line of this text, append our
 <code class="docutils literal notranslate"><span class="pre">combat_score</span></code> and put it back together again.</p>
@@ -532,58 +406,16 @@ should also be able to set its Power and order it around.</p>
 and put a custom NPC-specific cmdset on all NPCs. This cmdset could hold all manipulation commands.
 Since we expect NPC manipulation to be a common occurrence among the user base however, we will
 instead put all relevant NPC commands in the default command set and limit eventual access with
-<a class="reference external" href="Components/Locks.html#Permissions">Permissions and Locks</a>.</p>
+<a class="reference internal" href="../../../Components/Permissions.html"><span class="doc std std-doc">Permissions and Locks</span></a>.</p>
 <section id="creating-an-npc-with-createnpc">
 <h3>Creating an NPC with +createNPC<a class="headerlink" href="#creating-an-npc-with-createnpc" title="Permalink to this headline">¶</a></h3>
 <p>We need a command for creating the NPC, this is a very straightforward command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">+</span><span class="n">createnpc</span> <span class="n">Anna</span>
-<span class="n">You</span> <span class="n">created</span> <span class="n">the</span> <span class="n">NPC</span> <span class="s1">&#39;Anna&#39;</span><span class="o">.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; +createnpc Anna
+You created the NPC &#39;Anna&#39;.
 </pre></div>
 </div>
 <p>At the end of <code class="docutils literal notranslate"><span class="pre">command.py</span></code>, create our new command:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
 
 <span class="k">class</span> <span class="nc">CmdCreateNPC</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -627,14 +459,14 @@ instead put all relevant NPC commands in the default command set and limit event
             <span class="n">npc</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
         <span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Here we define a <code class="docutils literal notranslate"><span class="pre">+createnpc</span></code> (<code class="docutils literal notranslate"><span class="pre">+createNPC</span></code> works too) that is callable by everyone <em>not</em> having the
-<code class="docutils literal notranslate"><span class="pre">nonpcs</span></code> “<a class="reference external" href="Components/Locks.html#Permissions">permission</a>” (in Evennia, a “permission” can just as well be used to
+<code class="docutils literal notranslate"><span class="pre">nonpcs</span></code> “<a class="reference internal" href="../../../Components/Permissions.html"><span class="doc std std-doc">permission</span></a>” (in Evennia, a “permission” can just as well be used to
 block access, it depends on the lock we define). We create the NPC object in the caller’s current
 location, using our custom <code class="docutils literal notranslate"><span class="pre">Character</span></code> typeclass to do so.</p>
 <p>We set an extra lock condition on the NPC, which we will use to check who may edit the NPC later –
 we allow the creator to do so, and anyone with the Builders permission (or higher). See
-<a class="reference internal" href="../../../Components/Locks.html"><span class="doc">Locks</span></a> for more information about the lock system.</p>
+<a class="reference internal" href="../../../Components/Locks.html"><span class="doc std std-doc">Locks</span></a> for more information about the lock system.</p>
 <p>Note that we just give the object default permissions (by not specifying the <code class="docutils literal notranslate"><span class="pre">permissions</span></code> keyword
 to the <code class="docutils literal notranslate"><span class="pre">create_object()</span></code> call).  In some games one might want to give the NPC the same permissions
 as the Character creating them, this might be a security risk though.</p>
@@ -646,92 +478,21 @@ as the Character creating them, this might be a security risk though.</p>
 <p>Since we re-used our custom character typeclass, our new NPC already has a <em>Power</em> value - it
 defaults to 1. How do we change this?</p>
 <p>There are a few ways we can do this. The easiest is to remember that the <code class="docutils literal notranslate"><span class="pre">power</span></code> attribute is just a
-simple <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc">Attribute</span></a> stored on the NPC object. So as a Builder or Admin we could set this
+simple <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a> stored on the NPC object. So as a Builder or Admin we could set this
 right away with the default <code class="docutils literal notranslate"><span class="pre">&#64;set</span></code> command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@set</span> <span class="n">mynpc</span><span class="o">/</span><span class="n">power</span> <span class="o">=</span> <span class="mi">6</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @set mynpc/power = 6
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">&#64;set</span></code> command is too generally powerful though, and thus only available to staff. We will add a
 custom command that only changes the things we want players to be allowed to change. We could in
 principle re-work our old <code class="docutils literal notranslate"><span class="pre">+setpower</span></code> command, but let’s try something more useful. Let’s make a
 <code class="docutils literal notranslate"><span class="pre">+editNPC</span></code> command.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">+</span><span class="n">editNPC</span> <span class="n">Anna</span><span class="o">/</span><span class="n">power</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">Set</span> <span class="n">Anna</span><span class="s1">&#39;s property &#39;</span><span class="n">power</span><span class="s1">&#39; to 10.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; +editNPC Anna/power = 10
+Set Anna&#39;s property &#39;power&#39; to 10.
 </pre></div>
 </div>
 <p>This is a slightly more complex command. It goes at the end of your <code class="docutils literal notranslate"><span class="pre">command.py</span></code> file as before.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdEditNPC</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdEditNPC</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    edit an existing NPC</span>
 
@@ -804,7 +565,7 @@ principle re-work our old <code class="docutils literal notranslate"><span class
                          <span class="p">(</span><span class="n">npc</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">propname</span><span class="p">,</span>
                           <span class="n">npc</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">propname</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;N/A&quot;</span><span class="p">)))</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This command example shows off the use of more advanced parsing but otherwise it’s mostly error
 checking. It searches for the given npc in the same room, and checks so the caller actually has
 permission to “edit” it before continuing. An account without the proper permission won’t even be
@@ -824,48 +585,12 @@ anyone to use the NPC.</p>
 it doesn’t have access to are Session and Player-based cmdsets (which means, among other things that
 they cannot chat on channels, but they could do that if you just added those commands). This makes
 the <code class="docutils literal notranslate"><span class="pre">+npc</span></code> command simple:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>+npc Anna = say Hello!
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>+npc Anna = say Hello!
 Anna says, &#39;Hello!&#39;
 </pre></div>
 </div>
 <p>Again, add to the end of your <code class="docutils literal notranslate"><span class="pre">command.py</span></code> module:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdNPC</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdNPC</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    controls an NPC</span>
 
@@ -903,13 +628,13 @@ Anna says, &#39;Hello!&#39;
         <span class="n">npc</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span><span class="p">)</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You told </span><span class="si">{</span><span class="n">npc</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> to do &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Note that if you give an erroneous command, you will not see any error message, since that error
 will be returned to the npc object, not to you. If you want players to see this, you can give the
 caller’s session ID to the <code class="docutils literal notranslate"><span class="pre">execute_cmd</span></code> call, like this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">npc</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">sessid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">sessid</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">npc</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">sessid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">sessid</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Another thing to remember is however that this is a very simplistic way to control NPCs. Evennia
 supports full puppeting very easily. An Account (assuming the “puppet” permission was set correctly)
 could simply do <code class="docutils literal notranslate"><span class="pre">&#64;ic</span> <span class="pre">mynpc</span></code> and be able to play the game “as” that NPC. This is in fact just what
@@ -927,9 +652,9 @@ generation.</p>
 <p>The simple “Power” game mechanic should be easily expandable to something more full-fledged and
 useful, same is true for the combat score principle. The <code class="docutils literal notranslate"><span class="pre">+attack</span></code> could be made to target a
 specific player (or npc) and automatically compare their relevant attributes to determine a result.</p>
-<p>To continue from here, you can take a look at the <a class="reference internal" href="../Part1/Tutorial-World-Introduction.html"><span class="doc">Tutorial World</span></a>. For
-more specific ideas, see the <a class="reference internal" href="../../Howto-Overview.html"><span class="doc">other tutorials and hints</span></a> as well
-as the <a class="reference internal" href="../../../Components/Components-Overview.html"><span class="doc">Evennia Component overview</span></a>.</p>
+<p>To continue from here, you can take a look at the <a class="reference internal" href="../Part1/Tutorial-World-Introduction.html"><span class="doc std std-doc">Tutorial World</span></a>. For
+more specific ideas, see the <a class="reference internal" href="../../Howto-Overview.html"><span class="doc std std-doc">other tutorials and hints</span></a> as well
+as the <a class="reference internal" href="../../../Components/Components-Overview.html"><span class="doc std std-doc">Evennia Component overview</span></a>.</p>
 </section>
 </section>
 
@@ -1000,7 +725,7 @@ as the <a class="reference internal" href="../../../Components/Components-Overvi
 <h3>Versions</h3>
 <ul>
   <li><a href="Tutorial-for-basic-MUSH-like-game.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,15 +40,15 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="batch-command-processor">
+  <section class="tex2jax_ignore mathjax_ignore" id="batch-command-processor">
 <h1>Batch Command Processor<a class="headerlink" href="#batch-command-processor" title="Permalink to this headline">¶</a></h1>
-<p>For an introduction and motivation to using batch processors, see <a class="reference internal" href="Batch-Processors.html"><span class="doc">here</span></a>. This
+<p>For an introduction and motivation to using batch processors, see <a class="reference internal" href="Batch-Processors.html"><span class="doc std std-doc">here</span></a>. This
 page describes the Batch-<em>command</em> processor. The Batch-<em>code</em> one is covered [here](Batch-Code-
 Processor).</p>
 <section id="basic-usage">
 <h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
 <p>The batch-command processor is a superuser-only function, invoked by</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">&gt;</span> <span class="nd">@batchcommand</span> <span class="n">path</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">batchcmdfile</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; @batchcommand path.to.batchcmdfile
 </pre></div>
 </div>
 <p>Where <code class="docutils literal notranslate"><span class="pre">path.to.batchcmdfile</span></code> is the path to a <em>batch-command file</em> with the “<code class="docutils literal notranslate"><span class="pre">.ev</span></code>” file ending.
@@ -54,7 +56,7 @@ This path is given like a python path relative to a folder you define to hold yo
 with <code class="docutils literal notranslate"><span class="pre">BATCH_IMPORT_PATH</span></code> in your settings. Default folder is (assuming your game is in the <code class="docutils literal notranslate"><span class="pre">mygame</span></code>
 folder) <code class="docutils literal notranslate"><span class="pre">mygame/world</span></code>. So if you want to run the example batch file in
 <code class="docutils literal notranslate"><span class="pre">mygame/world/batch_cmds.ev</span></code>, you could use</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">&gt;</span> <span class="nd">@batchcommand</span> <span class="n">batch_cmds</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; @batchcommand batch_cmds
 </pre></div>
 </div>
 <p>A batch-command file contains a list of Evennia in-game commands separated by comments. The
@@ -88,46 +90,7 @@ batch-files together, use the <code class="docutils literal notranslate"><span c
 <code class="docutils literal notranslate"><span class="pre">&#64;batchcode</span></code> command from your batch file, the two batch processors are not compatible.</p></li>
 </ul>
 <p>Below is a version of the example file found in <code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorial_examples/batch_cmds.ev</span></code>.</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1">#</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="c1">#</span>
     <span class="c1"># This is an example batch build file for Evennia. </span>
     <span class="c1">#</span>
     
@@ -168,9 +131,9 @@ batch-files together, use the <code class="docutils literal notranslate"><span c
     <span class="c1"># The very last command in the file needs not be ended with #.</span>
     drop button
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>To test this, run <code class="docutils literal notranslate"><span class="pre">&#64;batchcommand</span></code> on the file:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="nd">@batchcommand</span> <span class="n">contrib</span><span class="o">.</span><span class="n">tutorial_examples</span><span class="o">.</span><span class="n">batch_cmds</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; @batchcommand contrib.tutorial_examples.batch_cmds
 </pre></div>
 </div>
 <p>A button will be created, described and dropped in Limbo. All commands will be executed by the user
@@ -187,11 +150,11 @@ useful for debugging and also if you have a large batch file and is only updatin
 – running the entire file again would be a waste of time (and in the case of <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code>-ing objects
 you would to end up with multiple copies of same-named objects, for example). Use <code class="docutils literal notranslate"><span class="pre">&#64;batchcommand</span></code>
 with the <code class="docutils literal notranslate"><span class="pre">/interactive</span></code> flag to enter interactive mode.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">&gt;</span> <span class="nd">@batchcommand</span><span class="o">/</span><span class="n">interactive</span> <span class="n">tutorial_examples</span><span class="o">.</span><span class="n">batch_cmds</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; @batchcommand/interactive tutorial_examples.batch_cmds
 </pre></div>
 </div>
 <p>You will see this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">01</span><span class="o">/</span><span class="mi">04</span><span class="p">:</span> <span class="nd">@create</span> <span class="n">button</span><span class="p">:</span><span class="n">tutorial_examples</span><span class="o">.</span><span class="n">red_button</span><span class="o">.</span><span class="n">RedButton</span>  <span class="p">(</span><span class="n">hh</span> <span class="k">for</span> <span class="n">help</span><span class="p">)</span> 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>01/04: @create button:tutorial_examples.red_button.RedButton  (hh for help) 
 </pre></div>
 </div>
 <p>This shows that you are on the <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> command, the first out of only four commands in this batch
@@ -222,7 +185,7 @@ when creating the file, so that you can ‘walk’ (or teleport) to the right pl
 <p>This also means there are several pitfalls when designing and adding certain types of objects. Here
 are some examples:</p>
 <ul class="simple">
-<li><p><em>Rooms that change your <a class="reference internal" href="Command-Sets.html"><span class="doc">Command Set</span></a></em>: Imagine that you build a ‘dark’ room, which
+<li><p><em>Rooms that change your <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">Command Set</span></a></em>: Imagine that you build a ‘dark’ room, which
 severely limits the cmdsets of those entering it (maybe you have to find the light switch to
 proceed). In your batch script you would create this room, then teleport to it - and promptly be
 shifted into the dark state where none of your normal build commands work …</p></li>
@@ -241,7 +204,7 @@ creation. It’s all doable, one just needs to keep it in mind.</p>
 <p>The fact that you build as ‘yourself’ can also be considered an advantage however, should you ever
 decide to change the default command to allow others than superusers to call the processor. Since
 normal access-checks are still performed, a malevolent builder with access to the processor should
-not be able to do all that much damage (this is the main drawback of the <a class="reference internal" href="Batch-Code-Processor.html"><span class="doc">Batch Code
+not be able to do all that much damage (this is the main drawback of the <a class="reference internal" href="Batch-Code-Processor.html"><span class="doc std std-doc">Batch Code
 Processor</span></a>)</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://www.gnu.org/software/emacs/">GNU Emacs</a> users might find it interesting to use emacs’
@@ -306,7 +269,7 @@ mode instead, see its readme for install instructions.</p></li>
 <h3>Versions</h3>
 <ul>
   <li><a href="Batch-Command-Processor.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

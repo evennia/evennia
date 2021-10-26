@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,49 +40,19 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="in-text-tags-parsed-by-evennia">
+  <section class="tex2jax_ignore mathjax_ignore" id="in-text-tags-parsed-by-evennia">
 <h1>In-text tags parsed by Evennia<a class="headerlink" href="#in-text-tags-parsed-by-evennia" title="Permalink to this headline">¶</a></h1>
 <p>Evennia understands various extra information embedded in text:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="Colors.html"><span class="doc">Colors</span></a> - Using <code class="docutils literal notranslate"><span class="pre">|r</span></code>, <code class="docutils literal notranslate"><span class="pre">|n</span></code> etc can be used to mark parts of text with a color. The color will
+<li><p><a class="reference internal" href="Colors.html"><span class="doc std std-doc">Colors</span></a> - Using <code class="docutils literal notranslate"><span class="pre">|r</span></code>, <code class="docutils literal notranslate"><span class="pre">|n</span></code> etc can be used to mark parts of text with a color. The color will
 become ANSI/XTerm256 color tags for Telnet connections and CSS information for the webclient.</p></li>
-<li><p><a class="reference internal" href="Clickable-Links.html"><span class="doc">Clickable links</span></a> - This allows you to provide a text the user can click to execute an
+<li><p><a class="reference internal" href="Clickable-Links.html"><span class="doc std std-doc">Clickable links</span></a> - This allows you to provide a text the user can click to execute an
 in-game command. This is on the form <code class="docutils literal notranslate"><span class="pre">|lc</span> <span class="pre">command</span> <span class="pre">|lt</span> <span class="pre">text</span> <span class="pre">|le</span></code>.</p></li>
-<li><p><a class="reference internal" href="../Components/FuncParser.html"><span class="doc">FuncParser callables</span></a> - These are full-fledged function calls on the form <code class="docutils literal notranslate"><span class="pre">$funcname(args,</span> <span class="pre">kwargs)</span></code>
+<li><p><a class="reference internal" href="../Components/FuncParser.html"><span class="doc std std-doc">FuncParser callables</span></a> - These are full-fledged function calls on the form <code class="docutils literal notranslate"><span class="pre">$funcname(args,</span> <span class="pre">kwargs)</span></code>
 that lead to calls to Python functions. The parser can be run with different available callables in different
 circumstances. The parser is run on all outgoing messages if <code class="docutils literal notranslate"><span class="pre">settings.FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED=True</span></code>
 (disabled by default).</p></li>
 </ul>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Colors.html">Colors</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Colors.html#ansi-colours">ANSI colours</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Colors.html#caveats-of">Caveats of <code class="docutils literal notranslate"><span class="pre">|*</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Colors.html#xterm256-colours">Xterm256 Colours</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Colors.html#more-reading">More reading</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Clickable-Links.html">Clickable links</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Components/FuncParser.html">The Inline Function Parser</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../Components/FuncParser.html#uses-in-default-evennia">Uses in default Evennia</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../Components/FuncParser.html#using-the-funcparser">Using the FuncParser</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../Components/FuncParser.html#defining-custom-callables">Defining custom callables</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../Components/FuncParser.html#safe-convertion-of-inputs">Safe convertion of inputs</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../Components/FuncParser.html#default-callables">Default callables</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../Components/FuncParser.html#evennia-utils-funcparser-funcparser-callables"><code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser.FUNCPARSER_CALLABLES</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../Components/FuncParser.html#evennia-utils-funcparser-searching-callables"><code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser.SEARCHING_CALLABLES</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../Components/FuncParser.html#evennia-utils-funcparser-actor-stance-callables"><code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser.ACTOR_STANCE_CALLABLES</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../Components/FuncParser.html#example">Example</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
 </section>
 
 
@@ -123,7 +95,7 @@ circumstances. The parser is run on all outgoing messages if <code class="docuti
 <h3>Versions</h3>
 <ul>
   <li><a href="TextTags.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

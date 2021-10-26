@@ -5,7 +5,7 @@ Evennia uses the [Django](https://www.djangoproject.com/) web framework as the b
 database configuration and the website it provides. While a full understanding of Django requires
 reading the Django documentation, we have provided this tutorial to get you running with the basics
 and how they pertain to Evennia. This text details getting everything set up. The 
-[Web-based Character view Tutorial](../../Web-Character-View-Tutorial) gives a more explicit example of making a
+[Web-based Character view Tutorial](../../Web-Character-View-Tutorial.md) gives a more explicit example of making a
 custom web page connected to your game, and you may want to read that after finishing this guide.
 
 ## A Basic Overview
@@ -25,7 +25,7 @@ like [CSS](https://en.wikipedia.org/wiki/CSS), [Javascript](https://en.wikipedia
 and Image files (You may note your mygame/web folder does not have a `static` or `template` folder.
 This is intended and explained further below). Django applications may also have a `models.py` file
 for storing information in the database. We will not change any models here, take a look at the 
-[New Models](../../../Concepts/New-Models) page (as well as the [Django docs](https://docs.djangoproject.com/en/1.7/topics/db/models/) on models) if you are interested.
+[New Models](../../../Concepts/New-Models.md) page (as well as the [Django docs](https://docs.djangoproject.com/en/1.7/topics/db/models/) on models) if you are interested.
 
 There is also a root `urls.py` that determines the URL structure for the entire project. A starter
 `urls.py` is included in the default game template, and automatically imports all of Evennia's
@@ -104,7 +104,7 @@ run any extra commands to see these changes - reloading the web page in your bro
 
 To replace the index page's text, we'll need to find the template for it. We'll go into more detail
 about how to determine which template is used for rendering a page in the 
-[Web-based Character view Tutorial](../../Web-Character-View-Tutorial). For now, you should know that the template we want to change
+[Web-based Character view Tutorial](../../Web-Character-View-Tutorial.md). For now, you should know that the template we want to change
 is stored in `evennia/web/website/templates/website/index.html`.
 
 To replace this template file, you will put your changed template inside the
@@ -120,7 +120,7 @@ original file already has all the markup and tags, ready for editing.
 ## Further reading
 
 For further hints on working with the web presence, you could now continue to the 
-[Web-based Character view Tutorial](../../Web-Character-View-Tutorial) where you learn to make a web page that
+[Web-based Character view Tutorial](../../Web-Character-View-Tutorial.md) where you learn to make a web page that
 displays in-game character stats. You can also look at [Django's own
 tutorial](https://docs.djangoproject.com/en/1.7/intro/tutorial01/) to get more insight in how Django
 works and what possibilities exist.
