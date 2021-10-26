@@ -4,29 +4,29 @@ This section contains information useful to world builders.
 
 ### Building basics
 
-- [Default in-game commands](api:evennia.commands.default)
-- [Building Quick-start](./Building-Quickstart)
-- [Giving build permissions to others](./Building-Permissions)
-- [Adding text tags](./TextTags)
-  - [Colored text](./TextTags#coloured-text)
-  - [Clickable links](./TextTags#clickable-links)
-  - [Inline functions](./TextTags#inline-functions)
-- [Customizing the connection screen](./Connection-Screen)
+- [Default in-game commands](evennia.commands.default)
+- [Building Quick-start](./Building-Quickstart.md)
+- [Giving build permissions to others](./Building-Permissions.md)
+- [Adding text tags](./TextTags.md)
+  - [Colored text](./TextTags.md#coloured-text)
+  - [Clickable links](./TextTags.md#clickable-links)
+  - [Inline functions](./TextTags.md#inline-functions)
+- [Customizing the connection screen](./Connection-Screen.md)
 
 ### Advanced building and World building
 
-- [Overview of batch processors](./Batch-Processors)
-  - [Batch-command processor](./Batch-Command-Processor)
-  - [Batch-code processor](./Batch-Code-Processor)
-- [Using the Spawner for individualizing objects](./Spawner-and-Prototypes)
-- [Adding Zones](./Zones)
+- [Overview of batch processors](./Batch-Processors.md)
+  - [Batch-command processor](./Batch-Command-Processor.md)
+  - [Batch-code processor](./Batch-Code-Processor.md)
+- [Using the Spawner for individualizing objects](./Spawner-and-Prototypes.md)
+- [Adding Zones](./Zones.md)
 
 ### The Tutorial world
 
-- [Introduction and setup](./Tutorial-World-Introduction)
+- [Introduction and setup](./Tutorial-World-Introduction.md)
 
 
-```toctree::
+```{toctree}
     :hidden:
 
     Building-Quickstart

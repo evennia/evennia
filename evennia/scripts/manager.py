@@ -6,7 +6,7 @@ from django.db.models import Q
 from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
 from evennia.utils.utils import make_iter
 
-__all__ = ("ScriptManager",)
+__all__ = ("ScriptManager", "ScriptDBManager")
 _GA = object.__getattribute__
 
 VALIDATE_ITERATION = 0

@@ -16,7 +16,6 @@ We also need to build the toc-tree and should do so automatically for now.
 import glob
 import re
 import datetime
-import textwrap
 
 _RE_MD_LINK = re.compile(r"\[(?P<txt>[\w -\[\]]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U)
 _RE_REF_LINK = re.compile(r"\[[\w -\[\]]*?\]\(.+?\)", re.I + re.S + re.U)
@@ -33,7 +32,7 @@ _INDEX_PREFIX = f"""
 
 # VERSION WARNING
 
-> This is the experimental static v0.95 documentation of Evennia, _automatically_ generated from the
+> This is the experimental static v0.9 documentation of Evennia, _automatically_ generated from the
 > [evennia wiki](https://github.com/evennia/evennia/wiki/) at {datetime.datetime.now()}.
 > There are known conversion issues which  will _not_ be addressed in this version - refer to
 > the original wiki if you have trouble.
@@ -214,7 +213,6 @@ def _sub_link(match):
 
 
 def create_toctree(files):
-
     with open("../source/toc.md", "w") as fil:
         fil.write("# Toc\n")
 
@@ -266,25 +264,16 @@ def convert_links(files, outdir):
                 if text.split("\n")[0].strip().startswith("[]")
                 else text.split("\n")
             )
-
-            # wrap text
-            formatted_lines = []
-            for line in text:
-                if line.strip():
-                    formatted_lines.append(textwrap.fill(line, width=100))
-                else:
-                    formatted_lines.append(line)
-            text = "\n".join(formatted_lines)
+            text = "\n".join(text)
 
             if not is_index:
                 text = f"# {title}\n\n{text}"
-
 
         with open(outfile, "w") as fil:
             fil.write(text)
 
 
 if __name__ == "__main__":
-
-    create_toctree(_INFILES)
-    convert_links(_INFILES, _OUTDIR)
+    print("This should not be run on develop files, it would overwrite changes.")
+    # create_toctree(_INFILES)
+    # convert_links(_INFILES, _OUTDIR)

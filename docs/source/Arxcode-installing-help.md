@@ -11,7 +11,7 @@ to pick ideas or even get a starting game to build on. These instructions are ba
 released as of *Aug 12, 2018*.
 
 If you are not familiar with what Evennia is, you can read
-[an introduction here](./Evennia-Introduction).
+[an introduction here](./Evennia-Introduction.md).
 
 It's not too hard to run Arx from the sources (of course you'll start with an empty database) but
 since part of Arx has grown organically, it doesn't follow standard Evennia paradigms everywhere.
@@ -24,7 +24,7 @@ Firstly, set aside a folder/directory on your drive for everything to follow.
 
 You need to start by installing [Evennia](http://www.evennia.com) by following most of the [Getting
 Started
-Instructions](Getting-Started) for your OS. The difference is that you need to `git clone
+Instructions](./Getting-Started.md) for your OS. The difference is that you need to `git clone
 https://github.com/TehomCD/evennia.git` instead of Evennia's repo because Arx uses TehomCD's older
 Evennia 0.8 [fork](https://github.com/TehomCD/evennia), notably still using Python2. This detail is
 important if referring to newer Evennia documentation.
@@ -32,7 +32,7 @@ important if referring to newer Evennia documentation.
 If you are new to Evennia it's *highly* recommended that you run through the
 instructions in full - including initializing and starting a new empty game and connecting to it.
 That way you can be sure Evennia works correctly as a base line. If you have trouble, make sure to
-read the [Troubleshooting instructions](./Getting-Started#troubleshooting) for your
+read the [Troubleshooting instructions](./Getting-Started.md#troubleshooting) for your
 operating system. You can also drop into our
 [forums](https://groups.google.com/forum/#%21forum/evennia), join `#evennia` on `irc.freenode.net`
 or chat from the linked [Discord Server](https://discord.gg/NecFePw).
@@ -64,7 +64,7 @@ A new folder `myarx` should appear next to the ones you already had. You could r
 something else if you want.
 
 Cd into `myarx`. If you wonder about the structure of the game dir, you can [read more about it
-here](Directory-Overview).
+here](./Directory-Overview.md).
 
 ### Clean up settings
 

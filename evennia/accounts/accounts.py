@@ -39,7 +39,7 @@ from evennia.utils.optionhandler import OptionHandler
 from django.utils.translation import gettext as _
 from random import getrandbits
 
-__all__ = ("DefaultAccount",)
+__all__ = ("DefaultAccount", "DefaultGuest")
 
 _SESSIONS = None
 

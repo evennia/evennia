@@ -1,16 +1,16 @@
 # Python basic tutorial part two
 
-[In the first part](./Python-basic-introduction) of this Python-for-Evennia basic tutorial we learned
+[In the first part](./Python-basic-introduction.md) of this Python-for-Evennia basic tutorial we learned
 how to run some simple Python code from inside the game. We also made our first new *module*
 containing a *function* that we called. Now we're going to start exploring the very important
 subject of *objects*.
 
 **Contents:**
-- [On the subject of objects](./Python-basic-tutorial-part-two#on-the-subject-of-objects)
-- [Exploring the Evennia library](./Python-basic-tutorial-part-two#exploring-the-evennia-library)
-- [Tweaking our Character class](./Python-basic-tutorial-part-two#tweaking-our-character-class)
-- [The Evennia shell](./Python-basic-tutorial-part-two#the-evennia-shell)
-- [Where to go from here](./Python-basic-tutorial-part-two#where-to-go-from-here)
+- [On the subject of objects](./Python-basic-tutorial-part-two.md#on-the-subject-of-objects)
+- [Exploring the Evennia library](./Python-basic-tutorial-part-two.md#exploring-the-evennia-library)
+- [Tweaking our Character class](./Python-basic-tutorial-part-two.md#tweaking-our-character-class)
+- [The Evennia shell](./Python-basic-tutorial-part-two.md#the-evennia-shell)
+- [Where to go from here](./Python-basic-tutorial-part-two.md#where-to-go-from-here)
 
 ### On the subject of objects
 
@@ -170,7 +170,7 @@ There are lots of things in there. There are some docs but most of those have to
 distribution of Evennia and does not concern us right now. The `evennia` subfolder is what we are
 looking for. *This* is what you are accessing when you do `from evennia import ...`. It's set up by
 Evennia as a good place to find modules when the server starts. The exact layout of the Evennia
-library [is covered by our directory overview](./Directory-Overview#evennia-library-layout). You can
+library [is covered by our directory overview](./Directory-Overview.md#evennia-library-layout). You can
 also explore it [online on github](https://github.com/evennia/evennia/tree/master/evennia).
 
 The structure of the library directly reflects how you import from it.
@@ -189,7 +189,7 @@ import in Python.
 
 Now, remember that our `characters.py` module did `from evennia import DefaultCharacter`. But if we
 look at the contents of the `evennia` folder, there is no `DefaultCharacter` anywhere! This is
-because Evennia gives a large number of optional "shortcuts", known as [the "flat" API](./Evennia-API). The intention is to make it easier to remember where to find stuff. The flat API is defined in
+because Evennia gives a large number of optional "shortcuts", known as [the "flat" API](./Evennia-API.md). The intention is to make it easier to remember where to find stuff. The flat API is defined in
 that weirdly named `__init__.py` file. This file just basically imports useful things from all over
 Evennia so you can more easily find them in one place.
 
@@ -220,7 +220,7 @@ is the same thing, just a little easier to remember.
 
 > To access the shortcuts of the flat API you *must* use `from evennia import
 > ...`. Using something like `import evennia.DefaultCharacter` will not work.
-> See [more about the Flat API here](./Evennia-API).
+> See [more about the Flat API here](./Evennia-API.md).
 
 
 ### Tweaking our Character class
@@ -278,8 +278,8 @@ brief summary of the methods we find in `DefaultCharacter` (follow in the code t
 roughly where things happen)::
 
 - `basetype_setup` is called by Evennia only once, when a Character is first created. In the
-`DefaultCharacter` class it sets some particular [Locks](./Locks) so that people can't pick up and
-puppet Characters just like that. It also adds the [Character Cmdset](./Command-Sets) so that
+`DefaultCharacter` class it sets some particular [Locks](./Locks.md) so that people can't pick up and
+puppet Characters just like that. It also adds the [Character Cmdset](./Command-Sets.md) so that
 Characters always can accept command-input (this should usually not be modified - the normal hook to
 override is `at_object_creation`, which is called after `basetype_setup` (it's in the parent)).
 - `at_after_move` makes it so that every time the Character moves, the `look` command is
@@ -472,7 +472,7 @@ convenient for quickly exploring code without having to go digging through the f
 
 This should give you a running start using Python with Evennia. If you are completely new to
 programming or Python you might want to look at a more formal Python tutorial. You can find links
-and resources [on our link page](./Links).
+and resources [on our link page](./Links.md).
 
 We have touched upon many of the concepts here but to use Evennia and to be able to follow along in
 the code, you will need basic understanding of Python
@@ -487,6 +487,6 @@ understanding of [object-oriented programming](http://www.tutorialspoint.com/pyt
 and what Python [Classes](http://docs.python.org/tutorial/classes.html) are.
 
 Once you have familiarized yourself, or if you prefer to pick Python up as you go, continue to one
-of the beginning-level [Evennia tutorials](./Tutorials) to gradually build up your understanding.
+of the beginning-level [Evennia tutorials](./Tutorials.md) to gradually build up your understanding.
 
 Good luck!

@@ -3,7 +3,7 @@
 
 ### How to *get* Help
 
-If you cannot find what you are looking for in the [online documentation](./index), here's what to do:
+If you cannot find what you are looking for in the [online documentation](./index.md), here's what to do:
 
 - If you think the documentation is not clear enough and are short on time, fill in our quick little
 [online form][form] and let us know - no login required. Maybe the docs need to be improved or a new
@@ -36,7 +36,7 @@ also a nice way to spread the word.
 
 If you'd like to help develop Evennia more hands-on, here are some ways to get going:
 
-- Look through our [online documentation wiki](./index) and see if you
+- Look through our [online documentation wiki](./index.md) and see if you
 can help improve or expand the documentation (even small things like fixing typos!). You don't need
 any particular permissions to edit the wiki.
 - Send a message to our [discussion group][group] and/or our [IRC chat][chat] asking about what
@@ -46,7 +46,7 @@ needs doing, along with what your interests and skills are.
 [bounties][issues-bounties] open - these are issues members of the community has put up money to see
 fixed (if you want to put up a bounty yourself you can do so via our page on
 [bountysource][bountysource]).
-- Check out the [Contributing](./Contributing) page on how to practically contribute with code using
+- Check out the [Contributing](./Contributing.md) page on how to practically contribute with code using
 github.
 
 ... And finally, if you want to help motivate and support development you can also drop some coins

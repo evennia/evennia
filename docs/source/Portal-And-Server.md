@@ -2,7 +2,7 @@
 
 
 Evennia consists of two processes, known as *Portal* and *Server*.  They can be controlled from
-inside the game or from the command line as described [here](./Start-Stop-Reload).
+inside the game or from the command line as described [here](./Start-Stop-Reload.md).
 
 If you are new to the concept, the main purpose of separating the two is to have accounts connect to
 the Portal but keep the MUD running on the Server. This way one can restart/reload the game (the

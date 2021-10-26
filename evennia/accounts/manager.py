@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.contrib.auth.models import UserManager
 from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
 
-__all__ = ("AccountManager",)
+__all__ = ("AccountManager", "AccountDBManager")
 
 
 #

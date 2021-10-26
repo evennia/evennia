@@ -7,14 +7,14 @@ and low on detail. There are countless Python guides and tutorials, books and vi
 learning more in-depth - use them!
 
 **Contents:**
-- [Evennia Hello world](./Python-basic-introduction#evennia-hello-world)
-- [Importing modules](./Python-basic-introduction#importing-modules)
-- [Parsing Python errors](./Python-basic-introduction#parsing-python-errors)
-- [Our first function](./Python-basic-introduction#our-first-function)
-- [Looking at the log](./Python-basic-introduction#looking-at-the-log)
-- (continued in [part 2](./Python-basic-tutorial-part-two))
+- [Evennia Hello world](./Python-basic-introduction.md#evennia-hello-world)
+- [Importing modules](./Python-basic-introduction.md#importing-modules)
+- [Parsing Python errors](./Python-basic-introduction.md#parsing-python-errors)
+- [Our first function](./Python-basic-introduction.md#our-first-function)
+- [Looking at the log](./Python-basic-introduction.md#looking-at-the-log)
+- (continued in [part 2](./Python-basic-tutorial-part-two.md))
 
-This quickstart assumes you have [gotten Evennia started](./Getting-Started). You should make sure
+This quickstart assumes you have [gotten Evennia started](./Getting-Started.md). You should make sure
 that you are able to see the output from the server in the console from which you started it. Log
 into the game either with a mud client on `localhost:4000` or by pointing a web browser to
 `localhost:4001/webclient`. Log in as your superuser (the user you created during install).
@@ -262,5 +262,5 @@ enter  `Ctrl-C` or `Cmd-C` depending on your system. As a game dev it is importa
 log output when working in Evennia - many errors will only appear with full details here. You may
 sometimes have to scroll up in the history if you miss it.
 
-This tutorial is continued in [Part 2](./Python-basic-tutorial-part-two), where we'll start learning
+This tutorial is continued in [Part 2](./Python-basic-tutorial-part-two.md), where we'll start learning
 about objects and to explore the Evennia library.

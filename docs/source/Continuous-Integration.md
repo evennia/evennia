@@ -27,7 +27,7 @@ Among those you will need:
 * A Continuous Integration Environment.
   * I recommend [TeamCity](https://www.jetbrains.com/teamcity/) which has an in-depth [Setup
 Guide](https://confluence.jetbrains.com/display/TCD8/Installing+and+Configuring+the+TeamCity+Server)
-* [Source Control](./Version-Control)
+* [Source Control](./Version-Control.md)
   * This could be Git or SVN or any other available SC.
 
 ## Linux TeamCity Setup
