@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Zones &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Zones</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="zones">
+<h1>Zones<a class="headerlink" href="#zones" title="Permalink to this headline">¶</a></h1>
+<p>Say you create a room named <em>Meadow</em> in your nice big forest MUD.  That’s all nice and dandy, but
+what if you, in the other end of that forest want another <em>Meadow</em>? As a game creator, this can
+cause all sorts of confusion. For example, teleporting to <em>Meadow</em> will now give you a warning that
+there are two <em>Meadow</em> s and you have to select which one. It’s no problem to do that, you just
+choose for example to go to <code class="docutils literal notranslate"><span class="pre">2-meadow</span></code>, but unless you examine them you couldn’t be sure which of
+the two sat in the magical part of the forest and which didn’t.</p>
+<p>Another issue is if you want to group rooms in geographic regions.  Let’s say the “normal” part of
+the forest should have separate weather patterns from the magical part. Or maybe a magical
+disturbance echoes through all magical-forest rooms. It would then be convenient to be able to
+simply find all rooms that are “magical” so you could send messages to them.</p>
+<section id="zones-in-evennia">
+<h2>Zones in Evennia<a class="headerlink" href="#zones-in-evennia" title="Permalink to this headline">¶</a></h2>
+<p><em>Zones</em> try to separate rooms by global location. In our example we would separate the forest into
+two parts - the magical and the non-magical part. Each have a <em>Meadow</em> and rooms belonging to each
+part should be easy to retrieve.</p>
+<p>Many MUD codebases hardcode zones as part of the engine and database.  Evennia does no such
+distinction due to the fact that rooms themselves are meant to be customized to any level anyway.
+Below is a suggestion for how to implement zones in Evennia.</p>
+<p>All objects in Evennia can hold any number of <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tags</span></a>. Tags are short labels that you attach to
+objects. They make it very easy to retrieve groups of objects. An object can have any number of
+different tags. So let’s attach the relevant tag to our forest:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="n">forestobj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;magicalforest&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;zone&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You could add this manually, or automatically during creation somehow (you’d need to modify your
+&#64;dig command for this, most likely). You can also use the default <code class="docutils literal notranslate"><span class="pre">&#64;tag</span></code> command during building:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @tag forestobj = magicalforest : zone
+</pre></div>
+</div>
+<p>Henceforth you can then easily retrieve only objects with a given tag:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">import</span> <span class="nn">evennia</span>
+     <span class="n">rooms</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_tag</span><span class="p">(</span><span class="s2">&quot;magicalforest&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;zone&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="using-typeclasses-and-inheritance-for-zoning">
+<h2>Using typeclasses and inheritance for zoning<a class="headerlink" href="#using-typeclasses-and-inheritance-for-zoning" title="Permalink to this headline">¶</a></h2>
+<p>The tagging or aliasing systems above don’t instill any sort of functional difference between a
+magical forest room and a normal one - they are just arbitrary ways to mark objects for quick
+retrieval later. Any functional differences must be expressed using <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclasses</span></a>.</p>
+<p>Of course, an alternative way to implement zones themselves is to have all rooms/objects in a zone
+inherit from a given typeclass parent - and then limit your searches to objects inheriting from that
+given parent. The effect would be similar but you’d need to expand the search functionality to
+properly search the inheritance tree.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Zones</a><ul>
+<li><a class="reference internal" href="#zones-in-evennia">Zones in Evennia</a></li>
+<li><a class="reference internal" href="#using-typeclasses-and-inheritance-for-zoning">Using typeclasses and inheritance for zoning</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Zones.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Zones.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Zones</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

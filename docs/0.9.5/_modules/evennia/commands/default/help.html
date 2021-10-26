@@ -1,0 +1,606 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.commands.default.help &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.help</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.commands.default.help</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The help command. The basic idea is that help texts for commands</span>
+<span class="sd">are best written by those that write the commands - the admins. So</span>
+<span class="sd">command-help is all auto-loaded and searched from the current command</span>
+<span class="sd">set. The normal, database-tied help system is used for collaborative</span>
+<span class="sd">creation of other help topics such as RP help or game-world aides.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">fill</span><span class="p">,</span> <span class="n">dedent</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">evmore</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">string_suggestions</span><span class="p">,</span> <span class="n">class_from_module</span>
+
+<span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
+<span class="n">HELP_MORE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">HELP_MORE</span>
+<span class="n">CMD_IGNORE_PREFIXES</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMD_IGNORE_PREFIXES</span>
+
+<span class="c1"># limit symbol import for API</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;CmdHelp&quot;</span><span class="p">,</span> <span class="s2">&quot;CmdSetHelp&quot;</span><span class="p">)</span>
+<span class="n">_DEFAULT_WIDTH</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span>
+<span class="n">_SEP</span> <span class="o">=</span> <span class="s2">&quot;|C&quot;</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="n">_DEFAULT_WIDTH</span> <span class="o">+</span> <span class="s2">&quot;|n&quot;</span>
+
+
+<div class="viewcode-block" id="CmdHelp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdHelp</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    View help or a list of topics</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      help &lt;topic or command&gt;</span>
+<span class="sd">      help list</span>
+<span class="sd">      help all</span>
+
+<span class="sd">    This will search for help on commands and other</span>
+<span class="sd">    topics related to the game.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;help&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;?&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s|$&quot;</span>
+
+    <span class="c1"># this is a special cmdhandler flag that makes the cmdhandler also pack</span>
+    <span class="c1"># the current cmdset with the call to self.func().</span>
+    <span class="n">return_cmdset</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># Help messages are wrapped in an EvMore call (unless using the webclient</span>
+    <span class="c1"># with separate help popups) If you want to avoid this, simply add</span>
+    <span class="c1"># &#39;HELP_MORE = False&#39; in your settings/conf/settings.py</span>
+    <span class="n">help_more</span> <span class="o">=</span> <span class="n">HELP_MORE</span>
+
+    <span class="c1"># suggestion cutoff, between 0 and 1 (1 =&gt; perfect match)</span>
+    <span class="n">suggestion_cutoff</span> <span class="o">=</span> <span class="mf">0.6</span>
+
+    <span class="c1"># number of suggestions (set to 0 to remove suggestions from help)</span>
+    <span class="n">suggestion_maxnum</span> <span class="o">=</span> <span class="mi">5</span>
+
+<div class="viewcode-block" id="CmdHelp.msg_help"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.msg_help">[docs]</a>    <span class="k">def</span> <span class="nf">msg_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        messages text to the caller, adding an extra oob argument to indicate</span>
+<span class="sd">        that this is a help command result and could be rendered in a separate</span>
+<span class="sd">        help window</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">help_more</span><span class="p">:</span>
+            <span class="n">usemore</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">protocol_key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;websocket&quot;</span><span class="p">,</span> <span class="s2">&quot;ajax/comet&quot;</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_saved_webclient_options</span>
+                    <span class="k">if</span> <span class="n">options</span> <span class="ow">and</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;helppopup&quot;</span><span class="p">]:</span>
+                        <span class="n">usemore</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+            <span class="k">if</span> <span class="n">usemore</span><span class="p">:</span>
+                <span class="n">evmore</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+                <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;help&quot;</span><span class="p">}))</span></div>
+
+<div class="viewcode-block" id="CmdHelp.format_help_entry"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.format_help_entry">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">format_help_entry</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">help_text</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suggested</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This visually formats the help entry.</span>
+<span class="sd">        This method can be overriden to customize the way a help</span>
+<span class="sd">        entry is displayed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            title (str): the title of the help entry.</span>
+<span class="sd">            help_text (str): the text of the help entry.</span>
+<span class="sd">            aliases (list of str or None): the list of aliases.</span>
+<span class="sd">            suggested (list of str or None): suggested reading.</span>
+
+<span class="sd">        Returns the formatted string, ready to be sent.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="n">_SEP</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;|CHelp for |w</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">title</span>
+        <span class="k">if</span> <span class="n">aliases</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; |C(aliases: </span><span class="si">%s</span><span class="s2">|C)|n&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;|C,|n &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;|w</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">ali</span> <span class="k">for</span> <span class="n">ali</span> <span class="ow">in</span> <span class="n">aliases</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">help_text</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">dedent</span><span class="p">(</span><span class="n">help_text</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">suggested</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">|CSuggested:|n &quot;</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">fill</span><span class="p">(</span><span class="s2">&quot;|C,|n &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;|w</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">sug</span> <span class="k">for</span> <span class="n">sug</span> <span class="ow">in</span> <span class="n">suggested</span><span class="p">))</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">_SEP</span>
+        <span class="k">return</span> <span class="n">string</span></div>
+
+<div class="viewcode-block" id="CmdHelp.format_help_list"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.format_help_list">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">format_help_list</span><span class="p">(</span><span class="n">hdict_cmds</span><span class="p">,</span> <span class="n">hdict_db</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Output a category-ordered list. The input are the</span>
+<span class="sd">        pre-loaded help files for commands and database-helpfiles</span>
+<span class="sd">        respectively.  You can override this method to return a</span>
+<span class="sd">        custom display of the list of commands and topics.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">hdict_cmds</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">hdict_cmds</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">_SEP</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">   |CCommand help entries|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">_SEP</span>
+            <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">hdict_cmds</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |w</span><span class="si">%s</span><span class="s2">|n:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">category</span><span class="p">)</span><span class="o">.</span><span class="n">title</span><span class="p">())</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;|G&quot;</span> <span class="o">+</span> <span class="n">fill</span><span class="p">(</span><span class="s2">&quot;|C, |G&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">hdict_cmds</span><span class="p">[</span><span class="n">category</span><span class="p">])))</span> <span class="o">+</span> <span class="s2">&quot;|n&quot;</span>
+        <span class="k">if</span> <span class="n">hdict_db</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">hdict_db</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">_SEP</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\r</span><span class="s2">  |COther help entries|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">_SEP</span>
+            <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">hdict_db</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\r</span><span class="s2">  |w</span><span class="si">%s</span><span class="s2">|n:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">category</span><span class="p">)</span><span class="o">.</span><span class="n">title</span><span class="p">())</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="s2">&quot;|G&quot;</span>
+                    <span class="o">+</span> <span class="n">fill</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">topic</span><span class="p">)</span> <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">hdict_db</span><span class="p">[</span><span class="n">category</span><span class="p">]])))</span>
+                    <span class="o">+</span> <span class="s2">&quot;|n&quot;</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">string</span></div>
+
+<div class="viewcode-block" id="CmdHelp.check_show_help"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.check_show_help">[docs]</a>    <span class="k">def</span> <span class="nf">check_show_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method. If this return True, the given cmd</span>
+<span class="sd">        auto-help will be viewable in the help listing.</span>
+<span class="sd">        Override this to easily select what is shown to</span>
+<span class="sd">        the account. Note that only commands available</span>
+<span class="sd">        in the caller&#39;s merged cmdset are available.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmd (Command): Command class from the merged cmdset</span>
+<span class="sd">            caller (Character, Account or Session): The current caller</span>
+<span class="sd">                executing the help command.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># return only those with auto_help set and passing the cmd: lock</span>
+        <span class="k">return</span> <span class="n">cmd</span><span class="o">.</span><span class="n">auto_help</span> <span class="ow">and</span> <span class="n">cmd</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CmdHelp.should_list_cmd"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.should_list_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">should_list_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should the specified command appear in the help table?</span>
+
+<span class="sd">        This method only checks whether a specified command should</span>
+<span class="sd">        appear in the table of topics/commands.  The command can be</span>
+<span class="sd">        used by the caller (see the &#39;check_show_help&#39; method) and</span>
+<span class="sd">        the command will still be available, for instance, if a</span>
+<span class="sd">        character type &#39;help name of the command&#39;.  However, if</span>
+<span class="sd">        you return False, the specified command will not appear in</span>
+<span class="sd">        the table.  This is sometimes useful to &quot;hide&quot; commands in</span>
+<span class="sd">        the table, but still access them through the help system.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmd: the command to be tested.</span>
+<span class="sd">            caller: the caller of the help system.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            True: the command should appear in the table.</span>
+<span class="sd">            False: the command shouldn&#39;t appear in the table.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cmd</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CmdHelp.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        input is a string containing the command or topic to match.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">original_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CmdHelp.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run the dynamic help entry creator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span><span class="p">,</span> <span class="n">cmdset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+
+        <span class="n">suggestion_cutoff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">suggestion_cutoff</span>
+        <span class="n">suggestion_maxnum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">suggestion_maxnum</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">query</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span>
+
+        <span class="c1"># removing doublets in cmdset, caused by cmdhandler</span>
+        <span class="c1"># having to allow doublet commands to manage exits etc.</span>
+        <span class="n">cmdset</span><span class="o">.</span><span class="n">make_unique</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+
+        <span class="c1"># retrieve all available commands and database topics</span>
+        <span class="n">all_cmds</span> <span class="o">=</span> <span class="p">[</span><span class="n">cmd</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmdset</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_show_help</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">caller</span><span class="p">)]</span>
+        <span class="n">all_topics</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">topic</span> <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">HelpEntry</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">if</span> <span class="n">topic</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">all_categories</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="nb">set</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">help_category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">all_cmds</span><span class="p">]</span>
+                <span class="o">+</span> <span class="p">[</span><span class="n">topic</span><span class="o">.</span><span class="n">help_category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">all_topics</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">query</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">):</span>
+            <span class="c1"># we want to list all available help entries, grouped by category</span>
+            <span class="n">hdict_cmd</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+            <span class="n">hdict_topic</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+            <span class="c1"># create the dictionaries {category:[topic, topic ...]} required by format_help_list</span>
+            <span class="c1"># Filter commands that should be reached by the help</span>
+            <span class="c1"># system, but not be displayed in the table, or be displayed differently.</span>
+            <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">all_cmds</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_list_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">cmd</span><span class="o">.</span><span class="n">auto_help_display_key</span>
+                        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;auto_help_display_key&quot;</span><span class="p">)</span>
+                        <span class="k">else</span> <span class="n">cmd</span><span class="o">.</span><span class="n">key</span>
+                    <span class="p">)</span>
+                    <span class="n">hdict_cmd</span><span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">help_category</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="p">[</span><span class="n">hdict_topic</span><span class="p">[</span><span class="n">topic</span><span class="o">.</span><span class="n">help_category</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">topic</span><span class="o">.</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">all_topics</span><span class="p">]</span>
+            <span class="c1"># report back</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg_help</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_help_list</span><span class="p">(</span><span class="n">hdict_cmd</span><span class="p">,</span> <span class="n">hdict_topic</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Try to access a particular command</span>
+
+        <span class="c1"># build vocabulary of suggestions and rate them by string similarity.</span>
+        <span class="n">suggestions</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">suggestion_maxnum</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">vocabulary</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">all_cmds</span> <span class="k">if</span> <span class="n">cmd</span><span class="p">]</span>
+                <span class="o">+</span> <span class="p">[</span><span class="n">topic</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">all_topics</span><span class="p">]</span>
+                <span class="o">+</span> <span class="n">all_categories</span>
+            <span class="p">)</span>
+            <span class="p">[</span><span class="n">vocabulary</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">aliases</span><span class="p">)</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">all_cmds</span><span class="p">]</span>
+            <span class="n">suggestions</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">sugg</span>
+                <span class="k">for</span> <span class="n">sugg</span> <span class="ow">in</span> <span class="n">string_suggestions</span><span class="p">(</span>
+                    <span class="n">query</span><span class="p">,</span> <span class="nb">set</span><span class="p">(</span><span class="n">vocabulary</span><span class="p">),</span> <span class="n">cutoff</span><span class="o">=</span><span class="n">suggestion_cutoff</span><span class="p">,</span> <span class="n">maxnum</span><span class="o">=</span><span class="n">suggestion_maxnum</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">sugg</span> <span class="o">!=</span> <span class="n">query</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">suggestions</span><span class="p">:</span>
+                <span class="n">suggestions</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">sugg</span> <span class="k">for</span> <span class="n">sugg</span> <span class="ow">in</span> <span class="n">vocabulary</span> <span class="k">if</span> <span class="n">sugg</span> <span class="o">!=</span> <span class="n">query</span> <span class="ow">and</span> <span class="n">sugg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+                <span class="p">]</span>
+
+        <span class="c1"># try an exact command auto-help match</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="p">[</span><span class="n">cmd</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">all_cmds</span> <span class="k">if</span> <span class="n">cmd</span> <span class="o">==</span> <span class="n">query</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
+            <span class="c1"># try an inexact match with prefixes stripped from query and cmds</span>
+            <span class="n">_query</span> <span class="o">=</span> <span class="n">query</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">query</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">CMD_IGNORE_PREFIXES</span> <span class="k">else</span> <span class="n">query</span>
+
+            <span class="n">match</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">cmd</span>
+                <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">all_cmds</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">cmd</span><span class="o">.</span><span class="n">_matchset</span>
+                <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="n">_query</span> <span class="ow">or</span> <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">CMD_IGNORE_PREFIXES</span> <span class="ow">and</span> <span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">==</span> <span class="n">_query</span>
+            <span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">cmd</span><span class="o">.</span><span class="n">auto_help_display_key</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;auto_help_display_key&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">cmd</span><span class="o">.</span><span class="n">key</span>
+            <span class="n">formatted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_help_entry</span><span class="p">(</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">cmd</span><span class="o">.</span><span class="n">get_help</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">),</span> <span class="n">aliases</span><span class="o">=</span><span class="n">cmd</span><span class="o">.</span><span class="n">aliases</span><span class="p">,</span> <span class="n">suggested</span><span class="o">=</span><span class="n">suggestions</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg_help</span><span class="p">(</span><span class="n">formatted</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># try an exact database help entry match</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">HelpEntry</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">find_topicmatch</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">formatted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_help_entry</span><span class="p">(</span>
+                <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">entrytext</span><span class="p">,</span>
+                <span class="n">aliases</span><span class="o">=</span><span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span>
+                <span class="n">suggested</span><span class="o">=</span><span class="n">suggestions</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg_help</span><span class="p">(</span><span class="n">formatted</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># try to see if a category name was entered</span>
+        <span class="k">if</span> <span class="n">query</span> <span class="ow">in</span> <span class="n">all_categories</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg_help</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">format_help_list</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="n">query</span><span class="p">:</span> <span class="p">[</span>
+                            <span class="n">cmd</span><span class="o">.</span><span class="n">auto_help_display_key</span>
+                            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;auto_help_display_key&quot;</span><span class="p">)</span>
+                            <span class="k">else</span> <span class="n">cmd</span><span class="o">.</span><span class="n">key</span>
+                            <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">all_cmds</span>
+                            <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">help_category</span> <span class="o">==</span> <span class="n">query</span>
+                        <span class="p">]</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span><span class="n">query</span><span class="p">:</span> <span class="p">[</span><span class="n">topic</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">all_topics</span> <span class="k">if</span> <span class="n">topic</span><span class="o">.</span><span class="n">help_category</span> <span class="o">==</span> <span class="n">query</span><span class="p">]},</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># no exact matches found. Just give suggestions.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">format_help_entry</span><span class="p">(</span>
+                <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;No help entry found for &#39;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">suggested</span><span class="o">=</span><span class="n">suggestions</span>
+            <span class="p">),</span>
+            <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;help&quot;</span><span class="p">},</span>
+        <span class="p">)</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">_loadhelp</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+    <span class="n">entry</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_editing_help</span>
+    <span class="k">if</span> <span class="n">entry</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">entry</span><span class="o">.</span><span class="n">entrytext</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">_savehelp</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
+    <span class="n">entry</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_editing_help</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Saved help entry.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">entry</span><span class="p">:</span>
+        <span class="n">entry</span><span class="o">.</span><span class="n">entrytext</span> <span class="o">=</span> <span class="n">buffer</span>
+
+
+<span class="k">def</span> <span class="nf">_quithelp</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Closing the editor.&quot;</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_editing_help</span>
+
+
+<div class="viewcode-block" id="CmdSetHelp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdSetHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdSetHelp</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Edit the help database.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      help[/switches] &lt;topic&gt;[[;alias;alias][,category[,locks]] [= &lt;text&gt;]</span>
+
+<span class="sd">    Switches:</span>
+<span class="sd">      edit - open a line editor to edit the topic&#39;s help text.</span>
+<span class="sd">      replace - overwrite existing help topic.</span>
+<span class="sd">      append - add text to the end of existing topic with a newline between.</span>
+<span class="sd">      extend - as append, but don&#39;t add a newline.</span>
+<span class="sd">      delete - remove help topic.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">      sethelp throw = This throws something at ...</span>
+<span class="sd">      sethelp/append pickpocketing,Thievery = This steals ...</span>
+<span class="sd">      sethelp/replace pickpocketing, ,attr(is_thief) = This steals ...</span>
+<span class="sd">      sethelp/edit thievery</span>
+
+<span class="sd">    This command manipulates the help database. A help entry can be created,</span>
+<span class="sd">    appended/merged to and deleted. If you don&#39;t assign a category, the</span>
+<span class="sd">    &quot;General&quot; category will be used. If no lockstring is specified, default</span>
+<span class="sd">    is to let everyone read the help file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;sethelp&quot;</span>
+    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">,</span> <span class="s2">&quot;extend&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(Helper)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
+
+<div class="viewcode-block" id="CmdSetHelp.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdSetHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implement the function&quot;&quot;&quot;</span>
+
+        <span class="n">switches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
+        <span class="n">lhslist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhslist</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;Usage: sethelp[/switches] &lt;topic&gt;[;alias;alias][,category[,locks,..] = &lt;text&gt;&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">nlist</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lhslist</span><span class="p">)</span>
+        <span class="n">topicstr</span> <span class="o">=</span> <span class="n">lhslist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">nlist</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">topicstr</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You have to define a topic!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">topicstrlist</span> <span class="o">=</span> <span class="n">topicstr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+        <span class="n">topicstr</span><span class="p">,</span> <span class="n">aliases</span> <span class="o">=</span> <span class="p">(</span><span class="n">topicstrlist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">topicstrlist</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">topicstr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="p">[])</span>
+        <span class="n">aliastxt</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;(aliases: </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">aliases</span><span class="p">))</span> <span class="k">if</span> <span class="n">aliases</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">old_entry</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># check if we have an old entry with the same name</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">querystr</span> <span class="ow">in</span> <span class="n">topicstrlist</span><span class="p">:</span>
+                <span class="n">old_entry</span> <span class="o">=</span> <span class="n">HelpEntry</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">find_topicmatch</span><span class="p">(</span><span class="n">querystr</span><span class="p">)</span>  <span class="c1"># also search by alias</span>
+                <span class="k">if</span> <span class="n">old_entry</span><span class="p">:</span>
+                    <span class="n">old_entry</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">old_entry</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">break</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="n">lhslist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">nlist</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">old_entry</span><span class="o">.</span><span class="n">help_category</span>
+            <span class="n">lockstring</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lhslist</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span> <span class="k">if</span> <span class="n">nlist</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">old_entry</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">old_entry</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="n">lhslist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">nlist</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;General&quot;</span>
+            <span class="n">lockstring</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lhslist</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span> <span class="k">if</span> <span class="n">nlist</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="s2">&quot;view:all()&quot;</span>
+        <span class="n">category</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s2">&quot;edit&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+            <span class="c1"># open the line editor to edit the helptext. No = is needed.</span>
+            <span class="k">if</span> <span class="n">old_entry</span><span class="p">:</span>
+                <span class="n">topicstr</span> <span class="o">=</span> <span class="n">old_entry</span><span class="o">.</span><span class="n">key</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+                    <span class="c1"># we assume append here.</span>
+                    <span class="n">old_entry</span><span class="o">.</span><span class="n">entrytext</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+                <span class="n">helpentry</span> <span class="o">=</span> <span class="n">old_entry</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">helpentry</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_help_entry</span><span class="p">(</span>
+                    <span class="n">topicstr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="n">lockstring</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_editing_help</span> <span class="o">=</span> <span class="n">helpentry</span>
+
+            <span class="n">EvEditor</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span>
+                <span class="n">loadfunc</span><span class="o">=</span><span class="n">_loadhelp</span><span class="p">,</span>
+                <span class="n">savefunc</span><span class="o">=</span><span class="n">_savehelp</span><span class="p">,</span>
+                <span class="n">quitfunc</span><span class="o">=</span><span class="n">_quithelp</span><span class="p">,</span>
+                <span class="n">key</span><span class="o">=</span><span class="s2">&quot;topic </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">topicstr</span><span class="p">),</span>
+                <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="s2">&quot;append&quot;</span> <span class="ow">in</span> <span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;merge&quot;</span> <span class="ow">in</span> <span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;extend&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+            <span class="c1"># merge/append operations</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">old_entry</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Could not find topic &#39;</span><span class="si">%s</span><span class="s2">&#39;. You must give an exact name.&quot;</span> <span class="o">%</span> <span class="n">topicstr</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must supply text to append/merge.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="s2">&quot;merge&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+                <span class="n">old_entry</span><span class="o">.</span><span class="n">entrytext</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">old_entry</span><span class="o">.</span><span class="n">entrytext</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+            <span class="n">old_entry</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">aliases</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Entry updated:</span><span class="se">\n</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">old_entry</span><span class="o">.</span><span class="n">entrytext</span><span class="p">,</span> <span class="n">aliastxt</span><span class="p">))</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="s2">&quot;delete&quot;</span> <span class="ow">in</span> <span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;del&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+            <span class="c1"># delete the help entry</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">old_entry</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Could not find topic &#39;</span><span class="si">%s</span><span class="s2">&#39;</span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">topicstr</span><span class="p">,</span> <span class="n">aliastxt</span><span class="p">))</span>
+                <span class="k">return</span>
+            <span class="n">old_entry</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Deleted help entry &#39;</span><span class="si">%s</span><span class="s2">&#39;</span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">topicstr</span><span class="p">,</span> <span class="n">aliastxt</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="c1"># at this point it means we want to add a new help entry.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must supply a help text to add.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">old_entry</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;replace&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+                <span class="c1"># overwrite old entry</span>
+                <span class="n">old_entry</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">topicstr</span>
+                <span class="n">old_entry</span><span class="o">.</span><span class="n">entrytext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+                <span class="n">old_entry</span><span class="o">.</span><span class="n">help_category</span> <span class="o">=</span> <span class="n">category</span>
+                <span class="n">old_entry</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="n">old_entry</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lockstring</span><span class="p">)</span>
+                <span class="n">old_entry</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">aliases</span><span class="p">)</span>
+                <span class="n">old_entry</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Overwrote the old topic &#39;</span><span class="si">%s</span><span class="s2">&#39;</span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">topicstr</span><span class="p">,</span> <span class="n">aliastxt</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="s2">&quot;Topic &#39;</span><span class="si">%s</span><span class="s2">&#39;</span><span class="si">%s</span><span class="s2"> already exists. Use /replace to overwrite &quot;</span>
+                    <span class="s2">&quot;or /append or /merge to add text to it.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">topicstr</span><span class="p">,</span> <span class="n">aliastxt</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># no old entry. Create a new one.</span>
+            <span class="n">new_entry</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_help_entry</span><span class="p">(</span>
+                <span class="n">topicstr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="n">lockstring</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">new_entry</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Topic &#39;</span><span class="si">%s</span><span class="s2">&#39;</span><span class="si">%s</span><span class="s2"> was successfully created.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">topicstr</span><span class="p">,</span> <span class="n">aliastxt</span><span class="p">))</span>
+                <span class="k">if</span> <span class="s2">&quot;edit&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+                    <span class="c1"># open the line editor to edit the helptext</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_editing_help</span> <span class="o">=</span> <span class="n">new_entry</span>
+                    <span class="n">EvEditor</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span>
+                        <span class="n">loadfunc</span><span class="o">=</span><span class="n">_loadhelp</span><span class="p">,</span>
+                        <span class="n">savefunc</span><span class="o">=</span><span class="n">_savehelp</span><span class="p">,</span>
+                        <span class="n">quitfunc</span><span class="o">=</span><span class="n">_quithelp</span><span class="p">,</span>
+                        <span class="n">key</span><span class="o">=</span><span class="s2">&quot;topic </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">new_entry</span><span class="o">.</span><span class="n">key</span><span class="p">),</span>
+                        <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="s2">&quot;Error when creating topic &#39;</span><span class="si">%s</span><span class="s2">&#39;</span><span class="si">%s</span><span class="s2">! Contact an admin.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">topicstr</span><span class="p">,</span> <span class="n">aliastxt</span><span class="p">)</span>
+                <span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="help.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.help</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,555 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.tutorial_examples.cmdset_red_button &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_examples.cmdset_red_button</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.tutorial_examples.cmdset_red_button">
+<span id="evennia-contrib-tutorial-examples-cmdset-red-button"></span><h1>evennia.contrib.tutorial_examples.cmdset_red_button<a class="headerlink" href="#module-evennia.contrib.tutorial_examples.cmdset_red_button" title="Permalink to this headline">¶</a></h1>
+<p>This defines the cmdset for the red_button. Here we have defined
+the commands and the cmdset in the same module, but if you
+have many different commands to merge it is often better
+to define the cmdset separately, picking and choosing from
+among the available commands as to what should be included in the
+cmdset - this way you can often re-use the commands too.</p>
+<dl class="py class">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdNudge">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_examples.cmdset_red_button.</code><code class="sig-name descname">CmdNudge</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#CmdNudge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdNudge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>Try to nudge the button’s lid</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>nudge lid</p>
+</dd>
+</dl>
+<p>This command will have you try to
+push the lid of the button away.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdNudge.key">
+<code class="sig-name descname">key</code><em class="property"> = 'nudge lid'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdNudge.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdNudge.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['nudge']</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdNudge.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdNudge.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdNudge.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdNudge.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#CmdNudge.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdNudge.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>nudge the lid. Random chance of success to open it.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdNudge.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdNudge.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdNudge.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdNudge.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdPush">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_examples.cmdset_red_button.</code><code class="sig-name descname">CmdPush</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#CmdPush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdPush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>Push the red button</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>push button</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdPush.key">
+<code class="sig-name descname">key</code><em class="property"> = 'push button'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdPush.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdPush.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['press button', 'press', 'push']</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdPush.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdPush.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdPush.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdPush.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#CmdPush.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdPush.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Note that we choose to implement this with checking for
+if the lid is open/closed. This is because this command
+is likely to be tried regardless of the state of the lid.</p>
+<p>An alternative would be to make two versions of this command
+and tuck them into the cmdset linked to the Open and Closed
+lid-state respectively.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdPush.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdPush.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdPush.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdPush.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdSmashGlass">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_examples.cmdset_red_button.</code><code class="sig-name descname">CmdSmashGlass</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#CmdSmashGlass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdSmashGlass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>smash glass</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>smash glass</p>
+</dd>
+</dl>
+<p>Try to smash the glass of the button.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdSmashGlass.key">
+<code class="sig-name descname">key</code><em class="property"> = 'smash glass'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdSmashGlass.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdSmashGlass.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['smash', 'break lid', 'smash lid']</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdSmashGlass.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdSmashGlass.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdSmashGlass.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdSmashGlass.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#CmdSmashGlass.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdSmashGlass.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>The lid won’t open, but there is a small chance
+of causing the lamp to break.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdSmashGlass.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdSmashGlass.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdSmashGlass.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdSmashGlass.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdOpenLid">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_examples.cmdset_red_button.</code><code class="sig-name descname">CmdOpenLid</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#CmdOpenLid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdOpenLid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>open lid</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>open lid</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdOpenLid.key">
+<code class="sig-name descname">key</code><em class="property"> = 'open lid'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdOpenLid.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdOpenLid.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['open', 'open button']</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdOpenLid.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdOpenLid.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdOpenLid.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdOpenLid.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#CmdOpenLid.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdOpenLid.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>simply call the right function.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdOpenLid.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdOpenLid.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdOpenLid.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdOpenLid.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdCloseLid">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_examples.cmdset_red_button.</code><code class="sig-name descname">CmdCloseLid</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#CmdCloseLid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdCloseLid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>close the lid</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>close lid</p>
+</dd>
+</dl>
+<p>Closes the lid of the red button.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdCloseLid.key">
+<code class="sig-name descname">key</code><em class="property"> = 'close lid'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdCloseLid.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdCloseLid.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['close']</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdCloseLid.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdCloseLid.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdCloseLid.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdCloseLid.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#CmdCloseLid.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdCloseLid.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the lid</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdCloseLid.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdCloseLid.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdCloseLid.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdCloseLid.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindLook">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_examples.cmdset_red_button.</code><code class="sig-name descname">CmdBlindLook</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#CmdBlindLook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindLook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>Looking around in darkness</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>look &lt;obj&gt;</p>
+</dd>
+</dl>
+<p>… not that there’s much to see in the dark.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindLook.key">
+<code class="sig-name descname">key</code><em class="property"> = 'look'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindLook.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindLook.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['examine', 'get', 'listen', 'l', 'feel', 'ex']</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindLook.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindLook.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindLook.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindLook.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#CmdBlindLook.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindLook.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This replaces all the senses when blinded.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindLook.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindLook.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindLook.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindLook.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindHelp">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_examples.cmdset_red_button.</code><code class="sig-name descname">CmdBlindHelp</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#CmdBlindHelp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindHelp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>Help function while in the blinded state</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>help</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindHelp.key">
+<code class="sig-name descname">key</code><em class="property"> = 'help'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindHelp.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindHelp.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['h']</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindHelp.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindHelp.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindHelp.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindHelp.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#CmdBlindHelp.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindHelp.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Give a message.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindHelp.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindHelp.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindHelp.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.CmdBlindHelp.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.DefaultCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_examples.cmdset_red_button.</code><code class="sig-name descname">DefaultCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#DefaultCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.DefaultCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>The default cmdset always sits
+on the button object and whereas other
+command sets may be added/merge onto it
+and hide it, removing them will always
+bring it back. It’s added to the object
+using obj.cmdset.add_default().</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.DefaultCmdSet.key">
+<code class="sig-name descname">key</code><em class="property"> = 'RedButtonDefault'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.DefaultCmdSet.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.DefaultCmdSet.mergetype">
+<code class="sig-name descname">mergetype</code><em class="property"> = 'Union'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.DefaultCmdSet.mergetype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.DefaultCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#DefaultCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.DefaultCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Init the cmdset</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.DefaultCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorial_examples.cmdset_red_button.DefaultCmdSet'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.DefaultCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.LidClosedCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_examples.cmdset_red_button.</code><code class="sig-name descname">LidClosedCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#LidClosedCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.LidClosedCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>A simple cmdset tied to the redbutton object.</p>
+<p>It contains the commands that launches the other
+command sets, making the red button a self-contained
+item (i.e. you don’t have to manually add any
+scripts etc to it when creating it).</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.LidClosedCmdSet.key">
+<code class="sig-name descname">key</code><em class="property"> = 'LidClosedCmdSet'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.LidClosedCmdSet.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.LidClosedCmdSet.key_mergetype">
+<code class="sig-name descname">key_mergetype</code><em class="property"> = {'LidOpenCmdSet': 'Replace'}</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.LidClosedCmdSet.key_mergetype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.LidClosedCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#LidClosedCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.LidClosedCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populates the cmdset when it is instantiated.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.LidClosedCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorial_examples.cmdset_red_button.LidClosedCmdSet'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.LidClosedCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.LidOpenCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_examples.cmdset_red_button.</code><code class="sig-name descname">LidOpenCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#LidOpenCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.LidOpenCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>This is the opposite of the Closed cmdset.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.LidOpenCmdSet.key">
+<code class="sig-name descname">key</code><em class="property"> = 'LidOpenCmdSet'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.LidOpenCmdSet.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.LidOpenCmdSet.key_mergetype">
+<code class="sig-name descname">key_mergetype</code><em class="property"> = {'LidClosedCmdSet': 'Replace'}</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.LidOpenCmdSet.key_mergetype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.LidOpenCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#LidOpenCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.LidOpenCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>setup the cmdset (just one command)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.LidOpenCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorial_examples.cmdset_red_button.LidOpenCmdSet'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.LidOpenCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.BlindCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_examples.cmdset_red_button.</code><code class="sig-name descname">BlindCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#BlindCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.BlindCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>This is the cmdset added to the <em>account</em> when
+the button is pushed.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.BlindCmdSet.key">
+<code class="sig-name descname">key</code><em class="property"> = 'BlindCmdSet'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.BlindCmdSet.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.BlindCmdSet.mergetype">
+<code class="sig-name descname">mergetype</code><em class="property"> = 'Replace'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.BlindCmdSet.mergetype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.BlindCmdSet.no_exits">
+<code class="sig-name descname">no_exits</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.BlindCmdSet.no_exits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.BlindCmdSet.no_objs">
+<code class="sig-name descname">no_objs</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.BlindCmdSet.no_objs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.BlindCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/cmdset_red_button.html#BlindCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.BlindCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup the blind cmdset</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorial_examples.cmdset_red_button.BlindCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorial_examples.cmdset_red_button.BlindCmdSet'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.cmdset_red_button.BlindCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.tutorial_examples.cmdset_red_button.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.contrib.tutorial_examples.cmdset_red_button.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_examples.cmdset_red_button</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>
