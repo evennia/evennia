@@ -459,11 +459,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 error depending on the value of `quiet`.
 
         Returns:
-            Object: If finding a match an `quiet=False`
-            None: If not finding a unique match and `quiet=False`.
-            list: With 0, 1 or more matching objects if `quiet=True`
-            list: With 2 or more matching objects if `stacked` is a positive integer and
-                the matched stack has only object-copies.
+            Object, None or list: Will return an `Object` or `None` if `quiet=False`. Will return
+            a `list` with 0, 1 or more matches if `quiet=True`. If `stacked` is a positive integer,
+            this list may contain all stacked identical matches.
 
         Notes:
             To find Accounts, use eg. `evennia.account_search`. If
