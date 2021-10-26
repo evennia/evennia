@@ -313,13 +313,14 @@ objects in the current <strong>location</strong> of <strong>self</strong> or its
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>searchdata</strong> (<em>str</em><em> or </em><em>obj</em>) – <p>Primary search criterion. Will be matched
 against <strong>object.key</strong> (with <strong>object.aliases</strong> second) unless
-the keyword attribute_name specifies otherwise.
-<strong>Special strings:</strong>
-- <strong>#&lt;num&gt;</strong>: search by unique dbref. This is always</p>
-<blockquote>
-<div><p>a global search.</p>
-</div></blockquote>
+the keyword attribute_name specifies otherwise.</p>
+<p>Special strings:</p>
 <ul>
+<li><dl class="simple">
+<dt><strong>#&lt;num&gt;</strong>: search by unique dbref. This is always</dt><dd><p>a global search.</p>
+</dd>
+</dl>
+</li>
 <li><p><strong>me,self</strong>: self-reference to this object</p></li>
 <li><dl class="simple">
 <dt><strong>&lt;num&gt;-&lt;string&gt;</strong> - can be used to differentiate</dt><dd><p>between multiple same-named matches. The exact form of this input
@@ -369,12 +370,9 @@ otherwise.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>match (Object, None or list)</em> –</p>
-<dl class="simple">
-<dt>will return an Object/None if <strong>quiet=False</strong>,</dt><dd><p>otherwise it will return a list of 0, 1 or more matches.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p><em>Object, None or list</em> – Will return an <strong>Object</strong> or <strong>None</strong> if <strong>quiet=False</strong>. Will return a
+list with 0, 1 or more matches if <strong>quiet=True</strong>. If <strong>stacked</strong> is a positive integer, this
+list may contain all stacked identical matches.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>

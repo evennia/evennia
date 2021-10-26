@@ -329,13 +329,10 @@ objects in the current <strong>location</strong> of <strong>self</strong> or its
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>searchdata</strong> (<em>str</em><em> or </em><em>obj</em>) – <p>Primary search criterion. Will be matched
 against <strong>object.key</strong> (with <strong>object.aliases</strong> second) unless
-the keyword attribute_name specifies otherwise.
-<strong>Special strings:</strong>
-- <strong>#&lt;num&gt;</strong>: search by unique dbref. This is always</p>
-<blockquote>
-<div><p>a global search.</p>
-</div></blockquote>
+the keyword attribute_name specifies otherwise.</p>
+<p>Special keywords:</p>
 <ul>
+<li><p><strong>#&lt;num&gt;</strong>: search by unique dbref. This is always a global search.</p></li>
 <li><p><strong>me,self</strong>: self-reference to this object</p></li>
 <li><dl class="simple">
 <dt><strong>&lt;num&gt;-&lt;string&gt;</strong> - can be used to differentiate</dt><dd><p>between multiple same-named matches. The exact form of this input
@@ -393,14 +390,9 @@ error depending on the value of <strong>quiet</strong>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>Object</em> – If finding a match an <strong>quiet=False</strong>
-None: If not finding a unique match and <strong>quiet=False</strong>.
-list: With 0, 1 or more matching objects if <strong>quiet=True</strong>
-list: With 2 or more matching objects if <strong>stacked</strong> is a positive integer and</p>
-<blockquote>
-<div><p>the matched stack has only object-copies.</p>
-</div></blockquote>
-</p>
+<dd class="field-even"><p><em>Object, None or list</em> – Will return an <strong>Object</strong> or <strong>None</strong> if <strong>quiet=False</strong>. Will return
+a <strong>list</strong> with 0, 1 or more matches if <strong>quiet=True</strong>. If <strong>stacked</strong> is a positive integer,
+this list may contain all stacked identical matches.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
