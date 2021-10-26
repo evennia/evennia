@@ -19,7 +19,7 @@ author = "The Evennia developer community"
 
 # The full Evennia version covered by these docs, including alpha/beta/rc tags
 # This will be used for multi-version selection options.
-release = "0.95"
+release = "0.9.5"
 
 
 # -- General configuration ---------------------------------------------------
