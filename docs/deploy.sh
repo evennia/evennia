@@ -28,7 +28,7 @@ git add .
 
 git commit -a -m "Updated HTML docs"
 
-echo "Skipping deployment"
+# echo "Skipping deployment"
 git push origin gh-pages
 
 # get back to previous branch 
