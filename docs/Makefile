@@ -34,7 +34,7 @@ help:
 	@echo "  $(cblue)quick$(cnorm)       to build local docs but skip the autodocs (for quick testing)"
 	@echo "  $(cblue)quickstrict$(cnorm) to build like 'quick' but abort immediately on any error"
 	@echo "  $(cblue)local$(cnorm)       to build local html docs of the current branch (no multiversion)."
-	@echo "  $(cblue)localupdate$(cnorm) to build local html docs (only update changes)
+	@echo "  $(cblue)localupdate$(cnorm) to build local html docs (only update changes)"
 	@echo "  $(cblue)mv-local$(cnorm)    to build multiversion html docs, without deploying (req: local git commit first)"
 	@echo "  $(cblue)deploy$(cnorm)      to deploy previously built multiversion docs online (req: commit and github push access)"
 	@echo "  $(cblue)release$(cnorm)     to build + deploy multiversion docs online (req: commit and github push access)"
