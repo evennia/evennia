@@ -447,13 +447,15 @@
 <span class="sd">            searchdata (str or obj): Primary search criterion. Will be matched</span>
 <span class="sd">                against `object.key` (with `object.aliases` second) unless</span>
 <span class="sd">                the keyword attribute_name specifies otherwise.</span>
-<span class="sd">                **Special strings:**</span>
-<span class="sd">                - `#&lt;num&gt;`: search by unique dbref. This is always</span>
-<span class="sd">                   a global search.</span>
+
+<span class="sd">                Special keywords:</span>
+
+<span class="sd">                - `#&lt;num&gt;`: search by unique dbref. This is always a global search.</span>
 <span class="sd">                - `me,self`: self-reference to this object</span>
 <span class="sd">                - `&lt;num&gt;-&lt;string&gt;` - can be used to differentiate</span>
 <span class="sd">                   between multiple same-named matches. The exact form of this input</span>
 <span class="sd">                   is given by `settings.SEARCH_MULTIMATCH_REGEX`.</span>
+
 <span class="sd">            global_search (bool): Search all objects globally. This overrules &#39;location&#39; data.</span>
 <span class="sd">            use_nicks (bool): Use nickname-replace (nicktype &quot;object&quot;) on `searchdata`.</span>
 <span class="sd">            typeclass (str or Typeclass, or list of either): Limit search only</span>
@@ -501,11 +503,9 @@
 <span class="sd">                error depending on the value of `quiet`.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Object: If finding a match an `quiet=False`</span>
-<span class="sd">            None: If not finding a unique match and `quiet=False`.</span>
-<span class="sd">            list: With 0, 1 or more matching objects if `quiet=True`</span>
-<span class="sd">            list: With 2 or more matching objects if `stacked` is a positive integer and</span>
-<span class="sd">                the matched stack has only object-copies.</span>
+<span class="sd">            Object, None or list: Will return an `Object` or `None` if `quiet=False`. Will return</span>
+<span class="sd">            a `list` with 0, 1 or more matches if `quiet=True`. If `stacked` is a positive integer,</span>
+<span class="sd">            this list may contain all stacked identical matches.</span>
 
 <span class="sd">        Notes:</span>
 <span class="sd">            To find Accounts, use eg. `evennia.account_search`. If</span>
