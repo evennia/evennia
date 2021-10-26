@@ -403,13 +403,15 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             searchdata (str or obj): Primary search criterion. Will be matched
                 against `object.key` (with `object.aliases` second) unless
                 the keyword attribute_name specifies otherwise.
-                **Special strings:**
-                - `#<num>`: search by unique dbref. This is always
-                   a global search.
+
+                Special keywords:
+
+                - `#<num>`: search by unique dbref. This is always a global search.
                 - `me,self`: self-reference to this object
                 - `<num>-<string>` - can be used to differentiate
                    between multiple same-named matches. The exact form of this input
                    is given by `settings.SEARCH_MULTIMATCH_REGEX`.
+
             global_search (bool): Search all objects globally. This overrules 'location' data.
             use_nicks (bool): Use nickname-replace (nicktype "object") on `searchdata`.
             typeclass (str or Typeclass, or list of either): Limit search only
