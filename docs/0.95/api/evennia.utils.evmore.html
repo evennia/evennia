@@ -1,0 +1,554 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.utils.evmore &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.evmore</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.utils.evmore">
+<span id="evennia-utils-evmore"></span><h1>evennia.utils.evmore<a class="headerlink" href="#module-evennia.utils.evmore" title="Permalink to this headline">¶</a></h1>
+<p>EvMore - pager mechanism</p>
+<p>This is a pager for displaying long texts and allows stepping up and
+down in the text (the name comes from the traditional ‘more’ unix
+command).</p>
+<p>To use, simply pass the text through the EvMore object:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="kn">import</span> <span class="n">EvMore</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="n">some_long_text_output</span><span class="p">()</span>
+<span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">always_page</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">justify_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>One can also use the convenience function msg from this module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evmore</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="n">some_long_text_output</span><span class="p">()</span>
+<span class="n">evmore</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">always_page</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">justify_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where always_page decides if the pager is used also if the text is not long
+enough to need to scroll, session is used to determine which session to relay
+to and <strong>justify_kwargs</strong> are kwargs to pass to <strong>utils.utils.justify</strong> in order to
+change the formatting of the text. The remaining <strong>**kwargs</strong> will be passed on to
+the <strong>caller.msg()</strong> construct every time the page is updated.</p>
+<hr class="docutils" />
+<dl class="py class">
+<dt id="evennia.utils.evmore.CmdMore">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evmore.</code><code class="sig-name descname">CmdMore</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#CmdMore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.CmdMore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>Manipulate the text paging</p>
+<dl class="py attribute">
+<dt id="evennia.utils.evmore.CmdMore.key">
+<code class="sig-name descname">key</code><em class="property"> = '__noinput_command'</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmore.CmdMore.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['next', 'top', 'n', 'back', 'abort', 'b', 'a', 'e', 'q', 'quit', 'end', 't']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmore.CmdMore.auto_help">
+<code class="sig-name descname">auto_help</code><em class="property"> = False</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.auto_help" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.CmdMore.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#CmdMore.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.CmdMore.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implement the command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmore.CmdMore.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmore.CmdMore.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.evmore.CmdMoreLook">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evmore.</code><code class="sig-name descname">CmdMoreLook</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#CmdMoreLook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>Override look to display window and prevent OOCLook from firing</p>
+<dl class="py attribute">
+<dt id="evennia.utils.evmore.CmdMoreLook.key">
+<code class="sig-name descname">key</code><em class="property"> = 'look'</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmore.CmdMoreLook.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['l']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmore.CmdMoreLook.auto_help">
+<code class="sig-name descname">auto_help</code><em class="property"> = False</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook.auto_help" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.CmdMoreLook.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#CmdMoreLook.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implement the command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmore.CmdMoreLook.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmore.CmdMoreLook.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.evmore.CmdSetMore">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evmore.</code><code class="sig-name descname">CmdSetMore</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#CmdSetMore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.CmdSetMore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>Stores the more command</p>
+<dl class="py attribute">
+<dt id="evennia.utils.evmore.CmdSetMore.key">
+<code class="sig-name descname">key</code><em class="property"> = 'more_commands'</em><a class="headerlink" href="#evennia.utils.evmore.CmdSetMore.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmore.CmdSetMore.priority">
+<code class="sig-name descname">priority</code><em class="property"> = 110</em><a class="headerlink" href="#evennia.utils.evmore.CmdSetMore.priority" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.CmdSetMore.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#CmdSetMore.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.CmdSetMore.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method - this should be overloaded in the inheriting
+class, and should take care of populating the cmdset by use of
+self.add().</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evmore.CmdSetMore.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.utils.evmore.CmdSetMore'</em><a class="headerlink" href="#evennia.utils.evmore.CmdSetMore.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.evmore.queryset_maxsize">
+<code class="sig-prename descclassname">evennia.utils.evmore.</code><code class="sig-name descname">queryset_maxsize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">qs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#queryset_maxsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.queryset_maxsize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.evmore.EvMore">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evmore.</code><code class="sig-name descname">EvMore</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">inp</em>, <em class="sig-param">always_page=False</em>, <em class="sig-param">session=None</em>, <em class="sig-param">justify=False</em>, <em class="sig-param">justify_kwargs=None</em>, <em class="sig-param">exit_on_lastpage=False</em>, <em class="sig-param">exit_cmd=None</em>, <em class="sig-param">page_formatter=&lt;class 'str'&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The main pager object.</p>
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">inp</em>, <em class="sig-param">always_page=False</em>, <em class="sig-param">session=None</em>, <em class="sig-param">justify=False</em>, <em class="sig-param">justify_kwargs=None</em>, <em class="sig-param">exit_on_lastpage=False</em>, <em class="sig-param">exit_cmd=None</em>, <em class="sig-param">page_formatter=&lt;class 'str'&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialization of the Evmore input handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>Object</em><em> or </em><em>Account</em>) – Entity reading the text.</p></li>
+<li><p><strong>inp</strong> (<em>str</em><em>, </em><a class="reference internal" href="evennia.utils.evtable.html#evennia.utils.evtable.EvTable" title="evennia.utils.evtable.EvTable"><em>EvTable</em></a><em>, </em><em>Paginator</em><em> or </em><em>iterator</em>) – <p>The text or data to put under paging.</p>
+<ul>
+<li><p>If a string, paginage normally. If this text contains
+one or more \f (backslash + f) format symbols, automatic
+pagination and justification are force-disabled and
+page-breaks will only happen after each \f.</p></li>
+<li><p>If <strong>EvTable</strong>, the EvTable will be paginated with the same
+setting on each page if it is too long. The table
+decorations will be considered in the size of the page.</p></li>
+<li><p>Otherwise <strong>inp</strong> is converted to an iterator, where each step is
+expected to be a line in the final display. Each line
+will be run through <strong>iter_callable</strong>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>always_page</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <strong>False</strong>, the pager will only kick
+in if <strong>inp</strong> is too big to fit the screen.</p></li>
+<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – If given, this session will be used
+to determine the screen width and will receive all output.</p></li>
+<li><p><strong>justify</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, auto-justify long lines. This must be turned
+off for fixed-width or formatted output, like tables. It’s force-disabled
+if <strong>inp</strong> is an EvTable.</p></li>
+<li><p><strong>justify_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Keywords for the justifiy function. Used only
+if <strong>justify</strong> is True. If this is not set, default arguments will be used.</p></li>
+<li><p><strong>exit_on_lastpage</strong> (<em>bool</em><em>, </em><em>optional</em>) – If reaching the last page without the
+page being completely filled, exit pager immediately. If unset,
+another move forward is required to exit. If set, the pager
+exit message will not be shown.</p></li>
+<li><p><strong>exit_cmd</strong> (<em>str</em><em>, </em><em>optional</em>) – If given, this command-string will be executed on
+the caller when the more page exits. Note that this will be using whatever
+cmdset the user had <em>before</em> the evmore pager was activated (so none of
+the evmore commands will be available when this is run).</p></li>
+<li><p><strong>kwargs</strong> (<em>any</em><em>, </em><em>any</em>) – These will be passed on to the <strong>caller.msg</strong> method.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Basic use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">super_long_text</span> <span class="o">=</span> <span class="s2">&quot; ... &quot;</span>
+<span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">super_long_text</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Paginated query data - this is an optimization to avoid fetching
+database data until it’s actually paged to.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="kn">import</span> <span class="n">Paginator</span>
+
+<span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="n">pages</span> <span class="o">=</span> <span class="n">Paginator</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>  <span class="c1"># 10 objs per page</span>
+<span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">pages</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Automatic split EvTable over multiple EvMore pages</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">table</span> <span class="o">=</span> <span class="n">EvMore</span><span class="p">(</span><span class="o">*</span><span class="n">header</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">tabledata</span><span class="p">)</span>
+<span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Every page a separate EvTable (optimization for very large data sets)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">EvTable</span><span class="p">,</span> <span class="n">EvMore</span>
+
+<span class="k">class</span> <span class="nc">TableEvMore</span><span class="p">(</span><span class="n">EvMore</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">init_pages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">pages</span> <span class="o">=</span> <span class="c1"># depends on data type</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">init_pages</span><span class="p">(</span><span class="n">pages</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">page_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">):</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">page</span><span class="p">:</span>
+            <span class="n">cols</span> <span class="o">=</span> <span class="c1"># split raw line into columns</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="o">*</span><span class="n">cols</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+
+<span class="n">TableEvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">pages</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.display">
+<code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">show_footer</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pretty-print the page.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.page_top">
+<code class="sig-name descname">page_top</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.page_top"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.page_top" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the top page</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.page_end">
+<code class="sig-name descname">page_end</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.page_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.page_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the bottom page.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.page_next">
+<code class="sig-name descname">page_next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.page_next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.page_next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scroll the text to the next page. Quit if already at the end
+of the page.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.page_back">
+<code class="sig-name descname">page_back</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.page_back"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.page_back" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scroll the text back up, at the most to the top.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.page_quit">
+<code class="sig-name descname">page_quit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quiet</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.page_quit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.page_quit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quit the pager</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts the pagination</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.paginator_index">
+<code class="sig-name descname">paginator_index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pageno</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.paginator_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.paginator_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Paginate to specific, known index</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.paginator_slice">
+<code class="sig-name descname">paginator_slice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pageno</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.paginator_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.paginator_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Paginate by slice. This is done with an eye on memory efficiency (usually for
+querysets); to avoid fetching all objects at the same time.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.paginator_django">
+<code class="sig-name descname">paginator_django</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pageno</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.paginator_django"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.paginator_django" title="Permalink to this definition">¶</a></dt>
+<dd><p>Paginate using the django queryset Paginator API. Note that his is indexed from 1.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.init_evtable">
+<code class="sig-name descname">init_evtable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">table</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.init_evtable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.init_evtable" title="Permalink to this definition">¶</a></dt>
+<dd><p>The input is an EvTable.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.init_queryset">
+<code class="sig-name descname">init_queryset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">qs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.init_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.init_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>The input is a queryset</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.init_django_paginator">
+<code class="sig-name descname">init_django_paginator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pages</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.init_django_paginator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.init_django_paginator" title="Permalink to this definition">¶</a></dt>
+<dd><p>The input is a django Paginator object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.init_iterable">
+<code class="sig-name descname">init_iterable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inp</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.init_iterable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.init_iterable" title="Permalink to this definition">¶</a></dt>
+<dd><p>The input is something other than a string - convert to iterable of strings</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.init_f_str">
+<code class="sig-name descname">init_f_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.init_f_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.init_f_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>The input contains \f (backslash + f) markers. We use \f to indicate
+the user wants to enforce their line breaks on their own. If so, we do
+no automatic line-breaking/justification at all.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.init_str">
+<code class="sig-name descname">init_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.init_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.init_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>The input is a string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.init_pages">
+<code class="sig-name descname">init_pages</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inp</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.init_pages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.init_pages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the pagination. By default, will analyze input type to determine
+how pagination automatically.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inp</strong> (<em>any</em>) – Incoming data to be paginated. By default, handles pagination of
+strings, querysets, django.Paginator, EvTables and any iterables with strings.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If overridden, this method must perform the following  actions:</p>
+<ul class="simple">
+<li><p>read and re-store <strong>self._data</strong> (the incoming data set) if needed
+for pagination to work.</p></li>
+<li><p>set <strong>self._npages</strong> to the total number of pages. Default is 1.</p></li>
+<li><p>set <strong>self._paginator</strong> to a callable that will take a page number 1…N and return
+the data to display on that page (not any decorations or next/prev buttons). If only
+wanting to change the paginator, override <strong>self.paginator</strong> instead.</p></li>
+<li><p>set <strong>self._page_formatter</strong> to a callable that will receive the
+page from <strong>self._paginator</strong> and format it with one element per
+line. Default is <strong>str</strong>. Or override <strong>self.page_formatter</strong>
+directly instead.</p></li>
+</ul>
+<p>By default, helper methods are called that perform these actions
+depending on supported inputs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.paginator">
+<code class="sig-name descname">paginator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pageno</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.paginator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.paginator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Paginator. The data operated upon is in <strong>self._data</strong>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pageno</strong> (<em>int</em>) – The page number to view, from 0…N-1</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>str</em> –</p>
+<dl class="simple">
+<dt>The page to display (without any decorations, those are added</dt><dd><p>by EvMore).</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evmore.EvMore.page_formatter">
+<code class="sig-name descname">page_formatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">page</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.page_formatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.page_formatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Page formatter. Every page passes through this method. Override
+it to customize behvaior per-page. A common use is to generate a new
+EvTable for every page (this is more efficient than to generate one huge
+EvTable across many pages and feed it into EvMore all at once).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>page</strong> (<em>any</em>) – A piece of data representing one page to display. This must</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>str</em> –</p>
+<dl class="simple">
+<dt>A ready-formatted page to display. Extra footer with help about</dt><dd><p>switching to the next/prev page will be added automatically</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.evmore.msg">
+<code class="sig-prename descclassname">evennia.utils.evmore.</code><code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">always_page</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">justify</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">justify_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exit_on_lastpage</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>EvMore-supported version of msg, mimicking the normal msg method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>Object</em><em> or </em><em>Account</em>) – Entity reading the text.</p></li>
+<li><p><strong>text</strong> (<em>str</em><em>, </em><a class="reference internal" href="evennia.utils.evtable.html#evennia.utils.evtable.EvTable" title="evennia.utils.evtable.EvTable"><em>EvTable</em></a><em> or </em><em>iterator</em>) – <p>The text or data to put under paging.</p>
+<ul>
+<li><p>If a string, paginage normally. If this text contains
+one or more \f (backslash + f) format symbol, automatic pagination is disabled
+and page-breaks will only happen after each \f.</p></li>
+<li><p>If <strong>EvTable</strong>, the EvTable will be paginated with the same
+setting on each page if it is too long. The table
+decorations will be considered in the size of the page.</p></li>
+<li><p>Otherwise <strong>text</strong> is converted to an iterator, where each step is
+is expected to be a line in the final display, and each line
+will be run through repr().</p></li>
+</ul>
+</p></li>
+<li><p><strong>always_page</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <strong>False</strong>, the
+pager will only kick in if <strong>text</strong> is too big
+to fit the screen.</p></li>
+<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – If given, this session will be used
+to determine the screen width and will receive all output.</p></li>
+<li><p><strong>justify</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, justify long lines in output. Disable for
+fixed-format output, like tables.</p></li>
+<li><p><strong>justify_kwargs</strong> (<em>dict</em><em>, </em><em>bool</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – If given, this should
+be valid keyword arguments to the utils.justify() function. If False,
+no justification will be done.</p></li>
+<li><p><strong>exit_on_lastpage</strong> (<em>bool</em><em>, </em><em>optional</em>) – Immediately exit pager when reaching the last page.</p></li>
+<li><p><strong>use_evtable</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, each page will be rendered as an
+EvTable. For this to work, <strong>text</strong> must be an iterable, where each element
+is the table (list of list) to render on that page.</p></li>
+<li><p><strong>evtable_args</strong> (<em>tuple</em><em>, </em><em>optional</em>) – The args to use for EvTable on each page.</p></li>
+<li><p><strong>evtable_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – The kwargs to use for EvTable on each
+page (except <strong>table</strong>, which is supplied by EvMore per-page).</p></li>
+<li><p><strong>kwargs</strong> (<em>any</em><em>, </em><em>optional</em>) – These will be passed on
+to the <strong>caller.msg</strong> method.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.utils.evmore.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.utils.evmore.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.utils.evmore.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.evmore</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

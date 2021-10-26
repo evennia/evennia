@@ -1,0 +1,462 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.tree_select &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tree_select</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.tree_select">
+<span id="evennia-contrib-tree-select"></span><h1>evennia.contrib.tree_select<a class="headerlink" href="#module-evennia.contrib.tree_select" title="Permalink to this headline">¶</a></h1>
+<p>Easy menu selection tree</p>
+<p>Contrib - Tim Ashley Jenkins 2017</p>
+<p>This module allows you to create and initialize an entire branching EvMenu
+instance with nothing but a multi-line string passed to one function.</p>
+<p>EvMenu is incredibly powerful and flexible, but using it for simple menus
+can often be fairly cumbersome - a simple menu that can branch into five
+categories would require six nodes, each with options represented as a list
+of dictionaries.</p>
+<p>This module provides a function, init_tree_selection, which acts as a frontend
+for EvMenu, dynamically sourcing the options from a multi-line string you provide.
+For example, if you define a string as such:</p>
+<blockquote>
+<div><p>TEST_MENU = ‘’’Foo
+Bar
+Baz
+Qux’’’</p>
+</div></blockquote>
+<p>And then use TEST_MENU as the ‘treestr’ source when you call init_tree_selection
+on a player:</p>
+<blockquote>
+<div><p>init_tree_selection(TEST_MENU, caller, callback)</p>
+</div></blockquote>
+<p>The player will be presented with an EvMenu, like so:</p>
+<blockquote>
+<div><p>Foo
+Bar
+Baz
+Qux</p>
+</div></blockquote>
+<p>Making a selection will pass the selection’s key to the specified callback as a
+string along with the caller, as well as the index of the selection (the line number
+on the source string) along with the source string for the tree itself.</p>
+<p>In addition to specifying selections on the menu, you can also specify categories.
+Categories are indicated by putting options below it preceded with a ‘-’ character.
+If a selection is a category, then choosing it will bring up a new menu node, prompting
+the player to select between those options, or to go back to the previous menu. In
+addition, categories are marked by default with a ‘[+]’ at the end of their key. Both
+this marker and the option to go back can be disabled.</p>
+<p>Categories can be nested in other categories as well - just go another ‘-’ deeper. You
+can do this as many times as you like. There’s no hard limit to the number of
+categories you can go down.</p>
+<p>For example, let’s add some more options to our menu, turning ‘Bar’ into a category.</p>
+<blockquote>
+<div><p>TEST_MENU = ‘’’Foo
+Bar
+-You’ve got to know
+–When to hold em
+–When to fold em
+–When to walk away
+Baz
+Qux’’’</p>
+</div></blockquote>
+<p>Now when we call the menu, we can see that ‘Bar’ has become a category instead of a
+selectable option.</p>
+<blockquote>
+<div><p>Foo
+Bar [+]
+Baz
+Qux</p>
+</div></blockquote>
+<p>Note the [+] next to ‘Bar’. If we select ‘Bar’, it’ll show us the option listed under it.</p>
+<blockquote>
+<div><p>You’ve got to know [+]
+&lt;&lt; Go Back: Return to the previous menu.</p>
+</div></blockquote>
+<p>Just the one option, which is a category itself, and the option to go back, which will
+take us back to the previous menu. Let’s select ‘You’ve got to know’.</p>
+<blockquote>
+<div><p>When to hold em
+When to fold em
+When to walk away
+&lt;&lt; Go Back: Return to the previous menu.</p>
+</div></blockquote>
+<p>Now we see the three options listed under it, too. We can select one of them or use ‘Go
+Back’ to return to the ‘Bar’ menu we were just at before. It’s very simple to make a
+branching tree of selections!</p>
+<p>One last thing - you can set the descriptions for the various options simply by adding a
+‘:’ character followed by the description to the option’s line. For example, let’s add a
+description to ‘Baz’ in our menu:</p>
+<blockquote>
+<div><p>TEST_MENU = ‘’’Foo
+Bar
+-You’ve got to know
+–When to hold em
+–When to fold em
+–When to walk away
+Baz: Look at this one: the best option.
+Qux’’’</p>
+</div></blockquote>
+<p>Now we see that the Baz option has a description attached that’s separate from its key:</p>
+<blockquote>
+<div><p>Foo
+Bar [+]
+Baz: Look at this one: the best option.
+Qux</p>
+</div></blockquote>
+<p>Once the player makes a selection - let’s say, ‘Foo’ - the menu will terminate and call
+your specified callback with the selection, like so:</p>
+<blockquote>
+<div><p>callback(caller, TEST_MENU, 0, “Foo”)</p>
+</div></blockquote>
+<p>The index of the selection is given along with a string containing the selection’s key.
+That way, if you have two selections in the menu with the same key, you can still
+differentiate between them.</p>
+<p>And that’s all there is to it! For simple branching-tree selections, using this system is
+much easier than manually creating EvMenu nodes. It also makes generating menus with dynamic
+options much easier - since the source of the menu tree is just a string, you could easily
+generate that string procedurally before passing it to the init_tree_selection function.
+For example, if a player casts a spell or does an attack without specifying a target, instead
+of giving them an error, you could present them with a list of valid targets to select by
+generating a multi-line string of targets and passing it to init_tree_selection, with the
+callable performing the maneuver once a selection is made.</p>
+<p>This selection system only works for simple branching trees - doing anything really complicated
+like jumping between categories or prompting for arbitrary input would still require a full
+EvMenu implementation. For simple selections, however, I’m sure you will find using this function
+to be much easier!</p>
+<p>Included in this module is a sample menu and function which will let a player change the color
+of their name - feel free to mess with it to get a feel for how this system works by importing
+this module in your game’s default_cmdsets.py module and adding CmdNameColor to your default
+character’s command set.</p>
+<dl class="py function">
+<dt id="evennia.contrib.tree_select.init_tree_selection">
+<code class="sig-prename descclassname">evennia.contrib.tree_select.</code><code class="sig-name descname">init_tree_selection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">treestr</span></em>, <em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mark_category</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">go_back</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">cmd_on_exit</span><span class="o">=</span><span class="default_value">'look'</span></em>, <em class="sig-param"><span class="n">start_text</span><span class="o">=</span><span class="default_value">'Make your selection:'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tree_select.html#init_tree_selection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tree_select.init_tree_selection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prompts a player to select an option from a menu tree given as a multi-line string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>treestr</strong> (<em>str</em>) – Multi-lne string representing menu options</p></li>
+<li><p><strong>caller</strong> (<em>obj</em>) – Player to initialize the menu for</p></li>
+<li><p><strong>callback</strong> (<em>callable</em>) – Function to run when a selection is made. Must take 4 args:
+caller (obj): Caller given above
+treestr (str): Menu tree string given above
+index (int): Index of final selection
+selection (str): Key of final selection</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Options:</dt><dd><p>index (int or None): Index to start the menu at, or None for top level
+mark_category (bool): If True, marks categories with a [+] symbol in the menu
+go_back (bool): If True, present an option to go back to previous categories
+start_text (str): Text to display at the top level of the menu
+cmd_on_exit(str): Command to enter when the menu exits - ‘look’ by default</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function will initialize an instance of EvMenu with options generated
+dynamically from the source string, and passes the menu user’s selection to
+a function of your choosing. The EvMenu is made of a single, repeating node,
+which will call itself over and over at different levels of the menu tree as
+categories are selected.</p>
+<p>Once a non-category selection is made, the user’s selection will be passed to
+the given callable, both as a string and as an index number. The index is given
+to ensure every selection has a unique identifier, so that selections with the
+same key in different categories can be distinguished between.</p>
+<p>The menus called by this function are not persistent and cannot perform
+complicated tasks like prompt for arbitrary input or jump multiple category
+levels at once - you’ll have to use EvMenu itself if you want to take full
+advantage of its features.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tree_select.dashcount">
+<code class="sig-prename descclassname">evennia.contrib.tree_select.</code><code class="sig-name descname">dashcount</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">entry</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tree_select.html#dashcount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tree_select.dashcount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Counts the number of dashes at the beginning of a string. This
+is needed to determine the depth of options in categories.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>entry</strong> (<em>str</em>) – String to count the dashes at the start of</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>dashes (int)</em> – Number of dashes at the start</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tree_select.is_category">
+<code class="sig-prename descclassname">evennia.contrib.tree_select.</code><code class="sig-name descname">is_category</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">treestr</span></em>, <em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tree_select.html#is_category"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tree_select.is_category" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines whether an option in a tree string is a category by
+whether or not there are additional options below it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>treestr</strong> (<em>str</em>) – Multi-line string representing menu options</p></li>
+<li><p><strong>index</strong> (<em>int</em>) – Which line of the string to test</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>is_category (bool)</em> – Whether the option is a category</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tree_select.parse_opts">
+<code class="sig-prename descclassname">evennia.contrib.tree_select.</code><code class="sig-name descname">parse_opts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">treestr</span></em>, <em class="sig-param"><span class="n">category_index</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tree_select.html#parse_opts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tree_select.parse_opts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses a tree string and given index into a list of options. If
+category_index is none, returns all the options at the top level of
+the menu. If category_index corresponds to a category, returns a list
+of options under that category. If category_index corresponds to
+an option that is not a category, it’s a selection and returns True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>treestr</strong> (<em>str</em>) – Multi-line string representing menu options</p></li>
+<li><p><strong>category_index</strong> (<em>int</em>) – Index of category or None for top level</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>kept_opts (list or True)</em> –</p>
+<dl class="simple">
+<dt>Either a list of options in the selected</dt><dd><p>category or True if a selection was made</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tree_select.index_to_selection">
+<code class="sig-prename descclassname">evennia.contrib.tree_select.</code><code class="sig-name descname">index_to_selection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">treestr</span></em>, <em class="sig-param"><span class="n">index</span></em>, <em class="sig-param"><span class="n">desc</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tree_select.html#index_to_selection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tree_select.index_to_selection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a menu tree string and an index, returns the corresponding selection’s
+name as a string. If ‘desc’ is set to True, will return the selection’s
+description as a string instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>treestr</strong> (<em>str</em>) – Multi-line string representing menu options</p></li>
+<li><p><strong>index</strong> (<em>int</em>) – Index to convert to selection key or description</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Options:</dt><dd><p>desc (bool): If true, returns description instead of key</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>selection (str)</em> – Selection key or description if ‘desc’ is set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tree_select.go_up_one_category">
+<code class="sig-prename descclassname">evennia.contrib.tree_select.</code><code class="sig-name descname">go_up_one_category</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">treestr</span></em>, <em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tree_select.html#go_up_one_category"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tree_select.go_up_one_category" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a menu tree string and an index, returns the category that the given option
+belongs to. Used for the ‘go back’ option.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>treestr</strong> (<em>str</em>) – Multi-line string representing menu options</p></li>
+<li><p><strong>index</strong> (<em>int</em>) – Index to determine the parent category of</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>parent_category (int)</em> – Index of parent category</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tree_select.optlist_to_menuoptions">
+<code class="sig-prename descclassname">evennia.contrib.tree_select.</code><code class="sig-name descname">optlist_to_menuoptions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">treestr</span></em>, <em class="sig-param"><span class="n">optlist</span></em>, <em class="sig-param"><span class="n">index</span></em>, <em class="sig-param"><span class="n">mark_category</span></em>, <em class="sig-param"><span class="n">go_back</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tree_select.html#optlist_to_menuoptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tree_select.optlist_to_menuoptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a list of options processed by parse_opts and turns it into
+a list/dictionary of menu options for use in menunode_treeselect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>treestr</strong> (<em>str</em>) – Multi-line string representing menu options</p></li>
+<li><p><strong>optlist</strong> (<em>list</em>) – List of options to convert to EvMenu’s option format</p></li>
+<li><p><strong>index</strong> (<em>int</em>) – Index of current category</p></li>
+<li><p><strong>mark_category</strong> (<em>bool</em>) – Whether or not to mark categories with [+]</p></li>
+<li><p><strong>go_back</strong> (<em>bool</em>) – Whether or not to add an option to go back in the menu</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>menuoptions (list of dicts)</em> –</p>
+<dl class="simple">
+<dt>List of menu options formatted for use</dt><dd><p>in EvMenu, each passing a different “newindex” kwarg that changes
+the menu level or makes a selection</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tree_select.menunode_treeselect">
+<code class="sig-prename descclassname">evennia.contrib.tree_select.</code><code class="sig-name descname">menunode_treeselect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tree_select.html#menunode_treeselect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tree_select.menunode_treeselect" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the repeating menu node that handles the tree selection.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tree_select.CmdNameColor">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tree_select.</code><code class="sig-name descname">CmdNameColor</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tree_select.html#CmdNameColor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tree_select.CmdNameColor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>Set or remove a special color on your name. Just an example for the
+easy menu selection tree contrib.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tree_select.CmdNameColor.key">
+<code class="sig-name descname">key</code><em class="property"> = 'namecolor'</em><a class="headerlink" href="#evennia.contrib.tree_select.CmdNameColor.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tree_select.CmdNameColor.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tree_select.html#CmdNameColor.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tree_select.CmdNameColor.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the actual executing part of the command.  It is
+called directly after self.parse(). See the docstring of this
+module for which object properties are available (beyond those
+set in self.parse())</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tree_select.CmdNameColor.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.tree_select.CmdNameColor.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tree_select.CmdNameColor.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.tree_select.CmdNameColor.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tree_select.CmdNameColor.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.tree_select.CmdNameColor.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tree_select.change_name_color">
+<code class="sig-prename descclassname">evennia.contrib.tree_select.</code><code class="sig-name descname">change_name_color</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">treestr</span></em>, <em class="sig-param"><span class="n">index</span></em>, <em class="sig-param"><span class="n">selection</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tree_select.html#change_name_color"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tree_select.change_name_color" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes a player’s name color.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>obj</em>) – Character whose name to color.</p></li>
+<li><p><strong>treestr</strong> (<em>str</em>) – String for the color change menu - unused</p></li>
+<li><p><strong>index</strong> (<em>int</em>) – Index of menu selection - unused</p></li>
+<li><p><strong>selection</strong> (<em>str</em>) – Selection made from the name color menu - used
+to determine the color the player chose.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.tree_select.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.contrib.tree_select.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.contrib.tree_select.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tree_select</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

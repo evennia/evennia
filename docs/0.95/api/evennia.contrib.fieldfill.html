@@ -1,0 +1,467 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.fieldfill &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.fieldfill</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.fieldfill">
+<span id="evennia-contrib-fieldfill"></span><h1>evennia.contrib.fieldfill<a class="headerlink" href="#module-evennia.contrib.fieldfill" title="Permalink to this headline">¶</a></h1>
+<p>Easy fillable form</p>
+<p>Contrib - Tim Ashley Jenkins 2018</p>
+<p>This module contains a function that calls an easily customizable EvMenu - this
+menu presents the player with a fillable form, with fields that can be filled
+out in any order. Each field’s value can be verified, with the function
+allowing easy checks for text and integer input, minimum and maximum values /
+character lengths, or can even be verified by a custom function. Once the form
+is submitted, the form’s data is submitted as a dictionary to any callable of
+your choice.</p>
+<p>The function that initializes the fillable form menu is fairly simple, and
+includes the caller, the template for the form, and the callback(caller, result) to which the form
+data will be sent to upon submission.</p>
+<blockquote>
+<div><p>init_fill_field(formtemplate, caller, formcallback)</p>
+</div></blockquote>
+<p>Form templates are defined as a list of dictionaries - each dictionary
+represents a field in the form, and contains the data for the field’s name and
+behavior. For example, this basic form template will allow a player to fill out
+a brief character profile:</p>
+<blockquote>
+<div><p>PROFILE_TEMPLATE = [
+{“fieldname”:”Name”, “fieldtype”:”text”},
+{“fieldname”:”Age”, “fieldtype”:”number”},
+{“fieldname”:”History”, “fieldtype”:”text”},
+]</p>
+</div></blockquote>
+<p>This will present the player with an EvMenu showing this basic form:</p>
+<blockquote>
+<div><blockquote>
+<div><dl class="simple">
+<dt>Name:</dt><dd><p>Age:</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>History:</p>
+</div></blockquote>
+<p>While in this menu, the player can assign a new value to any field with the
+syntax &lt;field&gt; = &lt;new value&gt;, like so:</p>
+<blockquote>
+<div><p>&gt; name = Ashley
+Field ‘Name’ set to: Ashley</p>
+</div></blockquote>
+<p>Typing ‘look’ by itself will show the form and its current values.</p>
+<blockquote>
+<div><blockquote>
+<div><p>&gt; look</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Name: Ashley</dt><dd><p>Age:</p>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+<p>History:</p>
+</div></blockquote>
+<p>Number fields require an integer input, and will reject any text that can’t
+be converted into an integer.</p>
+<blockquote>
+<div><p>&gt; age = youthful
+Field ‘Age’ requires a number.
+&gt; age = 31
+Field ‘Age’ set to: 31</p>
+</div></blockquote>
+<p>Form data is presented as an EvTable, so text of any length will wrap cleanly.</p>
+<blockquote>
+<div><blockquote>
+<div><p>&gt; history = EVERY MORNING I WAKE UP AND OPEN PALM SLAM[…]
+Field ‘History’ set to: EVERY MORNING I WAKE UP AND[…]
+&gt; look</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Name: Ashley</dt><dd><p>Age: 31</p>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+<dl class="simple">
+<dt>History: EVERY MORNING I WAKE UP AND OPEN PALM SLAM A VHS INTO THE SLOT.</dt><dd><p>IT’S CHRONICLES OF RIDDICK AND RIGHT THEN AND THERE I START DOING
+THE MOVES ALONGSIDE WITH THE MAIN CHARACTER, RIDDICK. I DO EVERY
+MOVE AND I DO EVERY MOVE HARD.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>When the player types ‘submit’ (or your specified submit command), the menu
+quits and the form’s data is passed to your specified function as a dictionary,
+like so:</p>
+<blockquote>
+<div><p>formdata = {“Name”:”Ashley”, “Age”:31, “History”:”EVERY MORNING I[…]”}</p>
+</div></blockquote>
+<p>You can do whatever you like with this data in your function - forms can be used
+to set data on a character, to help builders create objects, or for players to
+craft items or perform other complicated actions with many variables involved.</p>
+<p>The data that your form will accept can also be specified in your form template -
+let’s say, for example, that you won’t accept ages under 18 or over 100. You can
+do this by specifying “min” and “max” values in your field’s dictionary:</p>
+<blockquote>
+<div><p>PROFILE_TEMPLATE = [
+{“fieldname”:”Name”, “fieldtype”:”text”},
+{“fieldname”:”Age”, “fieldtype”:”number”, “min”:18, “max”:100},
+{“fieldname”:”History”, “fieldtype”:”text”}
+]</p>
+</div></blockquote>
+<p>Now if the player tries to enter a value out of range, the form will not acept the
+given value.</p>
+<blockquote>
+<div><p>&gt; age = 10
+Field ‘Age’ reqiures a minimum value of 18.
+&gt; age = 900
+Field ‘Age’ has a maximum value of 100.</p>
+</div></blockquote>
+<p>Setting ‘min’ and ‘max’ for a text field will instead act as a minimum or
+maximum character length for the player’s input.</p>
+<p>There are lots of ways to present the form to the player - fields can have default
+values or show a custom message in place of a blank value, and player input can be
+verified by a custom function, allowing for a great deal of flexibility. There
+is also an option for ‘bool’ fields, which accept only a True / False input and
+can be customized to represent the choice to the player however you like (E.G.
+Yes/No, On/Off, Enabled/Disabled, etc.)</p>
+<p>This module contains a simple example form that demonstrates all of the included
+functionality - a command that allows a player to compose a message to another
+online character and have it send after a custom delay. You can test it by
+importing this module in your game’s default_cmdsets.py module and adding
+CmdTestMenu to your default character’s command set.</p>
+<p>FIELD TEMPLATE KEYS:
+Required:</p>
+<blockquote>
+<div><p>fieldname (str): Name of the field, as presented to the player.
+fieldtype (str): Type of value required: ‘text’, ‘number’, or ‘bool’.</p>
+</div></blockquote>
+<dl>
+<dt>Optional:</dt><dd><p>max (int): Maximum character length (if text) or value (if number).
+min (int): Minimum charater length (if text) or value (if number).
+truestr (str): String for a ‘True’ value in a bool field.</p>
+<blockquote>
+<div><p>(E.G. ‘On’, ‘Enabled’, ‘Yes’)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>falsestr (str): String for a ‘False’ value in a bool field.</dt><dd><p>(E.G. ‘Off’, ‘Disabled’, ‘No’)</p>
+</dd>
+</dl>
+<p>default (str): Initial value (blank if not given).
+blankmsg (str): Message to show in place of value when field is blank.
+cantclear (bool): Field can’t be cleared if True.
+required (bool): If True, form cannot be submitted while field is blank.
+verifyfunc (callable): Name of a callable used to verify input - takes</p>
+<blockquote>
+<div><p>(caller, value) as arguments. If the function returns True,
+the player’s input is considered valid - if it returns False,
+the input is rejected. Any other value returned will act as
+the field’s new value, replacing the player’s input. This
+allows for values that aren’t strings or integers (such as
+object dbrefs). For boolean fields, return ‘0’ or ‘1’ to set
+the field to False or True.</p>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="py class">
+<dt id="evennia.contrib.fieldfill.FieldEvMenu">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">FieldEvMenu</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">menudata</span></em>, <em class="sig-param"><span class="n">startnode</span><span class="o">=</span><span class="default_value">'start'</span></em>, <em class="sig-param"><span class="n">cmdset_mergetype</span><span class="o">=</span><span class="default_value">'Replace'</span></em>, <em class="sig-param"><span class="n">cmdset_priority</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">auto_quit</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">auto_look</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">auto_help</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">cmd_on_exit</span><span class="o">=</span><span class="default_value">'look'</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">startnode_input</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#FieldEvMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.FieldEvMenu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu" title="evennia.utils.evmenu.EvMenu"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.evmenu.EvMenu</span></code></a></p>
+<p>Custom EvMenu type with its own node formatter - removes extraneous lines</p>
+<dl class="py method">
+<dt id="evennia.contrib.fieldfill.FieldEvMenu.node_formatter">
+<code class="sig-name descname">node_formatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodetext</span></em>, <em class="sig-param"><span class="n">optionstext</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#FieldEvMenu.node_formatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.FieldEvMenu.node_formatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Formats the entirety of the node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodetext</strong> (<em>str</em>) – The node text as returned by <strong>self.nodetext_formatter</strong>.</p></li>
+<li><p><strong>optionstext</strong> (<em>str</em>) – The options display as returned by <strong>self.options_formatter</strong>.</p></li>
+<li><p><strong>caller</strong> (<em>Object</em><em>, </em><em>Account</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The caller of the node.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>node (str)</em> – The formatted node to display.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.fieldfill.init_fill_field">
+<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">init_fill_field</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">formtemplate</span></em>, <em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">formcallback</span></em>, <em class="sig-param"><span class="n">pretext</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">posttext</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">submitcmd</span><span class="o">=</span><span class="default_value">'submit'</span></em>, <em class="sig-param"><span class="n">borderstyle</span><span class="o">=</span><span class="default_value">'cells'</span></em>, <em class="sig-param"><span class="n">formhelptext</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">initial_formdata</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#init_fill_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.init_fill_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a menu presenting a player with a fillable form - once the form
+is submitted, the data will be passed as a dictionary to your chosen
+function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>formtemplate</strong> (<em>list of dicts</em>) – The template for the form’s fields.</p></li>
+<li><p><strong>caller</strong> (<em>obj</em>) – Player who will be filling out the form.</p></li>
+<li><p><strong>formcallback</strong> (<em>callable</em>) – Function to pass the completed form’s data to.</p></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>Options:</dt><dd><p>pretext (str): Text to put before the form in the menu.
+posttext (str): Text to put after the form in the menu.
+submitcmd (str): Command used to submit the form.
+borderstyle (str): Form’s EvTable border style.
+formhelptext (str): Help text for the form menu (or default is provided).
+persistent (bool): Whether to make the EvMenu persistent across reboots.
+initial_formdata (dict): Initial data for the form - a blank form with</p>
+<blockquote>
+<div><p>defaults specified in the template will be generated otherwise.
+In the case of a form used to edit properties on an object or a
+similar application, you may want to generate the initial form
+data dynamically before calling init_fill_field.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.fieldfill.menunode_fieldfill">
+<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">menunode_fieldfill</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#menunode_fieldfill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.menunode_fieldfill" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is an EvMenu node, which calls itself over and over in order to
+allow a player to enter values into a fillable form. When the form is
+submitted, the form data is passed to a callback as a dictionary.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.fieldfill.form_template_to_dict">
+<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">form_template_to_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">formtemplate</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#form_template_to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.form_template_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a dictionary of form data from the given list-of-dictionaries
+form template, as formatted above.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>formtemplate</strong> (<em>list of dicts</em>) – Tempate for the form to be initialized.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>formdata (dict)</em> – Dictionary of initalized form data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.fieldfill.display_formdata">
+<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">display_formdata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">formtemplate</span></em>, <em class="sig-param"><span class="n">formdata</span></em>, <em class="sig-param"><span class="n">pretext</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">posttext</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">borderstyle</span><span class="o">=</span><span class="default_value">'cells'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#display_formdata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.display_formdata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays a form’s current data as a table. Used in the form menu.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>formtemplate</strong> (<em>list of dicts</em>) – Template for the form</p></li>
+<li><p><strong>formdata</strong> (<em>dict</em>) – Form’s current data</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Options:</dt><dd><p>pretext (str): Text to put before the form table.
+posttext (str): Text to put after the form table.
+borderstyle (str): EvTable’s border style.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.fieldfill.verify_online_player">
+<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">verify_online_player</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#verify_online_player"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.verify_online_player" title="Permalink to this definition">¶</a></dt>
+<dd><p>Example ‘verify function’ that matches player input to an online character
+or else rejects their input as invalid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>obj</em>) – Player entering the form data.</p></li>
+<li><p><strong>value</strong> (<em>str</em>) – String player entered into the form, to be verified.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>matched_character (obj or False)</em> –</p>
+<dl class="simple">
+<dt>dbref to a currently logged in</dt><dd><p>character object - reference to the object will be stored in
+the form instead of a string. Returns False if no match is
+made.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.fieldfill.CmdTestMenu">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">CmdTestMenu</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#CmdTestMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.CmdTestMenu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>This test command will initialize a menu that presents you with a form.
+You can fill out the fields of this form in any order, and then type in
+‘send’ to send a message to another online player, which will reach them
+after a delay you specify.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>&lt;field&gt; = &lt;new value&gt;
+clear &lt;field&gt;
+help
+look
+quit
+send</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.fieldfill.CmdTestMenu.key">
+<code class="sig-name descname">key</code><em class="property"> = 'testmenu'</em><a class="headerlink" href="#evennia.contrib.fieldfill.CmdTestMenu.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.fieldfill.CmdTestMenu.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#CmdTestMenu.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.CmdTestMenu.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This performs the actual command.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.fieldfill.CmdTestMenu.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.fieldfill.CmdTestMenu.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.fieldfill.CmdTestMenu.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.fieldfill.CmdTestMenu.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.fieldfill.CmdTestMenu.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.fieldfill.CmdTestMenu.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.fieldfill.sendmessage">
+<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">sendmessage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#sendmessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.sendmessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback to send a message to a player.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<em>obj</em>) – Player to message.</p></li>
+<li><p><strong>text</strong> (<em>str</em>) – Message.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.fieldfill.init_delayed_message">
+<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">init_delayed_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">formdata</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#init_delayed_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.init_delayed_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a delayed message, using data from the example form.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>obj</em>) – Character submitting the message.</p></li>
+<li><p><strong>formdata</strong> (<em>dict</em>) – Data from submitted form.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.fieldfill.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.contrib.fieldfill.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.contrib.fieldfill.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.fieldfill</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

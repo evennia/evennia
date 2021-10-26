@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,10 +40,10 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="building-permissions">
+  <section class="tex2jax_ignore mathjax_ignore" id="building-permissions">
 <h1>Building Permissions<a class="headerlink" href="#building-permissions" title="Permalink to this headline">¶</a></h1>
 <p><em>OBS: This gives only a brief introduction to the access system. Locks and permissions are fully
-detailed</em> <a class="reference internal" href="../Components/Locks.html"><span class="doc">here</span></a>.</p>
+detailed</em> <a class="reference internal" href="../Components/Locks.html"><span class="doc std std-doc">here</span></a>.</p>
 <section id="the-super-user">
 <h2>The super user<a class="headerlink" href="#the-super-user" title="Permalink to this headline">¶</a></h2>
 <p>There are strictly speaking two types of users in Evennia, the <em>super user</em> and everyone else. The
@@ -55,7 +57,7 @@ but one superuser.</p>
 <h2>Assigning permissions<a class="headerlink" href="#assigning-permissions" title="Permalink to this headline">¶</a></h2>
 <p>Whereas permissions can be used for anything, those put in <code class="docutils literal notranslate"><span class="pre">settings.PERMISSION_HIERARCHY</span></code> will have
 a ranking relative each other as well. We refer to these types of permissions as <em>hierarchical
-permissions</em>. When building locks to check these permissions, the <code class="docutils literal notranslate"><span class="pre">perm()</span></code> <a class="reference internal" href="../Components/Locks.html"><span class="doc">lock function</span></a> is
+permissions</em>. When building locks to check these permissions, the <code class="docutils literal notranslate"><span class="pre">perm()</span></code> <a class="reference internal" href="../Components/Locks.html"><span class="doc std std-doc">lock function</span></a> is
 used. By default Evennia creates the following hierarchy (spelled exactly like this):</p>
 <ol class="simple">
 <li><p><strong>Developers</strong> basically have the same access as superusers except that they do <em>not</em> sidestep
@@ -79,11 +81,11 @@ This is an <em>Developer</em>-level command, but it could in principle be made l
 allows assignments equal or lower to your current level (so you cannot use it to escalate your own
 permission level).  So, assuming you yourself have <em>Developer</em> access (or is superuser), you  assign
 a new account “Tommy” to your core staff with the command</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@perm</span><span class="o">/</span><span class="n">account</span> <span class="n">Tommy</span> <span class="o">=</span> <span class="n">Developer</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@perm/account Tommy = Developer
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@perm</span> <span class="o">*</span><span class="n">Tommy</span> <span class="o">=</span> <span class="n">Developer</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@perm *Tommy = Developer
 </pre></div>
 </div>
 <p>We use a switch or the <code class="docutils literal notranslate"><span class="pre">*name</span></code> format to make sure to put the permission on the <em>Account</em> and not on
@@ -91,7 +93,7 @@ any eventual <em>Character</em> that may also be named “Tommy”. This is usua
 Account will then remain an Developer regardless of which Character they are currently controlling.
 To limit permission to a per-Character level you should instead use <em>quelling</em> (see below). Normally
 permissions can be any string, but for these special hierarchical permissions you can also use
-plural (”Developer” and “Developers” both grant the same powers).</p>
+plural (“Developer” and “Developers” both grant the same powers).</p>
 </section>
 <section id="quelling-your-permissions">
 <h2>Quelling your permissions<a class="headerlink" href="#quelling-your-permissions" title="Permalink to this headline">¶</a></h2>
@@ -100,7 +102,7 @@ lower. For this you can use <em>quelling</em>.  Normally, when you puppet a Char
 Account-level permission. So even if your Character only has <em>Accounts</em> level permissions, your
 <em>Developer</em>-level Account will take precedence. With the <code class="docutils literal notranslate"><span class="pre">&#64;quell</span></code> command you can change so that the
 Character’s permission takes precedence instead:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@quell</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @quell
 </pre></div>
 </div>
 <p>This will allow you to test out the game using the current Character’s permission level. A developer
@@ -160,7 +162,7 @@ levels. Note that you cannot escalate your permissions this way; If the Characte
 <h3>Versions</h3>
 <ul>
   <li><a href="Building-Permissions.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

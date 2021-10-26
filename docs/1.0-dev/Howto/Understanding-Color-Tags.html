@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,17 +40,17 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="understanding-color-tags">
+  <section class="tex2jax_ignore mathjax_ignore" id="understanding-color-tags">
 <h1>Understanding Color Tags<a class="headerlink" href="#understanding-color-tags" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial aims at dispelling confusions regarding the use of color tags within Evennia.</p>
-<p>Correct understanding of this topic requires having read the <a class="reference internal" href="../Concepts/TextTags.html"><span class="doc">TextTags</span></a> page and learned
+<p>Correct understanding of this topic requires having read the <a class="reference internal" href="../Concepts/TextTags.html"><span class="doc std std-doc">TextTags</span></a> page and learned
 Evennia’s color tags. Here we’ll explain by examples the reasons behind the unexpected (or
 apparently incoherent) behaviors of some color tags, as mentioned <em>en passant</em> in the
-<a class="reference internal" href="../Concepts/TextTags.html"><span class="doc">TextTags</span></a> page.</p>
+<a class="reference internal" href="../Concepts/TextTags.html"><span class="doc std std-doc">TextTags</span></a> page.</p>
 <p>All you’ll need for this tutorial is access to a running instance of Evennia via a color-enabled
 client. The examples provided are just commands that you can type in your client.</p>
 </section>
-<section id="evennia-ansi-and-xterm256">
+<section class="tex2jax_ignore mathjax_ignore" id="evennia-ansi-and-xterm256">
 <h1>Evennia, ANSI and Xterm256<a class="headerlink" href="#evennia-ansi-and-xterm256" title="Permalink to this headline">¶</a></h1>
 <p>All modern MUD clients support colors; nevertheless, the standards to which all clients abide dates
 back to old day of terminals, and when it comes to colors we are dealing with ANSI and Xterm256
@@ -65,7 +67,7 @@ pitfalls. ANSI and Xterm256 coexist without conflicts in Evennia, but in many wa
 each other: ANSI-specific color tags will have no effect on Xterm-defined colors, as we shall see
 here.</p>
 </section>
-<section id="ansi">
+<section class="tex2jax_ignore mathjax_ignore" id="ansi">
 <h1>ANSI<a class="headerlink" href="#ansi" title="Permalink to this headline">¶</a></h1>
 <p>ANSI has a set of 16 colors, to be more precise: ANSI has 8 basic colors which come in <em>dark</em> and
 <em>bright</em> flavours—with <em>dark</em> being <em>normal</em>. The colors are: red, green, yellow, blue, magenta,
@@ -80,7 +82,7 @@ behavior of ANSI tags, as we shall see.</p>
 always customize their appearance—he might decide to have green show as red, and dark green as blue,
 etc.</p>
 </section>
-<section id="xterm256">
+<section class="tex2jax_ignore mathjax_ignore" id="xterm256">
 <h1>Xterm256<a class="headerlink" href="#xterm256" title="Permalink to this headline">¶</a></h1>
 <p>The 16 colors of ANSI should be more than enough to handle simple coloring of text. But when an
 author wants to be sure that a given color will show as he intended it, she might choose to rely on
@@ -88,7 +90,7 @@ Xterm256 colors.</p>
 <p>Xterm256 doesn’t rely on a palette of named colors, it instead represent colors by their values. So,
 a red color could be <code class="docutils literal notranslate"><span class="pre">|[500</span></code> (bright and pure red), or <code class="docutils literal notranslate"><span class="pre">|[300</span></code> (darker red), and so on.</p>
 </section>
-<section id="ansi-color-tags-in-evennia">
+<section class="tex2jax_ignore mathjax_ignore" id="ansi-color-tags-in-evennia">
 <h1>ANSI Color Tags in Evennia<a class="headerlink" href="#ansi-color-tags-in-evennia" title="Permalink to this headline">¶</a></h1>
 <blockquote>
 <div><p>NOTE: for ease of reading, the examples contain extra white spaces after the
@@ -97,7 +99,7 @@ to see the tags separated from their context; it wouldn’t be good practice
 in real-life coding.</p>
 </div></blockquote>
 <p>Let’s proceed by examples. In your MUD client type:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">say</span> <span class="n">Normal</span> <span class="o">|*</span> <span class="n">Negative</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>say Normal |* Negative
 </pre></div>
 </div>
 <p>Evennia should output the word “Normal” normally (ie: gray on black) and “Negative” in reversed
@@ -107,7 +109,7 @@ background—from now on, <strong>FG</strong> and <strong>BG</strong> shorthands
 background.</p>
 <p>But take mental note of this: <code class="docutils literal notranslate"><span class="pre">|*</span></code> has switched <em>dark white</em> and <em>dark black</em>.</p>
 <p>Now try this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">say</span> <span class="o">|</span><span class="n">w</span> <span class="n">Bright</span> <span class="n">white</span> <span class="n">FG</span> <span class="o">|*</span> <span class="n">Negative</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>say |w Bright white FG |* Negative
 </pre></div>
 </div>
 <p>You’ll notice that the word “Negative” is not black on white, it’s darkgray on gray. Why is this?
@@ -116,7 +118,7 @@ Shouldn’t it be black text on a white BG? Two things are happening here.</p>
 <em>highlighting</em> the base/dark/normal colors, and they only apply to FG.</p>
 <p>What happened here is that when we set the bright white FG with <code class="docutils literal notranslate"><span class="pre">|w</span></code>, Evennia translated this into
 the ANSI sequence of Highlight On + White FG. In terms of Evennia’s color tags, it’s as if we typed:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>say |h|!W Bright white FG |* Negative
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>say |h|!W Bright white FG |* Negative
 </pre></div>
 </div>
 <p>Furthermore, the Highlight-On property (which only works for BG!) is preserved after the FG/BG
@@ -128,14 +130,14 @@ color in its normal/dark version. So here the FG’s bright white became dark wh
 reality, it was always normal/dark white, except that in the FG is seen as bright because of the
 highlight tag behind the scenes.</p>
 <p>Let’s try the same thing with some color:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">say</span> <span class="o">|</span><span class="n">m</span> <span class="o">|</span><span class="p">[</span><span class="n">G</span> <span class="n">Bright</span> <span class="n">Magenta</span> <span class="n">on</span> <span class="n">Dark</span> <span class="n">Green</span> <span class="o">|*</span> <span class="n">Negative</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>say |m |[G Bright Magenta on Dark Green |* Negative
 </pre></div>
 </div>
 <p>Again, the BG stays dark because of ANSI rules, and the FG stays bright because of the implicit <code class="docutils literal notranslate"><span class="pre">|h</span></code>
 in <code class="docutils literal notranslate"><span class="pre">|m</span></code>.</p>
 <p>Now, let’s see what happens if we set a bright BG and then invert—yes, Evennia kindly allows us to
 do it, even if it’s not within ANSI expectations.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">say</span> <span class="o">|</span><span class="p">[</span><span class="n">b</span> <span class="n">Dark</span> <span class="n">White</span> <span class="n">on</span> <span class="n">Bright</span> <span class="n">Blue</span> <span class="o">|*</span> <span class="n">Negative</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>say |[b Dark White on Bright Blue |* Negative
 </pre></div>
 </div>
 <p>Before color inversion, the BG does show in bright blue, and after inversion (as expected) it’s
@@ -145,7 +147,7 @@ This behavior is tricky though, and not as simple as it might look.</p>
 blue, and should have converted to normal blue in the FG (after all, there was no highlighting on).
 The fact is that in reality this color is not bright blue at all, it just an Xterm version of it!</p>
 <p>To demonstrate this, type:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">say</span> <span class="o">|</span><span class="p">[</span><span class="n">b</span> <span class="n">Dark</span> <span class="n">White</span> <span class="n">on</span> <span class="n">Bright</span> <span class="n">Blue</span> <span class="o">|*</span> <span class="n">Negative</span> <span class="o">|</span><span class="n">H</span> <span class="n">un</span><span class="o">-</span><span class="n">bright</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>say |[b Dark White on Bright Blue |* Negative |H un-bright
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">|H</span></code> Highlight-Off tag should have turned <em>dark blue</em> the last word; but it didn’t because it
@@ -161,7 +163,7 @@ to your settings) and when instead it’s sending an Xterm representation of tha
 show up always as defined by Evennia).</p>
 <p>You’ll have to keep in mind that the presence of an Xterm BG or FG color might affect the way your
 tags work on the text. For example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>say |[b Bright Blue BG |* Negative |!Y Dark Yellow |h not bright
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>say |[b Bright Blue BG |* Negative |!Y Dark Yellow |h not bright
 </pre></div>
 </div>
 <p>Here the <code class="docutils literal notranslate"><span class="pre">|h</span></code> tag no longer affects the FG color. Even though it was changed via the <code class="docutils literal notranslate"><span class="pre">|!</span></code> tag, the
@@ -172,11 +174,11 @@ via bright BG colors). The <code class="docutils literal notranslate"><span clas
 again. So, at the end is just an issue of being mindful when using Xterm colors or bright BGs, and
 avoid wild mixing them with ANSI tags without normalizing (<code class="docutils literal notranslate"><span class="pre">|n</span></code>) things again.</p>
 <p>Try this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>say |[b Bright Blue BG |* Negative |!R Red FG
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>say |[b Bright Blue BG |* Negative |!R Red FG
 </pre></div>
 </div>
 <p>And then:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>say |[B Dark Blue BG |* Negative |!R Red BG??
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>say |[B Dark Blue BG |* Negative |!R Red BG??
 </pre></div>
 </div>
 <p>In this second example the <code class="docutils literal notranslate"><span class="pre">|!</span></code> changes the BG color instead of the FG! In fact, the odd behavior is
@@ -249,7 +251,7 @@ push it over the limit, so to speak.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Understanding-Color-Tags.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

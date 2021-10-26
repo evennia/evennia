@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Evennia Game Index &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Evennia Game Index</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="evennia-game-index">
+<h1>Evennia Game Index<a class="headerlink" href="#evennia-game-index" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference external" href="http://games.evennia.com">Evennia game index</a> is a list of games built or
+being built with Evennia. Anyone is allowed to add their game to the index</p>
+<ul class="simple">
+<li><p>also if you have just started development and don’t yet accept external
+players. It’s a chance for us to know you are out there and for you to make us
+intrigued about or excited for your upcoming game!</p></li>
+</ul>
+<p>All we ask is that you check so your game-name does not collide with one
+already in the list - be nice!</p>
+<section id="connect-with-the-wizard">
+<h2>Connect with the wizard<a class="headerlink" href="#connect-with-the-wizard" title="Permalink to this headline">¶</a></h2>
+<p>From your game dir, run</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia connections
+</pre></div>
+</div>
+<p>This will start the Evennia <em>Connection wizard</em>. From the menu, select to add
+your game to the Evennia Game Index. Follow the prompts and don’t forget to
+save your new settings in the end. Use <code class="docutils literal notranslate"><span class="pre">quit</span></code> at any time if you change your
+mind.</p>
+<blockquote>
+<div><p>The wizard will create a new file <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/connection_settings.py</span></code>
+with the settings you chose. This is imported from the end of your main
+settings file and will thus override it. You can edit this new file if you
+want, but remember that if you run the wizard again, your changes may get
+over-written.</p>
+</div></blockquote>
+</section>
+<section id="manual-settings">
+<h2>Manual Settings<a class="headerlink" href="#manual-settings" title="Permalink to this headline">¶</a></h2>
+<p>If you don’t want to use the wizard (maybe because you already have the client installed from an
+earlier version), you can also configure your index entry in your settings file
+(<code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>). Add the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">GAME_INDEX_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">GAME_INDEX_LISTING</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># required</span>
+    <span class="s1">&#39;game_status&#39;</span><span class="p">:</span> <span class="s1">&#39;pre-alpha&#39;</span><span class="p">,</span>            <span class="c1"># pre-alpha, alpha, beta, launched</span>
+    <span class="s1">&#39;listing_contact&#39;</span><span class="p">:</span> <span class="s2">&quot;dummy@dummy.com&quot;</span><span class="p">,</span>  <span class="c1"># not publicly shown.</span>
+    <span class="s1">&#39;short_description&#39;</span><span class="p">:</span> <span class="s1">&#39;Short blurb&#39;</span><span class="p">,</span>
+
+    <span class="c1"># optional</span>
+    <span class="s1">&#39;long_description&#39;</span><span class="p">:</span>
+        <span class="s2">&quot;Longer description that can use Markdown like *bold*, _italic_&quot;</span>
+        <span class="s2">&quot;and [linkname](http://link.com). Use </span><span class="se">\n</span><span class="s2"> for line breaks.&quot;</span>
+    <span class="s1">&#39;telnet_hostname&#39;</span><span class="p">:</span> <span class="s1">&#39;dummy.com&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;telnet_port&#39;</span><span class="p">:</span> <span class="s1">&#39;1234&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;web_client_url&#39;</span><span class="p">:</span> <span class="s1">&#39;dummy.com/webclient&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;game_website&#39;</span><span class="p">:</span> <span class="s1">&#39;dummy.com&#39;</span><span class="p">,</span>
+    <span class="c1"># &#39;game_name&#39;: &#39;MyGame&#39;,  # set only if different than settings.SERVERNAME</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Of these, the <code class="docutils literal notranslate"><span class="pre">game_status</span></code>, <code class="docutils literal notranslate"><span class="pre">short_description</span></code> and <code class="docutils literal notranslate"><span class="pre">listing_contact</span></code> are
+required.  The <code class="docutils literal notranslate"><span class="pre">listing_contact</span></code> is not publicly visible and is only meant as a
+last resort if we need to get in touch with you over any listing issue/bug (so
+far this has never happened).</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">game_name</span></code> is not set, the <code class="docutils literal notranslate"><span class="pre">settings.SERVERNAME</span></code> will be used. Use empty strings
+(<code class="docutils literal notranslate"><span class="pre">''</span></code>) for optional fields you don’t want to specify at this time.</p>
+</section>
+<section id="non-public-games">
+<h2>Non-public games<a class="headerlink" href="#non-public-games" title="Permalink to this headline">¶</a></h2>
+<p>If you don’t specify neither <code class="docutils literal notranslate"><span class="pre">telnet_hostname</span> <span class="pre">+</span> <span class="pre">port</span></code> nor
+<code class="docutils literal notranslate"><span class="pre">web_client_url</span></code>, the Game index will list your game as <em>Not yet public</em>.
+Non-public games are moved to the bottom of the index since there is no way
+for people to try them out. But it’s a good way to show you are out there, even
+if you are not ready for players yet.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Evennia Game Index</a><ul>
+<li><a class="reference internal" href="#connect-with-the-wizard">Connect with the wizard</a></li>
+<li><a class="reference internal" href="#manual-settings">Manual Settings</a></li>
+<li><a class="reference internal" href="#non-public-games">Non-public games</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Evennia-Game-Index.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Evennia-Game-Index.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Evennia Game Index</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

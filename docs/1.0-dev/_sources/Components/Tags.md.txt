@@ -10,11 +10,11 @@ currently dead.
 *Tags* are short text labels that you attach to objects so as to easily be able to retrieve and
 group them. An Evennia entity can be tagged with any number of Tags. On the database side, Tag
 entities are *shared* between all objects with that tag. This makes them very efficient but also
-fundamentally different from [Attributes](./Attributes), each of which always belongs to one *single*
+fundamentally different from [Attributes](./Attributes.md), each of which always belongs to one *single*
 object.
 
 In Evennia, Tags are technically also used to implement `Aliases` (alternative names for objects)
-and `Permissions` (simple strings for [Locks](./Locks) to check for).
+and `Permissions` (simple strings for [Locks](./Locks.md) to check for).
 
 
 ## Properties of Tags (and Aliases and Permissions)
@@ -26,7 +26,7 @@ unique key + category combination.
 
 When Tags are assigned to game entities, these entities are actually sharing the same Tag. This
 means that Tags are not suitable for storing information about a single object - use an
-[Attribute](./Attributes) for this instead. Tags are a lot more limited than Attributes but this also
+[Attribute](./Attributes.md) for this instead. Tags are a lot more limited than Attributes but this also
 makes them very quick to lookup in the database - this is the whole point.
 
 Tags have the following properties, stored in the database:
@@ -52,8 +52,8 @@ free up the *category* property for any use you desire.
 
 ## Adding/Removing Tags
 
-You can tag any *typeclassed* object, namely [Objects](./Objects), [Accounts](./Accounts),
-[Scripts](./Scripts) and [Channels](./Communications). General tags are added by the *Taghandler*.  The
+You can tag any *typeclassed* object, namely [Objects](./Objects.md), [Accounts](./Accounts.md),
+[Scripts](./Scripts.md) and [Channels](./Communications.md). General tags are added by the *Taghandler*.  The
 tag handler is accessed as a property `tags` on the relevant entity:
 
 ```python
@@ -135,7 +135,7 @@ objs = evennia.search_tag(category="bar")
 
 
 
-There is also an in-game command that deals with assigning and using ([Object-](./Objects)) tags:
+There is also an in-game command that deals with assigning and using ([Object-](./Objects.md)) tags:
 
      @tag/search furniture
 
@@ -166,4 +166,4 @@ That said, tag categories can be useful if you build some game system that uses 
 use tag categories to make sure to separate tags created with this system from any other tags
 created elsewhere. You can then supply custom search methods that *only* find objects tagged with
 tags of that category. An example of this
-is found in the [Zone tutorial](../Concepts/Zones). 
+is found in the [Zone tutorial](../Concepts/Zones.md). 

@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="apache-config">
+  <section class="tex2jax_ignore mathjax_ignore" id="apache-config">
 <h1>Apache Config<a class="headerlink" href="#apache-config" title="Permalink to this headline">¶</a></h1>
 <p><strong>Warning</strong>: This information is presented as a convenience, using another webserver than Evennia’s
 own is not directly supported and you are on your own if you want to do so.  Evennia’s webserver
@@ -121,10 +123,10 @@ some Linux distributions may default to very restrictive access permissions on a
 directory.</p>
 <p>One user commented that they had to add the following to their Apache config to get things to work.
 Not confirmed, but worth trying if there are trouble.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">Directory</span> <span class="s2">&quot;/home/&lt;yourname&gt;/evennia/game/web&quot;</span><span class="o">&gt;</span>
-                <span class="n">Options</span> <span class="o">+</span><span class="n">ExecCGI</span>
-                <span class="n">Allow</span> <span class="kn">from</span> <span class="nn">all</span>
-<span class="o">&lt;/</span><span class="n">Directory</span><span class="o">&gt;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Directory &quot;/home/&lt;yourname&gt;/evennia/game/web&quot;&gt;
+                Options +ExecCGI
+                Allow from all
+&lt;/Directory&gt;
 </pre></div>
 </div>
 </section>
@@ -143,6 +145,7 @@ repositories for Fedora and RHEL:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ dnf install httpd mod_ssl
 or
 $ yum install httpd mod_ssl
+
 </pre></div>
 </div>
 </li>
@@ -153,6 +156,7 @@ installation:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ apt-get update
 $ apt-get install apache2 
 $ a2enmod ssl
+
 </pre></div>
 </div>
 </li>
@@ -205,7 +209,7 @@ proxy. You must set the <code class="docutils literal notranslate"><span class="
 </pre></div>
 </div>
 <p>The setting above is what the client’s browser will actually use. Note the use of <code class="docutils literal notranslate"><span class="pre">wss://</span></code> is
-because our client will be communicating over an encrypted connection (”wss” indicates websocket
+because our client will be communicating over an encrypted connection (“wss” indicates websocket
 over SSL/TLS). Also, especially note the additional path <code class="docutils literal notranslate"><span class="pre">/ws</span></code> at the end of the URL. This is how
 Apache HTTP Server identifies that a particular request should be proxied to Evennia’s websocket
 port but this should be applicable also to other types of proxies (like nginx).</p>
@@ -279,7 +283,7 @@ port but this should be applicable also to other types of proxies (like nginx).<
 <h3>Versions</h3>
 <ul>
   <li><a href="Apache-Config.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="weather-tutorial">
+  <section class="tex2jax_ignore mathjax_ignore" id="weather-tutorial">
 <h1>Weather Tutorial<a class="headerlink" href="#weather-tutorial" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial will have us create a simple weather system for our MUD.  The way we want to use this
 is to have all outdoor rooms echo weather-related messages to the room at regular and semi-random
@@ -49,31 +51,11 @@ using a “ticker-subscription” model. The principle is simple: Instead of hav
 individually track the time, they instead subscribe to be called by a global ticker who handles time
 keeping.  Not only does this centralize and organize much of the code in one place, it also has less
 computing overhead.</p>
-<p>Evennia offers the <a class="reference internal" href="../Components/TickerHandler.html"><span class="doc">TickerHandler</span></a> specifically for using the subscription model. We
+<p>Evennia offers the <a class="reference internal" href="../Components/TickerHandler.html"><span class="doc std std-doc">TickerHandler</span></a> specifically for using the subscription model. We
 will use it for our weather system.</p>
 <p>We will assume you know how to make your own Typeclasses. If not see one of the beginning tutorials.
 We will create a new WeatherRoom typeclass that is aware of the day-night cycle.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
     <span class="kn">import</span> <span class="nn">random</span>
     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">TICKER_HANDLER</span>
     
@@ -95,7 +77,7 @@ We will create a new WeatherRoom typeclass that is aware of the day-night cycle.
             <span class="n">echo</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">ECHOES</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">echo</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>In the <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> method, we simply added ourselves to the TickerHandler and tell it to
 call <code class="docutils literal notranslate"><span class="pre">at_weather_update</span></code> every hour (<code class="docutils literal notranslate"><span class="pre">60*60</span></code> seconds). During testing you might want to play with a
 shorter time duration.</p>
@@ -146,7 +128,7 @@ weather came before it. Expanding it to be more realistic is a useful exercise.<
 <h3>Versions</h3>
 <ul>
   <li><a href="Weather-Tutorial.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

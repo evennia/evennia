@@ -1,6 +1,6 @@
 # Msg
 
-The [Msg](api:evennia.comms.models.Msg) object represents a database-saved
+The [Msg](evennia.comms.models.Msg) object represents a database-saved
 piece of communication. Think of it as a discrete piece of email - it contains
 a message, some metadata and will always have a sender and one or more
 recipients.
@@ -14,7 +14,7 @@ good uses for `Msg` objects:
 - game-wide email stored in 'mailboxes'.
 
 
-```important::
+```{important}
 
   A `Msg` does not have any in-game representation. So if you want to use them
   to represent in-game mail/letters, the physical letters would never be
@@ -25,15 +25,15 @@ good uses for `Msg` objects:
 
 ```
 
-```versionchanged:: 1.0
+```{versionchanged} 1.0
   Channels dropped Msg-support. Now only used in `page` command by default.
 ```
 
 ## Msg in code
 
 The Msg is intended to be used exclusively in code, to build other game systems. It is _not_
-a [Typeclassed](./Typeclasses) entity, which means it cannot (easily) be overridden. It
-doesn't support Attributes (but it _does_ support [Tags](./Tags)). It tries to be lean
+a [Typeclassed](./Typeclasses.md) entity, which means it cannot (easily) be overridden. It
+doesn't support Attributes (but it _does_ support [Tags](./Tags.md)). It tries to be lean
 and small since a new one is created for every message.
 
 You create a new message with `evennia.create_message`:
@@ -62,7 +62,7 @@ You can search for `Msg` objects in various ways:
 ### Properties on Msg
 
 - `senders` - there must always be at least one sender. This is a set of
-- [Account](./Accounts), [Object](./Objects), [Script](./Scripts)
+- [Account](./Accounts.md), [Object](./Objects.md), [Script](./Scripts.md)
   or `str` in any combination (but usually a message only targets one type).
   Using a `str` for a sender indicates it's an 'external' sender and
   and can be used to point to a sender that is not a typeclassed entity. This is not used by default
@@ -70,17 +70,17 @@ You can search for `Msg` objects in various ways:
   python-path, for example). While most systems expect a single sender, it's
   possible to have any number of them.
 - `receivers` - these are the ones to see the Msg. These are again any combination of
-  [Account](./Accounts), [Object](./Objects) or [Script](./Scripts) or `str` (an 'external' receiver).
+  [Account](./Accounts.md), [Object](./Objects.md) or [Script](./Scripts.md) or `str` (an 'external' receiver).
   It's in principle possible to have zero receivers but most usages of Msg expects one or more.
 - `header` - this is an optional text field that can contain meta-information about the message. For
   an email-like system it would be the subject line. This can be independently searched, making
   this a powerful place for quickly finding messages.
 - `message` - the actual text being sent.
 - `date_sent` - this is auto-set to the time the Msg was created (and thus presumably sent).
-- `locks` - the Evennia [lock handler](./Locks). Use with `locks.add()` etc and check locks with `msg.access()`
+- `locks` - the Evennia [lock handler](./Locks.md). Use with `locks.add()` etc and check locks with `msg.access()`
   like for all other lockable entities. This can be used to limit access to the contents
   of the Msg. The default lock-type to check is `'read'`.
-- `hide_from` - this is an optional list of [Accounts](./Accounts) or [Objects](./Objects) that
+- `hide_from` - this is an optional list of [Accounts](./Accounts.md) or [Objects](./Objects.md) that
   will not see this Msg. This relationship is available mainly for optimization
   reasons since it allows quick filtering of messages not intended for a given
   target.
@@ -88,7 +88,7 @@ You can search for `Msg` objects in various ways:
 
 ## TempMsg
 
-[evennia.comms.models.TempMsg](api:evennia.comms.models.TempMsg) is an object
+[evennia.comms.models.TempMsg](evennia.comms.models.TempMsg) is an object
 that implements the same API as the regular `Msg`, but which has no database
 component (and thus cannot be searched). It's meant to plugged into systems
 expecting a `Msg` but where you just want to process the message without saving

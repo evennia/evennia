@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="security">
+  <section class="tex2jax_ignore mathjax_ignore" id="security">
 <h1>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h1>
 <p>Hackers these days aren’t discriminating, and their backgrounds range from bored teenagers to
 international intelligence agencies. Their scripts and bots endlessly crawl the web, looking for
@@ -78,16 +80,16 @@ obvious to you where problems arise. These options should be disabled before you
 production– leaving them on can expose variables or code someone with malicious intent can easily
 abuse to compromise your environment.</p>
 <p>In <code class="docutils literal notranslate"><span class="pre">server/conf/settings.py</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Disable Django&#39;s debug mode</span>
-<span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="c1"># Disable the in-game equivalent</span>
-<span class="n">IN_GAME_ERRORS</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="c1"># If you&#39;ve registered a domain name, force Django to check host headers. Otherwise leave this</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Disable Django&#39;s debug mode
+DEBUG = False
+# Disable the in-game equivalent
+IN_GAME_ERRORS = False
+# If you&#39;ve registered a domain name, force Django to check host headers. Otherwise leave this
 </pre></div>
 </div>
 <p>as-is.
 # Note the leading period– it is not a typo!
-ALLOWED_HOSTS = [’.example.com’]</p>
+ALLOWED_HOSTS = [‘.example.com’]</p>
 </section>
 <section id="handle-user-uploaded-images-with-care">
 <h2>Handle user-uploaded images with care<a class="headerlink" href="#handle-user-uploaded-images-with-care" title="Permalink to this headline">¶</a></h2>
@@ -120,10 +122,10 @@ your users. Django’s security is robust, but if you don’t want/need these fe
 to force your users to use traditional clients to access your game, you might consider disabling
 either/both to minimize your attack surface.</p>
 <p>In <code class="docutils literal notranslate"><span class="pre">server/conf/settings.py</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Disable the Javascript webclient</span>
-<span class="n">WEBCLIENT_ENABLED</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="c1"># Disable the website altogether</span>
-<span class="n">WEBSERVER_ENABLED</span> <span class="o">=</span> <span class="kc">False</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Disable the Javascript webclient
+WEBCLIENT_ENABLED = False
+# Disable the website altogether
+WEBSERVER_ENABLED = False
 </pre></div>
 </div>
 </section>
@@ -137,37 +139,37 @@ server from these locations if you like to work remotely or don’t have a home 
 changing the port used for ssh to 443, which most/all hotspot providers assume is HTTPS traffic and
 allows through.</p>
 <p>(Ubuntu) In /etc/ssh/sshd_config, change the following variable:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># What ports, IPs and protocols we listen for</span>
-<span class="n">Port</span> <span class="mi">443</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># What ports, IPs and protocols we listen for
+Port 443
 </pre></div>
 </div>
 <p>Save, close, then run the following command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">service</span> <span class="n">ssh</span> <span class="n">restart</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>sudo service ssh restart
 </pre></div>
 </div>
 </section>
 <section id="set-up-a-firewall">
 <h2>Set up a firewall<a class="headerlink" href="#set-up-a-firewall" title="Permalink to this headline">¶</a></h2>
 <p>Ubuntu users can make use of the simple ufw utility. Anybody else can use iptables.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install ufw (if not already)</span>
-<span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">ufw</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Install ufw (if not already)
+sudo apt-get install ufw
 </pre></div>
 </div>
 <p>UFW’s default policy is to deny everything. We must specify what we want to allow through our
 firewall.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Allow terminal connections to your game</span>
-<span class="n">sudo</span> <span class="n">ufw</span> <span class="n">allow</span> <span class="mi">4000</span><span class="o">/</span><span class="n">tcp</span>
-<span class="c1"># Allow browser connections to your website</span>
-<span class="n">sudo</span> <span class="n">ufw</span> <span class="n">allow</span> <span class="mi">4001</span><span class="o">/</span><span class="n">tcp</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Allow terminal connections to your game
+sudo ufw allow 4000/tcp
+# Allow browser connections to your website
+sudo ufw allow 4001/tcp
 </pre></div>
 </div>
 <p>Use ONE of the next two commands depending on which port your ssh daemon is listening on:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">ufw</span> <span class="n">allow</span> <span class="mi">22</span><span class="o">/</span><span class="n">tcp</span>
-<span class="n">sudo</span> <span class="n">ufw</span> <span class="n">allow</span> <span class="mi">443</span><span class="o">/</span><span class="n">tcp</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>sudo ufw allow 22/tcp
+sudo ufw allow 443/tcp
 </pre></div>
 </div>
 <p>Finally:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">ufw</span> <span class="n">enable</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>sudo ufw enable
 </pre></div>
 </div>
 <p>Now the only ports open will be your administrative ssh port (whichever you chose), and Evennia on
@@ -175,7 +177,7 @@ firewall.</p>
 </section>
 <section id="use-an-external-webserver">
 <h2>Use an external webserver<a class="headerlink" href="#use-an-external-webserver" title="Permalink to this headline">¶</a></h2>
-<p>Though not officially supported, there are some benefits to <a class="reference internal" href="Apache-Config.html"><span class="doc">deploying a webserver</span></a>
+<p>Though not officially supported, there are some benefits to <a class="reference internal" href="Apache-Config.html"><span class="doc std std-doc">deploying a webserver</span></a>
 to handle/proxy traffic to your Evennia instance.</p>
 <p>For example, Evennia’s game engine and webservice are tightly integrated. If you bring your game
 down for maintenance (or if it simply crashes) your website will go down with it. In these cases a
@@ -248,7 +250,7 @@ ISP snooping.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Security.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

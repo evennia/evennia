@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,10 +40,10 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="add-a-wiki-on-your-website">
+  <section class="tex2jax_ignore mathjax_ignore" id="add-a-wiki-on-your-website">
 <h1>Add a wiki on your website<a class="headerlink" href="#add-a-wiki-on-your-website" title="Permalink to this headline">¶</a></h1>
 <p><strong>Before doing this tutorial you will probably want to read the intro in
-<a class="reference internal" href="Starting/Part5/Web-Tutorial.html"><span class="doc">Basic Web tutorial</span></a>.</strong>  Reading the three first parts of the
+<a class="reference internal" href="Starting/Part5/Web-Tutorial.html"><span class="doc std std-doc">Basic Web tutorial</span></a>.</strong>  Reading the three first parts of the
 <a class="reference external" href="https://docs.djangoproject.com/en/1.9/intro/tutorial01/">Django tutorial</a> might help as well.</p>
 <p>This tutorial will provide a step-by-step process to installing a wiki on your website.
 Fortunately, you don’t have to create the features manually, since it has been done by others, and
@@ -76,7 +78,7 @@ one you use to run the <code class="docutils literal notranslate"><span class="p
 <section id="installing-with-pip">
 <h3>Installing with pip<a class="headerlink" href="#installing-with-pip" title="Permalink to this headline">¶</a></h3>
 <p>Install the wiki using pip:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">wiki</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install wiki
 </pre></div>
 </div>
 <blockquote>
@@ -91,49 +93,7 @@ install wiki 0.3 if you haven’t updated to Python 3 yet.</p>
 <code class="docutils literal notranslate"><span class="pre">server/conf/settings.py</span></code> file and add the following at the bottom (but before importing
 <code class="docutils literal notranslate"><span class="pre">secret_settings</span></code>).  Here’s what you’ll find in my own setting file (add the whole Django-wiki
 section):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Evennia settings file.</span>
 
 <span class="sd">...</span>
@@ -177,27 +137,13 @@ section):</p>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;secret_settings.py file not found or failed to import.&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 <section id="adding-the-new-urls">
 <h3>Adding the new URLs<a class="headerlink" href="#adding-the-new-urls" title="Permalink to this headline">¶</a></h3>
 <p>Next we need to add two URLs in our <code class="docutils literal notranslate"><span class="pre">web/urls.py</span></code> file.  Open it and compare the following output:
 you will need to add two URLs in <code class="docutils literal notranslate"><span class="pre">custom_patterns</span></code> and add one import line:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span><span class="p">,</span> <span class="n">include</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span><span class="p">,</span> <span class="n">include</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span> <span class="c1"># NEW!</span>
 
 <span class="c1"># default evenni	a patterns</span>
@@ -213,7 +159,7 @@ you will need to add two URLs in <code class="docutils literal notranslate"><spa
 <span class="c1"># this is required by Django.</span>
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">custom_patterns</span> <span class="o">+</span> <span class="n">urlpatterns</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>You will probably need to copy line 2, 10, and 11.  Be sure to place them correctly, as shown in
 the example above.</p>
 </section>
@@ -221,10 +167,10 @@ the example above.</p>
 <h3>Running migrations<a class="headerlink" href="#running-migrations" title="Permalink to this headline">¶</a></h3>
 <p>It’s time to run the new migrations.  The wiki app adds a few tables in our database.  We’ll need to
 run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">migrate</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia migrate
 </pre></div>
 </div>
-<p>And that’s it, you can start the server.  If you go to http://localhost:4001/wiki , you should see
+<p>And that’s it, you can start the server.  If you go to <a class="reference external" href="http://localhost:4001/wiki">http://localhost:4001/wiki</a> , you should see
 the wiki.  Use your account’s username and password to connect to it.  That’s how simple it is.</p>
 </section>
 </section>
@@ -245,37 +191,7 @@ function as argument, said function (or callback) will be called with the articl
 Remember, a Django user, for us, is an account.  So we could check lockstrings on them if needed.
 Here is a default setting to restrict the wiki: only builders can write in it, but anyone (including
 non-logged in users) can read it.  The superuser has some additional privileges.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># In server/conf/settings.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># In server/conf/settings.py</span>
 <span class="c1"># ...</span>
 
 <span class="k">def</span> <span class="nf">is_superuser</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
@@ -307,7 +223,7 @@ non-logged in users) can read it.  The superuser has some additional privileges.
 <span class="c1"># Who can read articles?</span>
 <span class="n">WIKI_CAN_READ</span> <span class="o">=</span> <span class="n">is_anyone</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Here, we have created three functions: one to return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the user is the superuser, one to
 return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the user is a builder, one to return <code class="docutils literal notranslate"><span class="pre">True</span></code> no matter what (this includes if the
 user is anonymous, E.G. if it’s not logged-in).  We then change settings to allow either the
@@ -410,7 +326,7 @@ necessary.  If you’re interested in supporting this little project, you are mo
 <h3>Versions</h3>
 <ul>
   <li><a href="Add-a-wiki-on-your-website.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,10 +40,10 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="connection-screen">
+  <section class="tex2jax_ignore mathjax_ignore" id="connection-screen">
 <h1>Connection Screen<a class="headerlink" href="#connection-screen" title="Permalink to this headline">¶</a></h1>
 <p>When you first connect to your game you are greeted by Evennia’s default connection screen.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>==============================================================
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>==============================================================
  Welcome to Evennia, version Beta-ra4d24e8a3cab+!
 
  If you have an existing account, connect to it by typing:
@@ -58,7 +60,7 @@
 your game. This is simple:</p>
 <ol class="simple">
 <li><p>Edit <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/connection_screens.py</span></code>.</p></li>
-<li><p><a class="reference internal" href="../Setup/Start-Stop-Reload.html"><span class="doc">Reload</span></a> Evennia.</p></li>
+<li><p><a class="reference internal" href="../Setup/Start-Stop-Reload.html"><span class="doc std std-doc">Reload</span></a> Evennia.</p></li>
 </ol>
 <p>Evennia will look into this module and locate all <em>globally defined strings</em> in it. These strings
 are used as the text in your connection screen and are shown to the user at startup. If more than
@@ -66,10 +68,10 @@ one such string/screen is defined in the module, a <em>random</em> screen will b
 available.</p>
 <section id="commands-available-at-the-connection-screen">
 <h2>Commands available at the Connection Screen<a class="headerlink" href="#commands-available-at-the-connection-screen" title="Permalink to this headline">¶</a></h2>
-<p>You can also customize the <a class="reference internal" href="Commands.html"><span class="doc">Commands</span></a> available to use while the connection screen is
+<p>You can also customize the <a class="reference internal" href="Commands.html"><span class="doc std std-doc">Commands</span></a> available to use while the connection screen is
 shown (<code class="docutils literal notranslate"><span class="pre">connect</span></code>, <code class="docutils literal notranslate"><span class="pre">create</span></code> etc). These commands are a bit special since when the screen is running
 the account is not yet logged in. A command is made available at the login screen by adding them to
-<code class="docutils literal notranslate"><span class="pre">UnloggedinCmdSet</span></code> in <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdset.py</span></code>.  See <a class="reference internal" href="Commands.html"><span class="doc">Commands</span></a> and the
+<code class="docutils literal notranslate"><span class="pre">UnloggedinCmdSet</span></code> in <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdset.py</span></code>.  See <a class="reference internal" href="Commands.html"><span class="doc std std-doc">Commands</span></a> and the
 tutorial section on how to add new commands to a default command set.</p>
 </section>
 </section>
@@ -122,7 +124,7 @@ tutorial section on how to add new commands to a default command set.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Connection-Screen.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

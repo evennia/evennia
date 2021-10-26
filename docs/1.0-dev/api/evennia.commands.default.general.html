@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -642,7 +644,7 @@ automatically begin with your name.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.general.CmdPose.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['emote', ':']</em><a class="headerlink" href="#evennia.commands.default.general.CmdPose.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = [':', 'emote']</em><a class="headerlink" href="#evennia.commands.default.general.CmdPose.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -678,7 +680,7 @@ space.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.general.CmdPose.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'emote :', 'category': 'general', 'key': 'pose', 'tags': '', 'text': &quot;\n    strike a pose\n\n    Usage:\n      pose &lt;pose text&gt;\n      pose's &lt;pose text&gt;\n\n    Example:\n      pose is standing by the wall, smiling.\n       -&gt; others will see:\n      Tom is standing by the wall, smiling.\n\n    Describe an action being taken. The pose text will\n    automatically begin with your name.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.general.CmdPose.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ': emote', 'category': 'general', 'key': 'pose', 'tags': '', 'text': &quot;\n    strike a pose\n\n    Usage:\n      pose &lt;pose text&gt;\n      pose's &lt;pose text&gt;\n\n    Example:\n      pose is standing by the wall, smiling.\n       -&gt; others will see:\n      Tom is standing by the wall, smiling.\n\n    Describe an action being taken. The pose text will\n    automatically begin with your name.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.general.CmdPose.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -701,7 +703,7 @@ which permission groups you are a member of.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.general.CmdAccess.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['hierarchy', 'groups']</em><a class="headerlink" href="#evennia.commands.default.general.CmdAccess.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['groups', 'hierarchy']</em><a class="headerlink" href="#evennia.commands.default.general.CmdAccess.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -732,7 +734,7 @@ which permission groups you are a member of.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.general.CmdAccess.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'hierarchy groups', 'category': 'general', 'key': 'access', 'tags': '', 'text': '\n    show your current game access\n\n    Usage:\n      access\n\n    This command shows you the permission hierarchy and\n    which permission groups you are a member of.\n    '}</em><a class="headerlink" href="#evennia.commands.default.general.CmdAccess.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'groups hierarchy', 'category': 'general', 'key': 'access', 'tags': '', 'text': '\n    show your current game access\n\n    Usage:\n      access\n\n    This command shows you the permission hierarchy and\n    which permission groups you are a member of.\n    '}</em><a class="headerlink" href="#evennia.commands.default.general.CmdAccess.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -762,7 +764,7 @@ which permission groups you are a member of.</p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/api/evennia.commands.default.general.rst.txt"
+      <li><a href="../_sources/api/evennia.commands.default.general.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -779,7 +781,7 @@ which permission groups you are a member of.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.commands.default.general.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/api/evennia.commands.default.general.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/api/evennia.commands.default.general.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="coding-faq">
+  <section class="tex2jax_ignore mathjax_ignore" id="coding-faq">
 <h1>Coding FAQ<a class="headerlink" href="#coding-faq" title="Permalink to this headline">¶</a></h1>
 <p><em>This FAQ page is for users to share their solutions to coding problems. Keep it brief and link to
 the docs if you can rather than too lengthy explanations. Don’t forget to check if an answer already
@@ -46,29 +48,29 @@ exists before answering - maybe you can clarify that answer rather than to make 
 <section id="table-of-contents">
 <h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference external" href="Howto/Coding-FAQ.html#removing-default-commands">Removing default commands</a></p></li>
-<li><p>[Preventing character from moving based on a condition](./Coding-FAQ#preventing-character-from-
+<li><p><a class="reference internal" href="#removing-default-commands"><span class="std std-doc">Removing default commands</span></a></p></li>
+<li><p>[Preventing character from moving based on a condition](./Coding-FAQ.md#preventing-character-from-
 moving-based-on-a-condition)</p></li>
-<li><p>[Reference initiating object in an EvMenu command](./Coding-FAQ#reference-initiating-object-in-an-
+<li><p>[Reference initiating object in an EvMenu command](./Coding-FAQ.md#reference-initiating-object-in-an-
 evmenu-command)</p></li>
-<li><p><a class="reference external" href="Howto/Coding-FAQ.html#adding-color-to-default-evennia-channels">Adding color to default Evennia Channels</a></p></li>
-<li><p><a class="reference external" href="Howto/Coding-FAQ.html#selectively-turn-off-commands-in-a-room">Selectively turn off commands in a room</a></p></li>
-<li><p><a class="reference external" href="Howto/Coding-FAQ.html#select-command-based-on-a-condition">Select Command based on a condition</a></p></li>
-<li><p>[Automatically updating code when reloading](./Coding-FAQ#automatically-updating-code-when-
+<li><p><a class="reference internal" href="#adding-color-to-default-evennia-channels"><span class="std std-doc">Adding color to default Evennia Channels</span></a></p></li>
+<li><p><a class="reference internal" href="#selectively-turn-off-commands-in-a-room"><span class="std std-doc">Selectively turn off commands in a room</span></a></p></li>
+<li><p><a class="reference internal" href="#select-command-based-on-a-condition"><span class="std std-doc">Select Command based on a condition</span></a></p></li>
+<li><p>[Automatically updating code when reloading](./Coding-FAQ.md#automatically-updating-code-when-
 reloading)</p></li>
-<li><p><a class="reference external" href="Howto/Coding-FAQ.html#changing-all-exit-messages">Changing all exit messages</a></p></li>
-<li><p><a class="reference external" href="Howto/Coding-FAQ.html#add-parsing-with-the-to-delimiter">Add parsing with the “to” delimiter</a></p></li>
-<li><p><a class="reference external" href="Howto/Coding-FAQ.html#store-last-used-session-ip-address">Store last used session IP address</a></p></li>
-<li><p><a class="reference external" href="Howto/Coding-FAQ.html#non-latin-characters-in-evtable">Use wide characters with EvTable</a></p></li>
+<li><p><a class="reference internal" href="#changing-all-exit-messages"><span class="std std-doc">Changing all exit messages</span></a></p></li>
+<li><p><a class="reference internal" href="#add-parsing-with-the-to-delimiter"><span class="std std-doc">Add parsing with the “to” delimiter</span></a></p></li>
+<li><p><a class="reference internal" href="#store-last-used-session-ip-address"><span class="std std-doc">Store last used session IP address</span></a></p></li>
+<li><p><a class="reference internal" href="#non-latin-characters-in-evtable"><span class="std std-doc">Use wide characters with EvTable</span></a></p></li>
 </ul>
 </section>
 <section id="removing-default-commands">
 <h2>Removing default commands<a class="headerlink" href="#removing-default-commands" title="Permalink to this headline">¶</a></h2>
-<p><strong>Q:</strong> How does one <em>remove</em> (not replace) e.g. the default <code class="docutils literal notranslate"><span class="pre">get</span></code> <a class="reference internal" href="../Components/Commands.html"><span class="doc">Command</span></a> from the
-Character <a class="reference internal" href="../Components/Command-Sets.html"><span class="doc">Command Set</span></a>?</p>
+<p><strong>Q:</strong> How does one <em>remove</em> (not replace) e.g. the default <code class="docutils literal notranslate"><span class="pre">get</span></code> <a class="reference internal" href="../Components/Commands.html"><span class="doc std std-doc">Command</span></a> from the
+Character <a class="reference internal" href="../Components/Command-Sets.html"><span class="doc std std-doc">Command Set</span></a>?</p>
 <p><strong>A:</strong> Go to <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>. Find the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code> class. It has one
 method named <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation</span></code>. At the end of that method, add the following line:
-<code class="docutils literal notranslate"><span class="pre">self.remove(default_cmds.CmdGet())</span></code>. See the <a class="reference internal" href="Starting/Part1/Adding-Commands.html"><span class="doc">Adding Commands Tutorial</span></a>
+<code class="docutils literal notranslate"><span class="pre">self.remove(default_cmds.CmdGet())</span></code>. See the <a class="reference internal" href="Starting/Part1/Adding-Commands.html"><span class="doc std std-doc">Adding Commands Tutorial</span></a>
 for more info.</p>
 </section>
 <section id="preventing-character-from-moving-based-on-a-condition">
@@ -76,43 +78,34 @@ for more info.</p>
 <p><strong>Q:</strong> How does one keep a character from using any exit, if they meet a certain condition? (I.E. in
 combat, immobilized, etc.)</p>
 <p><strong>A:</strong> The <code class="docutils literal notranslate"><span class="pre">at_before_move</span></code> hook is called by Evennia just before performing any move. If it returns
-<code class="docutils literal notranslate"><span class="pre">False</span></code>, the move is aborted. Let’s say we want to check for an <a class="reference internal" href="../Components/Attributes.html"><span class="doc">Attribute</span></a> <code class="docutils literal notranslate"><span class="pre">cantmove</span></code>.
+<code class="docutils literal notranslate"><span class="pre">False</span></code>, the move is aborted. Let’s say we want to check for an <a class="reference internal" href="../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a> <code class="docutils literal notranslate"><span class="pre">cantmove</span></code>.
 Add the following code to the <code class="docutils literal notranslate"><span class="pre">Character</span></code> class:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">at_before_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">at_before_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
     <span class="s2">&quot;Called just before trying to move&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">cantmove</span><span class="p">:</span> <span class="c1"># replace with condition you want to test</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Something is preventing you from moving!&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 <section id="reference-initiating-object-in-an-evmenu-command">
 <h2>Reference initiating object in an EvMenu command.<a class="headerlink" href="#reference-initiating-object-in-an-evmenu-command" title="Permalink to this headline">¶</a></h2>
 <p><strong>Q:</strong> An object has a Command on it starts up an EvMenu instance. How do I capture a reference to
 that object for use in the menu?</p>
-<p><strong>A:</strong> When an <a class="reference internal" href="../Components/EvMenu.html"><span class="doc">EvMenu</span></a> is started, the menu object is stored as <code class="docutils literal notranslate"><span class="pre">caller.ndb._menutree</span></code>.
+<p><strong>A:</strong> When an <a class="reference internal" href="../Components/EvMenu.html"><span class="doc std std-doc">EvMenu</span></a> is started, the menu object is stored as <code class="docutils literal notranslate"><span class="pre">caller.ndb._menutree</span></code>.
 This is a good place to store menu-specific things since it will clean itself up when the menu
 closes. When initiating the menu, any additional keywords you give will be available for you as
 properties on this menu object:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyObjectCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyObjectCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="c1"># A Command stored on an object (the object is always accessible from</span>
     <span class="c1"># the Command as self.obj)</span>
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># add the object as the stored_obj menu property</span>
         <span class="n">EvMenu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">stored_obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Inside the menu you can now access the object through <code class="docutils literal notranslate"><span class="pre">caller.ndb._menutree.stored_obj</span></code>.</p>
 </section>
 <section id="adding-color-to-default-evennia-channels">
@@ -120,19 +113,7 @@ properties on this menu object:</p>
 <p><strong>Q:</strong> How do I add colors to the names of Evennia channels?</p>
 <p><strong>A:</strong> The Channel typeclass’ <code class="docutils literal notranslate"><span class="pre">channel_prefix</span></code> method decides what is shown at the beginning of a
 channel send. Edit <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/channels.py</span></code> (and then <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code>):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># define our custom color names</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># define our custom color names</span>
 <span class="n">CHANNEL_COLORS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;public&quot;</span><span class="p">:</span> <span class="s2">&quot;|015Public|n&quot;</span><span class="p">,</span>
                   <span class="s2">&quot;newbie&quot;</span><span class="p">:</span> <span class="s2">&quot;|550N|n|551e|n|552w|n|553b|n|554i|n|555e|n&quot;</span><span class="p">,</span>
                   <span class="s2">&quot;staff&quot;</span><span class="p">:</span> <span class="s2">&quot;|010S|n|020t|n|030a|n|040f|n|050f|n&quot;</span><span class="p">}</span>
@@ -146,7 +127,7 @@ channel send. Edit <code class="docutils literal notranslate"><span class="pre">
             <span class="n">p_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">p_str</span><span class="si">}</span><span class="s2">] &quot;</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Additional hint: To make colors easier to change from one place you could instead put the
 <code class="docutils literal notranslate"><span class="pre">CHANNEL_COLORS</span></code> dict in your settings file and import it as <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">django.conf.settings</span> <span class="pre">import</span> <span class="pre">CHANNEL_COLORS</span></code>.</p>
 </section>
@@ -154,33 +135,10 @@ channel send. Edit <code class="docutils literal notranslate"><span class="pre">
 <h2>Selectively turn off commands in a room<a class="headerlink" href="#selectively-turn-off-commands-in-a-room" title="Permalink to this headline">¶</a></h2>
 <p><strong>Q:</strong> I want certain commands to turn off in a given room. They should still work normally for
 staff.</p>
-<p><strong>A:</strong> This is done using a custom cmdset on a room <a class="reference internal" href="../Components/Locks.html"><span class="doc">locked with the ‘call’ lock type</span></a>. Only
+<p><strong>A:</strong> This is done using a custom cmdset on a room <a class="reference internal" href="../Components/Locks.html"><span class="doc std std-doc">locked with the ‘call’ lock type</span></a>. Only
 if this lock is passed will the commands on the room be made available to an object inside it. Here
 is an example of a room where certain commands are disabled for non-staff:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/rooms.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/rooms.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_commands</span><span class="p">,</span> <span class="n">CmdSet</span>
 
@@ -205,7 +163,7 @@ is an example of a room where certain commands are disabled for non-staff:</p>
         <span class="c1"># are NOT Builders or higher</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;call:not perm(Builders)&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>After <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code>, make some <code class="docutils literal notranslate"><span class="pre">BlockingRooms</span></code> (or switch a room to it with <code class="docutils literal notranslate"><span class="pre">&#64;typeclass</span></code>). Entering one
 will now replace the given commands for anyone that does not have the <code class="docutils literal notranslate"><span class="pre">Builders</span></code> or higher
 permission. Note that the ‘call’ lock is special in that even the superuser will be affected by it
@@ -217,18 +175,9 @@ superusers).</p>
 <p><strong>Q:</strong> I want a command to be available only based on a condition. For example I want the “werewolf”
 command to only be available on a full moon, from midnight to three in-game time.</p>
 <p><strong>A:</strong> This is easiest accomplished by putting the “werewolf” command on the Character as normal,
-but to <a class="reference internal" href="../Components/Locks.html"><span class="doc">lock</span></a> it with the “cmd” type lock. Only if the “cmd” lock type is passed will the
+but to <a class="reference internal" href="../Components/Locks.html"><span class="doc std std-doc">lock</span></a> it with the “cmd” type lock. Only if the “cmd” lock type is passed will the
 command be available.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/command.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/command.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
@@ -239,24 +188,19 @@ command be available.</p>
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># ...</span>
 </pre></div>
-</td></tr></table></div>
-<p>Add this to the <a class="reference internal" href="Starting/Part1/Adding-Commands.html"><span class="doc">default cmdset as usual</span></a>. The <code class="docutils literal notranslate"><span class="pre">is_full_moon</span></code> <a class="reference external" href="Howto/Locks#lock-functions">lock
-function</a> does not yet exist. We must create that:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/server/conf/lockfuncs.py</span>
+</div>
+<p>Add this to the <a class="reference internal" href="Starting/Part1/Adding-Commands.html"><span class="doc std std-doc">default cmdset as usual</span></a>. The <code class="docutils literal notranslate"><span class="pre">is_full_moon</span></code> <a class="reference internal" href="../Components/Locks.html#lock-functions"><span class="std std-doc">lock
+function</span></a> does not yet exist. We must create that:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/server/conf/lockfuncs.py</span>
 
 <span class="k">def</span> <span class="nf">is_full_moon</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span>
                  <span class="n">starthour</span><span class="p">,</span> <span class="n">endhour</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># calculate if the moon is full here and</span>
     <span class="c1"># if current game time is between starthour and endhour</span>
     <span class="c1"># return True or False</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>After a <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code>, the <code class="docutils literal notranslate"><span class="pre">werewolf</span></code> command will be available only at the right time, that is when the
 <code class="docutils literal notranslate"><span class="pre">is_full_moon</span></code> lock function returns True.</p>
 </section>
@@ -268,16 +212,7 @@ I reload?</p>
 useful if you have limited shell access to your server, or want to have it done automatically.  If
 you have your project in a configured Git environment, it’s a matter of automatically calling <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code> when you reload.  And that’s pretty straightforward:</p>
 <p>In <code class="docutils literal notranslate"><span class="pre">/server/conf/at_server_startstop.py</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">subprocess</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">subprocess</span>
 
 <span class="c1"># ... other hooks ...</span>
 
@@ -288,7 +223,7 @@ you have your project in a configured Git environment, it’s a matter of automa
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pulling from the game repository...&quot;</span><span class="p">)</span>
     <span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;pull&quot;</span><span class="p">],</span> <span class="n">shell</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>That’s all.  We call <code class="docutils literal notranslate"><span class="pre">subprocess</span></code> to execute a shell command (that code works on Windows and Linux,
 assuming the current directory is your game directory, which is probably the case when you run
 Evennia).  <code class="docutils literal notranslate"><span class="pre">call</span></code> waits for the process to complete, because otherwise, Evennia would reload on
@@ -326,62 +261,7 @@ simple customization).</p></li>
 <p>It is advisable to look in the <a class="reference external" href="https://github.com/evennia/evennia/tree/master/evennia/objects/objects.py">code of both
 hooks</a>, and read the
 hooks’ documentation.  The explanations on how to quickly update the message are shown below:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># In typeclasses/characters.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># In typeclasses/characters.py</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Characters</span>
 
@@ -438,7 +318,7 @@ hooks’ documentation.  The explanations on how to quickly update the message a
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">announce_move_to</span><span class="p">(</span><span class="n">source_location</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{object}</span><span class="s2"> arrives from the </span><span class="si">{exit}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>We override both hooks, but call the parent hook to display a different message.  If you read the
 provided docstrings, you will better understand why and how we use mappings (information between
 braces).  You can provide additional mappings as well, if you want to set a verb to move, for
@@ -449,14 +329,7 @@ instance, or other, extra information.</p>
 <p><strong>Q:</strong> How do I change commands to undestand say <code class="docutils literal notranslate"><span class="pre">give</span> <span class="pre">obj</span> <span class="pre">to</span> <span class="pre">target</span></code> as well as the default <code class="docutils literal notranslate"><span class="pre">give</span> <span class="pre">obj</span> <span class="pre">=</span> <span class="pre">target</span></code>?</p>
 <p><strong>A:</strong> You can make change the default <code class="docutils literal notranslate"><span class="pre">MuxCommand</span></code> parent with your own class making a small change
 in its <code class="docutils literal notranslate"><span class="pre">parse</span></code> method:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># in mygame/commands/command.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># in mygame/commands/command.py</span>
     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
     <span class="k">class</span> <span class="nc">MuxCommand</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -465,11 +338,11 @@ in its <code class="docutils literal notranslate"><span class="pre">parse</span>
             <span class="k">if</span> <span class="s2">&quot; to &quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; to &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Next you change the parent of the default commands in settings:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="s2">&quot;commands.command.MuxCommand&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="s2">&quot;commands.command.MuxCommand&quot;</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Do a <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> and all default commands will now use your new tweaked parent class. A copy of the
 MuxCommand class is also found commented-out in the <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code> file.</p>
 </section>
@@ -479,27 +352,17 @@ MuxCommand class is also found commented-out in the <code class="docutils litera
 staff that wants to ban-by-ip (instead of the user) with <code class="docutils literal notranslate"><span class="pre">&#64;ban/ip</span></code>?</p>
 <p><strong>A:</strong> One approach is to write the IP from the last session onto the “account” account object.</p>
 <p><code class="docutils literal notranslate"><span class="pre">typeclasses/accounts.py</span></code></p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">at_post_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">at_post_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_post_login</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lastsite</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">address</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Adding timestamp for login time and appending to a list to keep the last N login IP addresses and
 timestamps is possible, also.  Additionally, if you don’t want the list to grow beyond a
 <code class="docutils literal notranslate"><span class="pre">do_not_exceed</span></code> length, conditionally pop a value after you’ve added it, if the length has grown too
 long.</p>
 <p><strong>NOTE:</strong> You’ll need to add <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">time</span></code> to generate the login timestamp.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">at_post_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">at_post_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_post_login</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">do_not_exceed</span> <span class="o">=</span> <span class="mi">24</span>  <span class="c1"># Keep the last two dozen entries</span>
         <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Most recent session</span>
@@ -509,7 +372,7 @@ long.</p>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lastsite</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">do_not_exceed</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lastsite</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This only stores the data. You may want to interface the <code class="docutils literal notranslate"><span class="pre">&#64;ban</span></code> command or make a menu-driven viewer
 for staff to browse the list and display how long ago the login occurred.</p>
 </section>
@@ -590,7 +453,7 @@ discussion</a> where some suitable fonts are suggested.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Coding-FAQ.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

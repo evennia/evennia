@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="profiling">
+  <section class="tex2jax_ignore mathjax_ignore" id="profiling">
 <h1>Profiling<a class="headerlink" href="#profiling" title="Permalink to this headline">¶</a></h1>
 <p><em>This is considered an advanced topic mainly of interest to server developers.</em></p>
 <section id="introduction">
@@ -63,13 +65,7 @@ you may find that a small gain in speed is just not worth it.</p>
 <p>Python’s <code class="docutils literal notranslate"><span class="pre">timeit</span></code> module is very good for testing small things. For example, in
 order to test if it is faster to use a <code class="docutils literal notranslate"><span class="pre">for</span></code> loop or a list comprehension you
 could use the following code:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">timeit</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">timeit</span>
     <span class="c1"># Time to do 1000000 for loops</span>
     <span class="n">timeit</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="s2">&quot;for i in range(100):</span><span class="se">\n</span><span class="s2">    a.append(i)&quot;</span><span class="p">,</span> <span class="n">setup</span><span class="o">=</span><span class="s2">&quot;a = []&quot;</span><span class="p">)</span>
    <span class="o">&lt;&lt;&lt;</span> <span class="mf">10.70982813835144</span>
@@ -77,7 +73,7 @@ could use the following code:</p>
     <span class="n">timeit</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="s2">&quot;a = [i for i in range(100)]&quot;</span><span class="p">)</span>
    <span class="o">&lt;&lt;&lt;</span>  <span class="mf">5.358283996582031</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>The <code class="docutils literal notranslate"><span class="pre">setup</span></code> keyword is used to set up things that should not be included in the
 time measurement, like <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">[]</span></code> in the first call.</p>
 <p>By default the <code class="docutils literal notranslate"><span class="pre">timeit</span></code> function will re-run the given test 1000000 times and
@@ -93,13 +89,13 @@ tests have been done with <code class="docutils literal notranslate"><span class
 processes are handled, there is no point in using the normal way to start the
 profiler (<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">cProfile</span> <span class="pre">evennia.py</span></code>). Instead you start the profiler
 through the launcher:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="o">--</span><span class="n">profiler</span> <span class="n">start</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia --profiler start
 </pre></div>
 </div>
 <p>This will start Evennia with the Server component running (in daemon mode) under
 cProfile. You could instead try <code class="docutils literal notranslate"><span class="pre">--profile</span></code> with the <code class="docutils literal notranslate"><span class="pre">portal</span></code> argument to
 profile the Portal (you would then need to
-<a class="reference internal" href="../Setup/Start-Stop-Reload.html"><span class="doc">start the Server separately</span></a>).</p>
+<a class="reference internal" href="../Setup/Start-Stop-Reload.html"><span class="doc std std-doc">start the Server separately</span></a>).</p>
 <p>Please note that while the profiler is running, your process will use a lot more
 memory than usual.  Memory usage is even likely to climb over time. So don’t
 leave it running perpetually but monitor it carefully (for example using the
@@ -118,21 +114,18 @@ display its contents, all of which has only been tested in Linux (If you are a
 Windows/Mac user, let us know what works).</p>
 <p>You can look at the contents of the profile file with Python’s in-built <code class="docutils literal notranslate"><span class="pre">pstats</span></code>
 module in the evennia shell (it’s recommended you install <code class="docutils literal notranslate"><span class="pre">ipython</span></code> with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">ipython</span></code> in your virtualenv first, for prettier output):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">shell</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia shell
 </pre></div>
 </div>
 <p>Then in the shell</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pstats</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pstats</span>
 <span class="kn">from</span> <span class="nn">pstats</span> <span class="kn">import</span> <span class="n">SortKey</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="n">pstats</span><span class="o">.</span><span class="n">Stats</span><span class="p">(</span><span class="s1">&#39;server/log/server.prof&#39;</span><span class="p">)</span>
 <span class="n">p</span><span class="o">.</span><span class="n">strip_dirs</span><span class="p">()</span><span class="o">.</span><span class="n">sort_stats</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">print_stats</span><span class="p">()</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>See the
 <a class="reference external" href="https://docs.python.org/3/library/profile.html#instant-user-s-manual">Python profiling documentation</a>
 for more information.</p>
@@ -165,14 +158,16 @@ dummies will semi-randomly perform various tasks from a list of possible
 actions.  Use <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> to stop the Dummyrunner.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>You should not run the Dummyrunner on a production database. It
-will spawn many objects and also needs to run with general permissions.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>You should not run the Dummyrunner on a production database. It
+will spawn many objects and also needs to run with general permissions.
+</pre></div>
 </div>
 <p>This is the recommended process for using the dummy runner:</p>
+</div>
 <ol>
 <li><p>Stop your server completely with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code>.</p></li>
 <li><p>At <em>the end</em> of your <code class="docutils literal notranslate"><span class="pre">mygame/server/conf.settings.py</span></code> file, add the line</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="kn">from</span> <span class="nn">evennia.server.profiling.settings_mixin</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> from evennia.server.profiling.settings_mixin import *
 </pre></div>
 </div>
 <p>This will override your settings and disable Evennia’s rate limiters and
@@ -186,7 +181,7 @@ keep your existing database, just rename <code class="docutils literal notransla
 can manually check response. If you kept an old database, you will <em>not</em>
 be able to connect with an <em>existing</em> user since the password hasher changed!</p></li>
 <li><p>Start the dummyrunner with 10 dummy users from the terminal with</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">evennia</span> <span class="o">--</span><span class="n">dummyrunner</span> <span class="mi">10</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia --dummyrunner 10
 </pre></div>
 </div>
 <p>Use <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> (or <code class="docutils literal notranslate"><span class="pre">Cmd-C</span></code>) to stop it.</p>
@@ -194,7 +189,7 @@ be able to connect with an <em>existing</em> user since the password hasher chan
 </ol>
 <p>If you want to see what the dummies are actually doing you can run with a single
 dummy:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="o">--</span><span class="n">dummyrunner</span> <span class="mi">1</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia --dummyrunner 1
 </pre></div>
 </div>
 <p>The inputs/outputs from the dummy will then be printed. By default the runner
@@ -203,7 +198,7 @@ over and over. To change the settings, copy the file
 <code class="docutils literal notranslate"><span class="pre">evennia/server/profiling/dummyrunner_settings.py</span></code> to your <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/</span></code>
 directory, then add this line to your settings file to use it in the new
 location:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DUMMYRUNNER_SETTINGS_MODULE</span> <span class="o">=</span> <span class="s2">&quot;server/conf/dummyrunner_settings.py&quot;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DUMMYRUNNER_SETTINGS_MODULE = &quot;server/conf/dummyrunner_settings.py&quot;
 </pre></div>
 </div>
 <p>The dummyrunner settings file is a python code module in its own right - it
@@ -214,46 +209,7 @@ probability of them happening. The dummyrunner looks for a global variable
 commands for logging in/out of the server.</p>
 <p>Below is a simplified minimal setup (the default settings file adds a lot more
 functionality and info):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># minimal dummyrunner setup file</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># minimal dummyrunner setup file</span>
 
 <span class="c1"># Time between each dummyrunner &quot;tick&quot;, in seconds. Each dummy will be called</span>
 <span class="c1"># with this frequency.</span>
@@ -293,8 +249,9 @@ functionality and info):</p>
     <span class="n">c_logout</span><span class="p">,</span>
     <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">c_look</span><span class="p">)</span>   <span class="c1"># (probability, command-generator)</span>
 <span class="p">)</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>At the bottom of the default file are a few default profiles you can test out
 by just setting the <code class="docutils literal notranslate"><span class="pre">PROFILE</span></code> variable to one of the options.</p>
 <section id="dummyrunner-hints">
@@ -383,7 +340,7 @@ For this, actual real-game testing is required.</p></li>
 <h3>Versions</h3>
 <ul>
   <li><a href="Profiling.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

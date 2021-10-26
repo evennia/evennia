@@ -5,8 +5,8 @@
 different game entities as Python classes, without having to modify the database schema for every
 new type.
 
-In Evennia the most important game entities, [Accounts](./Accounts), [Objects](./Objects),
-[Scripts](./Scripts) and [Channels](./Communications#Channels) are all Python classes inheriting, at
+In Evennia the most important game entities, [Accounts](./Accounts.md), [Objects](./Objects.md),
+[Scripts](./Scripts.md) and [Channels](./Channels.md) are all Python classes inheriting, at
 varying distance, from `evennia.typeclasses.models.TypedObject`.  In the documentation we refer to
 these objects as being "typeclassed" or even "being a typeclass".
 
@@ -48,14 +48,14 @@ module from anywhere, the `typeclass/list` will not find it. To make it known
 to Evennia you must import that module from somewhere.
 
 
-### Difference between typeclasses and classes
+## Difference between typeclasses and classes
 
 All Evennia classes inheriting from class in the table above share one important feature and two
 important limitations. This is why we don't simply call them "classes" but "typeclasses".
 
  1. A typeclass can save itself to the database. This means that some properties (actually not that
 many) on the class actually represents database fields and can only hold very specific data types.
-This is detailed [below](./Typeclasses#about-typeclass-properties).
+This is detailed [below](./Typeclasses.md#about-typeclass-properties).
  1. Due to its connection to the database, the typeclass' name must be *unique* across the _entire_
 server namespace. That is, there must never be two same-named classes defined anywhere. So the below
 code would give an error (since `DefaultObject` is now globally found both in this module and in the
@@ -82,7 +82,7 @@ both accept arbitrary keyword arguments and use `super` to call its parent::
     ```
 
 Apart from this, a typeclass works like any normal Python class and you can
-treat it as such. 
+treat it as such.
 
 
 ## Creating a new typeclass
@@ -129,11 +129,11 @@ argument; this can both be the actual class or the python path to the typeclass 
 game directory. So if your `Furniture` typeclass sits in `mygame/typeclasses/furniture.py`, you
 could point to it as `typeclasses.furniture.Furniture`. Since Evennia will itself look in
 `mygame/typeclasses`, you can shorten this even further to just `furniture.Furniture`. The create-
-functions take a lot of extra keywords allowing you to set things like [Attributes](./Attributes) and
-[Tags](./Tags) all in one go. These keywords don't use the `db_*` prefix. This will also automatically
+functions take a lot of extra keywords allowing you to set things like [Attributes](./Attributes.md) and
+[Tags](./Tags.md) all in one go. These keywords don't use the `db_*` prefix. This will also automatically
 save the new instance to the database, so you don't need to call `save()` explicitly.
 
-### About typeclass properties
+## About typeclass properties
 
 An example of a database field is `db_key`. This stores the "name" of the entity you are modifying
 and can thus only hold a string. This is one way of making sure to update the `db_key`:
@@ -178,36 +178,36 @@ returns the string form "#id".
 
 The typeclassed entity has several common handlers:
 
- - `tags` - the [TagHandler](./Tags) that handles tagging. Use `tags.add()` , `tags.get()` etc.
- - `locks` - the [LockHandler](./Locks) that manages access restrictions. Use `locks.add()`,
+ - `tags` - the [TagHandler](./Tags.md) that handles tagging. Use `tags.add()` , `tags.get()` etc.
+ - `locks` - the [LockHandler](./Locks.md) that manages access restrictions. Use `locks.add()`,
 `locks.get()` etc.
- - `attributes` - the [AttributeHandler](./Attributes) that manages Attributes on the object. Use
+ - `attributes` - the [AttributeHandler](./Attributes.md) that manages Attributes on the object. Use
 `attributes.add()`
 etc.
  - `db` (DataBase) - a shortcut property to the AttributeHandler; allowing `obj.db.attrname = value`
- - `nattributes` - the [Non-persistent AttributeHandler](./Attributes) for attributes not saved in the
+ - `nattributes` - the [Non-persistent AttributeHandler](./Attributes.md) for attributes not saved in the
 database.
  - `ndb` (NotDataBase) - a shortcut property to the Non-peristent AttributeHandler. Allows
 `obj.ndb.attrname = value`
 
 
 Each of the typeclassed entities then extend this list with their own properties. Go to the
-respective pages for [Objects](./Objects), [Scripts](./Scripts), [Accounts](./Accounts) and
-[Channels](./Communications) for more info. It's also recommended that you explore the available
-entities using [Evennia's flat API](../Evennia-API) to explore which properties and methods they have
+respective pages for [Objects](./Objects.md), [Scripts](./Scripts.md), [Accounts](./Accounts.md) and
+[Channels](./Communications.md) for more info. It's also recommended that you explore the available
+entities using [Evennia's flat API](../Evennia-API.md) to explore which properties and methods they have
 available.
 
-### Overloading hooks
+## Overloading hooks
 
 The way to customize typeclasses is usually to overload *hook methods* on them. Hooks are methods
 that Evennia call in various situations. An example is the `at_object_creation` hook on `Objects`,
 which is only called once, the very first time this object is saved to the database.  Other examples
 are the `at_login` hook of Accounts and the `at_repeat` hook of Scripts.
 
-### Querying for typeclasses
+## Querying for typeclasses
 
 Most of the time you search for objects in the database by using convenience methods like the
-`caller.search()` of [Commands](./Commands) or the search functions like `evennia.search_objects`.
+`caller.search()` of [Commands](./Commands.md) or the search functions like `evennia.search_objects`.
 
 You can however also query for them directly using [Django's query
 language](https://docs.djangoproject.com/en/1.7/topics/db/queries/). This makes use of a _database
@@ -245,13 +245,13 @@ matches = ScriptDB.objects.filter(db_key__contains="Combat")
 When querying from the database model parent you don't need to use `filter_family` or `get_family` -
 you will always query all children on the database model.
 
-## Updating existing typeclass instances
+# Updating existing typeclass instances
 
 If you already have created instances of Typeclasses, you can modify the *Python code* at any time -
 due to how Python inheritance works your changes will automatically be applied to all children once
 you have reloaded the server.
 
-However, database-saved data, like `db_*` fields, [Attributes](./Attributes), [Tags](./Tags) etc, are
+However, database-saved data, like `db_*` fields, [Attributes](./Attributes.md), [Tags](./Tags.md) etc, are
 not themselves embedded into the class and will *not* be updated automatically. This you need to
 manage yourself, by searching for all relevant objects and updating or adding the data:
 
@@ -317,7 +317,7 @@ The arguments to this method are described [in the API docs
 here](github:evennia.typeclasses.models#typedobjectswap_typeclass).
 
 
-## How typeclasses actually work
+# How typeclasses actually work
 
 *This is considered an advanced section.*
 
@@ -325,7 +325,7 @@ Technically, typeclasses are [Django proxy
 models](https://docs.djangoproject.com/en/1.7/topics/db/models/#proxy-models).  The only database
 models that are "real" in the typeclass system (that is, are represented by actual tables in the
 database) are `AccountDB`, `ObjectDB`, `ScriptDB` and `ChannelDB` (there are also
-[Attributes](./Attributes) and [Tags](./Tags) but they are not typeclasses themselves). All the
+[Attributes](./Attributes.md) and [Tags](./Tags.md) but they are not typeclasses themselves). All the
 subclasses of them are "proxies", extending them with Python code without actually modifying the
 database layout.
 
@@ -334,7 +334,7 @@ Evennia modifies Django's proxy model in various ways to allow them to work with
 handles this for you using metaclasses). Evennia also makes sure you can query subclasses as well as
 patches django to allow multiple inheritance from the same base class.
 
-### Caveats
+## Caveats
 
 Evennia uses the *idmapper* to cache its typeclasses (Django proxy models) in memory. The idmapper
 allows things like on-object handlers and properties to be stored on typeclass instances and to not

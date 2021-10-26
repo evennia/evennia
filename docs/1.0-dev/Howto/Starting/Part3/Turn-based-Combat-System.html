@@ -14,6 +14,8 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="turn-based-combat-system">
+  <section class="tex2jax_ignore mathjax_ignore" id="turn-based-combat-system">
 <h1>Turn based Combat System<a class="headerlink" href="#turn-based-combat-system" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial gives an example of a full, if simplified, combat system for Evennia. It was inspired
 by the discussions held on the <a class="reference external" href="https://groups.google.com/forum/#%21msg/evennia/wnJNM2sXSfs/-dbLRrgWnYMJ">mailing
@@ -68,7 +70,7 @@ allows for emoting as part of combat which is an advantage for roleplay-heavy ga
 <p>To implement a freeform combat system all you need is a dice roller and a roleplaying rulebook. See
 <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/contrib/dice.py">contrib/dice.py</a> for an
 example dice roller. To implement at twitch-based system you basically need a few combat
-<a class="reference internal" href="../../../Components/Commands.html"><span class="doc">commands</span></a>, possibly ones with a <a class="reference internal" href="../../Command-Cooldown.html"><span class="doc">cooldown</span></a>. You also need a <a class="reference internal" href="Implementing-a-game-rule-system.html"><span class="doc">game rule
+<a class="reference internal" href="../../../Components/Commands.html"><span class="doc std std-doc">commands</span></a>, possibly ones with a <a class="reference internal" href="../../Command-Cooldown.html"><span class="doc std std-doc">cooldown</span></a>. You also need a <a class="reference internal" href="Implementing-a-game-rule-system.html"><span class="doc std std-doc">game rule
 module</span></a> that makes use of it. We will focus on the turn-based
 variety here.</p>
 </section>
@@ -86,7 +88,7 @@ free.</p></li>
 <li><p>The commands are (in our example) simple; they can either <code class="docutils literal notranslate"><span class="pre">hit</span> <span class="pre">&lt;target&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">feint</span> <span class="pre">&lt;target&gt;</span></code> or
 <code class="docutils literal notranslate"><span class="pre">parry</span> <span class="pre">&lt;target&gt;</span></code>. They can also <code class="docutils literal notranslate"><span class="pre">defend</span></code>, a generic passive defense. Finally they may choose to
 <code class="docutils literal notranslate"><span class="pre">disengage/flee</span></code>.</p></li>
-<li><p>When attacking we use a classic [rock-paper-scissors](https://en.wikipedia.org/wiki/Rock-paper-
+<li><p>When attacking we use a classic [rock-paper-scissors](<a class="reference external" href="https://en.wikipedia.org/wiki/Rock-paper-">https://en.wikipedia.org/wiki/Rock-paper-</a>
 scissors) mechanic to determine success: <code class="docutils literal notranslate"><span class="pre">hit</span></code> defeats <code class="docutils literal notranslate"><span class="pre">feint</span></code>, which defeats <code class="docutils literal notranslate"><span class="pre">parry</span></code> which defeats
 <code class="docutils literal notranslate"><span class="pre">hit</span></code>. <code class="docutils literal notranslate"><span class="pre">defend</span></code> is a general passive action that has a percentage chance to win against <code class="docutils literal notranslate"><span class="pre">hit</span></code>
 (only).</p></li>
@@ -98,23 +100,23 @@ reported. A new turn then begins.</p></li>
 </ul>
 <p>For creating the combat system we will need the following components:</p>
 <ul class="simple">
-<li><p>A combat handler. This is the main mechanic of the system. This is a <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc">Script</span></a> object
+<li><p>A combat handler. This is the main mechanic of the system. This is a <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Script</span></a> object
 created for each combat.  It is not assigned to a specific object but is shared by the combating
 characters and handles all the combat information. Since Scripts are database entities it also means
 that the combat will not be affected by a server reload.</p></li>
-<li><p>A combat <a class="reference internal" href="../../../Components/Command-Sets.html"><span class="doc">command set</span></a> with the relevant commands needed for combat, such as the
+<li><p>A combat <a class="reference internal" href="../../../Components/Command-Sets.html"><span class="doc std std-doc">command set</span></a> with the relevant commands needed for combat, such as the
 various attack/defend options and the <code class="docutils literal notranslate"><span class="pre">flee/disengage</span></code> command to leave the combat mode.</p></li>
-<li><p>A rule resolution system. The basics of making such a module is described in the <a class="reference internal" href="Implementing-a-game-rule-system.html"><span class="doc">rule system
+<li><p>A rule resolution system. The basics of making such a module is described in the <a class="reference internal" href="Implementing-a-game-rule-system.html"><span class="doc std std-doc">rule system
 tutorial</span></a>. We will only sketch such a module here for our end-turn
 combat resolution.</p></li>
-<li><p>An <code class="docutils literal notranslate"><span class="pre">attack</span></code> <a class="reference internal" href="../../../Components/Commands.html"><span class="doc">command</span></a> for initiating the combat mode. This is added to the default
+<li><p>An <code class="docutils literal notranslate"><span class="pre">attack</span></code> <a class="reference internal" href="../../../Components/Commands.html"><span class="doc std std-doc">command</span></a> for initiating the combat mode. This is added to the default
 command set. It will create the combat handler and add the character(s) to it. It will also assign
 the combat command set to the characters.</p></li>
 </ul>
 </section>
 <section id="the-combat-handler">
 <h2>The combat handler<a class="headerlink" href="#the-combat-handler" title="Permalink to this headline">¶</a></h2>
-<p>The <em>combat handler</em> is implemented as a stand-alone <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc">Script</span></a>.  This Script is created when
+<p>The <em>combat handler</em> is implemented as a stand-alone <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Script</span></a>.  This Script is created when
 the first Character decides to attack another and is deleted when no one is fighting any more. Each
 handler represents one instance of combat and one combat only. Each instance of combat can hold any
 number of characters but each character can only be part of one combat at a time (a player would
@@ -125,172 +127,12 @@ combat.  Vice-versa, all characters holds a back-reference to the current combat
 don’t use this very much here this might allow the combat commands on the characters to access and
 update the combat handler state directly.</p>
 <p><em>Note: Another way to implement a combat handler would be to use a normal Python object and handle
-time-keeping with the <a class="reference internal" href="../../../Components/TickerHandler.html"><span class="doc">TickerHandler</span></a>. This would require either adding custom hook
+time-keeping with the <a class="reference internal" href="../../../Components/TickerHandler.html"><span class="doc std std-doc">TickerHandler</span></a>. This would require either adding custom hook
 methods on the character or to implement a custom child of the TickerHandler class to track turns.
 Whereas the TickerHandler is easy to use, a Script offers more power in this case.</em></p>
 <p>Here is a basic combat handler. Assuming our game folder is named <code class="docutils literal notranslate"><span class="pre">mygame</span></code>, we store it in
 <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/combat_handler.py</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
-<span class="normal">  2</span>
-<span class="normal">  3</span>
-<span class="normal">  4</span>
-<span class="normal">  5</span>
-<span class="normal">  6</span>
-<span class="normal">  7</span>
-<span class="normal">  8</span>
-<span class="normal">  9</span>
-<span class="normal"> 10</span>
-<span class="normal"> 11</span>
-<span class="normal"> 12</span>
-<span class="normal"> 13</span>
-<span class="normal"> 14</span>
-<span class="normal"> 15</span>
-<span class="normal"> 16</span>
-<span class="normal"> 17</span>
-<span class="normal"> 18</span>
-<span class="normal"> 19</span>
-<span class="normal"> 20</span>
-<span class="normal"> 21</span>
-<span class="normal"> 22</span>
-<span class="normal"> 23</span>
-<span class="normal"> 24</span>
-<span class="normal"> 25</span>
-<span class="normal"> 26</span>
-<span class="normal"> 27</span>
-<span class="normal"> 28</span>
-<span class="normal"> 29</span>
-<span class="normal"> 30</span>
-<span class="normal"> 31</span>
-<span class="normal"> 32</span>
-<span class="normal"> 33</span>
-<span class="normal"> 34</span>
-<span class="normal"> 35</span>
-<span class="normal"> 36</span>
-<span class="normal"> 37</span>
-<span class="normal"> 38</span>
-<span class="normal"> 39</span>
-<span class="normal"> 40</span>
-<span class="normal"> 41</span>
-<span class="normal"> 42</span>
-<span class="normal"> 43</span>
-<span class="normal"> 44</span>
-<span class="normal"> 45</span>
-<span class="normal"> 46</span>
-<span class="normal"> 47</span>
-<span class="normal"> 48</span>
-<span class="normal"> 49</span>
-<span class="normal"> 50</span>
-<span class="normal"> 51</span>
-<span class="normal"> 52</span>
-<span class="normal"> 53</span>
-<span class="normal"> 54</span>
-<span class="normal"> 55</span>
-<span class="normal"> 56</span>
-<span class="normal"> 57</span>
-<span class="normal"> 58</span>
-<span class="normal"> 59</span>
-<span class="normal"> 60</span>
-<span class="normal"> 61</span>
-<span class="normal"> 62</span>
-<span class="normal"> 63</span>
-<span class="normal"> 64</span>
-<span class="normal"> 65</span>
-<span class="normal"> 66</span>
-<span class="normal"> 67</span>
-<span class="normal"> 68</span>
-<span class="normal"> 69</span>
-<span class="normal"> 70</span>
-<span class="normal"> 71</span>
-<span class="normal"> 72</span>
-<span class="normal"> 73</span>
-<span class="normal"> 74</span>
-<span class="normal"> 75</span>
-<span class="normal"> 76</span>
-<span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/combat_handler.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/combat_handler.py</span>
 
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
@@ -452,7 +294,7 @@ Whereas the TickerHandler is easy to use, a Script offers more power in this cas
                                                   <span class="p">(</span><span class="s2">&quot;defend&quot;</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg_all</span><span class="p">(</span><span class="s2">&quot;Next turn begins ...&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This implements all the useful properties of our combat handler. This Script will survive a reboot
 and will automatically re-assert itself when it comes back online. Even the current state of the
 combat should be unaffected since it is saved in Attributes at every turn. An important part to note
@@ -468,41 +310,7 @@ an exercise.</p>
 example) very simple. In a full implementation the commands available might be determined by the
 weapon(s) held by the player or by which skills they know.</p>
 <p>We create them in <code class="docutils literal notranslate"><span class="pre">mygame/commands/combat.py</span></code>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/combat.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/combat.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
@@ -538,31 +346,12 @@ weapon(s) held by the player or by which skills they know.</p>
         <span class="c1"># tell the handler to check if turn is over</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combat_handler</span><span class="o">.</span><span class="n">check_end_turn</span><span class="p">()</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>The other commands <code class="docutils literal notranslate"><span class="pre">CmdParry</span></code>, <code class="docutils literal notranslate"><span class="pre">CmdFeint</span></code>, <code class="docutils literal notranslate"><span class="pre">CmdDefend</span></code> and <code class="docutils literal notranslate"><span class="pre">CmdDisengage</span></code> look basically the same.
 We should also add a custom <code class="docutils literal notranslate"><span class="pre">help</span></code> command to list all the available combat commands and what they
 do.</p>
 <p>We just need to put them all in a cmdset. We do this at the end of the same module:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/combat.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/combat.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
@@ -583,7 +372,7 @@ do.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdPose</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdSay</span><span class="p">())</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 <section id="rules-module">
 <h2>Rules module<a class="headerlink" href="#rules-module" title="Permalink to this headline">¶</a></h2>
@@ -611,83 +400,7 @@ subsequent attack and so on …</em></p>
 <li><p><code class="docutils literal notranslate"><span class="pre">flee/disengage</span></code> must succeed two times in a row (i.e. not beaten by a <code class="docutils literal notranslate"><span class="pre">hit</span></code> once during the
 turn). If so the character leaves combat.</p></li>
 </ul>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/rules.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/rules.py</span>
 
 <span class="kn">import</span> <span class="nn">random</span>
 
@@ -765,7 +478,7 @@ turn). If so the character leaves combat.</p></li>
             <span class="n">combat_handler</span><span class="o">.</span><span class="n">msg_all</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2"> withdraws from combat.&quot;</span><span class="p">)</span>
             <span class="n">combat_handler</span><span class="o">.</span><span class="n">remove_character</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>To make it simple (and to save space), this example rule module actually resolves each interchange
 twice - first when it gets to each character and then again when handling the target. Also, since we
 use the combat handler’s <code class="docutils literal notranslate"><span class="pre">msg_all</span></code> method here, the system will get pretty spammy. To clean it up,
@@ -776,43 +489,7 @@ reported once.</p>
 <h2>Combat initiator command<a class="headerlink" href="#combat-initiator-command" title="Permalink to this headline">¶</a></h2>
 <p>This is the last component we need, a command to initiate combat. This will tie everything together.
 We store this with the other combat commands.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/combat.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/combat.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_script</span>
 
@@ -850,9 +527,9 @@ We store this with the other combat commands.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You attack </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">! You are in combat.&quot;</span><span class="p">)</span>
             <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="si">}</span><span class="s2"> attacks you! You are in combat.&quot;</span><span class="p">)</span>       
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>The <code class="docutils literal notranslate"><span class="pre">attack</span></code> command will not go into the combat cmdset but rather into the default cmdset. See e.g.
-the <a class="reference internal" href="../Part1/Adding-Commands.html"><span class="doc">Adding Command Tutorial</span></a> if you are unsure about how to do this.</p>
+the <a class="reference internal" href="../Part1/Adding-Commands.html"><span class="doc std std-doc">Adding Command Tutorial</span></a> if you are unsure about how to do this.</p>
 </section>
 <section id="expanding-the-example">
 <h2>Expanding the example<a class="headerlink" href="#expanding-the-example" title="Permalink to this headline">¶</a></h2>
@@ -921,7 +598,7 @@ show others what’s going on.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Turn-based-Combat-System.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

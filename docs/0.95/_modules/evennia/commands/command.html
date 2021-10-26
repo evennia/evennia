@@ -1,0 +1,786 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.commands.command &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.command</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.commands.command</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The base Command class.</span>
+
+<span class="sd">All commands in Evennia inherit from the &#39;Command&#39; class in this module.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
+<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
+
+
+<span class="k">def</span> <span class="nf">_init_command</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper command.</span>
+<span class="sd">    Makes sure all data are stored as lowercase and</span>
+<span class="sd">    do checking on all properties that should be in list form.</span>
+<span class="sd">    Sets up locks to be more forgiving. This is used both by the metaclass</span>
+<span class="sd">    and (optionally) at instantiation time.</span>
+
+<span class="sd">    If kwargs are given, these are set as instance-specific properties</span>
+<span class="sd">    on the command - but note that the Command instance is *re-used* on a given</span>
+<span class="sd">    host object, so a kwarg value set on the instance will *remain* on the instance</span>
+<span class="sd">    for subsequent uses of that Command on that particular object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)):</span>
+        <span class="c1"># used for dynamic creation of commands</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">popitem</span><span class="p">()</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="bp">cls</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">aliases</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_iter</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">aliases</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">aliases</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">aliases</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">alias</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">aliases</span> <span class="k">if</span> <span class="n">alias</span> <span class="ow">and</span> <span class="n">alias</span> <span class="o">!=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+
+    <span class="c1"># optimization - a set is much faster to match against than a list</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">_matchset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="bp">cls</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="bp">cls</span><span class="o">.</span><span class="n">aliases</span><span class="p">)</span>
+    <span class="c1"># optimization for looping over keys+aliases</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">_keyaliases</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_matchset</span><span class="p">)</span>
+
+    <span class="c1"># by default we don&#39;t save the command between runs</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;save_for_next&quot;</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">save_for_next</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># pre-process locks as defined in class definition</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;permissions&quot;</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">permissions</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;locks&quot;</span><span class="p">):</span>
+        <span class="c1"># default if one forgets to define completely</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;cmd:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">locks</span><span class="p">:</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all();&quot;</span> <span class="o">+</span> <span class="bp">cls</span><span class="o">.</span><span class="n">locks</span>
+    <span class="k">for</span> <span class="n">lockstring</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">lockstring</span> <span class="ow">and</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lockstring</span><span class="p">:</span>
+            <span class="n">lockstring</span> <span class="o">=</span> <span class="s2">&quot;cmd:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">lockstring</span>
+        <span class="n">temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lockstring</span><span class="p">)</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">lock_storage</span> <span class="o">=</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;arg_regex&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">arg_regex</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">arg_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">cls</span><span class="o">.</span><span class="n">arg_regex</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">UNICODE</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;auto_help&quot;</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">auto_help</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;is_exit&quot;</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">is_exit</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;help_category&quot;</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;general&quot;</span>
+    <span class="c1"># make sure to pick up the parent&#39;s docstring if the child class is</span>
+    <span class="c1"># missing one (important for auto-help)</span>
+    <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__doc__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">parent_class</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmro</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">parent_class</span><span class="o">.</span><span class="vm">__doc__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">parent_class</span><span class="o">.</span><span class="vm">__doc__</span>
+                <span class="k">break</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">help_category</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">help_category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="CommandMeta"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.CommandMeta">[docs]</a><span class="k">class</span> <span class="nc">CommandMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The metaclass cleans up all properties on the class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CommandMeta.__init__"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.CommandMeta.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">_init_command</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<span class="c1">#    The Command class is the basic unit of an Evennia command; when</span>
+<span class="c1">#    defining new commands, the admin subclass this class and</span>
+<span class="c1">#    define their own parser method to handle the input. The</span>
+<span class="c1">#    advantage of this is inheritage; commands that have similar</span>
+<span class="c1">#    structure can parse the input string the same way, minimizing</span>
+<span class="c1">#    parsing errors.</span>
+
+
+<div class="viewcode-block" id="Command"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command">[docs]</a><span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">CommandMeta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base command</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      command [args]</span>
+
+<span class="sd">    This is the base command class. Inherit from this</span>
+<span class="sd">    to create new commands.</span>
+
+<span class="sd">    The cmdhandler makes the following variables available to the</span>
+<span class="sd">    command methods (so you can always assume them to be there):</span>
+<span class="sd">    self.caller - the game object calling the command</span>
+<span class="sd">    self.cmdstring - the command name used to trigger this command (allows</span>
+<span class="sd">                     you to know which alias was used, for example)</span>
+<span class="sd">    cmd.args - everything supplied to the command following the cmdstring</span>
+<span class="sd">               (this is usually what is parsed in self.parse())</span>
+<span class="sd">    cmd.cmdset - the cmdset from which this command was matched (useful only</span>
+<span class="sd">                seldomly, notably for help-type commands, to create dynamic</span>
+<span class="sd">                help entries and lists)</span>
+<span class="sd">    cmd.obj - the object on which this command is defined. If a default command,</span>
+<span class="sd">                 this is usually the same as caller.</span>
+<span class="sd">    cmd.rawstring - the full raw string input, including any args and no parsing.</span>
+
+<span class="sd">    The following class properties can/should be defined on your child class:</span>
+
+<span class="sd">    key - identifier for command (e.g. &quot;look&quot;)</span>
+<span class="sd">    aliases - (optional) list of aliases (e.g. [&quot;l&quot;, &quot;loo&quot;])</span>
+<span class="sd">    locks - lock string (default is &quot;cmd:all()&quot;)</span>
+<span class="sd">    help_category - how to organize this help entry in help system</span>
+<span class="sd">                    (default is &quot;General&quot;)</span>
+<span class="sd">    auto_help - defaults to True. Allows for turning off auto-help generation</span>
+<span class="sd">    arg_regex - (optional) raw string regex defining how the argument part of</span>
+<span class="sd">                the command should look in order to match for this command</span>
+<span class="sd">                (e.g. must it be a space between cmdname and arg?)</span>
+<span class="sd">    auto_help_display_key - (optional) if given, this replaces the string shown</span>
+<span class="sd">        in the auto-help listing. This is particularly useful for system-commands</span>
+<span class="sd">        whose actual key is not really meaningful.</span>
+
+<span class="sd">    (Note that if auto_help is on, this initial string is also used by the</span>
+<span class="sd">    system to create the help entry for the command, so it&#39;s a good idea to</span>
+<span class="sd">    format it similar to this one).  This behavior can be changed by</span>
+<span class="sd">    overriding the method &#39;get_help&#39; of a command: by default, this</span>
+<span class="sd">    method returns cmd.__doc__ (that is, this very docstring, or</span>
+<span class="sd">    the docstring of your command).  You can, however, extend or</span>
+<span class="sd">    replace this without disabling auto_help.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the main way to call this command (e.g. &#39;look&#39;)</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;command&quot;</span>
+    <span class="c1"># alternative ways to call the command (e.g. &#39;l&#39;, &#39;glance&#39;, &#39;examine&#39;)</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># a list of lock definitions on the form</span>
+    <span class="c1">#   cmd:[NOT] func(args) [ AND|OR][ NOT] func2(args)</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_LOCKS</span>
+    <span class="c1"># used by the help system to group commands in lists.</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_HELP_CATEGORY</span>
+    <span class="c1"># This allows to turn off auto-help entry creation for individual commands.</span>
+    <span class="n">auto_help</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1"># optimization for quickly separating exit-commands from normal commands</span>
+    <span class="n">is_exit</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># define the command not only by key but by the regex form of its arguments</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_ARG_REGEX</span>
+    <span class="c1"># whether self.msg sends to all sessions of a related account/object (default</span>
+    <span class="c1"># is to only send to the session sending the command).</span>
+    <span class="n">msg_all_sessions</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_MSG_ALL_SESSIONS</span>
+
+    <span class="c1"># auto-set (by Evennia on command instantiation) are:</span>
+    <span class="c1">#   obj - which object this command is defined on</span>
+    <span class="c1">#   session - which session is responsible for triggering this command. Only set</span>
+    <span class="c1">#             if triggered by an account.</span>
+
+<div class="viewcode-block" id="Command.__init__"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The lockhandler works the same as for objects.</span>
+<span class="sd">        optional kwargs will be set as properties on the Command at runtime,</span>
+<span class="sd">        overloading evential same-named class properties.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">_init_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Command.lockhandler"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.lockhandler">[docs]</a>    <span class="nd">@lazy_property</span>
+    <span class="k">def</span> <span class="nf">lockhandler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">LockHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print the command key</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compare two command instances to each other by matching their</span>
+<span class="sd">        key and aliases.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmd (Command or str): Allows for equating both Command</span>
+<span class="sd">                objects and their keys.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            equal (bool): If the commands are equal or not.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># first assume input is a command (the most common case)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">_matchset</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="c1"># probably got a string</span>
+            <span class="k">return</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Python 3 requires that any class which implements __eq__ must also</span>
+<span class="sd">        implement __hash__ and that the corresponding hashes for equivalent</span>
+<span class="sd">        instances are themselves equivalent.</span>
+
+<span class="sd">        Technically, the following implementation is only valid for comparison</span>
+<span class="sd">        against other Commands, as our __eq__ supports comparison against</span>
+<span class="sd">        str, too.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The logical negation of __eq__. Since this is one of the most</span>
+<span class="sd">        called methods in Evennia (along with __eq__) we do some</span>
+<span class="sd">        code-duplication here rather than issuing a method-lookup to</span>
+<span class="sd">        __eq__.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span><span class="o">.</span><span class="n">isdisjoint</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">_matchset</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cmd</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span>
+
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This implements searches like &#39;if query in cmd&#39;. It&#39;s a fuzzy</span>
+<span class="sd">        matching used by the help system, returning True if query can</span>
+<span class="sd">        be found as a substring of the commands key or its aliases.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            query (str): query to match against. Should be lower case.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            result (bool): Fuzzy matching result.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">query</span> <span class="ow">in</span> <span class="n">keyalias</span> <span class="k">for</span> <span class="n">keyalias</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keyaliases</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Optimize the key and aliases for lookups.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># optimization - a set is much faster to match against than a list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">)</span>
+        <span class="c1"># optimization for looping over keys+aliases</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_keyaliases</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Command.set_key"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.set_key">[docs]</a>    <span class="k">def</span> <span class="nf">set_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update key.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_key (str): The new key.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This is necessary to use to make sure the optimization</span>
+<span class="sd">            caches are properly updated as well.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">new_key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optimize</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Command.set_aliases"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.set_aliases">[docs]</a>    <span class="k">def</span> <span class="nf">set_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_aliases</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replace aliases with new ones.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_aliases (str or list): Either a ;-separated string</span>
+<span class="sd">                or a list of aliases. These aliases will replace the</span>
+<span class="sd">                existing ones, if any.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This is necessary to use to make sure the optimization</span>
+<span class="sd">            caches are properly updated as well.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_aliases</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">new_aliases</span> <span class="o">=</span> <span class="n">new_aliases</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+        <span class="n">aliases</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">new_aliases</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">alias</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">aliases</span> <span class="k">if</span> <span class="n">alias</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optimize</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Command.match"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is called by the system when searching the available commands,</span>
+<span class="sd">        in order to determine if this is the one we wanted. cmdname was</span>
+<span class="sd">        previously extracted from the raw string by the system.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmdname (str): Always lowercase when reaching this point.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            result (bool): Match result.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cmdname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span></div>
+
+<div class="viewcode-block" id="Command.access"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">srcobj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;cmd&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This hook is called by the cmdhandler to determine if srcobj</span>
+<span class="sd">        is allowed to execute this command. It should return a boolean</span>
+<span class="sd">        value and is not normally something that need to be changed since</span>
+<span class="sd">        it&#39;s using the Evennia permission system directly.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            srcobj (Object): Object trying to gain permission</span>
+<span class="sd">            access_type (str, optional): The lock type to check.</span>
+<span class="sd">            default (bool, optional): The fallback result if no lock</span>
+<span class="sd">                of matching `access_type` is found on this Command.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lockhandler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">srcobj</span><span class="p">,</span> <span class="n">access_type</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Command.msg"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is a shortcut instead of calling msg() directly on an</span>
+<span class="sd">        object - it will detect if caller is an Object or an Account and</span>
+<span class="sd">        also appends self.session automatically if self.msg_all_sessions is False.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str, optional): Text string of message to send.</span>
+<span class="sd">            to_obj (Object, optional): Target object of message. Defaults to self.caller.</span>
+<span class="sd">            from_obj (Object, optional): Source of message. Defaults to to_obj.</span>
+<span class="sd">            session (Session, optional): Supply data only to a unique</span>
+<span class="sd">                session (ignores the value of `self.msg_all_sessions`).</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            options (dict): Options to the protocol.</span>
+<span class="sd">            any (any): All other keywords are interpreted as th</span>
+<span class="sd">                name of send-instructions.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">from_obj</span> <span class="o">=</span> <span class="n">from_obj</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">to_obj</span> <span class="o">=</span> <span class="n">to_obj</span> <span class="ow">or</span> <span class="n">from_obj</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_all_sessions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">to_obj</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">:</span>
+                <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">session</span> <span class="o">=</span> <span class="n">to_obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="n">to_obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Command.execute_cmd"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.execute_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A shortcut of execute_cmd on the caller. It appends the</span>
+<span class="sd">        session automatically.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            raw_string (str): Execute this string as a command input.</span>
+<span class="sd">            session (Session, optional): If not given, the current command&#39;s Session will be used.</span>
+<span class="sd">            obj (Object or Account, optional): Object or Account on which to call the execute_cmd.</span>
+<span class="sd">                If not given, self.caller will be used.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            Other keyword arguments will be added to the found command</span>
+<span class="sd">            object instace as variables before it executes.  This is</span>
+<span class="sd">            unused by default Evennia but may be used to set flags and</span>
+<span class="sd">            change operating paramaters for commands at run-time.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">obj</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">session</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="c1"># Common Command hooks</span>
+
+<div class="viewcode-block" id="Command.at_pre_cmd"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.at_pre_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This hook is called before self.parse() on all commands.  If</span>
+<span class="sd">        this hook returns anything but False/None, the command</span>
+<span class="sd">        sequence is aborted.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Command.at_post_cmd"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.at_post_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This hook is called after the command has finished executing</span>
+<span class="sd">        (after self.func()).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Command.parse"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Once the cmdhandler has identified this as the command we</span>
+<span class="sd">        want, this function is run. If many of your commands have a</span>
+<span class="sd">        similar syntax (for example &#39;cmd arg1 = arg2&#39;) you should</span>
+<span class="sd">        simply define this once and just let other commands of the</span>
+<span class="sd">        same form inherit from this. See the docstring of this module</span>
+<span class="sd">        for which object properties are available to use (notably</span>
+<span class="sd">        self.args).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Command.get_command_info"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.get_command_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_command_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is the default output of func() if no func() overload is done.</span>
+<span class="sd">        Provided here as a separate method so that it can be called for debugging</span>
+<span class="sd">        purposes when making commands.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">variables</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="s2">&quot; |w</span><span class="si">{}</span><span class="s2">|n (</span><span class="si">{}</span><span class="s2">): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">),</span> <span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Command </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> has no defined `func()` - showing on-command variables:</span>
+<span class="si">{</span><span class="n">variables</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="c1"># a simple test command to show the available properties</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|w</span><span class="si">%s</span><span class="s2">|n - Command variables from evennia:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">name of cmd (self.key): |w</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;cmd aliases (self.aliases): |w</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;cmd locks (self.locks): |w</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;help category (self.help_category): |w</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">help_category</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;object calling (self.caller): |w</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;object storing cmdset (self.obj): |w</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;command string given (self.cmdstring): |w</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span>
+        <span class="c1"># show cmdset.key instead of cmdset to shorten output</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="n">fill</span><span class="p">(</span>
+            <span class="s2">&quot;current cmdset (self.cmdset): |w</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Command.func"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is the actual executing part of the command.  It is</span>
+<span class="sd">        called directly after self.parse(). See the docstring of this</span>
+<span class="sd">        module for which object properties are available (beyond those</span>
+<span class="sd">        set in self.parse())</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_command_info</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Command.get_extra_info"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.get_extra_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_extra_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Display some extra information that may help distinguish this</span>
+<span class="sd">        command from others, for instance, in a disambiguity prompt.</span>
+
+<span class="sd">        If this command is a potential match in an ambiguous</span>
+<span class="sd">        situation, one distinguishing feature may be its attachment to</span>
+<span class="sd">        a nearby object, so we include this if available.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            caller (TypedObject): The caller who typed an ambiguous</span>
+<span class="sd">            term handed to the search function.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A string with identifying information to disambiguate the</span>
+<span class="sd">            object, conventionally with a preceding space.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">!=</span> <span class="n">caller</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Command.get_help"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.get_help">[docs]</a>    <span class="k">def</span> <span class="nf">get_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the help message for this command and this caller.</span>
+
+<span class="sd">        By default, return self.__doc__ (the docstring just under</span>
+<span class="sd">        the class definition).  You can override this behavior,</span>
+<span class="sd">        though, and even customize it depending on the caller, or other</span>
+<span class="sd">        commands the caller can use.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            caller (Object or Account): the caller asking for help on the command.</span>
+<span class="sd">            cmdset (CmdSet): the command set (if you need additional commands).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            docstring (str): the help text to provide the caller for this command.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span></div>
+
+<div class="viewcode-block" id="Command.client_width"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.client_width">[docs]</a>    <span class="k">def</span> <span class="nf">client_width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the client screenwidth for the session using this command.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            client width (int): The width (in characters) of the client window.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s2">&quot;SCREENWIDTH&quot;</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span><span class="p">}</span>
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span></div>
+
+<div class="viewcode-block" id="Command.client_height"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.client_height">[docs]</a>    <span class="k">def</span> <span class="nf">client_height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the client screenheight for the session using this command.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            client height (int): The height (in characters) of the client window.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s2">&quot;SCREENHEIGHT&quot;</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_HEIGHT</span><span class="p">}</span>
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_HEIGHT</span></div>
+
+<div class="viewcode-block" id="Command.styled_table"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.styled_table">[docs]</a>    <span class="k">def</span> <span class="nf">styled_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create an EvTable styled by on user preferences.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *args (str): Column headers. If not colored explicitly, these will get colors</span>
+<span class="sd">                from user options.</span>
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            any (str, int or dict): EvTable options, including, optionally a `table` dict</span>
+<span class="sd">                detailing the contents of the table.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            table (EvTable): An initialized evtable entity, either complete (if using `table` kwarg)</span>
+<span class="sd">                or incomplete and ready for use with `.add_row` or `.add_collumn`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">border_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;border_color&quot;</span><span class="p">)</span>
+        <span class="n">column_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;column_names_color&quot;</span><span class="p">)</span>
+
+        <span class="n">colornames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;|</span><span class="si">%s%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">column_color</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
+
+        <span class="n">h_line_char</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;header_line_char&quot;</span><span class="p">,</span> <span class="s2">&quot;~&quot;</span><span class="p">)</span>
+        <span class="n">header_line_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="n">border_color</span><span class="si">}{</span><span class="n">h_line_char</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">)</span>
+        <span class="n">c_char</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;corner_char&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">)</span>
+        <span class="n">corner_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="n">border_color</span><span class="si">}{</span><span class="n">c_char</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">)</span>
+
+        <span class="n">b_left_char</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;border_left_char&quot;</span><span class="p">,</span> <span class="s2">&quot;||&quot;</span><span class="p">)</span>
+        <span class="n">border_left_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="n">border_color</span><span class="si">}{</span><span class="n">b_left_char</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">)</span>
+
+        <span class="n">b_right_char</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;border_right_char&quot;</span><span class="p">,</span> <span class="s2">&quot;||&quot;</span><span class="p">)</span>
+        <span class="n">border_right_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="n">border_color</span><span class="si">}{</span><span class="n">b_right_char</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">)</span>
+
+        <span class="n">b_bottom_char</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;border_bottom_char&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+        <span class="n">border_bottom_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="n">border_color</span><span class="si">}{</span><span class="n">b_bottom_char</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">)</span>
+
+        <span class="n">b_top_char</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;border_top_char&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+        <span class="n">border_top_char</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="n">border_color</span><span class="si">}{</span><span class="n">b_top_char</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">)</span>
+
+        <span class="n">table</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">colornames</span><span class="p">,</span>
+            <span class="n">header_line_char</span><span class="o">=</span><span class="n">header_line_char</span><span class="p">,</span>
+            <span class="n">corner_char</span><span class="o">=</span><span class="n">corner_char</span><span class="p">,</span>
+            <span class="n">border_left_char</span><span class="o">=</span><span class="n">border_left_char</span><span class="p">,</span>
+            <span class="n">border_right_char</span><span class="o">=</span><span class="n">border_right_char</span><span class="p">,</span>
+            <span class="n">border_top_char</span><span class="o">=</span><span class="n">border_top_char</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">table</span></div>
+
+    <span class="k">def</span> <span class="nf">_render_decoration</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">header_text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">fill_character</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">edge_character</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;header&quot;</span><span class="p">,</span>
+        <span class="n">color_header</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper for formatting a string into a pretty display, for a header, separator or footer.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            header_text (str): Text to include in header.</span>
+<span class="sd">            fill_character (str): This single character will be used to fill the width of the</span>
+<span class="sd">                display.</span>
+<span class="sd">            edge_character (str): This character caps the edges of the display.</span>
+<span class="sd">            mode(str): One of &#39;header&#39;, &#39;separator&#39; or &#39;footer&#39;.</span>
+<span class="sd">            color_header (bool): If the header should be colorized based on user options.</span>
+<span class="sd">            width (int): If not given, the client&#39;s width will be used if available.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            string (str): The decorated and formatted text.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">colors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">colors</span><span class="p">[</span><span class="s2">&quot;border&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;border_color&quot;</span><span class="p">)</span>
+        <span class="n">colors</span><span class="p">[</span><span class="s2">&quot;headertext&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_text_color&quot;</span> <span class="o">%</span> <span class="n">mode</span><span class="p">)</span>
+        <span class="n">colors</span><span class="p">[</span><span class="s2">&quot;headerstar&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_star_color&quot;</span> <span class="o">%</span> <span class="n">mode</span><span class="p">)</span>
+
+        <span class="n">width</span> <span class="o">=</span> <span class="n">width</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_width</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">edge_character</span><span class="p">:</span>
+            <span class="n">width</span> <span class="o">-=</span> <span class="mi">2</span>
+
+        <span class="k">if</span> <span class="n">header_text</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">color_header</span><span class="p">:</span>
+                <span class="n">header_text</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">header_text</span><span class="p">)</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+                <span class="n">header_text</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;|n|</span><span class="si">%s%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">colors</span><span class="p">[</span><span class="s2">&quot;headertext&quot;</span><span class="p">],</span> <span class="n">header_text</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;header&quot;</span><span class="p">:</span>
+                <span class="n">begin_center</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span>
+                    <span class="s2">&quot;|n|</span><span class="si">%s</span><span class="s2">&lt;|</span><span class="si">%s</span><span class="s2">* |n&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">colors</span><span class="p">[</span><span class="s2">&quot;border&quot;</span><span class="p">],</span> <span class="n">colors</span><span class="p">[</span><span class="s2">&quot;headerstar&quot;</span><span class="p">])</span>
+                <span class="p">)</span>
+                <span class="n">end_center</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;|n |</span><span class="si">%s</span><span class="s2">*|</span><span class="si">%s</span><span class="s2">&gt;|n&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">colors</span><span class="p">[</span><span class="s2">&quot;headerstar&quot;</span><span class="p">],</span> <span class="n">colors</span><span class="p">[</span><span class="s2">&quot;border&quot;</span><span class="p">]))</span>
+                <span class="n">center_string</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">begin_center</span> <span class="o">+</span> <span class="n">header_text</span> <span class="o">+</span> <span class="n">end_center</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">center_string</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;|n |</span><span class="si">%s%s</span><span class="s2"> |n&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">colors</span><span class="p">[</span><span class="s2">&quot;headertext&quot;</span><span class="p">],</span> <span class="n">header_text</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">center_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">fill_character</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_fill&quot;</span> <span class="o">%</span> <span class="n">mode</span><span class="p">)</span>
+
+        <span class="n">remain_fill</span> <span class="o">=</span> <span class="n">width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">center_string</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">remain_fill</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">right_width</span> <span class="o">=</span> <span class="n">remain_fill</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">left_width</span> <span class="o">=</span> <span class="n">remain_fill</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">right_width</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">remain_fill</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">left_width</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">remain_fill</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">right_fill</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;|n|</span><span class="si">%s%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">colors</span><span class="p">[</span><span class="s2">&quot;border&quot;</span><span class="p">],</span> <span class="n">fill_character</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">right_width</span><span class="p">)))</span>
+        <span class="n">left_fill</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;|n|</span><span class="si">%s%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">colors</span><span class="p">[</span><span class="s2">&quot;border&quot;</span><span class="p">],</span> <span class="n">fill_character</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">left_width</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="n">edge_character</span><span class="p">:</span>
+            <span class="n">edge_fill</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;|n|</span><span class="si">%s%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">colors</span><span class="p">[</span><span class="s2">&quot;border&quot;</span><span class="p">],</span> <span class="n">edge_character</span><span class="p">))</span>
+            <span class="n">main_string</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">center_string</span><span class="p">)</span>
+            <span class="n">final_send</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">ANSIString</span><span class="p">(</span><span class="n">edge_fill</span><span class="p">)</span> <span class="o">+</span> <span class="n">left_fill</span> <span class="o">+</span> <span class="n">main_string</span> <span class="o">+</span> <span class="n">right_fill</span> <span class="o">+</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">edge_fill</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">final_send</span> <span class="o">=</span> <span class="n">left_fill</span> <span class="o">+</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">center_string</span><span class="p">)</span> <span class="o">+</span> <span class="n">right_fill</span>
+        <span class="k">return</span> <span class="n">final_send</span>
+
+<div class="viewcode-block" id="Command.styled_header"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.styled_header">[docs]</a>    <span class="k">def</span> <span class="nf">styled_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a pretty header.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="s2">&quot;mode&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;header&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_render_decoration</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Command.styled_separator"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.styled_separator">[docs]</a>    <span class="k">def</span> <span class="nf">styled_separator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a separator.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;mode&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;separator&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_render_decoration</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Command.styled_footer"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.styled_footer">[docs]</a>    <span class="k">def</span> <span class="nf">styled_footer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a pretty footer.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;mode&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;footer&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_render_decoration</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="InterruptCommand"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.InterruptCommand">[docs]</a><span class="k">class</span> <span class="nc">InterruptCommand</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Cleanly interrupt a command.&quot;&quot;&quot;</span>
+
+    <span class="k">pass</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="command.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.command</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -14,6 +14,8 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="planning-our-tutorial-game">
+  <section class="tex2jax_ignore mathjax_ignore" id="planning-our-tutorial-game">
 <h1>Planning our tutorial game<a class="headerlink" href="#planning-our-tutorial-game" title="Permalink to this headline">¶</a></h1>
 <p>Using the general plan from last lesson we’ll now establish what kind of game we want to create for this tutorial.
 Remembering that we need to keep the scope down, let’s establish some parameters.
@@ -101,8 +103,8 @@ goes outside the regular hierarchy and should usually only.</p>
 other. By default, the <code class="docutils literal notranslate"><span class="pre">public</span></code> channel is created for general discourse.
 Channels are logged to a file and when you are coming back to the game you can view the history of a channel
 in case you missed something.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; public Hello world!
-[Public] MyName: Hello world!   
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; public Hello world!
+[Public] MyName: Hello world!
 </pre></div>
 </div>
 <p>But Channels can also be set up to work between Characters instead of Accounts. This would mean the channels
@@ -149,7 +151,7 @@ build the brunt of things using Evennia’s Batchcode system.</p>
 the ability to create objects with in-built commands is easy and safe, actual code-creation (aka <em>softcode</em> ) is
 not something Evennia supports natively. Regular, untrusted users should never be allowed to execute raw Python
 code (such as what you can do with the <code class="docutils literal notranslate"><span class="pre">py</span></code> command). You can
-<a class="reference internal" href="../../../Concepts/Soft-Code.html"><span class="doc">read more about Evennia’s stance on softcode here</span></a>. If you want users to do limited scripting,
+<a class="reference internal" href="../../../Concepts/Soft-Code.html"><span class="doc std std-doc">read more about Evennia’s stance on softcode here</span></a>. If you want users to do limited scripting,
 it’s suggested that this is accomplished by adding more powerful build-commands for them to use.</p>
 <p>For our tutorial-game, we will only allow privileged builders to modify the world. The exception is crafting,
 which we will limit to repairing broken items by combining them with other repair-related items.</p>
@@ -556,7 +558,7 @@ to code themselves. So in the next lesson we will check out what help we have fr
 <h3>Versions</h3>
 <ul>
   <li><a href="Planning-The-Tutorial-Game.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

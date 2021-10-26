@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -41,6 +43,64 @@
   <section id="module-evennia.commands.default.system">
 <span id="evennia-commands-default-system"></span><h1>evennia.commands.default.system<a class="headerlink" href="#module-evennia.commands.default.system" title="Permalink to this headline">¶</a></h1>
 <p>System commands</p>
+<dl class="py class">
+<dt id="evennia.commands.default.system.CmdAccounts">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.system.</code><code class="sig-name descname">CmdAccounts</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/system.html#CmdAccounts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.system.CmdAccounts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Manage registered accounts</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>accounts [nr]
+accounts/delete &lt;name or #id&gt; [: reason]</p>
+</dd>
+<dt>Switches:</dt><dd><p>delete    - delete an account from the server</p>
+</dd>
+</dl>
+<p>By default, lists statistics about the Accounts registered with the game.
+It will list the &lt;nr&gt; amount of latest registered accounts
+If not given, &lt;nr&gt; defaults to 10.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdAccounts.key">
+<code class="sig-name descname">key</code><em class="property"> = 'accounts'</em><a class="headerlink" href="#evennia.commands.default.system.CmdAccounts.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdAccounts.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['listaccounts', 'account']</em><a class="headerlink" href="#evennia.commands.default.system.CmdAccounts.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdAccounts.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('delete',)</em><a class="headerlink" href="#evennia.commands.default.system.CmdAccounts.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdAccounts.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(listaccounts) or perm(Admin)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdAccounts.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdAccounts.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'system'</em><a class="headerlink" href="#evennia.commands.default.system.CmdAccounts.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.system.CmdAccounts.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/system.html#CmdAccounts.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.system.CmdAccounts.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the accounts</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdAccounts.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(listaccounts) or perm(Admin)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdAccounts.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdAccounts.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'listaccounts account', 'category': 'system', 'key': 'accounts', 'tags': '', 'text': '\n    Manage registered accounts\n\n    Usage:\n      accounts [nr]\n      accounts/delete &lt;name or #id&gt; [: reason]\n\n    Switches:\n      delete    - delete an account from the server\n\n    By default, lists statistics about the Accounts registered with the game.\n    It will list the &lt;nr&gt; amount of latest registered accounts\n    If not given, &lt;nr&gt; defaults to 10.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdAccounts.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt id="evennia.commands.default.system.CmdReload">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.system.</code><code class="sig-name descname">CmdReload</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/system.html#CmdReload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.system.CmdReload" title="Permalink to this definition">¶</a></dt>
@@ -609,6 +669,58 @@ to all the variables defined therein.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt id="evennia.commands.default.system.CmdTickers">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.system.</code><code class="sig-name descname">CmdTickers</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/system.html#CmdTickers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.system.CmdTickers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>View running tickers</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>tickers</p>
+</dd>
+</dl>
+<p>Note: Tickers are created, stopped and manipulated in Python code
+using the TickerHandler. This is merely a convenience function for
+inspecting the current status.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdTickers.key">
+<code class="sig-name descname">key</code><em class="property"> = 'tickers'</em><a class="headerlink" href="#evennia.commands.default.system.CmdTickers.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdTickers.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'system'</em><a class="headerlink" href="#evennia.commands.default.system.CmdTickers.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdTickers.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(tickers) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdTickers.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.system.CmdTickers.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/system.html#CmdTickers.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.system.CmdTickers.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the hook function that actually does all the work. It is called
+by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdTickers.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.system.CmdTickers.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdTickers.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(tickers) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.system.CmdTickers.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.system.CmdTickers.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'system', 'key': 'tickers', 'tags': '', 'text': '\n    View running tickers\n\n    Usage:\n      tickers\n\n    Note: Tickers are created, stopped and manipulated in Python code\n    using the TickerHandler. This is merely a convenience function for\n    inspecting the current status.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdTickers.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -634,7 +746,7 @@ to all the variables defined therein.</p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/api/evennia.commands.default.system.rst.txt"
+      <li><a href="../_sources/api/evennia.commands.default.system.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -651,7 +763,7 @@ to all the variables defined therein.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.commands.default.system.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/api/evennia.commands.default.system.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/api/evennia.commands.default.system.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

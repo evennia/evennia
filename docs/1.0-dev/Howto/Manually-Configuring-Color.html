@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,12 +40,12 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="manually-configuring-color">
+  <section class="tex2jax_ignore mathjax_ignore" id="manually-configuring-color">
 <h1>Manually Configuring Color<a class="headerlink" href="#manually-configuring-color" title="Permalink to this headline">¶</a></h1>
 <p>This is a small tutorial for customizing your character objects, using the example of letting users
 turn on and off ANSI color parsing as an example.  <code class="docutils literal notranslate"><span class="pre">&#64;options</span> <span class="pre">NOCOLOR=True</span></code> will now do what this
 tutorial shows, but the tutorial subject can be applied to other toggles you may want, as well.</p>
-<p>In the Building guide’s <a class="reference external" href="Concepts/TextTags.html#coloured-text">Colors</a> page you can learn how to add color to your
+<p>In the Building guide’s <a class="reference internal" href="../Concepts/Colors.html"><span class="doc std std-doc">Colors</span></a> page you can learn how to add color to your
 game by using special markup. Colors enhance the gaming experience, but not all users want color.
 Examples would be users working from clients that don’t support color, or people with various seeing
 disabilities that rely on screen readers to play your game. Also, whereas Evennia normally
@@ -62,15 +64,9 @@ configuration system for your characters. This is the basic sequence:</p>
 <h2>Setting up a custom Typeclass<a class="headerlink" href="#setting-up-a-custom-typeclass" title="Permalink to this headline">¶</a></h2>
 <p>Create a new module in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses</span></code> named, for example, <code class="docutils literal notranslate"><span class="pre">mycharacter.py</span></code>. Alternatively you
 can simply add a new class to ‘mygamegame/typeclasses/characters.py’.</p>
-<p>In your new module(or characters.py), create a new <a class="reference internal" href="../Components/Typeclasses.html"><span class="doc">Typeclass</span></a> inheriting from
+<p>In your new module(or <a class="reference external" href="http://characters.py">characters.py</a>), create a new <a class="reference internal" href="../Components/Typeclasses.html"><span class="doc std std-doc">Typeclass</span></a> inheriting from
 <code class="docutils literal notranslate"><span class="pre">evennia.DefaultCharacter</span></code>. We will also import <code class="docutils literal notranslate"><span class="pre">evennia.utils.ansi</span></code>, which we will use later.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Character</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Character</span>
     <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
 
     <span class="k">class</span> <span class="nc">ColorableCharacter</span><span class="p">(</span><span class="n">Character</span><span class="p">):</span>
@@ -78,15 +74,15 @@ can simply add a new class to ‘mygamegame/typeclasses/characters.py’.</p>
             <span class="c1"># set a color config value</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
-</td></tr></table></div>
-<p>Above we set a simple config value as an <a class="reference internal" href="../Components/Attributes.html"><span class="doc">Attribute</span></a>.</p>
+</div>
+<p>Above we set a simple config value as an <a class="reference internal" href="../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a>.</p>
 <p>Let’s make sure that new characters are created of this type. Edit your
 <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> file and add/change <code class="docutils literal notranslate"><span class="pre">BASE_CHARACTER_TYPECLASS</span></code> to point to your new
 character class. Observe that this will only affect <em>new</em> characters, not those already created. You
 have to convert already created characters to the new typeclass by using the <code class="docutils literal notranslate"><span class="pre">&#64;typeclass</span></code> command
 (try on a secondary character first though, to test that everything works - you don’t want to render
 your root user unusable!).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@typeclass</span><span class="o">/</span><span class="n">reset</span><span class="o">/</span><span class="n">force</span> <span class="n">Bob</span> <span class="o">=</span> <span class="n">mycharacter</span><span class="o">.</span><span class="n">ColorableCharacter</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @typeclass/reset/force Bob = mycharacter.ColorableCharacter
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">&#64;typeclass</span></code> changes Bob’s typeclass and runs all its creation hooks all over again. The <code class="docutils literal notranslate"><span class="pre">/reset</span></code>
@@ -100,22 +96,12 @@ object despite the actual typeclass name not having changed.</p>
 <p>Next we need to overload the <code class="docutils literal notranslate"><span class="pre">msg()</span></code> method. What we want is to check the configuration value before
 calling the main function.  The original <code class="docutils literal notranslate"><span class="pre">msg</span></code> method call is seen in <code class="docutils literal notranslate"><span class="pre">evennia/objects/objects.py</span></code>
 and is called like this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>As long as we define a method on our custom object with the same name and keep the same number of
 arguments/keywords we will overload the original. Here’s how it could look:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">class</span> <span class="nc">ColorableCharacter</span><span class="p">(</span><span class="n">Character</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">class</span> <span class="nc">ColorableCharacter</span><span class="p">(</span><span class="n">Character</span><span class="p">):</span>
         <span class="c1"># [...]</span>
         <span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -127,14 +113,14 @@ arguments/keywords we will overload the original. Here’s how it could look:</p
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">,</span>
                                                <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Above we create a custom version of the <code class="docutils literal notranslate"><span class="pre">msg()</span></code> method. If the configuration Attribute is set, it
 strips the ANSI from the text it is about to send, and then calls the parent <code class="docutils literal notranslate"><span class="pre">msg()</span></code> as usual. You
 need to <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> before your changes become visible.</p>
 <p>There we go! Just flip the attribute <code class="docutils literal notranslate"><span class="pre">config_color</span></code> to False and your users will not see any color.
 As superuser (assuming you use the Typeclass <code class="docutils literal notranslate"><span class="pre">ColorableCharacter</span></code>) you can test this with the <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code>
 command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span> <span class="o">=</span> <span class="kc">False</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @py self.db.config_color = False
 </pre></div>
 </div>
 </section>
@@ -145,36 +131,7 @@ they want.</p>
 <p>In <code class="docutils literal notranslate"><span class="pre">mygame/commands</span></code>, create a new file, call it for example <code class="docutils literal notranslate"><span class="pre">configcmds.py</span></code> (it’s likely that
 you’ll want to add other commands for configuration down the line). You can also copy/rename the
 command template.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
     <span class="k">class</span> <span class="nc">CmdConfigColor</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -205,24 +162,11 @@ command template.</p>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Color was turned off.&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Lastly, we make this command available to the user by adding it to the default <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code> in
 <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and reloading the server. Make sure you also import the
 command:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mygame.commands</span> <span class="kn">import</span> <span class="n">configcmds</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mygame.commands</span> <span class="kn">import</span> <span class="n">configcmds</span>
 <span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
     <span class="c1"># [...]</span>
     <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -237,17 +181,17 @@ command:</p>
         <span class="c1"># here is the only line that we edit</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">configcmds</span><span class="o">.</span><span class="n">CmdConfigColor</span><span class="p">())</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 <section id="more-colors">
 <h2>More colors<a class="headerlink" href="#more-colors" title="Permalink to this headline">¶</a></h2>
-<p>Apart from ANSI colors, Evennia also supports <strong>Xterm256</strong> colors (See [Colors](../Concepts/TextTags#colored-
+<p>Apart from ANSI colors, Evennia also supports <strong>Xterm256</strong> colors (See [Colors](…/Concepts/TextTags.md#colored-
 text)). The <code class="docutils literal notranslate"><span class="pre">msg()</span></code> method supports the <code class="docutils literal notranslate"><span class="pre">xterm256</span></code> keyword for manually activating/deactiving
 xterm256. It should be easy to expand the above example to allow players to customize xterm256
 regardless of if Evennia thinks their client supports it or not.</p>
 <p>To get a better understanding of how <code class="docutils literal notranslate"><span class="pre">msg()</span></code> works with keywords, you can try this as superuser:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|123Dark blue with xterm256, bright blue with ANSI&quot;</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|gThis should be uncolored&quot;</span><span class="p">,</span> <span class="n">nomarkup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@py self.msg(&quot;|123Dark blue with xterm256, bright blue with ANSI&quot;, xterm256=True)
+@py self.msg(&quot;|gThis should be uncolored&quot;, nomarkup=True)
 </pre></div>
 </div>
 </section>
@@ -304,7 +248,7 @@ regardless of if Evennia thinks their client supports it or not.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Manually-Configuring-Color.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

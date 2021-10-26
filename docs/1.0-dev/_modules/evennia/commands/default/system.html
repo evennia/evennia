@@ -13,6 +13,8 @@
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -76,6 +78,7 @@
 
 <span class="c1"># limit symbol import for API</span>
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;CmdAccounts&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CmdReload&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CmdReset&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CmdShutdown&quot;</span><span class="p">,</span>
@@ -85,6 +88,7 @@
     <span class="s2">&quot;CmdTime&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CmdServerLoad&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CmdTasks&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdTickers&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -450,7 +454,7 @@
         <span class="p">)</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">CmdAccounts</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdAccounts"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdAccounts">[docs]</a><span class="k">class</span> <span class="nc">CmdAccounts</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Manage registered accounts</span>
 
@@ -472,7 +476,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(listaccounts) or perm(Admin)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdAccounts.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdAccounts.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;List the accounts&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -557,7 +561,7 @@
 
         <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wAccount typeclass distribution:|n</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">typetable</span>
         <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wLast </span><span class="si">%s</span><span class="s2"> Accounts created:|n</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">naccounts</span><span class="p">,</span> <span class="n">nlim</span><span class="p">),</span> <span class="n">latesttable</span><span class="p">)</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdService"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdService">[docs]</a><span class="k">class</span> <span class="nc">CmdService</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -934,7 +938,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">CmdTickers</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdTickers"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdTickers">[docs]</a><span class="k">class</span> <span class="nc">CmdTickers</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    View running tickers</span>
 
@@ -951,7 +955,7 @@
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(tickers) or perm(Builder)&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdTickers.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdTickers.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
 
         <span class="n">all_subs</span> <span class="o">=</span> <span class="n">TICKER_HANDLER</span><span class="o">.</span><span class="n">all_display</span><span class="p">()</span>
@@ -971,7 +975,7 @@
                 <span class="n">sub</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="ow">or</span> <span class="s2">&quot;[Unset]&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;*&quot;</span> <span class="k">if</span> <span class="n">sub</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|wActive tickers|n:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|wActive tickers|n:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">))</span></div></div>
 
 
 <div class="viewcode-block" id="CmdTasks"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdTasks">[docs]</a><span class="k">class</span> <span class="nc">CmdTasks</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -1227,7 +1231,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="system.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../../../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

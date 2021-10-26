@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,29 +40,29 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="webserver">
+  <section class="tex2jax_ignore mathjax_ignore" id="webserver">
 <h1>Webserver<a class="headerlink" href="#webserver" title="Permalink to this headline">¶</a></h1>
 <p>When Evennia starts it also spins up its own Twisted-based web server. The
 webserver is responsible for serving the html pages of the game’s website. It
 can also serve static resources like images and music.</p>
-<p>The webclient runs as part of the <a class="reference internal" href="Portal-And-Server.html"><span class="doc">Server</span></a> process of
+<p>The webclient runs as part of the <a class="reference internal" href="Portal-And-Server.html"><span class="doc std std-doc">Server</span></a> process of
 Evennia. This means that it can directly access cached objects modified
 in-game, and there is no risk of working with objects that are temporarily
 out-of-sync in the database.</p>
 <p>The webserver runs on Twisted and is meant to be used in a production
 environment. It leverages the Django web framework and provides:</p>
 <ul class="simple">
-<li><p>A <a class="reference internal" href="Website.html"><span class="doc">Game Website</span></a> - this is what you see when you go to
+<li><p>A <a class="reference internal" href="Website.html"><span class="doc std std-doc">Game Website</span></a> - this is what you see when you go to
 <code class="docutils literal notranslate"><span class="pre">localhost:4001</span></code>. The look of the website is meant to be customized to your
 game. Users logged into the website will be auto-logged into the game if they
 do so with the webclient since they share the same login credentials (there
 is no way to safely do auto-login with telnet clients).</p></li>
-<li><p>The <a class="reference internal" href="Web-Admin.html"><span class="doc">Web Admin</span></a> is based on the Django web admin and allows you to
+<li><p>The <a class="reference internal" href="Web-Admin.html"><span class="doc std std-doc">Web Admin</span></a> is based on the Django web admin and allows you to
 edit the game database in a graphical interface.</p></li>
-<li><p>The <a class="reference internal" href="Webclient.html"><span class="doc">Webclient</span></a> page is served by the webserver, but the actual
+<li><p>The <a class="reference internal" href="Webclient.html"><span class="doc std std-doc">Webclient</span></a> page is served by the webserver, but the actual
 game communication (sending/receiving data) is done by the javascript client
 on the page opening a websocket connection directly to Evennia’s Portal.</p></li>
-<li><p>The <a class="reference internal" href="Web-API.html"><span class="doc">Evennia REST-API</span></a> allows for accessing the database from outside the game
+<li><p>The <a class="reference internal" href="Web-API.html"><span class="doc std std-doc">Evennia REST-API</span></a> allows for accessing the database from outside the game
 (only if `REST_API_ENABLED=True).</p></li>
 </ul>
 <section id="basic-webserver-data-flow">
@@ -99,7 +101,7 @@ browsers understand). Executing Javascript is something the web browser does,
 it operates independently from Evennia. Small snippets of javascript can be
 used on a page to have buttons react, make small animations etc that doesn’t
 require the server.</p>
-<p>In the case of the <a class="reference internal" href="Webclient.html"><span class="doc">Webclient</span></a>, Evennia will load the Webclient page
+<p>In the case of the <a class="reference internal" href="Webclient.html"><span class="doc std std-doc">Webclient</span></a>, Evennia will load the Webclient page
 as above, but the page then initiates Javascript code (a lot of it) responsible
 for actually displaying the client GUI, allows you to resize windows etc.</p>
 <p>After it starts, the webclient ‘calls home’ and spins up a
@@ -162,7 +164,7 @@ come back or you reload it manually in your browser.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Webserver.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

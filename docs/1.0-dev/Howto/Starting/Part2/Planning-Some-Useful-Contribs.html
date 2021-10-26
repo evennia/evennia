@@ -14,6 +14,8 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -48,7 +50,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="planning-the-use-of-some-useful-contribs">
+  <section class="tex2jax_ignore mathjax_ignore" id="planning-the-use-of-some-useful-contribs">
 <h1>Planning the use of some useful contribs<a class="headerlink" href="#planning-the-use-of-some-useful-contribs" title="Permalink to this headline">¶</a></h1>
 <p>Evennia is deliberately bare-bones out of the box. The idea is that you should be as unrestricted as possible
 in designing your game. This is why you can easily replace the few defaults we have and why we don’t try to
@@ -56,7 +58,7 @@ prescribe any major game systems on you.</p>
 <p>That said, Evennia <em>does</em> offer some more game-opinionated <em>optional</em> stuff. These are referred to as <em>Contribs</em>
 and is an ever-growing treasure trove of code snippets, concepts and even full systems you can pick and choose
 from to use, tweak or take inspiration from when you make your game.</p>
-<p>The <a class="reference internal" href="../../../Contribs/Contrib-Overview.html"><span class="doc">Contrib overview</span></a> page gives the full list of the current roster of contributions. On
+<p>The <a class="reference internal" href="../../../Contribs/Contrib-Overview.html"><span class="doc std std-doc">Contrib overview</span></a> page gives the full list of the current roster of contributions. On
 this page we will review a few contribs we will make use of for our game. We will do the actual installation
 of them when we start coding in the next part of this tutorial series. While we will introduce them here, you
 are wise to read their doc-strings yourself for the details.</p>
@@ -73,13 +75,13 @@ are wise to read their doc-strings yourself for the details.</p>
 </ul>
 <section id="barter-contrib">
 <h2>Barter contrib<a class="headerlink" href="#barter-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="../../../api/evennia.contrib.barter.html">source</a></p>
+<p><a class="reference internal" href="../../../api/evennia.contrib.barter.html"><span class="doc std std-doc">source</span></a></p>
 <p>Reviewing this contrib suggests that it allows for safe trading between two parties. The basic principle
 is that the parties puts up the stuff they want to sell and the system will guarantee that these systems are
 exactly what is being offered. Both sides can modify their offers (bartering) until both mark themselves happy
 with the deal. Only then the deal is sealed and the objects are exchanged automatically. Interestingly, this
 works just fine for money too - just put coin objects on one side of the transaction.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Sue &gt; trade Tom: Hi, I have a necklace to sell; wanna trade for a healing potion?
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Sue &gt; trade Tom: Hi, I have a necklace to sell; wanna trade for a healing potion?
 Tom &gt; trade Sue: Hm, I could use a necklace ...
    &lt;both accepted trade. Start trade&gt; 
 Sue &gt; offer necklace: This necklace is really worth it. 
@@ -102,20 +104,20 @@ things than boring gold coin.</p>
 </section>
 <section id="character-generation-contrib">
 <h2>Character generation contrib<a class="headerlink" href="#character-generation-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="../../../api/evennia.contrib.chargen.html">source</a></p>
+<p><a class="reference internal" href="../../../api/evennia.contrib.chargen.html"><span class="doc std std-doc">source</span></a></p>
 <p>This contrib is an example module for creating characters. Since we will be using <code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=3</span></code> we will
 get a selection screen like this automatically. We also plan to use a proper menu to build our character, so
 we will <em>not</em> be using this contrib.</p>
 </section>
 <section id="clothing-contrib">
 <h2>Clothing contrib<a class="headerlink" href="#clothing-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="../../../api/evennia.contrib.clothing.html">source</a></p>
+<p><a class="reference internal" href="../../../api/evennia.contrib.clothing.html"><span class="doc std std-doc">source</span></a></p>
 <p>This contrib provides a full system primarily aimed at wearing clothes, but it could also work for armor. You wear
 an object in a particular location and this will then be reflected in your character’s description. You can
 also add roleplaying flavor:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">wear</span> <span class="n">helmet</span> <span class="n">slightly</span> <span class="n">askew</span> <span class="n">on</span> <span class="n">her</span> <span class="n">head</span>
-<span class="n">look</span> <span class="bp">self</span>
-<span class="n">Username</span> <span class="ow">is</span> <span class="n">wearing</span> <span class="n">a</span> <span class="n">helmet</span> <span class="n">slightly</span> <span class="n">askew</span> <span class="n">on</span> <span class="n">her</span> <span class="n">head</span><span class="o">.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; wear helmet slightly askew on her head
+look self
+Username is wearing a helmet slightly askew on her head.
 </pre></div>
 </div>
 <p>By default there are no ‘body locations’ in this contrib, we will need to expand on it a little to make it useful
@@ -123,16 +125,16 @@ for things like armor. It’s a good contrib to build from though, so that’s w
 </section>
 <section id="dice-contrib">
 <h2>Dice contrib<a class="headerlink" href="#dice-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="../../../api/evennia.contrib.dice.html">source</a></p>
+<p><a class="reference internal" href="../../../api/evennia.contrib.dice.html"><span class="doc std std-doc">source</span></a></p>
 <p>The dice contrib presents a general dice roller to use in game.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">roll</span> <span class="mi">2</span><span class="n">d6</span>
-<span class="n">Roll</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> <span class="mi">2</span> <span class="ow">and</span> <span class="mf">5.</span> <span class="n">Total</span> <span class="n">result</span> <span class="ow">is</span> <span class="mf">7.</span>
-<span class="o">&gt;</span> <span class="n">roll</span> <span class="mi">1</span><span class="n">d100</span> <span class="o">+</span> <span class="mi">2</span>
-<span class="n">Roll</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> <span class="mf">43.</span> <span class="n">Total</span> <span class="n">result</span> <span class="ow">is</span> <span class="mi">47</span>
-<span class="o">&gt;</span> <span class="n">roll</span> <span class="mi">1</span><span class="n">d20</span> <span class="o">&gt;</span> <span class="mi">12</span>
-<span class="n">Roll</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> <span class="mf">7.</span> <span class="n">Total</span> <span class="n">result</span> <span class="ow">is</span> <span class="mf">7.</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">failure</span> <span class="p">(</span><span class="n">by</span> <span class="mi">5</span><span class="p">)</span>
-<span class="o">&gt;</span> <span class="n">roll</span><span class="o">/</span><span class="n">hidden</span> <span class="mi">1</span><span class="n">d20</span> <span class="o">&gt;</span> <span class="mi">12</span>
-<span class="n">Roll</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> <span class="mf">18.</span> <span class="n">Total</span> <span class="n">result</span> <span class="ow">is</span> <span class="mf">17.</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">success</span> <span class="p">(</span><span class="n">by</span> <span class="mi">6</span><span class="p">)</span><span class="o">.</span> <span class="p">(</span><span class="ow">not</span> <span class="n">echoed</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; roll 2d6
+Roll(s): 2 and 5. Total result is 7.
+&gt; roll 1d100 + 2
+Roll(s): 43. Total result is 47
+&gt; roll 1d20 &gt; 12
+Roll(s): 7. Total result is 7. This is a failure (by 5)
+&gt; roll/hidden 1d20 &gt; 12
+Roll(s): 18. Total result is 17. This is a success (by 6). (not echoed)
 </pre></div>
 </div>
 <p>The contrib also has a python function for producing these results in-code. However, while
@@ -143,7 +145,7 @@ or play a game, we will not need it for the core of our game.</p>
 </section>
 <section id="extended-room-contrib">
 <h2>Extended room contrib<a class="headerlink" href="#extended-room-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="../../../api/evennia.contrib.extended_room.html">source</a></p>
+<p><a class="reference internal" href="../../../api/evennia.contrib.extended_room.html"><span class="doc std std-doc">source</span></a></p>
 <p>This is a custom Room typeclass that changes its description based on time of day and season.</p>
 <p>For example, at night, in wintertime you could show the room as being dark and frost-covered while in daylight
 at summer it could describe a flowering meadow. The description can also contain special markers, so
@@ -158,25 +160,25 @@ game, why not!</p>
 </section>
 <section id="rp-system-contrib">
 <h2>RP-System contrib<a class="headerlink" href="#rp-system-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="../../../api/evennia.contrib.rpsystem.html">source</a></p>
+<p><a class="reference internal" href="../../../api/evennia.contrib.rpsystem.html"><span class="doc std std-doc">source</span></a></p>
 <p>This contrib adds a full roleplaying subsystem to your game. It gives every character a “short-description”
 (sdesc) that is what people will see when first meeting them. Let’s say Tom has an sdesc “A tall man” and
 Sue has the sdesc “A muscular, blonde woman”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Tom</span> <span class="o">&gt;</span> <span class="n">look</span> 
-<span class="n">Tom</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">room</span> <span class="n">desc</span><span class="o">&gt;</span> <span class="o">...</span> <span class="n">You</span> <span class="n">see</span><span class="p">:</span> <span class="n">A</span> <span class="n">muscular</span><span class="p">,</span> <span class="n">blonde</span> <span class="n">woman</span>
-<span class="n">Tom</span> <span class="o">&gt;</span> <span class="n">emote</span> <span class="o">/</span><span class="n">me</span> <span class="n">smiles</span> <span class="n">to</span> <span class="o">/</span><span class="n">muscular</span><span class="o">.</span>
-<span class="n">Tom</span><span class="p">:</span> <span class="n">Tom</span> <span class="n">smiles</span> <span class="n">to</span> <span class="n">A</span> <span class="n">muscular</span><span class="p">,</span> <span class="n">blonde</span> <span class="n">woman</span><span class="o">.</span>
-<span class="n">Sue</span><span class="p">:</span> <span class="n">A</span> <span class="n">tall</span> <span class="n">man</span> <span class="n">smiles</span> <span class="n">to</span> <span class="n">Sue</span><span class="o">.</span> 
-<span class="n">Tom</span> <span class="o">&gt;</span> <span class="n">emote</span> <span class="n">Leaning</span> <span class="n">forward</span><span class="p">,</span> <span class="o">/</span><span class="n">me</span> <span class="n">says</span><span class="p">,</span> <span class="s2">&quot;Well hello, what&#39;s yer name?&quot;</span>
-<span class="n">Tom</span><span class="p">:</span> <span class="n">Leaning</span> <span class="n">forward</span><span class="p">,</span> <span class="n">Tom</span> <span class="n">says</span><span class="p">,</span> <span class="s2">&quot;Well hello...&quot;</span>
-<span class="n">Sue</span><span class="p">:</span> <span class="n">Leaning</span> <span class="n">forward</span><span class="p">,</span> <span class="n">A</span> <span class="n">tall</span> <span class="n">man</span> <span class="n">says</span><span class="p">,</span> <span class="s2">&quot;Well hello, what&#39;s yer name?&quot;</span>
-<span class="n">Sue</span> <span class="o">&gt;</span> <span class="n">emote</span> <span class="o">/</span><span class="n">me</span> <span class="n">grins</span><span class="o">.</span> <span class="s2">&quot;I&#39;m Angelica&quot;</span><span class="p">,</span> <span class="n">she</span> <span class="n">says</span><span class="o">.</span> 
-<span class="n">Sue</span><span class="p">:</span> <span class="n">Sue</span> <span class="n">grins</span><span class="o">.</span> <span class="s2">&quot;I&#39;m Angelica&quot;</span><span class="p">,</span> <span class="n">she</span> <span class="n">says</span><span class="o">.</span>
-<span class="n">Tom</span><span class="p">:</span> <span class="n">A</span> <span class="n">muscular</span><span class="p">,</span> <span class="n">blonde</span> <span class="n">woman</span> <span class="n">grins</span><span class="o">.</span> <span class="s2">&quot;I&#39;m Angelica&quot;</span><span class="p">,</span> <span class="n">she</span> <span class="n">says</span><span class="o">.</span>
-<span class="n">Tom</span> <span class="o">&gt;</span> <span class="n">recog</span> <span class="n">muscular</span> <span class="n">Angelica</span>
-<span class="n">Tom</span> <span class="o">&gt;</span> <span class="n">emote</span> <span class="o">/</span><span class="n">me</span> <span class="n">nods</span> <span class="n">to</span> <span class="o">/</span><span class="n">angelica</span><span class="p">:</span> <span class="s2">&quot;I have a message for you ...&quot;</span>
-<span class="n">Tom</span><span class="p">:</span> <span class="n">Tom</span> <span class="n">nods</span> <span class="n">to</span> <span class="n">Angelica</span><span class="p">:</span> <span class="s2">&quot;I have a message for you ...&quot;</span>
-<span class="n">Sue</span><span class="p">:</span> <span class="n">A</span> <span class="n">tall</span> <span class="n">man</span> <span class="n">nods</span> <span class="n">to</span> <span class="n">Sue</span><span class="p">:</span> <span class="s2">&quot;I have a message for you ...&quot;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Tom &gt; look 
+Tom: &lt;room desc&gt; ... You see: A muscular, blonde woman
+Tom &gt; emote /me smiles to /muscular.
+Tom: Tom smiles to A muscular, blonde woman.
+Sue: A tall man smiles to Sue. 
+Tom &gt; emote Leaning forward, /me says, &quot;Well hello, what&#39;s yer name?&quot;
+Tom: Leaning forward, Tom says, &quot;Well hello...&quot;
+Sue: Leaning forward, A tall man says, &quot;Well hello, what&#39;s yer name?&quot;
+Sue &gt; emote /me grins. &quot;I&#39;m Angelica&quot;, she says. 
+Sue: Sue grins. &quot;I&#39;m Angelica&quot;, she says.
+Tom: A muscular, blonde woman grins. &quot;I&#39;m Angelica&quot;, she says.
+Tom &gt; recog muscular Angelica
+Tom &gt; emote /me nods to /angelica: &quot;I have a message for you ...&quot;
+Tom: Tom nods to Angelica: &quot;I have a message for you ...&quot;
+Sue: A tall man nods to Sue: &quot;I have a message for you ...&quot;
 </pre></div>
 </div>
 <p>Above, Sue introduces herself as “Angelica” and Tom uses this info to <code class="docutils literal notranslate"><span class="pre">recoc</span></code> her as “Angelica” hereafter. He
@@ -184,40 +186,40 @@ could have <code class="docutils literal notranslate"><span class="pre">recoc</s
 <code class="docutils literal notranslate"><span class="pre">say</span></code>, the spoken words are embedded in the emotes in quotes <code class="docutils literal notranslate"><span class="pre">&quot;...&quot;</span></code>.</p>
 <p>The RPSystem module also includes options for <code class="docutils literal notranslate"><span class="pre">poses</span></code>, which help to establish your position in the room
 when others look at you.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Tom</span> <span class="o">&gt;</span> <span class="n">pose</span> <span class="n">stands</span> <span class="n">by</span> <span class="n">the</span> <span class="n">bar</span><span class="p">,</span> <span class="n">looking</span> <span class="n">bored</span><span class="o">.</span>
-<span class="n">Sue</span> <span class="o">&gt;</span> <span class="n">look</span>
-<span class="n">Sue</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">room</span> <span class="n">desc</span><span class="o">&gt;</span> <span class="o">...</span> <span class="n">A</span> <span class="n">tall</span> <span class="n">man</span> <span class="n">stands</span> <span class="n">by</span> <span class="n">the</span> <span class="n">bar</span><span class="p">,</span> <span class="n">looking</span> <span class="n">bored</span><span class="o">.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Tom &gt; pose stands by the bar, looking bored.
+Sue &gt; look
+Sue: &lt;room desc&gt; ... A tall man stands by the bar, looking bored.
 </pre></div>
 </div>
 <p>You can also wear a mask to hide your identity; your sdesc will then be changed to the sdesc of the mask,
 like <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">person</span> <span class="pre">with</span> <span class="pre">a</span> <span class="pre">mask</span></code>.</p>
 <p>The RPSystem gives a lot of roleplaying power out of the box, so we will add it. There is also a separate
-<a class="reference external" href="../../../api/evennia.contrib.rplanguage.html">rplanguage</a> module that integrates with the spoken words in your emotes and garbles them if you don’t understand
+<a class="reference internal" href="../../../api/evennia.contrib.rplanguage.html"><span class="doc std std-doc">rplanguage</span></a> module that integrates with the spoken words in your emotes and garbles them if you don’t understand
 the language spoken. In order to restrict the scope we will not include languages for the tutorial game.</p>
 </section>
 <section id="talking-npc-contrib">
 <h2>Talking NPC contrib<a class="headerlink" href="#talking-npc-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="../../../api/evennia.contrib.talking_npc.html">source</a></p>
+<p><a class="reference internal" href="../../../api/evennia.contrib.talking_npc.html"><span class="doc std std-doc">source</span></a></p>
 <p>This exemplifies an NPC with a menu-driven dialogue tree. We will not use this contrib explicitly, but it’s
 good as inspiration for how we’ll do quest-givers later.</p>
 </section>
 <section id="traits-contrib">
 <h2>Traits contrib<a class="headerlink" href="#traits-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="../../../api/evennia.contrib.traits.html">source</a></p>
+<p><a class="reference internal" href="../../../api/evennia.contrib.traits.html"><span class="doc std std-doc">source</span></a></p>
 <p>An issue with dealing with roleplaying attributes like strength, dexterity, or skills like hunting, sword etc
 is how to keep track of the values in the moment. Your strength may temporarily be buffed by a strength-potion.
 Your swordmanship may be worse because you are encumbered. And when you drink your health potion you must make
 sure that those +20 health does not bring your health higher than its maximum. All this adds complexity.</p>
 <p>The <em>Traits</em> contrib consists of several types of objects to help track and manage values like this. When
 installed, the traits are accessed on a new handler <code class="docutils literal notranslate"><span class="pre">.traits</span></code>, for example</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
-<span class="mi">100</span>
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span> <span class="o">-=</span> <span class="mi">20</span>    <span class="c1"># getting hurt</span>
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
-<span class="mi">80</span>
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>  <span class="c1"># drink a potion</span>
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
-<span class="mi">100</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.traits.hp.value
+100
+&gt; py self.traits.hp -= 20    # getting hurt
+&gt; py self.traits.hp.value
+80
+&gt; py self.traits.hp.reset()  # drink a potion
+&gt; py self.traits.hp.value
+100
 </pre></div>
 </div>
 <p>A Trait is persistent (it uses an Attribute under the hood) and tracks changes, min/max and other things
@@ -253,7 +255,7 @@ effects of slow poisons and healing both.</p></li>
 </section>
 <section id="turnbattle-contrib">
 <h2>Turnbattle contrib<a class="headerlink" href="#turnbattle-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="../../../api/evennia.contrib.turnbattle.html">source</a></p>
+<p><a class="reference internal" href="../../../api/evennia.contrib.turnbattle.html"><span class="doc std std-doc">source</span></a></p>
 <p>This contrib consists of several implementations of a turn-based combat system, divivided into complexity:</p>
 <ul class="simple">
 <li><p>basic - initiative and turn order, attacks against defense values, damage.</p></li>
@@ -339,7 +341,7 @@ back to your planning and adjust it as you learn what works and what does not.</
 <h3>Versions</h3>
 <ul>
   <li><a href="Planning-Some-Useful-Contribs.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

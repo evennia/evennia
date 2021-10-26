@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,15 +40,15 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="portal-and-server">
+  <section class="tex2jax_ignore mathjax_ignore" id="portal-and-server">
 <h1>Portal And Server<a class="headerlink" href="#portal-and-server" title="Permalink to this headline">¶</a></h1>
 <p>Evennia consists of two processes, known as <em>Portal</em> and <em>Server</em>.  They can be controlled from
-inside the game or from the command line as described <a class="reference internal" href="../Setup/Start-Stop-Reload.html"><span class="doc">here</span></a>.</p>
+inside the game or from the command line as described <a class="reference internal" href="../Setup/Start-Stop-Reload.html"><span class="doc std std-doc">here</span></a>.</p>
 <p>If you are new to the concept, the main purpose of separating the two is to have accounts connect to
 the Portal but keep the MUD running on the Server. This way one can restart/reload the game (the
 Server part) without Accounts getting disconnected.</p>
 <p>![portal and server layout](https://474a3b9f-a-62cb3a1a-s-
-sites.googlegroups.com/site/evenniaserver/file-cabinet/evennia_server_portal.png)</p>
+<a class="reference external" href="http://sites.googlegroups.com/site/evenniaserver/file-cabinet/evennia_server_portal.png">sites.googlegroups.com/site/evenniaserver/file-cabinet/evennia_server_portal.png</a>)</p>
 <p>The Server and Portal are glued together via an AMP (Asynchronous Messaging Protocol) connection.
 This allows the two programs to communicate seamlessly.</p>
 </section>
@@ -91,7 +93,7 @@ This allows the two programs to communicate seamlessly.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Portal-And-Server.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

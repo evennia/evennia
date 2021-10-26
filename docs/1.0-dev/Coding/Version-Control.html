@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="version-control">
+  <section class="tex2jax_ignore mathjax_ignore" id="version-control">
 <h1>Version Control<a class="headerlink" href="#version-control" title="Permalink to this headline">¶</a></h1>
 <p>Version control software allows you to track the changes you make to your code, as well as being
 able to easily backtrack these changes, share your development efforts and more. Even if you are not
@@ -60,12 +62,12 @@ installation <a class="reference external" href="https://git-scm.com/book/en/Get
 <h3>Step 1: Install Git<a class="headerlink" href="#step-1-install-git" title="Permalink to this headline">¶</a></h3>
 <ul>
 <li><p><strong>Fedora Linux</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">yum</span> <span class="n">install</span> <span class="n">git</span><span class="o">-</span><span class="n">core</span>  
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  yum install git-core  
 </pre></div>
 </div>
 </li>
 <li><p><strong>Debian Linux</strong> <em>(Ubuntu, Linux Mint, etc.)</em></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">git</span>    
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  apt-get install git    
 </pre></div>
 </div>
 </li>
@@ -87,12 +89,12 @@ real, full name online, put a nickname here.</p>
 </div></blockquote>
 <ol>
 <li><p>Set the default name for git to use when you commit:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="k">global</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span> <span class="s2">&quot;Your Name Here&quot;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> git config --global user.name &quot;Your Name Here&quot;
 </pre></div>
 </div>
 </li>
 <li><p>Set the default email for git to use when you commit:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="k">global</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span> <span class="s2">&quot;your_email@example.com&quot;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> git config --global user.email &quot;your_email@example.com&quot;
 </pre></div>
 </div>
 </li>
@@ -107,14 +109,14 @@ real, full name online, put a nickname here.</p>
 <p>After you have set up your game you will have created a new folder to host your particular game
 (let’s call this folder <code class="docutils literal notranslate"><span class="pre">mygame</span></code> for now).</p>
 <p>This folder is <em>not</em> under version control at this point.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">init</span> <span class="n">mygame</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git init mygame
 </pre></div>
 </div>
 <p>Your mygame folder is now ready for version control! Now add all the content and make a first
 commit:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">mygame</span>
-<span class="n">git</span> <span class="n">add</span> <span class="o">*</span>
-<span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;Initial commit&quot;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd mygame
+git add *
+git commit -m &quot;Initial commit&quot;
 </pre></div>
 </div>
 <p>Read on for help on what these commands do.</p>
@@ -190,7 +192,7 @@ README” or else you’ll create unrelated histories).</p></li>
 <li><p>From your local game dir, do <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">remote</span> <span class="pre">add</span> <span class="pre">origin</span> <span class="pre">&lt;github</span> <span class="pre">URL&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;github</span> <span class="pre">URL&gt;</span></code> is the URL
 to your online repo. This tells your game dir that it should be pushing to the remote online dir.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">remote</span> <span class="pre">-v</span></code> to verify the online dir.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">origin</span> <span class="pre">master</span></code> now pushes your game dir online so you can see it on github.com.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">origin</span> <span class="pre">master</span></code> now pushes your game dir online so you can see it on <a class="reference external" href="http://github.com">github.com</a>.</p></li>
 </ol>
 <p>You can commit your work locally (<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span> <span class="pre">--all</span> <span class="pre">-m</span> <span class="pre">&quot;Make</span> <span class="pre">a</span> <span class="pre">change</span> <span class="pre">that</span> <span class="pre">...&quot;</span></code>) as many times as
 you want. When you want to push those changes to your online repo, you do <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span></code>. You can also
@@ -217,7 +219,7 @@ Evennia.</p>
 </div></blockquote>
 <p>A <em>fork</em> is a clone of the master repository that you can make your own commits and changes to. At
 the top of <a class="reference external" href="https://github.com/evennia/evennia">this page</a>, click the “Fork” button, as it appears
-below.  <img alt="https://github-images.s3.amazonaws.com/help/bootcamp/Bootcamp-Fork.png" src="https://github-images.s3.amazonaws.com/help/bootcamp/Bootcamp-Fork.png" /></p>
+below.  <img alt="" src="https://github-images.s3.amazonaws.com/help/bootcamp/Bootcamp-Fork.png" /></p>
 </section>
 <section id="step-2-clone-your-fork">
 <h3>Step 2: Clone your fork<a class="headerlink" href="#step-2-clone-your-fork" title="Permalink to this headline">¶</a></h3>
@@ -327,13 +329,11 @@ we can’t see the code you want to share).</p>
 <p><em>Note: If you hadn’t setup a public key on GitHub or aren’t asked for a username/password, you might
 get an error <code class="docutils literal notranslate"><span class="pre">403:</span> <span class="pre">Forbidden</span> <span class="pre">Access</span></code> at this stage. In that case, some users have reported that the
 workaround is to create a file <code class="docutils literal notranslate"><span class="pre">.netrc</span></code> under your home directory and add your credentials there:</em></p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>machine github.com
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>machine github.com
 login &lt;my_github_username&gt;
 password &lt;my_github_password&gt;
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 <section id="committing-fixes-to-evennia">
 <h2>Committing fixes to Evennia<a class="headerlink" href="#committing-fixes-to-evennia" title="Permalink to this headline">¶</a></h2>
@@ -343,7 +343,7 @@ Tracker</a>, it is recommended that you first hit the
 developer mailing list or IRC chat to see beforehand if your feature is deemed suitable to include
 as a core feature in the engine. When it comes to bug-fixes, other developers may also have good
 input on how to go about resolving the issue.</p>
-<p>To contribute you need to have <a class="reference external" href="Coding/Version-Control.html#forking-evennia">forked Evennia</a> first. As described
+<p>To contribute you need to have <a class="reference internal" href="#forking-evennia"><span class="std std-doc">forked Evennia</span></a> first. As described
 above you should do your modification in a separate local branch (not in the master branch). This
 branch is what you then present to us (as a <em>Pull request</em>, PR, see below). We can then merge your
 change into the upstream master and you then do <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code> to update master usual. Now that the
@@ -374,7 +374,7 @@ Evennia.</p>
 <div><p>If you refer to in-game commands that start with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>(such as <code class="docutils literal notranslate"><span class="pre">&#64;examine</span></code>), please put them in
 backticks `, for example `&#64;examine`. The reason for this is that GitHub uses <code class="docutils literal notranslate"><span class="pre">&#64;username</span></code> to refer
 to GitHub users, so if you forget the ticks, any user happening to be named <code class="docutils literal notranslate"><span class="pre">examine</span></code> will get a
-notification ….</p>
+notification …</p>
 </div></blockquote>
 <p>If you implement multiple separate features/bug-fixes, split them into different branches if they
 are very different and should be handled as separate PRs. You can do any number of commits to your
@@ -541,7 +541,7 @@ understand the underlying ideas behind GIT
 <h3>Versions</h3>
 <ul>
   <li><a href="Version-Control.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

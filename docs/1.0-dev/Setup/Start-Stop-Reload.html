@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,43 +40,43 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="start-stop-reload">
+  <section class="tex2jax_ignore mathjax_ignore" id="start-stop-reload">
 <h1>Start Stop Reload<a class="headerlink" href="#start-stop-reload" title="Permalink to this headline">¶</a></h1>
 <p>You control Evennia from your game folder (we refer to it as <code class="docutils literal notranslate"><span class="pre">mygame/</span></code> here), using the <code class="docutils literal notranslate"><span class="pre">evennia</span></code>
 program. If the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> program is not available on the command line you must first install
-Evennia as described in the <a class="reference internal" href="Setup-Quickstart.html"><span class="doc">Setup Quickstart</span></a> page.</p>
+Evennia as described in the <a class="reference internal" href="Setup-Quickstart.html"><span class="doc std std-doc">Setup Quickstart</span></a> page.</p>
 <blockquote>
 <div><p>Hint: If you ever try the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command and get an error complaining that the command is not
-available, make sure your <a class="reference external" href="Glossary.html#virtualenv">virtualenv</a> is active.</p>
+available, make sure your <a class="reference internal" href="../Glossary.html#virtualenv"><span class="std std-doc">virtualenv</span></a> is active.</p>
 </div></blockquote>
 <p>Below are described the various management options. Run</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="o">-</span><span class="n">h</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia -h
 </pre></div>
 </div>
 <p>to give you a brief help and</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">menu</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia menu
 </pre></div>
 </div>
 <p>to give you a menu with options.</p>
 <section id="starting-evennia">
 <h2>Starting Evennia<a class="headerlink" href="#starting-evennia" title="Permalink to this headline">¶</a></h2>
-<p>Evennia consists of two components, the Evennia <a class="reference internal" href="../Components/Portal-And-Server.html"><span class="doc">Server and Portal</span></a>.  Briefly,
+<p>Evennia consists of two components, the Evennia <a class="reference internal" href="../Components/Portal-And-Server.html"><span class="doc std std-doc">Server and Portal</span></a>.  Briefly,
 the  <em>Server</em> is what is running the mud. It handles all game-specific things but doesn’t care
 exactly how players connect, only that they have. The <em>Portal</em> is a gateway to which players
 connect. It knows everything about telnet, ssh, webclient protocols etc but very little about the
 game. Both are required for a functioning mud.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">evennia</span> <span class="n">start</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia start
 </pre></div>
 </div>
 <p>The above command will start the Portal, which in turn will boot up the Server. The command will
 print a summary of the process and unless there is an error you will see no further output. Both
 components will instead log to log files in <code class="docutils literal notranslate"><span class="pre">mygame/server/logs/</span></code>. For convenience you can follow
 those logs directly in your terminal by attaching <code class="docutils literal notranslate"><span class="pre">-l</span></code> to commands:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">evennia</span> <span class="o">-</span><span class="n">l</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia -l
 </pre></div>
 </div>
 <p>Will start following the logs of an already running server. When starting Evennia you can also do</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">evennia</span> <span class="n">start</span> <span class="o">-</span><span class="n">l</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia start -l
 </pre></div>
 </div>
 <blockquote>
@@ -87,12 +89,12 @@ those logs directly in your terminal by attaching <code class="docutils literal 
 processes (but not both) as foreground processes in <em>interactive</em> mode. This means they will log
 directly to the terminal (rather than to log files that we then echo to the terminal) and you can
 kill the process (not just the log-file view) with <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">istart</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia istart
 </pre></div>
 </div>
 <p>will start/restart the <em>Server</em> in interactive mode. This is required if you want to run a
 <em>debugger</em>. Next time you reload the server, it will return to normal mode.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">ipstart</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia ipstart
 </pre></div>
 </div>
 <p>will start the <em>Portal</em> in interactive mode. This is usually only necessary if you want to run
@@ -105,11 +107,11 @@ again. Everyone will get a message and the game will be briefly paused for all a
 server
 reboots. Since they are connected to the <em>Portal</em>, their connections are not lost.</p>
 <p>Reloading is as close to a “warm reboot” you can get. It reinitializes all code of Evennia, but
-doesn’t kill “persistent” <a class="reference internal" href="../Components/Scripts.html"><span class="doc">Scripts</span></a>. It also calls <code class="docutils literal notranslate"><span class="pre">at_server_reload()</span></code> hooks on all
+doesn’t kill “persistent” <a class="reference internal" href="../Components/Scripts.html"><span class="doc std std-doc">Scripts</span></a>. It also calls <code class="docutils literal notranslate"><span class="pre">at_server_reload()</span></code> hooks on all
 objects so you
 can save eventual temporary properties you want.</p>
 <p>From in-game the <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> command is used. You can also reload the server from outside the game:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">evennia</span> <span class="n">reload</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia reload
 </pre></div>
 </div>
 <p>Sometimes reloading from “the outside” is necessary in case you have added some sort of bug that
@@ -123,7 +125,7 @@ will be disconnected during a
 reset. A reset will however purge all non-persistent scripts and will call <code class="docutils literal notranslate"><span class="pre">at_server_shutdown()</span></code>
 hooks. It can be a good way to clean unsafe scripts during development, for example.</p>
 <p>From in-game the <code class="docutils literal notranslate"><span class="pre">&#64;reset</span></code> command is used. From the terminal:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">reset</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia reset
 </pre></div>
 </div>
 </section>
@@ -131,12 +133,12 @@ hooks. It can be a good way to clean unsafe scripts during development, for exam
 <h2>Rebooting<a class="headerlink" href="#rebooting" title="Permalink to this headline">¶</a></h2>
 <p>This will shut down <em>both</em> Server and Portal, which means all connected players will lose their
 connection. It can only be initiated from the terminal:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">reboot</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia reboot
 </pre></div>
 </div>
 <p>This is identical to doing these two commands:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">evennia</span> <span class="n">stop</span>
- <span class="n">evennia</span> <span class="n">start</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia stop
+ evennia start
 </pre></div>
 </div>
 </section>
@@ -145,7 +147,7 @@ connection. It can only be initiated from the terminal:</p>
 <p>A full shutdown closes Evennia completely, both Server and Portal. All accounts will be booted and
 systems saved and turned off cleanly.</p>
 <p>From inside the game you initiate a shutdown with the <code class="docutils literal notranslate"><span class="pre">&#64;shutdown</span></code> command.  From command line you do</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">evennia</span> <span class="n">stop</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia stop
 </pre></div>
 </div>
 <p>You will see messages of both Server and Portal closing down. All accounts will see the shutdown
@@ -156,11 +158,11 @@ runs in interactive mode.</p>
 <h2>Status and info<a class="headerlink" href="#status-and-info" title="Permalink to this headline">¶</a></h2>
 <p>To check basic Evennia settings, such as which ports and services are active, this will repeat the
 initial return given when starting the server:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">info</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia info
 </pre></div>
 </div>
 <p>You can also get a briefer run-status from both components with this command</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">status</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia status
 </pre></div>
 </div>
 <p>This can be useful for automating checks to make sure the game is running and is responding.</p>
@@ -169,11 +171,11 @@ initial return given when starting the server:</p>
 <h2>Killing (Linux/Mac only)<a class="headerlink" href="#killing-linux-mac-only" title="Permalink to this headline">¶</a></h2>
 <p>In the extreme case that neither of the server processes locks up and does not respond to commands,
 you can send them kill-signals to force them to shut down. To kill only the Server:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">skill</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia skill
 </pre></div>
 </div>
 <p>To kill both Server and Portal:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">kill</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia kill
 </pre></div>
 </div>
 <p>Note that this functionality is not supported on Windows.</p>
@@ -182,13 +184,11 @@ you can send them kill-signals to force them to shut down. To kill only the Serv
 <h2>Django options<a class="headerlink" href="#django-options" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">evennia</span></code> program will also pass-through options used by the <code class="docutils literal notranslate"><span class="pre">django-admin</span></code>. These operate on
 the database in various ways.</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span> evennia migrate <span class="c1"># migrate the database</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span> evennia migrate <span class="c1"># migrate the database</span>
  evennia shell   <span class="c1"># launch an interactive, django-aware python shell</span>
  evennia dbshell <span class="c1"># launch database shell</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>For (many) more options, see <a class="reference external" href="https://docs.djangoproject.com/en/1.7/ref/django-admin/#usage">the django-admin
 docs</a>.</p>
 </section>
@@ -218,7 +218,7 @@ Evennia failed to restart (that is, it remains in a shut-down state). Look at yo
 terminal to see what the problem is - you will usually see a clear traceback showing what went
 wrong.</p>
 <p>Fix your bug then run</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">start</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia start
 </pre></div>
 </div>
 <p>Assuming the bug was fixed, this will start the Server manually (while not restarting the Portal).
@@ -287,7 +287,7 @@ In-game you should now get the message that the Server has successfully restarte
 <h3>Versions</h3>
 <ul>
   <li><a href="Start-Stop-Reload.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

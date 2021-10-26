@@ -1,0 +1,728 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.utils.inlinefuncs &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.inlinefuncs</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.utils.inlinefuncs</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Inline functions (nested form).</span>
+
+<span class="sd">This parser accepts nested inlinefunctions on the form</span>
+<span class="sd">::</span>
+
+<span class="sd">    $funcname(arg, arg, ...)</span>
+
+<span class="sd">embedded in any text where any arg can be another `$funcname{}` call.</span>
+<span class="sd">This functionality is turned off by default - to activate,</span>
+<span class="sd">`settings.INLINEFUNC_ENABLED` must be set to `True`.</span>
+
+<span class="sd">Each token starts with `$funcname(` where there must be no space between the</span>
+<span class="sd">$funcname and &quot;(&quot;. It ends with a matched ending parentesis &quot;)&quot;.</span>
+
+<span class="sd">Inside the inlinefunc definition, one can use \\\\ to escape. This is</span>
+<span class="sd">mainly needed for escaping commas in flowing text (which would</span>
+<span class="sd">otherwise be interpreted as an argument separator), or to escape `}`</span>
+<span class="sd">when not intended to close the function block. Enclosing text in</span>
+<span class="sd">matched `\&quot;\&quot;\&quot;` (triple quotes) or `&#39;&#39;&#39;` (triple single-quotes) will</span>
+<span class="sd">also escape *everything* within without needing to escape individual</span>
+<span class="sd">characters.</span>
+
+<span class="sd">The available inlinefuncs are defined as global-level functions in</span>
+<span class="sd">modules defined by `settings.INLINEFUNC_MODULES`. They are identified</span>
+<span class="sd">by their function name (and ignored if this name starts with `_`). They</span>
+<span class="sd">should be on the following form:</span>
+<span class="sd">::</span>
+
+<span class="sd">    def funcname (*args, **kwargs):</span>
+<span class="sd">    # ...</span>
+
+<span class="sd">Here, the arguments given to `$funcname(arg1,arg2)` will appear as the</span>
+<span class="sd">`*args` tuple. This will be populated by the arguments given to the</span>
+<span class="sd">inlinefunc in-game - the only part that will be available from</span>
+<span class="sd">in-game. `**kwargs` are not supported from in-game but are only used</span>
+<span class="sd">internally by Evennia to make details about the caller available to</span>
+<span class="sd">the function. The kwarg passed to all functions is `session`, the</span>
+<span class="sd">Sessionobject for the object seeing the string. This may be `None` if</span>
+<span class="sd">the string is sent to a non-puppetable object. The inlinefunc should</span>
+<span class="sd">never raise an exception.</span>
+
+<span class="sd">There are two reserved function names:</span>
+
+<span class="sd">- &quot;nomatch&quot;: This is called if the user uses a functionname that is</span>
+<span class="sd">  not registered. The nomatch function will get the name of the</span>
+<span class="sd">  not-found function as its first argument followed by the normal</span>
+<span class="sd">  arguments to the given function. If not defined the default effect is</span>
+<span class="sd">  to print `&lt;UNKNOWN&gt;` to replace the unknown function.</span>
+<span class="sd">- &quot;stackfull&quot;: This is called when the maximum nested function stack is reached.</span>
+<span class="sd">  When this happens, the original parsed string is returned and the result of</span>
+<span class="sd">  the `stackfull` inlinefunc is appended to the end. By default this is an</span>
+<span class="sd">  error message.</span>
+
+<span class="sd">Syntax errors, notably not completely closing all inlinefunc blocks, will lead</span>
+<span class="sd">to the entire string remaining unparsed.</span>
+
+<span class="sd">----</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">fnmatch</span>
+<span class="kn">import</span> <span class="nn">random</span> <span class="k">as</span> <span class="nn">base_random</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">logger</span>
+
+<span class="c1"># The stack size is a security measure. Set to &lt;=0 to disable.</span>
+<span class="n">_STACK_MAXSIZE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">INLINEFUNC_STACK_MAXSIZE</span>
+
+
+<span class="c1"># example/testing inline functions</span>
+
+
+<div class="viewcode-block" id="random"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.random">[docs]</a><span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inlinefunc. Returns a random number between</span>
+<span class="sd">    0 and 1, from 0 to a maximum value, or within a given range (inclusive).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        minval (str, optional): Minimum value. If not given, assumed 0.</span>
+<span class="sd">        maxval (str, optional): Maximum value.</span>
+
+<span class="sd">    Keyword argumuents:</span>
+<span class="sd">        session (Session): Session getting the string.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        If either of the min/maxvalue has a &#39;.&#39; in it, a floating-point random</span>
+<span class="sd">        value will be returned. Otherwise it will be an integer value in the</span>
+<span class="sd">        given range.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">        - `$random()`</span>
+<span class="sd">        - `$random(5)`</span>
+<span class="sd">        - `$random(5, 10)`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nargs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nargs</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># only maxval given</span>
+        <span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">nargs</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span> <span class="o">=</span> <span class="n">args</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">minval</span> <span class="ow">or</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">maxval</span><span class="p">:</span>
+        <span class="c1"># float mode</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">minval</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">maxval</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">minval</span> <span class="o">+</span> <span class="n">maxval</span> <span class="o">*</span> <span class="n">base_random</span><span class="o">.</span><span class="n">random</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># int mode</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">minval</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">maxval</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">base_random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="pad"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.pad">[docs]</a><span class="k">def</span> <span class="nf">pad</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inlinefunc. Pads text to given width.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str, optional): Text to pad.</span>
+<span class="sd">        width (str, optional): Will be converted to integer. Width</span>
+<span class="sd">            of padding.</span>
+<span class="sd">        align (str, optional): Alignment of padding; one of &#39;c&#39;, &#39;l&#39; or &#39;r&#39;.</span>
+<span class="sd">        fillchar (str, optional): Character used for padding. Defaults to a</span>
+<span class="sd">            space.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        session (Session): Session performing the pad.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        `$pad(text, width, align, fillchar)`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">align</span><span class="p">,</span> <span class="n">fillchar</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">78</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span>
+    <span class="n">nargs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nargs</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">nargs</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="mi">78</span>
+    <span class="k">if</span> <span class="n">nargs</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">align</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;l&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;c&quot;</span>
+    <span class="k">if</span> <span class="n">nargs</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">fillchar</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="n">align</span><span class="p">,</span> <span class="n">fillchar</span><span class="o">=</span><span class="n">fillchar</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="crop"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.crop">[docs]</a><span class="k">def</span> <span class="nf">crop</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inlinefunc. Crops ingoing text to given widths.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str, optional): Text to crop.</span>
+<span class="sd">        width (str, optional): Will be converted to an integer. Width of</span>
+<span class="sd">            crop in characters.</span>
+<span class="sd">        suffix (str, optional): End string to mark the fact that a part</span>
+<span class="sd">            of the string was cropped. Defaults to `[...]`.</span>
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        session (Session): Session performing the crop.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        `$crop(text, width=78, suffix=&#39;[...]&#39;)`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">78</span><span class="p">,</span> <span class="s2">&quot;[...]&quot;</span>
+    <span class="n">nargs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nargs</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">nargs</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="mi">78</span>
+    <span class="k">if</span> <span class="n">nargs</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="space"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.space">[docs]</a><span class="k">def</span> <span class="nf">space</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inlinefunc. Inserts an arbitrary number of spaces. Defaults to 4 spaces.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        spaces (int, optional): The number of spaces to insert.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        session (Session): Session performing the crop.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        `$space(20)`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="mi">4</span>
+    <span class="k">return</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">width</span></div>
+
+
+<div class="viewcode-block" id="clr"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.clr">[docs]</a><span class="k">def</span> <span class="nf">clr</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inlinefunc. Colorizes nested text.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        startclr (str, optional): An ANSI color abbreviation without the</span>
+<span class="sd">            prefix `|`, such as `r` (red foreground) or `[r` (red background).</span>
+<span class="sd">        text (str, optional): Text</span>
+<span class="sd">        endclr (str, optional): The color to use at the end of the string. Defaults</span>
+<span class="sd">            to `|n` (reset-color).</span>
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        session (Session): Session object triggering inlinefunc.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        `$clr(startclr, text, endclr)`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">nargs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nargs</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">nargs</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;|&quot;</span> <span class="o">+</span> <span class="n">color</span> <span class="o">+</span> <span class="n">text</span>
+    <span class="k">if</span> <span class="n">nargs</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;|&quot;</span> <span class="o">+</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;|n&quot;</span>
+    <span class="k">return</span> <span class="n">text</span></div>
+
+
+<div class="viewcode-block" id="null"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.null">[docs]</a><span class="k">def</span> <span class="nf">null</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="nomatch"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.nomatch">[docs]</a><span class="k">def</span> <span class="nf">nomatch</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Default implementation of nomatch returns the function as-is as a string.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;inlinefunc_stack_depth&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;session&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="s2">&quot;$</span><span class="si">{name}</span><span class="s2">(</span><span class="si">{args}{kwargs}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">),</span>
+        <span class="n">kwargs</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()),</span>
+    <span class="p">)</span></div>
+
+
+<span class="n">_INLINE_FUNCS</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="c1"># we specify a default nomatch function to use if no matching func was</span>
+<span class="c1"># found. This will be overloaded by any nomatch function defined in</span>
+<span class="c1"># the imported modules.</span>
+<span class="n">_DEFAULT_FUNCS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;nomatch&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="s2">&quot;&lt;UNKNOWN&gt;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;stackfull&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> (not parsed: &quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">_INLINE_FUNCS</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_DEFAULT_FUNCS</span><span class="p">)</span>
+
+<span class="c1"># load custom inline func modules.</span>
+<span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">INLINEFUNC_MODULES</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_INLINE_FUNCS</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">callables_from_module</span><span class="p">(</span><span class="n">module</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">module</span> <span class="o">==</span> <span class="s2">&quot;server.conf.inlinefuncs&quot;</span><span class="p">:</span>
+            <span class="c1"># a temporary warning since the default module changed name</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+                <span class="s2">&quot;Error: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">Possible reason: mygame/server/conf/inlinefunc.py should &quot;</span>
+                <span class="s2">&quot;be renamed to mygame/server/conf/inlinefuncs.py (note &quot;</span>
+                <span class="s2">&quot;the S at the end).&quot;</span> <span class="o">%</span> <span class="n">err</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span>
+
+
+<span class="c1"># regex definitions</span>
+
+<span class="n">_RE_STARTTOKEN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(?&lt;!</span><span class="se">\\</span><span class="s2">)\$(\w+)\(&quot;</span><span class="p">)</span>  <span class="c1"># unescaped $funcname( (start of function call)</span>
+
+<span class="c1"># note: this regex can be experimented with at https://regex101.com/r/kGR3vE/2</span>
+<span class="n">_RE_TOKEN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">      (?&lt;!\\)\&#39;\&#39;\&#39;(?P&lt;singlequote&gt;.*?)(?&lt;!\\)\&#39;\&#39;\&#39;|  # single-triplets escape all inside</span>
+<span class="sd">      (?&lt;!\\)\&quot;\&quot;\&quot;(?P&lt;doublequote&gt;.*?)(?&lt;!\\)\&quot;\&quot;\&quot;|  # double-triplets escape all inside</span>
+<span class="sd">      (?P&lt;comma&gt;(?&lt;!\\)\,)|                            # , (argument sep)</span>
+<span class="sd">      (?P&lt;end&gt;(?&lt;!\\)\))|                              # ) (possible end of func call)</span>
+<span class="sd">      (?P&lt;leftparens&gt;(?&lt;!\\)\()|                       # ( (lone left-parens)</span>
+<span class="sd">      (?P&lt;start&gt;(?&lt;!\\)\$\w+\()|                       # $funcname (start of func call)</span>
+<span class="sd">      (?P&lt;escaped&gt;                                     # escaped tokens to re-insert sans backslash</span>
+<span class="sd">            \\\&#39;|\\\&quot;|\\\)|\\\$\w+\(|\\\()|</span>
+<span class="sd">      (?P&lt;rest&gt;                                        # everything else to re-insert verbatim</span>
+<span class="sd">            \$(?!\w+\()|\&#39;|\&quot;|\\|[^),$\&#39;\&quot;\\\(]+)&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">UNICODE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Cache for function lookups.</span>
+<span class="n">_PARSING_CACHE</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">LimitedSizeOrderedDict</span><span class="p">(</span><span class="n">size_limit</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ParseStack"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.ParseStack">[docs]</a><span class="k">class</span> <span class="nc">ParseStack</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom stack that always concatenates strings together when the</span>
+<span class="sd">    strings are added next to one another. Tuples are stored</span>
+<span class="sd">    separately and None is used to mark that a string should be broken</span>
+<span class="sd">    up into a new chunk. Below is the resulting stack after separately</span>
+<span class="sd">    appending 3 strings, None, 2 strings, a tuple and finally 2</span>
+<span class="sd">    strings:</span>
+
+<span class="sd">    [string + string + string,</span>
+<span class="sd">    None</span>
+<span class="sd">    string + string,</span>
+<span class="sd">    tuple,</span>
+<span class="sd">    string + string]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ParseStack.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.ParseStack.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># always start stack with the empty string</span>
+        <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="c1"># indicates if the top of the stack is a string or not</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_last</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">&quot;_string_last&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_string_last</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_string_last</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ParseStack.append"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.ParseStack.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The stack will merge strings, add other things as normal</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_string_last</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">item</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_string_last</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># everything else is added as normal</span>
+            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_string_last</span> <span class="o">=</span> <span class="kc">False</span></div></div>
+
+
+<div class="viewcode-block" id="InlinefuncError"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.InlinefuncError">[docs]</a><span class="k">class</span> <span class="nc">InlinefuncError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="parse_inlinefunc"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.parse_inlinefunc">[docs]</a><span class="k">def</span> <span class="nf">parse_inlinefunc</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">available_funcs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stacktrace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse the incoming string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        string (str): The incoming string to parse.</span>
+<span class="sd">        strip (bool, optional): Whether to strip function calls rather than</span>
+<span class="sd">            execute them.</span>
+<span class="sd">        available_funcs (dict, optional): Define an alternative source of functions to parse for.</span>
+<span class="sd">            If unset, use the functions found through `settings.INLINEFUNC_MODULES`.</span>
+<span class="sd">        stacktrace (bool, optional): If set, print the stacktrace to log.</span>
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        session (Session): This is sent to this function by Evennia when triggering</span>
+<span class="sd">            it. It is passed to the inlinefunc.</span>
+<span class="sd">        kwargs (any): All other kwargs are also passed on to the inlinefunc.</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_PARSING_CACHE</span>
+    <span class="n">usecache</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">available_funcs</span><span class="p">:</span>
+        <span class="n">available_funcs</span> <span class="o">=</span> <span class="n">_INLINE_FUNCS</span>
+        <span class="n">usecache</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># make sure the default keys are available, but also allow overriding</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">_DEFAULT_FUNCS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">tmp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">available_funcs</span><span class="p">)</span>
+        <span class="n">available_funcs</span> <span class="o">=</span> <span class="n">tmp</span>
+
+    <span class="k">if</span> <span class="n">usecache</span> <span class="ow">and</span> <span class="n">string</span> <span class="ow">in</span> <span class="n">_PARSING_CACHE</span><span class="p">:</span>
+        <span class="c1"># stack is already cached</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="n">_PARSING_CACHE</span><span class="p">[</span><span class="n">string</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">_RE_STARTTOKEN</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+        <span class="c1"># if there are no unescaped start tokens at all, return immediately.</span>
+        <span class="k">return</span> <span class="n">string</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># no cached stack; build a new stack and continue</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="n">ParseStack</span><span class="p">()</span>
+
+        <span class="c1"># process string on stack</span>
+        <span class="n">ncallable</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">nlparens</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">nvalid</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="n">stacktrace</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;STRING: </span><span class="si">{}</span><span class="s2"> =&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">_RE_TOKEN</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+            <span class="n">gdict</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">stacktrace</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot; MATCH: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">gdict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">val</span><span class="p">})</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">gdict</span><span class="p">[</span><span class="s2">&quot;singlequote&quot;</span><span class="p">]:</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gdict</span><span class="p">[</span><span class="s2">&quot;singlequote&quot;</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">gdict</span><span class="p">[</span><span class="s2">&quot;doublequote&quot;</span><span class="p">]:</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gdict</span><span class="p">[</span><span class="s2">&quot;doublequote&quot;</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">gdict</span><span class="p">[</span><span class="s2">&quot;leftparens&quot;</span><span class="p">]:</span>
+                <span class="c1"># we have a left-parens inside a callable</span>
+                <span class="k">if</span> <span class="n">ncallable</span><span class="p">:</span>
+                    <span class="n">nlparens</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">gdict</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">nlparens</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">nlparens</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;)&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">ncallable</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;)&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>
+                    <span class="n">operation</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">operation</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">strip</span><span class="p">:</span>
+                            <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">operation</span><span class="p">,</span> <span class="p">[</span><span class="n">arg</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">args</span><span class="p">)]))</span>
+                        <span class="n">ncallable</span> <span class="o">-=</span> <span class="mi">1</span>
+                        <span class="k">break</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">operation</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">gdict</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">]:</span>
+                <span class="n">funcname</span> <span class="o">=</span> <span class="n">_RE_STARTTOKEN</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">gdict</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># try to fetch the matching inlinefunc from storage</span>
+                    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">available_funcs</span><span class="p">[</span><span class="n">funcname</span><span class="p">])</span>
+                    <span class="n">nvalid</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">available_funcs</span><span class="p">[</span><span class="s2">&quot;nomatch&quot;</span><span class="p">])</span>
+                    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">funcname</span><span class="p">)</span>
+                    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="n">ncallable</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">gdict</span><span class="p">[</span><span class="s2">&quot;escaped&quot;</span><span class="p">]:</span>
+                <span class="c1"># escaped tokens</span>
+                <span class="n">token</span> <span class="o">=</span> <span class="n">gdict</span><span class="p">[</span><span class="s2">&quot;escaped&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">gdict</span><span class="p">[</span><span class="s2">&quot;comma&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">ncallable</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># commas outside strings and inside a callable are</span>
+                    <span class="c1"># used to mark argument separation - we use None</span>
+                    <span class="c1"># in the stack to indicate such a separation.</span>
+                    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># no callable active - just a string</span>
+                    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># the rest</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gdict</span><span class="p">[</span><span class="s2">&quot;rest&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">ncallable</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># this means not all inlinefuncs were complete</span>
+            <span class="k">return</span> <span class="n">string</span>
+
+        <span class="k">if</span> <span class="n">_STACK_MAXSIZE</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">_STACK_MAXSIZE</span> <span class="o">&lt;</span> <span class="n">nvalid</span><span class="p">:</span>
+            <span class="c1"># if stack is larger than limit, throw away parsing</span>
+            <span class="k">return</span> <span class="n">string</span> <span class="o">+</span> <span class="n">available_funcs</span><span class="p">[</span><span class="s2">&quot;stackfull&quot;</span><span class="p">](</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">usecache</span><span class="p">:</span>
+            <span class="c1"># cache the stack - we do this also if we don&#39;t check the cache above</span>
+            <span class="n">_PARSING_CACHE</span><span class="p">[</span><span class="n">string</span><span class="p">]</span> <span class="o">=</span> <span class="n">stack</span>
+
+    <span class="c1"># run the stack recursively</span>
+    <span class="k">def</span> <span class="nf">_run_stack</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="n">item</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">strip</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">func</span><span class="p">,</span> <span class="n">arglist</span> <span class="o">=</span> <span class="n">item</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">arglist</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">arg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="c1"># an argument-separating comma - start a new arg</span>
+                        <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># all other args should merge into one string</span>
+                        <span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">_run_stack</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># execute the inlinefunc at this point or strip it.</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;inlinefunc_stack_depth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">depth</span>
+                <span class="n">retval</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">strip</span> <span class="k">else</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_str</span><span class="p">(</span><span class="n">retval</span><span class="p">)</span>
+
+    <span class="n">retval</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_run_stack</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">stack</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">stacktrace</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;STACK: </span><span class="se">\n</span><span class="si">{}</span><span class="s2"> =&gt; </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stack</span><span class="p">,</span> <span class="n">retval</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="c1"># execute the stack</span>
+    <span class="k">return</span> <span class="n">retval</span></div>
+
+
+<div class="viewcode-block" id="raw"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.raw">[docs]</a><span class="k">def</span> <span class="nf">raw</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Escape all inlinefuncs in a string so they won&#39;t get parsed.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        string (str): String with inlinefuncs to escape.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_escape</span><span class="p">(</span><span class="n">match</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_RE_STARTTOKEN</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">_escape</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span></div>
+
+
+<span class="c1">#</span>
+<span class="c1"># Nick templating</span>
+<span class="c1">#</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This supports the use of replacement templates in nicks:</span>
+
+<span class="sd">This happens in two steps:</span>
+
+<span class="sd">1) The user supplies a template that is converted to a regex according</span>
+<span class="sd">   to the unix-like templating language.</span>
+<span class="sd">2) This regex is tested against nicks depending on which nick replacement</span>
+<span class="sd">   strategy is considered (most commonly inputline).</span>
+<span class="sd">3) If there is a template match and there are templating markers,</span>
+<span class="sd">   these are replaced with the arguments actually given.</span>
+
+<span class="sd">@desc $1 $2 $3</span>
+
+<span class="sd">This will be converted to the following regex:</span>
+
+<span class="sd">\@desc (?P&lt;1&gt;\w+) (?P&lt;2&gt;\w+) $(?P&lt;3&gt;\w+)</span>
+
+<span class="sd">Supported template markers (through fnmatch)</span>
+<span class="sd">   *       matches anything (non-greedy)     -&gt; .*?</span>
+<span class="sd">   ?       matches any single character      -&gt;</span>
+<span class="sd">   [seq]   matches any entry in sequence</span>
+<span class="sd">   [!seq]  matches entries not in sequence</span>
+<span class="sd">Custom arg markers</span>
+<span class="sd">   $N      argument position (1-99)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">_RE_NICK_ARG</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">(\$)([1-9][0-9]?)&quot;</span><span class="p">)</span>
+<span class="n">_RE_NICK_TEMPLATE_ARG</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\$)([1-9][0-9]?)&quot;</span><span class="p">)</span>
+<span class="n">_RE_NICK_SPACE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2"> &quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="NickTemplateInvalid"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.NickTemplateInvalid">[docs]</a><span class="k">class</span> <span class="nc">NickTemplateInvalid</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="initialize_nick_templates"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.initialize_nick_templates">[docs]</a><span class="k">def</span> <span class="nf">initialize_nick_templates</span><span class="p">(</span><span class="n">in_template</span><span class="p">,</span> <span class="n">out_template</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initialize the nick templates for matching and remapping a string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        in_template (str): The template to be used for nick recognition.</span>
+<span class="sd">        out_template (str): The template to be used to replace the string</span>
+<span class="sd">            matched by the `in_template`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        regex, template (regex, str): Regex to match against strings and a</span>
+<span class="sd">        template with markers `{arg1}`, `{arg2}`, etc for replacement using the</span>
+<span class="sd">        standard `.format` method.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        inlinefuncs.NickTemplateInvalid: If the in/out template does not have a matching</span>
+<span class="sd">            number of $args.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># create the regex for in_template</span>
+    <span class="n">regex_string</span> <span class="o">=</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">in_template</span><span class="p">)</span>
+    <span class="n">n_inargs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_RE_NICK_ARG</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">regex_string</span><span class="p">))</span>
+    <span class="n">regex_string</span> <span class="o">=</span> <span class="n">_RE_NICK_SPACE</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span> <span class="n">regex_string</span><span class="p">)</span>
+    <span class="n">regex_string</span> <span class="o">=</span> <span class="n">_RE_NICK_ARG</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="s2">&quot;(?P&lt;arg</span><span class="si">%s</span><span class="s2">&gt;.+?)&quot;</span> <span class="o">%</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">regex_string</span><span class="p">)</span>
+
+    <span class="c1"># create the out_template</span>
+    <span class="n">template_string</span> <span class="o">=</span> <span class="n">_RE_NICK_TEMPLATE_ARG</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="s2">&quot;{arg</span><span class="si">%s</span><span class="s2">}&quot;</span> <span class="o">%</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">out_template</span><span class="p">)</span>
+
+    <span class="c1"># validate the tempaltes - they should at least have the same number of args</span>
+    <span class="n">n_outargs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_RE_NICK_TEMPLATE_ARG</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">out_template</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">n_inargs</span> <span class="o">!=</span> <span class="n">n_outargs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">NickTemplateInvalid</span>
+
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex_string</span><span class="p">),</span> <span class="n">template_string</span></div>
+
+
+<div class="viewcode-block" id="parse_nick_template"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.parse_nick_template">[docs]</a><span class="k">def</span> <span class="nf">parse_nick_template</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">template_regex</span><span class="p">,</span> <span class="n">outtemplate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse a text using a template and map it to another template</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        string (str): The input string to processj</span>
+<span class="sd">        template_regex (regex): A template regex created with</span>
+<span class="sd">            initialize_nick_template.</span>
+<span class="sd">        outtemplate (str): The template to which to map the matches</span>
+<span class="sd">            produced by the template_regex. This should have $1, $2,</span>
+<span class="sd">            etc to match the regex.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">template_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">outtemplate</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">string</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="inlinefuncs.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.inlinefuncs</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

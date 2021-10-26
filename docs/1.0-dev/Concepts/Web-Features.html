@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="web-features">
+  <section class="tex2jax_ignore mathjax_ignore" id="web-features">
 <h1>Web Features<a class="headerlink" href="#web-features" title="Permalink to this headline">¶</a></h1>
 <p>Evennia is its own webserver and hosts a default website and browser webclient.</p>
 <section id="web-site">
@@ -75,7 +77,7 @@ change from the <code class="docutils literal notranslate"><span class="pre">web
 <p>Example: To override or modify <code class="docutils literal notranslate"><span class="pre">evennia/web/website/template/website/index.html</span></code> you need to
 add/modify <code class="docutils literal notranslate"><span class="pre">mygame/web/template_overrides/website/index.html</span></code>.</p>
 <p>The detailed description on how to customize the website is best described in tutorial form. See the
-<a class="reference internal" href="../Howto/Starting/Part5/Web-Tutorial.html"><span class="doc">Web Tutorial</span></a> for more information.</p>
+<a class="reference internal" href="../Howto/Starting/Part5/Web-Tutorial.html"><span class="doc std std-doc">Web Tutorial</span></a> for more information.</p>
 </section>
 <section id="overloading-django-views">
 <h3>Overloading Django views<a class="headerlink" href="#overloading-django-views" title="Permalink to this headline">¶</a></h3>
@@ -90,22 +92,7 @@ field of your web browser to get to the page in question. If you put your own UR
 the default ones, your own view will be used instead. The file <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> even marks where you should
 put your change.</p>
 <p>Here’s an example:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/web/urls.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/web/urls.py</span>
 
 <span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span><span class="p">,</span> <span class="n">include</span>
 <span class="c1"># default patterns</span>
@@ -121,8 +108,9 @@ put your change.</p>
 <span class="p">]</span>
 
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span> <span class="o">+</span> <span class="n">urlpatterns</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Django will always look for a list named <code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code> which consists of the results of <code class="docutils literal notranslate"><span class="pre">url()</span></code>
 calls. It will use the <em>first</em> match it finds in this list. Above, we add a new URL redirect from
 the root of the website. It will now our own function <code class="docutils literal notranslate"><span class="pre">myview</span></code> from a new module
@@ -145,7 +133,7 @@ you will also log all requests in <code class="docutils literal notranslate"><sp
 <h2>Web client<a class="headerlink" href="#web-client" title="Permalink to this headline">¶</a></h2>
 <p>Evennia comes with a MUD client accessible from a normal web browser. During
 development you can try it at <code class="docutils literal notranslate"><span class="pre">http://localhost:4001/webclient</span></code>.
-<a class="reference internal" href="../Components/Webclient.html"><span class="doc">See the Webclient page</span></a> for more details.</p>
+<a class="reference internal" href="../Components/Webclient.html"><span class="doc std std-doc">See the Webclient page</span></a> for more details.</p>
 </section>
 <section id="the-django-admin-page">
 <h2>The Django ‘Admin’ Page<a class="headerlink" href="#the-django-admin-page" title="Permalink to this headline">¶</a></h2>
@@ -156,11 +144,11 @@ in your database from a graphical interface.</p>
 <p>The behavior of default Evennia models are controlled by files <code class="docutils literal notranslate"><span class="pre">admin.py</span></code> in the Evennia package.
 New database models you choose to add yourself (such as in the Web Character View Tutorial) can/will
 also have <code class="docutils literal notranslate"><span class="pre">admin.py</span></code> files. New models are registered to the admin website by a call of
-<code class="docutils literal notranslate"><span class="pre">admin.site.register(model</span> <span class="pre">class,</span> <span class="pre">admin</span> <span class="pre">class)</span></code> inside an admin.py file. It is an error to attempt
+<code class="docutils literal notranslate"><span class="pre">admin.site.register(model</span> <span class="pre">class,</span> <span class="pre">admin</span> <span class="pre">class)</span></code> inside an <a class="reference external" href="http://admin.py">admin.py</a> file. It is an error to attempt
 to register a model that has already been registered.</p>
 <p>To overload Evennia’s admin files you don’t need to modify Evennia itself. To customize you can call
 <code class="docutils literal notranslate"><span class="pre">admin.site.unregister(model</span> <span class="pre">class)</span></code>, then follow that with <code class="docutils literal notranslate"><span class="pre">admin.site.register</span></code> in one of your own
-admin.py files in a new app that you add.</p>
+<a class="reference external" href="http://admin.py">admin.py</a> files in a new app that you add.</p>
 </section>
 <section id="more-reading">
 <h2>More reading<a class="headerlink" href="#more-reading" title="Permalink to this headline">¶</a></h2>
@@ -228,7 +216,7 @@ implementation, the relevant django “applications” in default Evennia are <c
 <h3>Versions</h3>
 <ul>
   <li><a href="Web-Features.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

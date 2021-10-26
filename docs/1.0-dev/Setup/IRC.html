@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,14 +40,14 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="irc">
+  <section class="tex2jax_ignore mathjax_ignore" id="irc">
 <h1>IRC<a class="headerlink" href="#irc" title="Permalink to this headline">¶</a></h1>
 <p><em>Disambiguation: This page is related to using IRC inside an Evennia game. To join the official
-Evennia IRC chat, connect to irc.freenode.net and join #evennia. Alternatively, you can <a class="reference external" href="https://discord.gg/NecFePw">join our
+Evennia IRC chat, connect to <a class="reference external" href="http://irc.freenode.net">irc.freenode.net</a> and join #evennia. Alternatively, you can <a class="reference external" href="https://discord.gg/NecFePw">join our
 Discord</a>, which is mirrored to IRC.</em></p>
 <p><a class="reference external" href="https://en.wikipedia.org/wiki/Internet_Relay_Chat">IRC (Internet Relay Chat)</a> is a long standing
 chat protocol used by many open-source projects for communicating in real time. By connecting one of
-Evennia’s <a class="reference internal" href="../Components/Communications.html"><span class="doc">Channels</span></a> to an IRC channel you can communicate also with people not on
+Evennia’s <a class="reference internal" href="../Components/Communications.html"><span class="doc std std-doc">Channels</span></a> to an IRC channel you can communicate also with people not on
 an mud themselves. You can also use IRC if you are only running your Evennia MUD locally on your
 computer (your game doesn’t need to be open to the public)! All you need is an internet connection.
 For IRC operation you also need <a class="reference external" href="https://twistedmatrix.com/trac/wiki/TwistedWords">twisted.words</a>.
@@ -54,12 +56,12 @@ downloadable from the link.</p>
 <section id="configuring-irc">
 <h2>Configuring IRC<a class="headerlink" href="#configuring-irc" title="Permalink to this headline">¶</a></h2>
 <p>To configure IRC, you’ll need to activate it in your settings file.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">IRC_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">IRC_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Start Evennia and log in as a privileged user. You should now have a new command available:
 <code class="docutils literal notranslate"><span class="pre">&#64;irc2chan</span></code>. This command is called like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@irc2chan</span><span class="p">[</span><span class="o">/</span><span class="n">switches</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">evennia_channel</span><span class="o">&gt;</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ircnetwork</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">port</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="c1">#irchannel&gt; &lt;botname&gt;</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @irc2chan[/switches] &lt;evennia_channel&gt; = &lt;ircnetwork&gt; &lt;port&gt; &lt;#irchannel&gt; &lt;botname&gt;
 </pre></div>
 </div>
 <p>If you already know how IRC works, this should be pretty self-evident to use. Read the help entry
@@ -69,7 +71,7 @@ for more features.</p>
 <h2>Setting up IRC, step by step<a class="headerlink" href="#setting-up-irc-step-by-step" title="Permalink to this headline">¶</a></h2>
 <p>You can connect IRC to any Evennia channel (so you could connect it to the default <em>public</em> channel
 if you like), but for testing, let’s set up a new channel <code class="docutils literal notranslate"><span class="pre">irc</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> @ccreate irc = This is connected to an irc channel!
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @ccreate irc = This is connected to an irc channel!
 </pre></div>
 </div>
 <p>You will automatically join the new channel.</p>
@@ -96,24 +98,24 @@ third-party IRC client. There are hundreds of such clients available. If you use
 have connected to a network, the command to join is usually <code class="docutils literal notranslate"><span class="pre">/join</span> <span class="pre">#channelname</span></code> (don’t forget the
 #).</p>
 <p>Next we connect Evennia with the IRC channel.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@irc2chan</span> <span class="n">irc</span> <span class="o">=</span> <span class="n">irc</span><span class="o">.</span><span class="n">freenode</span><span class="o">.</span><span class="n">net</span> <span class="mi">6667</span> <span class="c1">#myevennia-test mud-bot</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @irc2chan irc = irc.freenode.net 6667 #myevennia-test mud-bot
 </pre></div>
 </div>
 <p>Evennia will now create a new IRC bot <code class="docutils literal notranslate"><span class="pre">mud-bot</span></code> and connect it to the IRC network and the channel
 #myevennia. If you are connected to the IRC channel you will soon see the user <em>mud-bot</em> connect.</p>
 <p>Write something in the Evennia channel <em>irc</em>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> irc Hello, World!
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> irc Hello, World!
 [irc] Anna: Hello, World!
 </pre></div>
 </div>
 <p>If you are viewing your IRC channel with a separate IRC client you should see your text appearing
 there, spoken by the bot:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mud-bot&gt; [irc] Anna: Hello, World!
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mud-bot&gt; [irc] Anna: Hello, World!
 </pre></div>
 </div>
 <p>Write <code class="docutils literal notranslate"><span class="pre">Hello!</span></code> in your IRC client window and it will appear in your normal channel, marked with the
 name of the IRC channel you used (#evennia here).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">irc</span><span class="p">]</span> <span class="n">Anna</span><span class="o">@</span><span class="c1">#myevennia-test: Hello!</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[irc] Anna@#myevennia-test: Hello!
 </pre></div>
 </div>
 <p>Your Evennia gamers can now chat with users on external IRC channels!</p>
@@ -169,7 +171,7 @@ name of the IRC channel you used (#evennia here).</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="IRC.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

@@ -42,7 +42,7 @@ Example: To override or modify `evennia/web/website/template/website/index.html`
 add/modify `mygame/web/template_overrides/website/index.html`.
 
 The detailed description on how to customize the website is best described in tutorial form. See the
-[Web Tutorial](../Howto/Starting/Part5/Web-Tutorial) for more information.
+[Web Tutorial](../Howto/Starting/Part5/Web-Tutorial.md) for more information.
 
 ### Overloading Django views
 
@@ -103,7 +103,7 @@ you will also log all requests in `mygame/server/logs/http_requests.log`.
 
 Evennia comes with a MUD client accessible from a normal web browser. During
 development you can try it at `http://localhost:4001/webclient`. 
-[See the Webclient page](../Components/Webclient) for more details.
+[See the Webclient page](../Components/Webclient.md) for more details.
 
 
 ## The Django 'Admin' Page

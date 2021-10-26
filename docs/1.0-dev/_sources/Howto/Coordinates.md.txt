@@ -23,7 +23,7 @@ instance.
 ## Coordinates as tags
 
 The first concept might be the most surprising at first glance: we will create coordinates as
-[tags](../Components/Tags).
+[tags](../Components/Tags.md).
 
 > Why not attributes, wouldn't that be easier?
 

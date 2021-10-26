@@ -1,0 +1,298 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Evennia for Diku Users &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Evennia for Diku Users</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="evennia-for-diku-users">
+<h1>Evennia for Diku Users<a class="headerlink" href="#evennia-for-diku-users" title="Permalink to this headline">¶</a></h1>
+<p>Evennia represents a learning curve for those who used to code on
+<a class="reference external" href="https://en.wikipedia.org/wiki/DikuMUD">Diku</a> type MUDs. While coding in Python is easy if you
+already know C, the main effort is to get rid of old C programming habits. Trying to code Python the
+way you code C will not only look ugly, it will lead to less optimal and harder to maintain code.
+Reading Evennia example code is a good way to get a feel for how different problems are approached
+in Python.</p>
+<p>Overall, Python offers an extensive library of resources, safe memory management and excellent
+handling of errors. While Python code does not run as fast as raw C code does, the difference is not
+all that important for a text-based game. The main advantage of Python is an extremely fast
+development cycle with and easy ways to create game systems that would take many times more code and
+be much harder to make stable and maintainable in C.</p>
+<section id="core-differences">
+<h2>Core Differences<a class="headerlink" href="#core-differences" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>As mentioned, the main difference between Evennia and a Diku-derived codebase is that Evennia is
+written purely in Python. Since Python is an interpreted language there is no compile stage. It is
+modified and extended by the server loading Python modules at run-time. It also runs on all computer
+platforms Python runs on (which is basically everywhere).</p></li>
+<li><p>Vanilla Diku type engines save their data in custom <em>flat file</em> type storage solutions. By
+contrast, Evennia stores all game data in one of several supported SQL databases. Whereas flat files
+have the advantage of being easier to implement, they (normally) lack many expected safety features
+and ways to effectively extract subsets of the stored data. For example, if the server loses power
+while writing to a flatfile it may become corrupt and the data lost. A proper database solution is
+not susceptible to this - at no point is the data in a state where it cannot be recovered. Databases
+are also highly optimized for querying large data sets efficiently.</p></li>
+</ul>
+</section>
+<section id="some-familiar-things">
+<h2>Some Familiar Things<a class="headerlink" href="#some-familiar-things" title="Permalink to this headline">¶</a></h2>
+<p>Diku expresses the character object referenced normally by:</p>
+<p><code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">char</span> <span class="pre">ch*</span></code> then all character-related fields can be accessed by <code class="docutils literal notranslate"><span class="pre">ch-&gt;</span></code>. In Evennia, one must
+pay attention to what object you are using, and when you are accessing another through back-
+handling, that you are accessing the right object. In Diku C, accessing character object is normally
+done by:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* creating pointer of both character and room struct */</span>
+
+<span class="kt">void</span><span class="p">(</span><span class="k">struct</span> <span class="nc">char</span> <span class="n">ch</span><span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">room</span> <span class="n">room</span><span class="o">*</span><span class="p">){</span>
+    <span class="kt">int</span> <span class="n">dam</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ROOM_FLAGGED</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">ROOM_LAVA</span><span class="p">)){</span>
+        <span class="n">dam</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="n">ch</span><span class="o">-&gt;</span><span class="n">damage_taken</span> <span class="o">=</span> <span class="n">dam</span>
+    <span class="p">};</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>As an example for creating Commands in Evennia via the <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia</span> <span class="pre">import</span> <span class="pre">Command</span></code> the character
+object that calls the command is denoted by a class property as <code class="docutils literal notranslate"><span class="pre">self.caller</span></code>. In this example
+<code class="docutils literal notranslate"><span class="pre">self.caller</span></code> is essentially the ‘object’ that has called the Command, but most of the time it is an
+Account object. For a more familiar Diku feel, create a variable that becomes the account object as:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#mygame/commands/command.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+
+<span class="k">class</span> <span class="nc">CmdMyCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a Command Evennia Object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="c1"># then you can access the account object directly by using the familiar ch.</span>
+        <span class="n">ch</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
+        <span class="n">account_name</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">race</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">race</span>
+
+</pre></div>
+</div>
+<p>As mentioned above, care must be taken what specific object you are working with. If focused on a
+room object and you need to access the account object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#mygame/typeclasses/room.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultRoom</span>
+
+<span class="k">class</span> <span class="nc">MyRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
+    <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">is_account_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>
+        <span class="c1"># a test to see if object is an account</span>
+        <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">myMethod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1">#self.caller would not make any sense, since self refers to the</span>
+        <span class="c1"># object of &#39;DefaultRoom&#39;, you must find the character obj first:</span>
+        <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_account_object</span><span class="p">(</span><span class="n">ch</span><span class="p">):</span>
+                <span class="c1"># now you can access the account object with ch:</span>
+                <span class="n">account_name</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">race</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">race</span>
+</pre></div>
+</div>
+</section>
+<section id="emulating-evennia-to-look-and-feel-like-a-diku-rom">
+<h2>Emulating Evennia to Look and Feel Like A Diku/ROM<a class="headerlink" href="#emulating-evennia-to-look-and-feel-like-a-diku-rom" title="Permalink to this headline">¶</a></h2>
+<p>To emulate a Diku Mud on Evennia some work has to be done before hand. If there is anything that all
+coders and builders remember from Diku/Rom days is the presence of VNUMs. Essentially all data was
+saved in flat files and indexed by VNUMs for easy access. Evennia has the ability to emulate VNUMS
+to the extent of categorising rooms/mobs/objs/trigger/zones[…] into vnum ranges.</p>
+<p>Evennia has objects that are called Scripts. As defined, they are the ‘out of game’ instances that
+exist within the mud, but never directly interacted with. Scripts can be used for timers, mob AI,
+and even a stand alone databases.</p>
+<p>Because of their wonderful structure all mob, room, zone, triggers, etc… data can be saved in
+independently created global scripts.</p>
+<p>Here is a sample mob file from a Diku Derived flat file.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>#0
+mob0~
+mob0~
+mob0
+~
+   Mob0
+~
+10 0 0 0 0 0 0 0 0 E
+1 20 9 0d0+10 1d2+0
+10 100
+8 8 0
+E
+#1
+Puff dragon fractal~
+Puff~
+Puff the Fractal Dragon is here, contemplating a higher reality.
+~
+   Is that some type of differential curve involving some strange, and unknown
+calculus that she seems to be made out of?
+~
+516106 0 0 0 2128 0 0 0 1000 E
+34 9 -10 6d6+340 5d5+5
+340 115600
+8 8 2
+BareHandAttack: 12
+E
+T 95
+</pre></div>
+</div>
+<p>Each line represents something that the MUD reads in and does something with it. This isn’t easy to
+read, but let’s see if we can emulate this as a dictionary to be stored on a database script created
+in Evennia.</p>
+<p>First, let’s create a global script that does absolutely nothing and isn’t attached to anything. You
+can either create this directly in-game with the &#64;py command or create it in another file to do some
+checks and balances if for whatever reason the script needs to be created again. Progmatically it
+can be done like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_script</span>
+
+<span class="n">mob_db</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="s2">&quot;typeclasses.scripts.DefaultScript&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;mobdb&quot;</span><span class="p">,</span>
+                       <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">mob_db</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">vnums</span> <span class="o">=</span> <span class="p">{}</span>
+</pre></div>
+</div>
+<p>Just by creating a simple script object and assigning it a ‘vnums’ attribute as a type dictionary.
+Next we have to create the mob layout…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># vnum : mob_data</span>
+
+<span class="n">mob_vnum_1</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;key&#39;</span> <span class="p">:</span> <span class="s1">&#39;puff&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;sdesc&#39;</span> <span class="p">:</span> <span class="s1">&#39;puff the fractal dragon&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ldesc&#39;</span> <span class="p">:</span> <span class="s1">&#39;Puff the Fractal Dragon is here, &#39;</span> \
+                      <span class="s1">&#39;contemplating a higher reality.&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ddesc&#39;</span> <span class="p">:</span> <span class="s1">&#39; Is that some type of differential curve &#39;</span> \
+                      <span class="s1">&#39;involving some strange, and unknown calculus &#39;</span> \
+                      <span class="s1">&#39;that she seems to be made out of?&#39;</span><span class="p">,</span>
+            <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+        <span class="p">}</span>
+
+<span class="c1"># Then saving it to the data, assuming you have the script obj stored in a variable.</span>
+<span class="n">mob_db</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">vnums</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mob_vnum_1</span>
+</pre></div>
+</div>
+<p>This is a very ‘caveman’ example, but it gets the idea across. You can use the keys in the
+<code class="docutils literal notranslate"><span class="pre">mob_db.vnums</span></code> to act as the mob vnum while the rest contains the data…</p>
+<p>Much simpler to read and edit. If you plan on taking this route, you must keep in mind that by
+default evennia ‘looks’ at different properties when using the <code class="docutils literal notranslate"><span class="pre">look</span></code> command for instance. If you
+create an instance of this mob and make its <code class="docutils literal notranslate"><span class="pre">self.key</span> <span class="pre">=</span> <span class="pre">1</span></code>, by default evennia will say</p>
+<p><code class="docutils literal notranslate"><span class="pre">Here</span> <span class="pre">is</span> <span class="pre">:</span> <span class="pre">1</span></code></p>
+<p>You must restructure all default commands so that the mud looks at different properties defined on
+your mob.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Evennia for Diku Users</a><ul>
+<li><a class="reference internal" href="#core-differences">Core Differences</a></li>
+<li><a class="reference internal" href="#some-familiar-things">Some Familiar Things</a></li>
+<li><a class="reference internal" href="#emulating-evennia-to-look-and-feel-like-a-diku-rom">Emulating Evennia to Look and Feel Like A Diku/ROM</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Evennia-for-Diku-Users.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Evennia-for-Diku-Users.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Evennia for Diku Users</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

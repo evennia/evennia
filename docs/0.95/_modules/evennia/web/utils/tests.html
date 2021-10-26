@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.web.utils.tests &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.utils.tests</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.web.utils.tests</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">AnonymousUser</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">RequestFactory</span><span class="p">,</span> <span class="n">TestCase</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">patch</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">general_context</span>
+
+
+<div class="viewcode-block" id="TestGeneralContext"><a class="viewcode-back" href="../../../../api/evennia.web.utils.tests.html#evennia.web.utils.tests.TestGeneralContext">[docs]</a><span class="k">class</span> <span class="nc">TestGeneralContext</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="n">maxDiff</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="TestGeneralContext.test_general_context"><a class="viewcode-back" href="../../../../api/evennia.web.utils.tests.html#evennia.web.utils.tests.TestGeneralContext.test_general_context">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.GAME_NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;test_name&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.GAME_SLOGAN&quot;</span><span class="p">,</span> <span class="s2">&quot;test_game_slogan&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span>
+        <span class="s2">&quot;evennia.web.utils.general_context.WEBSOCKET_CLIENT_ENABLED&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;websocket_client_enabled_testvalue&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.WEBCLIENT_ENABLED&quot;</span><span class="p">,</span> <span class="s2">&quot;webclient_enabled_testvalue&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.WEBSOCKET_PORT&quot;</span><span class="p">,</span> <span class="s2">&quot;websocket_client_port_testvalue&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.WEBSOCKET_URL&quot;</span><span class="p">,</span> <span class="s2">&quot;websocket_client_url_testvalue&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_general_context</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">RequestFactory</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">AnonymousUser</span><span class="p">()</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;account&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;puppet&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">general_context</span><span class="o">.</span><span class="n">general_context</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">response</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;account&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;puppet&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;game_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test_name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;game_slogan&quot;</span><span class="p">:</span> <span class="s2">&quot;test_game_slogan&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;evennia_userapps&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Accounts&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;evennia_entityapps&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Objects&quot;</span><span class="p">,</span> <span class="s2">&quot;Scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;Comms&quot;</span><span class="p">,</span> <span class="s2">&quot;Help&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;evennia_setupapps&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Permissions&quot;</span><span class="p">,</span> <span class="s2">&quot;Config&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;evennia_connectapps&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Irc&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;evennia_websiteapps&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Flatpages&quot;</span><span class="p">,</span> <span class="s2">&quot;News&quot;</span><span class="p">,</span> <span class="s2">&quot;Sites&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;webclient_enabled&quot;</span><span class="p">:</span> <span class="s2">&quot;webclient_enabled_testvalue&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;websocket_enabled&quot;</span><span class="p">:</span> <span class="s2">&quot;websocket_client_enabled_testvalue&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;websocket_port&quot;</span><span class="p">:</span> <span class="s2">&quot;websocket_client_port_testvalue&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;websocket_url&quot;</span><span class="p">:</span> <span class="s2">&quot;websocket_client_url_testvalue&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span></div>
+
+    <span class="c1"># spec being an empty list will initially raise AttributeError in set_game_name_and_slogan to test defaults</span>
+<div class="viewcode-block" id="TestGeneralContext.test_set_game_name_and_slogan"><a class="viewcode-back" href="../../../../api/evennia.web.utils.tests.html#evennia.web.utils.tests.TestGeneralContext.test_set_game_name_and_slogan">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.settings&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="o">=</span><span class="p">[])</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.get_evennia_version&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_set_game_name_and_slogan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_get_version</span><span class="p">,</span> <span class="n">mock_settings</span><span class="p">):</span>
+        <span class="n">mock_get_version</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;version 1&quot;</span>
+        <span class="c1"># test default/fallback values</span>
+        <span class="n">general_context</span><span class="o">.</span><span class="n">set_game_name_and_slogan</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">general_context</span><span class="o">.</span><span class="n">GAME_NAME</span><span class="p">,</span> <span class="s2">&quot;Evennia&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">general_context</span><span class="o">.</span><span class="n">GAME_SLOGAN</span><span class="p">,</span> <span class="s2">&quot;version 1&quot;</span><span class="p">)</span>
+        <span class="c1"># test values when the settings are defined</span>
+        <span class="n">mock_settings</span><span class="o">.</span><span class="n">SERVERNAME</span> <span class="o">=</span> <span class="s2">&quot;test_name&quot;</span>
+        <span class="n">mock_settings</span><span class="o">.</span><span class="n">GAME_SLOGAN</span> <span class="o">=</span> <span class="s2">&quot;test_game_slogan&quot;</span>
+        <span class="n">general_context</span><span class="o">.</span><span class="n">set_game_name_and_slogan</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">general_context</span><span class="o">.</span><span class="n">GAME_NAME</span><span class="p">,</span> <span class="s2">&quot;test_name&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">general_context</span><span class="o">.</span><span class="n">GAME_SLOGAN</span><span class="p">,</span> <span class="s2">&quot;test_game_slogan&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestGeneralContext.test_set_webclient_settings"><a class="viewcode-back" href="../../../../api/evennia.web.utils.tests.html#evennia.web.utils.tests.TestGeneralContext.test_set_webclient_settings">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.settings&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_set_webclient_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_settings</span><span class="p">):</span>
+        <span class="n">mock_settings</span><span class="o">.</span><span class="n">WEBCLIENT_ENABLED</span> <span class="o">=</span> <span class="s2">&quot;webclient&quot;</span>
+        <span class="n">mock_settings</span><span class="o">.</span><span class="n">WEBSOCKET_CLIENT_URL</span> <span class="o">=</span> <span class="s2">&quot;websocket_url&quot;</span>
+        <span class="n">mock_settings</span><span class="o">.</span><span class="n">WEBSOCKET_CLIENT_ENABLED</span> <span class="o">=</span> <span class="s2">&quot;websocket_client&quot;</span>
+        <span class="n">mock_settings</span><span class="o">.</span><span class="n">WEBSOCKET_CLIENT_PORT</span> <span class="o">=</span> <span class="mi">5000</span>
+        <span class="n">general_context</span><span class="o">.</span><span class="n">set_webclient_settings</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">general_context</span><span class="o">.</span><span class="n">WEBCLIENT_ENABLED</span><span class="p">,</span> <span class="s2">&quot;webclient&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">general_context</span><span class="o">.</span><span class="n">WEBSOCKET_URL</span><span class="p">,</span> <span class="s2">&quot;websocket_url&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">general_context</span><span class="o">.</span><span class="n">WEBSOCKET_CLIENT_ENABLED</span><span class="p">,</span> <span class="s2">&quot;websocket_client&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">general_context</span><span class="o">.</span><span class="n">WEBSOCKET_PORT</span><span class="p">,</span> <span class="mi">5000</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="tests.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.utils.tests</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

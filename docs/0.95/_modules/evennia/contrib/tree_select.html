@@ -1,0 +1,683 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.tree_select &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tree_select</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.tree_select</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Easy menu selection tree</span>
+
+<span class="sd">Contrib - Tim Ashley Jenkins 2017</span>
+
+<span class="sd">This module allows you to create and initialize an entire branching EvMenu</span>
+<span class="sd">instance with nothing but a multi-line string passed to one function.</span>
+
+<span class="sd">EvMenu is incredibly powerful and flexible, but using it for simple menus</span>
+<span class="sd">can often be fairly cumbersome - a simple menu that can branch into five</span>
+<span class="sd">categories would require six nodes, each with options represented as a list</span>
+<span class="sd">of dictionaries.</span>
+
+<span class="sd">This module provides a function, init_tree_selection, which acts as a frontend</span>
+<span class="sd">for EvMenu, dynamically sourcing the options from a multi-line string you provide.</span>
+<span class="sd">For example, if you define a string as such:</span>
+
+<span class="sd">    TEST_MENU = &#39;&#39;&#39;Foo</span>
+<span class="sd">    Bar</span>
+<span class="sd">    Baz</span>
+<span class="sd">    Qux&#39;&#39;&#39;</span>
+
+<span class="sd">And then use TEST_MENU as the &#39;treestr&#39; source when you call init_tree_selection</span>
+<span class="sd">on a player:</span>
+
+<span class="sd">    init_tree_selection(TEST_MENU, caller, callback)</span>
+
+<span class="sd">The player will be presented with an EvMenu, like so:</span>
+
+<span class="sd">    ___________________________</span>
+
+<span class="sd">    Make your selection:</span>
+<span class="sd">    ___________________________</span>
+
+<span class="sd">    Foo</span>
+<span class="sd">    Bar</span>
+<span class="sd">    Baz</span>
+<span class="sd">    Qux</span>
+
+<span class="sd">Making a selection will pass the selection&#39;s key to the specified callback as a</span>
+<span class="sd">string along with the caller, as well as the index of the selection (the line number</span>
+<span class="sd">on the source string) along with the source string for the tree itself.</span>
+
+<span class="sd">In addition to specifying selections on the menu, you can also specify categories.</span>
+<span class="sd">Categories are indicated by putting options below it preceded with a &#39;-&#39; character.</span>
+<span class="sd">If a selection is a category, then choosing it will bring up a new menu node, prompting</span>
+<span class="sd">the player to select between those options, or to go back to the previous menu. In</span>
+<span class="sd">addition, categories are marked by default with a &#39;[+]&#39; at the end of their key. Both</span>
+<span class="sd">this marker and the option to go back can be disabled.</span>
+
+<span class="sd">Categories can be nested in other categories as well - just go another &#39;-&#39; deeper. You</span>
+<span class="sd">can do this as many times as you like. There&#39;s no hard limit to the number of</span>
+<span class="sd">categories you can go down.</span>
+
+<span class="sd">For example, let&#39;s add some more options to our menu, turning &#39;Bar&#39; into a category.</span>
+
+<span class="sd">    TEST_MENU = &#39;&#39;&#39;Foo</span>
+<span class="sd">    Bar</span>
+<span class="sd">    -You&#39;ve got to know</span>
+<span class="sd">    --When to hold em</span>
+<span class="sd">    --When to fold em</span>
+<span class="sd">    --When to walk away</span>
+<span class="sd">    Baz</span>
+<span class="sd">    Qux&#39;&#39;&#39;</span>
+
+<span class="sd">Now when we call the menu, we can see that &#39;Bar&#39; has become a category instead of a</span>
+<span class="sd">selectable option.</span>
+
+<span class="sd">    _______________________________</span>
+
+<span class="sd">    Make your selection:</span>
+<span class="sd">    _______________________________</span>
+
+<span class="sd">    Foo</span>
+<span class="sd">    Bar [+]</span>
+<span class="sd">    Baz</span>
+<span class="sd">    Qux</span>
+
+<span class="sd">Note the [+] next to &#39;Bar&#39;. If we select &#39;Bar&#39;, it&#39;ll show us the option listed under it.</span>
+
+<span class="sd">    ________________________________________________________________</span>
+
+<span class="sd">    Bar</span>
+<span class="sd">    ________________________________________________________________</span>
+
+<span class="sd">    You&#39;ve got to know [+]</span>
+<span class="sd">    &lt;&lt; Go Back: Return to the previous menu.</span>
+
+<span class="sd">Just the one option, which is a category itself, and the option to go back, which will</span>
+<span class="sd">take us back to the previous menu. Let&#39;s select &#39;You&#39;ve got to know&#39;.</span>
+
+<span class="sd">    ________________________________________________________________</span>
+
+<span class="sd">    You&#39;ve got to know</span>
+<span class="sd">    ________________________________________________________________</span>
+
+<span class="sd">    When to hold em</span>
+<span class="sd">    When to fold em</span>
+<span class="sd">    When to walk away</span>
+<span class="sd">    &lt;&lt; Go Back: Return to the previous menu.</span>
+
+<span class="sd">Now we see the three options listed under it, too. We can select one of them or use &#39;Go</span>
+<span class="sd">Back&#39; to return to the &#39;Bar&#39; menu we were just at before. It&#39;s very simple to make a</span>
+<span class="sd">branching tree of selections!</span>
+
+<span class="sd">One last thing - you can set the descriptions for the various options simply by adding a</span>
+<span class="sd">&#39;:&#39; character followed by the description to the option&#39;s line. For example, let&#39;s add a</span>
+<span class="sd">description to &#39;Baz&#39; in our menu:</span>
+
+<span class="sd">    TEST_MENU = &#39;&#39;&#39;Foo</span>
+<span class="sd">    Bar</span>
+<span class="sd">    -You&#39;ve got to know</span>
+<span class="sd">    --When to hold em</span>
+<span class="sd">    --When to fold em</span>
+<span class="sd">    --When to walk away</span>
+<span class="sd">    Baz: Look at this one: the best option.</span>
+<span class="sd">    Qux&#39;&#39;&#39;</span>
+
+<span class="sd">Now we see that the Baz option has a description attached that&#39;s separate from its key:</span>
+
+<span class="sd">    _______________________________________________________________</span>
+
+<span class="sd">    Make your selection:</span>
+<span class="sd">    _______________________________________________________________</span>
+
+<span class="sd">    Foo</span>
+<span class="sd">    Bar [+]</span>
+<span class="sd">    Baz: Look at this one: the best option.</span>
+<span class="sd">    Qux</span>
+
+<span class="sd">Once the player makes a selection - let&#39;s say, &#39;Foo&#39; - the menu will terminate and call</span>
+<span class="sd">your specified callback with the selection, like so:</span>
+
+<span class="sd">    callback(caller, TEST_MENU, 0, &quot;Foo&quot;)</span>
+
+<span class="sd">The index of the selection is given along with a string containing the selection&#39;s key.</span>
+<span class="sd">That way, if you have two selections in the menu with the same key, you can still</span>
+<span class="sd">differentiate between them.</span>
+
+<span class="sd">And that&#39;s all there is to it! For simple branching-tree selections, using this system is</span>
+<span class="sd">much easier than manually creating EvMenu nodes. It also makes generating menus with dynamic</span>
+<span class="sd">options much easier - since the source of the menu tree is just a string, you could easily</span>
+<span class="sd">generate that string procedurally before passing it to the init_tree_selection function.</span>
+<span class="sd">For example, if a player casts a spell or does an attack without specifying a target, instead</span>
+<span class="sd">of giving them an error, you could present them with a list of valid targets to select by</span>
+<span class="sd">generating a multi-line string of targets and passing it to init_tree_selection, with the</span>
+<span class="sd">callable performing the maneuver once a selection is made.</span>
+
+<span class="sd">This selection system only works for simple branching trees - doing anything really complicated</span>
+<span class="sd">like jumping between categories or prompting for arbitrary input would still require a full</span>
+<span class="sd">EvMenu implementation. For simple selections, however, I&#39;m sure you will find using this function</span>
+<span class="sd">to be much easier!</span>
+
+<span class="sd">Included in this module is a sample menu and function which will let a player change the color</span>
+<span class="sd">of their name - feel free to mess with it to get a feel for how this system works by importing</span>
+<span class="sd">this module in your game&#39;s default_cmdsets.py module and adding CmdNameColor to your default</span>
+<span class="sd">character&#39;s command set.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evmenu</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+
+
+<div class="viewcode-block" id="init_tree_selection"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.init_tree_selection">[docs]</a><span class="k">def</span> <span class="nf">init_tree_selection</span><span class="p">(</span>
+    <span class="n">treestr</span><span class="p">,</span>
+    <span class="n">caller</span><span class="p">,</span>
+    <span class="n">callback</span><span class="p">,</span>
+    <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">mark_category</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">go_back</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">cmd_on_exit</span><span class="o">=</span><span class="s2">&quot;look&quot;</span><span class="p">,</span>
+    <span class="n">start_text</span><span class="o">=</span><span class="s2">&quot;Make your selection:&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prompts a player to select an option from a menu tree given as a multi-line string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        treestr (str): Multi-lne string representing menu options</span>
+<span class="sd">        caller (obj): Player to initialize the menu for</span>
+<span class="sd">        callback (callable): Function to run when a selection is made. Must take 4 args:</span>
+<span class="sd">            caller (obj): Caller given above</span>
+<span class="sd">            treestr (str): Menu tree string given above</span>
+<span class="sd">            index (int): Index of final selection</span>
+<span class="sd">            selection (str): Key of final selection</span>
+
+<span class="sd">    Options:</span>
+<span class="sd">        index (int or None): Index to start the menu at, or None for top level</span>
+<span class="sd">        mark_category (bool): If True, marks categories with a [+] symbol in the menu</span>
+<span class="sd">        go_back (bool): If True, present an option to go back to previous categories</span>
+<span class="sd">        start_text (str): Text to display at the top level of the menu</span>
+<span class="sd">        cmd_on_exit(str): Command to enter when the menu exits - &#39;look&#39; by default</span>
+
+
+<span class="sd">    Notes:</span>
+<span class="sd">        This function will initialize an instance of EvMenu with options generated</span>
+<span class="sd">        dynamically from the source string, and passes the menu user&#39;s selection to</span>
+<span class="sd">        a function of your choosing. The EvMenu is made of a single, repeating node,</span>
+<span class="sd">        which will call itself over and over at different levels of the menu tree as</span>
+<span class="sd">        categories are selected.</span>
+
+<span class="sd">        Once a non-category selection is made, the user&#39;s selection will be passed to</span>
+<span class="sd">        the given callable, both as a string and as an index number. The index is given</span>
+<span class="sd">        to ensure every selection has a unique identifier, so that selections with the</span>
+<span class="sd">        same key in different categories can be distinguished between.</span>
+
+<span class="sd">        The menus called by this function are not persistent and cannot perform</span>
+<span class="sd">        complicated tasks like prompt for arbitrary input or jump multiple category</span>
+<span class="sd">        levels at once - you&#39;ll have to use EvMenu itself if you want to take full</span>
+<span class="sd">        advantage of its features.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Pass kwargs to store data needed in the menu</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="n">index</span><span class="p">,</span>
+        <span class="s2">&quot;mark_category&quot;</span><span class="p">:</span> <span class="n">mark_category</span><span class="p">,</span>
+        <span class="s2">&quot;go_back&quot;</span><span class="p">:</span> <span class="n">go_back</span><span class="p">,</span>
+        <span class="s2">&quot;treestr&quot;</span><span class="p">:</span> <span class="n">treestr</span><span class="p">,</span>
+        <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="n">callback</span><span class="p">,</span>
+        <span class="s2">&quot;start_text&quot;</span><span class="p">:</span> <span class="n">start_text</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Initialize menu of selections</span>
+    <span class="n">evmenu</span><span class="o">.</span><span class="n">EvMenu</span><span class="p">(</span>
+        <span class="n">caller</span><span class="p">,</span>
+        <span class="s2">&quot;evennia.contrib.tree_select&quot;</span><span class="p">,</span>
+        <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;menunode_treeselect&quot;</span><span class="p">,</span>
+        <span class="n">startnode_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">cmd_on_exit</span><span class="o">=</span><span class="n">cmd_on_exit</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dashcount"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.dashcount">[docs]</a><span class="k">def</span> <span class="nf">dashcount</span><span class="p">(</span><span class="n">entry</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Counts the number of dashes at the beginning of a string. This</span>
+<span class="sd">    is needed to determine the depth of options in categories.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        entry (str): String to count the dashes at the start of</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dashes (int): Number of dashes at the start</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dashes</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+            <span class="n">dashes</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dashes</span>
+    <span class="k">return</span> <span class="n">dashes</span></div>
+
+
+<div class="viewcode-block" id="is_category"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.is_category">[docs]</a><span class="k">def</span> <span class="nf">is_category</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines whether an option in a tree string is a category by</span>
+<span class="sd">    whether or not there are additional options below it.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        treestr (str): Multi-line string representing menu options</span>
+<span class="sd">        index (int): Which line of the string to test</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        is_category (bool): Whether the option is a category</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">opt_list</span> <span class="o">=</span> <span class="n">treestr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># Not a category if it&#39;s the last one in the list</span>
+    <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">opt_list</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="c1"># Not a category if next option is not one level deeper</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">dashcount</span><span class="p">(</span><span class="n">opt_list</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="o">!=</span> <span class="n">dashcount</span><span class="p">(</span><span class="n">opt_list</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="parse_opts"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.parse_opts">[docs]</a><span class="k">def</span> <span class="nf">parse_opts</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">category_index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parses a tree string and given index into a list of options. If</span>
+<span class="sd">    category_index is none, returns all the options at the top level of</span>
+<span class="sd">    the menu. If category_index corresponds to a category, returns a list</span>
+<span class="sd">    of options under that category. If category_index corresponds to</span>
+<span class="sd">    an option that is not a category, it&#39;s a selection and returns True.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        treestr (str): Multi-line string representing menu options</span>
+<span class="sd">        category_index (int): Index of category or None for top level</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        kept_opts (list or True): Either a list of options in the selected</span>
+<span class="sd">                                  category or True if a selection was made</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dash_depth</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">opt_list</span> <span class="o">=</span> <span class="n">treestr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">kept_opts</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># If a category index is given</span>
+    <span class="k">if</span> <span class="n">category_index</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># If given index is not a category, it&#39;s a selection - return True.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_category</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">category_index</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="c1"># Otherwise, change the dash depth to match the new category.</span>
+        <span class="n">dash_depth</span> <span class="o">=</span> <span class="n">dashcount</span><span class="p">(</span><span class="n">opt_list</span><span class="p">[</span><span class="n">category_index</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="c1"># Delete everything before the category index</span>
+        <span class="n">opt_list</span> <span class="o">=</span> <span class="n">opt_list</span><span class="p">[</span><span class="n">category_index</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+
+    <span class="c1"># Keep every option (referenced by index) at the appropriate depth</span>
+    <span class="n">cur_index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">opt_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dashcount</span><span class="p">(</span><span class="n">option</span><span class="p">)</span> <span class="o">==</span> <span class="n">dash_depth</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">category_index</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">kept_opts</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">cur_index</span><span class="p">,</span> <span class="n">option</span><span class="p">[</span><span class="n">dash_depth</span><span class="p">:]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">kept_opts</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">cur_index</span> <span class="o">+</span> <span class="n">category_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">option</span><span class="p">[</span><span class="n">dash_depth</span><span class="p">:]))</span>
+        <span class="c1"># Exits the loop if leaving a category</span>
+        <span class="k">if</span> <span class="n">dashcount</span><span class="p">(</span><span class="n">option</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dash_depth</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">kept_opts</span>
+        <span class="n">cur_index</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">kept_opts</span></div>
+
+
+<div class="viewcode-block" id="index_to_selection"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.index_to_selection">[docs]</a><span class="k">def</span> <span class="nf">index_to_selection</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a menu tree string and an index, returns the corresponding selection&#39;s</span>
+<span class="sd">    name as a string. If &#39;desc&#39; is set to True, will return the selection&#39;s</span>
+<span class="sd">    description as a string instead.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        treestr (str): Multi-line string representing menu options</span>
+<span class="sd">        index (int): Index to convert to selection key or description</span>
+
+<span class="sd">    Options:</span>
+<span class="sd">        desc (bool): If true, returns description instead of key</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        selection (str): Selection key or description if &#39;desc&#39; is set</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">opt_list</span> <span class="o">=</span> <span class="n">treestr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># Fetch the given line</span>
+    <span class="n">selection</span> <span class="o">=</span> <span class="n">opt_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+    <span class="c1"># Strip out the dashes at the start</span>
+    <span class="n">selection</span> <span class="o">=</span> <span class="n">selection</span><span class="p">[</span><span class="n">dashcount</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span> <span class="p">:]</span>
+    <span class="c1"># Separate out description, if any</span>
+    <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">selection</span><span class="p">:</span>
+        <span class="c1"># Split string into key and description</span>
+        <span class="n">selection</span> <span class="o">=</span> <span class="n">selection</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">selection</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">selection</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># If no description given, set description to None</span>
+        <span class="n">selection</span> <span class="o">=</span> <span class="p">[</span><span class="n">selection</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">selection</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">selection</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="go_up_one_category"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.go_up_one_category">[docs]</a><span class="k">def</span> <span class="nf">go_up_one_category</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a menu tree string and an index, returns the category that the given option</span>
+<span class="sd">    belongs to. Used for the &#39;go back&#39; option.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        treestr (str): Multi-line string representing menu options</span>
+<span class="sd">        index (int): Index to determine the parent category of</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        parent_category (int): Index of parent category</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">opt_list</span> <span class="o">=</span> <span class="n">treestr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># Get the number of dashes deep the given index is</span>
+    <span class="n">dash_level</span> <span class="o">=</span> <span class="n">dashcount</span><span class="p">(</span><span class="n">opt_list</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+    <span class="c1"># Delete everything after the current index</span>
+    <span class="n">opt_list</span> <span class="o">=</span> <span class="n">opt_list</span><span class="p">[:</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># If there&#39;s no dash, return &#39;None&#39; to return to base menu</span>
+    <span class="k">if</span> <span class="n">dash_level</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">current_index</span> <span class="o">=</span> <span class="n">index</span>
+    <span class="c1"># Go up through each option until we find one that&#39;s one category above</span>
+    <span class="k">for</span> <span class="n">selection</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">opt_list</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dashcount</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span> <span class="o">==</span> <span class="n">dash_level</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">current_index</span>
+        <span class="n">current_index</span> <span class="o">-=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="optlist_to_menuoptions"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.optlist_to_menuoptions">[docs]</a><span class="k">def</span> <span class="nf">optlist_to_menuoptions</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">optlist</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">mark_category</span><span class="p">,</span> <span class="n">go_back</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes a list of options processed by parse_opts and turns it into</span>
+<span class="sd">    a list/dictionary of menu options for use in menunode_treeselect.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        treestr (str): Multi-line string representing menu options</span>
+<span class="sd">        optlist (list): List of options to convert to EvMenu&#39;s option format</span>
+<span class="sd">        index (int): Index of current category</span>
+<span class="sd">        mark_category (bool): Whether or not to mark categories with [+]</span>
+<span class="sd">        go_back (bool): Whether or not to add an option to go back in the menu</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        menuoptions (list of dicts): List of menu options formatted for use</span>
+<span class="sd">            in EvMenu, each passing a different &quot;newindex&quot; kwarg that changes</span>
+<span class="sd">            the menu level or makes a selection</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">menuoptions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">cur_index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">optlist</span><span class="p">:</span>
+        <span class="n">index_to_add</span> <span class="o">=</span> <span class="n">optlist</span><span class="p">[</span><span class="n">cur_index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">menuitem</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">keystr</span> <span class="o">=</span> <span class="n">index_to_selection</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index_to_add</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mark_category</span> <span class="ow">and</span> <span class="n">is_category</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index_to_add</span><span class="p">):</span>
+            <span class="c1"># Add the [+] to the key if marking categories, and the key by itself as an alias</span>
+            <span class="n">menuitem</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">keystr</span> <span class="o">+</span> <span class="s2">&quot; [+]&quot;</span><span class="p">,</span> <span class="n">keystr</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">menuitem</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">keystr</span>
+        <span class="c1"># Get the option&#39;s description</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="n">index_to_selection</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index_to_add</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">desc</span><span class="p">:</span>
+            <span class="n">menuitem</span><span class="p">[</span><span class="s2">&quot;desc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">desc</span>
+        <span class="c1"># Passing &#39;newindex&#39; as a kwarg to the node is how we move through the menu!</span>
+        <span class="n">menuitem</span><span class="p">[</span><span class="s2">&quot;goto&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;menunode_treeselect&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;newindex&quot;</span><span class="p">:</span> <span class="n">index_to_add</span><span class="p">}]</span>
+        <span class="n">menuoptions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">menuitem</span><span class="p">)</span>
+        <span class="n">cur_index</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># Add option to go back, if needed</span>
+    <span class="k">if</span> <span class="n">index</span> <span class="o">!=</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">go_back</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">gobackitem</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;&lt;&lt; Go Back&quot;</span><span class="p">,</span> <span class="s2">&quot;go back&quot;</span><span class="p">,</span> <span class="s2">&quot;back&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Return to the previous menu.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;menunode_treeselect&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;newindex&quot;</span><span class="p">:</span> <span class="n">go_up_one_category</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">)}],</span>
+        <span class="p">}</span>
+        <span class="n">menuoptions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gobackitem</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">menuoptions</span></div>
+
+
+<div class="viewcode-block" id="menunode_treeselect"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.menunode_treeselect">[docs]</a><span class="k">def</span> <span class="nf">menunode_treeselect</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the repeating menu node that handles the tree selection.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># If &#39;newindex&#39; is in the kwargs, change the stored index.</span>
+    <span class="k">if</span> <span class="s2">&quot;newindex&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;newindex&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Retrieve menu info</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">index</span>
+    <span class="n">mark_category</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">mark_category</span>
+    <span class="n">go_back</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">go_back</span>
+    <span class="n">treestr</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">treestr</span>
+    <span class="n">callback</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">callback</span>
+    <span class="n">start_text</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">start_text</span>
+
+    <span class="c1"># List of options if index is &#39;None&#39; or category, or &#39;True&#39; if a selection</span>
+    <span class="n">optlist</span> <span class="o">=</span> <span class="n">parse_opts</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">category_index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
+
+    <span class="c1"># If given index returns optlist as &#39;True&#39;, it&#39;s a selection. Pass to callback and end the menu.</span>
+    <span class="k">if</span> <span class="n">optlist</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">selection</span> <span class="o">=</span> <span class="n">index_to_selection</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">callback</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">selection</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">log_trace</span><span class="p">(</span><span class="s2">&quot;Error in tree selection callback.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Returning None, None ends the menu.</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="c1"># Otherwise, convert optlist to a list of menu options.</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">optlist_to_menuoptions</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">optlist</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">mark_category</span><span class="p">,</span> <span class="n">go_back</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Use start_text for the menu text on the top level</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">start_text</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Use the category name and description (if any) as the menu text</span>
+            <span class="k">if</span> <span class="n">index_to_selection</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;|w&quot;</span>
+                    <span class="o">+</span> <span class="n">index_to_selection</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+                    <span class="o">+</span> <span class="s2">&quot;|n: &quot;</span>
+                    <span class="o">+</span> <span class="n">index_to_selection</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;|w&quot;</span> <span class="o">+</span> <span class="n">index_to_selection</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;|n&quot;</span>
+        <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+
+
+<span class="c1"># The rest of this module is for the example menu and command! It&#39;ll change the color of your name.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Here&#39;s an example string that you can initialize a menu from. Note the dashes at</span>
+<span class="sd">the beginning of each line - that&#39;s how menu option depth and hierarchy is determined.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">NAMECOLOR_MENU</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Set name color: Choose a color for your name!</span>
+<span class="s2">-Red shades: Various shades of |511red|n</span>
+<span class="s2">--Red: |511Set your name to Red|n</span>
+<span class="s2">--Pink: |533Set your name to Pink|n</span>
+<span class="s2">--Maroon: |301Set your name to Maroon|n</span>
+<span class="s2">-Orange shades: Various shades of |531orange|n</span>
+<span class="s2">--Orange: |531Set your name to Orange|n</span>
+<span class="s2">--Brown: |321Set your name to Brown|n</span>
+<span class="s2">--Sienna: |420Set your name to Sienna|n</span>
+<span class="s2">-Yellow shades: Various shades of |551yellow|n</span>
+<span class="s2">--Yellow: |551Set your name to Yellow|n</span>
+<span class="s2">--Gold: |540Set your name to Gold|n</span>
+<span class="s2">--Dandelion: |553Set your name to Dandelion|n</span>
+<span class="s2">-Green shades: Various shades of |141green|n</span>
+<span class="s2">--Green: |141Set your name to Green|n</span>
+<span class="s2">--Lime: |350Set your name to Lime|n</span>
+<span class="s2">--Forest: |032Set your name to Forest|n</span>
+<span class="s2">-Blue shades: Various shades of |115blue|n</span>
+<span class="s2">--Blue: |115Set your name to Blue|n</span>
+<span class="s2">--Cyan: |155Set your name to Cyan|n</span>
+<span class="s2">--Navy: |113Set your name to Navy|n</span>
+<span class="s2">-Purple shades: Various shades of |415purple|n</span>
+<span class="s2">--Purple: |415Set your name to Purple|n</span>
+<span class="s2">--Lavender: |535Set your name to Lavender|n</span>
+<span class="s2">--Fuchsia: |503Set your name to Fuchsia|n</span>
+<span class="s2">Remove name color: Remove your name color, if any&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="CmdNameColor"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.CmdNameColor">[docs]</a><span class="k">class</span> <span class="nc">CmdNameColor</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set or remove a special color on your name. Just an example for the</span>
+<span class="sd">    easy menu selection tree contrib.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;namecolor&quot;</span>
+
+<div class="viewcode-block" id="CmdNameColor.func"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.CmdNameColor.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># This is all you have to do to initialize a menu!</span>
+        <span class="n">init_tree_selection</span><span class="p">(</span>
+            <span class="n">NAMECOLOR_MENU</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">change_name_color</span><span class="p">,</span> <span class="n">start_text</span><span class="o">=</span><span class="s2">&quot;Name color options:&quot;</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="change_name_color"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.change_name_color">[docs]</a><span class="k">def</span> <span class="nf">change_name_color</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">selection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Changes a player&#39;s name color.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        caller (obj): Character whose name to color.</span>
+<span class="sd">        treestr (str): String for the color change menu - unused</span>
+<span class="sd">        index (int): Index of menu selection - unused</span>
+<span class="sd">        selection (str): Selection made from the name color menu - used</span>
+<span class="sd">            to determine the color the player chose.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Store the caller&#39;s uncolored name</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">uncolored_name</span><span class="p">:</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">uncolored_name</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">key</span>
+
+    <span class="c1"># Dictionary matching color selection names to color codes</span>
+    <span class="n">colordict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Red&quot;</span><span class="p">:</span> <span class="s2">&quot;|511&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Pink&quot;</span><span class="p">:</span> <span class="s2">&quot;|533&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Maroon&quot;</span><span class="p">:</span> <span class="s2">&quot;|301&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Orange&quot;</span><span class="p">:</span> <span class="s2">&quot;|531&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Brown&quot;</span><span class="p">:</span> <span class="s2">&quot;|321&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Sienna&quot;</span><span class="p">:</span> <span class="s2">&quot;|420&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Yellow&quot;</span><span class="p">:</span> <span class="s2">&quot;|551&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Gold&quot;</span><span class="p">:</span> <span class="s2">&quot;|540&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Dandelion&quot;</span><span class="p">:</span> <span class="s2">&quot;|553&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Green&quot;</span><span class="p">:</span> <span class="s2">&quot;|141&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Lime&quot;</span><span class="p">:</span> <span class="s2">&quot;|350&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Forest&quot;</span><span class="p">:</span> <span class="s2">&quot;|032&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Blue&quot;</span><span class="p">:</span> <span class="s2">&quot;|115&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Cyan&quot;</span><span class="p">:</span> <span class="s2">&quot;|155&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Navy&quot;</span><span class="p">:</span> <span class="s2">&quot;|113&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Purple&quot;</span><span class="p">:</span> <span class="s2">&quot;|415&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Lavender&quot;</span><span class="p">:</span> <span class="s2">&quot;|535&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Fuchsia&quot;</span><span class="p">:</span> <span class="s2">&quot;|503&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c1"># I know this probably isn&#39;t the best way to do this. It&#39;s just an example!</span>
+    <span class="k">if</span> <span class="n">selection</span> <span class="o">==</span> <span class="s2">&quot;Remove name color&quot;</span><span class="p">:</span>  <span class="c1"># Player chose to remove their name color</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">uncolored_name</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Name color removed.&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">selection</span> <span class="ow">in</span> <span class="n">colordict</span><span class="p">:</span>
+        <span class="n">newcolor</span> <span class="o">=</span> <span class="n">colordict</span><span class="p">[</span><span class="n">selection</span><span class="p">]</span>  <span class="c1"># Retrieve color code based on menu selection</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">newcolor</span> <span class="o">+</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">uncolored_name</span> <span class="o">+</span> <span class="s2">&quot;|n&quot;</span>  <span class="c1"># Add color code to caller&#39;s name</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">newcolor</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;Name color changed to </span><span class="si">%s</span><span class="s2">!&quot;</span> <span class="o">%</span> <span class="n">selection</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;|n&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="tree_select.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tree_select</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

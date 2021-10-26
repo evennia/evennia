@@ -14,6 +14,8 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -46,7 +48,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="starting-tutorial-part-1">
+  <section class="tex2jax_ignore mathjax_ignore" id="starting-tutorial-part-1">
 <h1>Starting Tutorial (Part 1)<a class="headerlink" href="#starting-tutorial-part-1" title="Permalink to this headline">¶</a></h1>
 <aside class="sidebar">
 <p class="sidebar-title">Tutorial Parts</p>
@@ -71,18 +73,18 @@ and share with others!</p>
 <h2>Lessons of Part 1 - “What we have”<a class="headerlink" href="#lessons-of-part-1-what-we-have" title="Permalink to this headline">¶</a></h2>
 <ol class="simple">
 <li><p>Introduction (you are here)</p></li>
-<li><p><a class="reference internal" href="Building-Quickstart.html"><span class="doc">Building stuff</span></a></p></li>
-<li><p><a class="reference internal" href="Tutorial-World-Introduction.html"><span class="doc">The Tutorial World</span></a></p></li>
-<li><p><a class="reference internal" href="Python-basic-introduction.html"><span class="doc">Python basics</span></a></p></li>
-<li><p><a class="reference internal" href="Gamedir-Overview.html"><span class="doc">Game dir overview</span></a></p></li>
-<li><p><a class="reference internal" href="Python-classes-and-objects.html"><span class="doc">Python classes and objects</span></a></p></li>
-<li><p><a class="reference internal" href="Evennia-Library-Overview.html"><span class="doc">Accessing the Evennia library</span></a></p></li>
-<li><p><a class="reference internal" href="Learning-Typeclasses.html"><span class="doc">Typeclasses and Persistent objects</span></a></p></li>
-<li><p><a class="reference internal" href="Adding-Commands.html"><span class="doc">Making first own Commands</span></a></p></li>
-<li><p><a class="reference internal" href="More-on-Commands.html"><span class="doc">Parsing and replacing default Commands</span></a></p></li>
-<li><p><a class="reference internal" href="Creating-Things.html"><span class="doc">Creating things</span></a></p></li>
-<li><p><a class="reference internal" href="Searching-Things.html"><span class="doc">Searching for things</span></a></p></li>
-<li><p><a class="reference internal" href="Django-queries.html"><span class="doc">Advanced searching with Django queries</span></a></p></li>
+<li><p><a class="reference internal" href="Building-Quickstart.html"><span class="doc std std-doc">Building stuff</span></a></p></li>
+<li><p><a class="reference internal" href="Tutorial-World-Introduction.html"><span class="doc std std-doc">The Tutorial World</span></a></p></li>
+<li><p><a class="reference internal" href="Python-basic-introduction.html"><span class="doc std std-doc">Python basics</span></a></p></li>
+<li><p><a class="reference internal" href="Gamedir-Overview.html"><span class="doc std std-doc">Game dir overview</span></a></p></li>
+<li><p><a class="reference internal" href="Python-classes-and-objects.html"><span class="doc std std-doc">Python classes and objects</span></a></p></li>
+<li><p><a class="reference internal" href="Evennia-Library-Overview.html"><span class="doc std std-doc">Accessing the Evennia library</span></a></p></li>
+<li><p><a class="reference internal" href="Learning-Typeclasses.html"><span class="doc std std-doc">Typeclasses and Persistent objects</span></a></p></li>
+<li><p><a class="reference internal" href="Adding-Commands.html"><span class="doc std std-doc">Making first own Commands</span></a></p></li>
+<li><p><a class="reference internal" href="More-on-Commands.html"><span class="doc std std-doc">Parsing and replacing default Commands</span></a></p></li>
+<li><p><a class="reference internal" href="Creating-Things.html"><span class="doc std std-doc">Creating things</span></a></p></li>
+<li><p><a class="reference internal" href="Searching-Things.html"><span class="doc std std-doc">Searching for things</span></a></p></li>
+<li><p><a class="reference internal" href="Django-queries.html"><span class="doc std std-doc">Advanced searching with Django queries</span></a></p></li>
 </ol>
 <p>In this first part we’ll focus on what we get out of the box in Evennia - we’ll get used to the tools,
 and how to find things we are looking for. We will also dive into some of things you’ll
@@ -106,7 +108,7 @@ to convert this to back-slashes <code class="docutils literal notranslate"><span
 </section>
 <section id="a-mud-client">
 <h3>A MUD client<a class="headerlink" href="#a-mud-client" title="Permalink to this headline">¶</a></h3>
-<p>You might already have a MUD-client you prefer. Check out the <a class="reference internal" href="../../../Setup/Client-Support-Grid.html"><span class="doc">grid of supported clients</span></a> for aid.
+<p>You might already have a MUD-client you prefer. Check out the <a class="reference internal" href="../../../Setup/Client-Support-Grid.html"><span class="doc std std-doc">grid of supported clients</span></a> for aid.
 If telnet’s not your thing, you can also just use Evennia’s web client in your browser.</p>
 <blockquote>
 <div><p>In this documentation we often use ‘MUD’ and ‘MU’ or ‘MU*’ interchangeably
@@ -131,13 +133,13 @@ Python is whitespace-aware, this will make your life a lot easier.</p>
 </section>
 <section id="set-up-a-game-dir-for-the-tutorial">
 <h3>Set up a game dir for the tutorial<a class="headerlink" href="#set-up-a-game-dir-for-the-tutorial" title="Permalink to this headline">¶</a></h3>
-<p>Next you should make sure you have <a class="reference internal" href="../../../Setup/Setup-Quickstart.html"><span class="doc">installed Evennia</span></a>. If you followed the instructions
+<p>Next you should make sure you have <a class="reference internal" href="../../../Setup/Setup-Quickstart.html"><span class="doc std std-doc">installed Evennia</span></a>. If you followed the instructions
 you will already have created a game-dir. You could use that for this tutorial or you may want to do the
 tutorial in its own, isolated game dir; it’s up to you.</p>
 <ul>
 <li><p>If you want a new gamedir for the tutorial game and already have Evennia running with another gamedir,
 first enter that gamedir and run</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">evennia</span> <span class="n">stop</span> 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  evennia stop
 </pre></div>
 </div>
 </li>
@@ -149,10 +151,10 @@ different ports from the defaults, or there’d be a clash. We will go into chan
 <ul>
 <li><p>Now go to where you want to create your tutorial-game. We will always refer to it as <code class="docutils literal notranslate"><span class="pre">mygame</span></code> so
 it may be convenient if you do too:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">evennia</span> <span class="o">--</span><span class="n">init</span> <span class="n">mygame</span>
- <span class="n">cd</span> <span class="n">mygame</span> 
- <span class="n">evennia</span> <span class="n">migrate</span> 
- <span class="n">evennia</span> <span class="n">start</span> <span class="o">--</span><span class="n">log</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia --init mygame
+ cd mygame
+ evennia migrate
+ evennia start --log
 </pre></div>
 </div>
 <p>Add your superuser name and password at the prompt (email is optional). Make sure you can
@@ -161,7 +163,7 @@ in your web browser (Mac users: Try <code class="docutils literal notranslate"><
 <p>The above <code class="docutils literal notranslate"><span class="pre">--log</span></code> flag will have Evennia output all its logs to the terminal. This will block
 the terminal from other input. To leave the log-view, press <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> (<code class="docutils literal notranslate"><span class="pre">Cmd-C</span></code> on Mac). To see
 the log again just run</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">evennia</span> <span class="o">--</span><span class="n">log</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia --log
 </pre></div>
 </div>
 </li>
@@ -234,7 +236,7 @@ the log again just run</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Starting-Part1.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

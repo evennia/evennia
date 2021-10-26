@@ -10,7 +10,7 @@ depending on when a given language was last updated. Below are all languages
 (besides English) with some level of support. Generally, any language not
 updated after May 2021 will be missing some translations.
 
-```eval_rst
+```{eval-rst}
 
 +---------------+----------------------+--------------+
 | Language Code | Language             | Last updated |
@@ -56,7 +56,7 @@ Here `'en'` (the default English) should be changed to the abbreviation for one
 of the supported languages found in `locale/` (and in the list above). Restart
 the server to activate i18n.
 
-```important::
+```{important}
 
     Even for a 'fully translated' language you will still see English text
     in many places when you start Evennia. This is because we expect you (the
@@ -67,7 +67,7 @@ the server to activate i18n.
 
 ```
 
-```sidebar:: Windows users
+```{sidebar} Windows users
 
     If you get errors concerning `gettext` or `xgettext` on Windows,
     see the `Django documentation <https://docs.djangoproject.com/en/3.2/topics/i18n/translation/#gettext-on-windows>`_
@@ -88,7 +88,7 @@ translation bad ... You are welcome to help improve the situation!
 
 To start a new translation you need to first have cloned the Evennia repositry
 with GIT and activated a python virtualenv as described on the
-[Setup Quickstart](../Setup/Setup-Quickstart) page.
+[Setup Quickstart](../Setup/Setup-Quickstart.md) page.
 
 Go to `evennia/evennia/` - that is, not your game dir, but inside the `evennia/`
 repo itself. If you see the `locale/` folder you are in the right place.  Make

@@ -64,7 +64,7 @@ regular code editor, see below).
 Evennia collects help entries from three sources:
 
 - _Auto-generated command help_ - this is literally the doc-strings of
-  the [Command classes](./Commands). The idea is that the command docs are
+  the [Command classes](./Commands.md). The idea is that the command docs are
   easier to maintain and keep up-to-date if the developer can change them at the
   same time as they do the code.
 - _Database-stored help entries_ - These are created in-game (using the
@@ -93,14 +93,14 @@ All help entries (no matter the source) have the following properties:
   extra space at beginning and end.
 
 A `text` that scrolls off the screen will automatically be paginated by
-the [EvMore](./EvMore) pager (you can control this with
+the [EvMore](./EvMore.md) pager (you can control this with
 `settings.HELP_MORE_ENABLED=False`). If you use EvMore and want to control
 exactly where the pager should break the page, mark the break with the control
 character `\f`.
 
 #### Subtopics
 
-```versionadded:: 1.0
+```{versionadded} 1.0
 ```
 
 Rather than making a very long help entry, the `text` may also be broken up
@@ -199,7 +199,7 @@ The text at the very top of the command class definition is the class'
 consistent format - all default commands are using the structure shown above.
 
 You can limit access to the help entry by the `view` and/or `read` locks on the
-Command. See [the section below](#Locking-help-entries) for details.
+Command. See [the section below](./Help-System.md#locking-help-entries) for details.
 
 You should also supply the `help_category` class property if you can; this helps
 to group help entries together for people to more easily find them. See the
@@ -209,7 +209,7 @@ used.
 
 If you don't want your command to be picked up by the auto-help system at all
 (like if you want to write its docs manually using the info in the next section
-or you use a [cmdset](./Command-Sets) that has its own help functionality) you
+or you use a [cmdset](./Command-Sets.md) that has its own help functionality) you
 can explicitly set `auto_help` class property to `False` in your command
 definition.
 
@@ -233,8 +233,8 @@ entry = create_help_entry("emote",
                 category="Roleplaying", locks="view:all()")
 ```
 
-The entity being created is a [evennia.help.models.HelpEntry](api:evennia.help.models.HelpEntry)
-object. This is _not_ a [Typeclassed](./Typeclasses) entity and is not meant to
+The entity being created is a [evennia.help.models.HelpEntry](evennia.help.models.HelpEntry)
+object. This is _not_ a [Typeclassed](./Typeclasses.md) entity and is not meant to
 be modified to any great degree. It holds the properties listed earlier. The
 text is stored in a field `entrytext`. It does not provide a `get_help` method
 like commands, stores and returns the `entrytext` directly.
@@ -244,7 +244,7 @@ this will not return the two other types of help entries.
 
 ### File-help entries
 
-```versionadded:: 1.0
+```{versionadded} 1.0
 ```
 
 File-help entries are created by the game development team outside of the game. The
@@ -369,7 +369,7 @@ help_entry = {
 
 ```
 
-```versionchanged:: 1.0
+```{versionchanged} 1.0
    Changed the old 'view' lock to control the help-index inclusion and added
    the new 'read' lock-type to control access to the entry itself.
 ```
@@ -377,7 +377,7 @@ help_entry = {
 ## Customizing the look of the help system
 
 This is done almost exclusively by overriding the `help` command
-[evennia.commands.default.help.CmdHelp](api:evennia.commands.default.help#CmdHelp).
+[evennia.commands.default.help.CmdHelp](evennia.commands.default.help.CmdHelp).
 
 Since the available commands may vary from moment to moment, `help` is
 responsible for collating the three sources of help-entries (commands/db/file)
@@ -401,7 +401,7 @@ Once the main entry has been found, subtopics are then searched with
 simple `==`, `startswith` and `in` matching (there are so relatively few of them
 at that point).
 
-```versionchanged:: 1.0
+```{versionchanged} 1.0
   Replaced the old bag-of-words algorithm with lunr package.
 
 ```

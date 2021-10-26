@@ -24,7 +24,7 @@ needed.
 
 ## Pictures
 
-Here are some screenshots of the simple app we will be making. 
+Here are some screenshots of the simple app we will be making.
 
 Index page, with no character application yet done:
 
@@ -82,7 +82,7 @@ and *templates* (how the web page should be structured).
 
 Models are created in `mygame/web/chargen/models.py`.
 
-A [Django database model](../Concepts/New-Models) is a Python class that describes the database storage of the
+A [Django database model](../Concepts/New-Models.md) is a Python class that describes the database storage of the
 data you want to manage. Any data you choose to store is stored in the same database as the game and
 you have access to all the game's objects here.
 
@@ -101,7 +101,7 @@ AccountID from the AccountDB object.
 > Note: In a full-fledged game, you’d likely want them to be able to select races, skills,
 attributes and so on.
 
-Our `models.py` file should look something like this: 
+Our `models.py` file should look something like this:
 
 ```python
 # in mygame/web/chargen/models.py
@@ -139,13 +139,13 @@ specific web page. We will use three views and three pages here:
 `http://yoursite.com/chargen`.
 * The detail display sheet (manages `detail.html`). A page that passively displays the stats of a
 given Character.
-* Character creation sheet (manages `create.html`). This is the main form with fields to fill in. 
+* Character creation sheet (manages `create.html`). This is the main form with fields to fill in.
 
 ### *Index* view
 
 Let’s get started with the index first.
 
-We’ll want characters to be able to see their created characters so let’s 
+We’ll want characters to be able to see their created characters so let’s
 
 ```python
 # file mygame/web/chargen.views.py
@@ -182,7 +182,7 @@ def detail(request, app_id):
     background = app.background
     submitted = app.submitted
     p_id = request.user.id
-    context = {'name': name, 'background': background, 
+    context = {'name': name, 'background': background,
         'p_id': p_id, 'submitted': submitted}
     return render(request, 'chargen/detail.html', context)
 ```
@@ -206,7 +206,7 @@ class AppForm(forms.Form):
     background = forms.CharField(label='Background')
 ```
 
-Now we make use of this form in our view. 
+Now we make use of this form in our view.
 
 ```python
 # file mygame/web/chargen/views.py
@@ -230,8 +230,8 @@ def creating(request):
             submitted = True
             if 'save' in request.POST:
                 submitted = False
-            app = CharApp(char_name=name, background=background, 
-            date_applied=applied_date, account_id=user.id, 
+            app = CharApp(char_name=name, background=background,
+            date_applied=applied_date, account_id=user.id,
             submitted=submitted)
             app.save()
             if submitted:
@@ -239,9 +239,9 @@ def creating(request):
                 typeclass = settings.BASE_CHARACTER_TYPECLASS
                 home = ObjectDB.objects.get_id(settings.GUEST_HOME)
                 # turn the permissionhandler to a string
-                perms = str(user.permissions)  
+                perms = str(user.permissions)
                 # create the character
-                char = create.create_object(typeclass=typeclass, key=name, 
+                char = create.create_object(typeclass=typeclass, key=name,
                     home=home, permissions=perms)
                 user.db._playable_characters.append(char)
                 # add the right locks for the character so the account can
@@ -266,9 +266,9 @@ create_object function to properly process the permissions.
 
 Most importantly, the following attributes must be set on the created character object:
 
-* Evennia [permissions](../Components/Locks#permissions) (copied from the `AccountDB`).
-* The right `puppet` [locks](../Components/Locks) so the Account can actually play as this Character later.
-* The relevant Character [typeclass](../Components/Typeclasses)
+* Evennia [permissions](../Components/Permissions.md) (copied from the `AccountDB`).
+* The right `puppet` [locks](../Components/Locks.md) so the Account can actually play as this Character later.
+* The relevant Character [typeclass](../Components/Typeclasses.md)
 * Character name (key)
 * The Character's home room location (`#2` by default)
 
@@ -281,7 +281,7 @@ After all of this, our `views.py` file should look like something like this:
 
 ```python
 # file mygame/web/chargen/views.py
-   
+
 from django.shortcuts import render
 from web.chargen.models import CharApp
 from web.chargen.forms import AppForm
@@ -305,7 +305,7 @@ def detail(request, app_id):
     background = app.background
     submitted = app.submitted
     p_id = request.user.id
-    context = {'name': name, 'background': background, 
+    context = {'name': name, 'background': background,
         'p_id': p_id, 'submitted': submitted}
     return render(request, 'chargen/detail.html', context)
 
@@ -320,8 +320,8 @@ def creating(request):
             submitted = True
             if 'save' in request.POST:
                 submitted = False
-            app = CharApp(char_name=name, background=background, 
-            date_applied=applied_date, account_id=user.id, 
+            app = CharApp(char_name=name, background=background,
+            date_applied=applied_date, account_id=user.id,
             submitted=submitted)
             app.save()
             if submitted:
@@ -329,9 +329,9 @@ def creating(request):
                 typeclass = settings.BASE_CHARACTER_TYPECLASS
                 home = ObjectDB.objects.get_id(settings.GUEST_HOME)
                 # turn the permissionhandler to a string
-                perms = str(user.permissions)  
+                perms = str(user.permissions)
                 # create the character
-                char = create.create_object(typeclass=typeclass, key=name, 
+                char = create.create_object(typeclass=typeclass, key=name,
                     home=home, permissions=perms)
                 user.db._playable_characters.append(char)
                 # add the right locks for the character so the account can
@@ -507,7 +507,7 @@ up on documentation elsewhere on the web for GET vs. POST.
 {% endblock %}
 ```
 
-### Templates - Checkpoint: 
+### Templates - Checkpoint:
 
 * Create a `index.html`, `detail.html` and `create.html` template in your
 `mygame/web/chargen/templates/chargen` directory

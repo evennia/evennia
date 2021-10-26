@@ -13,6 +13,8 @@
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -62,6 +64,9 @@
     <span class="s2">&quot;CmdUnconnectedQuit&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CmdUnconnectedLook&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CmdUnconnectedHelp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdUnconnectedEncoding&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdUnconnectedInfo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdUnconnectedScreenreader&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">MULTISESSION_MODE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MULTISESSION_MODE</span>
@@ -362,7 +367,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">CmdUnconnectedEncoding</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnconnectedEncoding"><a class="viewcode-back" href="../../../../api/evennia.commands.default.unloggedin.html#evennia.commands.default.unloggedin.CmdUnconnectedEncoding">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedEncoding</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    set which text encoding to use in unconnected-in state</span>
 
@@ -389,7 +394,7 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;encode&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnconnectedEncoding.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.unloggedin.html#evennia.commands.default.unloggedin.CmdUnconnectedEncoding.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the encoding.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -443,10 +448,10 @@
                 <span class="n">sync</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">sync</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">session_portal_sync</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">CmdUnconnectedScreenreader</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnconnectedScreenreader"><a class="viewcode-back" href="../../../../api/evennia.commands.default.unloggedin.html#evennia.commands.default.unloggedin.CmdUnconnectedScreenreader">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedScreenreader</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Activate screenreader mode.</span>
 
@@ -459,16 +464,16 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;screenreader&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnconnectedScreenreader.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.unloggedin.html#evennia.commands.default.unloggedin.CmdUnconnectedScreenreader.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Flips screenreader setting.&quot;&quot;&quot;</span>
         <span class="n">new_setting</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SCREENREADER&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;SCREENREADER&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_setting</span>
         <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Screenreader mode turned |w</span><span class="si">%s</span><span class="s2">|n.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;on&quot;</span> <span class="k">if</span> <span class="n">new_setting</span> <span class="k">else</span> <span class="s2">&quot;off&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">session_portal_sync</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">session_portal_sync</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">CmdUnconnectedInfo</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnconnectedInfo"><a class="viewcode-back" href="../../../../api/evennia.commands.default.unloggedin.html#evennia.commands.default.unloggedin.CmdUnconnectedInfo">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedInfo</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provides MUDINFO output, so that Evennia games can be added to Mudconnector</span>
 <span class="sd">    and Mudstats.  Sadly, the MUDINFO specification seems to have dropped off the</span>
@@ -480,7 +485,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnconnectedInfo.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.unloggedin.html#evennia.commands.default.unloggedin.CmdUnconnectedInfo.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
             <span class="s2">&quot;## BEGIN INFO 1.1</span><span class="se">\n</span><span class="s2">Name: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">Uptime: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">Connected: </span><span class="si">%d</span><span class="se">\n</span><span class="s2">Version: Evennia </span><span class="si">%s</span><span class="se">\n</span><span class="s2">## END INFO&quot;</span>
             <span class="o">%</span> <span class="p">(</span>
@@ -489,7 +494,7 @@
                 <span class="n">SESSIONS</span><span class="o">.</span><span class="n">account_count</span><span class="p">(),</span>
                 <span class="n">utils</span><span class="o">.</span><span class="n">get_evennia_version</span><span class="p">(),</span>
             <span class="p">)</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div></div>
 
 
 <span class="k">def</span> <span class="nf">_create_account</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">accountname</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">permissions</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -585,7 +590,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="unloggedin.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../../../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

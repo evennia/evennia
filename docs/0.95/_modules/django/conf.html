@@ -1,0 +1,377 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>django.conf &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.conf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for django.conf</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Settings and configuration for Django.</span>
+
+<span class="sd">Read values from the module specified by the DJANGO_SETTINGS_MODULE environment</span>
+<span class="sd">variable, and then from django.conf.global_settings; see the global_settings.py</span>
+<span class="sd">for a list of all possible variables.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">django</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">global_settings</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ImproperlyConfigured</span>
+<span class="kn">from</span> <span class="nn">django.utils.deprecation</span> <span class="kn">import</span> <span class="n">RemovedInDjango40Warning</span>
+<span class="kn">from</span> <span class="nn">django.utils.functional</span> <span class="kn">import</span> <span class="n">LazyObject</span><span class="p">,</span> <span class="n">empty</span>
+
+<span class="n">ENVIRONMENT_VARIABLE</span> <span class="o">=</span> <span class="s2">&quot;DJANGO_SETTINGS_MODULE&quot;</span>
+
+<span class="n">PASSWORD_RESET_TIMEOUT_DAYS_DEPRECATED_MSG</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;The PASSWORD_RESET_TIMEOUT_DAYS setting is deprecated. Use &#39;</span>
+    <span class="s1">&#39;PASSWORD_RESET_TIMEOUT instead.&#39;</span>
+<span class="p">)</span>
+
+<span class="n">DEFAULT_HASHING_ALGORITHM_DEPRECATED_MSG</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;The DEFAULT_HASHING_ALGORITHM transitional setting is deprecated. &#39;</span>
+    <span class="s1">&#39;Support for it and tokens, cookies, sessions, and signatures that use &#39;</span>
+    <span class="s1">&#39;SHA-1 hashing algorithm will be removed in Django 4.0.&#39;</span>
+<span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">SettingsReference</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    String subclass which references a current settings value. It&#39;s treated as</span>
+<span class="sd">    the value in memory but serializes to a settings.NAME attribute reference.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">setting_name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">setting_name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setting_name</span> <span class="o">=</span> <span class="n">setting_name</span>
+
+
+<span class="k">class</span> <span class="nc">LazySettings</span><span class="p">(</span><span class="n">LazyObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A lazy proxy for either global Django settings or a custom settings object.</span>
+<span class="sd">    The user can manually configure settings prior to using them. Otherwise,</span>
+<span class="sd">    Django uses the settings module pointed to by DJANGO_SETTINGS_MODULE.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load the settings module pointed to by the environment variable. This</span>
+<span class="sd">        is used the first time settings are needed, if the user hasn&#39;t</span>
+<span class="sd">        configured settings manually.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">settings_module</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ENVIRONMENT_VARIABLE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">settings_module</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;setting </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">name</span> <span class="k">else</span> <span class="s2">&quot;settings&quot;</span>
+            <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span>
+                <span class="s2">&quot;Requested </span><span class="si">%s</span><span class="s2">, but settings are not configured. &quot;</span>
+                <span class="s2">&quot;You must either define the environment variable </span><span class="si">%s</span><span class="s2"> &quot;</span>
+                <span class="s2">&quot;or call settings.configure() before accessing settings.&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="n">ENVIRONMENT_VARIABLE</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">(</span><span class="n">settings_module</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Hardcode the class name as otherwise it yields &#39;Settings&#39;.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="ow">is</span> <span class="n">empty</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;&lt;LazySettings [Unevaluated]&gt;&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;LazySettings &quot;</span><span class="si">%(settings_module)s</span><span class="s1">&quot;&gt;&#39;</span> <span class="o">%</span> <span class="p">{</span>
+            <span class="s1">&#39;settings_module&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="o">.</span><span class="n">SETTINGS_MODULE</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the value of a setting and cache it in self.__dict__.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="ow">is</span> <span class="n">empty</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># Special case some settings which require further modification.</span>
+        <span class="c1"># This is done here for performance reasons so the modified value is cached.</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;MEDIA_URL&#39;</span><span class="p">,</span> <span class="s1">&#39;STATIC_URL&#39;</span><span class="p">}</span> <span class="ow">and</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_script_prefix</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;SECRET_KEY&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">val</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span><span class="s2">&quot;The SECRET_KEY setting must not be empty.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the value of setting. Clear all cached values if _wrapped changes</span>
+<span class="sd">        (@override_settings does this) or clear single values when set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;_wrapped&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delete a setting and clear it from cache if needed.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__delattr__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_settings</span><span class="o">=</span><span class="n">global_settings</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called to manually configure the settings. The &#39;default_settings&#39;</span>
+<span class="sd">        parameter sets where to retrieve any unspecified values from (its</span>
+<span class="sd">        argument must support attribute access (__getattr__)).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">empty</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Settings already configured.&#39;</span><span class="p">)</span>
+        <span class="n">holder</span> <span class="o">=</span> <span class="n">UserSettingsHolder</span><span class="p">(</span><span class="n">default_settings</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Setting </span><span class="si">%r</span><span class="s1"> must be uppercase.&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">holder</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="o">=</span> <span class="n">holder</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_add_script_prefix</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add SCRIPT_NAME prefix to relative paths.</span>
+
+<span class="sd">        Useful when the app is being served at a subpath and manually prefixing</span>
+<span class="sd">        subpath to STATIC_URL and MEDIA_URL in settings is inconvenient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Don&#39;t apply prefix to absolute paths and URLs.</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s1">&#39;http://&#39;</span><span class="p">,</span> <span class="s1">&#39;https://&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">get_script_prefix</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">get_script_prefix</span><span class="p">(),</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">configured</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return True if the settings have already been configured.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">empty</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">PASSWORD_RESET_TIMEOUT_DAYS</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">extract_stack</span><span class="p">()</span>
+        <span class="c1"># Show a warning if the setting is used outside of Django.</span>
+        <span class="c1"># Stack index: -1 this line, -2 the caller.</span>
+        <span class="n">filename</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">django</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="n">PASSWORD_RESET_TIMEOUT_DAYS_DEPRECATED_MSG</span><span class="p">,</span>
+                <span class="n">RemovedInDjango40Warning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="s1">&#39;PASSWORD_RESET_TIMEOUT_DAYS&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Settings</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings_module</span><span class="p">):</span>
+        <span class="c1"># update this dict from global settings (but only for ALL_CAPS settings)</span>
+        <span class="k">for</span> <span class="n">setting</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">global_settings</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">setting</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setting</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">global_settings</span><span class="p">,</span> <span class="n">setting</span><span class="p">))</span>
+
+        <span class="c1"># store the settings module in case someone later cares</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SETTINGS_MODULE</span> <span class="o">=</span> <span class="n">settings_module</span>
+
+        <span class="n">mod</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SETTINGS_MODULE</span><span class="p">)</span>
+
+        <span class="n">tuple_settings</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;INSTALLED_APPS&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TEMPLATE_DIRS&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;LOCALE_PATHS&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_explicit_settings</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">setting</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">mod</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">setting</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
+                <span class="n">setting_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">setting</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">setting</span> <span class="ow">in</span> <span class="n">tuple_settings</span> <span class="ow">and</span>
+                        <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">setting_value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))):</span>
+                    <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span><span class="s2">&quot;The </span><span class="si">%s</span><span class="s2"> setting must be a list or a tuple. &quot;</span> <span class="o">%</span> <span class="n">setting</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setting</span><span class="p">,</span> <span class="n">setting_value</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_explicit_settings</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">setting</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s1">&#39;PASSWORD_RESET_TIMEOUT_DAYS&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s1">&#39;PASSWORD_RESET_TIMEOUT&#39;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span>
+                    <span class="s1">&#39;PASSWORD_RESET_TIMEOUT_DAYS/PASSWORD_RESET_TIMEOUT are &#39;</span>
+                    <span class="s1">&#39;mutually exclusive.&#39;</span>
+                <span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;PASSWORD_RESET_TIMEOUT&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PASSWORD_RESET_TIMEOUT_DAYS</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">PASSWORD_RESET_TIMEOUT_DAYS_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango40Warning</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s1">&#39;DEFAULT_HASHING_ALGORITHM&#39;</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">DEFAULT_HASHING_ALGORITHM_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango40Warning</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="s1">&#39;tzset&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">TIME_ZONE</span><span class="p">:</span>
+            <span class="c1"># When we can, attempt to validate the timezone. If we can&#39;t find</span>
+            <span class="c1"># this file, no check happens and it&#39;s harmless.</span>
+            <span class="n">zoneinfo_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;/usr/share/zoneinfo&#39;</span><span class="p">)</span>
+            <span class="n">zone_info_file</span> <span class="o">=</span> <span class="n">zoneinfo_root</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">TIME_ZONE</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">zoneinfo_root</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">zone_info_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Incorrect timezone setting: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TIME_ZONE</span><span class="p">)</span>
+            <span class="c1"># Move the time zone info into os.environ. See ticket #2315 for why</span>
+            <span class="c1"># we don&#39;t do this unconditionally (breaks Windows).</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;TZ&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TIME_ZONE</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">tzset</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">is_overridden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setting</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">setting</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_explicit_settings</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;</span><span class="si">%(cls)s</span><span class="s1"> &quot;</span><span class="si">%(settings_module)s</span><span class="s1">&quot;&gt;&#39;</span> <span class="o">%</span> <span class="p">{</span>
+            <span class="s1">&#39;cls&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+            <span class="s1">&#39;settings_module&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">SETTINGS_MODULE</span><span class="p">,</span>
+        <span class="p">}</span>
+
+
+<span class="k">class</span> <span class="nc">UserSettingsHolder</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Holder for user configured settings.&quot;&quot;&quot;</span>
+    <span class="c1"># SETTINGS_MODULE doesn&#39;t make much sense in the manually configured</span>
+    <span class="c1"># (standalone) case.</span>
+    <span class="n">SETTINGS_MODULE</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_settings</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Requests for configuration variables not in this class are satisfied</span>
+<span class="sd">        from the module specified in default_settings (if possible).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s1">&#39;_deleted&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_settings</span> <span class="o">=</span> <span class="n">default_settings</span>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span> <span class="ow">or</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deleted</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_settings</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_deleted</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;PASSWORD_RESET_TIMEOUT_DAYS&#39;</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;PASSWORD_RESET_TIMEOUT&#39;</span><span class="p">,</span> <span class="n">value</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">PASSWORD_RESET_TIMEOUT_DAYS_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango40Warning</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;DEFAULT_HASHING_ALGORITHM&#39;</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">DEFAULT_HASHING_ALGORITHM_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango40Warning</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_deleted</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__delattr__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">[</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span> <span class="o">*</span><span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_settings</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deleted</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">is_overridden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setting</span><span class="p">):</span>
+        <span class="n">deleted</span> <span class="o">=</span> <span class="p">(</span><span class="n">setting</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deleted</span><span class="p">)</span>
+        <span class="n">set_locally</span> <span class="o">=</span> <span class="p">(</span><span class="n">setting</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+        <span class="n">set_on_default</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_settings</span><span class="p">,</span> <span class="s1">&#39;is_overridden&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="kc">False</span><span class="p">)(</span><span class="n">setting</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">deleted</span> <span class="ow">or</span> <span class="n">set_locally</span> <span class="ow">or</span> <span class="n">set_on_default</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;</span><span class="si">%(cls)s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">{</span>
+            <span class="s1">&#39;cls&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+        <span class="p">}</span>
+
+
+<span class="n">settings</span> <span class="o">=</span> <span class="n">LazySettings</span><span class="p">()</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="conf.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.conf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

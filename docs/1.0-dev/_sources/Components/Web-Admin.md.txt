@@ -29,7 +29,7 @@ objects are actually stored as a `tuple` with object-unique data.
    you'll find the field _Serialized string_. This string shows a Python tuple like
 
        ('__packed_dbobj__', ('objects', 'objectdb'), '2021:05:15-08:59:30:624660', 358)
-   
+
    Mark and copy this tuple-string to your clipboard exactly as it stands (parentheses and all).
 2. Go to the entity that should have the new Attribute and create the Attribute. In its `value`
    field, paste the tuple-string you copied before. Save!
@@ -86,21 +86,21 @@ Only Superusers can change the `Superuser status` flag, and grant new
 permissions to accounts. The superuser is the only permission level that is
 also relevant in-game. `User Permissions` and `Groups` found on the `Account`
 admin page _only_ affects the admin - they have no connection to the in-game
-[Permissions](./Permissions) (Player, Builder, Admin etc).
+[Permissions](./Permissions.md) (Player, Builder, Admin etc).
 
 For a staffer with `Staff status` to be able to actually do anything, the
 superuser must grant at least some permissions for them on their Account. This
 can also be good in order to limit mistakes. It can be a good idea to not allow
 the `Can delete Account` permission, for example.
 
-```important::
+```{important}
 
   If you grant staff-status and permissions to an Account and they still cannot
   access the admin's content, try reloading the server.
 
 ```
 
-```warning::
+```{warning}
 
     If a staff member has access to the in-game ``py`` command, they can just as
     well have their admin ``Superuser status`` set too. The reason is that ``py``
@@ -112,25 +112,25 @@ the `Can delete Account` permission, for example.
 
 ## Customizing the web admin
 
-Customizing the admin is a big topic and something beyond the scope of this 
+Customizing the admin is a big topic and something beyond the scope of this
 documentation. See the [official Django docs](https://docs.djangoproject.com/en/3.2/ref/contrib/admin/) for
-the details. This is just a brief summary. 
+the details. This is just a brief summary.
 
-See the [Website](./Website) page for an overview of the components going into 
+See the [Website](./Website.md) page for an overview of the components going into
 generating a web page. The Django admin uses the same principle except that
 Django provides a lot of tools to automate the admin-generation for us.
 
 Admin templates are found in `evennia/web/templates/admin/` but you'll find
 this is relatively empty. This is because most of the templates are just
 inherited directly from their original location in the Django package
-(`django/contrib/admin/templates/`). So if you wanted to override one you'd have 
+(`django/contrib/admin/templates/`). So if you wanted to override one you'd have
 to copy it from _there_ into your `mygame/templates/admin/` folder. Same is true
 for CSS files.
 
 The admin site's backend code (the views) is found in `evennia/web/admin/`. It
 is organized into `admin`-classes, like `ObjectAdmin`, `AccountAdmin` etc.
 These automatically use the underlying database models to generate useful views
-for us without us havint go code the forms etc ourselves. 
+for us without us havint go code the forms etc ourselves.
 
 The top level `AdminSite` (the admin configuration referenced in django docs)
 is found in `evennia/web/utils/adminsite.py`.
@@ -138,7 +138,7 @@ is found in `evennia/web/utils/adminsite.py`.
 
 ### Change the title of the admin
 
-By default the admin's title is `Evennia web admin`. To change this, add the 
+By default the admin's title is `Evennia web admin`. To change this, add the
 following to your `mygame/web/urls.py`:
 
 ```python

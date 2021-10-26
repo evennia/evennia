@@ -13,6 +13,8 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -49,7 +51,7 @@
 <span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">UserManager</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.managers</span> <span class="kn">import</span> <span class="n">TypedObjectManager</span><span class="p">,</span> <span class="n">TypeclassManager</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;AccountManager&quot;</span><span class="p">,)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;AccountManager&quot;</span><span class="p">,</span> <span class="s2">&quot;AccountDBManager&quot;</span><span class="p">)</span>
 
 
 <span class="c1">#</span>
@@ -57,7 +59,7 @@
 <span class="c1">#</span>
 
 
-<span class="k">class</span> <span class="nc">AccountDBManager</span><span class="p">(</span><span class="n">TypedObjectManager</span><span class="p">,</span> <span class="n">UserManager</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountDBManager"><a class="viewcode-back" href="../../../api/evennia.accounts.manager.html#evennia.accounts.accounts.AccountDBManager">[docs]</a><span class="k">class</span> <span class="nc">AccountDBManager</span><span class="p">(</span><span class="n">TypedObjectManager</span><span class="p">,</span> <span class="n">UserManager</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This AccountManager implements methods for searching</span>
 <span class="sd">    and manipulating Accounts directly from the database.</span>
@@ -82,7 +84,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">num_total_accounts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountDBManager.num_total_accounts"><a class="viewcode-back" href="../../../api/evennia.accounts.manager.html#evennia.accounts.accounts.AccountDBManager.num_total_accounts">[docs]</a>    <span class="k">def</span> <span class="nf">num_total_accounts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get total number of accounts.</span>
 
@@ -90,9 +92,9 @@
 <span class="sd">            count (int): The total number of registered accounts.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">get_connected_accounts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountDBManager.get_connected_accounts"><a class="viewcode-back" href="../../../api/evennia.accounts.manager.html#evennia.accounts.accounts.AccountDBManager.get_connected_accounts">[docs]</a>    <span class="k">def</span> <span class="nf">get_connected_accounts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all currently connected accounts.</span>
 
@@ -101,9 +103,9 @@
 <span class="sd">                connected sessions.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_is_connected</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_is_connected</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_recently_created_accounts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountDBManager.get_recently_created_accounts"><a class="viewcode-back" href="../../../api/evennia.accounts.manager.html#evennia.accounts.accounts.AccountDBManager.get_recently_created_accounts">[docs]</a>    <span class="k">def</span> <span class="nf">get_recently_created_accounts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get accounts recently created.</span>
 
@@ -117,9 +119,9 @@
         <span class="n">end_date</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="n">tdelta</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="p">)</span>
         <span class="n">start_date</span> <span class="o">=</span> <span class="n">end_date</span> <span class="o">-</span> <span class="n">tdelta</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">date_joined__range</span><span class="o">=</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">date_joined__range</span><span class="o">=</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">))</span></div>
 
-    <span class="k">def</span> <span class="nf">get_recently_connected_accounts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountDBManager.get_recently_connected_accounts"><a class="viewcode-back" href="../../../api/evennia.accounts.manager.html#evennia.accounts.accounts.AccountDBManager.get_recently_connected_accounts">[docs]</a>    <span class="k">def</span> <span class="nf">get_recently_connected_accounts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get accounts recently connected to the game.</span>
 
@@ -134,9 +136,9 @@
         <span class="n">end_date</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="n">tdelta</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="p">)</span>
         <span class="n">start_date</span> <span class="o">=</span> <span class="n">end_date</span> <span class="o">-</span> <span class="n">tdelta</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">last_login__range</span><span class="o">=</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">))</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-last_login&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">last_login__range</span><span class="o">=</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">))</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-last_login&quot;</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_account_from_email</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uemail</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountDBManager.get_account_from_email"><a class="viewcode-back" href="../../../api/evennia.accounts.manager.html#evennia.accounts.accounts.AccountDBManager.get_account_from_email">[docs]</a>    <span class="k">def</span> <span class="nf">get_account_from_email</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uemail</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Search account by</span>
 <span class="sd">        Returns an account object based on email address.</span>
@@ -148,9 +150,9 @@
 <span class="sd">            account (Account): A found account, if found.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">email__iexact</span><span class="o">=</span><span class="n">uemail</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">email__iexact</span><span class="o">=</span><span class="n">uemail</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_account_from_uid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uid</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountDBManager.get_account_from_uid"><a class="viewcode-back" href="../../../api/evennia.accounts.manager.html#evennia.accounts.accounts.AccountDBManager.get_account_from_uid">[docs]</a>    <span class="k">def</span> <span class="nf">get_account_from_uid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uid</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get an account by id.</span>
 
@@ -164,9 +166,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">uid</span><span class="p">)</span>
         <span class="k">except</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
 
-    <span class="k">def</span> <span class="nf">get_account_from_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uname</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountDBManager.get_account_from_name"><a class="viewcode-back" href="../../../api/evennia.accounts.manager.html#evennia.accounts.accounts.AccountDBManager.get_account_from_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_account_from_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uname</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get account object based on name.</span>
 
@@ -180,9 +182,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username__iexact</span><span class="o">=</span><span class="n">uname</span><span class="p">)</span>
         <span class="k">except</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
 
-    <span class="k">def</span> <span class="nf">search_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountDBManager.search_account"><a class="viewcode-back" href="../../../api/evennia.accounts.manager.html#evennia.accounts.accounts.AccountDBManager.search_account">[docs]</a>    <span class="k">def</span> <span class="nf">search_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Searches for a particular account by name or</span>
 <span class="sd">        database id.</span>
@@ -221,10 +223,10 @@
                 <span class="n">db_tags__db_tagtype__iexact</span><span class="o">=</span><span class="s2">&quot;alias&quot;</span><span class="p">,</span>
                 <span class="o">**</span><span class="p">{</span><span class="s2">&quot;db_tags__db_key__iexact&quot;</span> <span class="k">if</span> <span class="n">exact</span> <span class="k">else</span> <span class="s2">&quot;db_tags__db_key__icontains&quot;</span><span class="p">:</span> <span class="n">ostring</span><span class="p">},</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="n">matches</span>
+        <span class="k">return</span> <span class="n">matches</span></div>
 
     <span class="c1"># back-compatibility alias</span>
-    <span class="n">account_search</span> <span class="o">=</span> <span class="n">search_account</span>
+    <span class="n">account_search</span> <span class="o">=</span> <span class="n">search_account</span></div>
 
 
 <div class="viewcode-block" id="AccountManager"><a class="viewcode-back" href="../../../api/evennia.accounts.manager.html#evennia.accounts.accounts.AccountManager">[docs]</a><span class="k">class</span> <span class="nc">AccountManager</span><span class="p">(</span><span class="n">AccountDBManager</span><span class="p">,</span> <span class="n">TypeclassManager</span><span class="p">):</span>
@@ -263,7 +265,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="manager.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

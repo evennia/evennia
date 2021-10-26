@@ -14,10 +14,12 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Coding and development help" href="Coding/Coding-Overview.html" />
+    <link rel="next" title="Default Commands" href="Components/Default-Commands.html" />
     <link rel="prev" title="Core Concepts" href="Concepts/Concepts-Overview.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -30,7 +32,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Coding/Coding-Overview.html" title="Coding and development help"
+          <a href="Components/Default-Commands.html" title="Default Commands"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="Concepts/Concepts-Overview.html" title="Core Concepts"
@@ -46,23 +48,23 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="api-summary">
+  <section class="tex2jax_ignore mathjax_ignore" id="api-summary">
 <h1>API Summary<a class="headerlink" href="#api-summary" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="api/evennia.html">evennia</a> - library root</p>
+<p><a class="reference internal" href="api/evennia-api.html"><span class="doc std std-doc">evennia</span></a> - library source tree</p>
 <ul class="simple">
-<li><p><a class="reference external" href="api/evennia.accounts.html">evennia.accounts</a> - the out-of-character entities representing players</p></li>
-<li><p><a class="reference external" href="api/evennia.commands.html">evennia.commands</a> - handle all inputs. Also includes default commands</p></li>
-<li><p><a class="reference external" href="api/evennia.comms.html">evennia.comms</a> - in-game channels and messaging</p></li>
-<li><p><a class="reference external" href="api/evennia.contrib.html">evennia.contrib</a> - game-specific tools and code contributed by the community</p></li>
-<li><p><a class="reference external" href="api/evennia.help.html">evennia.help</a> - in-game help system</p></li>
-<li><p><a class="reference external" href="api/evennia.locks.html">evennia.locks</a> - limiting access to various systems and resources</p></li>
-<li><p><a class="reference external" href="api/evennia.objects.html">evennia.objects</a> - all in-game entities, like Rooms, Characters, Exits etc</p></li>
-<li><p><a class="reference external" href="api/evennia.prototypes.html">evennia.prototypes</a> - customize entities using dicts</p></li>
-<li><p><a class="reference external" href="api/evennia.scripts.html">evennia.scripts</a> - all out-of-character game objects</p></li>
-<li><p><a class="reference external" href="api/evennia.server.html">evennia.server</a> - core Server and Portal programs, also network protocols</p></li>
-<li><p><a class="reference external" href="api/evennia.typeclasses.html">evennia.typeclasses</a> - core database-python bridge</p></li>
-<li><p><a class="reference external" href="api/evennia.utils.html">evennia.utils</a> - lots of useful coding tools and utilities</p></li>
-<li><p><a class="reference external" href="api/evennia.web.html">evennia.web</a> - webclient, website and other web resources</p></li>
+<li><p><a class="reference internal" href="api/evennia.accounts.html#evennia-accounts"><span class="std std-ref">evennia.accounts</span></a> - the out-of-character entities representing players</p></li>
+<li><p><a class="reference internal" href="api/evennia.commands.html#evennia-commands"><span class="std std-ref">evennia.commands</span></a> - handle all inputs. Also includes default commands</p></li>
+<li><p><a class="reference internal" href="api/evennia.comms.html#evennia-comms"><span class="std std-ref">evennia.comms</span></a> - in-game channels and messaging</p></li>
+<li><p><a class="reference internal" href="api/evennia.contrib.html#evennia-contrib"><span class="std std-ref">evennia.contrib</span></a> - game-specific tools and code contributed by the community</p></li>
+<li><p><a class="reference internal" href="api/evennia.help.html#evennia-help"><span class="std std-ref">evennia.help</span></a> - in-game help system</p></li>
+<li><p><a class="reference internal" href="api/evennia.locks.html#evennia-locks"><span class="std std-ref">evennia.locks</span></a> - limiting access to various systems and resources</p></li>
+<li><p><a class="reference internal" href="api/evennia.objects.html#evennia-objects"><span class="std std-ref">evennia.objects</span></a> - all in-game entities, like Rooms, Characters, Exits etc</p></li>
+<li><p><a class="reference internal" href="api/evennia.prototypes.html#evennia-prototypes"><span class="std std-ref">evennia.prototypes</span></a> - customize entities using dicts</p></li>
+<li><p><a class="reference internal" href="api/evennia.scripts.html#evennia-scripts"><span class="std std-ref">evennia.scripts</span></a> - all out-of-character game objects</p></li>
+<li><p><a class="reference internal" href="api/evennia.server.html#evennia-server"><span class="std std-ref">evennia.server</span></a> - core Server and Portal programs, also network protocols</p></li>
+<li><p><a class="reference internal" href="api/evennia.typeclasses.html#evennia-typeclasses"><span class="std std-ref">evennia.typeclasses</span></a> - core database-python bridge</p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.html#evennia-utils"><span class="std std-ref">evennia.utils</span></a> - lots of useful coding tools and utilities</p></li>
+<li><p><a class="reference internal" href="api/evennia.web.html#evennia-web"><span class="std std-ref">evennia.web</span></a> - webclient, website and other web resources</p></li>
 </ul>
 <section id="shortcuts">
 <h2>Shortcuts<a class="headerlink" href="#shortcuts" title="Permalink to this headline">¶</a></h2>
@@ -77,82 +79,81 @@ The flat API is defined in <code class="docutils literal notranslate"><span clas
 <section id="search-functions">
 <h3>Search functions<a class="headerlink" href="#search-functions" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p><a class="reference external" href="api/evennia.utils.search.html#evennia.utils.search.search_account">evennia.search_account</a></p></li>
-<li><p><a class="reference external" href="api/evennia.utils.search.html#evennia.utils.search.search_object">evennia.search_object</a></p></li>
-<li><p><a class="reference external" href="api/evennia.utils.search.html#evennia.utils.search_object_by_tag">evennia.search_object_by_tag</a></p></li>
-<li><p><a class="reference external" href="api/evennia.utils.search.html#evennia.utils.search_script">evennia.search_script</a></p></li>
-<li><p><a class="reference external" href="api/evennia.utils.search.html#evennia.utils.search_channel">evennia.search_channel</a></p></li>
-<li><p><a class="reference external" href="api/evennia.utils.search.html#evennia.utils.search_message">evennia.search_message</a></p></li>
-<li><p><a class="reference external" href="api/evennia.utils.search.html#evennia.utils.search.search_help">evennia.search_help</a></p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.search.html#evennia.utils.search.search_account" title="evennia.utils.search.search_account"><span class="xref myst py py-func">evennia.search_account</span></a></p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.search.html#evennia.utils.search.search_object" title="evennia.utils.search.search_object"><span class="xref myst py py-func">evennia.search_object</span></a></p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.search.html#evennia.utils.search.search_tag" title="evennia.utils.search.search_tag"><span class="xref myst py py-func">evennia.search_tag</span></a></p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.search.html#evennia.utils.search.search_script" title="evennia.utils.search.search_script"><span class="xref myst py py-func">evennia.search_script</span></a></p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.search.html#evennia.utils.search.search_channel" title="evennia.utils.search.search_channel"><span class="xref myst py py-func">evennia.search_channel</span></a></p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.search.html#evennia.utils.search.search_message" title="evennia.utils.search.search_message"><span class="xref myst py py-func">evennia.search_message</span></a></p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.search.html#evennia.utils.search.search_help_entry" title="evennia.utils.search.search_help_entry"><span class="xref myst py py-func">evennia.search_help</span></a></p></li>
 </ul>
 </section>
 <section id="create-functions">
 <h3>Create functions<a class="headerlink" href="#create-functions" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p><a class="reference external" href="api/evennia.utils.create.html#evennia.utils.create.create_account">evennia.create_account</a></p></li>
-<li><p><a class="reference external" href="api/evennia.utils.create.html#evennia.utils.create.create_object">evennia.create_object</a></p></li>
-<li><p><a class="reference external" href="api/evennia.utils.create.html#evennia.utils.create.create_script">evennia.create_script</a></p></li>
-<li><p><a class="reference external" href="api/evennia.utils.create.html#evennia.utils.create.create_channel">evennia.create_channel</a></p></li>
-<li><p><a class="reference external" href="api/evennia.utils.create.html#evennia.utils.create.create_help_entry">evennia.create_help_entry</a></p></li>
-<li><p><a class="reference external" href="api/evennia.utils.create.html#evennia.utils.create.create_message">evennia.create_message</a></p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.create.html#evennia.utils.create.create_account" title="evennia.utils.create.create_account"><span class="xref myst py py-func">evennia.create_account</span></a></p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.create.html#evennia.utils.create.create_object" title="evennia.utils.create.create_object"><span class="xref myst py py-func">evennia.create_object</span></a></p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.create.html#evennia.utils.create.create_script" title="evennia.utils.create.create_script"><span class="xref myst py py-func">evennia.create_script</span></a></p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.create.html#evennia.utils.create.create_channel" title="evennia.utils.create.create_channel"><span class="xref myst py py-func">evennia.create_channel</span></a></p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.create.html#evennia.utils.create.create_help_entry" title="evennia.utils.create.create_help_entry"><span class="xref myst py py-func">evennia.create_help_entry</span></a></p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.create.html#evennia.utils.create.create_message" title="evennia.utils.create.create_message"><span class="xref myst py py-func">evennia.create_message</span></a></p></li>
 </ul>
 </section>
 <section id="typeclasses">
 <h3>Typeclasses<a class="headerlink" href="#typeclasses" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p><a class="reference external" href="api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount">evennia.Defaultaccount</a> - player account class (<a class="reference internal" href="Components/Accounts.html"><span class="doc">docs</span></a>)</p></li>
-<li><p><a class="reference external" href="api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultGuest">evennia.DefaultGuest</a> - base guest account class</p></li>
-<li><p><a class="reference external" href="api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject">evennia.DefaultObject</a> - base class for all objects (<a class="reference internal" href="Components/Objects.html"><span class="doc">docs</span></a>)</p></li>
-<li><p><a class="reference external" href="api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter">evennia.DefaultCharacter</a> - base class for in-game characters (<a class="reference external" href="Components/Objects.html#Character">docs</a>)</p></li>
-<li><p><a class="reference external" href="api/evennia.objects.objects.html#evennia.objects.objects.DefaultRoom">evennia.DefaultRoom</a> - base class for rooms (<a class="reference external" href="Components/Objects.html#Room">docs</a>)</p></li>
-<li><p><a class="reference external" href="api/evennia.objects.objects.html#evennia.objects.objects.DefaultExit">evennia.DefaultExit</a> - base class for exits (<a class="reference external" href="Components/Objects.html#Exit">docs</a>)</p></li>
-<li><p><a class="reference external" href="api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript">evennia.DefaultScript</a> - base class for OOC-objects (<a class="reference internal" href="Components/Scripts.html"><span class="doc">docs</span></a>)</p></li>
-<li><p><a class="reference external" href="api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel">evennia.DefaultChannel</a> - base class for in-game channels (<a class="reference internal" href="Components/Channels.html"><span class="doc">docs</span></a>)</p></li>
+<li><p><a class="reference internal" href="api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><span class="xref myst py py-class">evennia.Defaultaccount</span></a> - player account class (<a class="reference internal" href="Components/Accounts.html"><span class="doc std std-doc">docs</span></a>)</p></li>
+<li><p><a class="reference internal" href="api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultGuest" title="evennia.accounts.accounts.DefaultGuest"><span class="xref myst py py-class">evennia.DefaultGuest</span></a> - base guest account class</p></li>
+<li><p><a class="reference internal" href="api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><span class="xref myst py py-class">evennia.DefaultObject</span></a> - base class for all objects (<a class="reference internal" href="Components/Objects.html"><span class="doc std std-doc">docs</span></a>)</p></li>
+<li><p><a class="reference internal" href="api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><span class="xref myst py py-class">evennia.DefaultCharacter</span></a> - base class for in-game characters (<a class="reference internal" href="Components/Objects.html#characters"><span class="std std-doc">docs</span></a>)</p></li>
+<li><p><a class="reference internal" href="api/evennia.objects.objects.html#evennia.objects.objects.DefaultRoom" title="evennia.objects.objects.DefaultRoom"><span class="xref myst py py-class">evennia.DefaultRoom</span></a> - base class for rooms (<a class="reference internal" href="Components/Objects.html#rooms"><span class="std std-doc">docs</span></a>)</p></li>
+<li><p><a class="reference internal" href="api/evennia.objects.objects.html#evennia.objects.objects.DefaultExit" title="evennia.objects.objects.DefaultExit"><span class="xref myst py py-class">evennia.DefaultExit</span></a> - base class for exits (<a class="reference internal" href="Components/Objects.html#exits"><span class="std std-doc">docs</span></a>)</p></li>
+<li><p><a class="reference internal" href="api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><span class="xref myst py py-class">evennia.DefaultScript</span></a> - base class for OOC-objects (<a class="reference internal" href="Components/Scripts.html"><span class="doc std std-doc">docs</span></a>)</p></li>
+<li><p><a class="reference internal" href="api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel" title="evennia.comms.comms.DefaultChannel"><span class="xref myst py py-class">evennia.DefaultChannel</span></a> - base class for in-game channels (<a class="reference internal" href="Components/Channels.html"><span class="doc std std-doc">docs</span></a>)</p></li>
 </ul>
 </section>
 <section id="commands">
 <h3>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p><a class="reference external" href="api/evennia.commands.command.html#evennia.commands.command.Command">evennia.Command</a> - base <a class="reference internal" href="Components/Commands.html"><span class="doc">Command</span></a> class. See also <code class="docutils literal notranslate"><span class="pre">evennia.default_cmds.MuxCommand</span></code></p></li>
-<li><p><a class="reference external" href="api/evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet">evennia.CmdSet</a> - base <a class="reference internal" href="Components/Command-Sets.html"><span class="doc">Cmdset</span></a> class</p></li>
-<li><p><a class="reference external" href="api/Default-Command-Help.html">evennia.default_cmds</a> - access all default command classes as properties</p></li>
-<li><p><a class="reference external" href="api/Commands.html#System-Commands">evennia.syscmdkeys</a> - access system command keys as properties</p></li>
+<li><p><a class="reference internal" href="api/evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><span class="xref myst py py-class">evennia.Command</span></a> - base <a class="reference internal" href="Components/Commands.html"><span class="doc std std-doc">Command</span></a> class. See also <code class="docutils literal notranslate"><span class="pre">evennia.default_cmds.MuxCommand</span></code></p></li>
+<li><p><a class="reference internal" href="api/evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><span class="xref myst py py-class">evennia.CmdSet</span></a> - base <a class="reference internal" href="Components/Command-Sets.html"><span class="doc std std-doc">CmdSet</span></a> class</p></li>
+<li><p><a class="reference internal" href="Components/Default-Commands.html"><span class="doc std std-doc">evennia.default_cmds</span></a> - access all default command classes as properties</p></li>
+<li><p><a class="reference internal" href="Components/Commands.html#system-commands"><span class="std std-doc">evennia.syscmdkeys</span></a> - access system command keys as properties</p></li>
 </ul>
 </section>
 <section id="utilities">
 <h3>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p><a class="reference external" href="api/evennia.utils.utils.html">evennia.utils.utils</a> - mixed useful utilities</p></li>
-<li><p><a class="reference external" href="api/evennia.utils.gametime.html">evennia.gametime</a> - server run- and game time (<a class="reference external" href="Components/Coding-Utils.html#gametime">docs</a>)</p></li>
-<li><p><a class="reference external" href="api/evennia.utils.logger.html">evennia.logger</a> - logging tools</p></li>
-<li><p><a class="reference external" href="api/evennia.utils.ansi.html">evennia.ansi</a> - ansi coloring tools</p></li>
-<li><p><a class="reference external" href="api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.Spawn">evennia.spawn</a> - spawn/prototype system (<a class="reference internal" href="Components/Prototypes.html"><span class="doc">docs</span></a>)</p></li>
-<li><p><a class="reference external" href="api/evennia.locks.lockfuncs.html">evennia.lockfuncs</a> - default lock functions for access control (<a class="reference internal" href="Components/Locks.html"><span class="doc">docs</span></a>)</p></li>
-<li><p><a class="reference external" href="api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu">evennia.EvMenu</a> - menu system (<a class="reference internal" href="Components/EvMenu.html"><span class="doc">docs</span></a>)</p></li>
-<li><p><a class="reference external" href="api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable">evennia.EvTable</a> - text table creater</p></li>
-<li><p><a class="reference external" href="api/evennia.utils.evform.html#evennia.utils.evform.EvForm">evennia.EvForm</a> - text form creator</p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.utils.html#evennia-utils-utils"><span class="std std-ref">evennia.utils.utils</span></a> - mixed useful utilities</p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.gametime.html#evennia.utils.gametime.TimeScript" title="evennia.utils.gametime.TimeScript"><span class="xref myst py py-class">evennia.gametime</span></a> - server run- and game time (<a class="reference internal" href="Components/Coding-Utils.html#game-time"><span class="std std-doc">docs</span></a>)</p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.logger.html#evennia-utils-logger"><span class="std std-ref">evennia.logger</span></a> - logging tools</p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.ansi.html#evennia-utils-ansi"><span class="std std-ref">evennia.ansi</span></a> - ansi coloring tools</p></li>
+<li><p><a class="reference internal" href="api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.spawn" title="evennia.prototypes.spawner.spawn"><span class="xref myst py py-func">evennia.spawn</span></a> - spawn/prototype system (<a class="reference internal" href="Components/Prototypes.html"><span class="doc std std-doc">docs</span></a>)</p></li>
+<li><p><a class="reference internal" href="api/evennia.locks.lockfuncs.html#evennia-locks-lockfuncs"><span class="std std-ref">evennia.lockfuncs</span></a> - default lock functions for access control (<a class="reference internal" href="Components/Locks.html"><span class="doc std std-doc">docs</span></a>)</p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu" title="evennia.utils.evmenu.EvMenu"><span class="xref myst py py-class">evennia.EvMenu</span></a> - menu system (<a class="reference internal" href="Components/EvMenu.html"><span class="doc std std-doc">docs</span></a>)</p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable" title="evennia.utils.evtable.EvTable"><span class="xref myst py py-class">evennia.EvTable</span></a> - text table creater</p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.evform.html#evennia.utils.evform.EvForm" title="evennia.utils.evform.EvForm"><span class="xref myst py py-class">evennia.EvForm</span></a> - text form creator</p></li>
 <li><p>Evennia.EvMore - text paginator</p></li>
-<li><p><a class="reference external" href="api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor">evennia.EvEditor</a> - in game text line editor (<a class="reference internal" href="Components/EvEditor.html"><span class="doc">docs</span></a>)</p></li>
-<li><p><a class="reference external" href="api/evennia.utils.funcparser.html">evennia.utils.funcparser.Funcparser</a> - inline parsing of functions (<a class="reference internal" href="Components/FuncParser.html"><span class="doc">docs</span></a>)</p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor" title="evennia.utils.eveditor.EvEditor"><span class="xref myst py py-class">evennia.EvEditor</span></a> - in game text line editor (<a class="reference internal" href="Components/EvEditor.html"><span class="doc std std-doc">docs</span></a>)</p></li>
+<li><p><a class="reference internal" href="api/evennia.utils.funcparser.html#evennia.utils.funcparser.FuncParser" title="evennia.utils.funcparser.FuncParser"><span class="xref myst py py-class">evennia.utils.funcparser.Funcparser</span></a> - inline parsing of functions (<a class="reference internal" href="Components/FuncParser.html"><span class="doc std std-doc">docs</span></a>)</p></li>
 </ul>
 </section>
 <section id="global-singleton-handlers">
 <h3>Global singleton handlers<a class="headerlink" href="#global-singleton-handlers" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p><a class="reference external" href="api/evennia.scripts.tickerhandler.html">evennia.TICKER_HANDLER</a> - allow objects subscribe to tickers (<a class="reference internal" href="Components/TickerHandler.html"><span class="doc">docs</span></a>)</p></li>
-<li><p><a class="reference external" href="api/evennia.scripts.monitorhandler.html">evennia.MONITOR_HANDLER</a> - monitor changes (<a class="reference internal" href="Components/MonitorHandler.html"><span class="doc">docs</span></a>)</p></li>
-<li><p><a class="reference external" href="api/evennia.comms.channelhandler.html">evennia.CHANNEL_HANDLER</a> - maintains channels</p></li>
-<li><p><a class="reference external" href="api/evennia.server.serverhandler.html">evennia.SESSION_HANDLER</a> - manages all sessionsmain session handler</p></li>
+<li><p><a class="reference internal" href="api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler" title="evennia.scripts.tickerhandler.TickerHandler"><span class="xref myst py py-class">evennia.TICKER_HANDLER</span></a> - allow objects subscribe to tickers (<a class="reference internal" href="Components/TickerHandler.html"><span class="doc std std-doc">docs</span></a>)</p></li>
+<li><p><a class="reference internal" href="api/evennia.scripts.monitorhandler.html#evennia.scripts.monitorhandler.MonitorHandler" title="evennia.scripts.monitorhandler.MonitorHandler"><span class="xref myst py py-class">evennia.MONITOR_HANDLER</span></a> - monitor changes (<a class="reference internal" href="Components/MonitorHandler.html"><span class="doc std std-doc">docs</span></a>)</p></li>
+<li><p><a class="reference internal" href="api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.SessionHandler" title="evennia.server.sessionhandler.SessionHandler"><span class="xref myst py py-class">evennia.SESSION_HANDLER</span></a> - manages all sessionsmain session handler</p></li>
 </ul>
 </section>
 <section id="database-core-models-for-more-advanced-lookups">
 <h3>Database core models (for more advanced lookups)<a class="headerlink" href="#database-core-models-for-more-advanced-lookups" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p><a class="reference external" href="api/evennia.objects.models.html#evennia.objects.models.ObjectDB">evennia.ObjectDB</a></p></li>
-<li><p><a class="reference external" href="api/evennia.accounts.models.html#evennia.accounts.models.AccountDB">evennia.accountDB</a></p></li>
-<li><p><a class="reference external" href="api/evennia.scripts.models.html#evennia.scripts.models.ScriptDB">evennia.ScriptDB</a></p></li>
-<li><p><a class="reference external" href="api/evennia.channels.models.html#evennia.channels.models.ChannelDB">evennia.ChannelDB</a></p></li>
-<li><p><a class="reference external" href="api/evennia.comms.models.html#evennia.comms.models.Msg">evennia.Msg</a></p></li>
+<li><p><a class="reference internal" href="api/evennia.objects.models.html#evennia.objects.models.ObjectDB" title="evennia.objects.models.ObjectDB"><span class="xref myst py py-class">evennia.ObjectDB</span></a></p></li>
+<li><p><a class="reference internal" href="api/evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><span class="xref myst py py-class">evennia.accountDB</span></a></p></li>
+<li><p><a class="reference internal" href="api/evennia.scripts.models.html#evennia.scripts.models.ScriptDB" title="evennia.scripts.models.ScriptDB"><span class="xref myst py py-class">evennia.ScriptDB</span></a></p></li>
+<li><p><a class="reference internal" href="api/evennia.comms.models.html#evennia.comms.models.ChannelDB" title="evennia.comms.models.ChannelDB"><span class="xref myst py py-class">evennia.ChannelDB</span></a></p></li>
+<li><p><a class="reference internal" href="api/evennia.comms.models.html#evennia.comms.models.Msg" title="evennia.comms.models.Msg"><span class="xref myst py py-class">evennia.Msg</span></a></p></li>
 <li><p>evennia.managers - contains shortcuts to all database managers</p></li>
 </ul>
 </section>
@@ -209,8 +210,8 @@ game-specific contributions and plugins (<a class="reference external" href="htt
   <p class="topless"><a href="Concepts/Concepts-Overview.html"
                         title="previous chapter">Core Concepts</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Coding/Coding-Overview.html"
-                        title="next chapter">Coding and development help</a></p>
+  <p class="topless"><a href="Components/Default-Commands.html"
+                        title="next chapter">Default Commands</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -231,7 +232,7 @@ game-specific contributions and plugins (<a class="reference external" href="htt
 <h3>Versions</h3>
 <ul>
   <li><a href="Evennia-API.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../0.9.5/Evennia-API.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../0.95/Evennia-API.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>
@@ -248,7 +249,7 @@ game-specific contributions and plugins (<a class="reference external" href="htt
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Coding/Coding-Overview.html" title="Coding and development help"
+          <a href="Components/Default-Commands.html" title="Default Commands"
              >next</a> |</li>
         <li class="right" >
           <a href="Concepts/Concepts-Overview.html" title="Core Concepts"

@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="the-web-admin">
+  <section class="tex2jax_ignore mathjax_ignore" id="the-web-admin">
 <h1>The Web Admin<a class="headerlink" href="#the-web-admin" title="Permalink to this headline">¶</a></h1>
 <p>The Evennia <em>Web admin</em> is a customized <a class="reference external" href="https://docs.djangoproject.com/en/3.2/ref/contrib/admin/">Django admin site</a>
 used for manipulating the game database using a graphical interface. You
@@ -63,7 +65,7 @@ objects are actually stored as a <code class="docutils literal notranslate"><spa
 <ol>
 <li><p>Find the object you want to add to the Attribute. At the bottom of the first section
 you’ll find the field <em>Serialized string</em>. This string shows a Python tuple like</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s1">&#39;__packed_dbobj__&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;objects&#39;</span><span class="p">,</span> <span class="s1">&#39;objectdb&#39;</span><span class="p">),</span> <span class="s1">&#39;2021:05:15-08:59:30:624660&#39;</span><span class="p">,</span> <span class="mi">358</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(&#39;__packed_dbobj__&#39;, (&#39;objects&#39;, &#39;objectdb&#39;), &#39;2021:05:15-08:59:30:624660&#39;, 358)
 </pre></div>
 </div>
 <p>Mark and copy this tuple-string to your clipboard exactly as it stands (parentheses and all).</p>
@@ -128,7 +130,7 @@ link on the web page. The staff-status has no in-game equivalence.</p>
 permissions to accounts. The superuser is the only permission level that is
 also relevant in-game. <code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">Permissions</span></code> and <code class="docutils literal notranslate"><span class="pre">Groups</span></code> found on the <code class="docutils literal notranslate"><span class="pre">Account</span></code>
 admin page <em>only</em> affects the admin - they have no connection to the in-game
-<a class="reference internal" href="Permissions.html"><span class="doc">Permissions</span></a> (Player, Builder, Admin etc).</p>
+<a class="reference internal" href="Permissions.html"><span class="doc std std-doc">Permissions</span></a> (Player, Builder, Admin etc).</p>
 <p>For a staffer with <code class="docutils literal notranslate"><span class="pre">Staff</span> <span class="pre">status</span></code> to be able to actually do anything, the
 superuser must grant at least some permissions for them on their Account. This
 can also be good in order to limit mistakes. It can be a good idea to not allow
@@ -140,11 +142,13 @@ access the admin’s content, try reloading the server.</p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>If a staff member has access to the in-game <code class="docutils literal notranslate"><span class="pre">py</span></code> command, they can just as
-well have their admin <code class="docutils literal notranslate"><span class="pre">Superuser</span> <span class="pre">status</span></code> set too. The reason is that <code class="docutils literal notranslate"><span class="pre">py</span></code>
-grants them all the power they need to set the <code class="docutils literal notranslate"><span class="pre">is_superuser</span></code> flag on their
-account manually. There is a reason access to the <code class="docutils literal notranslate"><span class="pre">py</span></code> command must be
-considered carefully …</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>If a staff member has access to the in-game ``py`` command, they can just as
+well have their admin ``Superuser status`` set too. The reason is that ``py``
+grants them all the power they need to set the ``is_superuser`` flag on their
+account manually. There is a reason access to the ``py`` command must be
+considered carefully ...
+</pre></div>
+</div>
 </div>
 </section>
 <section id="customizing-the-web-admin">
@@ -152,7 +156,7 @@ considered carefully …</p>
 <p>Customizing the admin is a big topic and something beyond the scope of this
 documentation. See the <a class="reference external" href="https://docs.djangoproject.com/en/3.2/ref/contrib/admin/">official Django docs</a> for
 the details. This is just a brief summary.</p>
-<p>See the <a class="reference internal" href="Website.html"><span class="doc">Website</span></a> page for an overview of the components going into
+<p>See the <a class="reference internal" href="Website.html"><span class="doc std std-doc">Website</span></a> page for an overview of the components going into
 generating a web page. The Django admin uses the same principle except that
 Django provides a lot of tools to automate the admin-generation for us.</p>
 <p>Admin templates are found in <code class="docutils literal notranslate"><span class="pre">evennia/web/templates/admin/</span></code> but you’ll find
@@ -171,16 +175,7 @@ is found in <code class="docutils literal notranslate"><span class="pre">evennia
 <h3>Change the title of the admin<a class="headerlink" href="#change-the-title-of-the-admin" title="Permalink to this headline">¶</a></h3>
 <p>By default the admin’s title is <code class="docutils literal notranslate"><span class="pre">Evennia</span> <span class="pre">web</span> <span class="pre">admin</span></code>. To change this, add the
 following to your <code class="docutils literal notranslate"><span class="pre">mygame/web/urls.py</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/web/urls.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/web/urls.py</span>
 
 <span class="c1"># ...</span>
 
@@ -190,8 +185,9 @@ following to your <code class="docutils literal notranslate"><span class="pre">m
 
 <span class="n">site</span><span class="o">.</span><span class="n">site_header</span> <span class="o">=</span> <span class="s2">&quot;My great game admin&quot;</span>
 
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Reload the server and the admin’s title header will have changed.</p>
 </section>
 </section>
@@ -255,7 +251,7 @@ following to your <code class="docutils literal notranslate"><span class="pre">m
 <h3>Versions</h3>
 <ul>
   <li><a href="Web-Admin.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

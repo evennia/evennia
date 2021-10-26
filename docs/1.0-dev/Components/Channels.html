@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,15 +40,15 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="channels">
+  <section class="tex2jax_ignore mathjax_ignore" id="channels">
 <h1>Channels<a class="headerlink" href="#channels" title="Permalink to this headline">¶</a></h1>
 <p>In a multiplayer game, players often need other means of in-game communication
 than moving to the same room and use <code class="docutils literal notranslate"><span class="pre">say</span></code> or <code class="docutils literal notranslate"><span class="pre">emote</span></code>.</p>
 <p><em>Channels</em> allows Evennia’s to act as a fancy chat program. When a player is
 connected to a channel, sending a message to it will automatically distribute
 it to every other subscriber.</p>
-<p>Channels can be used both for chats between <a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a> and between
-<a class="reference internal" href="Objects.html"><span class="doc">Objects</span></a> (usually Characters).  Chats could be both OOC
+<p>Channels can be used both for chats between <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a> and between
+<a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a> (usually Characters).  Chats could be both OOC
 (out-of-character) or IC (in-charcter) in nature.  Some examples:</p>
 <ul class="simple">
 <li><p>A support channel for contacting staff (OOC)</p></li>
@@ -65,41 +67,42 @@ auto-generated channel-commands and -cmdset. ChannelHandler was removed.</p>
 <section id="using-channels-in-game">
 <h2>Using channels in-game<a class="headerlink" href="#using-channels-in-game" title="Permalink to this headline">¶</a></h2>
 <p>In the default command set, channels are all handled via the mighty
-<a class="reference external" href="../api/evennia.commands.default.comms.CmdChannel.html">channel command</a>, <code class="docutils literal notranslate"><span class="pre">channel</span></code> (or
+<a class="reference internal" href="../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><span class="xref myst py py-class">channel
+command</span></a>, <code class="docutils literal notranslate"><span class="pre">channel</span></code> (or
 <code class="docutils literal notranslate"><span class="pre">chan</span></code>).  By default, this command will assume all entities dealing with
 channels are <code class="docutils literal notranslate"><span class="pre">Accounts</span></code>.</p>
 <section id="viewing-and-joining-channels">
 <h3>Viewing and joining channels<a class="headerlink" href="#viewing-and-joining-channels" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">channel</span>       <span class="o">-</span> <span class="n">shows</span> <span class="n">your</span> <span class="n">subscriptions</span>
-<span class="n">channel</span><span class="o">/</span><span class="nb">all</span>   <span class="o">-</span> <span class="n">shows</span> <span class="nb">all</span> <span class="n">subs</span> <span class="n">available</span> <span class="n">to</span> <span class="n">you</span>
-<span class="n">channel</span><span class="o">/</span><span class="n">who</span>   <span class="o">-</span> <span class="n">shows</span> <span class="n">who</span> <span class="n">subscribes</span> <span class="n">to</span> <span class="n">this</span> <span class="n">channel</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel       - shows your subscriptions
+channel/all   - shows all subs available to you
+channel/who   - shows who subscribes to this channel
 </pre></div>
 </div>
 <p>To join/unsub a channel do</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">channel</span><span class="o">/</span><span class="n">sub</span> <span class="n">channelname</span>
-<span class="n">channel</span><span class="o">/</span><span class="n">unsub</span> <span class="n">channelname</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel/sub channelname
+channel/unsub channelname
 </pre></div>
 </div>
 <p>If you temporarily don’t want to hear the channel for a while (without actually
 unsubscribing), you can mute it:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">channel</span><span class="o">/</span><span class="n">mute</span> <span class="n">channelname</span>
-<span class="n">channel</span><span class="o">/</span><span class="n">unmute</span> <span class="n">channelname</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel/mute channelname
+channel/unmute channelname
 </pre></div>
 </div>
 </section>
 <section id="chat-on-channels">
 <h3>Chat on channels<a class="headerlink" href="#chat-on-channels" title="Permalink to this headline">¶</a></h3>
 <p>To speak on a channel, do</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>channel public Hello world!
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel public Hello world!
 </pre></div>
 </div>
 <p>If the channel-name has spaces in it, you need to use a ‘<code class="docutils literal notranslate"><span class="pre">=</span></code>’:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>channel rest room = Hello world!
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel rest room = Hello world!
 </pre></div>
 </div>
 <p>Now, this is more to type than we’d like, so when you join a channel, the
 system automatically sets up an personal alias so you can do this instead:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">public</span> <span class="n">Hello</span> <span class="n">world</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>public Hello world
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -109,25 +112,25 @@ So channels with long names should make sure to provide a one-word alias as
 well.</p>
 </div>
 <p>Any user can make up their own channel aliases:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">channel</span><span class="o">/</span><span class="n">alias</span> <span class="n">public</span> <span class="o">=</span> <span class="n">foo</span><span class="p">;</span><span class="n">bar</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel/alias public = foo;bar
 </pre></div>
 </div>
 <p>You can now just do</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>foo Hello world!
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>foo Hello world!
 bar Hello again!
 </pre></div>
 </div>
 <p>And even remove the default one if they don’t want to use it</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">channel</span><span class="o">/</span><span class="n">unalias</span> <span class="n">public</span>
-<span class="n">public</span> <span class="n">Hello</span>    <span class="p">(</span><span class="n">gives</span> <span class="n">a</span> <span class="n">command</span><span class="o">-</span><span class="ow">not</span><span class="o">-</span><span class="n">found</span> <span class="n">error</span> <span class="n">now</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel/unalias public
+public Hello    (gives a command-not-found error now)
 </pre></div>
 </div>
 <p>But you can also use your alias with the <code class="docutils literal notranslate"><span class="pre">channel</span></code> command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>channel foo Hello world!
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel foo Hello world!
 </pre></div>
 </div>
 <blockquote>
-<div><p>What happens when aliasing is that a <a class="reference internal" href="Nicks.html"><span class="doc">nick</span></a> is created that maps your
+<div><p>What happens when aliasing is that a <a class="reference internal" href="Nicks.html"><span class="doc std std-doc">nick</span></a> is created that maps your
 alias + argument onto calling the <code class="docutils literal notranslate"><span class="pre">channel</span></code> command. So when you enter <code class="docutils literal notranslate"><span class="pre">foo</span> <span class="pre">hello</span></code>,
 what the server sees is actually <code class="docutils literal notranslate"><span class="pre">channel</span> <span class="pre">foo</span> <span class="pre">=</span> <span class="pre">hello</span></code>. The system is also
 clever enough to know that whenever you search for channels, your channel-nicks
@@ -135,12 +138,12 @@ should also be considered so as to convert your input to an existing channel nam
 </div></blockquote>
 <p>You can check if you missed channel conversations by viewing the channel’s
 scrollback with</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">channel</span><span class="o">/</span><span class="n">history</span> <span class="n">public</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel/history public
 </pre></div>
 </div>
 <p>This retrieves the last 20 lines of text (also from a time when you were
 offline). You can step further back by specifying how many lines back to start:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">channel</span><span class="o">/</span><span class="n">history</span> <span class="n">public</span> <span class="o">=</span> <span class="mi">30</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel/history public = 30
 </pre></div>
 </div>
 <p>This again retrieve 20 lines, but starting 30 lines back (so you’ll get lines
@@ -149,8 +152,8 @@ offline). You can step further back by specifying how many lines back to start:<
 <section id="channel-administration">
 <h3>Channel administration<a class="headerlink" href="#channel-administration" title="Permalink to this headline">¶</a></h3>
 <p>To create/destroy a new channel you can do</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">channel</span><span class="o">/</span><span class="n">create</span> <span class="n">channelname</span><span class="p">;</span><span class="n">alias</span><span class="p">;</span><span class="n">alias</span> <span class="o">=</span> <span class="n">description</span>
-<span class="n">channel</span><span class="o">/</span><span class="n">destroy</span> <span class="n">channelname</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel/create channelname;alias;alias = description
+channel/destroy channelname
 </pre></div>
 </div>
 <p>Aliases are optional but can be good for obvious shortcuts everyone may want to
@@ -158,25 +161,25 @@ use. The description is used in channel-listings. You will automatically join a
 channel you created and will be controlling it. You can also use <code class="docutils literal notranslate"><span class="pre">channel/desc</span></code> to
 change the description on a channel you wnn later.</p>
 <p>If you control a channel you can also kick people off it:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>channel/boot mychannel = annoyinguser123 : stop spamming!
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel/boot mychannel = annoyinguser123 : stop spamming!
 </pre></div>
 </div>
 <p>The last part is an optional reason to send to the user before they are booted.
 You can give a comma-separated list of channels to kick the same user from all
 those channels at once. The user will be unsubbed from the channel and all
 their aliases will be wiped. But they can still rejoin if they like.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">channel</span><span class="o">/</span><span class="n">ban</span> <span class="n">mychannel</span> <span class="o">=</span> <span class="n">annoyinguser123</span>
-<span class="n">channel</span><span class="o">/</span><span class="n">ban</span>      <span class="o">-</span> <span class="n">view</span> <span class="n">bans</span>
-<span class="n">channel</span><span class="o">/</span><span class="n">unban</span> <span class="n">mychannel</span> <span class="o">=</span> <span class="n">annoyinguser123</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel/ban mychannel = annoyinguser123
+channel/ban      - view bans
+channel/unban mychannel = annoyinguser123
 </pre></div>
 </div>
 <p>Banning adds the user to the channels blacklist. This means they will not be
 able to <em>rejoin</em> if you boot them. You will need to run <code class="docutils literal notranslate"><span class="pre">channel/boot</span></code> to
 actually kick them out.</p>
-<p>See the <a class="reference external" href="../api/evennia.commands.default.comms.CmdChannel.html">Channel command</a> api
+<p>See the <a class="reference internal" href="../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><span class="xref myst py py-class">Channel command</span></a> api
 docs (and in-game help) for more details.</p>
-<p>Admin-level users can also modify channel’s <a class="reference internal" href="Locks.html"><span class="doc">locks</span></a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">channel</span><span class="o">/</span><span class="n">lock</span> <span class="n">buildchannel</span> <span class="o">=</span> <span class="n">listen</span><span class="p">:</span><span class="nb">all</span><span class="p">();</span><span class="n">send</span><span class="p">:</span><span class="n">perm</span><span class="p">(</span><span class="n">Builders</span><span class="p">)</span>
+<p>Admin-level users can also modify channel’s <a class="reference internal" href="Locks.html"><span class="doc std std-doc">locks</span></a>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel/lock buildchannel = listen:all();send:perm(Builders)
 </pre></div>
 </div>
 <p>Channels use three lock-types by default:</p>
@@ -189,16 +192,16 @@ control over the channel you can edit it, boot users and do other management tas
 </ul>
 <section id="restricting-channel-administration">
 <h4>Restricting channel administration<a class="headerlink" href="#restricting-channel-administration" title="Permalink to this headline">¶</a></h4>
-<p>By default everyone can use the channel command (<a class="reference external" href="../api/evennia.commands.default.comms.CmdChannel.html">evennia.commands.default.comms.CmdChannel</a>)
+<p>By default everyone can use the channel command (<a class="reference internal" href="../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><span class="xref myst py py-class">evennia.commands.default.comms.CmdChannel</span></a>)
 to create channels and will then control the channels they created (to boot/ban
 people etc). If you as a developer does not want regular players to do this
 (perhaps you want only staff to be able to spawn new channels), you can
 override the <code class="docutils literal notranslate"><span class="pre">channel</span></code> command and change its <code class="docutils literal notranslate"><span class="pre">locks</span></code> property.</p>
 <p>The default <code class="docutils literal notranslate"><span class="pre">help</span></code> command has the following <code class="docutils literal notranslate"><span class="pre">locks</span></code> property:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:not perm(channel_banned); admin:all(); manage:all(); changelocks: perm(Admin)&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:not perm(channel_banned); admin:all(); manage:all(); changelocks: perm(Admin)&quot;</span>
 </pre></div>
-</td></tr></table></div>
-<p>This is a regular <a class="reference internal" href="Locks.html"><span class="doc">lockstring</span></a>.</p>
+</div>
+<p>This is a regular <a class="reference internal" href="Locks.html"><span class="doc std std-doc">lockstring</span></a>.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">cmd:</span> <span class="pre">pperm(channel_banned)</span></code> - The <code class="docutils literal notranslate"><span class="pre">cmd</span></code> locktype is the standard one used for all Commands.
 an accessing object failing this will not even know that the command exists. The <code class="docutils literal notranslate"><span class="pre">pperm()</span></code> lockfunc
@@ -217,19 +220,15 @@ will still only be able to admin or destroy channels they actually control!</p>
 </div></blockquote>
 <p>If you only want (say) Builders and higher to be able to create and admin
 channels you could override the <code class="docutils literal notranslate"><span class="pre">help</span></code> command and change the lockstring to:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="c1"># in for example mygame/commands/commands.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>  <span class="c1"># in for example mygame/commands/commands.py</span>
 
   <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
 
   <span class="k">class</span> <span class="nc">MyCustomChannelCmd</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdChannel</span><span class="p">):</span>
       <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd: not pperm(channel_banned);admin:perm(Builder);manage:perm(Builder);changelocks:perm(Admin)&quot;</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Add this custom command to your default cmdset and regular users wil now get an
 access-denied error when trying to use use these switches.</p>
 </section>
@@ -237,13 +236,13 @@ access-denied error when trying to use use these switches.</p>
 </section>
 <section id="allowing-characters-to-use-channels">
 <h2>Allowing Characters to use Channels<a class="headerlink" href="#allowing-characters-to-use-channels" title="Permalink to this headline">¶</a></h2>
-<p>The default <code class="docutils literal notranslate"><span class="pre">channel</span></code> command (<a class="reference external" href="../api/evennia.commands.default.comms.CmdChannel.html">evennia.commands.default.comms.CmdChannel</a>)
-sits in the <code class="docutils literal notranslate"><span class="pre">Account</span></code> <a class="reference internal" href="Command-Sets.html"><span class="doc">command set</span></a>. It is set up such that it will
+<p>The default <code class="docutils literal notranslate"><span class="pre">channel</span></code> command (<a class="reference internal" href="../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><span class="xref myst py py-class">evennia.commands.default.comms.CmdChannel</span></a>)
+sits in the <code class="docutils literal notranslate"><span class="pre">Account</span></code> <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">command set</span></a>. It is set up such that it will
 always operate on <code class="docutils literal notranslate"><span class="pre">Accounts</span></code>, even if you were to add it to the
 <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>.</p>
 <p>It’s a one-line change to make this command accept non-account callers. But for
 convenience we provide a version for Characters/Objects. Just import
-<a class="reference external" href="../api/evennia.commands.default.comms.CmdObjectChannel.html">evennia.commands.default.comms.CmdObjectChannel</a>
+<a class="reference internal" href="../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdObjectChannel" title="evennia.commands.default.comms.CmdObjectChannel"><span class="xref myst py py-class">evennia.commands.default.comms.CmdObjectChannel</span></a>
 and inherit from that instead.</p>
 </section>
 <section id="customizing-channel-output-and-behavior">
@@ -281,41 +280,17 @@ Default channels all use <code class="docutils literal notranslate"><span class=
 <p>For most common changes, the default channel, the recipient hooks and possibly
 overriding the <code class="docutils literal notranslate"><span class="pre">channel</span></code> command will get you very far. But you can also tweak
 channels themselves.</p>
-<p>Channels are <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclassed</span></a> entities. This means they are
-persistent in the database, can have <a class="reference internal" href="Attributes.html"><span class="doc">attributes</span></a> and <a class="reference internal" href="Tags.html"><span class="doc">Tags</span></a>
+<p>Channels are <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclassed</span></a> entities. This means they are
+persistent in the database, can have <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">attributes</span></a> and <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tags</span></a>
 and can be easily extended.</p>
 <p>To change which channel typeclass Evennia uses for default commands, change
 <code class="docutils literal notranslate"><span class="pre">settings.BASE_CHANNEL_TYPECLASS</span></code>. The base command class is
-<a class="reference external" href="api:evennia.comms.comms.DefaultChannel"><code class="docutils literal notranslate"><span class="pre">evennia.comms.comms.DefaultChannel</span></code></a>.
+<a class="reference internal" href="../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel" title="evennia.comms.comms.DefaultChannel"><span class="xref myst py py-class"><code class="docutils literal notranslate"><span class="pre">evennia.comms.comms.DefaultChannel</span></code></span></a>.
 There is an empty child class in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/channels.py</span></code>, same
 as for other typelass-bases.</p>
 <p>In code you create a new channel with <code class="docutils literal notranslate"><span class="pre">evennia.create_channel</span></code> or
 <code class="docutils literal notranslate"><span class="pre">Channel.create</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_channel</span><span class="p">,</span> <span class="n">search_object</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>  <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_channel</span><span class="p">,</span> <span class="n">search_object</span>
   <span class="kn">from</span> <span class="nn">typeclasses.channels</span> <span class="kn">import</span> <span class="n">Channel</span>
 
   <span class="n">channel</span> <span class="o">=</span> <span class="n">create_channel</span><span class="p">(</span><span class="s2">&quot;my channel&quot;</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mychan&quot;</span><span class="p">],</span> <span class="n">locks</span><span class="o">=...</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=...</span><span class="p">)</span>
@@ -340,8 +315,9 @@ as for other typelass-bases.</p>
 
   <span class="c1"># permanently delete channel (will unsub everyone)</span>
   <span class="n">channel</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>The Channel’s <code class="docutils literal notranslate"><span class="pre">.connect</span></code> method will accept both <code class="docutils literal notranslate"><span class="pre">Account</span></code> and <code class="docutils literal notranslate"><span class="pre">Object</span></code> subscribers
 and will handle them transparently.</p>
 <p>The channel has many more hooks, both hooks shared with all typeclasses as well
@@ -370,7 +346,7 @@ channel’s <code class="docutils literal notranslate"><span class="pre">at_post
 <h3>Properties on Channels<a class="headerlink" href="#properties-on-channels" title="Permalink to this headline">¶</a></h3>
 <p>Channels have all the standard properties of a Typeclassed entity (<code class="docutils literal notranslate"><span class="pre">key</span></code>,
 <code class="docutils literal notranslate"><span class="pre">aliases</span></code>, <code class="docutils literal notranslate"><span class="pre">attributes</span></code>, <code class="docutils literal notranslate"><span class="pre">tags</span></code>, <code class="docutils literal notranslate"><span class="pre">locks</span></code> etc). This is not an exhaustive list;
-see the <a class="reference external" href="../api/evennia.comms.comms.DefaultChannel.html">Channel api docs</a> for details.</p>
+see the <a class="reference internal" href="../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel" title="evennia.comms.comms.DefaultChannel"><span class="xref myst py py-class">Channel api docs</span></a> for details.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">send_to_online_only</span></code> - this class boolean defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code> and is a
 sensible optimization since people offline people will not see the message anyway.</p></li>
@@ -379,8 +355,8 @@ is <code class="docutils literal notranslate"><span class="pre">&quot;channel_{c
 <code class="docutils literal notranslate"><span class="pre">mygame/server/logs/</span></code>). You should usually not change this.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">channel_prefix_string</span></code> - this property is a string to easily change how
 the channel is prefixed. It takes the <code class="docutils literal notranslate"><span class="pre">channelname</span></code> format key. Default is <code class="docutils literal notranslate"><span class="pre">&quot;[{channelname}]</span> <span class="pre">&quot;</span></code>
-and produces output like `[public] …``.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">subscriptions</span></code> - this is the <a class="reference external" href="../api/evennia.comms.comms.html#SubscriptionHandler">SubscriptionHandler</a>, which
+and produces output like <code class="docutils literal notranslate"><span class="pre">[public]</span> <span class="pre">...</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">subscriptions</span></code> - this is the <a class="reference internal" href="../api/evennia.comms.models.html#evennia.comms.models.SubscriptionHandler" title="evennia.comms.models.SubscriptionHandler"><span class="xref myst py py-class">SubscriptionHandler</span></a>, which
 has methods <code class="docutils literal notranslate"><span class="pre">has</span></code>, <code class="docutils literal notranslate"><span class="pre">add</span></code>, <code class="docutils literal notranslate"><span class="pre">remove</span></code>, <code class="docutils literal notranslate"><span class="pre">all</span></code>, <code class="docutils literal notranslate"><span class="pre">clear</span></code> and also <code class="docutils literal notranslate"><span class="pre">online</span></code> (to get
 only actually online channel-members).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wholist</span></code>, <code class="docutils literal notranslate"><span class="pre">mutelist</span></code>, <code class="docutils literal notranslate"><span class="pre">banlist</span></code> are properties that return a list of subscribers,
@@ -390,7 +366,7 @@ replacement (detect that <code class="docutils literal notranslate"><span class=
 This pattern accepts an <code class="docutils literal notranslate"><span class="pre">{alias}</span></code> formatting marker. Don’t mess with this unless you really
 want to change how channels work.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">channel_msg_nick_replacement</span></code> - this is a string on the [nick replacement</p></li>
-<li><p>form](Nicks). It accepts the <code class="docutils literal notranslate"><span class="pre">{channelname}</span></code> formatting tag. This is strongly tied to the
+<li><p>form](./Nicks.md). It accepts the <code class="docutils literal notranslate"><span class="pre">{channelname}</span></code> formatting tag. This is strongly tied to the
 <code class="docutils literal notranslate"><span class="pre">channel</span></code> command and is by default <code class="docutils literal notranslate"><span class="pre">channel</span> <span class="pre">{channelname}</span> <span class="pre">=</span> <span class="pre">$1</span></code>.</p></li>
 </ul>
 <p>Notable <code class="docutils literal notranslate"><span class="pre">Channel</span></code> hooks:</p>
@@ -489,7 +465,7 @@ subscribers (and thus wipe all their aliases).</p></li>
 <h3>Versions</h3>
 <ul>
   <li><a href="Channels.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

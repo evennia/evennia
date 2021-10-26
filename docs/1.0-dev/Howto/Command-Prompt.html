@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,7 +40,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="command-prompt">
+  <section class="tex2jax_ignore mathjax_ignore" id="command-prompt">
 <h1>Command Prompt<a class="headerlink" href="#command-prompt" title="Permalink to this headline">¶</a></h1>
 <p>A <em>prompt</em> is quite common in MUDs. The prompt display useful details about your character that you
 are likely to want to keep tabs on at all times, such as health, magical power etc. It might also
@@ -49,51 +51,18 @@ above the input line). Usually it will remain like that until it is explicitly u
 <h2>Sending a prompt<a class="headerlink" href="#sending-a-prompt" title="Permalink to this headline">¶</a></h2>
 <p>A prompt is sent using the  <code class="docutils literal notranslate"><span class="pre">prompt</span></code> keyword to the <code class="docutils literal notranslate"><span class="pre">msg()</span></code> method on objects. The prompt will be
 sent without any line breaks.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;HP: 5, MP: 2, SP: 8&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;HP: 5, MP: 2, SP: 8&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>You can combine the sending of normal text with the sending (updating of the prompt):</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This is a text&quot;</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;This is a prompt&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This is a text&quot;</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;This is a prompt&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
-<p>You can update the prompt on demand, this is normally done using <a class="reference internal" href="../Concepts/OOB.html"><span class="doc">OOB</span></a>-tracking of the relevant
+</div>
+<p>You can update the prompt on demand, this is normally done using <a class="reference internal" href="../Concepts/OOB.html"><span class="doc std std-doc">OOB</span></a>-tracking of the relevant
 Attributes (like the character’s health). You could also make sure that attacking commands update
 the prompt when they cause a change in health, for example.</p>
 <p>Here is a simple example of the prompt sent/updated from a command class:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
 
     <span class="k">class</span> <span class="nc">CmdDiagnose</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -128,7 +97,7 @@ the prompt when they cause a change in health, for example.</p>
             <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">hp</span><span class="si">}</span><span class="s2"> HP, </span><span class="si">{</span><span class="n">mp</span><span class="si">}</span><span class="s2"> MP, </span><span class="si">{</span><span class="n">sp</span><span class="si">}</span><span class="s2"> SP&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </section>
 <section id="a-prompt-sent-with-every-command">
 <h2>A prompt sent with every command<a class="headerlink" href="#a-prompt-sent-with-every-command" title="Permalink to this headline">¶</a></h2>
@@ -141,15 +110,7 @@ users have. So sending a prompt with every command is a safe catch-all. You don�
 go in and edit every command you have though. Instead you edit the base command class for your
 custom commands (like <code class="docutils literal notranslate"><span class="pre">MuxCommand</span></code> in your <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code> folder) and overload the
 <code class="docutils literal notranslate"><span class="pre">at_post_cmd()</span></code> hook. This hook is always called <em>after</em> the main <code class="docutils literal notranslate"><span class="pre">func()</span></code> method of the Command.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
 
 <span class="k">class</span> <span class="nc">MuxCommand</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="c1"># ...</span>
@@ -158,21 +119,14 @@ custom commands (like <code class="docutils literal notranslate"><span class="pr
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>        
         <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span><span class="si">}</span><span class="s2"> HP, </span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mp</span><span class="si">}</span><span class="s2"> MP, </span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sp</span><span class="si">}</span><span class="s2"> SP&quot;</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">)</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <section id="modifying-default-commands">
 <h3>Modifying default commands<a class="headerlink" href="#modifying-default-commands" title="Permalink to this headline">¶</a></h3>
 <p>If you want to add something small like this to Evennia’s default commands without modifying them
 directly the easiest way is to just wrap those with a multiple inheritance to your own base class:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in (for example) mygame/commands/mycommands.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in (for example) mygame/commands/mycommands.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
 <span class="c1"># our custom MuxCommand with at_post_cmd hook</span>
@@ -182,19 +136,10 @@ directly the easiest way is to just wrap those with a multiple inheritance to yo
 <span class="k">class</span> <span class="nc">CmdLook</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">):</span>
     <span class="k">pass</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>The result of this is that the hooks from your custom <code class="docutils literal notranslate"><span class="pre">MuxCommand</span></code> will be mixed into the default
 <code class="docutils literal notranslate"><span class="pre">CmdLook</span></code> through multiple inheritance. Next you just add this to your default command set:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
 <span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
@@ -205,7 +150,7 @@ directly the easiest way is to just wrap those with a multiple inheritance to yo
         <span class="c1"># ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mycommands</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">())</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This will automatically replace the default <code class="docutils literal notranslate"><span class="pre">look</span></code> command in your game with your own version.</p>
 </section>
 </section>
@@ -263,7 +208,7 @@ directly the easiest way is to just wrap those with a multiple inheritance to yo
 <h3>Versions</h3>
 <ul>
   <li><a href="Command-Prompt.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

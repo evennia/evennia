@@ -1,0 +1,298 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.simpledoor &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.simpledoor</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.simpledoor">
+<span id="evennia-contrib-simpledoor"></span><h1>evennia.contrib.simpledoor<a class="headerlink" href="#module-evennia.contrib.simpledoor" title="Permalink to this headline">¶</a></h1>
+<p>SimpleDoor</p>
+<p>Contribution - Griatch 2016</p>
+<p>A simple two-way exit that represents a door that can be opened and
+closed. Can easily be expanded from to make it lockable, destroyable
+etc.  Note that the simpledoor is based on Evennia locks, so it will
+not work for a superuser (which bypasses all locks) - the superuser
+will always appear to be able to close/open the door over and over
+without the locks stopping you. To use the door, use <strong>&#64;quell</strong> or a
+non-superuser account.</p>
+<p>Installation:</p>
+<blockquote>
+<div><p>Import this module in mygame/commands/default_cmdsets and add
+the CmdOpen and CmdOpenCloseDoor commands to the CharacterCmdSet;
+then reload the server.</p>
+</div></blockquote>
+<p>To try it out, <strong>&#64;dig</strong> a new room and then use the (overloaded) <strong>&#64;open</strong>
+commmand to open a new doorway to it like this:</p>
+<blockquote>
+<div><p>&#64;open doorway:contrib.simpledoor.SimpleDoor = otherroom</p>
+</div></blockquote>
+<p>You can then use <strong>open doorway’ and **close doorway</strong> to change the open
+state. If you are not superuser (<strong>&#64;quell</strong> yourself) you’ll find you
+cannot pass through either side of the door once it’s closed from the
+other side.</p>
+<dl class="py class">
+<dt id="evennia.contrib.simpledoor.SimpleDoor">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.simpledoor.</code><code class="sig-name descname">SimpleDoor</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/simpledoor.html#SimpleDoor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.simpledoor.SimpleDoor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit" title="evennia.objects.objects.DefaultExit"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit</span></code></a></p>
+<p>A two-way exit “door” with some methods for affecting both “sides”
+of the door at the same time. For example, set a lock on either of the two
+sides using <strong>exitname.setlock(“traverse:false())</strong></p>
+<dl class="py method">
+<dt id="evennia.contrib.simpledoor.SimpleDoor.at_object_creation">
+<code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/simpledoor.html#SimpleDoor.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.simpledoor.SimpleDoor.at_object_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called the very first time the door is created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.simpledoor.SimpleDoor.setlock">
+<code class="sig-name descname">setlock</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lockstring</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/simpledoor.html#SimpleDoor.setlock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.simpledoor.SimpleDoor.setlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets identical locks on both sides of the door.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>lockstring</strong> (<em>str</em>) – A lockstring, like <strong>“traverse:true()”</strong>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.simpledoor.SimpleDoor.setdesc">
+<code class="sig-name descname">setdesc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">description</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/simpledoor.html#SimpleDoor.setdesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.simpledoor.SimpleDoor.setdesc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets identical descs on both sides of the door.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>setdesc</strong> (<em>str</em>) – A description.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.simpledoor.SimpleDoor.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/simpledoor.html#SimpleDoor.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.simpledoor.SimpleDoor.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes both sides of the door.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.simpledoor.SimpleDoor.at_failed_traverse">
+<code class="sig-name descname">at_failed_traverse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">traversing_object</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/simpledoor.html#SimpleDoor.at_failed_traverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.simpledoor.SimpleDoor.at_failed_traverse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when door traverse: lock fails.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>traversing_object</strong> (<em>Typeclassed entity</em>) – The object
+attempting the traversal.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.simpledoor.SimpleDoor.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.simpledoor.SimpleDoor.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.DoesNotExist" title="evennia.objects.objects.DefaultExit.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.simpledoor.SimpleDoor.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.simpledoor.SimpleDoor.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.MultipleObjectsReturned" title="evennia.objects.objects.DefaultExit.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.simpledoor.SimpleDoor.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.simpledoor.SimpleDoor'</em><a class="headerlink" href="#evennia.contrib.simpledoor.SimpleDoor.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.simpledoor.SimpleDoor.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'SimpleDoor'</em><a class="headerlink" href="#evennia.contrib.simpledoor.SimpleDoor.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.simpledoor.CmdOpen">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.simpledoor.</code><code class="sig-name descname">CmdOpen</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/simpledoor.html#CmdOpen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.building.html#evennia.commands.default.building.CmdOpen" title="evennia.commands.default.building.CmdOpen"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.building.CmdOpen</span></code></a></p>
+<p>open a new exit from the current room</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>open &lt;new exit&gt;[;alias;alias..][:typeclass] [,&lt;return exit&gt;[;alias;..][:typeclass]]] = &lt;destination&gt;</p>
+</dd>
+</dl>
+<p>Handles the creation of exits. If a destination is given, the exit
+will point there. The &lt;return exit&gt; argument sets up an exit at the
+destination leading back to the current room. Destination name
+can be given both as a #dbref and a name, if that name is globally
+unique.</p>
+<dl class="py method">
+<dt id="evennia.contrib.simpledoor.CmdOpen.create_exit">
+<code class="sig-name descname">create_exit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exit_name</span></em>, <em class="sig-param"><span class="n">location</span></em>, <em class="sig-param"><span class="n">destination</span></em>, <em class="sig-param"><span class="n">exit_aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/simpledoor.html#CmdOpen.create_exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpen.create_exit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple wrapper for the default CmdOpen.create_exit</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.simpledoor.CmdOpen.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpen.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.simpledoor.CmdOpen.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpen.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.simpledoor.CmdOpen.key">
+<code class="sig-name descname">key</code><em class="property"> = 'open'</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpen.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.simpledoor.CmdOpen.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(open) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpen.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.simpledoor.CmdOpenCloseDoor">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.simpledoor.</code><code class="sig-name descname">CmdOpenCloseDoor</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/simpledoor.html#CmdOpenCloseDoor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpenCloseDoor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Open and close a door</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>open &lt;door&gt;
+close &lt;door&gt;</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.simpledoor.CmdOpenCloseDoor.key">
+<code class="sig-name descname">key</code><em class="property"> = 'open'</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpenCloseDoor.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.simpledoor.CmdOpenCloseDoor.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['close']</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpenCloseDoor.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.simpledoor.CmdOpenCloseDoor.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpenCloseDoor.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.simpledoor.CmdOpenCloseDoor.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpenCloseDoor.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.simpledoor.CmdOpenCloseDoor.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/simpledoor.html#CmdOpenCloseDoor.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpenCloseDoor.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>implement the door functionality</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.simpledoor.CmdOpenCloseDoor.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpenCloseDoor.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.simpledoor.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.contrib.simpledoor.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.contrib.simpledoor.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.simpledoor</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,486 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.commands.default.unloggedin &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.unloggedin</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.commands.default.unloggedin">
+<span id="evennia-commands-default-unloggedin"></span><h1>evennia.commands.default.unloggedin<a class="headerlink" href="#module-evennia.commands.default.unloggedin" title="Permalink to this headline">¶</a></h1>
+<p>Commands that are available from the connect screen.</p>
+<dl class="py class">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedConnect">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.unloggedin.</code><code class="sig-name descname">CmdUnconnectedConnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/unloggedin.html#CmdUnconnectedConnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>connect to the game</p>
+<dl class="simple">
+<dt>Usage (at login screen):</dt><dd><p>connect accountname password
+connect “account name” “pass word”</p>
+</dd>
+</dl>
+<p>Use the create command to first create an account before logging in.</p>
+<p>If you have spaces in your name, enclose it in double quotes.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedConnect.key">
+<code class="sig-name descname">key</code><em class="property"> = 'connect'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedConnect.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['con', 'conn', 'co']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedConnect.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedConnect.arg_regex">
+<code class="sig-name descname">arg_regex</code><em class="property"> = re.compile('\\s.*?|$', re.IGNORECASE)</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.arg_regex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedConnect.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/unloggedin.html#CmdUnconnectedConnect.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the Django admin api. Note that unlogged-in commands
+have a unique position in that their func() receives
+a session object instead of a source_object like all
+other types of logged-in commands (this is because
+there is no object yet before the account has logged in)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedConnect.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedConnect.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedCreate">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.unloggedin.</code><code class="sig-name descname">CmdUnconnectedCreate</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/unloggedin.html#CmdUnconnectedCreate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedCreate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>create a new account account</p>
+<dl class="simple">
+<dt>Usage (at login screen):</dt><dd><p>create &lt;accountname&gt; &lt;password&gt;
+create “account name” “pass word”</p>
+</dd>
+</dl>
+<p>This creates a new account account.</p>
+<p>If you have spaces in your name, enclose it in double quotes.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedCreate.key">
+<code class="sig-name descname">key</code><em class="property"> = 'create'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedCreate.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedCreate.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['cr', 'cre']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedCreate.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedCreate.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedCreate.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedCreate.arg_regex">
+<code class="sig-name descname">arg_regex</code><em class="property"> = re.compile('\\s.*?|$', re.IGNORECASE)</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedCreate.arg_regex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedCreate.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/unloggedin.html#CmdUnconnectedCreate.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedCreate.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do checks and create account</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedCreate.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedCreate.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedCreate.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedCreate.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedQuit">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.unloggedin.</code><code class="sig-name descname">CmdUnconnectedQuit</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/unloggedin.html#CmdUnconnectedQuit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedQuit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>quit when in unlogged-in state</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>quit</p>
+</dd>
+</dl>
+<p>We maintain a different version of the quit command
+here for unconnected accounts for the sake of simplicity. The logged in
+version is a bit more complicated.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedQuit.key">
+<code class="sig-name descname">key</code><em class="property"> = 'quit'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedQuit.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedQuit.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['q', 'qu']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedQuit.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedQuit.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedQuit.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedQuit.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/unloggedin.html#CmdUnconnectedQuit.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedQuit.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply close the connection.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedQuit.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedQuit.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedQuit.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedQuit.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedLook">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.unloggedin.</code><code class="sig-name descname">CmdUnconnectedLook</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/unloggedin.html#CmdUnconnectedLook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedLook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>look when in unlogged-in state</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>look</p>
+</dd>
+</dl>
+<p>This is an unconnected version of the look command for simplicity.</p>
+<p>This is called by the server and kicks everything in gear.
+All it does is display the connect screen.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedLook.key">
+<code class="sig-name descname">key</code><em class="property"> = '__unloggedin_look_command'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedLook.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedLook.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'look']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedLook.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedLook.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedLook.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedLook.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/unloggedin.html#CmdUnconnectedLook.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedLook.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show the connect screen.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedLook.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedLook.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedLook.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedLook.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedHelp">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.unloggedin.</code><code class="sig-name descname">CmdUnconnectedHelp</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/unloggedin.html#CmdUnconnectedHelp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>get help when in unconnected-in state</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>help</p>
+</dd>
+</dl>
+<p>This is an unconnected version of the help command,
+for simplicity. It shows a pane of info.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedHelp.key">
+<code class="sig-name descname">key</code><em class="property"> = 'help'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedHelp.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['h', '?']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedHelp.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedHelp.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/unloggedin.html#CmdUnconnectedHelp.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shows help</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedHelp.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedHelp.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedEncoding">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.unloggedin.</code><code class="sig-name descname">CmdUnconnectedEncoding</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/unloggedin.html#CmdUnconnectedEncoding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedEncoding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>set which text encoding to use in unconnected-in state</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>encoding/switches [&lt;encoding&gt;]</p>
+</dd>
+<dt>Switches:</dt><dd><p>clear - clear your custom encoding</p>
+</dd>
+</dl>
+<p>This sets the text encoding for communicating with Evennia. This is mostly
+an issue only if you want to use non-ASCII characters (i.e. letters/symbols
+not found in English). If you see that your characters look strange (or you
+get encoding errors), you should use this command to set the server
+encoding to be the same used in your client program.</p>
+<p>Common encodings are utf-8 (default), latin-1, ISO-8859-1 etc.</p>
+<p>If you don’t submit an encoding, the current encoding will be displayed
+instead.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedEncoding.key">
+<code class="sig-name descname">key</code><em class="property"> = 'encoding'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedEncoding.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedEncoding.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['encode']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedEncoding.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedEncoding.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedEncoding.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedEncoding.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/unloggedin.html#CmdUnconnectedEncoding.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedEncoding.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the encoding.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedEncoding.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedEncoding.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedEncoding.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedEncoding.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedInfo">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.unloggedin.</code><code class="sig-name descname">CmdUnconnectedInfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/unloggedin.html#CmdUnconnectedInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Provides MUDINFO output, so that Evennia games can be added to Mudconnector
+and Mudstats.  Sadly, the MUDINFO specification seems to have dropped off the
+face of the net, but it is still used by some crawlers.  This implementation
+was created by looking at the MUDINFO implementation in MUX2, TinyMUSH, Rhost,
+and PennMUSH.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedInfo.key">
+<code class="sig-name descname">key</code><em class="property"> = 'info'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedInfo.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedInfo.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedInfo.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedInfo.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/unloggedin.html#CmdUnconnectedInfo.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedInfo.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the hook function that actually does all the work. It is called
+by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedInfo.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedInfo.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedInfo.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedInfo.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedInfo.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedInfo.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedScreenreader">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.unloggedin.</code><code class="sig-name descname">CmdUnconnectedScreenreader</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/unloggedin.html#CmdUnconnectedScreenreader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedScreenreader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Activate screenreader mode.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>screenreader</p>
+</dd>
+</dl>
+<p>Used to flip screenreader mode on and off before logging in (when
+logged in, use option screenreader on).</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedScreenreader.key">
+<code class="sig-name descname">key</code><em class="property"> = 'screenreader'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedScreenreader.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedScreenreader.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/unloggedin.html#CmdUnconnectedScreenreader.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedScreenreader.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flips screenreader setting.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedScreenreader.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedScreenreader.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedScreenreader.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedScreenreader.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.unloggedin.CmdUnconnectedScreenreader.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedScreenreader.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.commands.default.unloggedin.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.commands.default.unloggedin.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.commands.default.unloggedin.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.95</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.unloggedin</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

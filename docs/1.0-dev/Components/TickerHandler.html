@@ -14,6 +14,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -38,17 +40,17 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="tickerhandler">
+  <section class="tex2jax_ignore mathjax_ignore" id="tickerhandler">
 <h1>TickerHandler<a class="headerlink" href="#tickerhandler" title="Permalink to this headline">¶</a></h1>
 <p>One way to implement a dynamic MUD is by using “tickers”, also known as “heartbeats”. A ticker is a
-timer that fires (”ticks”) at a given interval. The tick triggers updates in various game systems.</p>
+timer that fires (“ticks”) at a given interval. The tick triggers updates in various game systems.</p>
 <section id="about-tickers">
 <h2>About Tickers<a class="headerlink" href="#about-tickers" title="Permalink to this headline">¶</a></h2>
 <p>Tickers are very common or even unavoidable in other mud code bases.  Certain code bases are even
 hard-coded to rely on the concept of the global ‘tick’. Evennia has no such notion - the decision to
 use tickers is very much up to the need of your game and which requirements you have. The “ticker
 recipe” is just one way of cranking the wheels.</p>
-<p>The most fine-grained way to manage the flow of time is of course to use <a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a>. Many
+<p>The most fine-grained way to manage the flow of time is of course to use <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a>. Many
 types of operations (weather being the classic example) are however done on multiple objects in the
 same way at regular intervals, and for this, storing separate Scripts on each object is inefficient.
 The way to do this is to use a ticker with a “subscription model” - let objects sign up to be
@@ -60,79 +62,69 @@ then call this callable at an interval you specify, and with the arguments you s
 it. This continues until the callable un-subscribes from the ticker. The handler survives a reboot
 and is highly optimized in resource usage.</p>
 <p>Here is an example of importing <code class="docutils literal notranslate"><span class="pre">TICKER_HANDLER</span></code> and using it:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># we assume that obj has a hook &quot;at_tick&quot; defined on itself</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># we assume that obj has a hook &quot;at_tick&quot; defined on itself</span>
     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span> <span class="k">as</span> <span class="n">tickerhandler</span>    
 
     <span class="n">tickerhandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_tick</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>That’s it - from now on, <code class="docutils literal notranslate"><span class="pre">obj.at_tick()</span></code> will be called every 20 seconds.</p>
 <p>You can also import function and tick that:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span> <span class="k">as</span> <span class="n">tickerhandler</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span> <span class="k">as</span> <span class="n">tickerhandler</span>
     <span class="kn">from</span> <span class="nn">mymodule</span> <span class="kn">import</span> <span class="n">myfunc</span>
 
     <span class="n">tickerhandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="n">myfunc</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Removing (stopping) the ticker works as expected:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">tickerhandler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_tick</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">tickerhandler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_tick</span><span class="p">)</span>
     <span class="n">tickerhandler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="n">myfunc</span><span class="p">)</span> 
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Note that you have to also supply <code class="docutils literal notranslate"><span class="pre">interval</span></code> to identify which subscription to remove. This is
 because the TickerHandler maintains a pool of tickers and a given callable can subscribe to be
 ticked at any number of different intervals.</p>
 <p>The full definition of the <code class="docutils literal notranslate"><span class="pre">tickerhandler.add</span></code> method is</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">tickerhandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">tickerhandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> 
                       <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Here <code class="docutils literal notranslate"><span class="pre">*args</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> will be passed to <code class="docutils literal notranslate"><span class="pre">callback</span></code> every <code class="docutils literal notranslate"><span class="pre">interval</span></code> seconds. If <code class="docutils literal notranslate"><span class="pre">persistent</span></code>
 is <code class="docutils literal notranslate"><span class="pre">False</span></code>, this subscription will not survive a server reload.</p>
 <p>Tickers are identified and stored by making a key of the callable itself, the ticker-interval, the
 <code class="docutils literal notranslate"><span class="pre">persistent</span></code> flag and the <code class="docutils literal notranslate"><span class="pre">idstring</span></code> (the latter being an empty string when not given explicitly).</p>
 <p>Since the arguments are not included in the ticker’s identification, the <code class="docutils literal notranslate"><span class="pre">idstring</span></code> must be used to
 have a specific callback triggered multiple times on the same interval but with different arguments:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">tickerhandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">update</span><span class="p">,</span> <span class="s2">&quot;ticker1&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">tickerhandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">update</span><span class="p">,</span> <span class="s2">&quot;ticker1&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
     <span class="n">tickerhandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">update</span><span class="p">,</span> <span class="s2">&quot;ticker2&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <blockquote>
 <div><p>Note that, when we want to send arguments to our callback within a ticker handler, we need to
 specify <code class="docutils literal notranslate"><span class="pre">idstring</span></code> and <code class="docutils literal notranslate"><span class="pre">persistent</span></code> before, unless we call our arguments as keywords, which would
 often be more readable:</p>
 </div></blockquote>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">tickerhandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">update</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">118</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">tickerhandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">update</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">118</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>If you add a ticker with exactly the same combination of callback, interval and idstring, it will
 overload the existing ticker. This identification is also crucial for later removing (stopping) the
 subscription:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">tickerhandler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">update</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;ticker1&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">tickerhandler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">update</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;ticker1&quot;</span><span class="p">)</span>
     <span class="n">tickerhandler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">update</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;ticker2&quot;</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>The <code class="docutils literal notranslate"><span class="pre">callable</span></code> can be on any form as long as it accepts the arguments you give to send to it in
 <code class="docutils literal notranslate"><span class="pre">TickerHandler.add</span></code>.</p>
 <blockquote>
 <div><p>Note that everything you supply to the TickerHandler will need to be pickled at some point to be
 saved into the database. Most of the time the handler will correctly store things like database
-objects, but the same restrictions as for <a class="reference internal" href="Attributes.html"><span class="doc">Attributes</span></a> apply to what the TickerHandler
+objects, but the same restrictions as for <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a> apply to what the TickerHandler
 may store.</p>
 </div></blockquote>
 <p>When testing, you can stop all tickers in the entire game with <code class="docutils literal notranslate"><span class="pre">tickerhandler.clear()</span></code>. You can also
 view the currently subscribed objects with <code class="docutils literal notranslate"><span class="pre">tickerhandler.all()</span></code>.</p>
-<p>See the <a class="reference internal" href="../Howto/Weather-Tutorial.html"><span class="doc">Weather Tutorial</span></a> for an example of using the TickerHandler.</p>
+<p>See the <a class="reference internal" href="../Howto/Weather-Tutorial.html"><span class="doc std std-doc">Weather Tutorial</span></a> for an example of using the TickerHandler.</p>
 <section id="when-not-to-use-tickerhandler">
 <h3>When <em>not</em> to use TickerHandler<a class="headerlink" href="#when-not-to-use-tickerhandler" title="Permalink to this headline">¶</a></h3>
 <p>Using the TickerHandler may sound very useful but it is important to consider when not to use it.
@@ -213,7 +205,7 @@ same time without input from something else.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="TickerHandler.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

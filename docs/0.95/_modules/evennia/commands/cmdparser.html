@@ -1,0 +1,329 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.commands.cmdparser &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdparser</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.commands.cmdparser</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The default command parser. Use your own by assigning</span>
+<span class="sd">`settings.COMMAND_PARSER` to a Python path to a module containing the</span>
+<span class="sd">replacing cmdparser function. The replacement parser must accept the</span>
+<span class="sd">same inputs as the default one.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
+
+<span class="n">_MULTIMATCH_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_MULTIMATCH_REGEX</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">U</span><span class="p">)</span>
+<span class="n">_CMD_IGNORE_PREFIXES</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMD_IGNORE_PREFIXES</span>
+
+
+<div class="viewcode-block" id="create_match"><a class="viewcode-back" href="../../../api/evennia.commands.cmdparser.html#evennia.commands.cmdparser.create_match">[docs]</a><span class="k">def</span> <span class="nf">create_match</span><span class="p">(</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">cmdobj</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Builds a command match by splitting the incoming string and</span>
+<span class="sd">    evaluating the quality of the match.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cmdname (str): Name of command to check for.</span>
+<span class="sd">        string (str): The string to match against.</span>
+<span class="sd">        cmdobj (str): The full Command instance.</span>
+<span class="sd">        raw_cmdname (str, optional): If CMD_IGNORE_PREFIX is set and the cmdname starts with</span>
+<span class="sd">            one of the prefixes to ignore, this contains the raw, unstripped cmdname,</span>
+<span class="sd">            otherwise it is None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        match (tuple): This is on the form (cmdname, args, cmdobj, cmdlen, mratio, raw_cmdname),</span>
+<span class="sd">            where `cmdname` is the command&#39;s name and `args` is the rest of the incoming</span>
+<span class="sd">            string, without said command name. `cmdobj` is</span>
+<span class="sd">            the Command instance, the cmdlen is the same as len(cmdname) and mratio</span>
+<span class="sd">            is a measure of how big a part of the full input string the cmdname</span>
+<span class="sd">            takes up - an exact match would be 1.0. Finally, the `raw_cmdname` is</span>
+<span class="sd">            the cmdname unmodified by eventual prefix-stripping.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cmdlen</span><span class="p">,</span> <span class="n">strlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">cmdname</span><span class="p">)),</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">string</span><span class="p">))</span>
+    <span class="n">mratio</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">strlen</span> <span class="o">-</span> <span class="n">cmdlen</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">strlen</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">string</span><span class="p">[</span><span class="n">cmdlen</span><span class="p">:]</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cmdobj</span><span class="p">,</span> <span class="n">cmdlen</span><span class="p">,</span> <span class="n">mratio</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="build_matches"><a class="viewcode-back" href="../../../api/evennia.commands.cmdparser.html#evennia.commands.cmdparser.build_matches">[docs]</a><span class="k">def</span> <span class="nf">build_matches</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">include_prefixes</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build match tuples by matching raw_string against available commands.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        raw_string (str): Input string that can look in any way; the only assumption is</span>
+<span class="sd">            that the sought command&#39;s name/alias must be *first* in the string.</span>
+<span class="sd">        cmdset (CmdSet): The current cmdset to pick Commands from.</span>
+<span class="sd">        include_prefixes (bool): If set, include prefixes like @, ! etc (specified in settings)</span>
+<span class="sd">            in the match, otherwise strip them before matching.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        matches (list) A list of match tuples created by `cmdparser.create_match`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">include_prefixes</span><span class="p">:</span>
+            <span class="c1"># use the cmdname as-is</span>
+            <span class="n">l_raw_string</span> <span class="o">=</span> <span class="n">raw_string</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmdset</span><span class="p">:</span>
+                <span class="n">matches</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="n">create_match</span><span class="p">(</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">cmdname</span> <span class="ow">in</span> <span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="n">cmd</span><span class="o">.</span><span class="n">aliases</span>
+                        <span class="k">if</span> <span class="n">cmdname</span>
+                        <span class="ow">and</span> <span class="n">l_raw_string</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">cmdname</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+                        <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span> <span class="ow">or</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">l_raw_string</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">cmdname</span><span class="p">)</span> <span class="p">:]))</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># strip prefixes set in settings</span>
+            <span class="n">raw_string</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">raw_string</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">_CMD_IGNORE_PREFIXES</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">raw_string</span>
+            <span class="p">)</span>
+            <span class="n">l_raw_string</span> <span class="o">=</span> <span class="n">raw_string</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmdset</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">raw_cmdname</span> <span class="ow">in</span> <span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="n">cmd</span><span class="o">.</span><span class="n">aliases</span><span class="p">:</span>
+                    <span class="n">cmdname</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">raw_cmdname</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">_CMD_IGNORE_PREFIXES</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_cmdname</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                        <span class="k">else</span> <span class="n">raw_cmdname</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">cmdname</span>
+                        <span class="ow">and</span> <span class="n">l_raw_string</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">cmdname</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+                        <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span> <span class="ow">or</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">l_raw_string</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">cmdname</span><span class="p">)</span> <span class="p">:]))</span>
+                    <span class="p">):</span>
+                        <span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">create_match</span><span class="p">(</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">log_trace</span><span class="p">(</span><span class="s2">&quot;cmdhandler error. raw_input:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">raw_string</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">matches</span></div>
+
+
+<div class="viewcode-block" id="try_num_prefixes"><a class="viewcode-back" href="../../../api/evennia.commands.cmdparser.html#evennia.commands.cmdparser.try_num_prefixes">[docs]</a><span class="k">def</span> <span class="nf">try_num_prefixes</span><span class="p">(</span><span class="n">raw_string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test if user tried to separate multi-matches with a number separator</span>
+<span class="sd">    (default 1-name, 2-name etc). This is usually called last, if no other</span>
+<span class="sd">    match was found.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        raw_string (str): The user input to parse.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        mindex, new_raw_string (tuple): If a multimatch-separator was detected,</span>
+<span class="sd">            this is stripped out as an integer to separate between the matches. The</span>
+<span class="sd">            new_raw_string is the result of stripping out that identifier. If no</span>
+<span class="sd">            such form was found, returns (None, None).</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        In the default configuration, entering 2-ball (e.g. in a room will more</span>
+<span class="sd">        than one &#39;ball&#39; object), will lead to a multimatch and this function</span>
+<span class="sd">        will parse `&quot;2-ball&quot;` and return `(2, &quot;ball&quot;)`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># no matches found</span>
+    <span class="n">num_ref_match</span> <span class="o">=</span> <span class="n">_MULTIMATCH_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">num_ref_match</span><span class="p">:</span>
+        <span class="c1"># the user might be trying to identify the command</span>
+        <span class="c1"># with a #num-command style syntax. We expect the regex to</span>
+        <span class="c1"># contain the groups &quot;number&quot; and &quot;name&quot;.</span>
+        <span class="n">mindex</span><span class="p">,</span> <span class="n">new_raw_string</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_ref_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">),</span> <span class="n">num_ref_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">mindex</span><span class="p">,</span> <span class="n">new_raw_string</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="cmdparser"><a class="viewcode-back" href="../../../api/evennia.commands.cmdparser.html#evennia.commands.cmdparser.cmdparser">[docs]</a><span class="k">def</span> <span class="nf">cmdparser</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">match_index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is called by the cmdhandler once it has</span>
+<span class="sd">    gathered and merged all valid cmdsets valid for this particular parsing.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        raw_string (str): The unparsed text entered by the caller.</span>
+<span class="sd">        cmdset (CmdSet): The merged, currently valid cmdset</span>
+<span class="sd">        caller (Session, Account or Object): The caller triggering this parsing.</span>
+<span class="sd">        match_index (int, optional): Index to pick a given match in a</span>
+<span class="sd">            list of same-named command matches. If this is given, it suggests</span>
+<span class="sd">            this is not the first time this function was called: normally</span>
+<span class="sd">            the first run resulted in a multimatch, and the index is given</span>
+<span class="sd">            to select between the results for the second run.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        matches (list): This is a list of match-tuples as returned by `create_match`.</span>
+<span class="sd">            If no matches were found, this is an empty list.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        The cmdparser understand the following command combinations (where</span>
+<span class="sd">        [] marks optional parts.</span>
+
+<span class="sd">        ```</span>
+<span class="sd">        [cmdname[ cmdname2 cmdname3 ...] [the rest]</span>
+<span class="sd">        ```</span>
+
+<span class="sd">        A command may consist of any number of space-separated words of any</span>
+<span class="sd">        length, and contain any character. It may also be empty.</span>
+
+<span class="sd">        The parser makes use of the cmdset to find command candidates. The</span>
+<span class="sd">        parser return a list of matches. Each match is a tuple with its</span>
+<span class="sd">        first three elements being the parsed cmdname (lower case),</span>
+<span class="sd">        the remaining arguments, and the matched cmdobject from the cmdset.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">raw_string</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="c1"># find mathces, first using the full name</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="n">build_matches</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">include_prefixes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span><span class="p">:</span>
+        <span class="c1"># try to match a number 1-cmdname, 2-cmdname etc</span>
+        <span class="n">mindex</span><span class="p">,</span> <span class="n">new_raw_string</span> <span class="o">=</span> <span class="n">try_num_prefixes</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mindex</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cmdparser</span><span class="p">(</span><span class="n">new_raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">match_index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">mindex</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">_CMD_IGNORE_PREFIXES</span><span class="p">:</span>
+            <span class="c1"># still no match. Try to strip prefixes</span>
+            <span class="n">raw_string</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">raw_string</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">_CMD_IGNORE_PREFIXES</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">raw_string</span>
+            <span class="p">)</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="n">build_matches</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">include_prefixes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># only select command matches we are actually allowed to call.</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span> <span class="k">if</span> <span class="n">match</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;cmd&quot;</span><span class="p">)]</span>
+
+    <span class="c1"># try to bring the number of matches down to 1</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># See if it helps to analyze the match with preserved case but only if</span>
+        <span class="c1"># it leaves at least one match.</span>
+        <span class="n">trimmed</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span> <span class="k">if</span> <span class="n">raw_string</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+        <span class="k">if</span> <span class="n">trimmed</span><span class="p">:</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="n">trimmed</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># we still have multiple matches. Sort them by count quality.</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">matches</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="c1"># only pick the matches with highest count quality</span>
+        <span class="n">quality</span> <span class="o">=</span> <span class="p">[</span><span class="n">mat</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">mat</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">]</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="o">-</span><span class="n">quality</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">quality</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="p">:]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># still multiple matches. Fall back to ratio-based quality.</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">matches</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+        <span class="c1"># only pick the highest rated ratio match</span>
+        <span class="n">quality</span> <span class="o">=</span> <span class="p">[</span><span class="n">mat</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="k">for</span> <span class="n">mat</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">]</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="o">-</span><span class="n">quality</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">quality</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="p">:]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">match_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># We couldn&#39;t separate match by quality, but we have an</span>
+        <span class="c1"># index argument to tell us which match to use.</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">match_index</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">):</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span><span class="n">matches</span><span class="p">[</span><span class="n">match_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># we tried to give an index outside of the range - this means</span>
+            <span class="c1"># a no-match</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># no matter what we have at this point, we have to return it.</span>
+    <span class="k">return</span> <span class="n">matches</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="cmdparser.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdparser</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

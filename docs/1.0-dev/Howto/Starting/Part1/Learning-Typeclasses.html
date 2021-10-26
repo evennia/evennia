@@ -14,6 +14,8 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -47,40 +49,14 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="persistent-objects-and-typeclasses">
+  <section class="tex2jax_ignore mathjax_ignore" id="persistent-objects-and-typeclasses">
 <h1>Persistent objects and typeclasses<a class="headerlink" href="#persistent-objects-and-typeclasses" title="Permalink to this headline">¶</a></h1>
 <p>Now that we have learned a little about how to find things in the Evennia library, let’s use it.</p>
-<p>In the <a class="reference internal" href="Python-classes-and-objects.html"><span class="doc">Python classes and objects</span></a> lesson we created the dragons Fluffy, Cuddly
+<p>In the <a class="reference internal" href="Python-classes-and-objects.html"><span class="doc std std-doc">Python classes and objects</span></a> lesson we created the dragons Fluffy, Cuddly
 and Smaug and made them fly and breathe fire. So far our dragons are short-lived - whenever we <code class="docutils literal notranslate"><span class="pre">restart</span></code>
 the server or <code class="docutils literal notranslate"><span class="pre">quit()</span></code> out of python mode they are gone.</p>
 <p>This is what you should have in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/monsters.py</span></code> so far:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="k">class</span> <span class="nc">Monster</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a base class for Monsters.</span>
@@ -107,22 +83,14 @@ the server or <code class="docutils literal notranslate"><span class="pre">quit(
 <span class="sd">        Let our dragon breathe fire.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> breathes fire!&quot;</span><span class="p">)</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <section id="our-first-persistent-object">
 <h2>Our first persistent object<a class="headerlink" href="#our-first-persistent-object" title="Permalink to this headline">¶</a></h2>
 <p>At this point we should know enough to understand what is happening in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/objects.py</span></code>. Let’s
 open it:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">module docstring</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
@@ -133,7 +101,7 @@ open it:</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>So we have a class <code class="docutils literal notranslate"><span class="pre">Object</span></code> that <em>inherits</em> from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>, which we have imported from Evennia.
 The class itself doesn’t do anything (it just <code class="docutils literal notranslate"><span class="pre">pass</span></code>es) but that doesn’t mean it’s useless. As we’ve seen,
 it inherits all the functionality of its parent. It’s in fact an <em>exact replica</em> of <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> right now.
@@ -141,37 +109,13 @@ If we knew what kind of methods and resources were available on <code class="doc
 change the way it works!</p>
 <blockquote>
 <div><p>Hint: We will get back to this, but to learn what resources an Evennia parent like <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> offers,
-easiest is to peek at its <a class="reference external" href="../../../api/evennia.objects.objects.html#DefaultObject">API documentation</a>. The docstring for
+easiest is to peek at its <a class="reference internal" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><span class="xref myst py py-class">API documentation</span></a>. The docstring for
 the <code class="docutils literal notranslate"><span class="pre">Object</span></code> class can also help.</p>
 </div></blockquote>
 <p>One thing that Evennia classes offers and which you don’t get with vanilla Python classes is <em>persistence</em>. As
 you’ve found, Fluffy, Cuddly and Smaug are gone once we reload the server. Let’s see if we can fix this.</p>
 <p>Go back to <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/monsters.py</span></code>. Change it as follows:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
 
 <span class="k">class</span> <span class="nc">Monster</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
@@ -196,8 +140,9 @@ you’ve found, Fluffy, Cuddly and Smaug are gone once we reload the server. Let
 <span class="sd">        Let our dragon breathe fire.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> breathes fire!&quot;</span><span class="p">)</span>
+
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>Don’t forget to save. We removed <code class="docutils literal notranslate"><span class="pre">Monster.__init__</span></code> and made <code class="docutils literal notranslate"><span class="pre">Monster</span></code> inherit from Evennia’s <code class="docutils literal notranslate"><span class="pre">Object</span></code> (which in turn
 inherits from Evennia’s <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>, as we saw). By extension, this means that <code class="docutils literal notranslate"><span class="pre">Dragon</span></code> also inherits
 from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>, just from further away!</p>
@@ -206,12 +151,14 @@ from <code class="docutils literal notranslate"><span class="pre">DefaultObject<
 <p>First reload the server as usual. We will need to create the dragon a little differently this time:</p>
 <aside class="sidebar">
 <p class="sidebar-title">Keyword arguments</p>
-<p>Keyword arguments (like <cite>db_key=”Smaug”</cite>) is a way to
-name the input arguments to a function or method. They make
-things easier to read but also allows for conveniently setting
-defaults for values not given explicitly.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Keyword arguments (like `db_key=&quot;Smaug&quot;`) is a way to 
+name the input arguments to a function or method. They make 
+things easier to read but also allows for conveniently setting 
+defaults for values not given explicitly.
+</pre></div>
+</div>
 </aside>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py
 &gt; from typeclasses.monsters import Dragon
 &gt; smaug = Dragon(db_key=&quot;Smaug&quot;, db_location=here)
 &gt; smaug.save()
@@ -222,14 +169,14 @@ The world trembles.
 </div>
 <p>Smaug works the same as before, but we created him differently: first we used
 <code class="docutils literal notranslate"><span class="pre">Dragon(db_key=&quot;Smaug&quot;,</span> <span class="pre">db_location=here)</span></code> to create the object, and then we used <code class="docutils literal notranslate"><span class="pre">smaug.save()</span></code> afterwards.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">quit</span><span class="p">()</span>
-<span class="n">Python</span> <span class="n">Console</span> <span class="ow">is</span> <span class="n">closing</span><span class="o">.</span>
-<span class="o">&gt;</span> <span class="n">look</span> 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; quit()
+Python Console is closing.
+&gt; look 
 </pre></div>
 </div>
 <p>You should now see that Smaug <em>is in the room with you</em>. Woah!</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">reload</span> 
-<span class="o">&gt;</span> <span class="n">look</span> 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload 
+&gt; look 
 </pre></div>
 </div>
 <p><em>He’s still there</em>… What we just did was to create a new entry in the database for Smaug. We gave the object
@@ -237,7 +184,7 @@ its name (key) and set its location to our current location (remember that <code
 in the <code class="docutils literal notranslate"><span class="pre">py</span></code> command, you can’t use it elsewhere).</p>
 <p>To make use of Smaug in code we must first find him in the database. For an object in the current
 location we can easily do this in <code class="docutils literal notranslate"><span class="pre">py</span></code> by using <code class="docutils literal notranslate"><span class="pre">me.search()</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py smaug = me.search(&quot;Smaug&quot;) ; smaug.firebreath()
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py smaug = me.search(&quot;Smaug&quot;) ; smaug.firebreath()
 Smaug breathes fire!  
 </pre></div>
 </div>
@@ -248,14 +195,14 @@ Smaug breathes fire!
 bound Python instances before. But you need to use <code class="docutils literal notranslate"><span class="pre">db_key</span></code> instead of <code class="docutils literal notranslate"><span class="pre">key</span></code> and you also have to
 remember to call <code class="docutils literal notranslate"><span class="pre">.save()</span></code> afterwards. Evennia has a helper function that is more common to use,
 called <code class="docutils literal notranslate"><span class="pre">create_object</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">fluffy</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="s1">&#39;typeclases.monster.Monster&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Fluffy&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">here</span><span class="p">)</span>
-<span class="o">&gt;</span> <span class="n">look</span> 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py fluffy = evennia.create_object(&#39;typeclases.monster.Monster&#39;, key=&quot;Fluffy&quot;, location=here)
+&gt; look 
 </pre></div>
 </div>
 <p>Boom, Fluffy should now be in the room with you, a little less scary than Smaug. You specify the
 python-path to the code you want and then set the key and location. Evennia sets things up and saves for you.</p>
 <p>If you want to find Fluffy from anywhere, you can use Evennia’s <code class="docutils literal notranslate"><span class="pre">search_object</span></code> helper:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; fluffy = evennia.search_object(&quot;Fluffy&quot;)[0] ; fluffy.move_around()
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; fluffy = evennia.search_object(&quot;Fluffy&quot;)[0] ; fluffy.move_around()
 Fluffy is moving! 
 </pre></div>
 </div>
@@ -268,13 +215,13 @@ multiple Fluffies we could get the second one with <code class="docutils literal
 <section id="creating-using-create-command">
 <h3>Creating using create-command<a class="headerlink" href="#creating-using-create-command" title="Permalink to this headline">¶</a></h3>
 <p>Finally, you can also create a new Dragon using the familiar builder-commands we explored a few lessons ago:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create</span><span class="o">/</span><span class="n">drop</span> <span class="n">Cuddly</span><span class="p">:</span><span class="n">typeclasses</span><span class="o">.</span><span class="n">monsters</span><span class="o">.</span><span class="n">Monster</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; create/drop Cuddly:typeclasses.monsters.Monster
 </pre></div>
 </div>
 <p>Cuddly is now in the room. After learning about how objects are created you’ll realize that all this command really
 does is to parse your input, figure out that <code class="docutils literal notranslate"><span class="pre">/drop</span></code> means to “give the object the same location as the caller”,
 and then do a call akin to</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="s2">&quot;typeclasses.monsters.Monster&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Cuddly&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">here</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia.create_object(&quot;typeclasses.monsters.Monster&quot;, key=&quot;Cuddly&quot;, location=here)
 </pre></div>
 </div>
 <p>That’s pretty much all there is to the mighty <code class="docutils literal notranslate"><span class="pre">create</span></code> command! The rest is just parsing for the command
@@ -325,31 +272,31 @@ own modules and import the base class.</p>
 <section id="examining-and-defaults">
 <h3>Examining and defaults<a class="headerlink" href="#examining-and-defaults" title="Permalink to this headline">¶</a></h3>
 <p>When you do</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create</span><span class="o">/</span><span class="n">drop</span> <span class="n">giantess</span><span class="p">:</span><span class="n">typeclasses</span><span class="o">.</span><span class="n">monsters</span><span class="o">.</span><span class="n">Monster</span>
-<span class="n">You</span> <span class="n">create</span> <span class="n">a</span> <span class="n">new</span> <span class="n">Monster</span><span class="p">:</span> <span class="n">giantess</span><span class="o">.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; create/drop giantess:typeclasses.monsters.Monster
+You create a new Monster: giantess.
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">evennia</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="s2">&quot;typeclasses.monsters.Monster&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Giantess&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">here</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py evennia.create_object(&quot;typeclasses.monsters.Monster&quot;, key=&quot;Giantess&quot;, location=here)
 </pre></div>
 </div>
 <p>You are specifying exactly which typeclass you want to use to build the Giantess. Let’s examine the result:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">examine</span> <span class="n">giantess</span>
-<span class="o">-------------------------------------------------------------------------------</span> 
-<span class="n">Name</span><span class="o">/</span><span class="n">key</span><span class="p">:</span> <span class="n">Giantess</span> <span class="p">(</span><span class="c1">#14)</span>
-<span class="n">Typeclass</span><span class="p">:</span> <span class="n">Monster</span> <span class="p">(</span><span class="n">typeclasses</span><span class="o">.</span><span class="n">monsters</span><span class="o">.</span><span class="n">Monster</span><span class="p">)</span>
-<span class="n">Location</span><span class="p">:</span> <span class="n">Limbo</span> <span class="p">(</span><span class="c1">#2)</span>
-<span class="n">Home</span><span class="p">:</span> <span class="n">Limbo</span> <span class="p">(</span><span class="c1">#2)</span>
-<span class="n">Permissions</span><span class="p">:</span> <span class="o">&lt;</span><span class="kc">None</span><span class="o">&gt;</span>
-<span class="n">Locks</span><span class="p">:</span> <span class="n">call</span><span class="p">:</span><span class="n">true</span><span class="p">();</span> <span class="n">control</span><span class="p">:</span><span class="nb">id</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">perm</span><span class="p">(</span><span class="n">Admin</span><span class="p">);</span> <span class="n">delete</span><span class="p">:</span><span class="nb">id</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">perm</span><span class="p">(</span><span class="n">Admin</span><span class="p">);</span>
-   <span class="n">drop</span><span class="p">:</span><span class="n">holds</span><span class="p">();</span> <span class="n">edit</span><span class="p">:</span><span class="n">perm</span><span class="p">(</span><span class="n">Admin</span><span class="p">);</span> <span class="n">examine</span><span class="p">:</span><span class="n">perm</span><span class="p">(</span><span class="n">Builder</span><span class="p">);</span> <span class="n">get</span><span class="p">:</span><span class="nb">all</span><span class="p">();</span>
-   <span class="n">puppet</span><span class="p">:</span><span class="n">pperm</span><span class="p">(</span><span class="n">Developer</span><span class="p">);</span> <span class="n">tell</span><span class="p">:</span><span class="n">perm</span><span class="p">(</span><span class="n">Admin</span><span class="p">);</span> <span class="n">view</span><span class="p">:</span><span class="nb">all</span><span class="p">()</span>
-<span class="n">Persistent</span> <span class="n">attributes</span><span class="p">:</span>
- <span class="n">desc</span> <span class="o">=</span> <span class="n">You</span> <span class="n">see</span> <span class="n">nothing</span> <span class="n">special</span><span class="o">.</span> 
-<span class="o">-------------------------------------------------------------------------------</span> 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; examine giantess
+------------------------------------------------------------------------------- 
+Name/key: Giantess (#14)
+Typeclass: Monster (typeclasses.monsters.Monster)
+Location: Limbo (#2)
+Home: Limbo (#2)
+Permissions: &lt;None&gt;
+Locks: call:true(); control:id(1) or perm(Admin); delete:id(1) or perm(Admin);
+   drop:holds(); edit:perm(Admin); examine:perm(Builder); get:all();
+   puppet:pperm(Developer); tell:perm(Admin); view:all()
+Persistent attributes:
+ desc = You see nothing special. 
+------------------------------------------------------------------------------- 
 </pre></div>
 </div>
-<p>We used the <code class="docutils literal notranslate"><span class="pre">examine</span></code> command briefly in the <a class="reference internal" href="Building-Quickstart.html"><span class="doc">lesson about building in-game</span></a>. Now these lines
+<p>We used the <code class="docutils literal notranslate"><span class="pre">examine</span></code> command briefly in the <a class="reference internal" href="Building-Quickstart.html"><span class="doc std std-doc">lesson about building in-game</span></a>. Now these lines
 may be more useful to us:</p>
 <ul class="simple">
 <li><p><strong>Name/key</strong> - The name of this thing. The value <code class="docutils literal notranslate"><span class="pre">(#14)</span></code> is probably different for you. This is the
@@ -368,20 +315,20 @@ to those in the next section.</p></li>
 <p>Note how the <strong>Typeclass</strong> line describes exactly where to find the code of this object? This is very useful for
 understanding how any object in Evennia works.</p>
 <p>What happens if we <em>don’t</em> specify the typeclass though?</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create</span><span class="o">/</span><span class="n">drop</span> <span class="n">box</span> 
-<span class="n">You</span> <span class="n">create</span> <span class="n">a</span> <span class="n">new</span> <span class="n">Object</span><span class="p">:</span> <span class="n">box</span><span class="o">.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; create/drop box 
+You create a new Object: box.
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;box&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">here</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py create.create_object(None, key=&quot;box&quot;, location=here)
 </pre></div>
 </div>
 <p>Now check it out:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">examine</span> <span class="n">box</span>  
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; examine box  
 </pre></div>
 </div>
 <p>You will find that the <strong>Typeclass</strong> line now reads</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Typeclass</span><span class="p">:</span> <span class="n">Object</span> <span class="p">(</span><span class="n">typeclasses</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">Object</span><span class="p">)</span> 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Typeclass: Object (typeclasses.objects.Object) 
 </pre></div>
 </div>
 <p>So when you didn’t specify a typeclass, Evennia used a default, more specifically the (so far) empty <code class="docutils literal notranslate"><span class="pre">Object</span></code> class in
@@ -392,10 +339,12 @@ in <a class="reference external" href="https://github.com/evennia/evennia/blob/m
 with the name <code class="docutils literal notranslate"><span class="pre">BASE_OBJECT_TYPECLASS</span></code>, which is set to <code class="docutils literal notranslate"><span class="pre">typeclasses.objects.Object</span></code>.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Changing things</p>
-<p>While it’s tempting to change folders around to your liking, this can
-make it harder to follow tutorials and may confuse if
-you are asking others for help. So don’t overdo it unless you really
-know what you are doing.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>While it&#39;s tempting to change folders around to your liking, this can
+make it harder to follow tutorials and may confuse if 
+you are asking others for help. So don&#39;t overdo it unless you really 
+know what you are doing.
+</pre></div>
+</div>
 </aside>
 <p>So if you wanted the creation commands and methods to default to some other class you could
 add your own <code class="docutils literal notranslate"><span class="pre">BASE_OBJECT_TYPECLASS</span></code> line to <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>. The same is true for all the other
@@ -406,16 +355,7 @@ layout of your game dir considerably if you wanted. You just need to tell Evenni
 <section id="modifying-ourselves">
 <h2>Modifying ourselves<a class="headerlink" href="#modifying-ourselves" title="Permalink to this headline">¶</a></h2>
 <p>Let’s try to modify ourselves a little. Open up <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">(module docstring)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
@@ -426,34 +366,34 @@ layout of your game dir considerably if you wanted. You just need to tell Evenni
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>This looks quite familiar now - an empty class inheriting from the Evennia base typeclass. As you would expect,
 this is also the default typeclass used for creating Characters if you don’t specify it. You can verify it:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">examine</span> <span class="n">me</span>
-<span class="o">------------------------------------------------------------------------------</span>
-<span class="n">Name</span><span class="o">/</span><span class="n">key</span><span class="p">:</span> <span class="n">YourName</span> <span class="p">(</span><span class="c1">#1)</span>
-<span class="n">Session</span> <span class="nb">id</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> <span class="c1">#1</span>
-<span class="n">Account</span><span class="p">:</span> <span class="n">YourName</span>
-<span class="n">Account</span> <span class="n">Perms</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">Superuser</span><span class="o">&gt;</span> <span class="p">(</span><span class="n">quelled</span><span class="p">)</span>
-<span class="n">Typeclass</span><span class="p">:</span> <span class="n">Character</span> <span class="p">(</span><span class="n">typeclasses</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">Character</span><span class="p">)</span>
-<span class="n">Location</span><span class="p">:</span> <span class="n">Limbo</span> <span class="p">(</span><span class="c1">#2)</span>
-<span class="n">Home</span><span class="p">:</span> <span class="n">Limbo</span> <span class="p">(</span><span class="c1">#2)</span>
-<span class="n">Permissions</span><span class="p">:</span> <span class="n">developer</span><span class="p">,</span> <span class="n">player</span>
-<span class="n">Locks</span><span class="p">:</span>      <span class="n">boot</span><span class="p">:</span><span class="n">false</span><span class="p">();</span> <span class="n">call</span><span class="p">:</span><span class="n">false</span><span class="p">();</span> <span class="n">control</span><span class="p">:</span><span class="n">perm</span><span class="p">(</span><span class="n">Developer</span><span class="p">);</span> <span class="n">delete</span><span class="p">:</span><span class="n">false</span><span class="p">();</span>
-      <span class="n">drop</span><span class="p">:</span><span class="n">holds</span><span class="p">();</span> <span class="n">edit</span><span class="p">:</span><span class="n">false</span><span class="p">();</span> <span class="n">examine</span><span class="p">:</span><span class="n">perm</span><span class="p">(</span><span class="n">Developer</span><span class="p">);</span> <span class="n">get</span><span class="p">:</span><span class="n">false</span><span class="p">();</span>
-      <span class="n">msg</span><span class="p">:</span><span class="nb">all</span><span class="p">();</span> <span class="n">puppet</span><span class="p">:</span><span class="n">false</span><span class="p">();</span> <span class="n">tell</span><span class="p">:</span><span class="n">perm</span><span class="p">(</span><span class="n">Admin</span><span class="p">);</span> <span class="n">view</span><span class="p">:</span><span class="nb">all</span><span class="p">()</span>
-<span class="n">Stored</span> <span class="n">Cmdset</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
- <span class="n">commands</span><span class="o">.</span><span class="n">default_cmdsets</span><span class="o">.</span><span class="n">CharacterCmdSet</span> <span class="p">[</span><span class="n">DefaultCharacter</span><span class="p">]</span> <span class="p">(</span><span class="n">Union</span><span class="p">,</span> <span class="n">prio</span> <span class="mi">0</span><span class="p">)</span>
-<span class="n">Merged</span> <span class="n">Cmdset</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-   <span class="o">...</span>
-<span class="n">Commands</span> <span class="n">available</span> <span class="n">to</span> <span class="n">YourName</span> <span class="p">(</span><span class="n">result</span> <span class="n">of</span> <span class="n">Merged</span> <span class="n">CmdSets</span><span class="p">):</span>
-   <span class="o">...</span>
-<span class="n">Persistent</span> <span class="n">attributes</span><span class="p">:</span>
- <span class="n">desc</span> <span class="o">=</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">User</span> <span class="c1">#1.</span>
- <span class="n">prelogout_location</span> <span class="o">=</span> <span class="n">Limbo</span>
-<span class="n">Non</span><span class="o">-</span><span class="n">Persistent</span> <span class="n">attributes</span><span class="p">:</span>
- <span class="n">last_cmd</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="o">------------------------------------------------------------------------------</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; examine me
+------------------------------------------------------------------------------
+Name/key: YourName (#1)
+Session id(s): #1
+Account: YourName
+Account Perms: &lt;Superuser&gt; (quelled)
+Typeclass: Character (typeclasses.characters.Character)
+Location: Limbo (#2)
+Home: Limbo (#2)
+Permissions: developer, player
+Locks:      boot:false(); call:false(); control:perm(Developer); delete:false();
+      drop:holds(); edit:false(); examine:perm(Developer); get:false();
+      msg:all(); puppet:false(); tell:perm(Admin); view:all()
+Stored Cmdset(s):
+ commands.default_cmdsets.CharacterCmdSet [DefaultCharacter] (Union, prio 0)
+Merged Cmdset(s):
+   ...
+Commands available to YourName (result of Merged CmdSets):
+   ...
+Persistent attributes:
+ desc = This is User #1.
+ prelogout_location = Limbo
+Non-Persistent attributes:
+ last_cmd = None
+------------------------------------------------------------------------------
 </pre></div>
 </div>
 <p>You got a lot longer output this time. You have a lot more going on than a simple Object. Here are some new fields of note:</p>
@@ -461,7 +401,7 @@ this is also the default typeclass used for creating Characters if you don’t s
 <li><p><strong>Session id(s)</strong>: This identifies the <em>Session</em> (that is, the individual connection to a player’s game client).</p></li>
 <li><p><strong>Account</strong> shows, well the <code class="docutils literal notranslate"><span class="pre">Account</span></code> object associated with this Character and Session.</p></li>
 <li><p><strong>Stored/Merged Cmdsets</strong> and <strong>Commands available</strong> is related to which <em>Commands</em> are stored on you. We will
-get to them in the <a class="reference internal" href="Adding-Commands.html"><span class="doc">next lesson</span></a>. For now it’s enough to know these consitute all the
+get to them in the <a class="reference internal" href="Adding-Commands.html"><span class="doc std std-doc">next lesson</span></a>. For now it’s enough to know these consitute all the
 commands available to you at a given moment.</p></li>
 <li><p><strong>Non-Persistent attributes</strong> are Attributes that are only stored temporarily and will go away on next reload.</p></li>
 </ul>
@@ -470,21 +410,7 @@ So if we modify this class we’ll also modify ourselves.</p>
 <section id="a-method-on-ourselves">
 <h3>A method on ourselves<a class="headerlink" href="#a-method-on-ourselves" title="Permalink to this headline">¶</a></h3>
 <p>Let’s try something simple first. Back in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    (class docstring)</span>
@@ -499,49 +425,50 @@ So if we modify this class we’ll also modify ourselves.</p>
 <span class="sd">        Get the main stats of this character</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">int</span>
+
 </pre></div>
-</td></tr></table></div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">reload</span> 
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span>
-<span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload 
+&gt; py self.get_stats()
+(10, 12, 15)
 </pre></div>
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Tuples and lists</p>
-<ul class="simple">
-<li><p>A <cite>list</cite> is written <cite>[a, b, c, d, …]</cite>. It can be modified after creation.</p></li>
-<li><p>A <cite>tuple</cite> is written <cite>(a, b, c, …)</cite>. It cannot be modified once created.</p></li>
-</ul>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>- A `list` is written `[a, b, c, d, ...]`. It can be modified after creation.
+- A `tuple` is written `(a, b, c, ...)`. It cannot be modified once created.
+</pre></div>
+</div>
 </aside>
 <p>We made a new method, gave it a docstring and had it <code class="docutils literal notranslate"><span class="pre">return</span></code> the RP-esque values we set. It comes back as a
 <em>tuple</em> <code class="docutils literal notranslate"><span class="pre">(10,</span> <span class="pre">12,</span> <span class="pre">15)</span></code>. To get a specific value you could specify the <em>index</em> of the value you want,
 starting from zero:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span> <span class="p">;</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Strength is </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-<span class="n">Strength</span> <span class="ow">is</span> <span class="mf">10.</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py stats = self.get_stats() ; print(f&quot;Strength is {stats[0]}.&quot;)
+Strength is 10.
 </pre></div>
 </div>
 </section>
 <section id="attributes">
 <h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
 <p>So what happens when we increase our strength? This would be one way:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">str</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">str</span>
-<span class="mi">11</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.str = self.str + 1
+&gt; py self.str
+11
 </pre></div>
 </div>
 <p>Here we set the strength equal to its previous value + 1. A shorter way to write this is to use Python’s <code class="docutils literal notranslate"><span class="pre">+=</span></code>
 operator:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">str</span> <span class="o">+=</span> <span class="mi">1</span>
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">str</span> 
-<span class="mi">12</span>     
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span>
-<span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.str += 1
+&gt; py self.str 
+12     
+&gt; py self.get_stats()
+(12, 12, 15)
 </pre></div>
 </div>
 <p>This looks correct! Try to change the values for dex and int too; it works fine. However:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">reload</span> 
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span>
-<span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload 
+&gt; py self.get_stats()
+(10, 12, 15)
 </pre></div>
 </div>
 <p>After a reload all our changes were forgotten. When we change properties like this, it only changes in memory,
@@ -552,17 +479,7 @@ since we have the stats hardcoded in the class, <em>every</em> character instanc
 same <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">dex</span></code> and <code class="docutils literal notranslate"><span class="pre">int</span></code> now! This is clearly not what we want.</p>
 <p>Evennia offers a special, persistent type of property for this, called an <code class="docutils literal notranslate"><span class="pre">Attribute</span></code>. Rework your
 <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code> like this:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    (class docstring)</span>
@@ -574,47 +491,49 @@ same <code class="docutils literal notranslate"><span class="pre">str</span></co
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">int</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <aside class="sidebar">
 <p class="sidebar-title">Spaces in Attribute name?</p>
-<p>What if you want spaces in your Attribute name? Or you want to assign the
-name of the Attribute on-the fly? Then you can use <cite>.attributes.add(name, value)</cite> instead,
-for example <cite>self.attributes.add(“str”, 10)</cite>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>What if you want spaces in your Attribute name? Or you want to assign the 
+name of the Attribute on-the fly? Then you can use `.attributes.add(name, value)` instead,
+for example `self.attributes.add(&quot;str&quot;, 10)`. 
+</pre></div>
+</div>
 </aside>
 <p>We removed the hard-coded stats and added added <code class="docutils literal notranslate"><span class="pre">.db</span></code> for every stat. The <code class="docutils literal notranslate"><span class="pre">.db</span></code> handler makes the stat
 into an an Evennia <code class="docutils literal notranslate"><span class="pre">Attribute</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">reload</span> 
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span>
-<span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload 
+&gt; py self.get_stats()
+(None, None, None) 
 </pre></div>
 </div>
 <p>Since we removed the hard-coded values, Evennia don’t know what they should be (yet). So all we get back
 is <code class="docutils literal notranslate"><span class="pre">None</span></code>, which is a Python reserved word to represent nothing, a no-value. This is different from a normal python
 property:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">str</span>
-<span class="ne">AttributeError</span><span class="p">:</span> <span class="s1">&#39;Character&#39;</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s1">&#39;str&#39;</span>
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">str</span>
-<span class="p">(</span><span class="n">nothing</span> <span class="n">will</span> <span class="n">be</span> <span class="n">displayed</span><span class="p">,</span> <span class="n">because</span> <span class="n">it</span><span class="s1">&#39;s None)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.str
+AttributeError: &#39;Character&#39; object has no attribute &#39;str&#39;
+&gt; py self.db.str
+(nothing will be displayed, because it&#39;s None)
 </pre></div>
 </div>
 <p>Trying to get an unknown normal Python property will give an error. Getting an unknown Evennia <code class="docutils literal notranslate"><span class="pre">Attribute</span></code> will
 never give an error, but only result in <code class="docutils literal notranslate"><span class="pre">None</span></code> being returned. This is often very practical.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">15</span>
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span>
-<span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
-<span class="o">&gt;</span> <span class="n">reload</span> 
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span>
-<span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.db.str, self.db.dex, self.db.int = 10, 12, 15
+&gt; py self.get_stats()
+(10, 12, 15)
+&gt; reload 
+&gt; py self.get_stats()
+(10, 12, 15)
 </pre></div>
 </div>
 <p>Now we set the Attributes to the right values. We can see that things work the same as before, also after a
 server reload. Let’s modify the strength:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">str</span> <span class="o">+=</span> <span class="mi">2</span> 
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span>
-<span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
-<span class="o">&gt;</span> <span class="n">reload</span> 
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span>
-<span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.db.str += 2 
+&gt; py self.get_stats()
+(12, 12, 15)
+&gt; reload 
+&gt; py self.get_stats()
+(12, 12, 15)
 </pre></div>
 </div>
 <p>Our change now survives a reload since Evennia automatically saves the Attribute to the database for us.</p>
@@ -627,30 +546,15 @@ in more detail. For now, let’s give every new character some random stats to s
 <p>We want those stats to be set only once, when the object is first created. For the Character, this method
 is called <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code>.</p>
 <aside class="sidebar">
-<p class="sidebar-title">__init__ vs at_object_creation</p>
-<p>For the <cite>Monster</cite> class we used <cite>__init__</cite> to set up the class. We can’t use this
+<p class="sidebar-title"><strong>init</strong> vs at_object_creation</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>For the `Monster` class we used `__init__` to set up the class. We can&#39;t use this
 for a typeclass because it will be called more than once, at the very least after
 every reload and maybe more depending on caching. Even if you are familiar with Python,
-avoid touching <cite>__init__</cite> for typeclasses, the results will not be what you expect.</p>
+avoid touching `__init__` for typeclasses, the results will not be what you expect.
+</pre></div>
+</div>
 </aside>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># up by the other imports</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># up by the other imports</span>
 <span class="kn">import</span> <span class="nn">random</span> 
 
 <span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
@@ -669,28 +573,28 @@ avoid touching <cite>__init__</cite> for typeclasses, the results will not be wh
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">int</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>We imported a new module, <code class="docutils literal notranslate"><span class="pre">random</span></code>. This is part of Python’s standard library. We used <code class="docutils literal notranslate"><span class="pre">random.randint</span></code> to
 set a random value from 3 to 18 to each stat. Simple, but for some classical RPGs this is all you need!</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">reload</span> 
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span>
-<span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload 
+&gt; py self.get_stats()
+(12, 12, 15)
 </pre></div>
 </div>
 <p>Hm, this is the same values we set before. They are not random. The reason for this is of course that, as said,
 <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> only runs <em>once</em>, the very first time a character is created. Our character object was already
 created long before, so it will not be called again.</p>
 <p>It’s simple enough to run it manually though:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span>
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span>
-<span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; self.at_object_creation()
+&gt; py self.get_stats()
+(5, 4, 8)
 </pre></div>
 </div>
 <p>Lady luck didn’t smile on us for this example; maybe you’ll fare better. Evennia has a helper command
 <code class="docutils literal notranslate"><span class="pre">update</span></code> that re-runs the creation hook and also cleans up any other Attributes not re-created by <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">update</span> <span class="bp">self</span>
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span>
-<span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">14</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; update self
+&gt; py self.get_stats()
+(8, 16, 14)
 </pre></div>
 </div>
 </section>
@@ -700,37 +604,39 @@ created long before, so it will not be called again.</p>
 before you create a lot of objects (characters in this case). But should it come to that you don’t want to have to
 go around and re-run the method on everyone manually. For the Python beginner, doing this will also give a chance to
 try out Python <em>loops</em>. We try them out in multi-line Python mode:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span>
-<span class="o">&gt;</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">]:</span>     <span class="o">&gt;</span>     <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="mi">1</span>
-<span class="mi">2</span>
-<span class="n">foo</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py
+&gt; for a in [1, 2, &quot;foo&quot;]:     &gt;     print(a)
+1
+2
+foo
 </pre></div>
 </div>
 <p>A python <em>for-loop</em> allows us to loop over something. Above, we made a <em>list</em> of two numbers and a string. In
 every iteration of the loop, the variable <code class="docutils literal notranslate"><span class="pre">a</span></code> becomes one element in turn, and we print that.</p>
 <p>For our list, we want to loop over all Characters, and want to call <code class="docutils literal notranslate"><span class="pre">.at_object_creation</span></code> on each. This is how
 this is done (still in python multi-line mode):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="kn">from</span> <span class="nn">typeclasses.characters</span> <span class="kn">import</span> <span class="n">Character</span>
-<span class="o">&gt;</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">Character</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-<span class="o">&gt;</span>     <span class="n">char</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; from typeclasses.characters import Character
+&gt; for char in Character.objects.all()
+&gt;     char.at_object_creation()
 </pre></div>
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Database queries</p>
-<p><cite>Character.objects.all()</cite> is an example of a database query expressed in Python. This will be converted
-into a database query under the hood. This syntax is part of
-<a class="reference external" href="https://docs.djangoproject.com/en/3.0/topics/db/queries/">Django’s query language</a>. You don’t need to
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>`Character.objects.all()` is an example of a database query expressed in Python. This will be converted 
+into a database query under the hood. This syntax is part of 
+`Django&#39;s query language &lt;https://docs.djangoproject.com/en/3.0/topics/db/queries/&gt;`_. You don&#39;t need to
 know Django to use Evennia, but if you ever need more specific database queries, this is always available
-when you need it.</p>
+when you need it.
+</pre></div>
+</div>
 </aside>
 <p>We import the <code class="docutils literal notranslate"><span class="pre">Character</span></code> class and then we use <code class="docutils literal notranslate"><span class="pre">.objects.all()</span></code> to get all <code class="docutils literal notranslate"><span class="pre">Character</span></code> instances. Simplified,
 <code class="docutils literal notranslate"><span class="pre">.objects</span></code> is a resource from which one can <em>query</em> for all <code class="docutils literal notranslate"><span class="pre">Characters</span></code>. Using <code class="docutils literal notranslate"><span class="pre">.all()</span></code> gets us a listing
 of all of them that we then immediately loop over. Boom, we just updated all Characters, including ourselves:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">quit</span><span class="p">()</span>
-<span class="n">Closing</span> <span class="n">the</span> <span class="n">Python</span> <span class="n">console</span><span class="o">.</span>
-<span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span>
-<span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; quit()
+Closing the Python console.
+&gt; self.get_stats()
+(3, 18, 10)
 </pre></div>
 </div>
 </section>
@@ -825,7 +731,7 @@ this tutorial. But that’s enough of them for now. It’s time to take some act
 <h3>Versions</h3>
 <ul>
   <li><a href="Learning-Typeclasses.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+  <li><a href="../../../../0.95/index.html">0.95 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

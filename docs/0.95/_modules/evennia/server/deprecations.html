@@ -1,0 +1,230 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.server.deprecations &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.deprecations</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.server.deprecations</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains historical deprecations that the Evennia launcher</span>
+<span class="sd">checks for.</span>
+
+<span class="sd">These all print to the terminal.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="check_errors"><a class="viewcode-back" href="../../../api/evennia.server.deprecations.html#evennia.server.deprecations.check_errors">[docs]</a><span class="k">def</span> <span class="nf">check_errors</span><span class="p">(</span><span class="n">settings</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check for deprecations that are critical errors and should stop</span>
+<span class="sd">    the launcher.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        settings (Settings): The Django settings file</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DeprecationWarning if a critical deprecation is found.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">deprstring</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;settings.</span><span class="si">%s</span><span class="s2"> should be renamed to </span><span class="si">%s</span><span class="s2">. If defaults are used, &quot;</span>
+        <span class="s2">&quot;their path/classname must be updated &quot;</span>
+        <span class="s2">&quot;(see evennia/settings_default.py).&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;CMDSET_DEFAULT&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">deprstring</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;CMDSET_DEFAULT&quot;</span><span class="p">,</span> <span class="s2">&quot;CMDSET_CHARACTER&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;CMDSET_OOC&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">deprstring</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;CMDSET_OOC&quot;</span><span class="p">,</span> <span class="s2">&quot;CMDSET_ACCOUNT&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">WEBSERVER_ENABLED</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">WEBSERVER_PORTS</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+            <span class="s2">&quot;settings.WEBSERVER_PORTS must be on the form &quot;</span> <span class="s2">&quot;[(proxyport, serverport), ...]&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;BASE_COMM_TYPECLASS&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">deprstring</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;BASE_COMM_TYPECLASS&quot;</span><span class="p">,</span> <span class="s2">&quot;BASE_CHANNEL_TYPECLASS&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;COMM_TYPECLASS_PATHS&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">deprstring</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;COMM_TYPECLASS_PATHS&quot;</span><span class="p">,</span> <span class="s2">&quot;CHANNEL_TYPECLASS_PATHS&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;CHARACTER_DEFAULT_HOME&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+            <span class="s2">&quot;settings.CHARACTER_DEFAULT_HOME should be renamed to &quot;</span>
+            <span class="s2">&quot;DEFAULT_HOME. See also settings.START_LOCATION &quot;</span>
+            <span class="s2">&quot;(see evennia/settings_default.py).&quot;</span>
+        <span class="p">)</span>
+    <span class="n">deprstring</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;settings.</span><span class="si">%s</span><span class="s2"> is now merged into settings.TYPECLASS_PATHS. &quot;</span> <span class="s2">&quot;Update your settings file.&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;OBJECT_TYPECLASS_PATHS&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">deprstring</span> <span class="o">%</span> <span class="s2">&quot;OBJECT_TYPECLASS_PATHS&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;SCRIPT_TYPECLASS_PATHS&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">deprstring</span> <span class="o">%</span> <span class="s2">&quot;SCRIPT_TYPECLASS_PATHS&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;ACCOUNT_TYPECLASS_PATHS&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">deprstring</span> <span class="o">%</span> <span class="s2">&quot;ACCOUNT_TYPECLASS_PATHS&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;CHANNEL_TYPECLASS_PATHS&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">deprstring</span> <span class="o">%</span> <span class="s2">&quot;CHANNEL_TYPECLASS_PATHS&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;SEARCH_MULTIMATCH_SEPARATOR&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+            <span class="s2">&quot;settings.SEARCH_MULTIMATCH_SEPARATOR was replaced by &quot;</span>
+            <span class="s2">&quot;SEARCH_MULTIMATCH_REGEX and SEARCH_MULTIMATCH_TEMPLATE. &quot;</span>
+            <span class="s2">&quot;Update your settings file (see evennia/settings_default.py &quot;</span>
+            <span class="s2">&quot;for more info).&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">gametime_deprecation</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;The settings TIME_SEC_PER_MIN, TIME_MIN_PER_HOUR,&quot;</span>
+        <span class="s2">&quot;TIME_HOUR_PER_DAY, TIME_DAY_PER_WEEK, </span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;TIME_WEEK_PER_MONTH and TIME_MONTH_PER_YEAR &quot;</span>
+        <span class="s2">&quot;are no longer supported. Remove them from your &quot;</span>
+        <span class="s2">&quot;settings file to continue.</span><span class="se">\n</span><span class="s2">If you want to use &quot;</span>
+        <span class="s2">&quot;and manipulate these time units, the tools from utils.gametime &quot;</span>
+        <span class="s2">&quot;are now found in contrib/convert_gametime.py instead.&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="s2">&quot;TIME_SEC_PER_MIN&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TIME_MIN_PER_HOUR&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TIME_HOUR_PER_DAY&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TIME_DAY_PER_WEEK&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TIME_WEEK_PER_MONTH&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TIME_MONTH_PER_YEAR&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">gametime_deprecation</span><span class="p">)</span>
+
+    <span class="n">game_directory_deprecation</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;The setting GAME_DIRECTORY_LISTING was removed. It must be &quot;</span>
+        <span class="s2">&quot;renamed to GAME_INDEX_LISTING instead.&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;GAME_DIRECTORY_LISTING&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">game_directory_deprecation</span><span class="p">)</span>
+
+    <span class="n">chan_connectinfo</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_CONNECTINFO</span>
+    <span class="k">if</span> <span class="n">chan_connectinfo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chan_connectinfo</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+            <span class="s2">&quot;settings.CHANNEL_CONNECTINFO has changed. It &quot;</span>
+            <span class="s2">&quot;must now be either None or a dict &quot;</span>
+            <span class="s2">&quot;specifying the properties of the channel to create.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;CYCLE_LOGFILES&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+            <span class="s2">&quot;settings.CYCLE_LOGFILES is unused and should be removed. &quot;</span>
+            <span class="s2">&quot;Use PORTAL/SERVER_LOG_DAY_ROTATION and PORTAL/SERVER_LOG_MAX_SIZE &quot;</span>
+            <span class="s2">&quot;to control log cycling.&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="check_warnings"><a class="viewcode-back" href="../../../api/evennia.server.deprecations.html#evennia.server.deprecations.check_warnings">[docs]</a><span class="k">def</span> <span class="nf">check_warnings</span><span class="p">(</span><span class="n">settings</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check conditions and deprecations that should produce warnings but which</span>
+<span class="sd">    does not stop launch.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; [Devel: settings.DEBUG is True. Important to turn off in production.]&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">IN_GAME_ERRORS</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; [Devel: settings.IN_GAME_ERRORS is True. Turn off in production.]&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">ALLOWED_HOSTS</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; [Devel: settings.ALLOWED_HOSTS set to &#39;*&#39; (all). Limit in production.]&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">dbentry</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">DATABASES</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s2">&quot;psycopg&quot;</span> <span class="ow">in</span> <span class="n">dbentry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ENGINE&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s1">&#39;Deprecation: postgresql_psycopg2 backend is deprecated&quot;. &#39;</span>
+                <span class="s2">&quot;Switch settings.DATABASES to use &quot;</span>
+                <span class="s1">&#39;&quot;ENGINE&quot;: &quot;django.db.backends.postgresql instead&quot;&#39;</span>
+            <span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="deprecations.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.deprecations</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

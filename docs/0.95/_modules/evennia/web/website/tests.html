@@ -1,0 +1,396 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.web.website.tests &#8212; Evennia 0.95 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.website.tests</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.web.website.tests</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">override_settings</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
+
+
+<div class="viewcode-block" id="EvenniaWebTest"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.EvenniaWebTest">[docs]</a><span class="k">class</span> <span class="nc">EvenniaWebTest</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+
+    <span class="c1"># Use the same classes the views are expecting</span>
+    <span class="n">account_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span>
+    <span class="n">object_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span>
+    <span class="n">character_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span>
+    <span class="n">exit_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_EXIT_TYPECLASS</span>
+    <span class="n">room_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_ROOM_TYPECLASS</span>
+    <span class="n">script_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_SCRIPT_TYPECLASS</span>
+    <span class="n">channel_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHANNEL_TYPECLASS</span>
+
+    <span class="c1"># Default named url</span>
+    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;index&quot;</span>
+
+    <span class="c1"># Response to expect for unauthenticated requests</span>
+    <span class="n">unauthenticated_response</span> <span class="o">=</span> <span class="mi">200</span>
+
+    <span class="c1"># Response to expect for authenticated requests</span>
+    <span class="n">authenticated_response</span> <span class="o">=</span> <span class="mi">200</span>
+
+<div class="viewcode-block" id="EvenniaWebTest.setUp"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.EvenniaWebTest.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+
+        <span class="c1"># Add chars to account rosters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account2</span><span class="p">):</span>
+            <span class="c1"># Demote accounts to Player permissions</span>
+            <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Player&quot;</span><span class="p">)</span>
+            <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;Developer&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Grant permissions to chars</span>
+            <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">:</span>
+                <span class="n">char</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;edit:id(</span><span class="si">%s</span><span class="s2">) or perm(Admin)&quot;</span> <span class="o">%</span> <span class="n">account</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+                <span class="n">char</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;delete:id(</span><span class="si">%s</span><span class="s2">) or perm(Admin)&quot;</span> <span class="o">%</span> <span class="n">account</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+                <span class="n">char</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;view:all()&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvenniaWebTest.test_valid_chars"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.EvenniaWebTest.test_valid_chars">[docs]</a>    <span class="k">def</span> <span class="nf">test_valid_chars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Make sure account has playable characters&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">account2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvenniaWebTest.get_kwargs"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.EvenniaWebTest.get_kwargs">[docs]</a>    <span class="k">def</span> <span class="nf">get_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="EvenniaWebTest.test_get"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.EvenniaWebTest.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Try accessing page while not logged in</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_name</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_kwargs</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unauthenticated_response</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvenniaWebTest.login"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.EvenniaWebTest.login">[docs]</a>    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">&quot;TestAccount&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;testpassword&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvenniaWebTest.test_get_authenticated"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.EvenniaWebTest.test_get_authenticated">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_authenticated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">logged_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">logged_in</span><span class="p">,</span> <span class="s2">&quot;Account failed to log in!&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Try accessing page while logged in</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_name</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_kwargs</span><span class="p">()),</span> <span class="n">follow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">authenticated_response</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># ------------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="AdminTest"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.AdminTest">[docs]</a><span class="k">class</span> <span class="nc">AdminTest</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>
+    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;django_admin&quot;</span>
+    <span class="n">unauthenticated_response</span> <span class="o">=</span> <span class="mi">302</span></div>
+
+
+<div class="viewcode-block" id="IndexTest"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.IndexTest">[docs]</a><span class="k">class</span> <span class="nc">IndexTest</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>
+    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;index&quot;</span></div>
+
+
+<div class="viewcode-block" id="RegisterTest"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.RegisterTest">[docs]</a><span class="k">class</span> <span class="nc">RegisterTest</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>
+    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;register&quot;</span></div>
+
+
+<div class="viewcode-block" id="LoginTest"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.LoginTest">[docs]</a><span class="k">class</span> <span class="nc">LoginTest</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>
+    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;login&quot;</span></div>
+
+
+<div class="viewcode-block" id="LogoutTest"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.LogoutTest">[docs]</a><span class="k">class</span> <span class="nc">LogoutTest</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>
+    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;logout&quot;</span></div>
+
+
+<div class="viewcode-block" id="PasswordResetTest"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.PasswordResetTest">[docs]</a><span class="k">class</span> <span class="nc">PasswordResetTest</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>
+    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;password_change&quot;</span>
+    <span class="n">unauthenticated_response</span> <span class="o">=</span> <span class="mi">302</span></div>
+
+
+<div class="viewcode-block" id="WebclientTest"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.WebclientTest">[docs]</a><span class="k">class</span> <span class="nc">WebclientTest</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>
+    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;webclient:index&quot;</span>
+
+<div class="viewcode-block" id="WebclientTest.test_get"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.WebclientTest.test_get">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">WEBCLIENT_ENABLED</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">authenticated_response</span> <span class="o">=</span> <span class="mi">200</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unauthenticated_response</span> <span class="o">=</span> <span class="mi">200</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WebclientTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">test_get</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="WebclientTest.test_get_disabled"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.WebclientTest.test_get_disabled">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">WEBCLIENT_ENABLED</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_get_disabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">authenticated_response</span> <span class="o">=</span> <span class="mi">404</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unauthenticated_response</span> <span class="o">=</span> <span class="mi">404</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WebclientTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">test_get</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="ChannelListTest"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.ChannelListTest">[docs]</a><span class="k">class</span> <span class="nc">ChannelListTest</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>
+    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;channels&quot;</span></div>
+
+
+<div class="viewcode-block" id="ChannelDetailTest"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.ChannelDetailTest">[docs]</a><span class="k">class</span> <span class="nc">ChannelDetailTest</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>
+    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;channel-detail&quot;</span>
+
+<div class="viewcode-block" id="ChannelDetailTest.setUp"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.ChannelDetailTest.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ChannelDetailTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+
+        <span class="n">klass</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_typeclass</span><span class="p">,</span>
+                                  <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_CHANNEL_TYPECLASS</span><span class="p">)</span>
+
+        <span class="c1"># Create a channel</span>
+        <span class="n">klass</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;demo&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChannelDetailTest.get_kwargs"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.ChannelDetailTest.get_kwargs">[docs]</a>    <span class="k">def</span> <span class="nf">get_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="s2">&quot;demo&quot;</span><span class="p">)}</span></div></div>
+
+
+<div class="viewcode-block" id="CharacterCreateView"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterCreateView">[docs]</a><span class="k">class</span> <span class="nc">CharacterCreateView</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>
+    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;character-create&quot;</span>
+    <span class="n">unauthenticated_response</span> <span class="o">=</span> <span class="mi">302</span>
+
+<div class="viewcode-block" id="CharacterCreateView.test_valid_access_multisession_0"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterCreateView.test_valid_access_multisession_0">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">MULTISESSION_MODE</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_valid_access_multisession_0</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Account1 with no characters should be able to create a new one&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Login account</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+
+        <span class="c1"># Post data for a new character</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;db_key&quot;</span><span class="p">:</span> <span class="s2">&quot;gannon&quot;</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Some dude.&quot;</span><span class="p">}</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_name</span><span class="p">),</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">follow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+        <span class="c1"># Make sure the character was actually created</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;Account only has the following characters attributed to it: </span><span class="si">%s</span><span class="s2">&quot;</span>
+            <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="CharacterCreateView.test_valid_access_multisession_2"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterCreateView.test_valid_access_multisession_2">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">MULTISESSION_MODE</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">MAX_NR_CHARACTERS</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_valid_access_multisession_2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Account1 should be able to create a new character&quot;</span>
+        <span class="c1"># Login account</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+
+        <span class="c1"># Post data for a new character</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;db_key&quot;</span><span class="p">:</span> <span class="s2">&quot;gannon&quot;</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Some dude.&quot;</span><span class="p">}</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_name</span><span class="p">),</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">follow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+        <span class="c1"># Make sure the character was actually created</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;Account only has the following characters attributed to it: </span><span class="si">%s</span><span class="s2">&quot;</span>
+            <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CharacterPuppetView"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterPuppetView">[docs]</a><span class="k">class</span> <span class="nc">CharacterPuppetView</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>
+    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;character-puppet&quot;</span>
+    <span class="n">unauthenticated_response</span> <span class="o">=</span> <span class="mi">302</span>
+
+<div class="viewcode-block" id="CharacterPuppetView.get_kwargs"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterPuppetView.get_kwargs">[docs]</a>    <span class="k">def</span> <span class="nf">get_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">name</span><span class="p">)}</span></div>
+
+<div class="viewcode-block" id="CharacterPuppetView.test_invalid_access"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterPuppetView.test_invalid_access">[docs]</a>    <span class="k">def</span> <span class="nf">test_invalid_access</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Account1 should not be able to puppet Account2:Char2&quot;</span>
+        <span class="c1"># Login account</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+
+        <span class="c1"># Try to access puppet page for char2</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">name</span><span class="p">)}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_name</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">),</span> <span class="n">follow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&gt;=</span> <span class="mi">400</span><span class="p">,</span>
+            <span class="s2">&quot;Invalid access should return a 4xx code-- either obj not found or permission denied! (Returned </span><span class="si">%s</span><span class="s2">)&quot;</span>
+            <span class="o">%</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CharacterListView"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterListView">[docs]</a><span class="k">class</span> <span class="nc">CharacterListView</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>
+    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;characters&quot;</span>
+    <span class="n">unauthenticated_response</span> <span class="o">=</span> <span class="mi">302</span></div>
+
+
+<div class="viewcode-block" id="CharacterManageView"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterManageView">[docs]</a><span class="k">class</span> <span class="nc">CharacterManageView</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>
+    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;character-manage&quot;</span>
+    <span class="n">unauthenticated_response</span> <span class="o">=</span> <span class="mi">302</span></div>
+
+
+<div class="viewcode-block" id="CharacterUpdateView"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterUpdateView">[docs]</a><span class="k">class</span> <span class="nc">CharacterUpdateView</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>
+    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;character-update&quot;</span>
+    <span class="n">unauthenticated_response</span> <span class="o">=</span> <span class="mi">302</span>
+
+<div class="viewcode-block" id="CharacterUpdateView.get_kwargs"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterUpdateView.get_kwargs">[docs]</a>    <span class="k">def</span> <span class="nf">get_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">name</span><span class="p">)}</span></div>
+
+<div class="viewcode-block" id="CharacterUpdateView.test_valid_access"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterUpdateView.test_valid_access">[docs]</a>    <span class="k">def</span> <span class="nf">test_valid_access</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Account1 should be able to update Account1:Char1&quot;</span>
+        <span class="c1"># Login account</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+
+        <span class="c1"># Try to access update page for char1</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_name</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_kwargs</span><span class="p">()),</span> <span class="n">follow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+        <span class="c1"># Try to update char1 desc</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;db_key&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db_key</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Just a regular type of dude.&quot;</span><span class="p">}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">reverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_name</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_kwargs</span><span class="p">()),</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">follow</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+        <span class="c1"># Make sure the change was made successfully</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;desc&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="CharacterUpdateView.test_invalid_access"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterUpdateView.test_invalid_access">[docs]</a>    <span class="k">def</span> <span class="nf">test_invalid_access</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Account1 should not be able to update Account2:Char2&quot;</span>
+        <span class="c1"># Login account</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+
+        <span class="c1"># Try to access update page for char2</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">name</span><span class="p">)}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_name</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">),</span> <span class="n">follow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">403</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CharacterDeleteView"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterDeleteView">[docs]</a><span class="k">class</span> <span class="nc">CharacterDeleteView</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>
+    <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;character-delete&quot;</span>
+    <span class="n">unauthenticated_response</span> <span class="o">=</span> <span class="mi">302</span>
+
+<div class="viewcode-block" id="CharacterDeleteView.get_kwargs"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterDeleteView.get_kwargs">[docs]</a>    <span class="k">def</span> <span class="nf">get_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">name</span><span class="p">)}</span></div>
+
+<div class="viewcode-block" id="CharacterDeleteView.test_valid_access"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterDeleteView.test_valid_access">[docs]</a>    <span class="k">def</span> <span class="nf">test_valid_access</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Account1 should be able to delete Account1:Char1&quot;</span>
+        <span class="c1"># Login account</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+
+        <span class="c1"># Try to access delete page for char1</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_name</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_kwargs</span><span class="p">()),</span> <span class="n">follow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+        <span class="c1"># Proceed with deleting it</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;yes&quot;</span><span class="p">}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">reverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_name</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_kwargs</span><span class="p">()),</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">follow</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+        <span class="c1"># Make sure it deleted</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">char1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">,</span>
+            <span class="s2">&quot;Char1 is still in Account playable characters list.&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="CharacterDeleteView.test_invalid_access"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterDeleteView.test_invalid_access">[docs]</a>    <span class="k">def</span> <span class="nf">test_invalid_access</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Account1 should not be able to delete Account2:Char2&quot;</span>
+        <span class="c1"># Login account</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+
+        <span class="c1"># Try to access delete page for char2</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">name</span><span class="p">)}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_name</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">),</span> <span class="n">follow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">403</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="tests.html">0.95 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.95</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.website.tests</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>
