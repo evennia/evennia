@@ -1,0 +1,267 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.dice &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.dice</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.dice">
+<span id="evennia-contrib-dice"></span><h1>evennia.contrib.dice<a class="headerlink" href="#module-evennia.contrib.dice" title="Permalink to this headline">¶</a></h1>
+<p>Dice - rolls dice for roleplaying, in-game gambling or GM:ing</p>
+<p>Evennia contribution - Griatch 2012</p>
+<p>This module implements a full-fledged dice-roller and a ‘dice’ command
+to go with it. It uses standard RPG ‘d’-syntax (e.g. 2d6 to roll two
+six-sided die) and also supports modifiers such as 3d6 + 5.</p>
+<p>One can also specify a standard Python operator in order to specify
+eventual target numbers and get results in a fair and guaranteed
+unbiased way.  For example a GM could (using the dice command) from
+the start define the roll as 2d6 &lt; 8 to show that a roll below 8 is
+required to succeed. The command will normally echo this result to all
+parties (although it also has options for hidden and secret rolls).</p>
+<p>Installation:</p>
+<p>To use in your code, just import the roll_dice function from this module.</p>
+<p>To use  the dice/roll command, just import this module in your custom
+cmdset module and add the following line to the end of DefaultCmdSet’s
+at_cmdset_creation():</p>
+<blockquote>
+<div><p>self.add(dice.CmdDice())</p>
+</div></blockquote>
+<p>After a reload the dice (or roll) command will be available in-game.</p>
+<dl class="py function">
+<dt id="evennia.contrib.dice.roll_dice">
+<code class="sig-prename descclassname">evennia.contrib.dice.</code><code class="sig-name descname">roll_dice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dicenum</span></em>, <em class="sig-param"><span class="n">dicetype</span></em>, <em class="sig-param"><span class="n">modifier</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">conditional</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_tuple</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/dice.html#roll_dice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.dice.roll_dice" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a standard dice roller.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dicenum</strong> (<em>int</em>) – Number of dice to roll (the result to be added).</p></li>
+<li><p><strong>dicetype</strong> (<em>int</em>) – Number of sides of the dice to be rolled.</p></li>
+<li><p><strong>modifier</strong> (<em>tuple</em>) – A tuple <strong>(operator, value)</strong>, where operator is
+one of <strong>“+”</strong>, <strong>“-”</strong>, <strong>“/”</strong> or <strong>“*”</strong>. The result of the dice
+roll(s) will be modified by this value.</p></li>
+<li><p><strong>conditional</strong> (<em>tuple</em>) – A tuple <strong>(conditional, value)</strong>, where
+conditional is one of <strong>“==”</strong>,**”&lt;”<strong>,</strong>”&gt;”<strong>,</strong>”&gt;=”<strong>,</strong>”&lt;=**” or “<strong>!=</strong>”.
+This allows the roller to directly return a result depending
+on if the conditional was passed or not.</p></li>
+<li><p><strong>return_tuple</strong> (<em>bool</em>) – Return a tuple with all individual roll
+results or not.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>roll_result (int)</em> –</p>
+<dl class="simple">
+<dt>The result of the roll + modifiers. This is the</dt><dd><p>default return.</p>
+</dd>
+<dt>condition_result (bool): A True/False value returned if <strong>conditional</strong></dt><dd><p>is set but not <strong>return_tuple</strong>. This effectively hides the result
+of the roll.</p>
+</dd>
+<dt>full_result (tuple): If, return_tuple** is <strong>True</strong>, instead</dt><dd><p>return a tuple <strong>(result, outcome, diff, rolls)</strong>. Here,
+<strong>result</strong> is the normal result of the roll + modifiers.
+<strong>outcome</strong> and <strong>diff</strong> are the boolean result of the roll and
+absolute difference to the <strong>conditional</strong> input; they will
+be will be <strong>None</strong> if <strong>conditional</strong> is not set. <strong>rolls</strong> is
+itself a tuple holding all the individual rolls in the case of
+multiple die-rolls.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>TypeError if non-supported modifiers</strong><strong> or </strong><strong>conditionals are given.</strong> – </p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>All input numbers are converted to integers.</p>
+<p class="rubric">Examples</p>
+<p>print roll_dice(2, 6) # 2d6
+&lt;&lt;&lt; 7
+print roll_dice(1, 100, (‘+’, 5) # 1d100 + 5
+&lt;&lt;&lt; 34
+print roll_dice(1, 20, conditional=(‘&lt;’, 10) # let’say we roll 3
+&lt;&lt;&lt; True
+print roll_dice(3, 10, return_tuple=True)
+&lt;&lt;&lt; (11, None, None, (2, 5, 4))
+print roll_dice(2, 20, (‘-’, 2), conditional=(‘&gt;=’, 10), return_tuple=True)
+&lt;&lt;&lt; (8, False, 2, (4, 6)) # roll was 4 + 6 - 2 = 8</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.dice.CmdDice">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.dice.</code><code class="sig-name descname">CmdDice</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/dice.html#CmdDice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.dice.CmdDice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>roll dice</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>dice[/switch] &lt;nr&gt;d&lt;sides&gt; [modifier] [success condition]</p>
+</dd>
+<dt>Switch:</dt><dd><p>hidden - tell the room the roll is being done, but don’t show the result
+secret - don’t inform the room about neither roll nor result</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>dice 3d6 + 4
+dice 1d100 - 2 &lt; 50</p>
+<p>This will roll the given number of dice with given sides and modifiers.
+So e.g. 2d6 + 3 means to ‘roll a 6-sided die 2 times and add the result,
+then add 3 to the total’.
+Accepted modifiers are +, -, * and /.
+A success condition is given as normal Python conditionals
+(&lt;,&gt;,&lt;=,&gt;=,==,!=). So e.g. 2d6 + 3 &gt; 10 means that the roll will succeed
+only if the final result is above 8. If a success condition is given, the
+outcome (pass/fail) will be echoed along with how much it succeeded/failed
+with. The hidden/secret switches will hide all or parts of the roll from
+everyone but the person rolling.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.dice.CmdDice.key">
+<code class="sig-name descname">key</code><em class="property"> = 'dice'</em><a class="headerlink" href="#evennia.contrib.dice.CmdDice.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.dice.CmdDice.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;dice', 'roll']</em><a class="headerlink" href="#evennia.contrib.dice.CmdDice.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.dice.CmdDice.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.dice.CmdDice.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.dice.CmdDice.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/dice.html#CmdDice.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.dice.CmdDice.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mostly parsing for calling the dice roller function</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.dice.CmdDice.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.dice.CmdDice.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.dice.CmdDice.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.dice.CmdDice.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.dice.DiceCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.dice.</code><code class="sig-name descname">DiceCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/dice.html#DiceCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.dice.DiceCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>a small cmdset for testing purposes.
+Add with &#64;py self.cmdset.add(“contrib.dice.DiceCmdSet”)</p>
+<dl class="py method">
+<dt id="evennia.contrib.dice.DiceCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/dice.html#DiceCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.dice.DiceCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when set is created</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.dice.DiceCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.dice.DiceCmdSet'</em><a class="headerlink" href="#evennia.contrib.dice.DiceCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.dice.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.contrib.dice.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.contrib.dice.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.dice</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

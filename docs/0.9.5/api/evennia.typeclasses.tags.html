@@ -1,0 +1,464 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.typeclasses.tags &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.typeclasses.tags</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.typeclasses.tags">
+<span id="evennia-typeclasses-tags"></span><h1>evennia.typeclasses.tags<a class="headerlink" href="#module-evennia.typeclasses.tags" title="Permalink to this headline">¶</a></h1>
+<p>Tags are entities that are attached to objects in the same way as
+Attributes. But contrary to Attributes, which are unique to an
+individual object, a single Tag can be attached to any number of
+objects at the same time.</p>
+<p>Tags are used for tagging, obviously, but the data structure is also
+used for storing Aliases and Permissions. This module contains the
+respective handlers.</p>
+<dl class="py class">
+<dt id="evennia.typeclasses.tags.Tag">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.tags.</code><code class="sig-name descname">Tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#Tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.Tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<p>Tags are quick markers for objects in-game. An typeobject can have
+any number of tags, stored via its db_tags property.  Tagging
+similar objects will make it easier to quickly locate the group
+later (such as when implementing zones). The main advantage of
+tagging as opposed to using tags is speed; a tag is very
+limited in what data it can hold, and the tag key+category is
+indexed for efficient lookup in the database. Tags are shared
+between objects - a new tag is only created if the key+category
+combination did not previously exist, making them unsuitable for
+storing object-related data (for this a regular Attribute should be
+used).</p>
+<p>The ‘db_data’ field is intended as a documentation field for the
+tag itself, such as to document what this tag+category stands for
+and display that in a web interface or similar.</p>
+<p>The main default use for Tags is to implement Aliases for objects.
+this uses the ‘aliases’ tag category, which is also checked by the
+default search functions of Evennia to allow quick searches by alias.</p>
+<dl class="py attribute">
+<dt id="evennia.typeclasses.tags.Tag.db_key">
+<code class="sig-name descname">db_key</code><a class="headerlink" href="#evennia.typeclasses.tags.Tag.db_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.typeclasses.tags.Tag.db_category">
+<code class="sig-name descname">db_category</code><a class="headerlink" href="#evennia.typeclasses.tags.Tag.db_category" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.typeclasses.tags.Tag.db_data">
+<code class="sig-name descname">db_data</code><a class="headerlink" href="#evennia.typeclasses.tags.Tag.db_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.typeclasses.tags.Tag.db_model">
+<code class="sig-name descname">db_model</code><a class="headerlink" href="#evennia.typeclasses.tags.Tag.db_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.typeclasses.tags.Tag.db_tagtype">
+<code class="sig-name descname">db_tagtype</code><a class="headerlink" href="#evennia.typeclasses.tags.Tag.db_tagtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.typeclasses.tags.Tag.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.typeclasses.tags.Tag.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.typeclasses.tags.Tag.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.typeclasses.tags.Tag.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.typeclasses.tags.Tag.accountdb_set">
+<code class="sig-name descname">accountdb_set</code><a class="headerlink" href="#evennia.typeclasses.tags.Tag.accountdb_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.typeclasses.tags.Tag.channeldb_set">
+<code class="sig-name descname">channeldb_set</code><a class="headerlink" href="#evennia.typeclasses.tags.Tag.channeldb_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.typeclasses.tags.Tag.helpentry_set">
+<code class="sig-name descname">helpentry_set</code><a class="headerlink" href="#evennia.typeclasses.tags.Tag.helpentry_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.typeclasses.tags.Tag.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#evennia.typeclasses.tags.Tag.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.typeclasses.tags.Tag.msg_set">
+<code class="sig-name descname">msg_set</code><a class="headerlink" href="#evennia.typeclasses.tags.Tag.msg_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.typeclasses.tags.Tag.objectdb_set">
+<code class="sig-name descname">objectdb_set</code><a class="headerlink" href="#evennia.typeclasses.tags.Tag.objectdb_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.typeclasses.tags.Tag.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#evennia.typeclasses.tags.Tag.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.typeclasses.tags.Tag.scriptdb_set">
+<code class="sig-name descname">scriptdb_set</code><a class="headerlink" href="#evennia.typeclasses.tags.Tag.scriptdb_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.typeclasses.tags.TagHandler">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.tags.</code><code class="sig-name descname">TagHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Generic tag-handler. Accessed via TypedObject.tags.</p>
+<dl class="py method">
+<dt id="evennia.typeclasses.tags.TagHandler.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagHandler.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tags are stored internally in the TypedObject.db_tags m2m
+field with an tag.db_model based on the obj the taghandler is
+stored on and with a tagtype given by self.handlertype</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>object</em>) – The object on which the handler is set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.tags.TagHandler.reset_cache">
+<code class="sig-name descname">reset_cache</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.reset_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagHandler.reset_cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the cache from the outside.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.tags.TagHandler.add">
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagHandler.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new tag to the handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tag</strong> (<em>str</em><em> or </em><em>list</em>) – The name of the tag to add. If a list,
+add several Tags.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – Category of Tag. <strong>None</strong> is the default category.</p></li>
+<li><p><strong>data</strong> (<em>str</em><em>, </em><em>optional</em>) – Info text about the tag(s) added.
+This can not be used to store object-unique info but only
+eventual info about the tag itself.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If the tag + category combination matches an already
+existing Tag object, this will be re-used and no new Tag
+will be created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.tags.TagHandler.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_tagobj</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">return_list</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagHandler.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the tag for the given key, category or combination of the two.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – The tag or tags to retrieve.</p></li>
+<li><p><strong>default</strong> (<em>any</em><em>, </em><em>optional</em>) – The value to return in case of no match.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The Tag category to limit the
+request to. Note that <strong>None</strong> is the valid, default
+category. If no <strong>key</strong> is given, all tags of this category will be
+returned.</p></li>
+<li><p><strong>return_tagobj</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return the Tag object itself
+instead of a string representation of the Tag.</p></li>
+<li><p><strong>return_list</strong> (<em>bool</em><em>, </em><em>optional</em>) – Always return a list, regardless
+of number of matches.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>tags (list)</em> –</p>
+<dl class="simple">
+<dt>The matches, either string</dt><dd><p>representations of the tags or the Tag objects themselves
+depending on <strong>return_tagobj</strong>. If ‘default’ is set, this
+will be a list with the default value as its only element.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.tags.TagHandler.remove">
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagHandler.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a tag from the handler based ond key and/or category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – The tag or tags to retrieve.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The Tag category to limit the
+request to. Note that <strong>None</strong> is the valid, default
+category</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If neither key nor category is specified, this acts
+as .clear().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.tags.TagHandler.clear">
+<code class="sig-name descname">clear</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagHandler.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all tags from the handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The Tag category to limit the
+request to. Note that <strong>None</strong> is the valid, default
+category.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.tags.TagHandler.all">
+<code class="sig-name descname">all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">return_key_and_category</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">return_objs</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagHandler.all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all tags in this handler, regardless of category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>return_key_and_category</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return a list of
+tuples <strong>[(key, category), …]</strong>.</p></li>
+<li><p><strong>return_objs</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return tag objects.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>tags (list)</em> –</p>
+<dl class="simple">
+<dt>A list of tag keys <strong>[tagkey, tagkey, …]</strong> or</dt><dd><p>a list of tuples <strong>[(key, category), …]</strong> if
+<strong>return_key_and_category</strong> is set.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.tags.TagHandler.batch_add">
+<code class="sig-name descname">batch_add</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.batch_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.TagHandler.batch_add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Batch-add tags from a list of tuples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>*args</strong> (<em>tuple</em><em> or </em><em>str</em>) – Each argument should be a <strong>tagstr</strong> keys or tuple <strong>(keystr, category)</strong> or
+<strong>(keystr, category, data)</strong>. It’s possible to mix input types.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This will generate a mimimal number of self.add calls,
+based on the number of categories involved (including
+<strong>None</strong>) (data is not unique and may be overwritten by the content
+of a latter tuple with the same category).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.typeclasses.tags.AliasHandler">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.tags.</code><code class="sig-name descname">AliasHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#AliasHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.AliasHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.typeclasses.tags.TagHandler" title="evennia.typeclasses.tags.TagHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.tags.TagHandler</span></code></a></p>
+<p>A handler for the Alias Tag type.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.typeclasses.tags.PermissionHandler">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.tags.</code><code class="sig-name descname">PermissionHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#PermissionHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.tags.PermissionHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.typeclasses.tags.TagHandler" title="evennia.typeclasses.tags.TagHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.tags.TagHandler</span></code></a></p>
+<p>A handler for the Permission Tag type.</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.typeclasses.tags.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.typeclasses.tags.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.typeclasses.tags.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.typeclasses.tags</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

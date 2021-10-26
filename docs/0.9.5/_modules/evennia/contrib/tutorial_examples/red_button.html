@@ -1,0 +1,273 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.tutorial_examples.red_button &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_examples.red_button</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.tutorial_examples.red_button</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">This is a more advanced example object. It combines functions from</span>
+<span class="sd">script.examples as well as commands.examples to make an interactive</span>
+<span class="sd">button typeclass.</span>
+
+<span class="sd">Create this button with</span>
+
+<span class="sd"> @create/drop examples.red_button.RedButton</span>
+
+<span class="sd">Note that you must drop the button before you can see its messages!</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.tutorial_examples</span> <span class="kn">import</span> <span class="n">red_button_scripts</span> <span class="k">as</span> <span class="n">scriptexamples</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.tutorial_examples</span> <span class="kn">import</span> <span class="n">cmdset_red_button</span> <span class="k">as</span> <span class="n">cmdsetexamples</span>
+
+<span class="c1">#</span>
+<span class="c1"># Definition of the object itself</span>
+<span class="c1">#</span>
+
+
+<div class="viewcode-block" id="RedButton"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton">[docs]</a><span class="k">class</span> <span class="nc">RedButton</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class describes an evil red button.  It will use the script</span>
+<span class="sd">    definition in contrib/examples/red_button_scripts to blink at regular</span>
+<span class="sd">    intervals.  It also uses a series of script and commands to handle</span>
+<span class="sd">    pushing the button and causing effects when doing so.</span>
+
+<span class="sd">    The following attributes can be set on the button:</span>
+<span class="sd">     desc_lid_open - description when lid is open</span>
+<span class="sd">     desc_lid_closed - description when lid is closed</span>
+<span class="sd">     desc_lamp_broken - description when lamp is broken</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RedButton.at_object_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function is called when object is created. Use this</span>
+<span class="sd">        instead of e.g. __init__.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># store desc (default, you can change this at creation time)</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a large red button, inviting yet evil-looking. &quot;</span>
+        <span class="n">desc</span> <span class="o">+=</span> <span class="s2">&quot;A closed glass lid protects it.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
+
+        <span class="c1"># We have to define all the variables the scripts</span>
+        <span class="c1"># are checking/using *before* adding the scripts or</span>
+        <span class="c1"># they might be deactivated before even starting!</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_open</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lamp_works</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_locked</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">cmdsetexamples</span><span class="o">.</span><span class="n">DefaultCmdSet</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># since the cmdsets relevant to the button are added &#39;on the fly&#39;,</span>
+        <span class="c1"># we need to setup custom scripts to do this for us (also, these scripts</span>
+        <span class="c1"># check so they are valid (i.e. the lid is actually still closed)).</span>
+        <span class="c1"># The AddClosedCmdSet script makes sure to add the Closed-cmdset.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scriptexamples</span><span class="o">.</span><span class="n">ClosedLidState</span><span class="p">)</span>
+        <span class="c1"># the script EventBlinkButton makes the button blink regularly.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scriptexamples</span><span class="o">.</span><span class="n">BlinkButtonEvent</span><span class="p">)</span></div>
+
+    <span class="c1"># state-changing methods</span>
+
+<div class="viewcode-block" id="RedButton.open_lid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.open_lid">[docs]</a>    <span class="k">def</span> <span class="nf">open_lid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Opens the glass lid and start the timer so it will soon close</span>
+<span class="sd">        again.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_open</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc_lid_open</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">desc</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a large red button, inviting yet evil-looking. &quot;</span>
+            <span class="n">desc</span> <span class="o">+=</span> <span class="s2">&quot;Its glass cover is open and the button exposed.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_open</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># with the lid open, we validate scripts; this will clean out</span>
+        <span class="c1"># scripts that depend on the lid to be closed.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+        <span class="c1"># now add new scripts that define the open-lid state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scriptexamples</span><span class="o">.</span><span class="n">OpenLidState</span><span class="p">)</span>
+        <span class="c1"># we also add a scripted event that will close the lid after a while.</span>
+        <span class="c1"># (this one cleans itself after being called once)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scriptexamples</span><span class="o">.</span><span class="n">CloseLidEvent</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RedButton.close_lid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.close_lid">[docs]</a>    <span class="k">def</span> <span class="nf">close_lid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close the glass lid. This validates all scripts on the button,</span>
+<span class="sd">        which means that scripts only being valid when the lid is open</span>
+<span class="sd">        will go away automatically.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_open</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc_lid_closed</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">desc</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a large red button, inviting yet evil-looking. &quot;</span>
+            <span class="n">desc</span> <span class="o">+=</span> <span class="s2">&quot;Its glass cover is closed, protecting it.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_open</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># clean out scripts depending on lid to be open</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+        <span class="c1"># add scripts related to the closed state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scriptexamples</span><span class="o">.</span><span class="n">ClosedLidState</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RedButton.break_lamp"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.break_lamp">[docs]</a>    <span class="k">def</span> <span class="nf">break_lamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feedback</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Breaks the lamp in the button, stopping it from blinking.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            feedback (bool): Show a message about breaking the lamp.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lamp_works</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc_lamp_broken</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">desc</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The big red button has stopped blinking for the time being.&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
+
+        <span class="k">if</span> <span class="n">feedback</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;The lamp flickers, the button going dark.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RedButton.press_button"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.press_button">[docs]</a>    <span class="k">def</span> <span class="nf">press_button</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pobject</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Someone was foolish enough to press the button!</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pobject (Object): The person pressing the button</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># deactivate the button so it won&#39;t flash/close lid etc.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scriptexamples</span><span class="o">.</span><span class="n">DeactivateButtonEvent</span><span class="p">)</span>
+        <span class="c1"># blind the person pressing the button. Note that this</span>
+        <span class="c1"># script is set on the *character* pressing the button!</span>
+        <span class="n">pobject</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scriptexamples</span><span class="o">.</span><span class="n">BlindedState</span><span class="p">)</span></div>
+
+    <span class="c1"># script-related methods</span>
+
+<div class="viewcode-block" id="RedButton.blink"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.blink">[docs]</a>    <span class="k">def</span> <span class="nf">blink</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The script system will regularly call this</span>
+<span class="sd">        function to make the button blink. Now and then</span>
+<span class="sd">        it won&#39;t blink at all though, to add some randomness</span>
+<span class="sd">        to how often the message is echoed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span>
+        <span class="k">if</span> <span class="n">loc</span><span class="p">:</span>
+            <span class="n">rand</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.2</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;The red button flashes briefly.&quot;</span>
+            <span class="k">elif</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.4</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;The red button blinks invitingly.&quot;</span>
+            <span class="k">elif</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.6</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;The red button flashes. You know you wanna push it!&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># no blink</span>
+                <span class="k">return</span>
+            <span class="n">loc</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="red_button.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_examples.red_button</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

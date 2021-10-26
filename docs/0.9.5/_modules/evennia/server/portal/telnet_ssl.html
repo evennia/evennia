@@ -1,0 +1,261 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.server.portal.telnet_ssl &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.telnet_ssl</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.server.portal.telnet_ssl</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This allows for running the telnet communication over an encrypted SSL tunnel. To use it, requires a</span>
+<span class="sd">client supporting Telnet SSL.</span>
+
+<span class="sd">The protocol will try to automatically create the private key and certificate on the server side</span>
+<span class="sd">when starting and will warn if this was not possible. These will appear as files ssl.key and</span>
+<span class="sd">ssl.cert in mygame/server/.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">OpenSSL</span> <span class="kn">import</span> <span class="n">crypto</span>
+    <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">ssl</span> <span class="k">as</span> <span class="n">twisted_ssl</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <span class="n">errstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    </span><span class="si">{err}</span><span class="s2"></span>
+<span class="s2">    Telnet-SSL requires the PyOpenSSL library and dependencies:</span>
+
+<span class="s2">        pip install pyopenssl pycrypto enum pyasn1 service_identity</span>
+
+<span class="s2">    Stop and start Evennia again. If no certificate can be generated, you&#39;ll</span>
+<span class="s2">    get a suggestion for a (linux) command to generate this locally.</span>
+
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">errstr</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="n">error</span><span class="p">))</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.server.portal.telnet</span> <span class="kn">import</span> <span class="n">TelnetProtocol</span>
+
+<span class="n">_GAME_DIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">GAME_DIR</span>
+
+<span class="n">_PRIVATE_KEY_LENGTH</span> <span class="o">=</span> <span class="mi">2048</span>
+<span class="n">_PRIVATE_KEY_FILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;ssl.key&quot;</span><span class="p">)</span>
+<span class="n">_PUBLIC_KEY_FILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;ssl-public.key&quot;</span><span class="p">)</span>
+<span class="n">_CERTIFICATE_FILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;ssl.cert&quot;</span><span class="p">)</span>
+<span class="n">_CERTIFICATE_EXPIRE</span> <span class="o">=</span> <span class="mi">365</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">20</span>  <span class="c1"># 20 years</span>
+<span class="n">_CERTIFICATE_ISSUER</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="s2">&quot;EV&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST&quot;</span><span class="p">:</span> <span class="s2">&quot;Evennia&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;L&quot;</span><span class="p">:</span> <span class="s2">&quot;Evennia&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;O&quot;</span><span class="p">:</span> <span class="s2">&quot;Evennia Security&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OU&quot;</span><span class="p">:</span> <span class="s2">&quot;Evennia Department&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CN&quot;</span><span class="p">:</span> <span class="s2">&quot;evennia&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># messages</span>
+
+<span class="n">NO_AUTOGEN</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Evennia could not auto-generate the SSL private- and public keys ({{err}}).</span>
+<span class="s2">If this error persists, create them manually (using the tools for your OS). The files</span>
+<span class="s2">should be placed and named like this:</span>
+<span class="s2">    </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">    </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="n">_PRIVATE_KEY_FILE</span><span class="p">,</span> <span class="n">_PUBLIC_KEY_FILE</span>
+<span class="p">)</span>
+
+<span class="n">NO_AUTOCERT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Evennia&#39;s could not auto-generate the SSL certificate ({{err}}).</span>
+<span class="s2">The private key already exists here:</span>
+<span class="s2">    </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">If this error persists, create the certificate manually (using the private key and</span>
+<span class="s2">the tools for your OS). The file should be placed and named like this:</span>
+<span class="s2">    </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="n">_PRIVATE_KEY_FILE</span><span class="p">,</span> <span class="n">_CERTIFICATE_FILE</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="SSLProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_ssl.html#evennia.server.portal.telnet_ssl.SSLProtocol">[docs]</a><span class="k">class</span> <span class="nc">SSLProtocol</span><span class="p">(</span><span class="n">TelnetProtocol</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Communication is the same as telnet, except data transfer</span>
+<span class="sd">    is done with encryption set up by the portal at start time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SSLProtocol.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_ssl.html#evennia.server.portal.telnet_ssl.SSLProtocol.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SSLProtocol</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol_key</span> <span class="o">=</span> <span class="s2">&quot;telnet/ssl&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="verify_or_create_SSL_key_and_cert"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_ssl.html#evennia.server.portal.telnet_ssl.verify_or_create_SSL_key_and_cert">[docs]</a><span class="k">def</span> <span class="nf">verify_or_create_SSL_key_and_cert</span><span class="p">(</span><span class="n">keyfile</span><span class="p">,</span> <span class="n">certfile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verify or create new key/certificate files.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        keyfile (str): Path to ssl.key file.</span>
+<span class="sd">        certfile (str): Parth to ssl.cert file.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        If files don&#39;t already exist, they are created.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">keyfile</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">certfile</span><span class="p">)):</span>
+        <span class="c1"># key/cert does not exist. Create.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># generate the keypair</span>
+            <span class="n">keypair</span> <span class="o">=</span> <span class="n">crypto</span><span class="o">.</span><span class="n">PKey</span><span class="p">()</span>
+            <span class="n">keypair</span><span class="o">.</span><span class="n">generate_key</span><span class="p">(</span><span class="n">crypto</span><span class="o">.</span><span class="n">TYPE_RSA</span><span class="p">,</span> <span class="n">_PRIVATE_KEY_LENGTH</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">_PRIVATE_KEY_FILE</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pfile</span><span class="p">:</span>
+                <span class="n">pfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">crypto</span><span class="o">.</span><span class="n">dump_privatekey</span><span class="p">(</span><span class="n">crypto</span><span class="o">.</span><span class="n">FILETYPE_PEM</span><span class="p">,</span> <span class="n">keypair</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created SSL private key in &#39;</span><span class="si">{}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_PRIVATE_KEY_FILE</span><span class="p">))</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">_PUBLIC_KEY_FILE</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pfile</span><span class="p">:</span>
+                <span class="n">pfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">crypto</span><span class="o">.</span><span class="n">dump_publickey</span><span class="p">(</span><span class="n">crypto</span><span class="o">.</span><span class="n">FILETYPE_PEM</span><span class="p">,</span> <span class="n">keypair</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created SSL public key in &#39;</span><span class="si">{}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_PUBLIC_KEY_FILE</span><span class="p">))</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">NO_AUTOGEN</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># create certificate</span>
+                <span class="n">cert</span> <span class="o">=</span> <span class="n">crypto</span><span class="o">.</span><span class="n">X509</span><span class="p">()</span>
+                <span class="n">subj</span> <span class="o">=</span> <span class="n">cert</span><span class="o">.</span><span class="n">get_subject</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_CERTIFICATE_ISSUER</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">subj</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="n">cert</span><span class="o">.</span><span class="n">set_issuer</span><span class="p">(</span><span class="n">subj</span><span class="p">)</span>
+
+                <span class="n">cert</span><span class="o">.</span><span class="n">set_serial_number</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+                <span class="n">cert</span><span class="o">.</span><span class="n">gmtime_adj_notBefore</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">cert</span><span class="o">.</span><span class="n">gmtime_adj_notAfter</span><span class="p">(</span><span class="n">_CERTIFICATE_EXPIRE</span><span class="p">)</span>
+                <span class="n">cert</span><span class="o">.</span><span class="n">set_pubkey</span><span class="p">(</span><span class="n">keypair</span><span class="p">)</span>
+                <span class="n">cert</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="s2">&quot;sha1&quot;</span><span class="p">)</span>
+
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">_CERTIFICATE_FILE</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cfile</span><span class="p">:</span>
+                    <span class="n">cfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">crypto</span><span class="o">.</span><span class="n">dump_certificate</span><span class="p">(</span><span class="n">crypto</span><span class="o">.</span><span class="n">FILETYPE_PEM</span><span class="p">,</span> <span class="n">cert</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created SSL certificate in &#39;</span><span class="si">{}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_CERTIFICATE_FILE</span><span class="p">))</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">NO_AUTOCERT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">))</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="getSSLContext"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_ssl.html#evennia.server.portal.telnet_ssl.getSSLContext">[docs]</a><span class="k">def</span> <span class="nf">getSSLContext</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is called by the portal when creating the SSL context</span>
+<span class="sd">    server-side.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ssl_context (tuple): A key and certificate that is either</span>
+<span class="sd">            existing previously or created on the fly.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">verify_or_create_SSL_key_and_cert</span><span class="p">(</span><span class="n">_PRIVATE_KEY_FILE</span><span class="p">,</span> <span class="n">_CERTIFICATE_FILE</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">twisted_ssl</span><span class="o">.</span><span class="n">DefaultOpenSSLContextFactory</span><span class="p">(</span><span class="n">_PRIVATE_KEY_FILE</span><span class="p">,</span> <span class="n">_CERTIFICATE_FILE</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="telnet_ssl.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.telnet_ssl</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>
