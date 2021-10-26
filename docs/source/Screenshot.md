@@ -4,7 +4,7 @@
 ![evennia_screenshot2017](https://user-images.githubusercontent.com/294267/30773728-ea45afb6-a076-11e7-8820-49be2168a6b8.png)
 *(right-click and choose your browser's equivalent of "view image" to see it full size)*
 
-This screenshot shows a vanilla [install](./Getting-Started) of the just started Evennia MUD server.
+This screenshot shows a vanilla [install](./Getting-Started.md) of the just started Evennia MUD server.
 In the bottom window we can see the log messages from the running server.
 
 In the top left window we see the default website of our new game displayed in a web browser (it has

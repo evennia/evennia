@@ -150,7 +150,7 @@ class in the same module to get access to the command-specific utilities mention
 ### Unit testing contribs with custom models
 
 A special case is if you were to create a contribution to go to the `evennia/contrib` folder that
-uses its [own database models](./New-Models). The problem with this is that Evennia (and Django) will
+uses its [own database models](./New-Models.md). The problem with this is that Evennia (and Django) will
 only recognize models in `settings.INSTALLED_APPS`. If a user wants to use your contrib, they will
 be required to add your models to their settings file. But since contribs are optional you cannot
 add the model to Evennia's central `settings_default.py` file - this would always create your
@@ -326,7 +326,7 @@ to see how it looks when it fails.
 ### Testing commands
 
 This section will test the proper execution of the 'abilities' command, as described in the
-[First Steps Coding](./First-Steps-Coding) page.  Follow this tutorial to create the 'abilities' command, we
+[First Steps Coding](./First-Steps-Coding.md) page.  Follow this tutorial to create the 'abilities' command, we
 will need it to test it.
 
 Testing commands in Evennia is a bit more complex than the simple testing example we have seen.
@@ -394,7 +394,7 @@ will get much more information to help you fix the bug.
 
 ### Testing Dynamic Output
 
-Having read the unit test tutorial on [Testing commands](./Unit-Testing#testing-commands) we can see
+Having read the unit test tutorial on [Testing commands](./Unit-Testing.md#testing-commands) we can see
 the code expects static unchanging numbers. While very good for learning it is unlikely a project
 will have nothing but static output to test. Here we are going to learn how to test against dynamic
 output.<br>

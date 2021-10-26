@@ -67,7 +67,7 @@ entries together for people to more easily find them. See the `help` command in-
 default categories. If you don't specify the category, "General" is assumed.
 
 If you don't want your command to be picked up by the auto-help system at all (like if you want to
-write its docs manually using the info in the next section or you use a [cmdset](./Command-Sets) that
+write its docs manually using the info in the next section or you use a [cmdset](./Command-Sets.md) that
 has its own help functionality) you can explicitly set `auto_help` class property to `False` in your
 command definition.
 
@@ -79,7 +79,7 @@ returned by this method will be displayed to the character asking for help in th
 ## Database help entries
 
 These are all help entries not involving commands (this is handled automatically by the [Command
-Auto-help system](Help-System#command-auto-help-system)).  Non-automatic help entries describe how
+Auto-help system](./Help-System.md#command-auto-help-system)).  Non-automatic help entries describe how
 your particular game is played - its rules, world descriptions and so on.
 
 A help entry consists of four parts:
@@ -89,7 +89,7 @@ looking for help. The topic can contain spaces and also partial matches will be 
 - The *help category*. Examples are *Administration*, *Building*, *Comms* or *General*. This is an
 overall grouping of similar help topics, used by the engine to give a better overview.
 - The *text* - the help text itself, of any length.
-- locks - a [lock definition](./Locks). This can be used to limit access to this help entry, maybe
+- locks - a [lock definition](./Locks.md). This can be used to limit access to this help entry, maybe
 because it's staff-only or otherwise meant to be restricted. Help commands check for `access_type`s
 `view` and `edit`. An example of a lock string would be `view:perm(Builders)`.
 
@@ -117,6 +117,6 @@ If the category *Roleplaying* did not already exist, it is created and will appe
 index.
 
 You can, finally, define a lock for the help entry by following the category with a [lock
-definition](Locks):
+definition](./Locks.md):
 
     > @sethelp/add emote, Roleplaying, view:all() = Emoting is ...

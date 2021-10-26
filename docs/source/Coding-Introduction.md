@@ -10,7 +10,7 @@ Here are some pointers to get you going.
 
 Evennia is developed using Python. Even if you are more of a designer than a coder, it is wise to
 learn how to read and understand basic Python code. If you are new to Python, or need a refresher,
-take a look at our two-part [Python introduction](./Python-basic-introduction).
+take a look at our two-part [Python introduction](./Python-basic-introduction.md).
 
 ### Explore Evennia interactively
 
@@ -31,11 +31,11 @@ This will open an Evennia-aware python shell (using ipython). From within this s
     evennia.<TAB>
 
 That is, enter `evennia.` and press the `<TAB>` key. This will show you all the resources made
-available at the top level of Evennia's  "flat API". See the [flat API](./Evennia-API) page for more
+available at the top level of Evennia's  "flat API". See the [flat API](./Evennia-API.md) page for more
 info on how to explore it efficiently.
 
 You can complement your exploration by peeking at the sections of the much more detailed 
-[Developer Central](./Developer-Central). The [Tutorials](./Tutorials) section also contains a growing collection
+[Developer Central](./Developer-Central.md). The [Tutorials](./Tutorials.md) section also contains a growing collection
 of system- or implementation-specific help.
 
 ### Use a python syntax checker
@@ -52,7 +52,7 @@ using such a checker can be a good start to weed out the simple problems.
 
 ### Plan before you code
 
-Before you start coding away at your dream game, take a look at our [Game Planning](./Game-Planning)
+Before you start coding away at your dream game, take a look at our [Game Planning](./Game-Planning.md)
 page. It might hopefully help you avoid some common pitfalls and time sinks.
 
 ### Code in your game folder, not in the evennia/ repository
@@ -64,7 +64,7 @@ it out into your game folder and edit it there.
 
 If you find that Evennia doesn't support some functionality you need, make a 
 [Feature Request](github:issue) about it. Same goes for [bugs](github:issue). If you add features or fix bugs
-yourself, please consider [Contributing](./Contributing) your changes upstream!
+yourself, please consider [Contributing](./Contributing.md) your changes upstream!
 
 ### Learn to read tracebacks
 

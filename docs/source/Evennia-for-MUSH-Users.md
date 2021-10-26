@@ -38,7 +38,7 @@ to use. So the *Player* usually operates by making use of the tools prepared for
 
 For a *Player*, collaborating on a game need not be too different between MUSH and Evennia. The
 building and description of the game world can still happen mostly in-game using build commands,
-using text tags and [inline functions](./TextTags#inline-functions) to prettify and customize the
+using text tags and [inline functions](./TextTags.md#inline-functions) to prettify and customize the
 experience. Evennia offers external ways to build a world but those are optional. There is also
 nothing *in principle* stopping a Developer from offering a softcode-like language to Players if
 that is deemed necessary.
@@ -89,7 +89,7 @@ based inheritance of MUSH.
 
 There are other differences for sure, but that should give some feel for things. Enough with the
 theory. Let's get down to more practical  matters next. To install, see the
-[Getting Started instructions](./Getting-Started).
+[Getting Started instructions](./Getting-Started.md).
 
 ## A first step making things more familiar
 
@@ -203,15 +203,15 @@ developer changing the underlying Python code.
 ## Next steps
 
 If you are a *Developer* and are interested in making a more MUSH-like Evennia game, a good start is
-to look into the Evennia [Tutorial for a first MUSH-like game](./Tutorial-for-basic-MUSH-like-game).
+to look into the Evennia [Tutorial for a first MUSH-like game](./Tutorial-for-basic-MUSH-like-game.md).
 That steps through building a simple little game from scratch and helps to acquaint you with the
-various corners of Evennia. There is also the [Tutorial for running roleplaying sessions](./Evennia-for-roleplaying-sessions) that can be of interest.
+various corners of Evennia. There is also the [Tutorial for running roleplaying sessions](./Evennia-for-roleplaying-sessions.md) that can be of interest.
 
 An important aspect of making things more familiar for *Players* is adding new and tweaking existing
-commands. How this is done is covered by the [Tutorial on adding new commands](./Adding-Command-Tutorial). You may also find it useful to shop through the `evennia/contrib/` folder. The [Tutorial
-world](Tutorial-World-Introduction) is a small single-player quest you can try (it’s not very MUSH-
+commands. How this is done is covered by the [Tutorial on adding new commands](./Adding-Command-Tutorial.md). You may also find it useful to shop through the `evennia/contrib/` folder. The [Tutorial
+world](./Tutorial-World-Introduction.md) is a small single-player quest you can try (it’s not very MUSH-
 like but it does show many Evennia concepts in action). Beyond that there are [many more
-tutorials](Tutorials) to try out. If you feel you want a more visual overview you can also look at
+tutorials](./Tutorials.md) to try out. If you feel you want a more visual overview you can also look at
 [Evennia in pictures](https://evennia.blogspot.se/2016/05/evennia-in-pictures.html).
 
 … And of course, if you need further help you can always drop into the [Evennia chatroom](http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb) or post a

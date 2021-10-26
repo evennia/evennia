@@ -348,7 +348,7 @@ See below for examples of this.
 This will display a one-line note that will pop even more than a normal `> note`.
 
 ````
-```important:: 
+```{important} 
   This is important because it is!
 ```
 ````
@@ -359,7 +359,7 @@ A warning block is used to draw attention to particularly dangerous things, or f
 mess up.
 
 ````
-```warning::
+```{warning}
   Be careful about this ... 
 ````
 

@@ -7,15 +7,15 @@ This will help you download, install and start Evennia for the first time.
 > test out Evennia. Apart from downloading and updating you don't even need an
 > internet connection until you feel ready to share your game with the world.
 
-- [Quick Start](./Getting-Started#quick-start)
-- [Requirements](./Getting-Started#requirements)
-- [Linux Install](./Getting-Started#linux-install)
-- [Mac Install](./Getting-Started#mac-install)
-- [Windows Install](./Getting-Started#windows-install)
-- [Running in Docker](./Running-Evennia-in-Docker)
-- [Where to Go Next](./Getting-Started#where-to-go-next)
-- [Troubleshooting](./Getting-Started#troubleshooting)
-- [Glossary of terms](./Glossary)
+- [Quick Start](./Getting-Started.md#quick-start)
+- [Requirements](./Getting-Started.md#requirements)
+- [Linux Install](./Getting-Started.md#linux-install)
+- [Mac Install](./Getting-Started.md#mac-install)
+- [Windows Install](./Getting-Started.md#windows-install)
+- [Running in Docker](./Running-Evennia-in-Docker.md)
+- [Where to Go Next](./Getting-Started.md#where-to-go-next)
+- [Troubleshooting](./Getting-Started.md#troubleshooting)
+- [Glossary of terms](./Glossary.md)
 
 ## Quick Start
 
@@ -37,7 +37,7 @@ Evennia should now be running and you can connect to it by pointing a web browse
 `http://localhost:4001` or a MUD telnet client to `localhost:4000` (use `127.0.0.1` if your OS does
 not recognize `localhost`).
 
-We also release [Docker images](./Running-Evennia-in-Docker)
+We also release [Docker images](./Running-Evennia-in-Docker.md)
 based on `master` and `develop` branches.
 
 ## Requirements
@@ -68,10 +68,10 @@ Twisted packages
 ## Linux Install
 
 If you run into any issues during the installation and first start, please
-check out [Linux Troubleshooting](./Getting-Started#linux-troubleshooting).
+check out [Linux Troubleshooting](./Getting-Started.md#linux-troubleshooting).
 
 For Debian-derived systems (like Ubuntu, Mint etc), start a terminal and
-install the [dependencies](./Getting-Started#requirements):
+install the [dependencies](./Getting-Started.md#requirements):
 
 ```
 sudo apt-get update
@@ -104,7 +104,7 @@ contains the source code though, it is not *installed* yet. To isolate the
 Evennia install and its dependencies from the rest of the system, it is good
 Python practice to install into a _virtualenv_. If you are unsure about what a
 virtualenv is and why it's useful, see the [Glossary entry on
-virtualenv](Glossary#virtualenv).
+virtualenv](./Glossary.md#virtualenv).
 
 Run `python -V` to see which version of Python your system defaults to.
 
@@ -142,8 +142,8 @@ folders) and run
 pip install -e evennia
 ```
 
-For more info about `pip`, see the [Glossary entry on pip](./Glossary#pip). If
-install failed with any issues, see [Linux Troubleshooting](./Getting-Started#linux-troubleshooting).
+For more info about `pip`, see the [Glossary entry on pip](./Glossary.md#pip). If
+install failed with any issues, see [Linux Troubleshooting](./Getting-Started.md#linux-troubleshooting).
 
 Next we'll start our new game, here called "mygame". This will create yet
 another new folder where you will be creating your new game:
@@ -160,8 +160,8 @@ Your final folder structure should look like this:
     mygame/
 ```
 
-You can [configure Evennia](./Server-Conf#settings-file) extensively, for example
-to use a [different database](./Choosing-An-SQL-Server). For now we'll just stick
+You can [configure Evennia](./Server-Conf.md#settings-file) extensively, for example
+to use a [different database](./Choosing-An-SQL-Server.md). For now we'll just stick
 to the defaults though.
 
 ```
@@ -175,7 +175,7 @@ evennia start        # (create a superuser when asked. Email is optional.)
 
 Your game should now be running! Open a web browser at `http://localhost:4001`
 or point a telnet client to `localhost:4000` and log in with the user you
-created. Check out [where to go next](./Getting-Started#where-to-go-next).
+created. Check out [where to go next](./Getting-Started.md#where-to-go-next).
 
 
 ## Mac Install
@@ -184,7 +184,7 @@ The Evennia server is a terminal program. Open the terminal e.g. from
 *Applications->Utilities->Terminal*. [Here is an introduction to the Mac
 terminal](http://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line)
 if you are unsure how it works. If you run into any issues during the
-installation, please check out [Mac Troubleshooting](./Getting-Started#mac-troubleshooting).
+installation, please check out [Mac Troubleshooting](./Getting-Started.md#mac-troubleshooting).
 
 * Python should already be installed but you must make sure it's a high enough version.
 ([This](http://docs.python-guide.org/en/latest/starting/install/osx/) discusses
@@ -215,7 +215,7 @@ A new folder `evennia` will appear containing the Evennia library. This only
 contains the source code though, it is not *installed* yet. To isolate the
 Evennia install and its dependencies from the rest of the system, it is good
 Python practice to install into a _virtualenv_. If you are unsure about what a
-virtualenv is and why it's useful, see the [Glossary entry on virtualenv](./Glossary#virtualenv).
+virtualenv is and why it's useful, see the [Glossary entry on virtualenv](./Glossary.md#virtualenv).
 
 Run `python -V` to check which Python your system defaults to.
 
@@ -253,8 +253,8 @@ pip install --upgrade setuptools   # Ditto concerning Mac issues.
 pip install -e evennia
 ```
 
-For more info about `pip`, see the [Glossary entry on pip](./Glossary#pip). If
-install failed with any issues, see [Mac Troubleshooting](./Getting-Started#mac-troubleshooting).
+For more info about `pip`, see the [Glossary entry on pip](./Glossary.md#pip). If
+install failed with any issues, see [Mac Troubleshooting](./Getting-Started.md#mac-troubleshooting).
 
 Next we'll start our new game. We'll call it "mygame" here. This creates a new
 folder where you will be creating your new game:
@@ -272,8 +272,8 @@ Your final folder structure should look like this:
     mygame/
 ```
 
-You can [configure Evennia](./Server-Conf#settings-file) extensively, for example
-to use a [different database](./Choosing-An-SQL-Server). We'll go with the
+You can [configure Evennia](./Server-Conf.md#settings-file) extensively, for example
+to use a [different database](./Choosing-An-SQL-Server.md). We'll go with the
 defaults here.
 
 ```
@@ -287,13 +287,13 @@ evennia start    # (create a superuser when asked. Email is optional.)
 
 Your game should now be running! Open a web browser at `http://localhost:4001`
 or point a telnet client to `localhost:4000` and log in with the user you
-created. Check out [where to go next](./Getting-Started#where-to-go-next).
+created. Check out [where to go next](./Getting-Started.md#where-to-go-next).
 
 
 ## Windows Install
 
 If you run into any issues during the installation, please check out
-[Windows Troubleshooting](./Getting-Started#windows-troubleshooting).
+[Windows Troubleshooting](./Getting-Started.md#windows-troubleshooting).
 
 > If you are running Windows10, consider using the Windows Subsystem for Linux
 > ([WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)) instead.
@@ -348,7 +348,7 @@ A new folder `evennia` will appear containing the Evennia library. This only
 contains the source code though, it is not *installed* yet. To isolate the
 Evennia install and its dependencies from the rest of the system, it is good
 Python practice to install into a _virtualenv_. If you are unsure about what a
-virtualenv is and why it's useful, see the [Glossary entry on virtualenv](./Glossary#virtualenv).
+virtualenv is and why it's useful, see the [Glossary entry on virtualenv](./Glossary.md#virtualenv).
 
 In your console, try `python -V` to see which version of Python your system
 defaults to.
@@ -393,8 +393,8 @@ folders when you use the `dir` command) and run
 ```
 pip install -e evennia
 ```
-For more info about `pip`, see the [Glossary entry on pip](./Glossary#pip). If
-the install failed with any issues, see [Windows Troubleshooting](./Getting-Started#windows-
+For more info about `pip`, see the [Glossary entry on pip](./Glossary.md#pip). If
+the install failed with any issues, see [Windows Troubleshooting](./Getting-Started.md#windows-
 troubleshooting).
 Next we'll start our new game, we'll call it "mygame" here. This creates a new folder where you will
 be
@@ -413,8 +413,8 @@ path\to\muddev
     mygame\
 ```
 
-You can [configure Evennia](./Server-Conf#settings-file) extensively, for example
-to use a [different database](./Choosing-An-SQL-Server). We'll go with the
+You can [configure Evennia](./Server-Conf.md#settings-file) extensively, for example
+to use a [different database](./Choosing-An-SQL-Server.md). We'll go with the
 defaults here.
 
 ```
@@ -428,7 +428,7 @@ evennia start      # (create a superuser when asked. Email is optional.)
 
 Your game should now be running! Open a web browser at `http://localhost:4001`
 or point a telnet client to `localhost:4000` and log in with the user you
-created. Check out [where to go next](./Getting-Started#where-to-go-next).
+created. Check out [where to go next](./Getting-Started.md#where-to-go-next).
 
 
 ## Where to Go Next
@@ -438,7 +438,7 @@ logged in, stand in the `Limbo` room and run
 
     @batchcommand tutorial_world.build
 
-to build [Evennia's tutorial world](./Tutorial-World-Introduction) - it's a small solo quest to
+to build [Evennia's tutorial world](./Tutorial-World-Introduction.md) - it's a small solo quest to
 explore. Only run the instructed `@batchcommand` once. You'll get a lot of text scrolling by as the
 tutorial is built. Once done, the `tutorial` exit will have appeared out of Limbo - just write
 `tutorial` to enter it.
@@ -446,10 +446,10 @@ tutorial is built. Once done, the `tutorial` exit will have appeared out of Limb
 Once you get back to `Limbo` from the tutorial (if you get stuck in the tutorial quest you can do
 `@tel #2` to jump to Limbo), a good idea is to learn how to [start, stop and reload](Start-Stop-
 Reload) the Evennia server. You may also want to familiarize yourself with some [commonly used terms
-in our Glossary](Glossary). After that, why not experiment with [creating some new items and build
-some new rooms](Building-Quickstart) out from Limbo.
+in our Glossary](./Glossary.md). After that, why not experiment with [creating some new items and build
+some new rooms](./Building-Quickstart.md) out from Limbo.
 
-From here on, you could move on to do one of our [introductory tutorials](./Tutorials) or simply dive
+From here on, you could move on to do one of our [introductory tutorials](./Tutorials.md) or simply dive
 headlong into Evennia's comprehensive [manual](https://github.com/evennia/evennia/wiki). While
 Evennia has no major game systems out of the box, we do supply a range of optional *contribs* that
 you can use or borrow from. They range from dice rolling and alternative color schemes to barter and
@@ -463,7 +463,7 @@ forums](https://groups.google.com/forum/#%21forum/evennia). You can also join th
 Server](https://discord.gg/NecFePw).
 
 Finally, if you are itching to help out or support Evennia (awesome!) have an
-issue to report or a feature to request, [see here](./How-To-Get-And-Give-Help).
+issue to report or a feature to request, [see here](./How-To-Get-And-Give-Help.md).
 
 Enjoy your stay!
 

@@ -2,7 +2,7 @@
 
 
 This tutorial will elaborate on the many ways one can parse command arguments.  The first step after
-[adding a command](./Adding-Command-Tutorial) usually is to parse its arguments.  There are lots of
+[adding a command](./Adding-Command-Tutorial.md) usually is to parse its arguments.  There are lots of
 ways to do it, but some are indeed better than others and this tutorial will try to present them.
 
 If you're a Python beginner, this tutorial might help you a lot.  If you're already familiar with
@@ -652,7 +652,7 @@ about... what is this `"book"`?
 
 To get an object from a string, we perform an Evennia search.  Evennia provides a `search` method on
 all typeclassed objects (you will most likely use the one on characters or accounts).  This method
-supports a very wide array of arguments and has [its own tutorial](./Tutorial-Searching-For-Objects).
+supports a very wide array of arguments and has [its own tutorial](./Tutorial-Searching-For-Objects.md).
 Some examples of useful cases follow:
 
 ### Local searches

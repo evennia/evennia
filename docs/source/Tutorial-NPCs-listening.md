@@ -6,7 +6,7 @@ their location. In this example the NPC parrots what is said, but any actions co
 this way.
 
 It is assumed that you already know how to create custom room and character typeclasses, please see
-the [Basic Game tutorial](./Tutorial-for-basic-MUSH-like-game) if you haven't already done this.
+the [Basic Game tutorial](./Tutorial-for-basic-MUSH-like-game.md) if you haven't already done this.
 
 What we will need is simply a new NPC typeclass that can react when someone speaks.
 
@@ -77,7 +77,7 @@ called 'leap before you look' and is a Python paradigm that may feel unfamiliar 
 other languages. Here we 'swallow' the error silently, which is fine when the code checked is
 simple. If not we may want to import `evennia.logger.log_trace` and add `log_trace()` in the
 `except` clause.<br>
-If you would like to learn more about the `text` list used above refer to the [Out-Of-Band](./OOB)
+If you would like to learn more about the `text` list used above refer to the [Out-Of-Band](./OOB.md)
 documentation.
 - We use `execute_cmd` to fire the `say` command back. We could also have called
 `self.location.msg_contents`  directly but using the Command makes sure all hooks are called (so

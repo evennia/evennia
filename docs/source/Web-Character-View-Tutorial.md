@@ -1,7 +1,7 @@
 # Web Character View Tutorial
 
 
-**Before doing this tutorial you will probably want to read the intro in [Basic Web tutorial](./Web-Tutorial).**
+**Before doing this tutorial you will probably want to read the intro in [Basic Web tutorial](./Web-Tutorial.md).**
 
 In this tutorial we will create a web page that displays the stats of a game character. For this,
 and all other pages we want to make specific to our game, we'll need to create our own Django "app"

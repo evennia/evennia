@@ -7,8 +7,8 @@ can give correct subsequent commands. If you are writing a combat system, you mi
 combattant's next roll get easier dependent on if their opponent failed. Your characters will
 probably need to store roleplaying-attributes like strength and agility. And so on.
 
-[Typeclassed](./Typeclasses) game entities ([Accounts](./Accounts), [Objects](./Objects),
-[Scripts](./Scripts) and [Channels](./Communications)) always have *Attributes* associated with them.
+[Typeclassed](./Typeclasses.md) game entities ([Accounts](./Accounts.md), [Objects](./Objects.md),
+[Scripts](./Scripts.md) and [Channels](./Communications.md)) always have *Attributes* associated with them.
 Attributes are used to store any type of data 'on' such entities. This is different from storing
 data in properties already defined on entities (such as `key` or `location`) - these have very
 specific names and require very specific types of data (for example you couldn't assign a python
@@ -16,12 +16,12 @@ specific names and require very specific types of data (for example you couldn't
 want to assign arbitrary data to arbitrary names.
 
 **Attributes are _not_ secure by default and any player may be able to change them unless you
-[prevent this behavior](./Attributes#locking-and-checking-attributes).**
+[prevent this behavior](./Attributes.md#locking-and-checking-attributes).**
 
 ## The .db and .ndb shortcuts
 
 To save persistent data on a Typeclassed object you normally use the `db` (DataBase) operator. Let's
-try to save some data to a *Rose* (an [Object](./Objects)):
+try to save some data to a *Rose* (an [Object](./Objects.md)):
 
 ```python
     # saving
@@ -87,13 +87,13 @@ The handlers have normal access methods that allow you to manage and retrieve `A
   returned, but the method takes keywords for returning the Attribute object itself. By supplying an
   `accessing_object` to the call one can also make sure to check permissions before modifying
   anything.
-- `add(...)` - this adds a new Attribute to the object. An optional [lockstring](./Locks) can be
+- `add(...)` - this adds a new Attribute to the object. An optional [lockstring](./Locks.md) can be
   supplied here to restrict future access and also the call itself may be checked against locks.
 - `remove(...)` - Remove the given Attribute. This can optionally be made to check for permission
   before performing the deletion.  - `clear(...)`  - removes all Attributes from object.
 - `all(...)` - returns all Attributes (of the given category) attached to this object.
 
-See [this section](./Attributes#locking-and-checking-attributes) for more about locking down Attribute
+See [this section](./Attributes.md#locking-and-checking-attributes) for more about locking down Attribute
 access and editing. The `Nattribute` offers no concept of access control.
 
 Some examples:
@@ -118,23 +118,23 @@ An Attribute object is stored in the database. It has the following properties:
   to `attrname`.
 - `value` - this is the value of the Attribute. This value can be anything which can be pickled -
   objects, lists, numbers or what have you (see
-  [this section](./Attributes#What_types_of_data_can_I_save_in_an_Attribute) for more info). In the
+  [this section](./Attributes.md#what-types-of-data-can-i-save-in-an-attribute) for more info). In the
 example
   `obj.db.attrname = value`, the `value` is stored here.
 - `category` - this is an optional property that is set to None for most Attributes. Setting this
   allows to use Attributes for different functionality. This is usually not needed unless you want
-  to use Attributes for very different functionality ([Nicks](./Nicks) is an example of using
+  to use Attributes for very different functionality ([Nicks](./Nicks.md) is an example of using
 Attributes
   in this way). To modify this property you need to use the [Attribute
-Handler](Attributes#The_Attribute_Handler).
+Handler](#the-attributehandler).
 - `strvalue` - this is a separate value field that only accepts strings. This severely limits the
   data possible to store, but allows for easier database lookups. This property is usually not used
-  except when re-using Attributes for some other purpose ([Nicks](./Nicks) use it). It is only
-  accessible via the [Attribute Handler](./Attributes#The_Attribute_Handler).
+  except when re-using Attributes for some other purpose ([Nicks](./Nicks.md) use it). It is only
+  accessible via the [Attribute Handler](./Attributes.md#the-attributehandler).
 
 There are also two special properties:
 
-- `attrtype` - this is used internally by Evennia to separate [Nicks](./Nicks), from Attributes (Nicks
+- `attrtype` - this is used internally by Evennia to separate [Nicks](./Nicks.md), from Attributes (Nicks
   use Attributes behind the scenes).
 - `model` - this is a *natural-key* describing the model this Attribute is attached to. This is on
   the form *appname.modelclass*, like `objects.objectdb`. It is used by the Attribute and
@@ -162,7 +162,7 @@ default
   during heavy loads.
 - A more valid reason for using non-persistent data is if you *want* to lose your state when logging
   off. Maybe you are storing throw-away data that are re-initialized at server startup. Maybe you
-  are implementing some caching of your own. Or maybe you are testing a buggy [Script](./Scripts) that
+  are implementing some caching of your own. Or maybe you are testing a buggy [Script](./Scripts.md) that
   does potentially harmful stuff to your character object. With non-persistent storage you can be
 sure
   that whatever is messed up, it's nothing a server reboot can't clear up.
@@ -192,7 +192,7 @@ not a big deal. But if you are accessing the Attribute as part of some big loop 
 amount of reads/writes you should first extract it to a temporary variable, operate on *that* and
 then save the result back to the Attribute. If you are storing a more complex structure like a
 `dict` or a `list` you should make sure to "disconnect" it from the database before looping over it,
-as mentioned in the [Retrieving Mutable Objects](./Attributes#retrieving-mutable-objects) section
+as mentioned in the [Retrieving Mutable Objects](./Attributes.md#retrieving-mutable-objects) section
 below.
 
 ### Storing single objects
@@ -246,7 +246,7 @@ containing dicts, etc.
   Since you can use any combination of the above iterables, this is generally not much of a
   limitation.
 
-Any entity listed in the [Single object](./Attributes#Storing-Single-Objects) section above can be
+Any entity listed in the [Single object](./Attributes.md#storing-single-objects) section above can be
 stored in the iterable.
 
 > As mentioned in the previous section, database entities (aka typeclasses) are not possible to
@@ -353,7 +353,7 @@ already disconnected from the database from the onset.
 Attributes are normally not locked down by default, but you can easily change that for individual
 Attributes (like those that may be game-sensitive in games with user-level building).
 
-First you need to set a *lock string* on your Attribute. Lock strings are specified [Locks](./Locks).
+First you need to set a *lock string* on your Attribute. Lock strings are specified [Locks](./Locks.md).
 The relevant lock types are
 
 - `attrread` - limits who may read the value of the Attribute

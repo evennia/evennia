@@ -7,8 +7,7 @@
 import os
 import sys
 import re
-import importlib
-from recommonmark.transform import AutoStructify
+# from recommonmark.transform import AutoStructify
 from sphinx.util.osutil import cd
 
 
@@ -20,20 +19,19 @@ author = "The Evennia developer community"
 
 # The full Evennia version covered by these docs, including alpha/beta/rc tags
 # This will be used for multi-version selection options.
-release = "0.9.5"
+release = "0.95"
 
 
 # -- General configuration ---------------------------------------------------
 
 extensions = [
-    "recommonmark",
     "sphinx_multiversion",
     "sphinx.ext.napoleon",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.viewcode",
-    # "sphinxcontrib.lunrsearch",
     "sphinx.ext.todo",
     "sphinx.ext.githubpages",
+    "myst_parser"
 ]
 
 source_suffix = [".md", ".rst"]
@@ -107,69 +105,111 @@ latex_documents = [
 ]
 
 
-# -- Recommonmark ------------------------------------------------------------
-# allows for writing Markdown and convert to rst dynamically
+# -- MyST Markdown parsing -----------------------------------------------------
+
+myst_enable_extensions = [
+    "amsmath",
+    "colon_fence",  # Use ::: instead of ``` for some extra features
+    "deflist",  # use : to mark sublevel of list
+    "dollarmath",
+    "html_admonition",  # Add admonitions in html (usually use ```{admonition} directive)
+    "html_image",  # parse raw <img ...> </img> tags
+    "linkify",  # convert bare urls to md links
+    "replacements",  # (c) to copyright sign etc
+    "smartquotes",
+    "substitution",
+    "tasklist",
+]
+
+myst_dmath_allow_space = False  # requires $a$, not $ a$ or $a $
+myst_dmath_allow_digits = False  # requires $a$, not 1$a$ or $a$2
+myst_dmath_double_inline = True  # allow $$ ... $$ math blocks
+
+myst_substitution = {
+    # used with Jinja2. Can also be set in a substitutions: block in front-matter of page
+}
+# add anchors to h1, h2, ... level headings
+myst_heading_anchors = 4
+
 
 # reroute to github links or to the api
 
+# shortcuts
+_githubstart = "github:"
+_apistart = "api:"
+_choose_issue = "github:issue"
+_sourcestart = "src:"
+# remaps
 _github_code_root = "https://github.com/evennia/evennia/blob/"
 _github_doc_root = "https://github.com/evennia/tree/master/docs/sources/"
 _github_issue_choose = "https://github.com/evennia/evennia/issues/new/choose"
+_ref_regex = re.compile(  # normal reference-links [txt](url)
+    r"\[(?P<txt>[\w -\[\]\`\n]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U + re.M)
+_ref_doc_regex = re.compile(  # in-document bottom references [txt]: url
+    r"\[(?P<txt>[\w -\`]+?)\\n]:\s+?(?P<url>.+?)(?=$|\n)", re.I + re.S + re.U + re.M)
 
 
-def url_resolver(url):
+def url_resolver(app, docname, source):
     """
+    A handler acting on the `source-read` signal. The `source`
+    is a list with one element that should be updated.
     Convert urls by catching special markers.
+
+    Supported replacements (used e.g. as [txt](github:...)
+        github:master/<url>  - add path to Evennia github master branch
+        github:develop/<url> - add path to Evennia github develop branch
+        github:issue - add link to the Evennia github issue-create page
+        src:foo.bar#Foo - add link to source doc in _modules
+        api:foo.bar#Foo - add link to api autodoc page
+
+
     """
-    githubstart = "github:"
-    apistart = "api:"
-    choose_issue = "github:issue"
-    sourcestart = "src:"
+    def _url_remap(url):
 
-    if url.endswith(choose_issue):
-        return _github_issue_choose
-    elif githubstart in url:
-        urlpath = url[url.index(githubstart) + len(githubstart) :]
-        if not (urlpath.startswith("develop/") or urlpath.startswith("master")):
-            urlpath = "master/" + urlpath
-        return _github_code_root + urlpath
-    elif apistart in url:
-        # locate the api/ folder in the doc structure
-        ind = url.index(apistart)
-        depth = url[:ind].count("/") + 1
-        path = "../".join("" for _ in range(depth))
-        urlpath = path + "api/" + url[ind + len(apistart) :] + ".html"
-        return urlpath
-    elif sourcestart in url:
-        ind = url.index(sourcestart)
-        depth = url[:ind].count("/") + 1
-        path = "../".join("" for _ in range(depth))
+        # determine depth in tree of current document
+        docdepth = docname.count('/') + 1
+        relative_path = "../".join("" for _ in range(docdepth))
 
-        modpath, *inmodule = url[ind + len(sourcestart) :].rsplit("#", 1)
-        modpath = "/".join(modpath.split("."))
-        inmodule = "#" + inmodule[0] if inmodule else ""
-        modpath = modpath + ".html" + inmodule
+        if url.endswith(_choose_issue):
+            # github:issue shortcut
+            return _github_issue_choose
+        elif _githubstart in url:
+            # github:develop/... shortcut
+            urlpath = url[url.index(_githubstart) + len(_githubstart):]
+            if not (urlpath.startswith("develop/") or urlpath.startswith("master")):
+                urlpath = "master/" + urlpath
+            return _github_code_root + urlpath
+        elif _sourcestart in url:
+            ind = url.index(_sourcestart)
 
-        urlpath = path + "_modules/" + modpath
-        return urlpath
+            modpath, *inmodule = url[ind + len(_sourcestart):].rsplit("#", 1)
+            modpath = "/".join(modpath.split("."))
+            inmodule = "#" + inmodule[0] if inmodule else ""
+            modpath = modpath + ".html" + inmodule
 
-    return url
+            urlpath = relative_path + "_modules/" + modpath
+            return urlpath
 
+        return url
 
-# auto-create TOCs if a list of links is under these headers
-auto_toc_sections = ["Contents", "Toc", "Index", "API", "Overview"]
+    def _re_ref_sub(match):
+        txt = match.group('txt')
+        url = _url_remap(match.group('url'))
+        return f"[{txt}]({url})"
 
-recommonmark_config = {
-    "enable_auto_toc_tree": True,
-    "url_resolver": url_resolver,
-    "auto_toc_maxdepth": 1,
-    "auto_toc_tree_section": ["Contents", "Toc", "Index"],
-    "code_highlight_options": {"force": True, "linenos": True},
-}
+    def _re_docref_sub(match):
+        txt = match.group('txt')
+        url = _url_remap(match.group('url'))
+        return f"[{txt}]: {url}"
+
+    src = source[0]
+    src = _ref_regex.sub(_re_ref_sub, src)
+    src = _ref_doc_regex.sub(_re_docref_sub, src)
+    source[0] = src
 
 
-# -- API/Autodoc ---------------------------------------------------------------
-# automatic creation of API documentation. This requires a valid Evennia setup
+# # -- API/Autodoc ---------------------------------------------------------------
+# # automatic creation of API documentation. This requires a valid Evennia setup
 
 _no_autodoc = os.environ.get("NOAUTODOC")
 
@@ -199,7 +239,7 @@ if not _no_autodoc:
 if _no_autodoc:
     exclude_patterns = ["api/*"]
 else:
-    exclude_patterns = ["api/*migrations.rst"]
+    exclude_patterns = ["api/*migrations.rst", "api/*migrations.md"]
 
 autodoc_default_options = {
     "members": True,
@@ -207,7 +247,7 @@ autodoc_default_options = {
     "show-inheritance": True,
     "special-members": "__init__",
     "enable_eval_rst": True,
-    # "inherited_members": True
+    "inherited_members": True
 }
 
 autodoc_member_order = "bysource"
@@ -300,13 +340,14 @@ napoleon_use_rtype = False
 def setup(app):
     app.connect("autodoc-skip-member", autodoc_skip_member)
     app.connect("autodoc-process-docstring", autodoc_post_process_docstring)
-    app.add_transform(AutoStructify)
+    app.connect("source-read", url_resolver)
 
     # build toctree file
     sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-    from docs.pylib import auto_link_remapper
+    from docs.pylib import auto_link_remapper, update_default_cmd_index
 
     _no_autodoc = os.environ.get("NOAUTODOC")
+    update_default_cmd_index.run_update(no_autodoc=_no_autodoc)
     auto_link_remapper.auto_link_remapper(no_autodoc=_no_autodoc)
     print("Updated source/toc.md file")
 
