@@ -15,6 +15,7 @@ This helps writing isolated code and reusing it over multiple objects.
   ```
 
 - Components need to inherit the Component class and must be registered to the listing
+  The name is required and used to set the corresponding attribute on the ComponentHolder
     Example:
     ```
     from evennia.contrib.components import Component, listing
@@ -58,7 +59,6 @@ class ComponentHolderMixin(object):
     All registered components are initialized on the typeclass.
     They will be of None value if not present in the class components or runtime components.
     """
-
     class_components = []
 
     def at_init(self):
@@ -75,6 +75,7 @@ class ComponentHolderMixin(object):
         Class components will be instanced via default_create.
         If a class component is already instanced it will be duplicated instead.
         """
+        self.component_instances = {}
         self.db.runtime_components = []
         super(ComponentHolderMixin, self).at_object_creation()
         for component_class in self.class_components:
@@ -82,7 +83,8 @@ class ComponentHolderMixin(object):
                 component_instance = component_class.default_create(self)
             else:
                 component_instance = component_class.duplicate(self)
-            setattr(self, component_class.name, component_instance)
+
+            self._set_component(component_instance)
 
     def at_post_puppet(self, *args, **kwargs):
         """
@@ -91,7 +93,7 @@ class ComponentHolderMixin(object):
         """
         super().at_post_puppet(*args, **kwargs)
         # TODO Should we only call components who register to this host signal?
-        for component in self.component_instances:
+        for component in self.component_instances.values():
             component.at_post_puppet(*args, **kwargs)
 
     def at_post_unpuppet(self, *args, **kwargs):
@@ -101,7 +103,7 @@ class ComponentHolderMixin(object):
         """
         super().at_post_unpuppet(*args, **kwargs)
         # TODO Should we only call components who register to this host signal?
-        for component in self.component_instances:
+        for component in self.component_instances.values():
             component.at_post_unpuppet(*args, **kwargs)
 
     def initialize_components(self):
@@ -111,8 +113,7 @@ class ComponentHolderMixin(object):
         for component_class in self.class_components:
             component_name = component_class.name
             component_instance = component_class.load(self)
-            setattr(self, component_name, component_instance)
-            self.component_instances[component_name] = component_instance
+            self._set_component(component_instance)
 
         runtime_component_names = self.runtime_component_names
         if not runtime_component_names:
@@ -122,8 +123,7 @@ class ComponentHolderMixin(object):
             component = listing.get(component_name)
             if component:
                 component_instance = component.load(self)
-                setattr(self, component_name, component_instance)
-                self.component_instances[component_name] = component_instance
+                self._set_component(component_instance)
             else:
                 logger.log_err(f"Could not initialize runtime component {component_name} from {self.name}")
 
@@ -131,14 +131,13 @@ class ComponentHolderMixin(object):
         """
         Registers new components as runtime or replaces an existing component.
         """
-        if component.name in self.class_component_names or component.name in self.runtime_component_names:
-            existing_component = getattr(self, component.name, None)
-            if existing_component:
-                existing_component.unregister_component()
+        existing_component = self.component_instances.get(component.name)
+        if existing_component:
+            self.unregister_component(existing_component)
         else:
             self.db.runtime_components.append(component.name)
 
-        setattr(self, component.name, component)
+        self._set_component(component)
         component.on_register(self)
 
     def unregister_component(self, component):
@@ -151,15 +150,17 @@ class ComponentHolderMixin(object):
         component.on_unregister(self)
         if component.name in self.runtime_component_names:
             self.db.runtime_components.remove(component.name)
+
         setattr(self, component.name, None)
+        del self.component_instances[component.name]
 
     @property
     def runtime_components(self):
         runtime_component_names = self.db.runtime_components
         component_instances = [
-            getattr(self, name, None) for name in runtime_component_names
+            self.component_instances.get(name)
+            for name in runtime_component_names
         ]
-
         return component_instances
 
     @property
@@ -168,21 +169,11 @@ class ComponentHolderMixin(object):
 
     @property
     def class_component_names(self):
-        # TODO Improve
-        return (c.name for c in self.class_components)
+        return [c.name for c in self.class_components]
 
-    @property
-    def component_instances(self):
-        # TODO Maybe this should be stored in a permanent list
-        runtime_component_names = self.db.runtime_components
-        class_component_names = self.class_component_names
-        instances = []
-        for component_name in itertools.chain(runtime_component_names, class_component_names):
-            instance = getattr(self, component_name, None)
-            if instance:
-                instances.append(instance)
-
-        return instances
+    def _set_component(self, component):
+        self.component_instances[component.name] = component
+        setattr(self, component.name, component)
 
 
 class Component(metaclass=abc.ABCMeta):
@@ -194,7 +185,6 @@ class Component(metaclass=abc.ABCMeta):
     def __init__(self, host=None):
         # TODO Passing a host here is to prevent TDB TNDB from creating
         # TODO Without host, this should instantiate this component's TDB and TNDB
-        # TODO Should this be the default create?
         self.host = host
         self._db_fields = self._get_db_field_names()
 
@@ -345,10 +335,10 @@ class DBField(object):
         # TODO This could be taken from a constructor parameter or just erased
         # TODO Since using setters would remove the need of such a thing
         # TODO Also, the attribute handler already has something similar?
-        signal = f'on_change_{self.name}'
-        signal_func = getattr(instance, signal, None)
-        if signal_func:
-            signal_func()
+        # signal = f'on_change_{self.name}'
+        # signal_func = getattr(instance, signal, None)
+        # if signal_func:
+        #     signal_func()
 
     def __delete__(self, instance):
         if not instance:
@@ -358,4 +348,5 @@ class DBField(object):
         if host:
             key = f"{instance.name}_{self.name}"
             delattr(host.db, key)
+
         del self._cache[instance]
