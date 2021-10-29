@@ -19,6 +19,7 @@ class ComponentTestB(Component):
     my_list = DBField('my_list', default_value=list)
 
 
+@listing.register
 class RuntimeComponentTestC(Component):
     name = "test_c"
     my_int = DBField('my_int', default_value=6)
@@ -69,3 +70,12 @@ class TestComponents(EvenniaTest):
         self.char1.at_post_unpuppet(self.account)
         self.char1.test_b.at_post_puppet.assert_called()
         self.char1.test_b.at_post_unpuppet.assert_called()
+
+    def test_all_components_show_in_components_instance(self):
+        rct = RuntimeComponentTestC.default_create(None)
+        self.char1.register_component(rct)
+        components = self.char1.component_instances
+
+        assert components.get("test_a") is self.char1.test_a
+        assert components.get("test_b") is self.char1.test_b
+        assert components.get("test_c") is rct
