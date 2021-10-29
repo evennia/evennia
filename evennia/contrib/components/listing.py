@@ -15,4 +15,4 @@ def register(component_class):
 
 
 def get(component_name):
-    return components_by_name[component_name]
+    return components_by_name.get(component_name)
