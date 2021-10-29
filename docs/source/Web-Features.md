@@ -35,14 +35,14 @@ You customize your website from your game directory. In the folder `web` you'll 
 `static`, `templates`, `static_overrides` and `templates_overrides`. The first two of those are
 populated automatically by Django and used to serve the website. You should not edit anything in
 them - the change will be lost. To customize the website you'll need to copy the file you want to
-change from the `web/website/template/` or `web/website/static/ path to the corresponding place
+change from the `web/website/template/` or `web/website/static/` path to the corresponding place
 under one of `_overrides` directories.
 
 Example: To override or modify `evennia/web/website/template/website/index.html` you need to
 add/modify `mygame/web/template_overrides/website/index.html`.
 
 The detailed description on how to customize the website is best described in tutorial form. See the
-[Web Tutorial](./Web-Tutorial) for more information.
+[Web Tutorial](./Web-Tutorial.md) for more information.
 
 ### Overloading Django views
 
@@ -89,8 +89,7 @@ the root of the website. It will now our own function `myview` from a new module
 `mygame.com` in the address bar. If we had wanted to add a view for `http://mygame.com/awesome`, the
 regular expression would have been `^/awesome`.
 
-Look at [evennia/web/website/views.py](https://github.com/evennia/evennia/blob/master/evennia/web/we
-bsite/views.py#L82) to see the inputs and outputs you must have to define a view. Easiest may be to
+Look at [evennia/web/website/views.py](https://github.com/evennia/evennia/blob/master/evennia/web/website/views.py#L82) to see the inputs and outputs you must have to define a view. Easiest may be to
 copy the default file to `mygame/web` to have something to modify and expand on.
 
 Restart the server and reload the page in the browser - the website will now use your custom view.
@@ -102,7 +101,7 @@ you will also log all requests in `mygame/server/logs/http_requests.log`.
 
 Evennia comes with a MUD client accessible from a normal web browser. During
 development you can try it at `http://localhost:4001/webclient`.
-[See the Webclient page](./Webclient) for more details.
+[See the Webclient page](./Webclient.md) for more details.
 
 
 ## The Django 'Admin' Page

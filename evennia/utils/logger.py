@@ -392,7 +392,16 @@ class EvenniaLogFile(logfile.LogFile):
         Returns:
             lines (list): lines from our _file attribute.
         """
-        return [line.decode("utf-8") for line in self._file.readlines(*args, **kwargs)]
+        lines = []
+        for line in self._file.readlines(*args, **kwargs):
+            try:
+                lines.append(line.decode("utf-8"))
+            except UnicodeDecodeError:
+                try:
+                    lines.append(str(line))
+                except Exception:
+                    lines.append("")
+        return lines
 
 
 _LOG_FILE_HANDLES = {}  # holds open log handles
@@ -511,7 +520,7 @@ def tail_log_file(filename, offset, nlines, callback=None):
             lines_found = filehandle.readlines()
             block_count -= 1
         # return the right number of lines
-        lines_found = lines_found[-nlines - offset : -offset if offset else None]
+        lines_found = lines_found[-nlines - offset: -offset if offset else None]
         if callback:
             callback(lines_found)
             return None

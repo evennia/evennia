@@ -7,7 +7,7 @@ focused on free form storytelling. Even if you are not interested in MUSH:es, th
 first game-type to try since it's not so code heavy. You will be able to use the same principles for
 building other types of games.
 
-The tutorial starts from scratch. If you did the [First Steps Coding](./First-Steps-Coding) tutorial
+The tutorial starts from scratch. If you did the [First Steps Coding](./First-Steps-Coding.md) tutorial
 already you should have some ideas about how to do some of the steps already.
 
 The following are the (very simplistic and cut-down) features we will implement (this was taken from
@@ -61,7 +61,7 @@ class Character(DefaultCharacter):
         self.db.combat_score = 1
 ```
 
-We defined two new [Attributes](./Attributes) `power` and `combat_score` and set them to default
+We defined two new [Attributes](./Attributes.md) `power` and `combat_score` and set them to default
 values. Make sure to `@reload` the server if you had it already running (you need to reload every
 time you update your python code, don't worry, no accounts will be disconnected by the reload).
 
@@ -94,8 +94,8 @@ check it. Using this method however will make it easy to add more functionality 
 
 What we need are the following:
 
-- One character generation [Command](./Commands) to set the "Power" on the `Character`.
-- A chargen [CmdSet](./Command-Sets) to hold this command. Lets call it `ChargenCmdset`.
+- One character generation [Command](./Commands.md) to set the "Power" on the `Character`.
+- A chargen [CmdSet](./Command-Sets.md) to hold this command. Lets call it `ChargenCmdset`.
 - A custom `ChargenRoom` type that makes this set of commands available to players in such rooms.
 - One such room to test things in.
 
@@ -104,7 +104,7 @@ What we need are the following:
 For this tutorial we will add all our new commands to `mygame/commands/command.py` but you could
 split your commands into multiple module if you prefered.
 
-For this tutorial character generation will only consist of one [Command](./Commands) to set the
+For this tutorial character generation will only consist of one [Command](./Commands.md) to set the
 Character s "power" stat. It will be called on the following MUSH-like form:
 
      +setpower 4
@@ -156,7 +156,7 @@ This is a pretty straightforward command. We do some error checking, then set th
 We use a `help_category` of "mush" for all our commands, just so they are easy to find and separate
 in the help list.
 
-Save the file. We will now add it to a new [CmdSet](./Command-Sets) so it can be accessed (in a full
+Save the file. We will now add it to a new [CmdSet](./Command-Sets.md) so it can be accessed (in a full
 chargen system you would of course have more than one command here).
 
 Open `mygame/commands/default_cmdsets.py` and import your `command.py` module at the top. We also
@@ -210,7 +210,7 @@ class ChargenRoom(Room):
 ```
 Note how new rooms created with this typeclass will always start with `ChargenCmdset` on themselves.
 Don't forget the `permanent=True` keyword or you will lose the cmdset after a server reload. For
-more information about [Command Sets](./Command-Sets) and [Commands](./Commands), see the respective
+more information about [Command Sets](./Command-Sets.md) and [Commands](./Commands.md), see the respective
 links.
 
 ### Testing chargen
@@ -242,7 +242,7 @@ between fixes. Don't continue until the creation seems to have worked okay.
 This should bring you to the chargen room. Being in there you should now have the `+setpower`
 command available, so test it out. When you leave (via the `finish` exit), the command will go away
 and trying `+setpower` should now give you a command-not-found error. Use `ex me` (as a privileged
-user) to check so the `Power` [Attribute](./Attributes) has been set correctly.
+user) to check so the `Power` [Attribute](./Attributes.md) has been set correctly.
 
 If things are not working, make sure your typeclasses and commands are free of bugs and that you
 have entered the paths to the various command sets and commands correctly. Check the logs or command
@@ -391,7 +391,7 @@ There are a few ways to define the NPC class. We could in theory create a custom
 and put a custom NPC-specific cmdset on all NPCs. This cmdset could hold all manipulation commands.
 Since we expect NPC manipulation to be a common occurrence among the user base however, we will
 instead put all relevant NPC commands in the default command set and limit eventual access with
-[Permissions and Locks](./Locks#Permissions).
+[Permissions and Locks](./Locks.md#permissions).
 
 ### Creating an NPC with +createNPC
 
@@ -443,13 +443,13 @@ class CmdCreateNPC(Command):
                                                 exclude=caller)
 ```
 Here we define a `+createnpc` (`+createNPC` works too) that is callable by everyone *not* having the
-`nonpcs` "[permission](./Locks#Permissions)" (in Evennia, a "permission" can just as well be used to
+`nonpcs` "[permission](./Locks.md#permissions)" (in Evennia, a "permission" can just as well be used to
 block access, it depends on the lock we define). We create the NPC object in the caller's current
 location, using our custom `Character` typeclass to do so.
 
 We set an extra lock condition on the NPC, which we will use to check who may edit the NPC later --
 we allow the creator to do so, and anyone with the Builders permission (or higher). See
-[Locks](./Locks) for more information about the lock system.
+[Locks](./Locks.md) for more information about the lock system.
 
 Note that we just give the object default permissions (by not specifying the `permissions` keyword
 to the `create_object()` call).  In some games one might want to give the NPC the same permissions
@@ -464,7 +464,7 @@ Since we re-used our custom character typeclass, our new NPC already has a *Powe
 defaults to 1. How do we change this?
 
 There are a few ways we can do this. The easiest is to remember that the `power` attribute is just a
-simple [Attribute](./Attributes) stored on the NPC object. So as a Builder or Admin we could set this
+simple [Attribute](./Attributes.md) stored on the NPC object. So as a Builder or Admin we could set this
 right away with the default `@set` command:
 
      @set mynpc/power = 6
@@ -646,6 +646,6 @@ The simple "Power" game mechanic should be easily expandable to something more f
 useful, same is true for the combat score principle. The `+attack` could be made to target a
 specific player (or npc) and automatically compare their relevant attributes to determine a result.
 
-To continue from here, you can take a look at the [Tutorial World](./Tutorial-World-Introduction). For
-more specific ideas, see the [other tutorials and hints](./Tutorials) as well
-as the [Developer Central](./Developer-Central).
+To continue from here, you can take a look at the [Tutorial World](./Tutorial-World-Introduction.md). For
+more specific ideas, see the [other tutorials and hints](./Tutorials.md) as well
+as the [Developer Central](./Developer-Central.md).

@@ -8,7 +8,7 @@ window pane.
 ## Briefly on input/outputcommands
 
 Inside Evennia, all server-client communication happens in the same way (so plain text is also an
-'OOB message' as far as Evennia is concerned). The message follows the [Message Path](./Messagepath).
+'OOB message' as far as Evennia is concerned). The message follows the [Message Path](./Messagepath.md).
 You should read up on that if you are unfamiliar with it. As the message travels along the path it
 has a standardized internal form: a tuple with a string, a tuple and a dict:
 
@@ -16,9 +16,9 @@ has a standardized internal form: a tuple with a string, a tuple and a dict:
 
 This is often referred to as an *inputcommand* or *outputcommand*, depending on the direction it's
 traveling. The end point for an inputcommand, (the 'Evennia-end' of the message path) is a matching
-[Inputfunc](./Inputfuncs). This function is called as `cmdname(session, *args, **kwargs)` where
+[Inputfunc](./Inputfuncs.md). This function is called as `cmdname(session, *args, **kwargs)` where
 `session` is the Session-source of the command. Inputfuncs can easily be added by the developer to
-support/map client commands to actions inside Evennia (see the [inputfunc](./Inputfuncs) page for more
+support/map client commands to actions inside Evennia (see the [inputfunc](./Inputfuncs.md) page for more
 details).
 
 When a message is outgoing (at the 'Client-end' of the message path) the outputcommand is handled by
@@ -26,7 +26,7 @@ a matching *Outputfunc*. This is responsible for converting the internal Evennia
 form suitable to send over the wire to the Client. Outputfuncs are hard-coded. Which is chosen and
 how it processes the outgoing data depends on the nature of the client it's connected to. The only
 time one would want to add new outputfuncs is as part of developing support for a new Evennia
-[Protocol](./Custom-Protocols).
+[Protocol](./Custom-Protocols.md).
 
 ## Sending and receiving an OOB message
 
@@ -59,7 +59,7 @@ drop any other types of outputfuncs.
 you turn off telnet completely and only rely on the webclient, you should never rely on non-`text`
 OOB messages always reaching all targets.
 
-[Inputfuncs](./Inputfuncs) lists the default inputfuncs available to handle incoming OOB messages. To
+[Inputfuncs](./Inputfuncs.md) lists the default inputfuncs available to handle incoming OOB messages. To
 accept more you need to add more inputfuncs (see that page for more info).
 
 ## Supported OOB protocols

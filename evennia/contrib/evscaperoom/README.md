@@ -4,9 +4,15 @@ Evennia contrib - Griatch 2019
 
 This 'Evennia escaperoom game engine' was created for the MUD Coders Guild game
 Jam, April 14-May 15 2019. The theme for the jam was "One Room". This contains the
-utilities and base classes and an empty example room. The code for the full
-in-production game 'Evscaperoom' is found at https://github.com/Griatch/evscaperoom
-and you can play the full game (for now) at `http://experimental.evennia.com`.
+utilities and base classes and an empty example room.
+
+The original code for the contest is found at https://github.com/Griatch/evscaperoom
+but the version on the public Evennia demo is more updated, so if you really
+want the latest bug fixes etc you should rather look at
+https://github.com/evennia/evdemo/tree/master/evdemo/evscaperoom instead.
+A copy of the full game can also be played on the Evennia demo server at
+https://demo.evennia.com - just connect to the server and write `evscaperoom`
+in the first room to start!
 
 # Introduction
 

@@ -114,14 +114,14 @@ is not what you want in this case.
 
 - **cboot mychannel = thomas** -- Boot a subscriber from a channel you control
 - **clock mychannel = control:perm(Admin);listen:all();send:all()** -- Fine control of access to
-your channel using [lock definitions](./Locks).
+your channel using [lock definitions](./Locks.md).
 
 Locking a specific command (like `page`) is accomplished like so:
 1. Examine the source of the command. [The default `page` command class](
 https://github.com/evennia/evennia/blob/master/evennia/commands/default/comms.py#L686) has the lock
 string **"cmd:not pperm(page_banned)"**. This means that unless the player has the 'permission'
 "page_banned" they can use this command. You can assign any lock string to allow finer customization
-in your commands. You might look for the value of an [Attribute](./Attributes) or [Tag](./Tags), your
+in your commands. You might look for the value of an [Attribute](./Attributes.md) or [Tag](./Tags.md), your
 current location etc.
 2. **perm/account thomas = page_banned** -- Give the account the 'permission' which causes (in this
 case) the lock to fail.

@@ -308,7 +308,7 @@ def fill(text, width=_DEFAULT_WIDTH, **kwargs):
 # EvCell class (see further down for the EvTable itself)
 
 
-class EvCell(object):
+class EvCell:
     """
     Holds a single data cell for the table. A cell has a certain width
     and height and contains one or more lines of data. It can shrink
@@ -976,14 +976,17 @@ class EvColumn(object):
             Available keywods as per `EvCell.__init__`.
 
         """
+        # column-level options override those in kwargs
+        options = {**kwargs, **self.options}
+
         ypos = kwargs.get("ypos", None)
         if ypos is None or ypos > len(self.column):
             # add to the end
-            self.column.extend([EvCell(data, **self.options) for data in args])
+            self.column.extend([EvCell(data, **options) for data in args])
         else:
             # insert cells before given index
             ypos = min(len(self.column) - 1, max(0, int(ypos)))
-            new_cells = [EvCell(data, **self.options) for data in args]
+            new_cells = [EvCell(data, **options) for data in args]
             self.column = self.column[:ypos] + new_cells + self.column[ypos:]
         # self._balance(**kwargs)
 
@@ -1010,6 +1013,7 @@ class EvColumn(object):
             Keywords as per `EvCell.__init__`.
 
         """
+        # column-level options take precedence here
         kwargs.update(self.options)
         self.column[index].reformat(**kwargs)
 
@@ -1101,7 +1105,7 @@ class EvTable(object):
 
         Notes:
             Beyond those table-specific keywords, the non-overlapping keywords
-            of `EcCell.__init__` are also available. These will be passed down
+            of `EvCell.__init__` are also available. These will be passed down
             to every cell in the table.
 
         """
@@ -1544,7 +1548,7 @@ class EvTable(object):
         to the end.
 
         Args:
-            args (`EvColum` or multiple strings): Either a single EvColumn instance or
+            args (`EvColumn` or multiple strings): Either a single EvColumn instance or
                 a number of data string arguments to be used to create a new column.
             header (str, optional): The header text for the column
             xpos (int, optional): Index position in table *before* which

@@ -386,13 +386,16 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             searchdata (str or obj): Primary search criterion. Will be matched
                 against `object.key` (with `object.aliases` second) unless
                 the keyword attribute_name specifies otherwise.
-                **Special strings:**
+
+                Special strings:
+
                 - `#<num>`: search by unique dbref. This is always
                    a global search.
                 - `me,self`: self-reference to this object
                 - `<num>-<string>` - can be used to differentiate
                    between multiple same-named matches. The exact form of this input
                    is given by `settings.SEARCH_MULTIMATCH_REGEX`.
+
             global_search (bool): Search all objects globally. This overrules 'location' data.
             use_nicks (bool): Use nickname-replace (nicktype "object") on `searchdata`.
             typeclass (str or Typeclass, or list of either): Limit search only
@@ -432,8 +435,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 otherwise.
 
         Returns:
-            match (Object, None or list): will return an Object/None if `quiet=False`,
-                otherwise it will return a list of 0, 1 or more matches.
+            Object, None or list: Will return an `Object` or `None` if `quiet=False`. Will return a
+            list with 0, 1 or more matches if `quiet=True`. If `stacked` is a positive integer, this
+            list may contain all stacked identical matches.
 
         Notes:
             To find Accounts, use eg. `evennia.account_search`. If
@@ -628,7 +632,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                     logger.log_trace()
         kwargs["options"] = options
         try:
-            if not self.at_msg_receive(text=text, **kwargs):
+            if not self.at_msg_receive(text=text, from_obj=from_obj, **kwargs):
                 # if at_msg_receive returns false, we abort message to this object
                 return
         except Exception:
@@ -1443,7 +1447,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             }
         )
 
-        location.msg_contents(string, exclude=(self,), mapping=mapping)
+        location.msg_contents(string, exclude=(self,), from_obj=self, mapping=mapping)
 
     def announce_move_to(self, source_location, msg=None, mapping=None, **kwargs):
         """
@@ -1505,7 +1509,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             }
         )
 
-        destination.msg_contents(string, exclude=(self,), mapping=mapping)
+        destination.msg_contents(string, exclude=(self,), from_obj=self, mapping=mapping)
 
     def at_after_move(self, source_location, **kwargs):
         """

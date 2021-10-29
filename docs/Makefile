@@ -11,6 +11,7 @@ SPHINXBUILD   ?= sphinx-build
 SPHINXMULTIVERSION ?= sphinx-multiversion
 SPHINXAPIDOC ?= sphinx-apidoc
 SPHINXAPIDOCOPTS = --tocfile evennia-api  --module-first --force -d 6 --separate --templatedir=$(SOURCEDIR)/_templates/
+SPHINXAPIDOCOPTSQUICK = --tocfile evennia-api  --module-first -d 6 --separate --templatedir=$(SOURCEDIR)/_templates/
 SPHINXAPIDOCENV = members,undoc-members,show-inheritance
 SPHINXAPIDOCEXCLUDE = ../*/migrations/* ../evennia/game_template/* ../evennia/*/tests/* ../evennia/*/tests.py
 
@@ -28,9 +29,12 @@ QUICKFILES=
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 	@echo "Evennia-specific: "
-	@echo "  $(cblue)install$(cnorm)     to get build requirements"
+	@echo "  $(cblue)install$(cnorm)     to get doc build requirements"
 	@echo "  $(cblue)clean$(cnorm)       to remove remnants of a previous build"
+	@echo "  $(cblue)quick$(cnorm)       to build local docs but skip the autodocs (for quick testing)"
+	@echo "  $(cblue)quickstrict$(cnorm) to build like 'quick' but abort immediately on any error"
 	@echo "  $(cblue)local$(cnorm)       to build local html docs of the current branch (no multiversion)."
+	@echo "  $(cblue)localupdate$(cnorm) to build local html docs (only update changes)
 	@echo "  $(cblue)mv-local$(cnorm)    to build multiversion html docs, without deploying (req: local git commit first)"
 	@echo "  $(cblue)deploy$(cnorm)      to deploy previously built multiversion docs online (req: commit and github push access)"
 	@echo "  $(cblue)release$(cnorm)     to build + deploy multiversion docs online (req: commit and github push access)"
@@ -66,6 +70,10 @@ _autodoc-index:
 	make _clean_api_index
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) SPHINX_APIDOC_OPTIONS=$(SPHINXAPIDOCENV) $(SPHINXAPIDOC) $(SPHINXAPIDOCOPTS) -o $(SOURCEDIR)/api/ $(EVDIR) $(SPHINXAPIDOCEXCLUDE)
 	make _reformat_apidoc_headers
+	pylib/api_rst2md.py
+
+_quick_autodoc-index:
+	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) SPHINX_APIDOC_OPTIONS=$(SPHINXAPIDOCENV) $(SPHINXAPIDOC) $(SPHINXAPIDOCOPTSQUICK) -o $(SOURCEDIR)/api/ $(EVDIR) $(SPHINXAPIDOCEXCLUDE)
 
 _multiversion-autodoc-index:
 	make _autodoc-index
@@ -102,6 +110,7 @@ pdf:
 	@echo "To see result, open evennia/docs/build/latex/evennia.pdf in a PDF reader."
 
 quick:
+	make _quick_autodoc-index
 	make _quick-html-build $(FILES)
 	@echo ""
 	@echo "Documentation built (single version, no autodocs)."
@@ -119,6 +128,14 @@ local:
 	make _html-build
 	@echo ""
 	@echo "Documentation built (single version)."
+	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
+
+# build only that which updated since last run (no clean or index-creation)
+localupdate:
+	make _check-env
+	make _html-build
+	@echo ""
+	@echo "Documentation built (single version, only updates, no auto-index)."
 	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
 
 # note that this should be done for each relevant multiversion branch.

@@ -9,7 +9,7 @@ a while. Such effects are called *cooldowns*.
 
 This page exemplifies a very resource-efficient way to do cooldowns. A more
 'active' way is to use asynchronous delays as in the [command duration
-tutorial](Command-Duration#Blocking-Commands), the two might be useful to
+tutorial](./Command-Duration.md#blocking-commands), the two might be useful to
 combine if you want to echo some message to the user after the cooldown ends.
 
 ## Non-persistent cooldown
@@ -88,7 +88,7 @@ database, you need to use the caster for the storage.
     self.caller.db.firestorm_lastcast = now
 ```
 
-Since we are storing as an [Attribute](./Attributes), we need to identify the
+Since we are storing as an [Attribute](./Attributes.md), we need to identify the
 variable as `firestorm_lastcast` so we are sure we get the right one (we'll
     likely have other skills with cooldowns after all). But this method of
 using cooldowns also has the advantage of working *between* commands - you can

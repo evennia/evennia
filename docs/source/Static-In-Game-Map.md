@@ -4,8 +4,8 @@
 ## Introduction
 
 This tutorial describes the creation of an in-game map display based on a pre-drawn map. It also
-details how to use the [Batch code processor](./Batch-Code-Processor) for advanced building. There is
-also the [Dynamic in-game map tutorial](./Dynamic-In-Game-Map) that works in the opposite direction,
+details how to use the [Batch code processor](./Batch-Code-Processor.md) for advanced building. There is
+also the [Dynamic in-game map tutorial](./Dynamic-In-Game-Map.md) that works in the opposite direction,
 by generating a map from an existing grid of rooms.
 
 Evennia does not require its rooms to be positioned in a "logical" way. Your exits could be named
@@ -18,8 +18,7 @@ sanity of their players. And when they do, the game becomes possible to map. Thi
 an example of a simple but flexible in-game map system to further help player's to navigate. We will
 
 To simplify development and error-checking we'll break down the work into bite-size chunks, each
-building on what came before. For this we'll make extensive use of the [Batch code processor](Batch-
-Code-Processor), so you may want to familiarize yourself with that.
+building on what came before. For this we'll make extensive use of the [Batch code processor](./Batch-Code-Processor.md), so you may want to familiarize yourself with that.
 
 1. **Planning the map** - Here we'll come up with a small example map to use for the rest of the
 tutorial.
@@ -36,19 +35,17 @@ map we designed before.
     O─O─O  To the south, the glow of a campfire can be seen. To the east lie
     ≈↑│↑∩  the vast mountains and to the west is heard the waves of the sea.
     ↑▲O▲↑
-    
+
     Exits: north(#8), east(#9), south(#10), west(#11)
     ```
 
 We will henceforth assume your game folder is name named `mygame` and that you haven't modified the
-default commands. We will also not be using [Colors](./TextTags#colored-text) for our map since they
+default commands. We will also not be using [Colors](./TextTags.md#coloured-text) for our map since they
 don't show in the documentation wiki.
 
 ## Planning the Map
 
-Let's begin with the fun part! Maps in MUDs come in many different [shapes and
-sizes](http://journal.imaginary-realities.com/volume-05/issue-01/modern-interface-modern-
-mud/index.html). Some appear as just boxes connected by lines. Others have complex graphics that are
+Let's begin with the fun part! Maps in MUDs come in many different [shapes and sizes](http://journal.imaginary-realities.com/volume-05/issue-01/modern-interface-modern-mud/index.html). Some appear as just boxes connected by lines. Others have complex graphics that are
 external to the game itself.
 
 Our map will be in-game text but that doesn't mean we're restricted to the normal alphabet! If
@@ -83,23 +80,23 @@ planning at this stage can solve many problems before they happen.
 In this section we will try to create an actual "map" object that an account can pick up and look
 at.
 
-Evennia offers a range of [default commands](./Default-Command-Help) for [creating objects and rooms
-in-game](Building-Quickstart). While readily accessible, these commands are made to do very
+Evennia offers a range of [default commands](./Default-Commands.md) for [creating objects and rooms
+in-game](./Building-Quickstart.md). While readily accessible, these commands are made to do very
 specific, restricted things and will thus not offer as much flexibility to experiment (for an
-advanced exception see [in-line functions](./TextTags#new-inlinefuncs)). Additionally, entering long
+advanced exception see [in-line functions](./TextTags.md#new-inlinefuncs)). Additionally, entering long
 descriptions and properties over and over in the game client can become tedious; especially when
 testing and you may want to delete and recreate things over and over.
 
-To overcome this, Evennia offers [batch processors](./Batch-Processors) that work as input-files
+To overcome this, Evennia offers [batch processors](./Batch-Processors.md) that work as input-files
 created out-of-game. In this tutorial we'll be using the more powerful of the two available batch
-processors, the [Batch Code Processor ](./Batch-Code-Processor), called with the `@batchcode` command.
+processors, the [Batch Code Processor ](./Batch-Code-Processor.md), called with the `@batchcode` command.
 This is a very powerful tool. It allows you to craft Python files to act as blueprints of your
 entire game world. These files have access to use Evennia's Python API directly. Batchcode allows
 for easy editing and creation in whatever text editor you prefer, avoiding having to manually build
 the world line-by-line inside the game.
 
 > Important warning: `@batchcode`'s power is only rivaled by the `@py` command. Batchcode is so
-powerful it should be reserved only for the [superuser](./Building-Permissions). Think carefully
+powerful it should be reserved only for the [superuser](./Building-Permissions.md). Think carefully
 before you let others (such as `Developer`- level staff) run `@batchcode` on their own - make sure
 you are okay with them running *arbitrary Python code* on your server.
 
@@ -275,12 +272,12 @@ def return_map():
     This function returns the whole map
     """
     map = ""
-    
+
     #For each row in our map, add it to map
     for valuey in world_map:
         map += valuey
         map += "\n"
-    
+
     return map
 
 def return_minimap(x, y, radius = 2):
@@ -289,12 +286,12 @@ def return_minimap(x, y, radius = 2):
     Returning all chars in a 2 char radius from (x,y)
     """
     map = ""
-    
+
     #For each row we need, add the characters we need.
     for valuey in world_map[y-radius:y+radius+1]:         for valuex in valuey[x-radius:x+radius+1]:
             map += valuex
         map += "\n"
-    
+
     return map
 ```
 
@@ -411,6 +408,5 @@ You should now have a mapped little world and a basic understanding of batchcode
 easily new game defining features can be added to Evennia.
 
 You can easily build from this tutorial by expanding the map and creating more rooms to explore. Why
-not add more features to your game by trying other tutorials: [Add weather to your world](Weather-
-Tutorial), [fill your world with NPC's](./Tutorial-Aggressive-NPCs) or [implement a combat
-system](Turn-based-Combat-System).
+not add more features to your game by trying other tutorials: [Add weather to your world](./Weather-Tutorial.md),
+[fill your world with NPC's](./Tutorial-Aggressive-NPCs.md) or [implement a combat system](./Turn-based-Combat-System.md).

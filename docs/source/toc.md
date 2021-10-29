@@ -1,150 +1,373 @@
-# Toc
+```{toctree}
 - [API root](api/evennia-api.rst)
-- [./A voice operated elevator using events](./A-voice-operated-elevator-using-events)
-- [./API refactoring](./API-refactoring)
-- [./Accounts](./Accounts)
-- [./Add a simple new web page](./Add-a-simple-new-web-page)
-- [./Add a wiki on your website](./Add-a-wiki-on-your-website)
-- [./Adding Command Tutorial](./Adding-Command-Tutorial)
-- [./Adding Object Typeclass Tutorial](./Adding-Object-Typeclass-Tutorial)
-- [./Administrative Docs](./Administrative-Docs)
-- [./Apache Config](./Apache-Config)
-- [./Arxcode installing help](./Arxcode-installing-help)
-- [./Async Process](./Async-Process)
-- [./Attributes](./Attributes)
-- [./Banning](./Banning)
-- [./Batch Code Processor](./Batch-Code-Processor)
-- [./Batch Command Processor](./Batch-Command-Processor)
-- [./Batch Processors](./Batch-Processors)
-- [./Bootstrap & Evennia](./Bootstrap-&-Evennia)
-- [./Bootstrap Components and Utilities](./Bootstrap-Components-and-Utilities)
-- [./Builder Docs](./Builder-Docs)
-- [./Building Permissions](./Building-Permissions)
-- [./Building Quickstart](./Building-Quickstart)
-- [./Building a mech tutorial](./Building-a-mech-tutorial)
-- [./Building menus](./Building-menus)
-- [./Choosing An SQL Server](./Choosing-An-SQL-Server)
-- [./Client Support Grid](./Client-Support-Grid)
-- [./Coding FAQ](./Coding-FAQ)
-- [./Coding Introduction](./Coding-Introduction)
-- [./Coding Utils](./Coding-Utils)
-- [./Command Cooldown](./Command-Cooldown)
-- [./Command Duration](./Command-Duration)
-- [./Command Prompt](./Command-Prompt)
-- [./Command Sets](./Command-Sets)
-- [./Command System](./Command-System)
-- [./Commands](./Commands)
-- [./Communications](./Communications)
-- [./Connection Screen](./Connection-Screen)
-- [./Continuous Integration](./Continuous-Integration)
-- [./Contributing](./Contributing)
-- [./Contributing Docs](./Contributing-Docs)
-- [./Coordinates](./Coordinates)
-- [./Custom Protocols](./Custom-Protocols)
-- [./Customize channels](./Customize-channels)
-- [./Debugging](./Debugging)
-- [./Default Command Help](./Default-Command-Help)
-- [./Default Exit Errors](./Default-Exit-Errors)
-- [./Developer Central](./Developer-Central)
-- [./Dialogues in events](./Dialogues-in-events)
-- [./Directory Overview](./Directory-Overview)
-- [./Docs refactoring](./Docs-refactoring)
-- [./Dynamic In Game Map](./Dynamic-In-Game-Map)
-- [./EvEditor](./EvEditor)
-- [./EvMenu](./EvMenu)
-- [./EvMore](./EvMore)
-- [./Evennia API](./Evennia-API)
-- [./Evennia Game Index](./Evennia-Game-Index)
-- [./Evennia Introduction](./Evennia-Introduction)
-- [./Evennia for Diku Users](./Evennia-for-Diku-Users)
-- [./Evennia for MUSH Users](./Evennia-for-MUSH-Users)
-- [./Evennia for roleplaying sessions](./Evennia-for-roleplaying-sessions)
-- [./Execute Python Code](./Execute-Python-Code)
-- [./First Steps Coding](./First-Steps-Coding)
-- [./Game Planning](./Game-Planning)
-- [./Gametime Tutorial](./Gametime-Tutorial)
-- [./Getting Started](./Getting-Started)
-- [./Glossary](./Glossary)
-- [./Grapevine](./Grapevine)
-- [./Guest Logins](./Guest-Logins)
-- [./HAProxy Config](./HAProxy-Config)
-- [./Help System](./Help-System)
-- [./Help System Tutorial](./Help-System-Tutorial)
-- [./How To Get And Give Help](./How-To-Get-And-Give-Help)
-- [./How to connect Evennia to Twitter](./How-to-connect-Evennia-to-Twitter)
-- [./IRC](./IRC)
-- [./Implementing a game rule system](./Implementing-a-game-rule-system)
-- [./Inputfuncs](./Inputfuncs)
-- [./Installing on Android](./Installing-on-Android)
-- [./Internationalization](./Internationalization)
-- [./Learn Python for Evennia The Hard Way](./Learn-Python-for-Evennia-The-Hard-Way)
-- [./Licensing](./Licensing)
-- [./Links](./Links)
-- [./Locks](./Locks)
-- [./Manually Configuring Color](./Manually-Configuring-Color)
-- [./Mass and weight for objects](./Mass-and-weight-for-objects)
-- [./Messagepath](./Messagepath)
-- [./MonitorHandler](./MonitorHandler)
-- [./NPC shop Tutorial](./NPC-shop-Tutorial)
-- [./New Models](./New-Models)
-- [./Nicks](./Nicks)
-- [./OOB](./OOB)
-- [./Objects](./Objects)
-- [./Online Setup](./Online-Setup)
-- [./Parsing command arguments, theory and best practices](./Parsing-command-arguments,-theory-and-best-practices)
-- [./Portal And Server](./Portal-And-Server)
-- [./Profiling](./Profiling)
-- [./Python 3](./Python-3)
-- [./Python basic introduction](./Python-basic-introduction)
-- [./Python basic tutorial part two](./Python-basic-tutorial-part-two)
-- [./Quirks](./Quirks)
-- [./RSS](./RSS)
-- [./Roadmap](./Roadmap)
-- [./Running Evennia in Docker](./Running-Evennia-in-Docker)
-- [./Screenshot](./Screenshot)
-- [./Scripts](./Scripts)
-- [./Security](./Security)
-- [./Server Conf](./Server-Conf)
-- [./Sessions](./Sessions)
-- [./Setting up PyCharm](./Setting-up-PyCharm)
-- [./Signals](./Signals)
-- [./Soft Code](./Soft-Code)
-- [./Spawner and Prototypes](./Spawner-and-Prototypes)
-- [./Start Stop Reload](./Start-Stop-Reload)
-- [./Static In Game Map](./Static-In-Game-Map)
-- [./Tags](./Tags)
-- [./Text Encodings](./Text-Encodings)
-- [./TextTags](./TextTags)
-- [./TickerHandler](./TickerHandler)
-- [./Turn based Combat System](./Turn-based-Combat-System)
-- [./Tutorial Aggressive NPCs](./Tutorial-Aggressive-NPCs)
-- [./Tutorial NPCs listening](./Tutorial-NPCs-listening)
-- [./Tutorial Searching For Objects](./Tutorial-Searching-For-Objects)
-- [./Tutorial Tweeting Game Stats](./Tutorial-Tweeting-Game-Stats)
-- [./Tutorial Vehicles](./Tutorial-Vehicles)
-- [./Tutorial World Introduction](./Tutorial-World-Introduction)
-- [./Tutorial for basic MUSH like game](./Tutorial-for-basic-MUSH-like-game)
-- [./Tutorials](./Tutorials)
-- [./Typeclasses](./Typeclasses)
-- [./Understanding Color Tags](./Understanding-Color-Tags)
-- [./Unit Testing](./Unit-Testing)
-- [./Updating Your Game](./Updating-Your-Game)
-- [./Using MUX as a Standard](./Using-MUX-as-a-Standard)
-- [./Using Travis](./Using-Travis)
-- [./Version Control](./Version-Control)
-- [./Weather Tutorial](./Weather-Tutorial)
-- [./Web Character Generation](./Web-Character-Generation)
-- [./Web Character View Tutorial](./Web-Character-View-Tutorial)
-- [./Web Features](./Web-Features)
-- [./Web Tutorial](./Web-Tutorial)
-- [./Webclient](./Webclient)
-- [./Webclient brainstorm](./Webclient-brainstorm)
-- [./Wiki Index](./Wiki-Index)
-- [./Zones](./Zones)
-- [./index](./index)
+A-voice-operated-elevator-using-events
+API-refactoring
+Accounts
+Add-a-simple-new-web-page
+Add-a-wiki-on-your-website
+Adding-Command-Tutorial
+Adding-Object-Typeclass-Tutorial
+Administrative-Docs
+Apache-Config
+Arxcode-installing-help
+Async-Process
+Attributes
+Banning
+Batch-Code-Processor
+Batch-Command-Processor
+Batch-Processors
+Bootstrap-&-Evennia
+Bootstrap-Components-and-Utilities
+Builder-Docs
+Building-Permissions
+Building-Quickstart
+Building-a-mech-tutorial
+Building-menus
+Choosing-An-SQL-Server
+Client-Support-Grid
+Coding-FAQ
+Coding-Introduction
+Coding-Utils
+Command-Cooldown
+Command-Duration
+Command-Prompt
+Command-Sets
+Command-System
+Commands
+Communications
+Connection-Screen
+Continuous-Integration
+Contributing
+Contributing-Docs
+Coordinates
+Custom-Protocols
+Customize-channels
+Debugging
+Default-Commands
+Default-Exit-Errors
+Developer-Central
+Dialogues-in-events
+Directory-Overview
+Docs-refactoring
+Dynamic-In-Game-Map
+EvEditor
+EvMenu
+EvMore
+Evennia-API
+Evennia-Game-Index
+Evennia-Introduction
+Evennia-for-Diku-Users
+Evennia-for-MUSH-Users
+Evennia-for-roleplaying-sessions
+Execute-Python-Code
+First-Steps-Coding
+Game-Planning
+Gametime-Tutorial
+Getting-Started
+Glossary
+Grapevine
+Guest-Logins
+HAProxy-Config
+Help-System
+Help-System-Tutorial
+How-To-Get-And-Give-Help
+How-to-connect-Evennia-to-Twitter
+IRC
+Implementing-a-game-rule-system
+Inputfuncs
+Installing-on-Android
+Internationalization
+Learn-Python-for-Evennia-The-Hard-Way
+Licensing
+Links
+Locks
+Manually-Configuring-Color
+Mass-and-weight-for-objects
+Messagepath
+MonitorHandler
+NPC-shop-Tutorial
+New-Models
+Nicks
+OOB
+Objects
+Online-Setup
+Parsing-command-arguments,-theory-and-best-practices
+Portal-And-Server
+Profiling
+Python-3
+Python-basic-introduction
+Python-basic-tutorial-part-two
+Quirks
+RSS
+Roadmap
+Running-Evennia-in-Docker
+Screenshot
+Scripts
+Security
+Server-Conf
+Sessions
+Setting-up-PyCharm
+Signals
+Soft-Code
+Spawner-and-Prototypes
+Start-Stop-Reload
+Static-In-Game-Map
+Tags
+Text-Encodings
+TextTags
+TickerHandler
+Turn-based-Combat-System
+Tutorial-Aggressive-NPCs
+Tutorial-NPCs-listening
+Tutorial-Searching-For-Objects
+Tutorial-Tweeting-Game-Stats
+Tutorial-Vehicles
+Tutorial-World-Introduction
+Tutorial-for-basic-MUSH-like-game
+Tutorials
+Typeclasses
+Understanding-Color-Tags
+Unit-Testing
+Updating-Your-Game
+Using-MUX-as-a-Standard
+Using-Travis
+Version-Control
+Weather-Tutorial
+Web-Character-Generation
+Web-Character-View-Tutorial
+Web-Features
+Web-Tutorial
+Webclient
+Webclient-brainstorm
+Wiki-Index
+Zones
+api/evennia
+api/evennia-api
+api/evennia.accounts
+api/evennia.accounts.accounts
+api/evennia.accounts.admin
+api/evennia.accounts.bots
+api/evennia.accounts.manager
+api/evennia.accounts.models
+api/evennia.commands
+api/evennia.commands.cmdhandler
+api/evennia.commands.cmdparser
+api/evennia.commands.cmdset
+api/evennia.commands.cmdsethandler
+api/evennia.commands.command
+api/evennia.commands.default
+api/evennia.commands.default.account
+api/evennia.commands.default.admin
+api/evennia.commands.default.batchprocess
+api/evennia.commands.default.building
+api/evennia.commands.default.cmdset_account
+api/evennia.commands.default.cmdset_character
+api/evennia.commands.default.cmdset_session
+api/evennia.commands.default.cmdset_unloggedin
+api/evennia.commands.default.comms
+api/evennia.commands.default.general
+api/evennia.commands.default.help
+api/evennia.commands.default.muxcommand
+api/evennia.commands.default.syscommands
+api/evennia.commands.default.system
+api/evennia.commands.default.tests
+api/evennia.commands.default.unloggedin
+api/evennia.comms
+api/evennia.comms.admin
+api/evennia.comms.channelhandler
+api/evennia.comms.comms
+api/evennia.comms.managers
+api/evennia.comms.models
+api/evennia.contrib
+api/evennia.contrib.barter
+api/evennia.contrib.building_menu
+api/evennia.contrib.chargen
+api/evennia.contrib.clothing
+api/evennia.contrib.color_markups
+api/evennia.contrib.custom_gametime
+api/evennia.contrib.dice
+api/evennia.contrib.email_login
+api/evennia.contrib.extended_room
+api/evennia.contrib.fieldfill
+api/evennia.contrib.gendersub
+api/evennia.contrib.health_bar
+api/evennia.contrib.ingame_python
+api/evennia.contrib.ingame_python.callbackhandler
+api/evennia.contrib.ingame_python.commands
+api/evennia.contrib.ingame_python.eventfuncs
+api/evennia.contrib.ingame_python.scripts
+api/evennia.contrib.ingame_python.tests
+api/evennia.contrib.ingame_python.typeclasses
+api/evennia.contrib.ingame_python.utils
+api/evennia.contrib.mail
+api/evennia.contrib.mapbuilder
+api/evennia.contrib.menu_login
+api/evennia.contrib.multidescer
+api/evennia.contrib.puzzles
+api/evennia.contrib.random_string_generator
+api/evennia.contrib.rplanguage
+api/evennia.contrib.rpsystem
+api/evennia.contrib.security
+api/evennia.contrib.security.auditing
+api/evennia.contrib.security.auditing.outputs
+api/evennia.contrib.security.auditing.server
+api/evennia.contrib.security.auditing.tests
+api/evennia.contrib.simpledoor
+api/evennia.contrib.slow_exit
+api/evennia.contrib.talking_npc
+api/evennia.contrib.tree_select
+api/evennia.contrib.turnbattle
+api/evennia.contrib.turnbattle.tb_basic
+api/evennia.contrib.turnbattle.tb_equip
+api/evennia.contrib.turnbattle.tb_items
+api/evennia.contrib.turnbattle.tb_magic
+api/evennia.contrib.turnbattle.tb_range
+api/evennia.contrib.tutorial_examples
+api/evennia.contrib.tutorial_examples.bodyfunctions
+api/evennia.contrib.tutorial_examples.cmdset_red_button
+api/evennia.contrib.tutorial_examples.example_batch_code
+api/evennia.contrib.tutorial_examples.red_button
+api/evennia.contrib.tutorial_examples.red_button_scripts
+api/evennia.contrib.tutorial_examples.tests
+api/evennia.contrib.tutorial_world
+api/evennia.contrib.tutorial_world.intro_menu
+api/evennia.contrib.tutorial_world.mob
+api/evennia.contrib.tutorial_world.objects
+api/evennia.contrib.tutorial_world.rooms
+api/evennia.contrib.unixcommand
+api/evennia.contrib.wilderness
+api/evennia.help
+api/evennia.help.admin
+api/evennia.help.manager
+api/evennia.help.models
+api/evennia.locks
+api/evennia.locks.lockfuncs
+api/evennia.locks.lockhandler
+api/evennia.objects
+api/evennia.objects.admin
+api/evennia.objects.manager
+api/evennia.objects.models
+api/evennia.objects.objects
+api/evennia.prototypes
+api/evennia.prototypes.menus
+api/evennia.prototypes.protfuncs
+api/evennia.prototypes.prototypes
+api/evennia.prototypes.spawner
+api/evennia.scripts
+api/evennia.scripts.admin
+api/evennia.scripts.manager
+api/evennia.scripts.models
+api/evennia.scripts.monitorhandler
+api/evennia.scripts.scripthandler
+api/evennia.scripts.scripts
+api/evennia.scripts.taskhandler
+api/evennia.scripts.tickerhandler
+api/evennia.server
+api/evennia.server.admin
+api/evennia.server.amp_client
+api/evennia.server.connection_wizard
+api/evennia.server.deprecations
+api/evennia.server.evennia_launcher
+api/evennia.server.game_index_client
+api/evennia.server.game_index_client.client
+api/evennia.server.game_index_client.service
+api/evennia.server.initial_setup
+api/evennia.server.inputfuncs
+api/evennia.server.manager
+api/evennia.server.models
+api/evennia.server.portal
+api/evennia.server.portal.amp
+api/evennia.server.portal.amp_server
+api/evennia.server.portal.grapevine
+api/evennia.server.portal.irc
+api/evennia.server.portal.mccp
+api/evennia.server.portal.mssp
+api/evennia.server.portal.mxp
+api/evennia.server.portal.naws
+api/evennia.server.portal.portal
+api/evennia.server.portal.portalsessionhandler
+api/evennia.server.portal.rss
+api/evennia.server.portal.ssh
+api/evennia.server.portal.ssl
+api/evennia.server.portal.suppress_ga
+api/evennia.server.portal.telnet
+api/evennia.server.portal.telnet_oob
+api/evennia.server.portal.telnet_ssl
+api/evennia.server.portal.tests
+api/evennia.server.portal.ttype
+api/evennia.server.portal.webclient
+api/evennia.server.portal.webclient_ajax
+api/evennia.server.profiling
+api/evennia.server.profiling.dummyrunner
+api/evennia.server.profiling.dummyrunner_settings
+api/evennia.server.profiling.memplot
+api/evennia.server.profiling.settings_mixin
+api/evennia.server.profiling.test_queries
+api/evennia.server.profiling.tests
+api/evennia.server.profiling.timetrace
+api/evennia.server.server
+api/evennia.server.serversession
+api/evennia.server.session
+api/evennia.server.sessionhandler
+api/evennia.server.signals
+api/evennia.server.throttle
+api/evennia.server.validators
+api/evennia.server.webserver
+api/evennia.settings_default
+api/evennia.typeclasses
+api/evennia.typeclasses.admin
+api/evennia.typeclasses.attributes
+api/evennia.typeclasses.managers
+api/evennia.typeclasses.models
+api/evennia.typeclasses.tags
+api/evennia.utils
+api/evennia.utils.ansi
+api/evennia.utils.batchprocessors
+api/evennia.utils.containers
+api/evennia.utils.create
+api/evennia.utils.dbserialize
+api/evennia.utils.eveditor
+api/evennia.utils.evform
+api/evennia.utils.evmenu
+api/evennia.utils.evmore
+api/evennia.utils.evtable
+api/evennia.utils.gametime
+api/evennia.utils.idmapper
+api/evennia.utils.idmapper.manager
+api/evennia.utils.idmapper.models
+api/evennia.utils.idmapper.tests
+api/evennia.utils.inlinefuncs
+api/evennia.utils.logger
+api/evennia.utils.optionclasses
+api/evennia.utils.optionhandler
+api/evennia.utils.picklefield
+api/evennia.utils.search
+api/evennia.utils.test_resources
+api/evennia.utils.text2html
+api/evennia.utils.utils
+api/evennia.utils.validatorfuncs
+api/evennia.web
+api/evennia.web.urls
+api/evennia.web.utils
+api/evennia.web.utils.backends
+api/evennia.web.utils.general_context
+api/evennia.web.utils.middleware
+api/evennia.web.utils.tests
+api/evennia.web.webclient
+api/evennia.web.webclient.urls
+api/evennia.web.webclient.views
+api/evennia.web.website
+api/evennia.web.website.forms
+api/evennia.web.website.templatetags
+api/evennia.web.website.templatetags.addclass
+api/evennia.web.website.tests
+api/evennia.web.website.urls
+api/evennia.web.website.views
+index
+```
 
-```toctree::
+```{toctree}
   :hidden:
 
-  toc
+toc
 ```

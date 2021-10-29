@@ -606,7 +606,7 @@ def cmdhandler(
             cmd.raw_string = unformatted_raw_string
             # cmd.obj  # set via on-object cmdset handler for each command,
             # since this may be different for every command when
-            # merging multuple cmdsets
+            # merging multiple cmdsets
 
             if hasattr(cmd, "obj") and hasattr(cmd.obj, "scripts"):
                 # cmd.obj is automatically made available by the cmdhandler.

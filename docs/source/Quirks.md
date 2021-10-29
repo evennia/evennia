@@ -64,7 +64,7 @@ update the database you'd need to explicitly re-assign the updated data to the `
 
 ### Commands are matched by name *or* alias
 
-When merging [command sets](./Commands) it's important to remember that command objects are identified
+When merging [command sets](./Commands.md) it's important to remember that command objects are identified
 *both* by key *or* alias. So if you have a command with a key `look` and an alias `ls`, introducing
 another command with a key `ls` will be assumed by the system to be *identical* to the first one.
 This usually means merging cmdsets will overload one of them depending on priority. Whereas this is
@@ -110,7 +110,7 @@ Try to avoid doing so.
 distributions (notably Ubuntu 16.04 LTS). Zope is a dependency of Twisted. The error manifests in
 the server not starting with an error that `zope.interface` is not found even though `pip list`
 shows it's installed. The reason is a missing empty `__init__.py` file at the root of the zope
-package. If the virtualenv is named "evenv" as suggested in the [Getting Started](./Getting-Started)
+package. If the virtualenv is named "evenv" as suggested in the [Getting Started](./Getting-Started.md)
 instructions, use the following command to fix it:
 
     ```shell

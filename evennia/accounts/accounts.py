@@ -39,7 +39,7 @@ from evennia.utils.optionhandler import OptionHandler
 from django.utils.translation import gettext as _
 from random import getrandbits
 
-__all__ = ("DefaultAccount",)
+__all__ = ("DefaultAccount", "DefaultGuest")
 
 _SESSIONS = None
 
@@ -1500,7 +1500,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                     )
                 )
             result.append("\n\n |whelp|n - more commands")
-            result.append("\n |wooc <Text>|n - talk on public channel")
+            result.append("\n |wpublic <Text>|n - talk on public channel")
 
             charmax = _MAX_NR_CHARACTERS
 

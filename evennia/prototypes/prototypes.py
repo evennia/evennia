@@ -365,6 +365,10 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
         be found as a match.
 
     """
+    # prototype keys are always in lowecase
+    if key:
+      key = key.lower()
+
     # search module prototypes
 
     mod_matches = {}
@@ -379,10 +383,12 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
     else:
         mod_matches = _MODULE_PROTOTYPES
 
+    allow_fuzzy = True
     if key:
         if key in mod_matches:
             # exact match
             module_prototypes = [mod_matches[key]]
+            allow_fuzzy = False
         else:
             # fuzzy matching
             module_prototypes = [
@@ -406,7 +412,7 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
     if key:
         # exact or partial match on key
         exact_match = db_matches.filter(Q(db_key__iexact=key)).order_by("db_key")
-        if not exact_match:
+        if not exact_match and allow_fuzzy:
             # try with partial match instead
             db_matches = db_matches.filter(Q(db_key__icontains=key)).order_by("db_key")
         else:
@@ -423,7 +429,7 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
         nmodules = len(module_prototypes)
         ndbprots = db_matches.count()
         if nmodules + ndbprots != 1:
-            raise KeyError(f"Found {nmodules + ndbprots} matching prototypes.")
+            raise KeyError(f"Found {nmodules + ndbprots} matching prototypes {module_prototypes}.")
 
     if return_iterators:
         # trying to get the entire set of prototypes - we must paginate
@@ -651,7 +657,7 @@ def validate_prototype(
                 )
             )
 
-    # recursively traverese prototype_parent chain
+    # recursively traverse prototype_parent chain
 
     for protstring in make_iter(prototype_parent):
         protstring = protstring.lower()

@@ -23,7 +23,7 @@ instance.
 ## Coordinates as tags
 
 The first concept might be the most surprising at first glance: we will create coordinates as
-[tags](./Tags).
+[tags](./Tags.md).
 
 > Why not attributes, wouldn't that be easier?
 
@@ -51,7 +51,7 @@ class Room(DefaultRoom):
     See examples/object.py for a list of
     properties and methods available on all Objects.
     """
-    
+
     @property
     def x(self):
         """Return the X coordinate or None."""
@@ -72,7 +72,7 @@ class Room(DefaultRoom):
         """Return the Y coordinate or None."""
         y = self.tags.get(category="coordy")
         return int(y) if isinstance(y, str) else None
-    
+
     @y.setter
     def y(self, y):
         """Change the Y coordinate."""
@@ -87,7 +87,7 @@ class Room(DefaultRoom):
         """Return the Z coordinate or None."""
         z = self.tags.get(category="coordz")
         return int(z) if isinstance(z, str) else None
-    
+
     @z.setter
     def z(self, z):
         """Change the Z coordinate."""
@@ -99,8 +99,7 @@ class Room(DefaultRoom):
 ```
 
 If you aren't familiar with the concept of properties in Python, I encourage you to read a good
-tutorial on the subject.  [This article on Python properties](https://www.programiz.com/python-
-programming/property)
+tutorial on the subject.  [This article on Python properties](https://www.programiz.com/python-programming/property)
 is well-explained and should help you understand the idea.
 
 Let's look at our properties for `x`.  First of all is the read property.

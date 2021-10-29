@@ -106,7 +106,7 @@ Evennia is smart enough to understand that when we type `+something`, `+` is the
 `something` is the command argument.  This will, of course, fail if you have a command beginning by
 `+` conflicting with the `CmdConnect` key.
 4. We have altered some class attributes, like `auto_help`.  If you want to know what they do and
-why they have changed here, you can check the [documentation on commands](./Commands).
+why they have changed here, you can check the [documentation on commands](./Commands.md).
 5. In the command body, we begin by extracting the channel name.  Remember that this name should be
 in the command arguments (that is, in `self.args`).  Following the same example, if a player enters
 `+something`, `self.args` should contain `"something"`.  We use `search_channel` to see if this
@@ -480,5 +480,4 @@ close from the code I've provided here.  Notice, however, that this resource is
 external to Evennia and not maintained by anyone but the original author of
 this article.
 
-[Read the full example on Github](https://github.com/vincent-
-lg/avenew/blob/master/commands/comms.py)
+[Read the full example on Github](https://github.com/vincent-lg/avenew/blob/master/commands/comms.py)

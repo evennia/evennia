@@ -5,17 +5,17 @@ This tutorial shows the implementation of an NPC object that responds to charact
 location. In this example the NPC has the option to respond aggressively or not, but any actions
 could be triggered this way.
 
-One could imagine using a [Script](./Scripts) that is constantly checking for newcomers. This would be
+One could imagine using a [Script](./Scripts.md) that is constantly checking for newcomers. This would be
 highly inefficient (most of the time its check would fail). Instead we handle this on-demand by
 using a couple of existing object hooks to inform the NPC that a Character has entered.
 
 It is assumed that you already know how to create custom room and character typeclasses, please see
-the [Basic Game tutorial](./Tutorial-for-basic-MUSH-like-game) if you haven't already done this.
+the [Basic Game tutorial](./Tutorial-for-basic-MUSH-like-game.md) if you haven't already done this.
 
 What we will need is the following:
 
 - An NPC typeclass that can react when someone enters.
-- A custom [Room](./Objects#rooms) typeclass that can tell the NPC that someone entered.
+- A custom [Room](./Objects.md#rooms) typeclass that can tell the NPC that someone entered.
 - We will also tweak our default `Character` typeclass a little.
 
 To begin with, we need to create an NPC typeclass. Create a new file inside of your typeclasses
