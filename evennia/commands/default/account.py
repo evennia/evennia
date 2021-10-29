@@ -521,11 +521,11 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
                     continue
                 delta_cmd = time.time() - session.cmd_last_visible
                 delta_conn = time.time() - session.conn_time
-                account = session.get_account()
+                session_account = session.get_account()
                 puppet = session.get_puppet()
                 location = puppet.location.key if puppet and puppet.location else "None"
                 table.add_row(
-                    utils.crop(account.get_display_name(account), width=25),
+                    utils.crop(session_account.get_display_name(account), width=25),
                     utils.time_format(delta_conn, 0),
                     utils.time_format(delta_cmd, 1),
                     utils.crop(puppet.get_display_name(account) if puppet else "None", width=25),
@@ -542,9 +542,9 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
                     continue
                 delta_cmd = time.time() - session.cmd_last_visible
                 delta_conn = time.time() - session.conn_time
-                account = session.get_account()
+                session_account = session.get_account()
                 table.add_row(
-                    utils.crop(account.get_display_name(account), width=25),
+                    utils.crop(session_account.get_display_name(account), width=25),
                     utils.time_format(delta_conn, 0),
                     utils.time_format(delta_cmd, 1),
                 )

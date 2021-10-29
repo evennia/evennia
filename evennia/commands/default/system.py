@@ -45,6 +45,8 @@ __all__ = (
     "CmdAbout",
     "CmdTime",
     "CmdServerLoad",
+    "CmdAccounts",
+    "CmdTickers"
 )
 
 

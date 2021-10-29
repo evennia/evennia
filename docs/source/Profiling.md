@@ -52,7 +52,7 @@ profiler through the launcher:
 
 This will start Evennia with the Server component running (in daemon mode) under cProfile. You could
 instead try `--profile` with the `portal` argument to profile the Portal (you would then need to
-[start the Server separately](./Start-Stop-Reload)).
+[start the Server separately](./Start-Stop-Reload.md)).
 
 Please note that while the profiler is running, your process will use a lot more memory than usual.
 Memory usage is even likely to climb over time. So don't leave it running perpetually but monitor it

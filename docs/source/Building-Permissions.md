@@ -2,7 +2,7 @@
 
 
 *OBS: This gives only a brief introduction to the access system. Locks and permissions are fully
-detailed* [here](./Locks).
+detailed* [here](./Locks.md).
 
 ## The super user
 
@@ -17,7 +17,7 @@ but one superuser.
 
 Whereas permissions can be used for anything, those put in `settings.PERMISSION_HIERARCHY` will have
 a ranking relative each other as well. We refer to these types of permissions as *hierarchical
-permissions*. When building locks to check these permissions, the `perm()` [lock function](./Locks) is
+permissions*. When building locks to check these permissions, the `perm()` [lock function](./Locks.md) is
 used. By default Evennia creates the following hierarchy (spelled exactly like this):
 
 1. **Developers** basically have the same access as superusers except that they do *not* sidestep

@@ -33,5 +33,5 @@ It will then install the server (so the `evennia` command is available) and run 
 your game dir (based on your `settings.py` file in `server/conf/`).
 
 Running this will not actually do anything though, because there are no unit tests in your game dir
-yet. [We have a page](./Unit-Testing) on how we set those up for Evennia, you should be able to refer
+yet. [We have a page](./Unit-Testing.md) on how we set those up for Evennia, you should be able to refer
 to that for making tests fitting your game.

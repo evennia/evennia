@@ -1,16 +1,16 @@
 # Python basic tutorial part two
 
-[In the first part](./Python-basic-introduction) of this Python-for-Evennia basic tutorial we learned
+[In the first part](./Python-basic-introduction.md) of this Python-for-Evennia basic tutorial we learned
 how to run some simple Python code from inside the game. We also made our first new *module*
 containing a *function* that we called. Now we're going to start exploring the very important
 subject of *objects*.
 
 **Contents:**
-- [On the subject of objects](./Python-basic-tutorial-part-two#on-the-subject-of-objects)
-- [Exploring the Evennia library](./Python-basic-tutorial-part-two#exploring-the-evennia-library)
-- [Tweaking our Character class](./Python-basic-tutorial-part-two#tweaking-our-character-class)
-- [The Evennia shell](./Python-basic-tutorial-part-two#the-evennia-shell)
-- [Where to go from here](./Python-basic-tutorial-part-two#where-to-go-from-here)
+- [On the subject of objects](./Python-basic-tutorial-part-two.md#on-the-subject-of-objects)
+- [Exploring the Evennia library](./Python-basic-tutorial-part-two.md#exploring-the-evennia-library)
+- [Tweaking our Character class](./Python-basic-tutorial-part-two.md#tweaking-our-character-class)
+- [The Evennia shell](./Python-basic-tutorial-part-two.md#the-evennia-shell)
+- [Where to go from here](./Python-basic-tutorial-part-two.md#where-to-go-from-here)
 
 ### On the subject of objects
 
@@ -55,8 +55,7 @@ A *class* is like a "factory" or blueprint. From a class you then create individ
 if class is`Dog`, an instance of `Dog` might be `fido`. Our in-game persona is of a class
 `Character`. The superuser `christine` is an *instance* of the `Character` class (an instance is
 also often referred to as an *object*). This is an important concept in *object oriented
-programming*. You are wise to [familiarize yourself with it](https://en.wikipedia.org/wiki/Class-
-based_programming) a little.
+programming*. You are wise to [familiarize yourself with it](https://en.wikipedia.org/wiki/Class-based_programming) a little.
 
 > In other terms:
 > * class: A description of a thing, all the methods (code) and data (information)
@@ -171,13 +170,12 @@ There are lots of things in there. There are some docs but most of those have to
 distribution of Evennia and does not concern us right now. The `evennia` subfolder is what we are
 looking for. *This* is what you are accessing when you do `from evennia import ...`. It's set up by
 Evennia as a good place to find modules when the server starts. The exact layout of the Evennia
-library [is covered by our directory overview](./Directory-Overview#evennia-library-layout). You can
+library [is covered by our directory overview](./Directory-Overview.md#evennia-library-layout). You can
 also explore it [online on github](https://github.com/evennia/evennia/tree/master/evennia).
 
 The structure of the library directly reflects how you import from it.
 
-- To, for example, import [the text justify
-function](https://github.com/evennia/evennia/blob/master/evennia/utils/utils.py#L201) from
+- To, for example, import [the text justify function](https://github.com/evennia/evennia/blob/master/evennia/utils/utils.py#L201) from
 `evennia/utils/utils.py` you would do `from evennia.utils.utils import justify`. In your code you
 could then just call `justify(...)` to access its functionality.
 - You could also do `from evennia.utils import utils`. In code you would then have to write
@@ -191,15 +189,13 @@ import in Python.
 
 Now, remember that our `characters.py` module did `from evennia import DefaultCharacter`. But if we
 look at the contents of the `evennia` folder, there is no `DefaultCharacter` anywhere! This is
-because Evennia gives a large number of optional "shortcuts", known as [the "flat" API](Evennia-
-API). The intention is to make it easier to remember where to find stuff. The flat API is defined in
+because Evennia gives a large number of optional "shortcuts", known as [the "flat" API](./Evennia-API.md). The intention is to make it easier to remember where to find stuff. The flat API is defined in
 that weirdly named `__init__.py` file. This file just basically imports useful things from all over
 Evennia so you can more easily find them in one place.
 
 We could [just look at the documenation](github:evennia#typeclasses) to find out where we can look
 at our `DefaultCharacter` parent. But for practice, let's figure it out. Here is where
-`DefaultCharacter` [is imported
-from](https://github.com/evennia/evennia/blob/master/evennia/__init__.py#L188) inside `__init__.py`:
+`DefaultCharacter` [is imported from](https://github.com/evennia/evennia/blob/master/evennia/__init__.py#L188) inside `__init__.py`:
 
 ```python
 from .objects.objects import DefaultCharacter
@@ -224,15 +220,14 @@ is the same thing, just a little easier to remember.
 
 > To access the shortcuts of the flat API you *must* use `from evennia import
 > ...`. Using something like `import evennia.DefaultCharacter` will not work.
-> See [more about the Flat API here](./Evennia-API).
+> See [more about the Flat API here](./Evennia-API.md).
 
 
 ### Tweaking our Character class
 
 In the previous section we traced the parent of our `Character` class to be
 `DefaultCharacter` in
-[evennia/objects/objects.py](https://github.com/evennia/evennia/blob/master/evennia/objects/objects.
-py).
+[evennia/objects/objects.py](https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py).
 Open that file and locate the `DefaultCharacter` class. It's quite a bit down
 in this module so you might want to search using your editor's (or browser's)
 search function. Once you find it, you'll find that the class starts like this:
@@ -276,16 +271,15 @@ outside
 
 ```
 
-... And so on (you can see the full [class online
-here](https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L1915)). Here we
+... And so on (you can see the full [class online here](https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L1915)). Here we
 have functional code! These methods may not be directly visible in `Character` back in our game dir,
 but they are still available since `Character` is a child of `DefaultCharacter` above. Here is a
 brief summary of the methods we find in `DefaultCharacter` (follow in the code to see if you can see
 roughly where things happen)::
 
 - `basetype_setup` is called by Evennia only once, when a Character is first created. In the
-`DefaultCharacter` class it sets some particular [Locks](./Locks) so that people can't pick up and
-puppet Characters just like that. It also adds the [Character Cmdset](./Command-Sets) so that
+`DefaultCharacter` class it sets some particular [Locks](./Locks.md) so that people can't pick up and
+puppet Characters just like that. It also adds the [Character Cmdset](./Command-Sets.md) so that
 Characters always can accept command-input (this should usually not be modified - the normal hook to
 override is `at_object_creation`, which is called after `basetype_setup` (it's in the parent)).
 - `at_after_move` makes it so that every time the Character moves, the `look` command is
@@ -309,8 +303,7 @@ class DefaultCharacter(DefaultObject):
 
 This means that `DefaultCharacter` is in *itself* a child of something called `DefaultObject`! Let's
 see what this parent class provides. It's in the same module as `DefaultCharacter`, you just need to
-[scroll up near the
-top](https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L193):
+[scroll up near the top](https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L193):
 
 ```python
 class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
@@ -327,11 +320,9 @@ the doc string of `msg`.
 
 > As seen, `DefaultObject` actually has multiple parents. In one of those the basic `key` property
 is defined, but we won't travel further up the inheritance tree in this tutorial. If you are
-interested to see them, you can find `TypeclassBase` in [evennia/typeclasses/models.py](https://gith
-ub.com/evennia/evennia/blob/master/evennia/typeclasses/models.py#L93) and `ObjectDB` in [evennia/obj
+interested to see them, you can find `TypeclassBase` in [evennia/typeclasses/models.py](https://github.com/evennia/evennia/blob/master/evennia/typeclasses/models.py#L93) and `ObjectDB` in [evennia/obj
 ects/models.py](https://github.com/evennia/evennia/blob/master/evennia/objects/models.py#L121). We
-will also not go into the details of [Multiple
-Inheritance](https://docs.python.org/2/tutorial/classes.html#multiple-inheritance) or
+will also not go into the details of [Multiple Inheritance](https://docs.python.org/2/tutorial/classes.html#multiple-inheritance) or
 [Metaclasses](http://www.onlamp.com/pub/a/python/2003/04/17/metaclasses.html) here. The general rule
 is that if you realize that you need these features, you already know enough to use them.
 
@@ -384,8 +375,7 @@ By default the `at_before_say` method doesn't do anything. It just takes the `me
 `return`s it just the way it was (the `return` is another reserved Python word).
 
 > We won't go into `**kwargs` here, but it (and its sibling `*args`) is also important to
-understand, extra reading is [here for
-`**kwargs`](https://stackoverflow.com/questions/1769403/understanding-kwargs-in-python).
+understand, extra reading is [here for `**kwargs`](https://stackoverflow.com/questions/1769403/understanding-kwargs-in-python).
 
 Now, open your game folder and edit `mygame/typeclasses/characters.py`. Locate your `Character`
 class and modify it as such:
@@ -407,8 +397,7 @@ through the method.
 Note that `f` in front of the string, it means we turned the string into a 'formatted string'. We
 can now easily inject stuff directly into the string by wrapping them in curly brackets `{ }`. In
 this example, we put the incoming `message` into the string, followed by an ellipsis. This is only
-one way to format a string. Python has very powerful [string
-formatting](https://docs.python.org/2/library/string.html#format-specification-mini-language) and
+one way to format a string. Python has very powerful [string formatting](https://docs.python.org/2/library/string.html#format-specification-mini-language) and
 you are wise to learn it well, considering your game will be mainly text-based.
 
 > You could also copy & paste the relevant method from `DefaultObject` here to get the full doc
@@ -454,8 +443,7 @@ program.
 
     IPython ...
     ...
-    In [1]: 
-IPython has some very nice ways to explore what Evennia has to offer.
+    In [1]: IPython has some very nice ways to explore what Evennia has to offer.
 
     > import evennia
     > evennia.<TAB>
@@ -484,22 +472,21 @@ convenient for quickly exploring code without having to go digging through the f
 
 This should give you a running start using Python with Evennia. If you are completely new to
 programming or Python you might want to look at a more formal Python tutorial. You can find links
-and resources [on our link page](./Links).
+and resources [on our link page](./Links.md).
 
 We have touched upon many of the concepts here but to use Evennia and to be able to follow along in
 the code, you will need basic understanding of Python
 [modules](http://docs.python.org/2/tutorial/modules.html),
-[variables](http://www.tutorialspoint.com/python/python_variable_types.htm), [conditional
-statements](http://docs.python.org/tutorial/controlflow.html#if-statements),
+[variables](http://www.tutorialspoint.com/python/python_variable_types.htm),
+[conditional statements](http://docs.python.org/tutorial/controlflow.html#if-statements),
 [loops](http://docs.python.org/tutorial/controlflow.html#for-statements),
-[functions](http://docs.python.org/tutorial/controlflow.html#defining-functions), [lists,
-dictionaries, list comprehensions](http://docs.python.org/tutorial/datastructures.html) and [string
-formatting](http://docs.python.org/tutorial/introduction.html#strings). You should also have a basic
-understanding of [object-oriented
-programming](http://www.tutorialspoint.com/python/python_classes_objects.htm) and what Python
-[Classes](http://docs.python.org/tutorial/classes.html) are.
+[functions](http://docs.python.org/tutorial/controlflow.html#defining-functions),
+[lists, dictionaries, list comprehensions](http://docs.python.org/tutorial/datastructures.html)
+and [string formatting](http://docs.python.org/tutorial/introduction.html#strings). You should also have a basic
+understanding of [object-oriented programming](http://www.tutorialspoint.com/python/python_classes_objects.htm)
+and what Python [Classes](http://docs.python.org/tutorial/classes.html) are.
 
 Once you have familiarized yourself, or if you prefer to pick Python up as you go, continue to one
-of the beginning-level [Evennia tutorials](./Tutorials) to gradually build up your understanding.
+of the beginning-level [Evennia tutorials](./Tutorials.md) to gradually build up your understanding.
 
 Good luck!

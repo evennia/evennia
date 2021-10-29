@@ -27,7 +27,7 @@ defaults for our particular use-case. Below we will flesh out these components f
 ## Starting out
 
 We will assume you start from scratch. You need Evennia installed, as per the [Getting
-Started](Getting-Started) instructions. Initialize a new game directory with `evennia init
+Started](./Getting-Started.md) instructions. Initialize a new game directory with `evennia init
 <gamedirname>`. In this tutorial we assume your game dir is simply named `mygame`. You can use the
 default database and keep all other settings to default for now. Familiarize yourself with the
 `mygame` folder before continuing. You might want to browse the [First Steps Coding](First-Steps-
@@ -44,7 +44,7 @@ to show your renewed GM status to the other accounts.
 
 ### The permission hierarchy
 
-Evennia has the following [permission hierarchy](./Building-Permissions#assigning-permissions) out of
+Evennia has the following [permission hierarchy](./Building-Permissions.md#assigning-permissions) out of
 the box: *Players, Helpers, Builders, Admins* and finally *Developers*. We could change these but
 then we'd need to update our Default commands to use the changes. We want to keep this simple, so
 instead we map our different roles on top of this permission ladder.
@@ -60,7 +60,7 @@ everyone.
 5. `Developers`-level permission are the server administrators, the ones with the ability to
 restart/shutdown the server as well as changing the permission levels.
 
-> The [superuser](./Building-Permissions#the-super-user) is not part of the hierarchy and actually
+> The [superuser](./Building-Permissions.md#the-super-user) is not part of the hierarchy and actually
 completely bypasses it. We'll assume server admin(s) will "just" be Developers.
 
 ### How to grant permissions
@@ -102,7 +102,7 @@ its name will have the string`(GM)` added to the end.
 #### Character modification
 
 Let's first start by customizing the Character. We recommend you browse the beginning of the
-[Account](./Accounts) page to make sure you know how Evennia differentiates between the OOC "Account
+[Account](./Accounts.md) page to make sure you know how Evennia differentiates between the OOC "Account
 objects" (not to be confused with the `Accounts` permission, which is just a string specifying your
 access) and the IC "Character objects".
 
@@ -142,7 +142,7 @@ Above, we change how the Character's name is displayed: If the account controlli
 a GM, we attach the string `(GM)` to the Character's name so everyone can tell who's the boss. If we
 ourselves are Developers or GM's we will see database ids attached to Characters names, which can
 help if doing database searches against Characters of exactly the same name. We base the "gm-
-ingness" on having an flag (an [Attribute](./Attributes)) named `is_gm`. We'll make sure new GM's
+ingness" on having an flag (an [Attribute](./Attributes.md)) named `is_gm`. We'll make sure new GM's
 actually get this flag below.
 
 > **Extra exercise:** This will only show the `(GM)` text on *Characters* puppeted by a GM account,
@@ -152,7 +152,7 @@ that is, it will show only to those in the same location. If we wanted it to als
 
 #### New @gm/@ungm command
 
-We will describe in some detail how to create and add an Evennia [command](./Commands) here with the
+We will describe in some detail how to create and add an Evennia [command](./Commands.md) here with the
 hope that we don't need to be as detailed when adding commands in the future. We will build on
 Evennia's default "mux-like" commands here.
 
@@ -267,7 +267,7 @@ We will here show two examples using the *EvTable* and *EvForm* utilities.Later 
 Commands to edit and display the output from those utilities.
 
 > Note that due to the limitations of the wiki, no color is used in any of the examples. See [the
-text tag documentation](TextTags) for how to add color to the tables and forms.
+text tag documentation](./TextTags.md) for how to add color to the tables and forms.
 
 #### Making a sheet with EvTable
 
@@ -687,7 +687,7 @@ implemented.
 
 Evennia comes with rooms out of the box, so no extra work needed. A GM will automatically have all
 needed building commands available. A fuller go-through is found in the [Building
-tutorial](Building-Quickstart). Here are some useful highlights:
+tutorial](./Building-Quickstart.md). Here are some useful highlights:
 
 * `@dig roomname;alias = exit_there;alias, exit_back;alias` - this is the basic command for digging
 a new room. You can specify any exit-names and just enter the name of that exit to go there.
@@ -704,7 +704,7 @@ access after the fact.
 
 ## Channels
 
-Evennia comes with [Channels](./Communications#Channels) in-built and they are described fully in the
+Evennia comes with [Channels](./Communications.md#channels) in-built and they are described fully in the
 documentation. For brevity, here are the relevant commands for normal use:
 
 * `@ccreate new_channel;alias;alias = short description` - Creates a new channel.

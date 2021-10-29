@@ -16,11 +16,11 @@ system.
 
 - **self** / **me** - the calling object (i.e. you)
 - **here** - the current caller's location
-- **obj** - a dummy [Object](./Objects) instance
-- **evennia** - Evennia's [flat API](./Evennia-API) - through this you can access all of Evennia.
+- **obj** - a dummy [Object](./Objects.md) instance
+- **evennia** - Evennia's [flat API](./Evennia-API.md) - through this you can access all of Evennia.
 
 For accessing other objects in the same room you need to use `self.search(name)`. For objects in
-other locations, use one of the `evennia.search_*` methods. See [below](./Execute-Python-Code#finding-
+other locations, use one of the `evennia.search_*` methods. See [below](./Execute-Python-Code.md#finding-
 objects).
 
 ## Returning output
@@ -46,7 +46,7 @@ string behind the scenes for you). But for *lists* and *tuples* you will be conf
 if you don't wrap them in `str()`: only the first item of the iterable will be returned. This is
 because doing `msg(text)` is actually just a convenience shortcut; the full argument that `msg`
 accepts is something called an *outputfunc* on the form `(cmdname, (args), {kwargs})` (see [the
-message path](Messagepath) for more info). Sending a list/tuple confuses Evennia to think you are
+message path](./Messagepath.md) for more info). Sending a list/tuple confuses Evennia to think you are
 sending such a structure. Converting it to a string however makes it clear it should just be
 displayed as-is.
 
@@ -117,4 +117,4 @@ of other editing features, such as tab-completion and `__doc__`-string reading.
     In [2]: evennia.managers.objects.all()
     Out[3]: [<ObjectDB: Harry>, <ObjectDB: Limbo>, ...]
 
-See the page about the [Evennia-API](./Evennia-API) for more things to explore.
+See the page about the [Evennia-API](./Evennia-API.md) for more things to explore.

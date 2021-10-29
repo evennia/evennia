@@ -13,9 +13,7 @@ It is set as the NOGOAHEAD protocol_flag option.
 http://www.faqs.org/rfcs/rfc858.html
 
 """
-from twisted.python.compat import _bytesChr as bchr
-
-SUPPRESS_GA = bchr(3)  # b"\x03"
+SUPPRESS_GA = bytes([3])  # b"\x03"
 
 # default taken from telnet specification
 
@@ -40,6 +38,9 @@ class SuppressGA(object):
         self.protocol = protocol
 
         self.protocol.protocol_flags["NOGOAHEAD"] = True
+        self.protocol.protocol_flags[
+            "NOPROMPTGOAHEAD"
+        ] = True  # Used to send a GA after a prompt line only, set in TTYPE (per client)
         # tell the client that we prefer to suppress GA ...
         self.protocol.will(SUPPRESS_GA).addCallbacks(self.will_suppress_ga, self.wont_suppress_ga)
 

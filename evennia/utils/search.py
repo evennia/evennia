@@ -37,6 +37,7 @@ __all__ = (
     "search_message",
     "search_channel",
     "search_help_entry",
+    "search_tag",  # object-tag
     "search_script_tag",
     "search_account_tag",
     "search_channel_tag",

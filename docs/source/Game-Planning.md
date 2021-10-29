@@ -4,11 +4,7 @@
 So you have Evennia up and running. You have a great game idea in mind. Now it's time to start
 cracking!  But where to start? Here are some ideas for a workflow. Note that the suggestions on this
 page are just that - suggestions. Also, they are primarily aimed at a lone hobby designer or a small
-team developing a game in their free time. There is an article in the Imaginary Realities e-zine
-which was written by the Evennia lead dev. It focuses more on you finding out your motivations for
-making a game - you can [read the article here](http://journal.imaginary-
-realities.com/volume-07/issue-03/where-do-i-begin/index.html).
-
+team developing a game in their free time.
 
 Below are some minimal steps for getting the first version of a new game world going with players.
 It's worth to at least make the attempt to do these steps in order even if you are itching to jump
@@ -125,18 +121,18 @@ gloss over this bit and jump directly to **World Building**. Vice versa, many "g
 tend to jump directly to this part without doing the **Planning** first. Neither way is good and
 *will* lead to you having to redo all your hard work at least once, probably more.
 
-Evennia's [Developer Central](./Developer-Central) tries to help you with this bit of development. We
-also have a slew of [Tutorials](./Tutorials) with worked examples. Evennia tries hard to make this
+Evennia's [Developer Central](./Developer-Central.md) tries to help you with this bit of development. We
+also have a slew of [Tutorials](./Tutorials.md) with worked examples. Evennia tries hard to make this
 part easier for you, but there is no way around the fact that if you want anything but a very basic
 Talker-type game you *will* have to bite the bullet and code your game (or find a coder willing to
 do it for you).
 
 Even if you won't code anything yourself, as a designer you need to at least understand the basic
-paradigms of Evennia, such as [Objects](./Objects), [Commands](./Commands) and [Scripts](./Scripts) and
+paradigms of Evennia, such as [Objects](./Objects.md), [Commands](./Commands.md) and [Scripts](./Scripts.md) and
 how they hang together. We recommend you go through the [Tutorial World](Tutorial-World-
 Introduction) in detail (as well as glancing at its code) to get at least a feel for what is
 involved behind the scenes. You could also look through the tutorial for [building a game from
-scratch](Tutorial-for-basic-MUSH-like-game).
+scratch](./Tutorial-for-basic-MUSH-like-game.md).
 
 During Coding you look back at the things you wanted during the **Planning** phase and try to
 implement them. Don't be shy to update your plans if you find things easier/harder than you thought.
@@ -144,7 +140,7 @@ The earlier you revise problems, the easier they will be to fix.
 
 A good idea is to host your code online (publicly or privately) using version control. Not only will
 this make it easy for multiple coders to collaborate (and have a bug-tracker etc), it also means
-your work is backed up at all times. The [Version Control](./Version-Control) tutorial has
+your work is backed up at all times. The [Version Control](./Version-Control.md) tutorial has
 instructions for setting up a sane developer environment with proper version control.
 
 ### "Tech Demo" Building
@@ -199,7 +195,7 @@ flag and let people try it! Call upon your alpha-players to try everything - the
 to break your game in ways that you never could have imagined. In Alpha you might be best off to
 focus on inviting friends and maybe other MUD developers, people who you can pester to give proper
 feedback and bug reports (there *will* be bugs, there is no way around it). Follow the quick
-instructions for [Online Setup](./Online-Setup) to make your game visible online. If you hadn't
+instructions for [Online Setup](./Online-Setup.md) to make your game visible online. If you hadn't
 already, make sure to put up your game on the [Evennia game index](http://games.evennia.com/) so
 people know it's in the works (actually, even pre-alpha games are allowed in the index so don't be
 shy)!

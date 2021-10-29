@@ -16,6 +16,12 @@
 - Latin (la) i18n translation (jamalainm)
 - Made the `evennia` dir possible to use without gamedir for purpose of doc generation.
 
+### Backports from 1.0 to 0.9.5 since 0.9.5 release
+
+- Fix to TaskHandler to complate api and allow manipulation of `utils.delay`
+  return as originall intended.
+- Support for Python 3.9.
+
 ### Evennia 0.9.5 (Nov 2020)
 
 A transitional release, including new doc system.

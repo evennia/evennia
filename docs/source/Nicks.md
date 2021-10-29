@@ -1,7 +1,7 @@
 # Nicks
 
 
-*Nicks*, short for *Nicknames* is a system allowing an object (usually a [Account](./Accounts)) to
+*Nicks*, short for *Nicknames* is a system allowing an object (usually a [Account](./Accounts.md)) to
 assign custom replacement names for other game entities.
 
 Nicks are not to be confused with *Aliases*. Setting an Alias on a game entity actually changes an
@@ -75,7 +75,7 @@ You can also use [shell-type wildcards](http://www.linfo.org/wildcard.html):
 ## Coding with nicks
 
 Nicks are stored as the `Nick` database model and are referred from the normal Evennia
-[object](./Objects) through the `nicks` property - this is known as the *NickHandler*. The NickHandler
+[object](./Objects.md) through the `nicks` property - this is known as the *NickHandler*. The NickHandler
 offers effective error checking, searches and conversion.
 
 ```python
@@ -101,12 +101,12 @@ offers effective error checking, searches and conversion.
 In a command definition you can reach the nick handler through `self.caller.nicks`. See the `nick`
 command in `evennia/commands/default/general.py` for more examples.
 
-As a last note, The Evennia [channel](./Communications) alias systems are using nicks with the
+As a last note, The Evennia [channel](./Communications.md) alias systems are using nicks with the
 `nick_type="channel"` in order to allow users to create their own custom aliases to channels.
 
 # Advanced note
 
-Internally, nicks are [Attributes](./Attributes) saved with the `db_attrype` set to "nick" (normal
+Internally, nicks are [Attributes](./Attributes.md) saved with the `db_attrype` set to "nick" (normal
 Attributes has this set to `None`).
 
 The nick stores the replacement data in the Attribute.db_value field as a tuple with four fields
