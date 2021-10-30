@@ -2672,6 +2672,43 @@
     <span class="n">txt</span> <span class="o">=</span> <span class="n">strip_tags</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
     <span class="n">txt</span> <span class="o">=</span> <span class="n">_STRIP_UNSAFE_TOKENS</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">txt</span></div>
+
+
+<div class="viewcode-block" id="copy_word_case"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.commands.default.building.copy_word_case">[docs]</a><span class="k">def</span> <span class="nf">copy_word_case</span><span class="p">(</span><span class="n">base_word</span><span class="p">,</span> <span class="n">new_word</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a word to use the same capitalization as a first word.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        base_word (str): A word to get the capitalization from.</span>
+<span class="sd">        new_word (str): A new word to capitalize in the same way as `base_word`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The `new_word` with capitalization matching the first word.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        This is meant for words. Longer sentences may get unexpected results.</span>
+
+<span class="sd">        If the two words have a mix of capital/lower letters _and_ `new_word`</span>
+<span class="sd">        is longer than `base_word`, the excess will retain its original case.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Word</span>
+    <span class="k">if</span> <span class="n">base_word</span><span class="o">.</span><span class="n">istitle</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">new_word</span><span class="o">.</span><span class="n">title</span><span class="p">()</span>
+    <span class="c1"># word</span>
+    <span class="k">elif</span> <span class="n">base_word</span><span class="o">.</span><span class="n">islower</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">new_word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="c1"># WORD</span>
+    <span class="k">elif</span> <span class="n">base_word</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">new_word</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># WorD - a mix. Handle each character</span>
+        <span class="n">maxlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">base_word</span><span class="p">)</span>
+        <span class="n">shared</span><span class="p">,</span> <span class="n">excess</span> <span class="o">=</span> <span class="n">new_word</span><span class="p">[:</span><span class="n">maxlen</span><span class="p">],</span> <span class="n">new_word</span><span class="p">[</span><span class="n">maxlen</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">if</span> <span class="n">base_word</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span> <span class="k">else</span> <span class="n">char</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                       <span class="k">for</span> <span class="n">ic</span><span class="p">,</span> <span class="n">char</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">new_word</span><span class="p">))</span> <span class="o">+</span> <span class="n">excess</span></div>
+
 </pre></div>
 
             <div class="clearer"></div>

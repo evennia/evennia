@@ -1,0 +1,667 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.utils.verb_conjugation.pronouns &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.verb_conjugation.pronouns</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.utils.verb_conjugation.pronouns</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">English pronoun mapping between 1st/2nd person and 3rd person perspective (and vice-versa).</span>
+
+<span class="sd">This file is released under the Evennia regular BSD License.</span>
+<span class="sd">(Griatch 2021)</span>
+
+<span class="sd">Pronouns are words you use instead of a proper name, such as &#39;him&#39;, &#39;herself&#39;, &#39;theirs&#39; etc. These</span>
+<span class="sd">look different depending on who sees the outgoing string. This mapping maps between 1st/2nd case and</span>
+<span class="sd">the 3rd person case and back. In some cases, the mapping is not unique; it is assumed the system can</span>
+<span class="sd">differentiate between the options in some other way.</span>
+
+
+<span class="sd">====================  =======  ========  ==========  ==========  ===========</span>
+<span class="sd">viewpoint/pronouns    Subject  Object    Possessive  Possessive  Reflexive</span>
+<span class="sd">                      Pronoun  Pronoun   Adjective   Pronoun     Pronoun</span>
+<span class="sd">====================  =======  ========  ==========  ==========  ===========</span>
+<span class="sd">1st person              I        me        my         mine       myself</span>
+<span class="sd">1st person plural       we       us        our        ours       ourselves</span>
+<span class="sd">2nd person              you      you       your       yours      yourself</span>
+<span class="sd">2nd person plural       you      you       your       yours      yourselves</span>
+
+<span class="sd">3rd person male         he       him       his        his        himself</span>
+<span class="sd">3rd person female       she      her       her        hers       herself</span>
+<span class="sd">3rd person neutral      it       it        its        theirs*    itself</span>
+<span class="sd">3rd person plural       they     them      their      theirs     themselves</span>
+<span class="sd">====================  =======  ========  ==========  ==========  ===========</span>
+
+<span class="sd">&gt; `*`) Not formally used, we use `theirs` here as a filler.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">copy_word_case</span>
+
+<span class="n">DEFAULT_PRONOUN_TYPE</span> <span class="o">=</span> <span class="s2">&quot;object_pronoun&quot;</span>
+<span class="n">DEFAULT_VIEWPOINT</span> <span class="o">=</span> <span class="s2">&quot;2nd person&quot;</span>
+<span class="n">DEFAULT_GENDER</span> <span class="o">=</span> <span class="s2">&quot;neutral&quot;</span>
+
+<span class="n">PRONOUN_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># 1st/2nd person -&gt; 3rd person mappings</span>
+    <span class="s2">&quot;I&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;subject pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;male&quot;</span><span class="p">:</span> <span class="s2">&quot;he&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;female&quot;</span><span class="p">:</span> <span class="s2">&quot;she&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;it&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;me&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;object pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;male&quot;</span><span class="p">:</span> <span class="s2">&quot;him&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;female&quot;</span><span class="p">:</span> <span class="s2">&quot;her&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;it&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;my&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;possessive adjective&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;male&quot;</span><span class="p">:</span> <span class="s2">&quot;his&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;female&quot;</span><span class="p">:</span> <span class="s2">&quot;her&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;its&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;mine&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;possessive pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;male&quot;</span><span class="p">:</span> <span class="s2">&quot;his&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;female&quot;</span><span class="p">:</span> <span class="s2">&quot;hers&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;theirs&quot;</span><span class="p">,</span>  <span class="c1"># colloqial,</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;myself&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;reflexive_pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;male&quot;</span><span class="p">:</span> <span class="s2">&quot;himself&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;female&quot;</span><span class="p">:</span> <span class="s2">&quot;herself&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;itself&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;themselves&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;you&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;subject pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;male&quot;</span><span class="p">:</span> <span class="s2">&quot;he&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;female&quot;</span><span class="p">:</span> <span class="s2">&quot;she&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;it&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;they&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;object pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;male&quot;</span><span class="p">:</span> <span class="s2">&quot;him&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;female&quot;</span><span class="p">:</span> <span class="s2">&quot;her&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;it&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;them&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;your&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;possessive adjective&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;male&quot;</span><span class="p">:</span> <span class="s2">&quot;his&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;female&quot;</span><span class="p">:</span> <span class="s2">&quot;her&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;its&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;their&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;yours&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;possessive pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;male&quot;</span><span class="p">:</span> <span class="s2">&quot;his&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;female&quot;</span><span class="p">:</span> <span class="s2">&quot;hers&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;theirs&quot;</span><span class="p">,</span>  <span class="c1"># colloqial</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;theirs&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;yourself&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;reflexive_pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;male&quot;</span><span class="p">:</span> <span class="s2">&quot;himself&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;female&quot;</span><span class="p">:</span> <span class="s2">&quot;herself&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;itself&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;we&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;subject pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;they&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;us&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;object pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;them&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;our&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;possessive adjective&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;their&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;ours&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;possessive pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;theirs&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;ourselves&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;reflexive pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;themselves&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;ours&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;possessive pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;theirs&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;ourselves&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;reflexive pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;themselves&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;yourselves&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;reflexive_pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;themselves&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="c1"># 3rd person to 1st/second person mappings</span>
+    <span class="s2">&quot;he&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;subject pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;I&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;we&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;you&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;you&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;him&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;object pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;me&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;us&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;you&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;you&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;his&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;possessive adjective&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;my&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;our&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;your&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;your&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;possessive pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;mine&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;ours&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;yours&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;yours&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;himself&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;reflexive pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;myself&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;ourselves&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;yours&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;yours&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;she&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;subject pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;I&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;you&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;you&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;we&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;her&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;object pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;me&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;us&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;you&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;you&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;possessive adjective&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;my&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;our&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;your&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;your&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;hers&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;possessive pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;mine&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;ours&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;yours&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;yours&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;herself&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;reflexive pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;myself&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;ourselves&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;yourself&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;yourselves&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;it&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;subject pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;I&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;we&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;you&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;you&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;object pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;me&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;us&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;you&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;you&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;its&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;possessive adjective&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;my&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;our&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;your&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;your&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;theirs&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;possessive pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;mine&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;ours&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;yours&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;yours&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;itself&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;reflexive pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;myself&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;ourselves&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="s2">&quot;yourself&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;yourselves&quot;</span>  <span class="c1"># pluralis majestatis</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;they&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;subject pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;we&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;you&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;them&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;object pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;us&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;you&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;their&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;possessive adjective&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;our&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;your&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;themselves&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;reflexive pronoun&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;1st person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;ourselves&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;2nd person&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;plural&quot;</span><span class="p">:</span> <span class="s2">&quot;yourselves&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="n">ALIASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="s2">&quot;male&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="s2">&quot;female&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="s2">&quot;neutral&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="s2">&quot;plural&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1st&quot;</span><span class="p">:</span> <span class="s2">&quot;1st person&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;2nd&quot;</span><span class="p">:</span> <span class="s2">&quot;2nd person&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;3rd&quot;</span><span class="p">:</span> <span class="s2">&quot;3rd person&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="s2">&quot;1st person&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="s2">&quot;2nd person&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;3&quot;</span><span class="p">:</span> <span class="s2">&quot;3rd person&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;subject pronoun&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sp&quot;</span><span class="p">:</span> <span class="s2">&quot;subject pronoun&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;subject&quot;</span><span class="p">:</span> <span class="s2">&quot;subject pronoun&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;object pronoun&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;object&quot;</span><span class="p">:</span> <span class="s2">&quot;object pronoun&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pa&quot;</span><span class="p">:</span> <span class="s2">&quot;possessive adjective&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pp&quot;</span><span class="p">:</span> <span class="s2">&quot;possessive pronoun&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">PRONOUN_TYPES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;subject pronoun&quot;</span><span class="p">,</span> <span class="s2">&quot;object pronoun&quot;</span><span class="p">,</span> <span class="s2">&quot;possessive adjective&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;possessive pronoun&quot;</span><span class="p">,</span> <span class="s2">&quot;reflexive pronoun&quot;</span><span class="p">]</span>
+<span class="n">VIEWPOINTS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;1st person&quot;</span><span class="p">,</span> <span class="s2">&quot;2nd person&quot;</span><span class="p">,</span> <span class="s2">&quot;3rd person&quot;</span><span class="p">]</span>
+<span class="n">GENDERS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;male&quot;</span><span class="p">,</span> <span class="s2">&quot;female&quot;</span><span class="p">,</span> <span class="s2">&quot;neutral&quot;</span><span class="p">,</span> <span class="s2">&quot;plural&quot;</span><span class="p">]</span>  <span class="c1"># including plural as a gender for simplicity</span>
+
+
+<div class="viewcode-block" id="pronoun_to_viewpoints"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.pronouns.html#evennia.utils.verb_conjugation.pronouns.pronoun_to_viewpoints">[docs]</a><span class="k">def</span> <span class="nf">pronoun_to_viewpoints</span><span class="p">(</span><span class="n">pronoun</span><span class="p">,</span>
+                <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pronoun_type</span><span class="o">=</span><span class="s2">&quot;object_pronoun&quot;</span><span class="p">,</span>
+                <span class="n">gender</span><span class="o">=</span><span class="s2">&quot;neutral&quot;</span><span class="p">,</span> <span class="n">viewpoint</span><span class="o">=</span><span class="s2">&quot;2nd person&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Access function for determining the forms of a pronount from different viewpoints.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pronoun (str): A valid English pronoun, such as &#39;you&#39;, &#39;his&#39;, &#39;themselves&#39; etc.</span>
+<span class="sd">        options (str or list, optional): A list or space-separated string of options to help</span>
+<span class="sd">            the engine when there is no unique mapping to use. This could for example</span>
+<span class="sd">            be &quot;2nd female&quot; (alias &#39;f&#39;) or &quot;possessive adjective&quot; (alias &#39;pa&#39; or &#39;a&#39;).</span>
+<span class="sd">        pronoun_type (str, optional): An explicit object pronoun to separate cases where</span>
+<span class="sd">            there is no unique mapping. Pronoun types defined in `options` take precedence.</span>
+<span class="sd">            Values are</span>
+
+<span class="sd">            - `subject pronoun`/`subject`/`sp` (I, you, he, they)</span>
+<span class="sd">            - `object pronoun`/`object/`/`op`  (me, you, him, them)</span>
+<span class="sd">            - `possessive adjective`/`adjective`/`pa` (my, your, his, their)</span>
+<span class="sd">            - `possessive pronoun`/`pronoun`/`pp`  (mine, yours, his, theirs)</span>
+
+<span class="sd">        gender (str, optional): Specific gender to use (plural counts a gender for this purpose).</span>
+<span class="sd">            A gender specified in `options` takes precedence. Values and aliases are:</span>
+
+<span class="sd">            - `male`/`m`</span>
+<span class="sd">            - `female`/`f`</span>
+<span class="sd">            - `neutral`/`n`</span>
+<span class="sd">            - `plural`/`p`</span>
+
+<span class="sd">        viewpoint (str, optional): A specified viewpoint of the one talking, to use</span>
+<span class="sd">            when there is no unique mapping. A viewpoint given in `options` take</span>
+<span class="sd">            precedence. Values and aliases are:</span>
+
+<span class="sd">            - `1st person`/`1st`/`1`</span>
+<span class="sd">            - `2nd person`/`2nd`/`2`</span>
+<span class="sd">            - `3rd person`/`3rd`/`3`</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: A tuple `(1st/2nd_person_pronoun, 3rd_person_pronoun)` to show to the one sending the</span>
+<span class="sd">        string and others respectively. If pronoun is invalid, the word is returned verbatim.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        The capitalization of the original word will be retained.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">pronoun</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pronoun</span>
+
+    <span class="n">pronoun_lower</span> <span class="o">=</span> <span class="s2">&quot;I&quot;</span> <span class="k">if</span> <span class="n">pronoun</span> <span class="o">==</span> <span class="s2">&quot;I&quot;</span> <span class="k">else</span> <span class="n">pronoun</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">pronoun_lower</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">PRONOUN_MAPPING</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pronoun</span>
+
+    <span class="c1"># differentiators</span>
+
+    <span class="k">if</span> <span class="n">pronoun_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">PRONOUN_TYPES</span><span class="p">:</span>
+        <span class="n">pronoun_type</span> <span class="o">=</span> <span class="n">DEFAULT_PRONOUN_TYPE</span>
+    <span class="k">if</span> <span class="n">viewpoint</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">VIEWPOINTS</span><span class="p">:</span>
+        <span class="n">viewpoint</span> <span class="o">=</span> <span class="n">DEFAULT_VIEWPOINT</span>
+    <span class="k">if</span> <span class="n">gender</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">GENDERS</span><span class="p">:</span>
+        <span class="n">gender</span> <span class="o">=</span> <span class="n">DEFAULT_GENDER</span>
+
+    <span class="k">if</span> <span class="n">options</span><span class="p">:</span>
+        <span class="c1"># option string/list will override the kwargs differentiators given</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">part</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">options</span><span class="p">]</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="n">ALIASES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span> <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">options</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">PRONOUN_TYPES</span><span class="p">:</span>
+                <span class="n">pronoun_type</span> <span class="o">=</span> <span class="n">opt</span>
+            <span class="k">elif</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">VIEWPOINTS</span><span class="p">:</span>
+                <span class="n">viewpoint</span> <span class="o">=</span> <span class="n">opt</span>
+            <span class="k">elif</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">GENDERS</span><span class="p">:</span>
+                <span class="n">gender</span> <span class="o">=</span> <span class="n">opt</span>
+
+    <span class="c1"># step down into the mapping, using differentiators as needed</span>
+    <span class="n">pronoun_types</span> <span class="o">=</span> <span class="n">PRONOUN_MAPPING</span><span class="p">[</span><span class="n">pronoun_lower</span><span class="p">]</span>
+    <span class="c1"># this has one or more pronoun-types</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pronoun_types</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">pronoun_type</span><span class="p">,</span> <span class="n">viewpoints</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">pronoun_types</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+    <span class="k">elif</span> <span class="n">pronoun_type</span> <span class="ow">in</span> <span class="n">pronoun_types</span><span class="p">:</span>
+        <span class="n">viewpoints</span> <span class="o">=</span> <span class="n">pronoun_types</span><span class="p">[</span><span class="n">pronoun_type</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">DEFAULT_PRONOUN_TYPE</span> <span class="ow">in</span> <span class="n">pronoun_types</span><span class="p">:</span>
+        <span class="n">pronoun_type</span> <span class="o">=</span> <span class="n">DEFAULT_PRONOUN_TYPE</span>
+        <span class="n">viewpoints</span> <span class="o">=</span> <span class="n">pronoun_types</span><span class="p">[</span><span class="n">pronoun_type</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># not enough info - grab the first of the mappings</span>
+        <span class="n">pronoun_type</span><span class="p">,</span> <span class="n">viewpoints</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">pronoun_types</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+
+    <span class="c1"># we have one or more viewpoints at this point</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">viewpoints</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">viewpoint</span><span class="p">,</span> <span class="n">genders</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">viewpoints</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+    <span class="k">elif</span> <span class="n">viewpoint</span> <span class="ow">in</span> <span class="n">viewpoints</span><span class="p">:</span>
+        <span class="n">genders</span> <span class="o">=</span> <span class="n">viewpoints</span><span class="p">[</span><span class="n">viewpoint</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">DEFAULT_VIEWPOINT</span> <span class="ow">in</span> <span class="n">viewpoints</span><span class="p">:</span>
+        <span class="n">viewpoint</span> <span class="o">=</span> <span class="n">DEFAULT_VIEWPOINT</span>
+        <span class="n">genders</span> <span class="o">=</span> <span class="n">viewpoints</span><span class="p">[</span><span class="n">viewpoint</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># not enough info - grab first of mappings</span>
+        <span class="n">viewpoint</span><span class="p">,</span> <span class="n">genders</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">viewpoints</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+
+    <span class="c1"># we have one or more possible genders (including plural forms)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">genders</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">gender</span><span class="p">,</span> <span class="n">mapped_pronoun</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">genders</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+    <span class="k">elif</span> <span class="n">gender</span> <span class="ow">in</span> <span class="n">genders</span><span class="p">:</span>
+        <span class="n">mapped_pronoun</span> <span class="o">=</span> <span class="n">genders</span><span class="p">[</span><span class="n">gender</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">DEFAULT_GENDER</span> <span class="ow">in</span> <span class="n">genders</span><span class="p">:</span>
+        <span class="n">gender</span> <span class="o">=</span> <span class="n">DEFAULT_GENDER</span>
+        <span class="n">mapped_pronoun</span> <span class="o">=</span> <span class="n">genders</span><span class="p">[</span><span class="n">gender</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># not enough info - grab first mapping</span>
+        <span class="n">gender</span><span class="p">,</span> <span class="n">mapped_pronoun</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">genders</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+
+    <span class="c1"># keep the same capitalization as the original</span>
+    <span class="k">if</span> <span class="n">pronoun</span> <span class="o">!=</span> <span class="s2">&quot;I&quot;</span><span class="p">:</span>
+        <span class="c1"># don&#39;t remap I, since this is always capitalized.</span>
+        <span class="n">mapped_pronoun</span> <span class="o">=</span> <span class="n">copy_word_case</span><span class="p">(</span><span class="n">pronoun</span><span class="p">,</span> <span class="n">mapped_pronoun</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mapped_pronoun</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span>
+        <span class="n">mapped_pronoun</span> <span class="o">=</span> <span class="n">mapped_pronoun</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">viewpoint</span> <span class="o">==</span> <span class="s2">&quot;3rd person&quot;</span><span class="p">:</span>
+        <span class="c1"># the remapped viewpoing is in 3rd person, meaning the ingoing viewpoing</span>
+        <span class="c1"># must have been 1st or 2nd person.</span>
+        <span class="k">return</span> <span class="n">pronoun</span><span class="p">,</span> <span class="n">mapped_pronoun</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># the remapped viewpoint is 1st or 2nd person, so ingoing must have been</span>
+        <span class="c1"># in 3rd person form.</span>
+        <span class="k">return</span> <span class="n">mapped_pronoun</span><span class="p">,</span> <span class="n">pronoun</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="pronouns.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.verb_conjugation.pronouns</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

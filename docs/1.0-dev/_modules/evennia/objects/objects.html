@@ -82,13 +82,8 @@
 <span class="c1"># the sessid_max is based on the length of the db_sessid csv field (excluding commas)</span>
 <span class="n">_SESSID_MAX</span> <span class="o">=</span> <span class="mi">16</span> <span class="k">if</span> <span class="n">_MULTISESSION_MODE</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span>
 
-<span class="n">_MSG_CONTENTS_PARSER</span> <span class="o">=</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">FuncParser</span><span class="p">(</span>
-    <span class="p">{</span>
-        <span class="s2">&quot;you&quot;</span><span class="p">:</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">funcparser_callable_you</span><span class="p">,</span>
-        <span class="s2">&quot;You&quot;</span><span class="p">:</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">funcparser_callable_You</span><span class="p">,</span>
-        <span class="s2">&quot;conj&quot;</span><span class="p">:</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">funcparser_callable_conjugate</span>
-    <span class="p">}</span>
-<span class="p">)</span>
+<span class="c1"># init the actor-stance funcparser for msg_contents</span>
+<span class="n">_MSG_CONTENTS_PARSER</span> <span class="o">=</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">FuncParser</span><span class="p">(</span><span class="n">funcparser</span><span class="o">.</span><span class="n">ACTOR_STANCE_CALLABLES</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="ObjectSessionHandler"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler">[docs]</a><span class="k">class</span> <span class="nc">ObjectSessionHandler</span><span class="p">:</span>
@@ -773,8 +768,9 @@
 <span class="sd">                on the valid OOB outmessage form `(message, {kwargs})`,</span>
 <span class="sd">                where kwargs are optional data passed to the `text`</span>
 <span class="sd">                outputfunc. The message will be parsed for `{key}` formatting and</span>
-<span class="sd">                `$You/$you()/$You(key)` and `$conj(verb)` inline function callables.</span>
-<span class="sd">                The `key` is taken from the `mapping` kwarg {&quot;key&quot;: object, ...}`.</span>
+<span class="sd">                `$You/$you()/$You()`, `$obj(name)`, `$conj(verb)` and `$pron(pronoun, option)`</span>
+<span class="sd">                inline function callables.</span>
+<span class="sd">                The `name` is taken from the `mapping` kwarg {&quot;name&quot;: object, ...}`.</span>
 <span class="sd">                The `mapping[key].get_display_name(looker=recipient)` will be called</span>
 <span class="sd">                for that key for every recipient of the string.</span>
 <span class="sd">            exclude (list, optional): A list of objects not to send to.</span>

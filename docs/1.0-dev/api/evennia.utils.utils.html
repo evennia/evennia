@@ -1656,6 +1656,27 @@ to check for bypassing the strip. If not given, use
 permissions are required to bypass this strip.</p>
 </dd></dl>
 
+<dl class="py function">
+<dt id="evennia.utils.utils.copy_word_case">
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">copy_word_case</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_word</span></em>, <em class="sig-param"><span class="n">new_word</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#copy_word_case"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.copy_word_case" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a word to use the same capitalization as a first word.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_word</strong> (<em>str</em>) – A word to get the capitalization from.</p></li>
+<li><p><strong>new_word</strong> (<em>str</em>) – A new word to capitalize in the same way as <strong>base_word</strong>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>str</em> – The <strong>new_word</strong> with capitalization matching the first word.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is meant for words. Longer sentences may get unexpected results.</p>
+<p>If the two words have a mix of capital/lower letters _and_ <strong>new_word</strong>
+is longer than <strong>base_word</strong>, the excess will retain its original case.</p>
+</dd></dl>
+
 </section>
 
 

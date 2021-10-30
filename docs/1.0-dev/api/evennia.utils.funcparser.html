@@ -612,15 +612,16 @@ Others will see “With a grin, CharName jumps at Tommy.”</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="evennia.utils.funcparser.funcparser_callable_You">
-<code class="sig-prename descclassname">evennia.utils.funcparser.</code><code class="sig-name descname">funcparser_callable_You</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">you</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receiver</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mapping</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">capitalize</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/funcparser.html#funcparser_callable_You"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.funcparser.funcparser_callable_You" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.funcparser.funcparser_callable_you_capitalize">
+<code class="sig-prename descclassname">evennia.utils.funcparser.</code><code class="sig-name descname">funcparser_callable_you_capitalize</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">you</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receiver</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mapping</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">capitalize</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/funcparser.html#funcparser_callable_you_capitalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.funcparser.funcparser_callable_you_capitalize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Usage: $You() - capitalizes the ‘you’ output.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="evennia.utils.funcparser.funcparser_callable_conjugate">
 <code class="sig-prename descclassname">evennia.utils.funcparser.</code><code class="sig-name descname">funcparser_callable_conjugate</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receiver</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/funcparser.html#funcparser_callable_conjugate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.funcparser.funcparser_callable_conjugate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Conjugate a verb according to if it should be 2nd or third person.</p>
+<dd><p>Usage: $conj(word, [options])</p>
+<p>Conjugate a verb according to if it should be 2nd or third person.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
 <dd class="field-odd"><ul class="simple">
@@ -647,6 +648,220 @@ than ‘you’. The caller/receiver must be passed to the parser directly.</p>
 </ul>
 <p>You will see “With a grin, you jump.”
 Others will see “With a grin, CharName jumps.”</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.funcparser.funcparser_callable_pronoun">
+<code class="sig-prename descclassname">evennia.utils.funcparser.</code><code class="sig-name descname">funcparser_callable_pronoun</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receiver</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">capitalize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/funcparser.html#funcparser_callable_pronoun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.funcparser.funcparser_callable_pronoun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $prop(word, [options])</p>
+<p>Adjust pronouns to the expected form. Pronouns are words you use instead of a
+proper name, such as ‘him’, ‘herself’, ‘theirs’ etc. These look different
+depending on who sees the outgoing string.</p>
+<p>The parser maps between this table …</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>1st/2nd person</p></th>
+<th class="head"><p>Subject
+Pronoun</p></th>
+<th class="head"><p>Object
+Pronoun</p></th>
+<th class="head"><p>Possessive
+Adjective</p></th>
+<th class="head"><p>Possessive
+Pronoun</p></th>
+<th class="head"><p>Reflexive
+Pronoun</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1st person</p></td>
+<td><p>I</p></td>
+<td><p>me</p></td>
+<td><p>my</p></td>
+<td><p>mine</p></td>
+<td><p>myself</p></td>
+</tr>
+<tr class="row-odd"><td><p>1st person plural</p></td>
+<td><p>we</p></td>
+<td><p>us</p></td>
+<td><p>our</p></td>
+<td><p>ours</p></td>
+<td><p>ourselves</p></td>
+</tr>
+<tr class="row-even"><td><p>2nd person</p></td>
+<td><p>you</p></td>
+<td><p>you</p></td>
+<td><p>your</p></td>
+<td><p>yours</p></td>
+<td><p>yourself</p></td>
+</tr>
+<tr class="row-odd"><td><p>2nd person plural</p></td>
+<td><p>you</p></td>
+<td><p>you</p></td>
+<td><p>your</p></td>
+<td><p>yours</p></td>
+<td><p>yourselves</p></td>
+</tr>
+</tbody>
+</table>
+<p>… and this table (and vice versa).</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>3rd person</p></th>
+<th class="head"><p>Subject
+Pronoun</p></th>
+<th class="head"><p>Object
+Pronoun</p></th>
+<th class="head"><p>Possessive
+Adjective</p></th>
+<th class="head"><p>Possessive
+Pronoun</p></th>
+<th class="head"><p>Reflexive
+Pronoun</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>3rd person male</p></td>
+<td><p>he</p></td>
+<td><p>him</p></td>
+<td><p>his</p></td>
+<td><p>his</p></td>
+<td><p>himself</p></td>
+</tr>
+<tr class="row-odd"><td><p>3rd person female</p></td>
+<td><p>she</p></td>
+<td><p>her</p></td>
+<td><p>her</p></td>
+<td><p>hers</p></td>
+<td><p>herself</p></td>
+</tr>
+<tr class="row-even"><td><p>3rd person neutral</p></td>
+<td><p>it</p></td>
+<td><p>it</p></td>
+<td><p>its</p></td>
+<td></td>
+<td><p>itself</p></td>
+</tr>
+<tr class="row-odd"><td><p>3rd person plural</p></td>
+<td><p>they</p></td>
+<td><p>them</p></td>
+<td><p>their</p></td>
+<td><p>theirs</p></td>
+<td><p>themselves</p></td>
+</tr>
+</tbody>
+</table>
+<p>This system will examine <strong>caller</strong> for either a property or a callable <strong>.gender</strong> to
+get a default gender fallback (if not specified in the call). If a callable,
+<strong>.gender</strong> will be called without arguments and should return a string
+<strong>male</strong>/<strong>female</strong>/<strong>neutral</strong>/<strong>plural</strong> (plural is considered a gender for this purpose).
+If no <strong>gender</strong> property/callable is found, <strong>neutral</strong> is used as a fallback.</p>
+<p>The pronoun-type default (if not spefified in call) is <strong>subject pronoun</strong>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pronoun</strong> (<em>str</em>) – Input argument to parsed call. This can be any of the pronouns
+in the table above. If given in 1st/second form, they will be mappped to
+3rd-person form for others viewing the message (but will need extra input
+via the <strong>gender</strong>, see below). If given on 3rd person form, this will be
+mapped to 2nd person form for <strong>caller</strong> unless <strong>viewpoint</strong> is specified
+in options.</p></li>
+<li><p><strong>options</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>A space- or comma-separated string detailing <strong>pronoun_type</strong>,
+<strong>gender</strong>/<strong>plural</strong> and/or <strong>viewpoint</strong> to help the mapper differentiate between
+non-unique cases (such as if <strong>you</strong> should become <strong>him</strong> or <strong>they</strong>).
+Allowed values are:</p>
+<ul>
+<li><p><strong>subject pronoun</strong>/<strong>subject</strong>/<strong>sp</strong> (I, you, he, they)</p></li>
+<li><p><strong>object pronoun</strong>/<strong>object/</strong>/<strong>op</strong>  (me, you, him, them)</p></li>
+<li><p><strong>possessive adjective</strong>/<strong>adjective</strong>/<strong>pa</strong> (my, your, his, their)</p></li>
+<li><p><strong>possessive pronoun</strong>/<strong>pronoun</strong>/<strong>pp</strong>  (mine, yours, his, theirs)</p></li>
+<li><p><strong>male</strong>/<strong>m</strong></p></li>
+<li><p><strong>female</strong>/<strong>f</strong></p></li>
+<li><p><strong>neutral</strong>/<strong>n</strong></p></li>
+<li><p><strong>plural</strong>/<strong>p</strong></p></li>
+<li><p><strong>1st person</strong>/<strong>1st</strong>/<strong>1</strong></p></li>
+<li><p><strong>2nd person</strong>/<strong>2nd</strong>/<strong>2</strong></p></li>
+<li><p><strong>3rd person</strong>/<strong>3rd</strong>/<strong>3</strong></p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>caller</strong> (<em>Object</em>) – The object creating the string. If this has a property ‘gender’,
+it will be checked for a string ‘male/female/neutral’ to determine
+the 3rd person gender (but if <strong>pronoun_type</strong> contains a gender
+component, that takes precedence). Provided automatically to the
+funcparser.</p></li>
+<li><p><strong>receiver</strong> (<em>Object</em>) – The recipient of the string. This being the same as
+<strong>caller</strong> or not helps determine 2nd vs 3rd-person forms. This is
+provided automatically by the funcparser.</p></li>
+<li><p><strong>capitalize</strong> (<em>bool</em>) – The input retains its capitalization. If this is set the output is
+always capitalized.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 48%" />
+<col style="width: 28%" />
+<col style="width: 24%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>caller sees</p></th>
+<th class="head"><p>others see</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>$pron(I, m)</p></td>
+<td><p>I</p></td>
+<td><p>he</p></td>
+</tr>
+<tr class="row-odd"><td><p>$pron(you,fo)</p></td>
+<td><p>you</p></td>
+<td><p>her</p></td>
+</tr>
+<tr class="row-even"><td><p>$pron(yourself)</p></td>
+<td><p>yourself</p></td>
+<td><p>itself</p></td>
+</tr>
+<tr class="row-odd"><td><p>$pron(its)</p></td>
+<td><p>your</p></td>
+<td><p>its</p></td>
+</tr>
+<tr class="row-even"><td><p>$pron(you,op,p)</p></td>
+<td><p>you</p></td>
+<td><p>them</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>There is no option to specify reflexive pronouns since they are all unique
+and the mapping can always be auto-detected.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.funcparser.funcparser_callable_pronoun_capitalize">
+<code class="sig-prename descclassname">evennia.utils.funcparser.</code><code class="sig-name descname">funcparser_callable_pronoun_capitalize</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receiver</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">capitalize</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/funcparser.html#funcparser_callable_pronoun_capitalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.funcparser.funcparser_callable_pronoun_capitalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $Pron(word) - always maps to a capitalized word.</p>
 </dd></dl>
 
 </section>

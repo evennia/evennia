@@ -547,8 +547,9 @@ function on.</p></li>
 on the valid OOB outmessage form <strong>(message, {kwargs})</strong>,
 where kwargs are optional data passed to the <strong>text</strong>
 outputfunc. The message will be parsed for <strong>{key}</strong> formatting and
-<strong>$You/$you()/$You(key)</strong> and <strong>$conj(verb)</strong> inline function callables.
-The <strong>key</strong> is taken from the <strong>mapping</strong> kwarg {“key”: object, …}**.
+<strong>$You/$you()/$You()</strong>, <strong>$obj(name)</strong>, <strong>$conj(verb)</strong> and <strong>$pron(pronoun, option)</strong>
+inline function callables.
+The <strong>name</strong> is taken from the <strong>mapping</strong> kwarg {“name”: object, …}**.
 The <strong>mapping[key].get_display_name(looker=recipient)</strong> will be called
 for that key for every recipient of the string.</p></li>
 <li><p><strong>exclude</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of objects not to send to.</p></li>
