@@ -24,6 +24,7 @@ This documentation cover more over-arching concepts of Evennia, often involving 
 - [Change the language of the server](./Internationalization.md)
 - [Server text-encoding](./Text-Encodings.md)
 - [Text tags](./TextTags.md)
+- [Change Messages Per receiver](Change-Messages-Per-Receiver.md)
 
 ## Web features
 
