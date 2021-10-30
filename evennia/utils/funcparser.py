@@ -53,6 +53,7 @@ from evennia.utils.utils import (
     safe_convert_to_types)
 from evennia.utils import search
 from evennia.utils.verb_conjugation.conjugate import verb_actor_stance_components
+from evennia.utils.verb_conjugation.pronouns import pronoun_to_viewpoints
 
 # setup
 
@@ -1082,8 +1083,8 @@ def funcparser_callable_you(*args, caller=None, receiver=None, mapping=None, cap
             if hasattr(caller, "get_display_name") else str(caller))
 
 
-def funcparser_callable_You(*args, you=None, receiver=None, mapping=None, capitalize=True,
-                            **kwargs):
+def funcparser_callable_you_capitalize(
+        *args, you=None, receiver=None, mapping=None, capitalize=True, **kwargs):
     """
     Usage: $You() - capitalizes the 'you' output.
 
@@ -1094,6 +1095,8 @@ def funcparser_callable_You(*args, you=None, receiver=None, mapping=None, capita
 
 def funcparser_callable_conjugate(*args, caller=None, receiver=None, **kwargs):
     """
+    Usage: $conj(word, [options])
+
     Conjugate a verb according to if it should be 2nd or third person.
 
     Keyword Args:
@@ -1128,6 +1131,146 @@ def funcparser_callable_conjugate(*args, caller=None, receiver=None, **kwargs):
 
     second_person_str, third_person_str = verb_actor_stance_components(args[0])
     return second_person_str if caller == receiver else third_person_str
+
+
+def funcparser_callable_pronoun(*args, caller=None, receiver=None, capitalize=False, **kwargs):
+    """
+
+    Usage: $prop(word, [options])
+
+    Adjust pronouns to the expected form. Pronouns are words you use instead of a
+    proper name, such as 'him', 'herself', 'theirs' etc. These look different
+    depending on who sees the outgoing string.
+
+    The parser maps between this table ...
+
+    ====================  =======  =======  ==========  ==========  ===========
+    1st/2nd person        Subject  Object   Possessive  Possessive  Reflexive
+                          Pronoun  Pronoun  Adjective   Pronoun     Pronoun
+    ====================  =======  =======  ==========  ==========  ===========
+    1st person               I        me        my        mine       myself
+    1st person plural       we       us        our        ours       ourselves
+    2nd person              you      you       your       yours      yourself
+    2nd person plural       you      you       your       yours      yourselves
+    ====================  =======  =======  ==========  ==========  ===========
+
+    ... and this table (and vice versa).
+
+    ====================  =======  =======  ==========  ==========  ===========
+    3rd person            Subject  Object   Possessive  Possessive  Reflexive
+                          Pronoun  Pronoun  Adjective   Pronoun     Pronoun
+    ====================  =======  =======  ==========  ==========  ===========
+    3rd person male         he       him       his        his        himself
+    3rd person female       she      her       her        hers       herself
+    3rd person neutral      it       it        its                   itself
+    3rd person plural       they    them       their      theirs     themselves
+    ====================  =======  =======  ==========  ==========  ===========
+
+    This system will examine `caller` for either a property or a callable `.gender` to
+    get a default gender fallback (if not specified in the call). If a callable,
+    `.gender` will be called without arguments and should return a string
+    `male`/`female`/`neutral`/`plural` (plural is considered a gender for this purpose).
+    If no `gender` property/callable is found, `neutral` is used as a fallback.
+
+    The pronoun-type default (if not spefified in call) is `subject pronoun`.
+
+    Args:
+        pronoun (str): Input argument to parsed call. This can be any of the pronouns
+            in the table above. If given in 1st/second form, they will be mappped to
+            3rd-person form for others viewing the message (but will need extra input
+            via the `gender`, see below). If given on 3rd person form, this will be
+            mapped to 2nd person form for `caller` unless `viewpoint` is specified
+            in options.
+        options (str, optional): A space- or comma-separated string detailing `pronoun_type`,
+            `gender`/`plural` and/or `viewpoint` to help the mapper differentiate between
+            non-unique cases (such as if `you` should become `him` or `they`).
+            Allowed values are:
+
+            - `subject pronoun`/`subject`/`sp` (I, you, he, they)
+            - `object pronoun`/`object/`/`op`  (me, you, him, them)
+            - `possessive adjective`/`adjective`/`pa` (my, your, his, their)
+            - `possessive pronoun`/`pronoun`/`pp`  (mine, yours, his, theirs)
+            - `male`/`m`
+            - `female`/`f`
+            - `neutral`/`n`
+            - `plural`/`p`
+            - `1st person`/`1st`/`1`
+            - `2nd person`/`2nd`/`2`
+            - `3rd person`/`3rd`/`3`
+
+    Keyword Args:
+
+        caller (Object): The object creating the string. If this has a property 'gender',
+            it will be checked for a string 'male/female/neutral' to determine
+            the 3rd person gender (but if `pronoun_type` contains a gender
+            component, that takes precedence). Provided automatically to the
+            funcparser.
+        receiver (Object): The recipient of the string. This being the same as
+            `caller` or not helps determine 2nd vs 3rd-person forms. This is
+            provided automatically by the funcparser.
+        capitalize (bool): The input retains its capitalization. If this is set the output is
+            always capitalized.
+
+    Examples:
+
+        ======================  =============    ===========
+        Input                   caller sees      others see
+        ======================  =============    ===========
+        $pron(I, m)             I                he
+        $pron(you,fo)           you              her
+        $pron(yourself)         yourself         itself
+        $pron(its)              your             its
+        $pron(you,op,p)         you              them
+        ======================  =============    ===========
+
+    Notes:
+        There is no option to specify reflexive pronouns since they are all unique
+        and the mapping can always be auto-detected.
+
+    """
+    if not args:
+        return ''
+
+    pronoun, *options = args
+    # options is either multiple args or a space-separated string
+    if len(options) == 1:
+        options = options[0]
+
+    # default differentiators
+    default_pronoun_type = "subject pronoun"
+    default_gender = "neutral"
+    default_viewpoint = "2nd person"
+
+    if hasattr(caller, "gender"):
+        if callable(caller, gender):
+            default_gender = caller.gender()
+        else:
+            default_gender = caller.gender
+
+    if "viewpoint" in kwargs:
+        # passed into FuncParser initialization
+        default_viewpoint = kwargs["viewpoint"]
+
+    pronoun_1st_or_2nd_person, pronoun_3rd_person = pronoun_to_viewpoints(
+        pronoun, options,
+        pronoun_type=default_pronoun_type, gender=default_gender, viewpoint=default_viewpoint)
+
+    if capitalize:
+        pronoun_1st_or_2nd_person = pronoun_1st_or_2nd_person.capitalize()
+        pronoun_3rd_person = pronoun_3rd_person.capitalize()
+
+    return pronoun_1st_or_2nd_person if caller == receiver else pronoun_3rd_person
+
+
+def funcparser_callable_pronoun_capitalize(
+        *args, caller=None, receiver=None, capitalize=True, **kwargs):
+    """
+    Usage: $Pron(word) - always maps to a capitalized word.
+
+    """
+    return funcparser_callable_pronoun(
+        *args, caller=caller, receiver=receiver, capitalize=capitalize, **kwargs)
+
 
 
 # these are made available as callables by adding 'evennia.utils.funcparser' as
@@ -1176,6 +1319,10 @@ SEARCHING_CALLABLES = {
 ACTOR_STANCE_CALLABLES = {
     # requires `you`, `receiver` and `mapping` to be passed into parser
     "you": funcparser_callable_you,
-    "You": funcparser_callable_You,
+    "You": funcparser_callable_you_capitalize,
+    "obj": funcparser_callable_you,
+    "Obj": funcparser_callable_you_capitalize,
     "conj": funcparser_callable_conjugate,
+    "pron": funcparser_callable_pronoun,
+    "Pron": funcparser_callable_pronoun_capitalize,
 }

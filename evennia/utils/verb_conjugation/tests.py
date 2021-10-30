@@ -5,7 +5,7 @@ Unit tests for verb conjugation.
 
 from parameterized import parameterized
 from django.test import TestCase
-from . import conjugate
+from . import conjugate, pronouns
 
 
 class TestVerbConjugate(TestCase):
@@ -239,3 +239,49 @@ class TestVerbConjugate(TestCase):
 
         """
         self.assertEqual(expected, conjugate.verb_actor_stance_components(verb))
+
+
+class TestPronounMapping(TestCase):
+    """
+    Test pronoun viewpoint mapping
+
+    """
+
+    @parameterized.expand([
+        ("you", "m", "you", "he"),
+        ("you", "f op", "you", "her"),
+        ("I", "", "I", "it"),
+        ("I", "p", "I", "it"),  # plural is invalid
+        ("I", "m", "I", "he"),
+        ("Me", "n", "Me", "It"),
+        ("your", "p", "your", "their"),
+        ("ours", "", "ours", "theirs"),
+        ("yourself", "", "yourself", "itself"),
+        ("yourself", "m", "yourself", "himself"),
+        ("yourself", "f", "yourself", "herself"),
+        ("yourself", "p", "yourself", "itself"),  # plural is invalid
+        ("yourselves", "", "yourselves", "themselves"),
+        ("he", "", "you", "he"),  # assume 2nd person
+        ("he", "1", "I", "he"),
+        ("he", "1 p", "we", "he"),
+        ("her", "p", "you", "her"),
+        ("her", "pa", "your", "her"),
+        ("their", "pa", "your", "their"),
+        ("their", "pa", "your", "their"),
+        ("itself", "", "yourself", "itself"),
+        ("themselves", "", "yourselves", "themselves"),
+        ("herself", "", "yourself", "herself"),
+    ])
+    def test_mapping_with_options(self, pronoun, options,
+                                  expected_1st_or_2nd_person,
+                                  expected_3rd_person):
+        """
+        Test the pronoun mapper.
+
+        """
+        received_1st_or_2nd_person, received_3rd_person = (
+            pronouns.pronoun_to_viewpoints(pronoun, options)
+        )
+
+        self.assertEqual(expected_1st_or_2nd_person, received_1st_or_2nd_person)
+        self.assertEqual(expected_3rd_person, received_3rd_person)

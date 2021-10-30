@@ -97,6 +97,8 @@ Up requirements to Django 3.2+, Twisted 21+
   not support this (useful for getting a complete log).
 - Make `@lazy_property` decorator create read/delete-protected properties. This is
   because it's used for handlers, and e.g. self.locks=[] is a common beginner mistake.
+- Add `$pron()` inlinefunc for pronoun parsing in actor-stance strings using
+  `msg_contents`.
 
 
 

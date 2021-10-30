@@ -38,13 +38,8 @@ _COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 # the sessid_max is based on the length of the db_sessid csv field (excluding commas)
 _SESSID_MAX = 16 if _MULTISESSION_MODE in (1, 3) else 1
 
-_MSG_CONTENTS_PARSER = funcparser.FuncParser(
-    {
-        "you": funcparser.funcparser_callable_you,
-        "You": funcparser.funcparser_callable_You,
-        "conj": funcparser.funcparser_callable_conjugate
-    }
-)
+# init the actor-stance funcparser for msg_contents
+_MSG_CONTENTS_PARSER = funcparser.FuncParser(funcparser.ACTOR_STANCE_CALLABLES)
 
 
 class ObjectSessionHandler:
@@ -729,8 +724,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 on the valid OOB outmessage form `(message, {kwargs})`,
                 where kwargs are optional data passed to the `text`
                 outputfunc. The message will be parsed for `{key}` formatting and
-                `$You/$you()/$You(key)` and `$conj(verb)` inline function callables.
-                The `key` is taken from the `mapping` kwarg {"key": object, ...}`.
+                `$You/$you()/$You()`, `$obj(name)`, `$conj(verb)` and `$pron(pronoun, option)`
+                inline function callables.
+                The `name` is taken from the `mapping` kwarg {"name": object, ...}`.
                 The `mapping[key].get_display_name(looker=recipient)` will be called
                 for that key for every recipient of the string.
             exclude (list, optional): A list of objects not to send to.

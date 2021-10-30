@@ -13,6 +13,7 @@ evennia.utils.verb\_conjugation
    :maxdepth: 6
 
    evennia.utils.verb_conjugation.conjugate
+   evennia.utils.verb_conjugation.pronouns
    evennia.utils.verb_conjugation.tests
 
 ```
