@@ -339,8 +339,10 @@ match; if <code class="docutils literal notranslate"><span class="pre">return_li
 <h3><code class="docutils literal notranslate"><span class="pre">evennia.utils.funcparser.ACTOR_STANCE_CALLABLES</span></code><a class="headerlink" href="#evennia-utils-funcparser-actor-stance-callables" title="Permalink to this headline">¶</a></h3>
 <p>These are used to implement actor-stance emoting. They are used by the
 <a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.msg_contents" title="evennia.objects.objects.DefaultObject.msg_contents"><span class="xref myst py py-meth">DefaultObject.msg_contents</span></a> method
-by default.</p>
-<p>These all require extra kwargs be passed into the parser:</p>
+by default. You can read a lot more about this on the page
+<a class="reference internal" href="../Concepts/Change-Messages-Per-Receiver.html"><span class="doc std std-doc">Change messages per receiver</span></a>.</p>
+<p>On the parser side, all these inline functions require extra kwargs be passed into the parser
+(done by <code class="docutils literal notranslate"><span class="pre">msg_contents</span></code> by default):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">caller</span><span class="o">=&lt;</span><span class="n">obj</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=&lt;</span><span class="n">obj</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">obj</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">...</span><span class="p">})</span>
 </pre></div>
 </div>
@@ -354,10 +356,13 @@ be replaced either with the string <code class="docutils literal notranslate"><s
 result of <code class="docutils literal notranslate"><span class="pre">you_obj.get_display_name(looker=receiver)</span></code>. This allows for a single string to echo differently
 depending on who sees it, and also to reference other people in the same way.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">$You([key])</span></code> - same as <code class="docutils literal notranslate"><span class="pre">$you</span></code> but always capitalized.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">$conj(verb)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_conjugate" title="evennia.utils.funcparser.funcparser_callable_conjugate"><span class="xref myst py py-func">code</span></a>) – conjugates a verb between 4nd person presens to 3rd person presence depending on who
+<li><p><code class="docutils literal notranslate"><span class="pre">$conj(verb)</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_conjugate" title="evennia.utils.funcparser.funcparser_callable_conjugate"><span class="xref myst py py-func">code</span></a>) - conjugates a verb
+between 2nd person presens to 3rd person presence depending on who
 sees the string. For example <code class="docutils literal notranslate"><span class="pre">&quot;$You()</span> <span class="pre">$conj(smiles)&quot;.</span></code> will show as “You smile.” and “Tom smiles.” depending
 on who sees it. This makes use of the tools in <a class="reference internal" href="../api/evennia.utils.verb_conjugation.html#evennia-utils-verb-conjugation"><span class="std std-ref">evennia.utils.verb_conjugation</span></a>
 to do this, and only works for English verbs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$pron(pronoun</span> <span class="pre">[,options])</span></code> (<a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pronoun" title="evennia.utils.funcparser.funcparser_callable_pronoun"><span class="xref myst py py-func">code</span></a>) - Dynamically
+map pronouns (like his, herself, you, its etc) between 1st/2nd person to 3rd person.</p></li>
 </ul>
 </section>
 <section id="example">

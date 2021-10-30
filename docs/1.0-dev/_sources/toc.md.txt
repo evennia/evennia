@@ -58,6 +58,7 @@ Concepts/Async-Process
 Concepts/Banning
 Concepts/Bootstrap-&-Evennia
 Concepts/Building-Permissions
+Concepts/Change-Messages-Per-Receiver
 Concepts/Clickable-Links
 Concepts/Colors
 Concepts/Concepts-Overview
@@ -393,6 +394,7 @@ api/evennia.utils.utils
 api/evennia.utils.validatorfuncs
 api/evennia.utils.verb_conjugation
 api/evennia.utils.verb_conjugation.conjugate
+api/evennia.utils.verb_conjugation.pronouns
 api/evennia.utils.verb_conjugation.tests
 api/evennia.web
 api/evennia.web.admin

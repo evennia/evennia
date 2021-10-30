@@ -97,6 +97,7 @@
     <span class="n">safe_convert_to_types</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">search</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.verb_conjugation.conjugate</span> <span class="kn">import</span> <span class="n">verb_actor_stance_components</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.verb_conjugation.pronouns</span> <span class="kn">import</span> <span class="n">pronoun_to_viewpoints</span>
 
 <span class="c1"># setup</span>
 
@@ -1126,8 +1127,8 @@
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;get_display_name&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">caller</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="funcparser_callable_You"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_You">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_You</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">you</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="funcparser_callable_you_capitalize"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_you_capitalize">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_you_capitalize</span><span class="p">(</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">you</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $You() - capitalizes the &#39;you&#39; output.</span>
 
@@ -1138,6 +1139,8 @@
 
 <div class="viewcode-block" id="funcparser_callable_conjugate"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_conjugate">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_conjugate</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage: $conj(word, [options])</span>
+
 <span class="sd">    Conjugate a verb according to if it should be 2nd or third person.</span>
 
 <span class="sd">    Keyword Args:</span>
@@ -1172,6 +1175,146 @@
 
     <span class="n">second_person_str</span><span class="p">,</span> <span class="n">third_person_str</span> <span class="o">=</span> <span class="n">verb_actor_stance_components</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">second_person_str</span> <span class="k">if</span> <span class="n">caller</span> <span class="o">==</span> <span class="n">receiver</span> <span class="k">else</span> <span class="n">third_person_str</span></div>
+
+
+<div class="viewcode-block" id="funcparser_callable_pronoun"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pronoun">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_pronoun</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Usage: $prop(word, [options])</span>
+
+<span class="sd">    Adjust pronouns to the expected form. Pronouns are words you use instead of a</span>
+<span class="sd">    proper name, such as &#39;him&#39;, &#39;herself&#39;, &#39;theirs&#39; etc. These look different</span>
+<span class="sd">    depending on who sees the outgoing string.</span>
+
+<span class="sd">    The parser maps between this table ...</span>
+
+<span class="sd">    ====================  =======  =======  ==========  ==========  ===========</span>
+<span class="sd">    1st/2nd person        Subject  Object   Possessive  Possessive  Reflexive</span>
+<span class="sd">                          Pronoun  Pronoun  Adjective   Pronoun     Pronoun</span>
+<span class="sd">    ====================  =======  =======  ==========  ==========  ===========</span>
+<span class="sd">    1st person               I        me        my        mine       myself</span>
+<span class="sd">    1st person plural       we       us        our        ours       ourselves</span>
+<span class="sd">    2nd person              you      you       your       yours      yourself</span>
+<span class="sd">    2nd person plural       you      you       your       yours      yourselves</span>
+<span class="sd">    ====================  =======  =======  ==========  ==========  ===========</span>
+
+<span class="sd">    ... and this table (and vice versa).</span>
+
+<span class="sd">    ====================  =======  =======  ==========  ==========  ===========</span>
+<span class="sd">    3rd person            Subject  Object   Possessive  Possessive  Reflexive</span>
+<span class="sd">                          Pronoun  Pronoun  Adjective   Pronoun     Pronoun</span>
+<span class="sd">    ====================  =======  =======  ==========  ==========  ===========</span>
+<span class="sd">    3rd person male         he       him       his        his        himself</span>
+<span class="sd">    3rd person female       she      her       her        hers       herself</span>
+<span class="sd">    3rd person neutral      it       it        its                   itself</span>
+<span class="sd">    3rd person plural       they    them       their      theirs     themselves</span>
+<span class="sd">    ====================  =======  =======  ==========  ==========  ===========</span>
+
+<span class="sd">    This system will examine `caller` for either a property or a callable `.gender` to</span>
+<span class="sd">    get a default gender fallback (if not specified in the call). If a callable,</span>
+<span class="sd">    `.gender` will be called without arguments and should return a string</span>
+<span class="sd">    `male`/`female`/`neutral`/`plural` (plural is considered a gender for this purpose).</span>
+<span class="sd">    If no `gender` property/callable is found, `neutral` is used as a fallback.</span>
+
+<span class="sd">    The pronoun-type default (if not spefified in call) is `subject pronoun`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pronoun (str): Input argument to parsed call. This can be any of the pronouns</span>
+<span class="sd">            in the table above. If given in 1st/second form, they will be mappped to</span>
+<span class="sd">            3rd-person form for others viewing the message (but will need extra input</span>
+<span class="sd">            via the `gender`, see below). If given on 3rd person form, this will be</span>
+<span class="sd">            mapped to 2nd person form for `caller` unless `viewpoint` is specified</span>
+<span class="sd">            in options.</span>
+<span class="sd">        options (str, optional): A space- or comma-separated string detailing `pronoun_type`,</span>
+<span class="sd">            `gender`/`plural` and/or `viewpoint` to help the mapper differentiate between</span>
+<span class="sd">            non-unique cases (such as if `you` should become `him` or `they`).</span>
+<span class="sd">            Allowed values are:</span>
+
+<span class="sd">            - `subject pronoun`/`subject`/`sp` (I, you, he, they)</span>
+<span class="sd">            - `object pronoun`/`object/`/`op`  (me, you, him, them)</span>
+<span class="sd">            - `possessive adjective`/`adjective`/`pa` (my, your, his, their)</span>
+<span class="sd">            - `possessive pronoun`/`pronoun`/`pp`  (mine, yours, his, theirs)</span>
+<span class="sd">            - `male`/`m`</span>
+<span class="sd">            - `female`/`f`</span>
+<span class="sd">            - `neutral`/`n`</span>
+<span class="sd">            - `plural`/`p`</span>
+<span class="sd">            - `1st person`/`1st`/`1`</span>
+<span class="sd">            - `2nd person`/`2nd`/`2`</span>
+<span class="sd">            - `3rd person`/`3rd`/`3`</span>
+
+<span class="sd">    Keyword Args:</span>
+
+<span class="sd">        caller (Object): The object creating the string. If this has a property &#39;gender&#39;,</span>
+<span class="sd">            it will be checked for a string &#39;male/female/neutral&#39; to determine</span>
+<span class="sd">            the 3rd person gender (but if `pronoun_type` contains a gender</span>
+<span class="sd">            component, that takes precedence). Provided automatically to the</span>
+<span class="sd">            funcparser.</span>
+<span class="sd">        receiver (Object): The recipient of the string. This being the same as</span>
+<span class="sd">            `caller` or not helps determine 2nd vs 3rd-person forms. This is</span>
+<span class="sd">            provided automatically by the funcparser.</span>
+<span class="sd">        capitalize (bool): The input retains its capitalization. If this is set the output is</span>
+<span class="sd">            always capitalized.</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">        ======================  =============    ===========</span>
+<span class="sd">        Input                   caller sees      others see</span>
+<span class="sd">        ======================  =============    ===========</span>
+<span class="sd">        $pron(I, m)             I                he</span>
+<span class="sd">        $pron(you,fo)           you              her</span>
+<span class="sd">        $pron(yourself)         yourself         itself</span>
+<span class="sd">        $pron(its)              your             its</span>
+<span class="sd">        $pron(you,op,p)         you              them</span>
+<span class="sd">        ======================  =============    ===========</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        There is no option to specify reflexive pronouns since they are all unique</span>
+<span class="sd">        and the mapping can always be auto-detected.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="n">pronoun</span><span class="p">,</span> <span class="o">*</span><span class="n">options</span> <span class="o">=</span> <span class="n">args</span>
+    <span class="c1"># options is either multiple args or a space-separated string</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">options</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># default differentiators</span>
+    <span class="n">default_pronoun_type</span> <span class="o">=</span> <span class="s2">&quot;subject pronoun&quot;</span>
+    <span class="n">default_gender</span> <span class="o">=</span> <span class="s2">&quot;neutral&quot;</span>
+    <span class="n">default_viewpoint</span> <span class="o">=</span> <span class="s2">&quot;2nd person&quot;</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;gender&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">gender</span><span class="p">):</span>
+            <span class="n">default_gender</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">gender</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">default_gender</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">gender</span>
+
+    <span class="k">if</span> <span class="s2">&quot;viewpoint&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="c1"># passed into FuncParser initialization</span>
+        <span class="n">default_viewpoint</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;viewpoint&quot;</span><span class="p">]</span>
+
+    <span class="n">pronoun_1st_or_2nd_person</span><span class="p">,</span> <span class="n">pronoun_3rd_person</span> <span class="o">=</span> <span class="n">pronoun_to_viewpoints</span><span class="p">(</span>
+        <span class="n">pronoun</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span>
+        <span class="n">pronoun_type</span><span class="o">=</span><span class="n">default_pronoun_type</span><span class="p">,</span> <span class="n">gender</span><span class="o">=</span><span class="n">default_gender</span><span class="p">,</span> <span class="n">viewpoint</span><span class="o">=</span><span class="n">default_viewpoint</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">capitalize</span><span class="p">:</span>
+        <span class="n">pronoun_1st_or_2nd_person</span> <span class="o">=</span> <span class="n">pronoun_1st_or_2nd_person</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+        <span class="n">pronoun_3rd_person</span> <span class="o">=</span> <span class="n">pronoun_3rd_person</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">pronoun_1st_or_2nd_person</span> <span class="k">if</span> <span class="n">caller</span> <span class="o">==</span> <span class="n">receiver</span> <span class="k">else</span> <span class="n">pronoun_3rd_person</span></div>
+
+
+<div class="viewcode-block" id="funcparser_callable_pronoun_capitalize"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pronoun_capitalize">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_pronoun_capitalize</span><span class="p">(</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage: $Pron(word) - always maps to a capitalized word.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">funcparser_callable_pronoun</span><span class="p">(</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="n">receiver</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="n">capitalize</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
 
 
 <span class="c1"># these are made available as callables by adding &#39;evennia.utils.funcparser&#39; as</span>
@@ -1220,8 +1363,12 @@
 <span class="n">ACTOR_STANCE_CALLABLES</span> <span class="o">=</span> <span class="p">{</span>
     <span class="c1"># requires `you`, `receiver` and `mapping` to be passed into parser</span>
     <span class="s2">&quot;you&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_you</span><span class="p">,</span>
-    <span class="s2">&quot;You&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_You</span><span class="p">,</span>
+    <span class="s2">&quot;You&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_you_capitalize</span><span class="p">,</span>
+    <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_you</span><span class="p">,</span>
+    <span class="s2">&quot;Obj&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_you_capitalize</span><span class="p">,</span>
     <span class="s2">&quot;conj&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_conjugate</span><span class="p">,</span>
+    <span class="s2">&quot;pron&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_pronoun</span><span class="p">,</span>
+    <span class="s2">&quot;Pron&quot;</span><span class="p">:</span> <span class="n">funcparser_callable_pronoun_capitalize</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 

@@ -19,6 +19,7 @@ evennia.server
    evennia.server.initial_setup
    evennia.server.inputfuncs
    evennia.server.manager
+   evennia.server.markup
    evennia.server.models
    evennia.server.server
    evennia.server.serversession

@@ -1,0 +1,473 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Sending different messages depending on viewpoint and receiver &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Sending different messages depending on viewpoint and receiver</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="sending-different-messages-depending-on-viewpoint-and-receiver">
+<h1>Sending different messages depending on viewpoint and receiver<a class="headerlink" href="#sending-different-messages-depending-on-viewpoint-and-receiver" title="Permalink to this headline">¶</a></h1>
+<p>Sending messages to everyong in a location is handled by the
+<a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.msg_contents" title="evennia.objects.objects.DefaultObject.msg_contents"><span class="xref myst py py-meth">msg_contents</span></a> method on
+all <a class="reference internal" href="../Components/Objects.html"><span class="doc std std-doc">Objects</span></a>. It’s most commonly called on rooms.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;Anna walks into the room.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can also embed references in the string:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{anna}</span><span class="s2"> walks into the room.&quot;</span><span class="p">,</span> 
+                  <span class="n">from_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> 
+                  <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;anna&#39;</span><span class="p">:</span> <span class="n">anna_object</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">exclude=object_or_list_of_object</span></code> to skip sending the message one or more targets.</p>
+<p>The advantage of this is that <code class="docutils literal notranslate"><span class="pre">anna_object.get_display_name(looker)</span></code> will be called
+for every onlooker; this allows the <code class="docutils literal notranslate"><span class="pre">{anna}</span></code> stanza to be different depending on who
+sees the strings. How this is to work depends on the <em>stance</em> of your game.</p>
+<p>The stance indicates how your game echoes its messages to the player. Knowing how you want to
+handle the stance is important for a text game. There are two main stances that are usually considered,
+<em>Actor stance</em> and <em>Director stance</em>.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Stance</p></th>
+<th class="head"><p>You see</p></th>
+<th class="head"><p>Others in the same location see</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Actor stance</p></td>
+<td><p>You pick up the stone</p></td>
+<td><p>Anna picks up the stone</p></td>
+</tr>
+<tr class="row-odd"><td><p>Director stance</p></td>
+<td><p>Anna picks up the stone</p></td>
+<td><p>Anna picks up the stone</p></td>
+</tr>
+</tbody>
+</table>
+<p>It’s not unheard of to mix the two stances - with commands from the game being told
+in Actor stance while Director stance is used for complex emoting and roleplaying. One should
+usually try to be consistent however.</p>
+<section id="director-stance">
+<h2>Director Stance<a class="headerlink" href="#director-stance" title="Permalink to this headline">¶</a></h2>
+<p>While not so common as Actor stance, director stance has the advantage of simplicity, particularly
+in roleplaying MUDs where longer roleplaying emotes are used. It is also a pretty simple stance to
+implement technically since everyone sees the same text, regardless of viewpoint.</p>
+<p>Here’s an example of a flavorful text to show the room:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Tom picks up the gun, whistling to himself.
+</pre></div>
+</div>
+<p>Everyone will see this string, both Tom and others. Here’s how to send it to everyone in
+the room.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Tom picks up the gun, whistling to himself.&quot;</span>
+<span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>One may want to expand on it by making the name <code class="docutils literal notranslate"><span class="pre">Tom</span></code> be seen differently by different people,
+but the English grammar of the sentence does not change. Not only is this pretty easy to do
+technically, it’s also easy to write for the player.</p>
+</section>
+<section id="actor-stance">
+<h2>Actor Stance<a class="headerlink" href="#actor-stance" title="Permalink to this headline">¶</a></h2>
+<p>This means that the game addresses “you” when it does things. In actor stance, whenever you perform
+an action, you should get a different message than those <em>observing</em> you doing that action.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Tom picks up the gun, whistling to himself.
+</pre></div>
+</div>
+<p>This is what <em>others</em> should see. The player themselves should see this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>You pick up the gun, whistling to yourself.
+</pre></div>
+</div>
+<p>Not only do you need to map “Tom” to “You” above, there are also grammatical differences -
+“Tom walks” vs “You walk” and “himself” vs “yourself”. This is a lot more complex to handle. For a
+developer making simple “You/Tom pick/picks up the stone” messages, you could in principle hand-craft
+the strings from every view point, but there’s a better way.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">msg_contents</span></code> method helps by parsing the ingoing string with a
+<a class="reference internal" href="../Components/FuncParser.html"><span class="doc std std-doc">FuncParser functions</span></a> with some very specific <code class="docutils literal notranslate"><span class="pre">$inline-functions</span></code>. The inline funcs
+basically provides you with a mini-language for building <em>one</em> string that will change
+appropriately depending on who sees it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;$You() $conj(pick) up the gun, whistling to $pron(yourself).&quot;</span>
+<span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;gun&quot;</span><span class="p">:</span> <span class="n">gun_object</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>These are the inline-functions available:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">$You()/$you()</span></code> - this is a reference to ‘you’ in the text. It will be replaced with “You/you” for
+the one sending the text and with the return from <code class="docutils literal notranslate"><span class="pre">caller.get_display_name(looker)</span></code> for everyone else.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$conj(verb)</span></code> - this will conjugate the given verb depending on who sees the string (like <code class="docutils literal notranslate"><span class="pre">pick</span></code>
+to <code class="docutils literal notranslate"><span class="pre">picks</span></code>). Enter the root form of the verb.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$pron(pronoun[,options])</span></code> - A pronoun is a word you want to use instead of a proper noun, like
+<em>him</em>, <em>herself</em>, <em>its</em>, <em>me</em>, <em>I</em>, <em>their</em> and so on. The <code class="docutils literal notranslate"><span class="pre">options</span></code> is a space- or comma-separated
+set of options to help the system map your pronoun from 1st/2nd person to 3rd person and vice versa.
+See next section.</p></li>
+</ul>
+<section id="more-on-pron">
+<h3>More on $pron()<a class="headerlink" href="#more-on-pron" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">$pron()</span></code> inline func maps between 1st/2nd person (I/you) to 3rd person (he/she etc). In short,
+it translates between this table …</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>Subject Pronoun</p></th>
+<th class="head"><p>Object Pronoun</p></th>
+<th class="head"><p>Possessive Adjective</p></th>
+<th class="head"><p>Possessive Pronoun</p></th>
+<th class="head"><p>Reflexive Pronoun</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>1st person</strong></p></td>
+<td><p>I</p></td>
+<td><p>me</p></td>
+<td><p>my</p></td>
+<td><p>mine</p></td>
+<td><p>myself</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>1st person plural</strong></p></td>
+<td><p>we</p></td>
+<td><p>us</p></td>
+<td><p>our</p></td>
+<td><p>ours</p></td>
+<td><p>ourselves</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>2nd person</strong></p></td>
+<td><p>you</p></td>
+<td><p>you</p></td>
+<td><p>your</p></td>
+<td><p>yours</p></td>
+<td><p>yourself</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>2nd person plural</strong></p></td>
+<td><p>you</p></td>
+<td><p>you</p></td>
+<td><p>your</p></td>
+<td><p>yours</p></td>
+<td><p>yourselves</p></td>
+</tr>
+</tbody>
+</table>
+<p>… to this table (in both directions):</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>Subject Pronoun</p></th>
+<th class="head"><p>Object Pronoun</p></th>
+<th class="head"><p>Possessive Adjective</p></th>
+<th class="head"><p>Possessive Pronoun</p></th>
+<th class="head"><p>Reflexive Pronoun</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>3rd person male</strong></p></td>
+<td><p>he</p></td>
+<td><p>him</p></td>
+<td><p>his</p></td>
+<td><p>his</p></td>
+<td><p>himself</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>3rd person female</strong></p></td>
+<td><p>she</p></td>
+<td><p>her</p></td>
+<td><p>her</p></td>
+<td><p>hers</p></td>
+<td><p>herself</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>3rd person neutral</strong></p></td>
+<td><p>it</p></td>
+<td><p>it</p></td>
+<td><p>its</p></td>
+<td><p>theirs*</p></td>
+<td><p>itself</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>3rd person plural</strong></p></td>
+<td><p>they</p></td>
+<td><p>them</p></td>
+<td><p>their</p></td>
+<td><p>theirs</p></td>
+<td><p>themselves</p></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<div><p>*) The neutral 3rd person possessive pronoun is not actually used in English. We set it to “theirs”
+just to have something to show should someone accidentally ask for a neutral possessive pronoun.</p>
+</div></blockquote>
+<p>Some mappings are easy. For example, if you write <code class="docutils literal notranslate"><span class="pre">$pron(yourselves)</span></code> then the 3rd-person
+form is always <code class="docutils literal notranslate"><span class="pre">themselves</span></code>. But because English grammar is the way it is, not all mappings
+are 1:1. For example, if you write
+<code class="docutils literal notranslate"><span class="pre">$pron(you)</span></code>, Evennia will not know which 3rd-persion equivalent this should map to - you need to
+provide more info to help out. This can either be provided as a second space-separated option
+to <code class="docutils literal notranslate"><span class="pre">$pron</span></code> or the system will try to figure it out on its own.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">pronoun_type</span></code> - this is one of the columns in the table and can be set as a <code class="docutils literal notranslate"><span class="pre">$pron</span></code> option.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">subject</span> <span class="pre">pronoun</span></code> (aliases <code class="docutils literal notranslate"><span class="pre">subject</span></code> or <code class="docutils literal notranslate"><span class="pre">sp</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">object</span> <span class="pre">pronoun</span></code> (aliases <code class="docutils literal notranslate"><span class="pre">object</span></code> or <code class="docutils literal notranslate"><span class="pre">op</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">possessive</span> <span class="pre">adjective</span></code> (aliases <code class="docutils literal notranslate"><span class="pre">adjective</span></code> or <code class="docutils literal notranslate"><span class="pre">pa</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">possessive</span> <span class="pre">pronoun</span></code> (aliases <code class="docutils literal notranslate"><span class="pre">pronoun</span></code> or <code class="docutils literal notranslate"><span class="pre">pp</span></code>).</p></li>
+</ul>
+<p>(There is no need to specify reflexive pronouns since they
+are all uniquely mapped 1:1). Speciying the pronoun-type is mainly needed when using <code class="docutils literal notranslate"><span class="pre">you</span></code>,
+since the same ‘you’ is used to represent all sorts of things in English grammar.
+If not specified and the mapping is not clear, a ‘subject pronoun’ (he/she/it/they) is assumed.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gender</span></code> - set in <code class="docutils literal notranslate"><span class="pre">$pron</span></code> option as</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">male</span></code>, or <code class="docutils literal notranslate"><span class="pre">m</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">female'</span></code> or <code class="docutils literal notranslate"><span class="pre">f</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">neutral</span></code>, or <code class="docutils literal notranslate"><span class="pre">n</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plural</span></code>, or <code class="docutils literal notranslate"><span class="pre">p</span></code> (yes plural is considered a ‘gender’ for this purpose).</p></li>
+</ul>
+<p>If not set as an option the system will
+look for a callable or property <code class="docutils literal notranslate"><span class="pre">.gender</span></code> on the current <code class="docutils literal notranslate"><span class="pre">from_obj</span></code>. A callable will be called
+with no arguments and is expected to return a string ‘male/female/neutral/plural’. If none
+is found, a neutral gender is assumed.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">viewpoint</span></code>- set in <code class="docutils literal notranslate"><span class="pre">$pron</span></code> option as</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">1st</span> <span class="pre">person</span></code> (aliases <code class="docutils literal notranslate"><span class="pre">1st</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">2nd</span> <span class="pre">person</span></code> (aliases <code class="docutils literal notranslate"><span class="pre">2nd</span></code> or <code class="docutils literal notranslate"><span class="pre">2</span></code>)</p></li>
+</ul>
+<p>This is only needed if you want to have 1st person perspective - if
+not, 2nd person is assumed wherever the viewpoint is unclear.</p>
+</li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">$pron()</span></code> examples:</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>you see</p></th>
+<th class="head"><p>others see</p></th>
+<th class="head"><p>note</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$pron(I,</span> <span class="pre">male)</span></code></p></td>
+<td><p>I</p></td>
+<td><p>he</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$pron(I,</span> <span class="pre">f)</span></code></p></td>
+<td><p>I</p></td>
+<td><p>she</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$pron(my)</span></code></p></td>
+<td><p>my</p></td>
+<td><p>its</p></td>
+<td><p>figures out it’s an possessive adjective, assumes neutral</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$pron(you)</span></code></p></td>
+<td><p>you</p></td>
+<td><p>it</p></td>
+<td><p>assumes neutral subject pronoun</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$pron(you,</span> <span class="pre">f)</span></code></p></td>
+<td><p>you</p></td>
+<td><p>she</p></td>
+<td><p>female specified, assumes subject pronoun</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$pron(you,op</span> <span class="pre">f)</span></code></p></td>
+<td><p>you</p></td>
+<td><p>her</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$pron(you,op</span> <span class="pre">p)</span></code></p></td>
+<td><p>you</p></td>
+<td><p>them</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$pron(you,</span> <span class="pre">f</span> <span class="pre">op)</span></code></p></td>
+<td><p>you</p></td>
+<td><p>her</p></td>
+<td><p>specified female and objective pronoun</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$pron(yourself)</span></code></p></td>
+<td><p>yourself</p></td>
+<td><p>itself</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$pron(its)</span></code></p></td>
+<td><p>your</p></td>
+<td><p>its</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$Pron(its)</span></code></p></td>
+<td><p>Your</p></td>
+<td><p>Its</p></td>
+<td><p>Using $Pron always capitalizes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$pron(her)</span></code></p></td>
+<td><p>you</p></td>
+<td><p>her</p></td>
+<td><p>3rd person -&gt; 2nd person</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$pron(her,</span> <span class="pre">1)</span></code></p></td>
+<td><p>I</p></td>
+<td><p>her</p></td>
+<td><p>3rd person -&gt; 1st person</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$pron(its,</span> <span class="pre">1st)</span></code></p></td>
+<td><p>my</p></td>
+<td><p>its</p></td>
+<td><p>3rd person -&gt; 1st person</p></td>
+</tr>
+</tbody>
+</table>
+<p>Note the three last examples - instead of specifying the 2nd person form you
+can also specify the 3rd-person and do a ‘reverse’ lookup - you will still see the proper 1st/2nd text.
+So writing <code class="docutils literal notranslate"><span class="pre">$pron(her)</span></code> instead of <code class="docutils literal notranslate"><span class="pre">$pron(you,</span> <span class="pre">op</span> <span class="pre">f)</span></code> gives the same result.</p>
+<p>The <a class="reference internal" href="../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pronoun" title="evennia.utils.funcparser.funcparser_callable_pronoun"><span class="xref myst py py-func">$pron inlinefunc api is found here</span></a></p>
+</section>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="referencing-other-objects">
+<h1>Referencing other objects<a class="headerlink" href="#referencing-other-objects" title="Permalink to this headline">¶</a></h1>
+<p>There is one more inlinefunc understood by <code class="docutils literal notranslate"><span class="pre">msg_contents</span></code>. This can be used natively to spruce up
+your strings (for both director- and actor stance):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">$Obj(name)/$obj(name)</span></code> references another entity, which must be supplied
+in the <code class="docutils literal notranslate"><span class="pre">mapping</span></code> keyword argument to <code class="docutils literal notranslate"><span class="pre">msg_contents</span></code>. The object’s <code class="docutils literal notranslate"><span class="pre">.get_display_name(looker)</span></code> will be
+called and inserted instead. This is essentially the same as using the <code class="docutils literal notranslate"><span class="pre">{anna}</span></code> marker we used
+in the first example at the top of this page, but using <code class="docutils literal notranslate"><span class="pre">$Obj/$obj</span></code> allows you to easily
+control capitalization.</p></li>
+</ul>
+<p>This is used like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># director stance</span>
+<span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Tom picks up the $obj(gun), whistling to himself&quot;</span>
+
+<span class="c1"># actor stance </span>
+<span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;$You() $conj(pick) up the $obj(gun), whistling to $pron(yourself)&quot;</span>
+
+<span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;gun&quot;</span><span class="p">:</span> <span class="n">gun_object</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Depending on your game, Tom may now see himself picking up <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">rusty</span> <span class="pre">old</span> <span class="pre">gun</span></code>, whereas an onlooker
+with a high gun smith skill may instead see him picking up <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">rare-make</span> <span class="pre">Smith</span> <span class="pre">&amp;</span> <span class="pre">Wesson</span> <span class="pre">model</span> <span class="pre">686</span>&#160; <span class="pre">in</span> <span class="pre">poor</span> <span class="pre">condition&quot;</span> <span class="pre">...</span></code></p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="recog-systems-and-roleplaying">
+<h1>Recog systems and roleplaying<a class="headerlink" href="#recog-systems-and-roleplaying" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">$funcparser</span></code> inline functions are very powerful for the game developer, but they may
+be a bit too much to write for the regular player.</p>
+<p>The <span class="xref myst">rpsystem contrib</span> implements a full dynamic emote/pose and recognition
+system with short-descriptions and disguises. It uses director stance with a custom markup
+language, like <code class="docutils literal notranslate"><span class="pre">/me</span></code> <code class="docutils literal notranslate"><span class="pre">/gun</span></code> and <code class="docutils literal notranslate"><span class="pre">/tall</span> <span class="pre">man</span></code> to refer to players and objects in the location. It can be
+worth checking out for inspiration.</p>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Sending different messages depending on viewpoint and receiver</a><ul>
+<li><a class="reference internal" href="#director-stance">Director Stance</a></li>
+<li><a class="reference internal" href="#actor-stance">Actor Stance</a><ul>
+<li><a class="reference internal" href="#more-on-pron">More on $pron()</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#referencing-other-objects">Referencing other objects</a></li>
+<li><a class="reference internal" href="#recog-systems-and-roleplaying">Recog systems and roleplaying</a></li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Concepts/Change-Messages-Per-Receiver.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Change-Messages-Per-Receiver.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Sending different messages depending on viewpoint and receiver</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>
