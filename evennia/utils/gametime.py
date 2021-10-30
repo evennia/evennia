@@ -4,6 +4,7 @@ The gametime module handles the global passage of time in the mud.
 It also supplies some useful methods to convert between
 in-mud time and real-world time as well allows to get the
 total runtime of the server and the current uptime.
+
 """
 
 import time
@@ -244,8 +245,11 @@ def schedule(
         script (Script): The created Script handling the sceduling.
 
     Examples:
-        schedule(func, min=5, sec=0) # Will call 5 minutes past the next (in-game) hour.
-        schedule(func, hour=2, min=30, sec=0) # Will call the next (in-game) day at 02:30.
+        ::
+
+            schedule(func, min=5, sec=0)  # Will call 5 minutes past the next (in-game) hour.
+            schedule(func, hour=2, min=30, sec=0)  # Will call the next (in-game) day at 02:30.
+
     """
     seconds = real_seconds_until(sec=sec, min=min, hour=hour, day=day, month=month, year=year)
     script = create_script(

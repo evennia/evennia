@@ -58,6 +58,7 @@ Concepts/Async-Process
 Concepts/Banning
 Concepts/Bootstrap-&-Evennia
 Concepts/Building-Permissions
+Concepts/Change-Messages-Per-Receiver
 Concepts/Clickable-Links
 Concepts/Colors
 Concepts/Concepts-Overview
@@ -320,6 +321,7 @@ api/evennia.server.game_index_client.service
 api/evennia.server.initial_setup
 api/evennia.server.inputfuncs
 api/evennia.server.manager
+api/evennia.server.markup
 api/evennia.server.models
 api/evennia.server.portal
 api/evennia.server.portal.amp
@@ -393,6 +395,7 @@ api/evennia.utils.utils
 api/evennia.utils.validatorfuncs
 api/evennia.utils.verb_conjugation
 api/evennia.utils.verb_conjugation.conjugate
+api/evennia.utils.verb_conjugation.pronouns
 api/evennia.utils.verb_conjugation.tests
 api/evennia.web
 api/evennia.web.admin

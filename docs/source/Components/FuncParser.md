@@ -319,9 +319,11 @@ The `caller` is required, it's the the object to do the access-check for. The `a
 
 These are used to implement actor-stance emoting. They are used by the
 [DefaultObject.msg_contents](evennia.objects.objects.DefaultObject.msg_contents) method
-by default.
+by default. You can read a lot more about this on the page
+[Change messages per receiver](../Concepts/Change-Messages-Per-Receiver.md).
 
-These all require extra kwargs be passed into the parser:
+On the parser side, all these inline functions require extra kwargs be passed into the parser
+(done by `msg_contents` by default):
 
 ```python
 parser.parse(string, caller=<obj>, receiver=<obj>, mapping={'key': <obj>, ...})
@@ -337,10 +339,13 @@ references to other objects accessible via these callables.
   result of `you_obj.get_display_name(looker=receiver)`. This allows for a single string to echo differently
   depending on who sees it, and also to reference other people in the same way.
 - `$You([key])` - same as `$you` but always capitalized.
-- `$conj(verb)` ([code](evennia.utils.funcparser.funcparser_callable_conjugate)) -- conjugates a verb between 4nd person presens to 3rd person presence depending on who
+- `$conj(verb)` ([code](evennia.utils.funcparser.funcparser_callable_conjugate)) - conjugates a verb 
+  between 2nd person presens to 3rd person presence depending on who
   sees the string. For example `"$You() $conj(smiles)".` will show as "You smile." and "Tom smiles." depending
   on who sees it. This makes use of the tools in [evennia.utils.verb_conjugation](evennia.utils.verb_conjugation)
   to do this, and only works for English verbs.
+- `$pron(pronoun [,options])` ([code](evennia.utils.funcparser.funcparser_callable_pronoun)) - Dynamically 
+  map pronouns (like his, herself, you, its etc) between 1st/2nd person to 3rd person.
 
 ### Example
 
