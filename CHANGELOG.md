@@ -106,6 +106,8 @@ Up requirements to Django 3.2+, Twisted 21+
 - Change `settings.COMMAND_DEFAULT_ARG_REGEX` default from `None` to a regex meaning that
   a space or `/` must separate the cmdname and args. This better fits common expectations.
 - Add confirmation question to `ban`/`unban` commands.
+- Add `move` and `move_here` to `tel` command to optionally allow to limit
+  teleportation of an object or to a specific destination.
 
 
 ### Evennia 0.9.5 (2019-2020)
