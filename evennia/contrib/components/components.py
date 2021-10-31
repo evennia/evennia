@@ -15,7 +15,6 @@ This helps writing isolated code and reusing it over multiple objects.
   ```
 
 - Components need to inherit the Component class and must be registered to the listing
-  The name is required and used to set the corresponding attribute on the ComponentHolder
     Example:
     ```
     from evennia.contrib.components import Component, listing

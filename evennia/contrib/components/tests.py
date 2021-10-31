@@ -27,7 +27,6 @@ class RuntimeComponentTestC(Component):
 
 
 class CharacterWithComponents(ComponentHolderMixin, DefaultCharacter):
-    # TODO Being able to name multiple instances of a component is not supported
     class_components = [
         ComponentTestA,
         ComponentTestB.as_template(my_int=3, my_list=[1, 2, 3])
