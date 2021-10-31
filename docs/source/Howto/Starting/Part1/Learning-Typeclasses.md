@@ -2,7 +2,7 @@
 
 Now that we have learned a little about how to find things in the Evennia library, let's use it. 
 
-In the [Python classes and objects](./Python-classes-and-objects) lesson we created the dragons Fluffy, Cuddly 
+In the [Python classes and objects](./Python-classes-and-objects.md) lesson we created the dragons Fluffy, Cuddly 
 and Smaug and made them fly and breathe fire. So far our dragons are short-lived - whenever we `restart`
 the server or `quit()` out of python mode they are gone. 
 
@@ -65,7 +65,7 @@ If we knew what kind of methods and resources were available on `DefaultObject` 
 change the way it works!
 
 > Hint: We will get back to this, but to learn what resources an Evennia parent like `DefaultObject` offers, 
-> easiest is to peek at its [API documentation](api:evennia.objects.objects#DefaultObject). The docstring for
+> easiest is to peek at its [API documentation](evennia.objects.objects.DefaultObject). The docstring for
 > the `Object` class can also help.
 
 One thing that Evennia classes offers and which you don't get with vanilla Python classes is _persistence_. As 
@@ -110,7 +110,7 @@ from `DefaultObject`, just from further away!
 
 First reload the server as usual. We will need to create the dragon a little differently this time: 
 
-```sidebar:: Keyword arguments
+```{sidebar} Keyword arguments
 
     Keyword arguments (like `db_key="Smaug"`) is a way to 
     name the input arguments to a function or method. They make 
@@ -251,7 +251,7 @@ You are specifying exactly which typeclass you want to use to build the Giantess
      desc = You see nothing special. 
     ------------------------------------------------------------------------------- 
 
-We used the `examine` command briefly in the [lesson about building in-game](./Building-Quickstart). Now these lines
+We used the `examine` command briefly in the [lesson about building in-game](./Building-Quickstart.md). Now these lines
 may be more useful to us:
 - **Name/key** - The name of this thing. The value `(#14)` is probably different for you. This is the 
     unique 'primary key' or _dbref_ for this entity in the database.
@@ -294,7 +294,7 @@ But the reason Evennia knows to fall back to this class is not hard-coded - it's
 in [evennia/settings_default.py](https://github.com/evennia/evennia/blob/master/evennia/settings_default.py#L465), 
 with the name `BASE_OBJECT_TYPECLASS`, which is set to `typeclasses.objects.Object`. 
 
-```sidebar:: Changing things
+```{sidebar} Changing things
 
     While it's tempting to change folders around to your liking, this can
     make it harder to follow tutorials and may confuse if 
@@ -357,7 +357,7 @@ You got a lot longer output this time. You have a lot more going on than a simpl
 - **Session id(s)**: This identifies the _Session_ (that is, the individual connection to a player's game client).
 - **Account** shows, well the `Account` object associated with this Character and Session.
 - **Stored/Merged Cmdsets** and **Commands available** is related to which _Commands_ are stored on you. We will
-    get to them in the [next lesson](./Adding-Commands). For now it's enough to know these consitute all the 
+    get to them in the [next lesson](./Adding-Commands.md). For now it's enough to know these consitute all the 
     commands available to you at a given moment. 
 - **Non-Persistent attributes** are Attributes that are only stored temporarily and will go away on next reload.
 
@@ -391,7 +391,7 @@ class Character(DefaultCharacter):
     > py self.get_stats()
     (10, 12, 15)
     
-```sidebar:: Tuples and lists
+```{sidebar} Tuples and lists
 
     - A `list` is written `[a, b, c, d, ...]`. It can be modified after creation.
     - A `tuple` is written `(a, b, c, ...)`. It cannot be modified once created.
@@ -451,7 +451,7 @@ class Character(DefaultCharacter):
         return self.db.str, self.db.dex, self.db.int
 ```
 
-```sidebar:: Spaces in Attribute name?
+```{sidebar} Spaces in Attribute name?
 
     What if you want spaces in your Attribute name? Or you want to assign the 
     name of the Attribute on-the fly? Then you can use `.attributes.add(name, value)` instead,
@@ -506,7 +506,7 @@ in more detail. For now, let's give every new character some random stats to sta
 We want those stats to be set only once, when the object is first created. For the Character, this method 
 is called `at_object_creation`.
 
-```sidebar:: __init__ vs at_object_creation
+```{sidebar} __init__ vs at_object_creation
 
     For the `Monster` class we used `__init__` to set up the class. We can't use this
     for a typeclass because it will be called more than once, at the very least after
@@ -583,7 +583,7 @@ this is done (still in python multi-line mode):
     > for char in Character.objects.all()
     >     char.at_object_creation()
     
-```sidebar:: Database queries
+```{sidebar} Database queries
 
     `Character.objects.all()` is an example of a database query expressed in Python. This will be converted 
     into a database query under the hood. This syntax is part of 

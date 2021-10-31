@@ -2,7 +2,7 @@
 
 
 This tutorial will create a simple script that will send a tweet to your already configured twitter
-account. Please see: [How to connect Evennia to Twitter](../Setup/How-to-connect-Evennia-to-Twitter) if you
+account. Please see: [How to connect Evennia to Twitter](../Setup/How-to-connect-Evennia-to-Twitter.md) if you
 haven't already done so.
 
 The script could be expanded to cover a variety of statistics you might wish to tweet about
@@ -89,7 +89,7 @@ randomly choosing between these outputs.
 1. Shows the number of Player Characters, Rooms and Other/Objects
 2. Shows the number of prototypes currently in the game and then selects 3 random keys to show 
 
-[Scripts Information](../Components/Scripts) will show you how to add it as a Global script, however, for testing
+[Scripts Information](../Components/Scripts.md) will show you how to add it as a Global script, however, for testing
 it may be useful to start/stop it quickly from within the game.  Assuming that you create the file
 as `mygame/typeclasses/tweet_stats.py` it can be started by using the following command
 

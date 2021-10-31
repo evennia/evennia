@@ -8,7 +8,7 @@ window pane.
 ## Briefly on input/outputcommands
 
 Inside Evennia, all server-client communication happens in the same way (so plain text is also an
-'OOB message' as far as Evennia is concerned). The message follows the [Message Path](./Messagepath).
+'OOB message' as far as Evennia is concerned). The message follows the [Message Path](./Messagepath.md).
 You should read up on that if you are unfamiliar with it. As the message travels along the path it
 has a standardized internal form: a tuple with a string, a tuple and a dict:
 
@@ -16,9 +16,9 @@ has a standardized internal form: a tuple with a string, a tuple and a dict:
 
 This is often referred to as an *inputcommand* or *outputcommand*, depending on the direction it's
 traveling. The end point for an inputcommand, (the 'Evennia-end' of the message path) is a matching
-[Inputfunc](../Components/Inputfuncs). This function is called as `cmdname(session, *args, **kwargs)` where
+[Inputfunc](../Components/Inputfuncs.md). This function is called as `cmdname(session, *args, **kwargs)` where
 `session` is the Session-source of the command. Inputfuncs can easily be added by the developer to
-support/map client commands to actions inside Evennia (see the [inputfunc](../Components/Inputfuncs) page for more
+support/map client commands to actions inside Evennia (see the [inputfunc](../Components/Inputfuncs.md) page for more
 details).
 
 When a message is outgoing (at the 'Client-end' of the message path) the outputcommand is handled by
@@ -26,7 +26,7 @@ a matching *Outputfunc*. This is responsible for converting the internal Evennia
 form suitable to send over the wire to the Client. Outputfuncs are hard-coded. Which is chosen and
 how it processes the outgoing data depends on the nature of the client it's connected to. The only
 time one would want to add new outputfuncs is as part of developing support for a new Evennia
-[Protocol](./Custom-Protocols).
+[Protocol](./Custom-Protocols.md).
 
 ## Sending and receiving an OOB message
 
@@ -59,12 +59,12 @@ drop any other types of outputfuncs.
 you turn off telnet completely and only rely on the webclient, you should never rely on non-`text`
 OOB messages always reaching all targets.
 
-[Inputfuncs](../Components/Inputfuncs) lists the default inputfuncs available to handle incoming OOB messages. To
+[Inputfuncs](../Components/Inputfuncs.md) lists the default inputfuncs available to handle incoming OOB messages. To
 accept more you need to add more inputfuncs (see that page for more info).
 
 ## Supported OOB protocols
 
-Evennia supports clients using one of the following protocols: 
+Evennia supports clients using one of the following protocols:
 
 ### Telnet
 
@@ -96,7 +96,7 @@ come `foo_bar`. To send a GMCP command that turns into an Evennia inputcommand w
 underscore, use the `Core` package. So `Core.Cmdname` becomes just `cmdname` in Evennia and vice
 versa.
 
-On the wire, a GMCP instruction for `("cmdname", ("arg",), {})` will look like this: 
+On the wire, a GMCP instruction for `("cmdname", ("arg",), {})` will look like this:
 
     IAC SB GMCP "cmdname" "arg" IAC SE
 
@@ -105,7 +105,6 @@ where all the capitalized words are telnet character constants specified in
 these in the listings below.
 
 Input/Outputfunc | GMCP-Command
-------------------
 `[cmd_name, [], {}]`  |  Cmd.Name
 `[cmd_name, [arg], {}]` |      Cmd.Name arg
 `[cmd_na_me, [args],{}]`  |     Cmd.Na.Me [args]
@@ -116,15 +115,14 @@ Since Evennia already supplies default inputfuncs that don't match the names exp
 common GMCP implementations we have a few hard-coded mappings for those:
 
 GMCP command name | Input/Outputfunc name
------------------
-"Core.Hello" | "client_options" 
-"Core.Supports.Get" | "client_options" 
-"Core.Commands.Get" | "get_inputfuncs" 
+"Core.Hello" | "client_options"
+"Core.Supports.Get" | "client_options"
+"Core.Commands.Get" | "get_inputfuncs"
 "Char.Value.Get" | "get_value"
 "Char.Repeat.Update" | "repeat"
 "Char.Monitor.Update" | "monitor"
 
-#### Telnet + MSDP 
+#### Telnet + MSDP
 
 [MSDP](http://tintin.sourceforge.net/msdp/), the *Mud Server Data Protocol*, is a competing standard
 to GMCP. The MSDP protocol page specifies a range of "recommended" available MSDP command names.
@@ -143,7 +141,6 @@ The various available MSDP constants like `VAR` (variable), `VAL` (value), `ARRA
 and `TABLEOPEN`/`TABLECLOSE` are specified in `evennia/server/portal/telnet_oob`.
 
 Outputfunc/Inputfunc | MSDP instruction
--------------------------
 `[cmdname, [], {}]` | VAR cmdname VAL
 `[cmdname, [arg], {}]` | VAR cmdname VAL arg
 `[cmdname, [args],{}]`  | VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE
@@ -157,7 +154,7 @@ different `VAR ... VAL` (outside a table) will come out as a second, different c
 
 ### SSH
 
-SSH only supports the `text` input/outputcommand. 
+SSH only supports the `text` input/outputcommand.
 
 ### Web client
 

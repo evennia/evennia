@@ -16,7 +16,7 @@ fact.
 As a developer about to expose a web application to the threat landscape of the modern internet,
 here are a few tips to consider to increase the security of your Evennia install.
 
-### Know your logs
+## Know your logs
 In case of emergency, check your logs! By default they are located in the `server/logs/` folder.
 Here are some of the more important ones and why you should care:
 
@@ -32,7 +32,7 @@ objects, and more. If your game fails to start or crashes and you can't tell why
 place you should look for answers. Security-related events are prefixed with an `[SS]` so when
 there's a problem you might want to pay special attention to those.
 
-### Disable development/debugging options
+## Disable development/debugging options
 There are a few Evennia/Django options that are set when you first create your game to make it more
 obvious to you where problems arise. These options should be disabled before you push your game into
 production-- leaving them on can expose variables or code someone with malicious intent can easily
@@ -49,7 +49,7 @@ as-is.
     # Note the leading period-- it is not a typo!
     ALLOWED_HOSTS = ['.example.com']
 
-### Handle user-uploaded images with care
+## Handle user-uploaded images with care
 If you decide to allow users to upload their own images to be served from your site, special care
 must be taken. Django will read the file headers to confirm it's an image (as opposed to a document
 or zip archive), but [code can be injected into an image
@@ -70,7 +70,7 @@ resources in bulk).
 bothered with additional infrastructure, then simply reprocess user images upon receipt using an
 image library. Convert them to a different format, for example. *Destroy the originals!*
 
-### Disable the web interface
+## Disable the web interface
 The web interface allows visitors to see an informational page as well as log into a browser-based
 telnet client with which to access Evennia. It also provides authentication endpoints against which
 an attacker can attempt to validate stolen lists of credentials to see which ones might be shared by
@@ -85,7 +85,7 @@ In `server/conf/settings.py`:
     # Disable the website altogether
     WEBSERVER_ENABLED = False
 
-### Change your ssh port
+## Change your ssh port
 Automated attacks will often target port 22 seeing as how it's the standard port for SSH traffic.
 Also,
 many public wifi hotspots block ssh traffic over port 22 so you might not be able to access your
@@ -104,9 +104,9 @@ Save, close, then run the following command:
 
     sudo service ssh restart
 
-### Set up a firewall
+## Set up a firewall
 Ubuntu users can make use of the simple ufw utility. Anybody else can use iptables.
-    
+
     # Install ufw (if not already)
     sudo apt-get install ufw
 
@@ -130,8 +130,8 @@ Finally:
 Now the only ports open will be your administrative ssh port (whichever you chose), and Evennia on
 4000-4001.
 
-### Use an external webserver
-Though not officially supported, there are some benefits to [deploying a webserver](./Apache-Config)
+## Use an external webserver
+Though not officially supported, there are some benefits to [deploying a webserver](./Apache-Config.md)
 to handle/proxy traffic to your Evennia instance.
 
 For example, Evennia's game engine and webservice are tightly integrated. If you bring your game

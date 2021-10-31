@@ -7,7 +7,7 @@ A Command is something that handles the input from a user and causes a result to
 An example is `look`, which examines your current location and tells how it looks like and
 what is in it.
 
-```sidebar:: Commands are not typeclassed
+```{sidebar} Commands are not typeclassed
 
     If you just came from the previous lesson, you might want to know that Commands and
     CommandSets are not `typeclassed`. That is, instances of them are not saved to the
@@ -181,7 +181,7 @@ class CmdEcho(Command):
 First we added a docstring. This is always a good thing to do in general, but for a Command class, it will also
 automatically become the in-game help entry! Next we add the `func` method. It has one active line where it
 makes use of some of those variables we found the Command offers to us. If you did the
-[basic Python tutorial](./Python-basic-introduction), you will recognize `.msg` - this will send a message
+[basic Python tutorial](./Python-basic-introduction.md), you will recognize `.msg` - this will send a message
 to the object it is attached to us - in this case `self.caller`, that is, us. We grab `self.args` and includes
 that in the message.
 
@@ -306,7 +306,7 @@ A lot of things to dissect here:
     `self.args.strip()` over and over, we store the stripped version
     in a _local variable_ `args`. Note that we don't modify `self.args` by doing this, `self.args` will still
     have the whitespace and is not the same as `args` in this example.
-```sidebar:: if-statements
+```{sidebar} if-statements
 
     The full form of the if statement is
 
@@ -354,7 +354,7 @@ class MyCmdSet(CmdSet):
 
 ```
 
-```sidebar:: Errors in your code
+```{sidebar} Errors in your code
 
     With longer code snippets to try, it gets more and more likely you'll
     make an error and get a `traceback` when you reload. This will either appear

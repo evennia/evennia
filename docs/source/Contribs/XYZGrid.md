@@ -1,6 +1,6 @@
 # XYZGrid contrib
 
-```versionadded:: 1.0
+```{versionadded} 1.0
 ```
 
 This optional contrib adds a 'coordinate grid' to Evennia. It allows for
@@ -66,7 +66,7 @@ Exits: northeast and east
    available for use as prototype-parents when spawning the grid.
 4. Run `evennia xyzgrid help` for available options.
 5. (Optional): By default, the xyzgrid will only spawn module-based
-   [prototypes](../Components/Prototypes). This is an optimization and usually makes sense
+   [prototypes](../Components/Prototypes.md). This is an optimization and usually makes sense
    since the grid is entirely defined outside the game anyway. If you want to
    also make use of in-game (db-) created prototypes, add
    `XYZGRID_USE_DB_PROTOTYPES = True` to settings.
@@ -79,11 +79,11 @@ The grid contrib consists of multiple components.
 1. The `XYMap` - This class parses modules with special _Map strings_
    and _Map legends_ into one Python object. It has helpers for pathfinding and
    visual-range handling.
-2. The `XYZGrid` - This is a singleton [Script](../Components/Scripts) that
+2. The `XYZGrid` - This is a singleton [Script](../Components/Scripts.md) that
    stores all `XYMaps` in the game. It is the central point for managing the 'grid'
    of the game.
 3. `XYZRoom` and `XYZExit`are custom typeclasses that use
-   [Tags](../Components/Tags)
+   [Tags](../Components/Tags.md)
    to know which X,Y,Z coordinate they are located at. The `XYZGrid` is
    abstract until it is used to _spawn_ these database entities into
    something you can actually interract with in the game. The `XYZRoom`
@@ -102,7 +102,7 @@ After installation, do the following from your command line (where the
     $ evennia xyzgrid init
 
 use `evennia xyzgrid help` to see all options)
-This will create a new `XYZGrid` [Script](../Components/Scripts) if one didn't already exist.
+This will create a new `XYZGrid` [Script](../Components/Scripts.md) if one didn't already exist.
 The `evennia xyzgrid` is a custom launch option added only for this contrib.
 
 The xyzgrid-contrib comes with a full grid example. Let's add it:
@@ -120,7 +120,7 @@ about each map with the `show` subcommand:
     $ evennia xyzgrid show "the small cave"
 
 If you want to peek at how the grid's code, open
-[evennia/contrib/xyzgrid/example.py](api:evennia.contrib.xyzgrid.example).
+[evennia/contrib/xyzgrid/example.py](evennia.contrib.xyzgrid.example).
 (We'll explain the details in later sections).
 
 So far the grid is 'abstract' and has no actual in-game presence. Let's
@@ -430,9 +430,9 @@ LEGEND = {
 The legend is optional, and any symbol not explicitly given in your legend will
 fall back to its value in the default legend [outlined below](#default-legend).
 
-- [MapNode](api:evennia.contrib.xyzgrid.xymap_legend#evennia.contrib.xyzgrid.xymap_legend.MapNode)
+- [MapNode](evennia.contrib.xyzgrid.xymap_legend.MapNode)
   is the base class for all nodes.
-- [MapLink](api:evennia.contrib.xyzgrid.xymap_legend#evennia.contrib.xyzgrid.xymap_legend.MapLink)
+- [MapLink](evennia.contrib.xyzgrid.xymap_legend.MapLink)
   is the base class for all links.
 
 As the _Map String_ is parsed, each found symbol is looked up in the legend and
@@ -445,7 +445,7 @@ with a full set of map elements that use these properties in various ways
 (described in the next section).
 
 Some useful properties of the
-[MapNode](api:evennia.contrib.xyzgrid.xymap_legend#evennia.contrib.xyzgrid.xymap_legend.MapNode)
+[MapNode](evennia.contrib.xyzgrid.xymap_legend.MapNode)
 class (see class doc for hook methods):
 
 - `symbol` (str) - The character to parse from the map into this node. By default this
@@ -473,7 +473,7 @@ class (see class doc for hook methods):
   useful for various reasons, mostly map-transitions).
 
 Some useful properties of the
-[MapLink](api:evennia.contrib.xyzgrid.xymap_legend#evennia.contrib.xyzgrid.xymap_legend.MapLink)
+[MapLink](evennia.contrib.xyzgrid.xymap_legend.MapLink)
 class (see class doc for hook methods):
 
 - `symbol` (str) - The character to parse from the map into this node. This must
@@ -551,7 +551,7 @@ actually visualized when displaying the map to players in-game. This could have
 colors etc. All classes are found in `evennia.contrib.xyzgrid.xymap_legend` and
 their names are included to make it easy to know what to override.
 
-```eval_rst
+```{eval-rst}
 =============  ==============  ====  ===================  =========================================
 symbol         display-symbol  type  class                description
 =============  ==============  ====  ===================  =========================================
@@ -921,11 +921,11 @@ across the map boundary.
 
 ### Prototypes
 
-[Prototypes](../Components/Prototypes) are dicts that describe how to _spawn_ a new instance
+[Prototypes](../Components/Prototypes.md) are dicts that describe how to _spawn_ a new instance
 of an object. Each of the _nodes_ and _links_ above have a default prototype
 that allows the `evennia xyzgrid spawn` command to convert them to
-a [XYZRoom](api:evennia.contrib.xyzgrid.xyzroom#XYZRoom)
-or an [XYZExit](api:evennia.contrib.xyzgrid.xyzroom#XYZExit) respectively.
+a [XYZRoom](evennia.contrib.xyzgrid.xyzroom.XYZRoom)
+or an [XYZExit](evennia.contrib.xyzgrid.xyzroom.XYZRoom) respectively.
 
 The default prototypes are found in `evennia.contrib.xyzgrid.prototypes` (added
 during installation of this contrib), with `prototype_key`s `"xyz_room"` and
@@ -1167,7 +1167,7 @@ a location if they know that location's name. Here are some details about
 
 ##  XYZGrid
 
-The `XYZGrid` is a [Global Script](../Components/Scripts) that holds all `XYMap` objects on
+The `XYZGrid` is a [Global Script](../Components/Scripts.md) that holds all `XYMap` objects on
 the grid. There should be only one XYZGrid created at any time.
 
 To access the grid in-code, there are several ways:
@@ -1216,17 +1216,17 @@ know how to call find the pathfinder though:
 - `xymap.get_shortest_path(start_xy, end_xy)`
 - `xymap.get_visual_range(xy, dist=2, **kwargs)`
 
-See the [XYMap](api:evennia.contrib.xyzgrid.xymap#XYMap) documentation for
+See the [XYMap](xymap) documentation for
 details.
 
 
 ## XYZRoom and XYZExit
 
-These are new custom [Typeclasses](../Components/Typeclasses) located in
+These are new custom [Typeclasses](../Components/Typeclasses.md) located in
 `evennia.contrib.xyzgrid.xyzroom`. They extend the base `DefaultRoom` and
 `DefaultExit` to be aware of their `X`, `Y` and `Z` coordinates.
 
-```warning::
+```{warning}
 
     You should usually **not** create XYZRooms/Exits manually. They are intended
     to be created/deleted based on the layout of the grid. So to add a new room, add
@@ -1253,7 +1253,7 @@ Useful (extra) properties on `XYZRoom`, `XYZExit`:
 - `xyz_destination` (only for `XYZExits`) - this gives the xyz-coordinate of
   the exit's destination.
 
-The coordinates are stored as [Tags](../Components/Tags) where both rooms and exits tag
+The coordinates are stored as [Tags](../Components/Tags.md) where both rooms and exits tag
 categories `room_x_coordinate`, `room_y_coordinate` and `room_z_coordinate`
 while exits use the same in addition to tags for their destination, with tag
 categories `exit_dest_x_coordinate`, `exit_dest_y_coordinate` and
@@ -1293,7 +1293,7 @@ exit = XYZExit.objects.get_xyz_exit(xyz=(0, 12, 'foo'), xyz_destination=(5, 2, '
 You can customize the XYZRoom/Exit by having the grid spawn your own subclasses
 of them. To do this you need to override the prototype used to spawn rooms on
 the grid. Easiest is to modify the base prototype-parents in settings (see the
-[Extending the base prototypes](#extending-the-base-prototypes) section above).
+[XYZRoom and XYZExit](#xyzroom-and-xyzexit) section above).
 
 ## Working with the grid
 

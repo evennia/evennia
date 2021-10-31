@@ -8,7 +8,7 @@ That said, Evennia _does_ offer some more game-opinionated _optional_ stuff. The
 and is an ever-growing treasure trove of code snippets, concepts and even full systems you can pick and choose 
 from to use, tweak or take inspiration from when you make your game.
 
-The [Contrib overview](../../../Contribs/Contrib-Overview) page gives the full list of the current roster of contributions. On
+The [Contrib overview](../../../Contribs/Contrib-Overview.md) page gives the full list of the current roster of contributions. On
 this page we will review a few contribs we will make use of for our game. We will do the actual installation
 of them when we start coding in the next part of this tutorial series. While we will introduce them here, you
 are wise to read their doc-strings yourself for the details.
@@ -26,7 +26,7 @@ This is the things we know we need:
 
 ## Barter contrib 
 
-[source](api:evennia.contrib.barter)
+[source](../../../api/evennia.contrib.barter.md)
 
 Reviewing this contrib suggests that it allows for safe trading between two parties. The basic principle
 is that the parties puts up the stuff they want to sell and the system will guarantee that these systems are
@@ -57,7 +57,7 @@ things than boring gold coin.
 
 ## Character generation contrib
 
-[source](api:evennia.contrib.chargen)
+[source](../../../api/evennia.contrib.chargen.md)
 
 This contrib is an example module for creating characters. Since we will be using `MULTISESSION_MODE=3` we will
 get a selection screen like this automatically. We also plan to use a proper menu to build our character, so 
@@ -65,7 +65,7 @@ we will _not_ be using this contrib.
 
 ## Clothing contrib
 
-[source](api:evennia.contrib.clothing)
+[source](../../../api/evennia.contrib.clothing.md)
 
 This contrib provides a full system primarily aimed at wearing clothes, but it could also work for armor. You wear
 an object in a particular location and this will then be reflected in your character's description. You can 
@@ -80,7 +80,7 @@ for things like armor. It's a good contrib to build from though, so that's what 
 
 ## Dice contrib 
 
-[source](api:evennia.contrib.dice)
+[source](../../../api/evennia.contrib.dice.md)
 
 The dice contrib presents a general dice roller to use in game.
 
@@ -102,7 +102,7 @@ or play a game, we will not need it for the core of our game.
 
 ## Extended room contrib 
 
-[source](api:evennia.contrib.extended_room)
+[source](../../../api/evennia.contrib.extended_room.md)
 
 This is a custom Room typeclass that changes its description based on time of day and season.
 
@@ -122,7 +122,7 @@ game, why not!
 
 ## RP-System contrib
 
-[source](api:evennia.contrib.rpsystem)
+[source](../../../api/evennia.contrib.rpsystem.md)
 
 This contrib adds a full roleplaying subsystem to your game. It gives every character a "short-description"
 (sdesc) that is what people will see when first meeting them. Let's say Tom has an sdesc "A tall man" and
@@ -159,20 +159,20 @@ You can also wear a mask to hide your identity; your sdesc will then be changed 
 like `a person with a mask`. 
 
 The RPSystem gives a lot of roleplaying power out of the box, so we will add it. There is also a separate 
-[rplanguage](api:evennia.contrib.rplanguage) module that integrates with the spoken words in your emotes and garbles them if you don't understand
+[rplanguage](../../../api/evennia.contrib.rplanguage.md) module that integrates with the spoken words in your emotes and garbles them if you don't understand
 the language spoken. In order to restrict the scope we will not include languages for the tutorial game.
 
 
 ## Talking NPC contrib
 
-[source](api:evennia.contrib.talking_npc)
+[source](../../../api/evennia.contrib.talking_npc.md)
 
 This exemplifies an NPC with a menu-driven dialogue tree. We will not use this contrib explicitly, but it's 
 good as inspiration for how we'll do quest-givers later. 
 
 ## Traits contrib
 
-[source](api:evennia.contrib.traits)
+[source](../../../api/evennia.contrib.traits.md)
 
 An issue with dealing with roleplaying attributes like strength, dexterity, or skills like hunting, sword etc
 is how to keep track of the values in the moment. Your strength may temporarily be buffed by a strength-potion. 
@@ -226,7 +226,7 @@ Traits will be very practical to use for our character sheets.
 
 ## Turnbattle contrib
 
-[source](api:evennia.contrib.turnbattle)
+[source](../../../api/evennia.contrib.turnbattle.md)
 
 This contrib consists of several implementations of a turn-based combat system, divivided into complexity:
 

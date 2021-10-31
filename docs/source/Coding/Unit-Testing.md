@@ -74,28 +74,28 @@ To test the results, you use special methods of the `TestCase` class.  Many of t
 "`assert`", such as `assertEqual` or `assertTrue`.
 
 Example of a `TestCase` class:
- 
+
 ```python
     import unittest
-    
+
     # the function we want to test
     from mypath import myfunc
-    
+
     class TestObj(unittest.TestCase):
        "This tests a function myfunc."
-    
+
        def test_return_value(self):
-           "test method. Makes sure return value is as expected."  
+           "test method. Makes sure return value is as expected."
            expected_return = "This is me being nice."
            actual_return = myfunc()
-           # test 
+           # test
            self.assertEqual(expected_return, actual_return)
        def test_alternative_call(self):
            "test method. Calls with a keyword argument."
            expected_return = "This is me being baaaad."
            actual_return = myfunc(bad=True)
            # test
-           self.assertEqual(expected_return, actual_return)    
+           self.assertEqual(expected_return, actual_return)
 ```
 
 You might also want to read the [documentation for the unittest
@@ -145,7 +145,7 @@ class in the same module to get access to the command-specific utilities mention
             self.call(general.CmdLook(), "Char2", "Char2(#7)")
         "tests the look command by simple call, with target as room"
         def test_mycmd_room(self):
-            self.call(general.CmdLook(), "Room", 
+            self.call(general.CmdLook(), "Room",
                       "Room(#1)\nroom_desc\nExits: out(#3)\n"
                       "You see: Obj(#4), Obj2(#5), Char2(#7)")
 ```
@@ -153,7 +153,7 @@ class in the same module to get access to the command-specific utilities mention
 ### Unit testing contribs with custom models
 
 A special case is if you were to create a contribution to go to the `evennia/contrib` folder that
-uses its [own database models](../Concepts/New-Models). The problem with this is that Evennia (and Django) will
+uses its [own database models](../Concepts/New-Models.md). The problem with this is that Evennia (and Django) will
 only recognize models in `settings.INSTALLED_APPS`. If a user wants to use your contrib, they will
 be required to add your models to their settings file. But since contribs are optional you cannot
 add the model to Evennia's central `settings_default.py` file - this would always create your
@@ -199,7 +199,7 @@ class TestMyModel(EvenniaTest):
         from django.db.models import loading
         loading.cache.loaded = False
         call_command('syncdb', verbosity=0)
-         
+
     def tearDown(self):
         settings.configure(**OLD_DEFAULT_SETTINGS)
         django.setup()
@@ -290,11 +290,11 @@ just to show how unit testing works:
     # mygame/commands/tests.py
 
     import unittest
-    
+
     class TestString(unittest.TestCase):
-    
+
         """Unittest for strings (just a basic example)."""
-    
+
         def test_upper(self):
             """Test the upper() str method."""
             self.assertEqual('foo'.upper(), 'FOO')
@@ -317,7 +317,7 @@ Let's execute that test to see if it works.
     .
     ----------------------------------------------------------------------
     Ran 1 test in 0.001s
-    
+
     OK
     Destroying test database for alias 'default'...
 
@@ -330,7 +330,7 @@ to see how it looks when it fails.
 
 ### Testing commands
 
-```warning:: This is not correct anymore.
+```{warning} This is not correct anymore.
 ```
 
 This section will test the proper execution of the 'abilities' command, as described in the DELETED
@@ -349,14 +349,14 @@ already have in `commands` from before.
     # bottom of mygame/commands/tests.py
 
     from evennia.commands.default.tests import CommandTest
-    
+
     from commands.command import CmdAbilities
     from typeclasses.characters import Character
-    
+
     class TestAbilities(CommandTest):
-    
+
         character_typeclass = Character
-    
+
         def test_simple(self):
             self.call(CmdAbilities(), "", "STR: 5, AGI: 4, MAG: 2")
 ```
@@ -392,7 +392,7 @@ Let's run our new test:
     ..
     ----------------------------------------------------------------------
     Ran 2 tests in 0.156s
-    
+
     OK
     Destroying test database for alias 'default'...
 

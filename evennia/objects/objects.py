@@ -38,13 +38,8 @@ _COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 # the sessid_max is based on the length of the db_sessid csv field (excluding commas)
 _SESSID_MAX = 16 if _MULTISESSION_MODE in (1, 3) else 1
 
-_MSG_CONTENTS_PARSER = funcparser.FuncParser(
-    {
-        "you": funcparser.funcparser_callable_you,
-        "You": funcparser.funcparser_callable_You,
-        "conj": funcparser.funcparser_callable_conjugate
-    }
-)
+# init the actor-stance funcparser for msg_contents
+_MSG_CONTENTS_PARSER = funcparser.FuncParser(funcparser.ACTOR_STANCE_CALLABLES)
 
 
 class ObjectSessionHandler:
@@ -403,13 +398,15 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             searchdata (str or obj): Primary search criterion. Will be matched
                 against `object.key` (with `object.aliases` second) unless
                 the keyword attribute_name specifies otherwise.
-                **Special strings:**
-                - `#<num>`: search by unique dbref. This is always
-                   a global search.
+
+                Special keywords:
+
+                - `#<num>`: search by unique dbref. This is always a global search.
                 - `me,self`: self-reference to this object
                 - `<num>-<string>` - can be used to differentiate
                    between multiple same-named matches. The exact form of this input
                    is given by `settings.SEARCH_MULTIMATCH_REGEX`.
+
             global_search (bool): Search all objects globally. This overrules 'location' data.
             use_nicks (bool): Use nickname-replace (nicktype "object") on `searchdata`.
             typeclass (str or Typeclass, or list of either): Limit search only
@@ -457,11 +454,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 error depending on the value of `quiet`.
 
         Returns:
-            Object: If finding a match an `quiet=False`
-            None: If not finding a unique match and `quiet=False`.
-            list: With 0, 1 or more matching objects if `quiet=True`
-            list: With 2 or more matching objects if `stacked` is a positive integer and
-                the matched stack has only object-copies.
+            Object, None or list: Will return an `Object` or `None` if `quiet=False`. Will return
+            a `list` with 0, 1 or more matches if `quiet=True`. If `stacked` is a positive integer,
+            this list may contain all stacked identical matches.
 
         Notes:
             To find Accounts, use eg. `evennia.account_search`. If
@@ -729,8 +724,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 on the valid OOB outmessage form `(message, {kwargs})`,
                 where kwargs are optional data passed to the `text`
                 outputfunc. The message will be parsed for `{key}` formatting and
-                `$You/$you()/$You(key)` and `$conj(verb)` inline function callables.
-                The `key` is taken from the `mapping` kwarg {"key": object, ...}`.
+                `$You/$you()/$You()`, `$obj(name)`, `$conj(verb)` and `$pron(pronoun, option)`
+                inline function callables.
+                The `name` is taken from the `mapping` kwarg {"name": object, ...}`.
                 The `mapping[key].get_display_name(looker=recipient)` will be called
                 for that key for every recipient of the string.
             exclude (list, optional): A list of objects not to send to.

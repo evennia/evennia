@@ -101,10 +101,6 @@ HELP_ENTRY_DICTS = [
 
             There are many ways to get help and communicate with other devs!
 
-            ### IRC
-
-            The irc channel is #evennia on irc.freenode.net
-
             ### Discord
 
             There is also a discord channel you can find from the sidebard on evennia.com.

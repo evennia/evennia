@@ -34,6 +34,7 @@ _IDMAPPER = None
 
 # limit symbol import for API
 __all__ = (
+    "CmdAccounts",
     "CmdReload",
     "CmdReset",
     "CmdShutdown",
@@ -43,6 +44,7 @@ __all__ = (
     "CmdTime",
     "CmdServerLoad",
     "CmdTasks",
+    "CmdTickers",
 )
 
 
@@ -660,8 +662,7 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
          |wCode|n https://github.com/evennia/evennia
          |wDemo|n https://demo.evennia.com
          |wGame listing|n https://games.evennia.com
-         |wIrc|n #evennia on irc.freenode.net:6667
-         |wDiscord|n https://discord.gg/SVCkd4cY3q
+         |wChat|n https://discord.gg/AJJpcRUhtF
          |wForum|n https://github.com/evennia/evennia/discussions
          |wLicence|n https://opensource.org/licenses/BSD-3-Clause
          |wMaintainer|n (2010-)   Griatch (griatch AT gmail DOT com)

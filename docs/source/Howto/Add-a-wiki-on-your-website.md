@@ -2,7 +2,7 @@
 
 
 **Before doing this tutorial you will probably want to read the intro in 
-[Basic Web tutorial](Starting/Part5/Web-Tutorial).**  Reading the three first parts of the 
+[Basic Web tutorial](Starting/Part5/Web-Tutorial.md).**  Reading the three first parts of the 
 [Django tutorial](https://docs.djangoproject.com/en/1.9/intro/tutorial01/) might help as well.
 
 This tutorial will provide a step-by-step process to installing a wiki on your website.

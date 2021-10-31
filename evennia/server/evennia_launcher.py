@@ -287,7 +287,7 @@ ABOUT_INFO = """
 
     Licence: BSD 3-Clause Licence
     Web: http://www.evennia.com
-    Irc: #evennia on FreeNode
+    Chat: https://discord.gg/AJJpcRUhtF
     Forum: http://www.evennia.com/discussions
     Maintainer (2006-10): Greg Taylor
     Maintainer (2010-):   Griatch (griatch AT gmail DOT com)

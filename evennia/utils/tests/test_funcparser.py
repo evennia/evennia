@@ -5,6 +5,7 @@ Test the funcparser module.
 """
 
 import time
+from unittest.mock import MagicMock, patch
 from ast import literal_eval
 from simpleeval import simple_eval
 from parameterized import parameterized
@@ -306,6 +307,10 @@ class TestDefaultCallables(TestCase):
         ("$You() $conj(smile) at $You(char1).", "You smile at You.", "Char1 smiles at Char1."),
         ("$You() $conj(smile) at $You(char2).", "You smile at Char2.", "Char1 smiles at You."),
         ("$You(char2) $conj(smile) at $you(char1).", "Char2 smile at you.", "You smiles at Char1."),
+        ("$You() $conj(smile) to $pron(yourself,m).", "You smile to yourself.",
+         "Char1 smiles to himself."),
+        ("$You() $conj(smile) to $pron(herself).", "You smile to yourself.",
+         "Char1 smiles to herself.")  # reverse reference
     ])
     def test_conjugate(self, string, expected_you, expected_them):
         """
@@ -464,3 +469,5 @@ class TestCallableSearch(test_resources.EvenniaTest):
 
         ret = self.parser.parse(string, caller=self.char1, return_str=False, raise_errors=True)
         self.assertEqual(expected, ret)
+
+

@@ -1,7 +1,7 @@
 # Things to remember about the flat API
 
 The flat API is a series of 'shortcuts' on the `evennia` main library root (defined in 
-`evennia/__init__.py`). Its componentas are documented [as part of the auto-documentation](../Evennia-API).
+`evennia/__init__.py`). Its componentas are documented [as part of the auto-documentation](../Evennia-API.md).
 
 ## To remember when importing from `evennia`
 

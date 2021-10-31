@@ -3,10 +3,10 @@
 
 You control Evennia from your game folder (we refer to it as `mygame/` here), using the `evennia`
 program. If the `evennia` program is not available on the command line you must first install
-Evennia as described in the [Setup Quickstart](./Setup-Quickstart) page.
+Evennia as described in the [Setup Quickstart](./Setup-Quickstart.md) page.
 
 > Hint: If you ever try the `evennia` command and get an error complaining that the command is not
-available, make sure your [virtualenv](../Glossary#virtualenv) is active.
+available, make sure your [virtualenv](../Glossary.md#virtualenv) is active.
 
 Below are described the various management options. Run
 
@@ -20,7 +20,7 @@ to give you a menu with options.
 
 ## Starting Evennia
 
-Evennia consists of two components, the Evennia [Server and Portal](../Components/Portal-And-Server).  Briefly,
+Evennia consists of two components, the Evennia [Server and Portal](../Components/Portal-And-Server.md).  Briefly,
 the  *Server* is what is running the mud. It handles all game-specific things but doesn't care
 exactly how players connect, only that they have. The *Portal* is a gateway to which players
 connect. It knows everything about telnet, ssh, webclient protocols etc but very little about the
@@ -67,7 +67,7 @@ reboots. Since they are connected to the *Portal*, their connections are not los
 
 
 Reloading is as close to a "warm reboot" you can get. It reinitializes all code of Evennia, but
-doesn't kill "persistent" [Scripts](../Components/Scripts). It also calls `at_server_reload()` hooks on all
+doesn't kill "persistent" [Scripts](../Components/Scripts.md). It also calls `at_server_reload()` hooks on all
 objects so you
 can save eventual temporary properties you want.
 

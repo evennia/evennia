@@ -11,7 +11,7 @@ meant to be accessed in code, by other programs.
 The API is using [Django Rest Framework][drf]. This automates the process
 of setting up _views_ (Python code) to process the result of web requests.
 The process of retrieving data is similar to that explained on the
-[Webserver](./Webserver) page, except the views will here return [JSON][json]
+[Webserver](./Webserver.md) page, except the views will here return [JSON][json]
 data for the resource you want. You can also _send_ such JSON data
 in order to update the database from the outside.
 
@@ -25,7 +25,7 @@ To activate the API, add this to your settings file.
 The main controlling setting is `REST_FRAMEWORK`, which is a dict. The keys
 `DEFAULT_LIST_PERMISSION` and `DEFAULT_CREATE_PERMISSIONS` control who may
 view and create new objects via the api respectively. By default, users with
-['Builder'-level permission](./Permissions) or higher may access both actions.
+['Builder'-level permission](./Permissions.md) or higher may access both actions.
 
 While the api is meant to be expanded upon, Evennia supplies several operations
 out of the box. If you click the `Autodoc` button in the upper right of the `/api`
@@ -74,7 +74,7 @@ permissions:
     "results": [{"username": "bob",...}]
     }
 
-Now suppose that you want to use the API to create an [Object](./Objects):
+Now suppose that you want to use the API to create an [Object](./Objects.md):
 
     >>> data = {"db_key": "A shiny sword"}
     >>> response = requests.post("https://www.mygame.com/api/objects",
@@ -108,7 +108,7 @@ Overall, reading up on [Django Rest Framework ViewSets](https://www.django-rest-
 other parts of their documentation is required for expanding and
 customizing the API.
 
-Check out the [Website](./Website) page for help on how to override code, templates
+Check out the [Website](./Website.md) page for help on how to override code, templates
 and static files.
 - API templates (for the web-display) is located in `evennia/web/api/templates/rest_framework/` (it must
   be named such to allow override of the original REST framework templates).

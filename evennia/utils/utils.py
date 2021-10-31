@@ -2628,3 +2628,40 @@ def strip_unsafe_input(txt, session=None, bypass_perms=None):
     txt = strip_tags(txt)
     txt = _STRIP_UNSAFE_TOKENS(txt)
     return txt
+
+
+def copy_word_case(base_word, new_word):
+    """
+    Converts a word to use the same capitalization as a first word.
+
+    Args:
+        base_word (str): A word to get the capitalization from.
+        new_word (str): A new word to capitalize in the same way as `base_word`.
+
+    Returns:
+        str: The `new_word` with capitalization matching the first word.
+
+    Notes:
+        This is meant for words. Longer sentences may get unexpected results.
+
+        If the two words have a mix of capital/lower letters _and_ `new_word`
+        is longer than `base_word`, the excess will retain its original case.
+
+    """
+
+    # Word
+    if base_word.istitle():
+        return new_word.title()
+    # word
+    elif base_word.islower():
+        return new_word.lower()
+    # WORD
+    elif base_word.isupper():
+        return new_word.upper()
+    else:
+        # WorD - a mix. Handle each character
+        maxlen = len(base_word)
+        shared, excess = new_word[:maxlen], new_word[maxlen - 1:]
+        return "".join(char.upper() if base_word[ic].isupper() else char.lower()
+                       for ic, char in enumerate(new_word)) + excess
+

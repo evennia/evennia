@@ -1,19 +1,19 @@
 # Scripts
 
-[Script API reference](api:evennia.scripts.scripts)
+[Script API reference](evennia.scripts.scripts)
 
 *Scripts* are the out-of-character siblings to the in-character
-[Objects](./Objects). Scripts are so flexible that the name "Script" is a bit limiting
+[Objects](./Objects.md). Scripts are so flexible that the name "Script" is a bit limiting
 in itself - but we had to pick _something_ to name them. Other possible names
 (depending on what you'd use them for) would be `OOBObjects`, `StorageContainers` or `TimerObjects`.
 
-If you ever consider creating an [Object](./Objects) with a `None`-location just to store some game data,
+If you ever consider creating an [Object](./Objects.md) with a `None`-location just to store some game data,
 you should really be using a Script instead.
 
-- Scripts are full [Typeclassed](./Typeclasses) entities - they have [Attributes](./Attributes) and
+- Scripts are full [Typeclassed](./Typeclasses.md) entities - they have [Attributes](./Attributes.md) and
   can be modified in the same way. But they have _no in-game existence_, so no
-  location or command-execution like [Objects](./Objects) and no connection to a particular
-  player/session like [Accounts](./Accounts). This means they are perfectly suitable for acting
+  location or command-execution like [Objects](./Objects.md) and no connection to a particular
+  player/session like [Accounts](./Accounts.md). This means they are perfectly suitable for acting
   as database-storage backends for game _systems_: Storing the current state of the economy,
   who is involved in the current fight, tracking an ongoing barter and so on. They are great as
   persistent system handlers.
@@ -21,22 +21,22 @@ you should really be using a Script instead.
   to tick the `at_repeat` hook on the Script at a certain interval. The timer can be controlled
   independently of the rest of the script as needed. This component is optional
   and complementary to other timing functions in Evennia, like
-  [evennia.utils.delay](api:evennia.utils.utils#evennia.utils.utils.delay) and
-    [evennia.utils.repeat](api:evennia.utils.utils#evennia.utils.utils.repeat).
+  [evennia.utils.delay](evennia.utils.utils.delay) and
+    [evennia.utils.repeat](evennia.utils.utils.repeat).
 - Scripts can _attach_ to Objects and Accounts via e.g. `obj.scripts.add/remove`. In the
   script you can then access the object/account as `self.obj` or `self.account`. This can be used to
   dynamically extend other typeclasses but also to use the timer component to affect the parent object
   in various ways. For historical reasons, a Script _not_ attached to an object is referred to as a
   _Global_ Script.
 
-```versionchanged:: 1.0
+```{versionchanged} 1.0
    In previus Evennia versions, stopping the Script's timer also meant deleting the Script object.
    Starting with this version, the timer can be start/stopped separately and `.delete()` must be called
    on the Script explicitly to delete it.
 
 ```
 
-### In-game command examples
+## In-game command examples
 
 There are two main commands controlling scripts in the default cmdset:
 
@@ -52,11 +52,11 @@ The `scripts` command is used to view all scripts and perform operations on them
     > scripts/pause #11
     > scripts/delete #566
 
-```versionchanged:: 1.0
+```{versionchanged} 1.0
    The `addscript` command used to be only `script` which was easy to confuse with `scripts`.
 ```
 
-### Code examples
+## Code examples
 
 Here are some examples of working with Scripts in-code (more details to follow in later
 sections).
@@ -111,13 +111,13 @@ new_script.delete()
 timed_script.delete()
 ```
 
-## Defining new Scripts
+# Defining new Scripts
 
 A Script is defined as a class and is created in the same way as other
-[typeclassed](./Typeclasses) entities. The parent class is `evennia.DefaultScript`.
+[typeclassed](./Typeclasses.md) entities. The parent class is `evennia.DefaultScript`.
 
 
-### Simple storage script
+## Simple storage script
 
 In `mygame/typeclasses/scripts.py` is an empty `Script` class already set up. You
 can use this as a base for your own scripts.
@@ -162,12 +162,12 @@ evennia.create_script('typeclasses.scripts.MyScript', key="another name",
 
 ```
 
-See the [create_script](api:evennia.utils.create#evennia.utils.create.create_script) and
-[search_script](api:evennia.utils.search#evennia.utils.search.search_script) API documentation for more options
+See the [create_script](evennia.utils.create.create_script) and
+[search_script](evennia.utils.search.search_script) API documentation for more options
 on creating and finding Scripts.
 
 
-### Timed Scripts
+## Timed Scripts
 
 There are several properties one can set on the Script to control its timer component.
 
@@ -229,11 +229,11 @@ The timer component is controlled with methods on the Script class:
 - `.force_repeat()` - this prematurely forces `at_repeat` to be called right away. Doing so will reset the
   countdown so that next call will again happen after `interval` seconds.
 
-#### Script timers vs delay/repeat
+### Script timers vs delay/repeat
 
 If the _only_ goal is to get a repeat/delay effect, the
-[evennia.utils.delay](api:evennia.utils.utils#evennia.utils.utils.delay) and
-[evennia.utils.repeat](api:evennia.utils.utils#evennia.utils.utils.repeat) functions
+[evennia.utils.delay](evennia.utils.utils.delay) and
+[evennia.utils.repeat](evennia.utils.utils.repeat) functions
 should generally be considered first. A Script is a lot 'heavier' to create/delete on the fly.
 In fact, for making a single delayed call (`script.repeats==1`), the `utils.delay` call is
 probably always the better choice.
@@ -249,9 +249,9 @@ It's also worth noting that once the script object has _already been created_,
 starting/stopping/pausing/unpausing the timer has very little overhead. The pause/unpause and update
 methods of the script also offers a bit more fine-control than using `utils.delays/repeat`.
 
-### Script attached to another object
+## Script attached to another object
 
-Scripts can be attached to an [Account](./Accounts) or (more commonly) an [Object](./Objects).
+Scripts can be attached to an [Account](./Accounts.md) or (more commonly) an [Object](./Objects.md).
 If so, the 'parent object' will be available to the script as either `.obj` or `.account`.
 
 
@@ -303,10 +303,10 @@ You can also attach the script as part of creating it:
     create_script('typeclasses.weather.Weather', obj=myroom)
 ```
 
-## Other Script methods
+# Other Script methods
 
 A Script has all the properties of a typeclassed object, such as `db` and `ndb`(see
-[Typeclasses](./Typeclasses)). Setting `key` is useful in order to manage scripts (delete them by name
+[Typeclasses](./Typeclasses.md)). Setting `key` is useful in order to manage scripts (delete them by name
 etc). These are usually set up in the Script's typeclass, but can also be assigned on the fly as
 keyword arguments to `evennia.create_script`.
 
@@ -325,12 +325,12 @@ reload.
 - `delete()` - same as for other typeclassed entities, this will delete the Script. Of note is that
   it will also stop the timer (if it runs), leading to the `at_stop` hook being called.
 
-In addition, Scripts support [Attributes](./Attributes), [Tags](./Tags) and [Locks](./Locks) etc like other
+In addition, Scripts support [Attributes](./Attributes.md), [Tags](./Tags.md) and [Locks](./Locks.md) etc like other
 Typeclassed entities.
 
-See also the methods involved in controlling a [Timed Script](#Timed_Scripts) above.
+See also the methods involved in controlling a [Timed Script](#timed-scripts) above.
 
-## The GLOBAL_SCRIPTS container
+# The GLOBAL_SCRIPTS container
 
 A Script not attached to another entity is commonly referred to as a _Global_ script since it't available
 to access from anywhere. This means they need to be searched for in order to be used.
@@ -353,7 +353,7 @@ GLOBAL_SCRIPTS.weather.db.current_weather = "Cloudy"
 
 ```
 
-```warning::
+```{warning}
     Note that global scripts appear as properties on `GLOBAL_SCRIPTS` based on their `key`.
     If you were to create two global scripts with the same `key` (even with different typeclasses),
     the `GLOBAL_SCRIPTS` container will only return one of them (which one depends on order in
@@ -389,10 +389,10 @@ GLOBAL_SCRIPTS = {
 Above we add two scripts with keys `myscript` and `storagescript`respectively. The following dict
 can be empty - the `settings.BASE_SCRIPT_TYPECLASS` will then be used. Under the hood, the provided
 dict (along with the `key`) will be passed into `create_script` automatically, so
-all the [same keyword arguments as for create_script](api:evennia.utils.create.create_script) are
+all the [same keyword arguments as for create_script](evennia.utils.create.create_script) are
 supported here.
 
-```warning::
+```{warning}
     Before setting up Evennia to manage your script like this, make sure that your Script typeclass
     does not have any critical errors (test it separately). If there are, you'll see errors in your log
     and your Script will temporarily fall back to being a `DefaultScript` type.
@@ -413,7 +413,7 @@ That is, if the script is deleted, next time you get it from `GLOBAL_SCRIPTS`, E
 information in settings to recreate it for you on the fly.
 
 
-## Hints: Dealing with Script Errors
+# Hints: Dealing with Script Errors
 
 Errors inside a timed, executing script can sometimes be rather terse or point to
 parts of the execution mechanism that is hard to interpret. One way to make it

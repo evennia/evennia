@@ -1,26 +1,26 @@
-# The Tutorial World 
+# The Tutorial World
 
-The *Tutorial World* is a small and functioning MUD-style game world shipped with Evennia.  
+The *Tutorial World* is a small and functioning MUD-style game world shipped with Evennia.
 It's a small showcase of what is possible. It can also be useful for those who have an easier
-time learning by deconstructing existing code. 
+time learning by deconstructing existing code.
 
-Stand in the Limbo room and install it with 
+Stand in the Limbo room and install it with
 
     batchcommand tutorial_world.build
-    
+
 What this does is to run the build script
 [evennia/contrib/tutorial_world/build.ev](github:evennia/contrib/tutorial_world/build.ev).
-This is pretty much just a list of build-commands executed in sequence by the `batchcommand` command. 
+This is pretty much just a list of build-commands executed in sequence by the `batchcommand` command.
 Wait for the building to complete and don't run it twice. A new exit should have appeared named _Tutorial_.
-    
-The game consists of a single-player quest and has some 20 rooms that you can explore as you seek 
+
+The game consists of a single-player quest and has some 20 rooms that you can explore as you seek
 to discover the whereabouts of a mythical weapon. Make sure you don't play as superuser:
 
     quell
-    
-Enter the new exit by writing `tutorial`. Enjoy! If you succeed you will eventually 
+
+Enter the new exit by writing `tutorial`. Enjoy! If you succeed you will eventually
 end up back in Limbo.
-    
+
 ## Gameplay
 
 ![the castle off the moor](https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/22916c25-6299-453d-a221-446ec839f567/da2pmzu-46d63c6d-9cdc-41dd-87d6-1106db5a5e1a.jpg/v1/fill/w_600,h_849,q_75,strp/the_castle_off_the_moor_by_griatch_art_da2pmzu-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3siaGVpZ2h0IjoiPD04NDkiLCJwYXRoIjoiXC9mXC8yMjkxNmMyNS02Mjk5LTQ1M2QtYTIyMS00NDZlYzgzOWY1NjdcL2RhMnBtenUtNDZkNjNjNmQtOWNkYy00MWRkLTg3ZDYtMTEwNmRiNWE1ZTFhLmpwZyIsIndpZHRoIjoiPD02MDAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.omuS3D1RmFiZCy9OSXiIita-HxVGrBok3_7asq0rflw)
@@ -39,7 +39,7 @@ face you stand where the moor meets the sea along a high, rocky coast ...*
 - Look at everything. While a demo, this is not necessarily trivial, depending on your experience with
 text-based adventure games. Just remember that everything can be solved or bypassed.
 - Some things cannot be damaged by mortal weapons. In that case it's OK to run away. Expect
-  to be chased though. 
+  to be chased though.
 - Some objects are interactive in more than one way. Use the normal `help` command to get a feel for
 which commands are available at any given time.
 - Use the command `tutorial` to get insight behind the scenes of the game.
@@ -49,14 +49,14 @@ which commands are available at any given time.
     - *defend* will lower the chance to taking damage on your enemy's next attack.
 - Being defeated is a part of the experience. You can't actually die, but getting knocked out
   means being left in the dark ...
- 
+
 ## Once you are done (or had enough)
 
-Afterwards you'll either have conquered the old ruin and returned in glory and triumph ... or 
+Afterwards you'll either have conquered the old ruin and returned in glory and triumph ... or
 you returned limping and whimpering from the challenge through `telport limbo`.
 Either way you should now be back in Limbo, able to reflect on the experience.
 
-Some features exemplified by the tutorial world: 
+Some features exemplified by the tutorial world:
 
 - Rooms with custom ability to show details (like looking at the wall in the dark room)
 - Hidden or impassable exits until you fulfilled some criterion
@@ -72,14 +72,14 @@ Some features exemplified by the tutorial world:
 - Object spawning (the weapons in the barrel and the final weapoon is actually randomized)
 - Teleporter trap rooms (if you fail the obelisk puzzle)
 
-```sidebar:: Extra Credit
+```{sidebar} Extra Credit
 
-    If you have previous programming experience (or after you have gone 
-    through this Starter tutorial) it may be instructive to dig a little deeper into the Tutorial-world 
-    code to learn how it achieves what it does. The code is heavily documented. 
+    If you have previous programming experience (or after you have gone
+    through this Starter tutorial) it may be instructive to dig a little deeper into the Tutorial-world
+    code to learn how it achieves what it does. The code is heavily documented.
     You can find all the code in `evennia/contrib/tutorial_world <../../api/evennia.contrib.tutorial_world.html>`_,
     the build-script is `here <https://github.com/evennia/evennia/blob/master/evennia/contrib/tutorial_world/build.ev>`_.
-    
+
 
     When reading and learning from the code, however, keep in mind that *Tutorial World* was created with a very
     specific goal in mind: to install easily and to not permanently modify the rest of the server. It therefore
@@ -87,7 +87,7 @@ Some features exemplified by the tutorial world:
     you will usually need to worry about when making your own game.
 ```
 
-Quite a lot of stuff crammed in such a small area! 
+Quite a lot of stuff crammed in such a small area!
 
 ## Uninstall the tutorial world
 

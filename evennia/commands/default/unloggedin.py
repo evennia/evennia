@@ -20,6 +20,9 @@ __all__ = (
     "CmdUnconnectedQuit",
     "CmdUnconnectedLook",
     "CmdUnconnectedHelp",
+    "CmdUnconnectedEncoding",
+    "CmdUnconnectedInfo",
+    "CmdUnconnectedScreenreader",
 )
 
 MULTISESSION_MODE = settings.MULTISESSION_MODE

@@ -49,7 +49,7 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
 
     # nonce value, used to prevent the webclient from erasing the
     # webclient_authenticated_uid value of csession on disconnect
-    nonce = None
+    nonce = 0
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -143,7 +143,7 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
             # set *before* this disconnect (disconnect called after a new client
             # connects, which occurs in some 'fast' browsers like Google Chrome
             # and Mobile Safari)
-            if csession.get("webclient_authenticated_nonce", None) == self.nonce:
+            if csession.get("webclient_authenticated_nonce", 0) == self.nonce:
                 csession["webclient_authenticated_uid"] = None
                 csession["webclient_authenticated_nonce"] = 0
                 csession.save()
