@@ -150,6 +150,10 @@ def check_warnings(settings):
         print(" [Devel: settings.IN_GAME_ERRORS is True. Turn off in production.]")
     if settings.ALLOWED_HOSTS == ["*"]:
         print(" [Devel: settings.ALLOWED_HOSTS set to '*' (all). Limit in production.]")
+    if settings.SERVER_HOSTNAME == "localhost":
+        print(" [Devel: settings.SERVER_HOSTNAME is set to 'localhost'. "
+              "Update to the actual hostname in production.]")
+
     for dbentry in settings.DATABASES.values():
         if "psycopg" in dbentry.get("ENGINE", ""):
             print(
