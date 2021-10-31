@@ -3356,6 +3356,13 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
 
     Teleports an object somewhere. If no object is given, you yourself are
     teleported to the target location.
+
+    To lock an object from being teleported, set its `move` lock, it will be
+    checked with the caller. To block
+    a destination from being teleported to, set the destination's `move_here`
+    lock - it will be checked with the thing being teleported. Admins and
+    higher permissions can always teleport.
+
     """
 
     key = "tel"
@@ -3437,6 +3444,16 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
             caller.msg("%s is already at %s." % (obj_to_teleport, destination))
             return
 
+        # check any move-locks
+        if not (caller.permissions.check("Admin") or obj_to_teleport.access(caller, "move")):
+            caller.msg(f"{obj_to_teleport} 'move'-lock blocks you from teleporting it anywhere.")
+            return
+
+        if not (caller.permissions.check("Admin")
+                or destination.access(obj_to_teleport, "move_here")):
+            caller.msg(f"{destination} 'move_to'-lock blocks {obj_to_teleport} from moving there.")
+            return
+
         # try the teleport
         if not obj_to_teleport.location:
             # teleporting from none-location
@@ -3452,7 +3469,6 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
                 caller.msg(f"Teleported {obj_to_teleport} -> {destination}.")
         else:
             caller.msg("Teleportation failed.")
-
 
 
 class CmdTag(COMMAND_DEFAULT_CLASS):
