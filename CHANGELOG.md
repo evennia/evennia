@@ -103,6 +103,8 @@ Up requirements to Django 3.2+, Twisted 21+
   `SERVER_HOSTNAME` setting for use in the server:port stanza.
 - Changed all `at_before/after_*` hooks to `at_pre/post_*` for consistency
   across Evennia (the old names still work but are deprecated)
+- Change `settings.COMMAND_DEFAULT_ARG_REGEX` default from `None` to a regex meaning that
+  a space or `/` must separate the cmdname and args. This better fits common expectations.
 
 
 ### Evennia 0.9.5 (2019-2020)

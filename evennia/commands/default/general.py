@@ -586,6 +586,9 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
     aliases = ['"', "'"]
     locks = "cmd:all()"
 
+    # don't require a space after `say/'/"`
+    arg_regex = None
+
     def func(self):
         """Run the say command"""
 
@@ -670,6 +673,10 @@ class CmdPose(COMMAND_DEFAULT_CLASS):
     key = "pose"
     aliases = [":", "emote"]
     locks = "cmd:all()"
+
+    # we want to be able to pose without whitespace between
+    # the command/alias and the pose (e.g. :pose)
+    arg_regex = None
 
     def parse(self):
         """
