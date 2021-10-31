@@ -614,9 +614,18 @@ def msdp_send(session, *args, **kwargs):
 # client specific
 
 
-def external_discord_hello(session, *args, **kwargs):
+def _not_implemented(session, *args, **kwargs):
     """
-    Sent by Mudlet as a greeting; added here to avoid
-    logging a missing inputfunc for it.
+    Dummy used to swallow missing-inputfunc errors for
+    common clients.
     """
     pass
+
+
+# GMCP External.Discord.Hello is sent by Mudlet as a greeting
+# (see https://wiki.mudlet.org/w/Manual:Technical_Manual)
+external_discord_hello = _not_implemented
+
+
+# GMCP Client.Gui is sent by Mudlet for gui setup.
+client_gui = _not_implemented
