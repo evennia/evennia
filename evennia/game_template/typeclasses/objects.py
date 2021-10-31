@@ -119,13 +119,13 @@ class Object(DefaultObject):
                             of a lock access check on this object. Return value
                             does not affect check result.
 
-     at_before_move(destination)             - called just before moving object
+     at_pre_move(destination)             - called just before moving object
                         to the destination. If returns False, move is cancelled.
      announce_move_from(destination)         - called in old location, just
                         before move, if obj.move_to() has quiet=False
      announce_move_to(source_location)       - called in new location, just
                         after move, if obj.move_to() has quiet=False
-     at_after_move(source_location)          - always called after a move has
+     at_post_move(source_location)          - always called after a move has
                         been successfully performed.
      at_object_leave(obj, target_location)   - called when an object leaves
                         this object in any fashion
@@ -136,7 +136,7 @@ class Object(DefaultObject):
                               handles all moving across the exit, including
                               calling the other exit hooks. Use super() to retain
                               the default functionality.
-     at_after_traverse(traversing_object, source_location) - (exit-objects only)
+     at_post_traverse(traversing_object, source_location) - (exit-objects only)
                               called just after a traversal has happened.
      at_failed_traverse(traversing_object)      - (exit-objects only) called if
                        traversal fails and property err_traverse is not defined.

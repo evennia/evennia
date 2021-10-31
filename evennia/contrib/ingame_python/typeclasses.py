@@ -290,7 +290,7 @@ class EventCharacter(DefaultCharacter):
 
         super().announce_move_to(source_location, msg=string, mapping=mapping)
 
-    def at_before_move(self, destination):
+    def at_pre_move(self, destination):
         """
         Called just before starting to move this object to
         destination.
@@ -330,7 +330,7 @@ class EventCharacter(DefaultCharacter):
 
         return True
 
-    def at_after_move(self, source_location):
+    def at_post_move(self, source_location):
         """
         Called after move has completed, regardless of quiet mode or
         not.  Allows changes to the object due to the location it is
@@ -340,7 +340,7 @@ class EventCharacter(DefaultCharacter):
             source_location (Object): Wwhere we came from. This may be `None`.
 
         """
-        super().at_after_move(source_location)
+        super().at_post_move(source_location)
 
         origin = source_location
         destination = self.location
@@ -410,7 +410,7 @@ class EventCharacter(DefaultCharacter):
 
         super().at_pre_unpuppet()
 
-    def at_before_say(self, message, **kwargs):
+    def at_pre_say(self, message, **kwargs):
         """
         Before the object says something.
 
@@ -646,7 +646,7 @@ class EventExit(DefaultExit):
         normally by calling
         `traversing_object.move_to(target_location)`. It is normally
         only implemented by Exit objects. If it returns False (usually
-        because `move_to` returned False), `at_after_traverse` below
+        because `move_to` returned False), `at_post_traverse` below
         should not be called and instead `at_failed_traverse` should be
         called.
 

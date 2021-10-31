@@ -101,6 +101,8 @@ Up requirements to Django 3.2+, Twisted 21+
   `msg_contents`.
 - Update defauklt website to show Telnet/SSL/SSH connect info. Added new
   `SERVER_HOSTNAME` setting for use in the server:port stanza.
+- Changed all `at_before/after_*` hooks to `at_pre/post_*` for consistency
+  across Evennia (the old names still work but are deprecated)
 
 
 ### Evennia 0.9.5 (2019-2020)

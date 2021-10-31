@@ -970,7 +970,7 @@ class CmdSay(RPCommand):  # replaces standard say
             return
 
         # calling the speech modifying hook
-        speech = caller.at_before_say(self.args)
+        speech = caller.at_pre_say(self.args)
         # preparing the speech with sdesc/speech parsing.
         targets = self.caller.location.contents
         send_emote(self.caller, targets, speech, anonymous_add=None)
@@ -1614,7 +1614,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         # initializing sdesc
         self.sdesc.add("A normal person")
 
-    def at_before_say(self, message, **kwargs):
+    def at_pre_say(self, message, **kwargs):
         """
         Called before the object says or whispers anything, return modified message.
 
