@@ -105,6 +105,7 @@ Up requirements to Django 3.2+, Twisted 21+
   across Evennia (the old names still work but are deprecated)
 - Change `settings.COMMAND_DEFAULT_ARG_REGEX` default from `None` to a regex meaning that
   a space or `/` must separate the cmdname and args. This better fits common expectations.
+- Add confirmation question to `ban`/`unban` commands.
 
 
 ### Evennia 0.9.5 (2019-2020)
