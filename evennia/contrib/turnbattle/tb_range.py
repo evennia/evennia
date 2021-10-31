@@ -799,7 +799,7 @@ class TBRangeCharacter(DefaultCharacter):
         can be changed at creation and factor into combat calculations.
         """
 
-    def at_before_move(self, destination):
+    def at_pre_move(self, destination):
         """
         Called just before starting to move this object to
         destination.
@@ -833,7 +833,7 @@ class TBRangeObject(DefaultObject):
     objects on your own turn.
     """
 
-    def at_before_drop(self, dropper):
+    def at_pre_drop(self, dropper):
         """
         Called by the default `drop` command before this object has been
         dropped.
@@ -869,7 +869,7 @@ class TBRangeObject(DefaultObject):
 
         Notes:
             This hook cannot stop the drop from happening. Use
-            permissions or the at_before_drop() hook for that.
+            permissions or the at_pre_drop() hook for that.
 
         """
         # If dropper is currently in combat
@@ -878,7 +878,7 @@ class TBRangeObject(DefaultObject):
             self.db.combat_range = {}
             dropper.location.db.combat_turnhandler.join_rangefield(self, anchor_obj=dropper)
 
-    def at_before_get(self, getter):
+    def at_pre_get(self, getter):
         """
         Called by the default `get` command before this object has been
         picked up.
@@ -917,7 +917,7 @@ class TBRangeObject(DefaultObject):
 
         Notes:
             This hook cannot stop the pickup from happening. Use
-            permissions or the at_before_get() hook for that.
+            permissions or the at_pre_get() hook for that.
 
         """
         # If gotten, erase range values
@@ -932,7 +932,7 @@ class TBRangeObject(DefaultObject):
         if is_in_combat(getter):
             spend_action(getter, 1, action_name="get")  # Use up one action.
 
-    def at_before_give(self, giver, getter):
+    def at_pre_give(self, giver, getter):
         """
         Called by the default `give` command before this object has been
         given.
@@ -976,7 +976,7 @@ class TBRangeObject(DefaultObject):
 
         Notes:
             This hook cannot stop the give from happening. Use
-            permissions or the at_before_give() hook for that.
+            permissions or the at_pre_give() hook for that.
 
         """
         # Spend an action if in combat

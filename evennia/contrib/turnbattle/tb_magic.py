@@ -351,7 +351,7 @@ class TBMagicCharacter(DefaultCharacter):
         self.db.max_mp = 20  # Set maximum MP to 20
         self.db.mp = self.db.max_mp  # Set current MP to maximum
 
-    def at_before_move(self, destination):
+    def at_pre_move(self, destination):
         """
         Called just before starting to move this object to
         destination.

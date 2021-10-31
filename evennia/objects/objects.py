@@ -840,7 +840,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                  moving to a None location. If you want to run hooks, run them manually
                  (and make sure they can manage None locations).
             move_hooks (bool): If False, turn off the calling of move-related hooks
-                (at_before/after_move etc) with quiet=True, this is as quiet a move
+                (at_pre/post_move etc) with quiet=True, this is as quiet a move
                 as can be done.
 
         Keyword Args:
@@ -857,13 +857,13 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
             The `DefaultObject` hooks called (if `move_hooks=True`) are, in order:
 
-             1. `self.at_before_move(destination)` (if this returns False, move is aborted)
+             1. `self.at_pre_move(destination)` (if this returns False, move is aborted)
              2. `source_location.at_object_leave(self, destination)`
              3. `self.announce_move_from(destination)`
              4. (move happens here)
              5. `self.announce_move_to(source_location)`
              6. `destination.at_object_receive(self, source_location)`
-             7. `self.at_after_move(source_location)`
+             7. `self.at_post_move(source_location)`
 
         """
         def logerr(string="", err=None):
@@ -890,10 +890,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # Before the move, call eventual pre-commands.
         if move_hooks:
             try:
-                if not self.at_before_move(destination, **kwargs):
+                if not self.at_pre_move(destination, **kwargs):
                     return False
             except Exception as err:
-                logerr(errtxt.format(err="at_before_move()"), err)
+                logerr(errtxt.format(err="at_pre_move()"), err)
                 return False
 
         # Save the old location
@@ -943,9 +943,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # (usually calling 'look')
         if move_hooks:
             try:
-                self.at_after_move(source_location, **kwargs)
+                self.at_post_move(source_location, **kwargs)
             except Exception as err:
-                logerr(errtxt.format(err="at_after_move"), err)
+                logerr(errtxt.format(err="at_post_move"), err)
                 return False
         return True
 
@@ -1244,7 +1244,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 self.aliases.batch_add(*cdict["aliases"])
             if cdict.get("location"):
                 cdict["location"].at_object_receive(self, None)
-                self.at_after_move(None)
+                self.at_post_move(None)
             if cdict.get("tags"):
                 # this should be a list of tags, tuples (key, category) or (key, category, data)
                 self.tags.batch_add(*cdict["tags"])
@@ -1452,7 +1452,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     # hooks called when moving the object
 
-    def at_before_move(self, destination, **kwargs):
+    def at_pre_move(self, destination, **kwargs):
         """
         Called just before starting to move this object to
         destination.
@@ -1472,6 +1472,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         # return has_perm(self, destination, "can_move")
         return True
+
+    # deprecated alias
+    at_before_move = at_pre_move
 
     def announce_move_from(self, destination, msg=None, mapping=None, **kwargs):
         """
@@ -1583,7 +1586,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         destination.msg_contents(string, exclude=(self,), from_obj=self, mapping=mapping)
 
-    def at_after_move(self, source_location, **kwargs):
+    def at_post_move(self, source_location, **kwargs):
         """
         Called after move has completed, regardless of quiet mode or
         not.  Allows changes to the object due to the location it is
@@ -1596,6 +1599,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         pass
+
+    # deprecated
+    at_after_move = at_post_move
 
     def at_object_leave(self, moved_obj, target_location, **kwargs):
         """
@@ -1630,7 +1636,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         normally by calling
         `traversing_object.move_to(target_location)`. It is normally
         only implemented by Exit objects. If it returns False (usually
-        because `move_to` returned False), `at_after_traverse` below
+        because `move_to` returned False), `at_post_traverse` below
         should not be called and instead `at_failed_traverse` should be
         called.
 
@@ -1643,7 +1649,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         pass
 
-    def at_after_traverse(self, traversing_object, source_location, **kwargs):
+    def at_post_traverse(self, traversing_object, source_location, **kwargs):
         """
         Called just after an object successfully used this object to
         traverse to another object (i.e. this object is a type of
@@ -1659,6 +1665,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             The target location should normally be available as `self.destination`.
         """
         pass
+
+    # deprecated
+    at_after_traverse = at_post_traverse
 
     def at_failed_traverse(self, traversing_object, **kwargs):
         """
@@ -1901,7 +1910,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         pass
 
-    def at_before_get(self, getter, **kwargs):
+    def at_pre_get(self, getter, **kwargs):
         """
         Called by the default `get` command before this object has been
         picked up.
@@ -1920,6 +1929,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         return True
 
+    # deprecated
+    at_before_get = at_pre_get
+
     def at_get(self, getter, **kwargs):
         """
         Called by the default `get` command when this object has been
@@ -1932,12 +1944,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         Notes:
             This hook cannot stop the pickup from happening. Use
-            permissions or the at_before_get() hook for that.
+            permissions or the at_pre_get() hook for that.
 
         """
         pass
 
-    def at_before_give(self, giver, getter, **kwargs):
+    def at_pre_give(self, giver, getter, **kwargs):
         """
         Called by the default `give` command before this object has been
         given.
@@ -1958,6 +1970,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         return True
 
+    # deprecated
+    at_before_give = at_pre_give
+
     def at_give(self, giver, getter, **kwargs):
         """
         Called by the default `give` command when this object has been
@@ -1971,12 +1986,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         Notes:
             This hook cannot stop the give from happening. Use
-            permissions or the at_before_give() hook for that.
+            permissions or the at_pre_give() hook for that.
 
         """
         pass
 
-    def at_before_drop(self, dropper, **kwargs):
+    def at_pre_drop(self, dropper, **kwargs):
         """
         Called by the default `drop` command before this object has been
         dropped.
@@ -2002,6 +2017,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             return False
         return True
 
+    # deprecated
+    at_before_drop = at_pre_drop
+
     def at_drop(self, dropper, **kwargs):
         """
         Called by the default `drop` command when this object has been
@@ -2014,12 +2032,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         Notes:
             This hook cannot stop the drop from happening. Use
-            permissions or the at_before_drop() hook for that.
+            permissions or the at_pre_drop() hook for that.
 
         """
         pass
 
-    def at_before_say(self, message, **kwargs):
+    def at_pre_say(self, message, **kwargs):
         """
         Before the object says something.
 
@@ -2043,6 +2061,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         return message
+
+    # deprecated
+    at_before_say = at_pre_say
 
     def at_say(
         self,
@@ -2339,13 +2360,16 @@ class DefaultCharacter(DefaultObject):
         # add the default cmdset
         self.cmdset.add_default(settings.CMDSET_CHARACTER, persistent=True)
 
-    def at_after_move(self, source_location, **kwargs):
+    def at_post_move(self, source_location, **kwargs):
         """
         We make sure to look around after a move.
 
         """
         if self.location.access(self, "view"):
             self.msg(text=(self.at_look(self.location), {"type": "look"}))
+
+    # deprecated
+    at_after_move = at_post_move
 
     def at_pre_puppet(self, account, session=None, **kwargs):
         """
@@ -2811,7 +2835,7 @@ class DefaultExit(DefaultObject):
         """
         source_location = traversing_object.location
         if traversing_object.move_to(target_location):
-            self.at_after_traverse(traversing_object, source_location)
+            self.at_post_traverse(traversing_object, source_location)
         else:
             if self.db.err_traverse:
                 # if exit has a better error message, let's use it.

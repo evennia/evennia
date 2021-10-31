@@ -347,7 +347,7 @@ class WildernessScript(DefaultScript):
                     # ... but that other wilderness room belongs to another
                     # wilderness map
                     create_new_room = True
-                    old_room.wilderness.at_after_object_leave(obj)
+                    old_room.wilderness.at_post_object_leave(obj)
                 else:
                     for item in old_room.contents:
                         if item.has_account:
@@ -451,7 +451,7 @@ class WildernessScript(DefaultScript):
             # And finally put this room away in storage
             self.db.unused_rooms.append(room)
 
-    def at_after_object_leave(self, obj):
+    def at_post_object_leave(self, obj):
         """
         Called after an object left this wilderness map. Used for cleaning up.
 
@@ -551,7 +551,7 @@ class WildernessRoom(DefaultRoom):
             target_location (Object): Where `moved_obj` is going.
 
         """
-        self.wilderness.at_after_object_leave(moved_obj)
+        self.wilderness.at_post_object_leave(moved_obj)
 
     def set_active_coordinates(self, new_coordinates, obj):
         """
@@ -698,7 +698,7 @@ class WildernessExit(DefaultExit):
         ):
             return False
 
-        if not traversing_object.at_before_move(None):
+        if not traversing_object.at_pre_move(None):
             return False
         traversing_object.location.msg_contents(
             "{} leaves to {}".format(traversing_object.key, new_coordinates),
@@ -712,7 +712,7 @@ class WildernessExit(DefaultExit):
             exclude=[traversing_object],
         )
 
-        traversing_object.at_after_move(None)
+        traversing_object.at_post_move(None)
         return True
 
 

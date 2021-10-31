@@ -531,7 +531,7 @@ class TBItemsCharacter(DefaultCharacter):
         can be changed at creation and factor into combat calculations.
         """
 
-    def at_before_move(self, destination):
+    def at_pre_move(self, destination):
         """
         Called just before starting to move this object to
         destination.

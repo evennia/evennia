@@ -19,7 +19,7 @@ class Character(DefaultCharacter):
                     (important!)sets locks so character cannot be picked up
                     and its commands only be called by itself, not anyone else.
                     (to change things, use at_object_creation() instead).
-    at_after_move(source_location) - Launches the "look" command after every move.
+    at_post_move(source_location) - Launches the "look" command after every move.
     at_post_unpuppet(account) -  when Account disconnects from the Character, we
                     store the current location in the pre_logout_location Attribute and
                     move it to a None-location so the "unpuppeted" character
