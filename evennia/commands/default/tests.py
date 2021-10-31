@@ -761,7 +761,7 @@ class TestAdmin(CommandTest):
         self.call(admin.CmdWall(), "Test", "Announcing to all connected sessions ...")
 
     def test_ban(self):
-        self.call(admin.CmdBan(), "Char", "Name-Ban char was added.")
+        self.call(admin.CmdBan(), "Char", "Name-ban 'char' was added. Use unban to reinstate.")
 
     def test_force(self):
         cid = self.char2.id
