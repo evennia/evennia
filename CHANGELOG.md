@@ -99,7 +99,8 @@ Up requirements to Django 3.2+, Twisted 21+
   because it's used for handlers, and e.g. self.locks=[] is a common beginner mistake.
 - Add `$pron()` inlinefunc for pronoun parsing in actor-stance strings using
   `msg_contents`.
-
+- Update defauklt website to show Telnet/SSL/SSH connect info. Added new
+  `SERVER_HOSTNAME` setting for use in the server:port stanza.
 
 
 ### Evennia 0.9.5 (2019-2020)

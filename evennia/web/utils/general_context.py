@@ -15,24 +15,45 @@ from evennia.utils.utils import get_evennia_version
 # Setup lists of the most relevant apps so
 # the adminsite becomes more readable.
 
+GAME_NAME = None
+GAME_SLOGAN = None
+SERVER_VERSION = None
+SERVER_HOSTNAME = None
+
+TELNET_ENABLED = None
+TELNET_PORTS = None
+TELNET_SSL_ENABLED = None
+TELNET_SSL_PORTS = None
+
+SSH_ENABLED = None
+SSH_PORTS = None
+
+WEBCLIENT_ENABLED = None
+WEBSOCKET_CLIENT_ENABLED = None
+WEBSOCKET_PORT = None
+WEBSOCKET_URL = None
+
+REST_API_ENABLED = False
+
 ACCOUNT_RELATED = ["Accounts"]
 GAME_ENTITIES = ["Objects", "Scripts", "Comms", "Help"]
 GAME_SETUP = ["Permissions", "Config"]
 CONNECTIONS = ["Irc"]
 WEBSITE = ["Flatpages", "News", "Sites"]
-REST_API_ENABLED = False
 
-# Determine the site name and server version
-def set_game_name_and_slogan():
+
+def load_game_settings():
     """
-    Sets global variables GAME_NAME and GAME_SLOGAN which are used by
-    general_context.
-
-    Notes:
-        This function is used for unit testing the values of the globals.
+    Load and cache game settings.
 
     """
-    global GAME_NAME, GAME_SLOGAN, SERVER_VERSION, REST_API_ENABLED
+    global GAME_NAME, GAME_SLOGAN, SERVER_VERSION, SERVER_HOSTNAME
+    global TELNET_ENABLED, TELNET_PORTS
+    global TELNET_SSL_ENABLED, TELNET_SSL_PORTS
+    global SSH_ENABLED, SSH_PORTS
+    global WEBCLIENT_ENABLED, WEBSOCKET_CLIENT_ENABLED, WEBSOCKET_PORT, WEBSOCKET_URL
+    global REST_API_ENABLED
+
     try:
         GAME_NAME = settings.SERVERNAME.strip()
     except AttributeError:
@@ -42,19 +63,16 @@ def set_game_name_and_slogan():
         GAME_SLOGAN = settings.GAME_SLOGAN.strip()
     except AttributeError:
         GAME_SLOGAN = SERVER_VERSION
+    SERVER_HOSTNAME = settings.SERVER_HOSTNAME
 
-    REST_API_ENABLED = settings.REST_API_ENABLED
+    TELNET_ENABLED = settings.TELNET_ENABLED
+    TELNET_PORTS = settings.TELNET_PORTS
+    TELNET_SSL_ENABLED = settings.SSL_ENABLED
+    TELNET_SSL_PORTS = settings.SSL_PORTS
 
-def set_webclient_settings():
-    """
-    As with set_game_name_and_slogan above, this sets global variables pertaining
-    to webclient settings.
+    SSH_ENABLED = settings.SSH_ENABLED
+    SSH_PORTS = settings.SSH_PORTS
 
-    Notes:
-        Used for unit testing.
-
-    """
-    global WEBCLIENT_ENABLED, WEBSOCKET_CLIENT_ENABLED, WEBSOCKET_PORT, WEBSOCKET_URL
     WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
     WEBSOCKET_CLIENT_ENABLED = settings.WEBSOCKET_CLIENT_ENABLED
     # if we are working through a proxy or uses docker port-remapping, the webclient port encoded
@@ -66,9 +84,11 @@ def set_webclient_settings():
     # this is determined dynamically by the client and is less of an issue
     WEBSOCKET_URL = settings.WEBSOCKET_CLIENT_URL
 
+    REST_API_ENABLED = settings.REST_API_ENABLED
 
-set_game_name_and_slogan()
-set_webclient_settings()
+
+load_game_settings()
+
 
 # The main context processor function
 def general_context(request):
@@ -91,11 +111,18 @@ def general_context(request):
         "puppet": puppet,
         "game_name": GAME_NAME,
         "game_slogan": GAME_SLOGAN,
+        "server_hostname": SERVER_HOSTNAME,
         "evennia_userapps": ACCOUNT_RELATED,
         "evennia_entityapps": GAME_ENTITIES,
         "evennia_setupapps": GAME_SETUP,
         "evennia_connectapps": CONNECTIONS,
         "evennia_websiteapps": WEBSITE,
+        "telnet_enabled": TELNET_ENABLED,
+        "telnet_ports": TELNET_PORTS,
+        "telnet_ssl_enabled": TELNET_SSL_ENABLED,
+        "telnet_ssl_ports": TELNET_SSL_PORTS,
+        "ssh_enabled": SSH_ENABLED,
+        "ssh_ports": SSH_ENABLED,
         "webclient_enabled": WEBCLIENT_ENABLED,
         "websocket_enabled": WEBSOCKET_CLIENT_ENABLED,
         "websocket_port": WEBSOCKET_PORT,
