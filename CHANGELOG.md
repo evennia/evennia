@@ -108,6 +108,8 @@ Up requirements to Django 3.2+, Twisted 21+
 - Add confirmation question to `ban`/`unban` commands.
 - Check new `teleport` and `teleport_here` lock-types in `teleport` command to optionally
   allow to limit teleportation of an object or to a specific destination.
+- Add `settings.MXP_ENABLED=True` and `settings.MXP_OUTGOING_ONLY=True` as sane defaults,
+  to avoid known security issues with players entering MXP links.
 
 
 ### Evennia 0.9.5 (2019-2020)
