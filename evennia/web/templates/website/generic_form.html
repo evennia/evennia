@@ -14,7 +14,9 @@ Form
         <div class="card-body">
           <h1 class="card-title">Form</h1>
           <hr />
-          
+
+            {% include 'website/messages.html' %} 
+
             {% if form.errors %}
               {% for field in form %}
                 {% for error in field.errors %}
