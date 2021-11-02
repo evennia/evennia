@@ -192,6 +192,14 @@ ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
 # of users with screen readers. Note that ANSI/MXP doesn't need to
 # be stripped this way, that is handled automatically.
 SCREENREADER_REGEX_STRIP = r"\+-+|\+$|\+~|--+|~~+|==+"
+# MXP support means the ability to show clickable links in the client. Clicking
+# the link will execute a game command. It's a way to add mouse input to the game.
+MXP_ENABLED = True
+# If this is set, MXP can only be sent by the server and not added from the
+# client side. Disabling this is a potential security risk because it could
+# allow malevolent players to lure others to execute commands they did not
+# intend to.
+MXP_OUTGOING_ONLY = True
 # Database objects are cached in what is known as the idmapper. The idmapper
 # caching results in a massive speedup of the server (since it dramatically
 # limits the number of database accesses needed) and also allows for
