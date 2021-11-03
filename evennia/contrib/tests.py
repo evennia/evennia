@@ -894,13 +894,13 @@ class TestCustomGameTime(EvenniaTest):
         )
 
     def test_realtime_to_gametime(self):
-        self.assertEqual(custom_gametime.realtime_to_gametime(days=2, mins=34), 349680.0)
+        self.assertEqual(custom_gametime.realtime_to_gametime(days=3, mins=34), 349680.0)
         self.assertEqual(
-            custom_gametime.realtime_to_gametime(days=2, mins=34, format=True),
+            custom_gametime.realtime_to_gametime(days=3, mins=34, format=True),
             (0, 0, 0, 4, 1, 8, 0),
         )
         self.assertEqual(
-            custom_gametime.realtime_to_gametime(format=True, days=2, mins=4), (0, 0, 0, 4, 0, 8, 0)
+            custom_gametime.realtime_to_gametime(format=True, days=3, mins=4), (0, 0, 0, 4, 0, 8, 0)
         )
 
     def test_custom_gametime(self):
@@ -909,7 +909,7 @@ class TestCustomGameTime(EvenniaTest):
 
     def test_real_seconds_until(self):
         self.assertEqual(
-            custom_gametime.real_seconds_until(year=2300, month=11, day=6), 31911667199.77
+            custom_gametime.real_seconds_until(year=2300, month=12, day=7), 31911667199.77
         )
 
     def test_schedule(self):
