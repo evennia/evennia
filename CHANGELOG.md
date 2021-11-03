@@ -110,7 +110,8 @@ Up requirements to Django 3.2+, Twisted 21+
   allow to limit teleportation of an object or to a specific destination.
 - Add `settings.MXP_ENABLED=True` and `settings.MXP_OUTGOING_ONLY=True` as sane defaults,
   to avoid known security issues with players entering MXP links.
-
+- Add browser name to webclient `CLIENT_NAME` in `session.protocol_flags`, e.g.
+  `"Evennia webclient (websocket:firefox)"` or `"evennia webclient (ajax:chrome)"`.
 
 ### Evennia 0.9.5 (2019-2020)
 
