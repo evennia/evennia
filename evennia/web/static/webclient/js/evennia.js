@@ -227,7 +227,7 @@ An "emitter" object must have a function
                 return;
             }
             // Important - we pass csessid tacked on the url
-            websocket = new WebSocket(wsurl + '?' + csessid);
+            websocket = new WebSocket(wsurl + '?' + csessid + '&' + browser);
 
             // Handle Websocket open event
             websocket.onopen = function (event) {
@@ -310,7 +310,7 @@ An "emitter" object must have a function
             $.ajax({type: "POST", url: "/webclientdata",
                     async: true, cache: false, timeout: 50000,
                     datatype: "json",
-                    data: {mode: "init", csessid: csessid},
+                    data: {mode: "init", csessid: csessid, browserstr: browser},
 
                     success: function(data) {
                         open = true;
@@ -449,6 +449,24 @@ function log() {
     console.log(JSON.stringify(arguments));
   }
 }
+
+
+// figure out the browser info string
+var browser = (function (agent) {
+    "use strict"
+    switch (true) {
+        case agent.indexOf("edge") > -1: return "edge";
+        case agent.indexOf("edg") > -1: return "chromium based edge (dev or canary)";
+        case agent.indexOf("opr") > -1 && !!window.opr: return "opera";
+        case agent.indexOf("chrome") > -1 && !!window.chrome: return "chrome";
+        case agent.indexOf("trident") > -1: return "ie";
+        case agent.indexOf("firefox") > -1: return "firefox";
+        case agent.indexOf("safari") > -1: return "safari";
+        default: return "other";
+    }
+})(window.navigator.userAgent.toLowerCase());
+console.log(window.navigator.userAgent.toLowerCase() + "\n" + browser);
+
 
 // Called when page has finished loading (kicks the client into gear)
 $(document).ready(function() {

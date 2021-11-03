@@ -129,6 +129,19 @@ class AjaxWebClient(resource.Resource):
         """
         return html.escape(request.args[b"csessid"][0].decode("utf-8"))
 
+    def get_browserstr(self, request):
+        """
+        Get browser-string out of the request.
+
+        Args:
+            request (Request): Incoming request object.
+        Returns:
+            str: The browser name.
+
+
+        """
+        return html.escape(request.args[b"browserstr"][0].decode("utf-8"))
+
     def at_login(self):
         """
         Called when this session gets authenticated by the server.
@@ -181,6 +194,7 @@ class AjaxWebClient(resource.Resource):
 
         """
         csessid = self.get_client_sessid(request)
+        browserstr = self.get_browserstr(request)
 
         remote_addr = request.getClientIP()
 
@@ -204,6 +218,7 @@ class AjaxWebClient(resource.Resource):
         sess.init_session("ajax/comet", remote_addr, self.sessionhandler)
 
         sess.csessid = csessid
+        sess.browserstr = browserstr
         csession = _CLIENT_SESSIONS(session_key=sess.csessid)
         uid = csession and csession.get("webclient_authenticated_uid", False)
         if uid:
@@ -217,6 +232,11 @@ class AjaxWebClient(resource.Resource):
             # the keepalive is not running; start it.
             self.keep_alive = LoopingCall(self._keepalive)
             self.keep_alive.start(_KEEPALIVE, now=False)
+
+        browserstr = f":{browserstr}" if browserstr else ""
+        sess.protocol_flags["CLIENTNAME"] = f"Evennia Webclient (ajax{browserstr})"
+        sess.protocol_flags["UTF-8"] = True
+        sess.protocol_flags["OOB"] = True
 
         # actually do the connection
         sess.sessionhandler.connect(sess)
