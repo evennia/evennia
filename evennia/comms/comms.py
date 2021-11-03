@@ -399,12 +399,20 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         """
         Deletes channel.
 
+        Returns:
+            bool: If deletion was successful. Only time it can fail would be
+                if channel was already deleted. Even if it were to fail, all subscribers
+                will be disconnected.
+
         """
         self.attributes.clear()
         self.aliases.clear()
         for subscriber in self.subscriptions.all():
             self.disconnect(subscriber)
+        if not self.pk:
+            return False
         super().delete()
+        return True
 
     def channel_prefix(self):
         """

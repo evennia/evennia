@@ -853,6 +853,12 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             `*args` and `**kwargs` are passed on to the base delete
              mechanism (these are usually not used).
 
+        Return:
+            bool: If deletion was successful. Only time it fails would be
+                if the Account was already deleted. Note that even on a failure,
+                connected resources (nicks/aliases etc) will still have been
+                deleted.
+
         """
         for session in self.sessions.all():
             # unpuppeting all objects and disconnecting the user, if any
@@ -868,7 +874,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         self.attributes.clear()
         self.nicks.clear()
         self.aliases.clear()
+        if not self.pk:
+            return False
         super().delete(*args, **kwargs)
+        return True
+
 
     # methods inherited from database model
 

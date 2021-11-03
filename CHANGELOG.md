@@ -114,6 +114,8 @@ Up requirements to Django 3.2+, Twisted 21+
   `"Evennia webclient (websocket:firefox)"` or `"evennia webclient (ajax:chrome)"`.
 - `TagHandler.add/has(tag=...)` kwarg changed to `add/has(key=...)` for consistency
   with other handlers.
+- Make `DefaultScript.delete`, `DefaultChannel.delete` and `DefaultAccount.delete` return
+  bool True/False if deletion was successful (like `DefaultObject.delete` before them)
 
 ### Evennia 0.9.5 (2019-2020)
 

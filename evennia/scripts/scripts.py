@@ -447,11 +447,18 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
                 is if wanting to delete the script from the at_stop method - setting
                 this will then avoid an infinite recursion.
 
+        Returns:
+            bool: If deletion was successful or not. Only time this can fail would be if
+                the script was already previously deleted, or `at_script_delete` returns
+                False.
+
         """
+        if not self.pk or not self.at_script_delete():
+            return False
         if stop_task:
             self._stop_task()
-        self.at_script_delete()
         super().delete()
+        return True
 
     def at_script_creation(self):
         """
@@ -462,10 +469,13 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
 
     def at_script_delete(self):
         """
-        Called when script is deleted, after at_stop.
+        Called when script is deleted, before the script timer stops.
+
+        Returns:
+            bool: If False, deletion is aborted.
 
         """
-        pass
+        return True
 
     def is_valid(self):
         """
@@ -725,10 +735,13 @@ class DefaultScript(ScriptBase):
 
     def at_script_delete(self):
         """
-        Called when the Script is deleted, after at_stop().
+        Called when the Script is deleted, before stopping the timer.
+
+        Returns:
+            bool: If False, the deletion is aborted.
 
         """
-        pass
+        return True
 
     def at_server_reload(self):
         """
