@@ -112,6 +112,8 @@ Up requirements to Django 3.2+, Twisted 21+
   to avoid known security issues with players entering MXP links.
 - Add browser name to webclient `CLIENT_NAME` in `session.protocol_flags`, e.g.
   `"Evennia webclient (websocket:firefox)"` or `"evennia webclient (ajax:chrome)"`.
+- `TagHandler.add/has(tag=...)` kwarg changed to `add/has(key=...)` for consistency
+  with other handlers.
 
 ### Evennia 0.9.5 (2019-2020)
 

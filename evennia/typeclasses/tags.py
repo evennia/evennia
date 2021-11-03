@@ -290,12 +290,12 @@ class TagHandler(object):
         self._cache = {}
         self._catcache = {}
 
-    def add(self, tag=None, category=None, data=None):
+    def add(self, key=None, category=None, data=None):
         """
         Add a new tag to the handler.
 
         Args:
-            tag (str or list): The name of the tag to add. If a list,
+            key (str or list): The name of the tag to add. If a list,
                 add several Tags.
             category (str, optional): Category of Tag. `None` is the default category.
             data (str, optional): Info text about the tag(s) added.
@@ -308,11 +308,11 @@ class TagHandler(object):
             will be created.
 
         """
-        if not tag:
+        if not key:
             return
         if not self._cache_complete:
             self._fullcache()
-        for tagstr in make_iter(tag):
+        for tagstr in make_iter(key):
             if not tagstr:
                 continue
             tagstr = str(tagstr).strip().lower()
@@ -327,12 +327,12 @@ class TagHandler(object):
             getattr(self.obj, self._m2m_fieldname).add(tagobj)
             self._setcache(tagstr, category, tagobj)
 
-    def has(self, tag=None, category=None, return_list=False):
+    def has(self, key=None, category=None, return_list=False):
         """
         Checks if the given Tag (or list of Tags) exists on the object.
 
         Args:
-            tag (str or iterable): The Tag key or tags to check for.
+            key (str or iterable): The Tag key or tags to check for.
                 If `None`, search by category.
             category (str, optional): Limit the check to Tags with this
                 category (note, that `None` is the default category).
@@ -347,8 +347,8 @@ class TagHandler(object):
         """
         ret = []
         category = category.strip().lower() if category is not None else None
-        if tag:
-            for tag_str in make_iter(tag):
+        if key:
+            for tag_str in make_iter(key):
                 tag_str = tag_str.strip().lower()
                 ret.extend(bool(tag) for tag in self._getcache(tag_str, category))
         elif category:
@@ -515,7 +515,7 @@ class TagHandler(object):
                 keys[tup[1]].append(tup[0])
                 data[tup[1]] = tup[2]  # overwrite previous
         for category, key in keys.items():
-            self.add(tag=key, category=category, data=data.get(category, None))
+            self.add(key=key, category=category, data=data.get(category, None))
 
     def __str__(self):
         return ",".join(self.all())
