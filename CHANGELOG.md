@@ -116,6 +116,8 @@ Up requirements to Django 3.2+, Twisted 21+
   with other handlers.
 - Make `DefaultScript.delete`, `DefaultChannel.delete` and `DefaultAccount.delete` return
   bool True/False if deletion was successful (like `DefaultObject.delete` before them)
+- `contrib.custom_gametime` days/weeks/months now always starts from 1 (to match
+  the standard calendar form ... there is no month 0 every year after all).
 
 ### Evennia 0.9.5 (2019-2020)
 
