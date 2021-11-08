@@ -727,10 +727,10 @@ class TraitProperty:
 
         class Character(DefaultCharacter):
 
-            strength = TraitProperty("str", "Strength", trait_type="static", base=10, mod=2)
-            hunting = TraitProperty(self, "hunting", "Hunting Skill", trait_type="counter",
+            strength = TraitProperty(name="STR", trait_type="static", base=10, mod=2)
+            hunting = TraitProperty("Hunting Skill", trait_type="counter",
                                     base=10, mod=1, max=100)
-            health = TraitProperty("health", "Health", trait_type="gauge", min=0, base=100)
+            health = TraitProperty(trait_type="gauge", min=0, base=100)
 
     """
 
