@@ -137,7 +137,12 @@ overriding the call (unused by default).</p>
 <dl class="py method">
 <dt id="evennia.scripts.scripts.DefaultScript.at_script_delete">
 <code class="sig-name descname">at_script_delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripts.html#DefaultScript.at_script_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripts.DefaultScript.at_script_delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called when the Script is deleted, after at_stop().</p>
+<dd><p>Called when the Script is deleted, before stopping the timer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>bool</em> – If False, the deletion is aborted.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

@@ -130,7 +130,7 @@ match the <strong>settings.TIME_UNITS</strong> dict keys.</p></li>
 
 <dl class="py function">
 <dt id="evennia.contrib.custom_gametime.realtime_to_gametime">
-<code class="sig-prename descclassname">evennia.contrib.custom_gametime.</code><code class="sig-name descname">realtime_to_gametime</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">secs</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">mins</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">hrs</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">days</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">weeks</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">months</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">yrs</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/custom_gametime.html#realtime_to_gametime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.custom_gametime.realtime_to_gametime" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.custom_gametime.</code><code class="sig-name descname">realtime_to_gametime</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">secs</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">mins</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">hrs</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">days</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">weeks</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">months</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">yrs</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/custom_gametime.html#realtime_to_gametime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.custom_gametime.realtime_to_gametime" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method calculates how much in-game time a real-world time
 interval would correspond to. This is usually a lot less
 interesting than the other way around.</p>
@@ -143,19 +143,27 @@ interesting than the other way around.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p><em>time (float or tuple)</em> –</p>
-<blockquote>
-<div><dl class="simple">
-<dt>The gametime difference or the same</dt><dd><p>time split up into time units.</p>
-</dd>
-</dl>
-</div></blockquote>
 <dl class="simple">
-<dt>Example:</dt><dd><p>realtime_to_gametime(days=2) -&gt; number of game-world seconds</p>
+<dt>The gametime difference or the same</dt><dd><p>time split up into time units.</p>
 </dd>
 </dl>
 </p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<dl class="simple">
+<dt>days/weeks/months start from 1 (there is no day/week/month 0). This makes it</dt><dd><p>consistent with the real world datetime.</p>
+</dd>
+</dl>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If trying to add a days/weeks/months of &lt;=0.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>realtime_to_gametime(days=2) -&gt; number of game-world seconds</p>
 </dd></dl>
 
 <dl class="py function">
@@ -194,6 +202,8 @@ return 300 (5 minutes).</p>
 <dd class="field-odd"><p>The number of real seconds before the given game time is up.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>day/week/month start from 1, not from 0 (there is no month 0 for example)</p>
 </dd></dl>
 
 <dl class="py function">

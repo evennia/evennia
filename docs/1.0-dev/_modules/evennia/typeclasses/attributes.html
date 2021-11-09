@@ -203,6 +203,123 @@
     <span class="n">value</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__value_get</span><span class="p">,</span> <span class="n">__value_set</span><span class="p">,</span> <span class="n">__value_del</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="AttributeProperty"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeProperty">[docs]</a><span class="k">class</span> <span class="nc">AttributeProperty</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Attribute property descriptor. Allows for specifying Attributes as Django-like &#39;fields&#39;</span>
+<span class="sd">    on the class level. Note that while one can set a lock on the Attribute,</span>
+<span class="sd">    there is no way to *check* said lock when accessing via the property - use</span>
+<span class="sd">    the full AttributeHandler if you need to do access checks.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">    ::</span>
+
+<span class="sd">        class Character(DefaultCharacter):</span>
+<span class="sd">            foo = AttributeProperty(default=&quot;Bar&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">attrhandler_name</span> <span class="o">=</span> <span class="s2">&quot;attributes&quot;</span>
+
+<div class="viewcode-block" id="AttributeProperty.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeProperty.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strattr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lockstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                 <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize an Attribute as a property descriptor.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            default (any): A default value if the attr is not set.</span>
+<span class="sd">            category (str): The attribute&#39;s category. If unset, use class default.</span>
+<span class="sd">            strattr (bool): If set, this Attribute *must* be a simple string, and will be</span>
+<span class="sd">                stored more efficiently.</span>
+<span class="sd">            lockstring (str): This is not itself useful with the property, but only if</span>
+<span class="sd">                using the full AttributeHandler.get(accessing_obj=...) to access the</span>
+<span class="sd">                Attribute.</span>
+<span class="sd">            autocreate (bool): If an un-found Attr should lead to auto-creating the</span>
+<span class="sd">                Attribute (with the default value). If `False`, the property will</span>
+<span class="sd">                return the default value until it has been explicitly set. This means</span>
+<span class="sd">                less database accesses, but also means the property will have no</span>
+<span class="sd">                corresponding Attribute if wanting to access it directly via the</span>
+<span class="sd">                AttributeHandler (it will also not show up in `examine`).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default</span> <span class="o">=</span> <span class="n">default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_category</span> <span class="o">=</span> <span class="n">category</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_strattr</span> <span class="o">=</span> <span class="n">strattr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lockstring</span> <span class="o">=</span> <span class="n">lockstring</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_autocreate</span> <span class="o">=</span> <span class="n">autocreate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+
+    <span class="k">def</span> <span class="nf">__set_name__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when descriptor is first assigned to the class. It is called with</span>
+<span class="sd">        the name of the field.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when the attrkey is retrieved from the instance.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrhandler_name</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">,</span>
+                     <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_default</span><span class="p">,</span>
+                     <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">,</span>
+                     <span class="n">strattr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_strattr</span><span class="p">,</span>
+                     <span class="n">raise_exception</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_autocreate</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_autocreate</span><span class="p">:</span>
+                <span class="c1"># attribute didn&#39;t exist and autocreate is set</span>
+                <span class="bp">self</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when assigning to the property (and when auto-creating an Attribute).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrhandler_name</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">,</span>
+                 <span class="n">value</span><span class="p">,</span>
+                 <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">,</span>
+                 <span class="n">lockstring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lockstring</span><span class="p">,</span>
+                 <span class="n">strattr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_strattr</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__delete__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when running `del` on the field. Will remove/clear the Attribute.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrhandler_name</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">,</span>
+                    <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="NAttributeProperty"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NAttributeProperty">[docs]</a><span class="k">class</span> <span class="nc">NAttributeProperty</span><span class="p">(</span><span class="n">AttributeProperty</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    NAttribute property descriptor. Allows for specifying NAttributes as Django-like &#39;fields&#39;</span>
+<span class="sd">    on the class level.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">    ::</span>
+
+<span class="sd">        class Character(DefaultCharacter):</span>
+<span class="sd">            foo = NAttributeProperty(default=&quot;Bar&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">attrhandler_name</span> <span class="o">=</span> <span class="s2">&quot;nattributes&quot;</span></div>
+
+
 <div class="viewcode-block" id="Attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.Attribute">[docs]</a><span class="k">class</span> <span class="nc">Attribute</span><span class="p">(</span><span class="n">IAttribute</span><span class="p">,</span> <span class="n">SharedMemoryModel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This attribute is stored via Django. Most Attributes will be using this class.</span>
@@ -1024,11 +1141,11 @@
 <span class="sd">            key (str or list, optional): the attribute identifier or</span>
 <span class="sd">                multiple attributes to get. if a list of keys, the</span>
 <span class="sd">                method will return a list.</span>
-<span class="sd">            category (str, optional): the category within which to</span>
-<span class="sd">                retrieve attribute(s).</span>
 <span class="sd">            default (any, optional): The value to return if an</span>
 <span class="sd">                Attribute was not defined. If set, it will be returned in</span>
 <span class="sd">                a one-item list.</span>
+<span class="sd">            category (str, optional): the category within which to</span>
+<span class="sd">                retrieve attribute(s).</span>
 <span class="sd">            return_obj (bool, optional): If set, the return is not the value of the</span>
 <span class="sd">                Attribute but the Attribute object itself.</span>
 <span class="sd">            strattr (bool, optional): Return the `strvalue` field of</span>

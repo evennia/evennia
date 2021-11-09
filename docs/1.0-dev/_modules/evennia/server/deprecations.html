@@ -194,6 +194,10 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; [Devel: settings.IN_GAME_ERRORS is True. Turn off in production.]&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">ALLOWED_HOSTS</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">]:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; [Devel: settings.ALLOWED_HOSTS set to &#39;*&#39; (all). Limit in production.]&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">SERVER_HOSTNAME</span> <span class="o">==</span> <span class="s2">&quot;localhost&quot;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; [Devel: settings.SERVER_HOSTNAME is set to &#39;localhost&#39;. &quot;</span>
+              <span class="s2">&quot;Update to the actual hostname in production.]&quot;</span><span class="p">)</span>
+
     <span class="k">for</span> <span class="n">dbentry</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">DATABASES</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
         <span class="k">if</span> <span class="s2">&quot;psycopg&quot;</span> <span class="ow">in</span> <span class="n">dbentry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ENGINE&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span>

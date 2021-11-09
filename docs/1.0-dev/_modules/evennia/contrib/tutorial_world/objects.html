@@ -795,7 +795,7 @@
         <span class="c1"># call the parent to continue execution (will use the desc we just set)</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">return_appearance</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrumblingWall.at_after_traverse"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.CrumblingWall.at_after_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_after_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traverser</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
+<div class="viewcode-block" id="CrumblingWall.at_post_traverse"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.CrumblingWall.at_post_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traverser</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called after we traversed this exit. Cleans up and resets</span>
 <span class="sd">        the puzzle.</span>

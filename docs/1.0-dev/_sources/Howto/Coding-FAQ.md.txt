@@ -35,12 +35,12 @@ for more info.
 **Q:** How does one keep a character from using any exit, if they meet a certain condition? (I.E. in
 combat, immobilized, etc.)
 
-**A:** The `at_before_move` hook is called by Evennia just before performing any move. If it returns
+**A:** The `at_pre_move` hook is called by Evennia just before performing any move. If it returns
 `False`, the move is aborted. Let's say we want to check for an [Attribute](../Components/Attributes.md) `cantmove`.
 Add the following code to the `Character` class:
 
 ```python
-def at_before_move(self, destination):
+def at_pre_move(self, destination):
     "Called just before trying to move"
     if self.db.cantmove: # replace with condition you want to test
         self.msg("Something is preventing you from moving!")

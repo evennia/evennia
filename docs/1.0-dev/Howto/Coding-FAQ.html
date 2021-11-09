@@ -77,10 +77,10 @@ for more info.</p>
 <h2>Preventing character from moving based on a condition<a class="headerlink" href="#preventing-character-from-moving-based-on-a-condition" title="Permalink to this headline">¶</a></h2>
 <p><strong>Q:</strong> How does one keep a character from using any exit, if they meet a certain condition? (I.E. in
 combat, immobilized, etc.)</p>
-<p><strong>A:</strong> The <code class="docutils literal notranslate"><span class="pre">at_before_move</span></code> hook is called by Evennia just before performing any move. If it returns
+<p><strong>A:</strong> The <code class="docutils literal notranslate"><span class="pre">at_pre_move</span></code> hook is called by Evennia just before performing any move. If it returns
 <code class="docutils literal notranslate"><span class="pre">False</span></code>, the move is aborted. Let’s say we want to check for an <a class="reference internal" href="../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a> <code class="docutils literal notranslate"><span class="pre">cantmove</span></code>.
 Add the following code to the <code class="docutils literal notranslate"><span class="pre">Character</span></code> class:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">at_before_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">at_pre_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
     <span class="s2">&quot;Called just before trying to move&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">cantmove</span><span class="p">:</span> <span class="c1"># replace with condition you want to test</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Something is preventing you from moving!&quot;</span><span class="p">)</span>

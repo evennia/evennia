@@ -771,10 +771,10 @@
 
 <span class="sd">        class Character(DefaultCharacter):</span>
 
-<span class="sd">            strength = TraitProperty(&quot;str&quot;, &quot;Strength&quot;, trait_type=&quot;static&quot;, base=10, mod=2)</span>
-<span class="sd">            hunting = TraitProperty(self, &quot;hunting&quot;, &quot;Hunting Skill&quot;, trait_type=&quot;counter&quot;,</span>
+<span class="sd">            strength = TraitProperty(name=&quot;STR&quot;, trait_type=&quot;static&quot;, base=10, mod=2)</span>
+<span class="sd">            hunting = TraitProperty(&quot;Hunting Skill&quot;, trait_type=&quot;counter&quot;,</span>
 <span class="sd">                                    base=10, mod=1, max=100)</span>
-<span class="sd">            health = TraitProperty(&quot;health&quot;, &quot;Health&quot;, trait_type=&quot;gauge&quot;, min=0, base=100)</span>
+<span class="sd">            health = TraitProperty(trait_type=&quot;gauge&quot;, min=0, base=100)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 

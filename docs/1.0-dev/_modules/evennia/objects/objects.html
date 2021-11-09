@@ -884,7 +884,7 @@
 <span class="sd">                 moving to a None location. If you want to run hooks, run them manually</span>
 <span class="sd">                 (and make sure they can manage None locations).</span>
 <span class="sd">            move_hooks (bool): If False, turn off the calling of move-related hooks</span>
-<span class="sd">                (at_before/after_move etc) with quiet=True, this is as quiet a move</span>
+<span class="sd">                (at_pre/post_move etc) with quiet=True, this is as quiet a move</span>
 <span class="sd">                as can be done.</span>
 
 <span class="sd">        Keyword Args:</span>
@@ -901,13 +901,13 @@
 
 <span class="sd">            The `DefaultObject` hooks called (if `move_hooks=True`) are, in order:</span>
 
-<span class="sd">             1. `self.at_before_move(destination)` (if this returns False, move is aborted)</span>
+<span class="sd">             1. `self.at_pre_move(destination)` (if this returns False, move is aborted)</span>
 <span class="sd">             2. `source_location.at_object_leave(self, destination)`</span>
 <span class="sd">             3. `self.announce_move_from(destination)`</span>
 <span class="sd">             4. (move happens here)</span>
 <span class="sd">             5. `self.announce_move_to(source_location)`</span>
 <span class="sd">             6. `destination.at_object_receive(self, source_location)`</span>
-<span class="sd">             7. `self.at_after_move(source_location)`</span>
+<span class="sd">             7. `self.at_post_move(source_location)`</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">def</span> <span class="nf">logerr</span><span class="p">(</span><span class="n">string</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -934,10 +934,10 @@
         <span class="c1"># Before the move, call eventual pre-commands.</span>
         <span class="k">if</span> <span class="n">move_hooks</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_before_move</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_pre_move</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
                     <span class="k">return</span> <span class="kc">False</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;at_before_move()&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
+                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;at_pre_move()&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># Save the old location</span>
@@ -987,9 +987,9 @@
         <span class="c1"># (usually calling &#39;look&#39;)</span>
         <span class="k">if</span> <span class="n">move_hooks</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">at_after_move</span><span class="p">(</span><span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">at_post_move</span><span class="p">(</span><span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;at_after_move&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
+                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;at_post_move&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
@@ -1288,7 +1288,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;aliases&quot;</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">cdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">):</span>
                 <span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">at_after_move</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">at_post_move</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">cdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">):</span>
                 <span class="c1"># this should be a list of tags, tuples (key, category) or (key, category, data)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">])</span>
@@ -1496,7 +1496,7 @@
 
     <span class="c1"># hooks called when moving the object</span>
 
-<div class="viewcode-block" id="DefaultObject.at_before_move"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_before_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_pre_move"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_pre_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before starting to move this object to</span>
 <span class="sd">        destination.</span>
@@ -1516,6 +1516,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># return has_perm(self, destination, &quot;can_move&quot;)</span>
         <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="c1"># deprecated alias</span>
+    <span class="n">at_before_move</span> <span class="o">=</span> <span class="n">at_pre_move</span>
 
 <div class="viewcode-block" id="DefaultObject.announce_move_from"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.announce_move_from">[docs]</a>    <span class="k">def</span> <span class="nf">announce_move_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1627,7 +1630,7 @@
 
         <span class="n">destination</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="p">,),</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_after_move"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_after_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_after_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_post_move"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_post_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called after move has completed, regardless of quiet mode or</span>
 <span class="sd">        not.  Allows changes to the object due to the location it is</span>
@@ -1640,6 +1643,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
+
+    <span class="c1"># deprecated</span>
+    <span class="n">at_after_move</span> <span class="o">=</span> <span class="n">at_post_move</span>
 
 <div class="viewcode-block" id="DefaultObject.at_object_leave"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_obj</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1674,7 +1680,7 @@
 <span class="sd">        normally by calling</span>
 <span class="sd">        `traversing_object.move_to(target_location)`. It is normally</span>
 <span class="sd">        only implemented by Exit objects. If it returns False (usually</span>
-<span class="sd">        because `move_to` returned False), `at_after_traverse` below</span>
+<span class="sd">        because `move_to` returned False), `at_post_traverse` below</span>
 <span class="sd">        should not be called and instead `at_failed_traverse` should be</span>
 <span class="sd">        called.</span>
 
@@ -1687,7 +1693,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_after_traverse"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_after_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_after_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_post_traverse"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_post_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just after an object successfully used this object to</span>
 <span class="sd">        traverse to another object (i.e. this object is a type of</span>
@@ -1703,6 +1709,9 @@
 <span class="sd">            The target location should normally be available as `self.destination`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
+
+    <span class="c1"># deprecated</span>
+    <span class="n">at_after_traverse</span> <span class="o">=</span> <span class="n">at_post_traverse</span>
 
 <div class="viewcode-block" id="DefaultObject.at_failed_traverse"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_failed_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_failed_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1945,7 +1954,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_before_get"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_before_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_pre_get"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_pre_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `get` command before this object has been</span>
 <span class="sd">        picked up.</span>
@@ -1964,6 +1973,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
+    <span class="c1"># deprecated</span>
+    <span class="n">at_before_get</span> <span class="o">=</span> <span class="n">at_pre_get</span>
+
 <div class="viewcode-block" id="DefaultObject.at_get"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `get` command when this object has been</span>
@@ -1976,12 +1988,12 @@
 
 <span class="sd">        Notes:</span>
 <span class="sd">            This hook cannot stop the pickup from happening. Use</span>
-<span class="sd">            permissions or the at_before_get() hook for that.</span>
+<span class="sd">            permissions or the at_pre_get() hook for that.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_before_give"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_before_give">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_give</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">giver</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_pre_give"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_pre_give">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_give</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">giver</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `give` command before this object has been</span>
 <span class="sd">        given.</span>
@@ -2002,6 +2014,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
+    <span class="c1"># deprecated</span>
+    <span class="n">at_before_give</span> <span class="o">=</span> <span class="n">at_pre_give</span>
+
 <div class="viewcode-block" id="DefaultObject.at_give"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_give">[docs]</a>    <span class="k">def</span> <span class="nf">at_give</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">giver</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `give` command when this object has been</span>
@@ -2015,12 +2030,12 @@
 
 <span class="sd">        Notes:</span>
 <span class="sd">            This hook cannot stop the give from happening. Use</span>
-<span class="sd">            permissions or the at_before_give() hook for that.</span>
+<span class="sd">            permissions or the at_pre_give() hook for that.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_before_drop"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_before_drop">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropper</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_pre_drop"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_pre_drop">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropper</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `drop` command before this object has been</span>
 <span class="sd">        dropped.</span>
@@ -2046,6 +2061,9 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
+    <span class="c1"># deprecated</span>
+    <span class="n">at_before_drop</span> <span class="o">=</span> <span class="n">at_pre_drop</span>
+
 <div class="viewcode-block" id="DefaultObject.at_drop"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_drop">[docs]</a>    <span class="k">def</span> <span class="nf">at_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropper</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `drop` command when this object has been</span>
@@ -2058,12 +2076,12 @@
 
 <span class="sd">        Notes:</span>
 <span class="sd">            This hook cannot stop the drop from happening. Use</span>
-<span class="sd">            permissions or the at_before_drop() hook for that.</span>
+<span class="sd">            permissions or the at_pre_drop() hook for that.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_before_say"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_before_say">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_say</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_pre_say"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_pre_say">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_say</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Before the object says something.</span>
 
@@ -2087,6 +2105,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">message</span></div>
+
+    <span class="c1"># deprecated</span>
+    <span class="n">at_before_say</span> <span class="o">=</span> <span class="n">at_pre_say</span>
 
 <div class="viewcode-block" id="DefaultObject.at_say"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_say">[docs]</a>    <span class="k">def</span> <span class="nf">at_say</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2383,13 +2404,16 @@
         <span class="c1"># add the default cmdset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_CHARACTER</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultCharacter.at_after_move"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.at_after_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_after_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultCharacter.at_post_move"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.at_post_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We make sure to look around after a move.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">at_look</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;look&quot;</span><span class="p">}))</span></div>
+
+    <span class="c1"># deprecated</span>
+    <span class="n">at_after_move</span> <span class="o">=</span> <span class="n">at_post_move</span>
 
 <div class="viewcode-block" id="DefaultCharacter.at_pre_puppet"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.at_pre_puppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2855,7 +2879,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">source_location</span> <span class="o">=</span> <span class="n">traversing_object</span><span class="o">.</span><span class="n">location</span>
         <span class="k">if</span> <span class="n">traversing_object</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">target_location</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">at_after_traverse</span><span class="p">(</span><span class="n">traversing_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">at_post_traverse</span><span class="p">(</span><span class="n">traversing_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">err_traverse</span><span class="p">:</span>
                 <span class="c1"># if exit has a better error message, let&#39;s use it.</span>

@@ -976,6 +976,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;emote&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;:&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
 <div class="viewcode-block" id="CmdEmote.func"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdEmote.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Perform the emote.&quot;</span>
@@ -1003,6 +1004,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;say&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
 <div class="viewcode-block" id="CmdSay.func"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdSay.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Run the say command&quot;</span>
@@ -1014,7 +1016,7 @@
             <span class="k">return</span>
 
         <span class="c1"># calling the speech modifying hook</span>
-        <span class="n">speech</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">at_before_say</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">speech</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">at_pre_say</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
         <span class="c1"># preparing the speech with sdesc/speech parsing.</span>
         <span class="n">targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span>
         <span class="n">send_emote</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">speech</span><span class="p">,</span> <span class="n">anonymous_add</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div></div>
@@ -1658,7 +1660,7 @@
         <span class="c1"># initializing sdesc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;A normal person&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ContribRPCharacter.at_before_say"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPCharacter.at_before_say">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_say</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribRPCharacter.at_pre_say"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPCharacter.at_pre_say">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_say</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called before the object says or whispers anything, return modified message.</span>
 

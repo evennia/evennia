@@ -521,6 +521,18 @@ errors (list): List of error messages in string form</p>
 <dt><strong>*args</strong> and <strong>**kwargs</strong> are passed on to the base delete</dt><dd><p>mechanism (these are usually not used).</p>
 </dd>
 </dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>bool</em> –</p>
+<dl class="simple">
+<dt>If deletion was successful. Only time it fails would be</dt><dd><p>if the Account was already deleted. Note that even on a failure,
+connected resources (nicks/aliases etc) will still have been
+deleted.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
