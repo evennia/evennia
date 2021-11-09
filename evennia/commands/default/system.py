@@ -350,6 +350,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
     switch_options = ("time", "edit", "clientraw", "noecho")
     locks = "cmd:perm(py) or perm(Developer)"
     help_category = "System"
+    arg_regex = ""
 
     def func(self):
         """hook function"""

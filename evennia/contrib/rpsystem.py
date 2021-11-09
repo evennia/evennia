@@ -932,6 +932,7 @@ class CmdEmote(RPCommand):  # replaces the main emote
     key = "emote"
     aliases = [":"]
     locks = "cmd:all()"
+    arg_regex = ""
 
     def func(self):
         "Perform the emote."
@@ -959,6 +960,7 @@ class CmdSay(RPCommand):  # replaces standard say
     key = "say"
     aliases = ['"', "'"]
     locks = "cmd:all()"
+    arg_regex = ""
 
     def func(self):
         "Run the say command"

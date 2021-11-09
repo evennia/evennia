@@ -159,6 +159,123 @@ class InMemoryAttribute(IAttribute):
     value = property(__value_get, __value_set, __value_del)
 
 
+class AttributeProperty:
+    """
+    Attribute property descriptor. Allows for specifying Attributes as Django-like 'fields'
+    on the class level. Note that while one can set a lock on the Attribute,
+    there is no way to *check* said lock when accessing via the property - use
+    the full AttributeHandler if you need to do access checks.
+
+    Example:
+    ::
+
+        class Character(DefaultCharacter):
+            foo = AttributeProperty(default="Bar")
+
+    """
+    attrhandler_name = "attributes"
+
+    def __init__(self, default=None, category=None, strattr=False, lockstring="",
+                 autocreate=False):
+        """
+        Initialize an Attribute as a property descriptor.
+
+        Keyword Args:
+            default (any): A default value if the attr is not set.
+            category (str): The attribute's category. If unset, use class default.
+            strattr (bool): If set, this Attribute *must* be a simple string, and will be
+                stored more efficiently.
+            lockstring (str): This is not itself useful with the property, but only if
+                using the full AttributeHandler.get(accessing_obj=...) to access the
+                Attribute.
+            autocreate (bool): If an un-found Attr should lead to auto-creating the
+                Attribute (with the default value). If `False`, the property will
+                return the default value until it has been explicitly set. This means
+                less database accesses, but also means the property will have no
+                corresponding Attribute if wanting to access it directly via the
+                AttributeHandler (it will also not show up in `examine`).
+
+        """
+        self._default = default
+        self._category = category
+        self._strattr = strattr
+        self._lockstring = lockstring
+        self._autocreate = autocreate
+        self._key = ""
+
+    def __set_name__(self, cls, name):
+        """
+        Called when descriptor is first assigned to the class. It is called with
+        the name of the field.
+
+        """
+        self._key = name
+
+    def __get__(self, instance, owner):
+        """
+        Called when the attrkey is retrieved from the instance.
+
+        """
+        value = self._default
+        try:
+            value = (
+                getattr(instance, self.attrhandler_name)
+                .get(key=self._key,
+                     default=self._default,
+                     category=self._category,
+                     strattr=self._strattr,
+                     raise_exception=self._autocreate)
+            )
+        except AttributeError:
+            if self._autocreate:
+                # attribute didn't exist and autocreate is set
+                self.__set__(instance, self._default)
+            else:
+                raise
+        finally:
+            return value
+
+    def __set__(self, instance, value):
+        """
+        Called when assigning to the property (and when auto-creating an Attribute).
+
+        """
+        (
+            getattr(instance, self.attrhandler_name)
+            .add(self._key,
+                 value,
+                 category=self._category,
+                 lockstring=self._lockstring,
+                 strattr=self._strattr)
+        )
+
+    def __delete__(self, instance):
+        """
+        Called when running `del` on the field. Will remove/clear the Attribute.
+
+        """
+        (
+            getattr(instance, self.attrhandler_name)
+            .remove(key=self._key,
+                    category=self._category)
+        )
+
+
+class NAttributeProperty(AttributeProperty):
+    """
+    NAttribute property descriptor. Allows for specifying NAttributes as Django-like 'fields'
+    on the class level.
+
+    Example:
+    ::
+
+        class Character(DefaultCharacter):
+            foo = NAttributeProperty(default="Bar")
+
+    """
+    attrhandler_name = "nattributes"
+
+
 class Attribute(IAttribute, SharedMemoryModel):
     """
     This attribute is stored via Django. Most Attributes will be using this class.
@@ -980,11 +1097,11 @@ class AttributeHandler:
             key (str or list, optional): the attribute identifier or
                 multiple attributes to get. if a list of keys, the
                 method will return a list.
-            category (str, optional): the category within which to
-                retrieve attribute(s).
             default (any, optional): The value to return if an
                 Attribute was not defined. If set, it will be returned in
                 a one-item list.
+            category (str, optional): the category within which to
+                retrieve attribute(s).
             return_obj (bool, optional): If set, the return is not the value of the
                 Attribute but the Attribute object itself.
             strattr (bool, optional): Return the `strvalue` field of

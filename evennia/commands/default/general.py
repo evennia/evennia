@@ -673,6 +673,7 @@ class CmdPose(COMMAND_DEFAULT_CLASS):
     key = "pose"
     aliases = [":", "emote"]
     locks = "cmd:all()"
+    arg_regex = ""
 
     # we want to be able to pose without whitespace between
     # the command/alias and the pose (e.g. :pose)
