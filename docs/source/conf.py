@@ -131,6 +131,7 @@ myst_substitution = {
 # add anchors to h1, h2, ... level headings
 myst_heading_anchors = 4
 
+suppress_warnings = ["myst.ref"]
 
 # reroute to github links or to the api
 
