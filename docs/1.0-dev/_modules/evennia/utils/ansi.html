@@ -117,6 +117,8 @@
 
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">to_str</span>
 
+<span class="n">MXP_ENABLED</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MXP_ENABLED</span>
+
 
 <span class="c1"># ANSI definitions</span>
 
@@ -627,6 +629,14 @@
     <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">strip_unsafe_tokens</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="strip_mxp"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.strip_mxp">[docs]</a><span class="k">def</span> <span class="nf">strip_mxp</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">ANSI_PARSER</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Strip MXP markup.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">strip_mxp</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="raw"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.raw">[docs]</a><span class="k">def</span> <span class="nf">raw</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Escapes a string into a form which won&#39;t be colorized by the ansi</span>
@@ -836,8 +846,8 @@
             <span class="n">decoded</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">decoded</span><span class="p">:</span>
             <span class="c1"># Completely new ANSI String</span>
-            <span class="n">clean_string</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">clean_string</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="n">MXP_ENABLED</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="n">MXP_ENABLED</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">clean_string</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># We have an explicit clean string.</span>
             <span class="k">pass</span>

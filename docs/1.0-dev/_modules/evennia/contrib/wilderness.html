@@ -391,7 +391,7 @@
                     <span class="c1"># ... but that other wilderness room belongs to another</span>
                     <span class="c1"># wilderness map</span>
                     <span class="n">create_new_room</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="n">old_room</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">at_after_object_leave</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                    <span class="n">old_room</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">at_post_object_leave</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">old_room</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
@@ -495,7 +495,7 @@
             <span class="c1"># And finally put this room away in storage</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">unused_rooms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">room</span><span class="p">)</span>
 
-<div class="viewcode-block" id="WildernessScript.at_after_object_leave"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessScript.at_after_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_after_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessScript.at_post_object_leave"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessScript.at_post_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called after an object left this wilderness map. Used for cleaning up.</span>
 
@@ -595,7 +595,7 @@
 <span class="sd">            target_location (Object): Where `moved_obj` is going.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">at_after_object_leave</span><span class="p">(</span><span class="n">moved_obj</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">at_post_object_leave</span><span class="p">(</span><span class="n">moved_obj</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WildernessRoom.set_active_coordinates"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessRoom.set_active_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">set_active_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_coordinates</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -742,7 +742,7 @@
         <span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">traversing_object</span><span class="o">.</span><span class="n">at_before_move</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">traversing_object</span><span class="o">.</span><span class="n">at_pre_move</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">traversing_object</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
             <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> leaves to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">traversing_object</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">new_coordinates</span><span class="p">),</span>
@@ -756,7 +756,7 @@
             <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="n">traversing_object</span><span class="p">],</span>
         <span class="p">)</span>
 
-        <span class="n">traversing_object</span><span class="o">.</span><span class="n">at_after_move</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">traversing_object</span><span class="o">.</span><span class="n">at_post_move</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span></div></div>
 
 

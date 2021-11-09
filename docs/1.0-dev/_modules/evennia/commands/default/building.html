@@ -3400,6 +3400,13 @@
 
 <span class="sd">    Teleports an object somewhere. If no object is given, you yourself are</span>
 <span class="sd">    teleported to the target location.</span>
+
+<span class="sd">    To lock an object from being teleported, set its `teleport` lock, it will be</span>
+<span class="sd">    checked with the caller. To block</span>
+<span class="sd">    a destination from being teleported to, set the destination&#39;s `teleport_here`</span>
+<span class="sd">    lock - it will be checked with the thing being teleported. Admins and</span>
+<span class="sd">    higher permissions can always teleport.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;tel&quot;</span>
@@ -3481,6 +3488,18 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is already at </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj_to_teleport</span><span class="p">,</span> <span class="n">destination</span><span class="p">))</span>
             <span class="k">return</span>
 
+        <span class="c1"># check any locks</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;Admin&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;teleport&quot;</span><span class="p">)):</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj_to_teleport</span><span class="si">}</span><span class="s2"> &#39;teleport&#39;-lock blocks you from teleporting &quot;</span>
+                       <span class="s2">&quot;it anywhere.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;Admin&quot;</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="n">destination</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">obj_to_teleport</span><span class="p">,</span> <span class="s2">&quot;teleport_here&quot;</span><span class="p">)):</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2"> &#39;teleport_here&#39;-lock blocks </span><span class="si">{</span><span class="n">obj_to_teleport</span><span class="si">}</span><span class="s2"> from &quot;</span>
+                       <span class="s2">&quot;moving there.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
         <span class="c1"># try the teleport</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
             <span class="c1"># teleporting from none-location</span>
@@ -3496,7 +3515,6 @@
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Teleported </span><span class="si">{</span><span class="n">obj_to_teleport</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Teleportation failed.&quot;</span><span class="p">)</span></div></div>
-
 
 
 <div class="viewcode-block" id="CmdTag"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdTag">[docs]</a><span class="k">class</span> <span class="nc">CmdTag</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>

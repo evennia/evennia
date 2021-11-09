@@ -582,8 +582,8 @@ normal hook to overload for most object types.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.turnbattle.tb_range.TBRangeCharacter.at_before_move">
-<code class="sig-name descname">at_before_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">destination</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeCharacter.at_before_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeCharacter.at_before_move" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.turnbattle.tb_range.TBRangeCharacter.at_pre_move">
+<code class="sig-name descname">at_pre_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">destination</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeCharacter.at_pre_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeCharacter.at_pre_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called just before starting to move this object to
 destination.</p>
 <dl class="field-list simple">
@@ -632,8 +632,8 @@ the object has restrictions in combat - you must be next to an object to get it,
 must be next to your target to give them something, and can only interact with
 objects on your own turn.</p>
 <dl class="py method">
-<dt id="evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_drop">
-<code class="sig-name descname">at_before_drop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dropper</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_before_drop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_drop" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.turnbattle.tb_range.TBRangeObject.at_pre_drop">
+<code class="sig-name descname">at_pre_drop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dropper</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_pre_drop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_pre_drop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the default <strong>drop</strong> command before this object has been
 dropped.</p>
 <dl class="field-list simple">
@@ -669,12 +669,12 @@ overriding the call (unused by default).</p></li>
 </dl>
 <p class="rubric">Notes</p>
 <p>This hook cannot stop the drop from happening. Use
-permissions or the at_before_drop() hook for that.</p>
+permissions or the at_pre_drop() hook for that.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_get">
-<code class="sig-name descname">at_before_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">getter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_before_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_get" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.turnbattle.tb_range.TBRangeObject.at_pre_get">
+<code class="sig-name descname">at_pre_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">getter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_pre_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_pre_get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the default <strong>get</strong> command before this object has been
 picked up.</p>
 <dl class="field-list simple">
@@ -710,12 +710,12 @@ overriding the call (unused by default).</p></li>
 </dl>
 <p class="rubric">Notes</p>
 <p>This hook cannot stop the pickup from happening. Use
-permissions or the at_before_get() hook for that.</p>
+permissions or the at_pre_get() hook for that.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_give">
-<code class="sig-name descname">at_before_give</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">giver</span></em>, <em class="sig-param"><span class="n">getter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_before_give"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_give" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.turnbattle.tb_range.TBRangeObject.at_pre_give">
+<code class="sig-name descname">at_pre_give</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">giver</span></em>, <em class="sig-param"><span class="n">getter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_pre_give"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_pre_give" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the default <strong>give</strong> command before this object has been
 given.</p>
 <dl class="field-list simple">
@@ -753,7 +753,7 @@ overriding the call (unused by default).</p></li>
 </dl>
 <p class="rubric">Notes</p>
 <p>This hook cannot stop the give from happening. Use
-permissions or the at_before_give() hook for that.</p>
+permissions or the at_pre_give() hook for that.</p>
 </dd></dl>
 
 <dl class="py exception">

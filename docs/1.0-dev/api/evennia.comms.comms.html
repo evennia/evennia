@@ -386,6 +386,17 @@ errors (list): A list of errors in string form, if any.</p>
 <dt id="evennia.comms.comms.DefaultChannel.delete">
 <code class="sig-name descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/comms.html#DefaultChannel.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deletes channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>bool</em> –</p>
+<dl class="simple">
+<dt>If deletion was successful. Only time it can fail would be</dt><dd><p>if channel was already deleted. Even if it were to fail, all subscribers
+will be disconnected.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

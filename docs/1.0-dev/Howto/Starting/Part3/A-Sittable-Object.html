@@ -73,7 +73,7 @@ This requires a change to our Character typeclass. Open <code class="docutils li
 <span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="c1"># ...</span>
 
-    <span class="k">def</span> <span class="nf">at_before_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">at_pre_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">       Called by self.move_to when trying to move somewhere. If this returns</span>
 <span class="sd">       False, the move is immediately cancelled.</span>
@@ -86,7 +86,7 @@ This requires a change to our Character typeclass. Open <code class="docutils li
 </pre></div>
 </div>
 <p>When moving somewhere, <a class="reference internal" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.move_to" title="evennia.objects.objects.DefaultObject.move_to"><span class="xref myst py py-meth">character.move_to</span></a> is called. This in turn
-will call <code class="docutils literal notranslate"><span class="pre">character.at_before_move</span></code>. Here we look for an Attribute <code class="docutils literal notranslate"><span class="pre">is_resting</span></code> (which we will assign below)
+will call <code class="docutils literal notranslate"><span class="pre">character.at_pre_move</span></code>. Here we look for an Attribute <code class="docutils literal notranslate"><span class="pre">is_resting</span></code> (which we will assign below)
 to determine if we are stuck on the chair or not.</p>
 </section>
 <section id="making-the-chair-itself">

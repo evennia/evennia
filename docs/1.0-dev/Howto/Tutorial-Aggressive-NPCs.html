@@ -113,12 +113,12 @@ hook in our customized room typeclass to suit our needs.</p>
 <code class="docutils literal notranslate"><span class="pre">Characters</span></code>, ignoring other NPCs or objects.  When triggered the room will look through its
 contents and inform any <code class="docutils literal notranslate"><span class="pre">NPCs</span> <span class="pre">inside</span> <span class="pre">by</span> <span class="pre">calling</span> <span class="pre">their</span> </code>at_char_entered` method.</p>
 <p>You’ll also see that we have added a ‘look’ into this code. This is because, by default, the
-<code class="docutils literal notranslate"><span class="pre">at_object_receive</span></code> is carried out <em>before</em> the character’s <code class="docutils literal notranslate"><span class="pre">at_after_move</span></code> which, we will now
+<code class="docutils literal notranslate"><span class="pre">at_object_receive</span></code> is carried out <em>before</em> the character’s <code class="docutils literal notranslate"><span class="pre">at_post_move</span></code> which, we will now
 overload.  This means that a character entering would see the NPC perform its actions before the
 ‘look’ command. Deactivate the look command in the default <code class="docutils literal notranslate"><span class="pre">Character</span></code> class within the
 <code class="docutils literal notranslate"><span class="pre">typeclasses.characters</span></code> module:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># Add this hook in any blank area within your Character class.</span>
-    <span class="k">def</span> <span class="nf">at_after_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">at_post_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Default is to look around after a move </span>
 <span class="sd">        Note:  This has been moved to Room.at_object_receive</span>

@@ -629,7 +629,7 @@ keyword allows objects to move “inside” exit objects.</p></li>
 moving to a None location. If you want to run hooks, run them manually
 (and make sure they can manage None locations).</p></li>
 <li><p><strong>move_hooks</strong> (<em>bool</em>) – If False, turn off the calling of move-related hooks
-(at_before/after_move etc) with quiet=True, this is as quiet a move
+(at_pre/post_move etc) with quiet=True, this is as quiet a move
 as can be done.</p></li>
 </ul>
 </dd>
@@ -652,13 +652,13 @@ calling <strong>move_to</strong>.</p>
 <p>The <strong>DefaultObject</strong> hooks called (if <strong>move_hooks=True</strong>) are, in order:</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li><p><strong>self.at_before_move(destination)</strong> (if this returns False, move is aborted)</p></li>
+<li><p><strong>self.at_pre_move(destination)</strong> (if this returns False, move is aborted)</p></li>
 <li><p><strong>source_location.at_object_leave(self, destination)</strong></p></li>
 <li><p><strong>self.announce_move_from(destination)</strong></p></li>
 <li><p>(move happens here)</p></li>
 <li><p><strong>self.announce_move_to(source_location)</strong></p></li>
 <li><p><strong>destination.at_object_receive(self, source_location)</strong></p></li>
-<li><p><strong>self.at_after_move(source_location)</strong></p></li>
+<li><p><strong>self.at_post_move(source_location)</strong></p></li>
 </ol>
 </div></blockquote>
 </dd></dl>
@@ -963,8 +963,30 @@ based on the access result.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.at_pre_move">
+<code class="sig-name descname">at_pre_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">destination</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_pre_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_pre_move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called just before starting to move this object to
+destination.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>destination</strong> (<em>Object</em>) – The object we are moving to</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>shouldmove (bool)</em> – If we should move or not.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If this method returns False/None, the move is cancelled
+before it is even started.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.at_before_move">
-<code class="sig-name descname">at_before_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">destination</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_before_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_before_move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_before_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">destination</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_before_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called just before starting to move this object to
 destination.</p>
 <dl class="field-list simple">
@@ -1041,8 +1063,25 @@ destination: the location of the object after moving.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.at_post_move">
+<code class="sig-name descname">at_post_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_location</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_post_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_post_move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called after move has completed, regardless of quiet mode or
+not.  Allows changes to the object due to the location it is
+now in.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_location</strong> (<em>Object</em>) – Wwhere we came from. This may be <strong>None</strong>.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.at_after_move">
-<code class="sig-name descname">at_after_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_location</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_after_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_after_move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_after_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_location</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_after_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called after move has completed, regardless of quiet mode or
 not.  Allows changes to the object due to the location it is
 now in.</p>
@@ -1097,7 +1136,7 @@ overriding the call (unused by default).</p></li>
 normally by calling
 <strong>traversing_object.move_to(target_location)</strong>. It is normally
 only implemented by Exit objects. If it returns False (usually
-because <strong>move_to</strong> returned False), <strong>at_after_traverse</strong> below
+because <strong>move_to</strong> returned False), <strong>at_post_traverse</strong> below
 should not be called and instead <strong>at_failed_traverse</strong> should be
 called.</p>
 <dl class="field-list simple">
@@ -1113,8 +1152,28 @@ overriding the call (unused by default).</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.at_post_traverse">
+<code class="sig-name descname">at_post_traverse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">traversing_object</span></em>, <em class="sig-param"><span class="n">source_location</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_post_traverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_post_traverse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called just after an object successfully used this object to
+traverse to another object (i.e. this object is a type of
+Exit)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>traversing_object</strong> (<em>Object</em>) – The object traversing us.</p></li>
+<li><p><strong>source_location</strong> (<em>Object</em>) – Where <strong>traversing_object</strong> came from.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The target location should normally be available as <strong>self.destination</strong>.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.at_after_traverse">
-<code class="sig-name descname">at_after_traverse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">traversing_object</span></em>, <em class="sig-param"><span class="n">source_location</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_after_traverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_after_traverse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_after_traverse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">traversing_object</span></em>, <em class="sig-param"><span class="n">source_location</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_after_traverse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called just after an object successfully used this object to
 traverse to another object (i.e. this object is a type of
 Exit)</p>
@@ -1340,8 +1399,30 @@ overriding the call (unused by default).</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.at_pre_get">
+<code class="sig-name descname">at_pre_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">getter</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_pre_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_pre_get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by the default <strong>get</strong> command before this object has been
+picked up.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>getter</strong> (<em>Object</em>) – The object about to get this object.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>shouldget (bool)</em> – If the object should be gotten or not.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If this method returns False/None, the getting is cancelled
+before it is even started.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.at_before_get">
-<code class="sig-name descname">at_before_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">getter</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_before_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_before_get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_before_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">getter</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_before_get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the default <strong>get</strong> command before this object has been
 picked up.</p>
 <dl class="field-list simple">
@@ -1377,12 +1458,35 @@ overriding the call (unused by default).</p></li>
 </dl>
 <p class="rubric">Notes</p>
 <p>This hook cannot stop the pickup from happening. Use
-permissions or the at_before_get() hook for that.</p>
+permissions or the at_pre_get() hook for that.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.at_pre_give">
+<code class="sig-name descname">at_pre_give</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">giver</span></em>, <em class="sig-param"><span class="n">getter</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_pre_give"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_pre_give" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by the default <strong>give</strong> command before this object has been
+given.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>giver</strong> (<em>Object</em>) – The object about to give this object.</p></li>
+<li><p><strong>getter</strong> (<em>Object</em>) – The object about to get this object.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>shouldgive (bool)</em> – If the object should be given or not.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If this method returns False/None, the giving is cancelled
+before it is even started.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.at_before_give">
-<code class="sig-name descname">at_before_give</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">giver</span></em>, <em class="sig-param"><span class="n">getter</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_before_give"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_before_give" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_before_give</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">giver</span></em>, <em class="sig-param"><span class="n">getter</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_before_give" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the default <strong>give</strong> command before this object has been
 given.</p>
 <dl class="field-list simple">
@@ -1420,12 +1524,34 @@ overriding the call (unused by default).</p></li>
 </dl>
 <p class="rubric">Notes</p>
 <p>This hook cannot stop the give from happening. Use
-permissions or the at_before_give() hook for that.</p>
+permissions or the at_pre_give() hook for that.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.at_pre_drop">
+<code class="sig-name descname">at_pre_drop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dropper</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_pre_drop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_pre_drop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by the default <strong>drop</strong> command before this object has been
+dropped.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dropper</strong> (<em>Object</em>) – The object which will drop this object.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>shoulddrop (bool)</em> – If the object should be dropped or not.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If this method returns False/None, the dropping is cancelled
+before it is even started.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.at_before_drop">
-<code class="sig-name descname">at_before_drop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dropper</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_before_drop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_before_drop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_before_drop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dropper</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_before_drop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the default <strong>drop</strong> command before this object has been
 dropped.</p>
 <dl class="field-list simple">
@@ -1461,12 +1587,40 @@ overriding the call (unused by default).</p></li>
 </dl>
 <p class="rubric">Notes</p>
 <p>This hook cannot stop the drop from happening. Use
-permissions or the at_before_drop() hook for that.</p>
+permissions or the at_pre_drop() hook for that.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.objects.objects.DefaultObject.at_pre_say">
+<code class="sig-name descname">at_pre_say</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_pre_say"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_pre_say" title="Permalink to this definition">¶</a></dt>
+<dd><p>Before the object says something.</p>
+<p>This hook is by default used by the ‘say’ and ‘whisper’
+commands as used by this command it is called before the text
+is said/whispered and can be used to customize the outgoing
+text from the object. Returning <strong>None</strong> aborts the command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>message</strong> (<em>str</em>) – The suggested say/whisper text spoken by self.</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>whisper</strong> (<em>bool</em>) – If True, this is a whisper rather than
+a say. This is sent by the whisper command by default.
+Other verbal commands could use this hook in similar
+ways.</p></li>
+<li><p><strong>receivers</strong> (<em>Object</em><em> or </em><em>iterable</em>) – If set, this is the target or targets for the
+say/whisper.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>message (str)</em> – The (possibly modified) text to be spoken.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.at_before_say">
-<code class="sig-name descname">at_before_say</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_before_say"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_before_say" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_before_say</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_before_say" title="Permalink to this definition">¶</a></dt>
 <dd><p>Before the object says something.</p>
 <p>This hook is by default used by the ‘say’ and ‘whisper’
 commands as used by this command it is called before the text
@@ -1653,8 +1807,14 @@ Character object works).</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.objects.objects.DefaultCharacter.at_post_move">
+<code class="sig-name descname">at_post_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_location</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultCharacter.at_post_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultCharacter.at_post_move" title="Permalink to this definition">¶</a></dt>
+<dd><p>We make sure to look around after a move.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.objects.objects.DefaultCharacter.at_after_move">
-<code class="sig-name descname">at_after_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_location</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultCharacter.at_after_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultCharacter.at_after_move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_after_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_location</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.objects.objects.DefaultCharacter.at_after_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>We make sure to look around after a move.</p>
 </dd></dl>
 

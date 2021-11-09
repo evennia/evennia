@@ -170,14 +170,14 @@ object).
 1. The Exit command triggers `at_traverse(obj, destination)` on the Exit object.
 1. In `at_traverse`, `object.move_to(destination)` is triggered. This triggers the following hooks,
 in order:
-    1. `obj.at_before_move(destination)` - if this returns False, move is aborted.
-    1. `origin.at_before_leave(obj, destination)`
+    1. `obj.at_pre_move(destination)` - if this returns False, move is aborted.
+    1. `origin.at_pre_leave(obj, destination)`
     1. `obj.announce_move_from(destination)`
     1. Move is performed by changing `obj.location` from source location to `destination`.
     1. `obj.announce_move_to(source)`
     1. `destination.at_object_receive(obj, source)`
-    1. `obj.at_after_move(source)`
-1. On the Exit object, `at_after_traverse(obj, source)` is triggered.
+    1. `obj.at_post_move(source)`
+1. On the Exit object, `at_post_traverse(obj, source)` is triggered.
 
 If the move fails for whatever reason, the Exit will look for an Attribute `err_traverse` on itself
 and display this as an error message. If this is not found, the Exit will instead call

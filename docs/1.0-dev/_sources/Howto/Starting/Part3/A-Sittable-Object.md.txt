@@ -36,7 +36,7 @@ This requires a change to our Character typeclass. Open `mygame/typeclasses/char
 class Character(DefaultCharacter):
     # ...
 
-    def at_before_move(self, destination):
+    def at_pre_move(self, destination):
        """
        Called by self.move_to when trying to move somewhere. If this returns
        False, the move is immediately cancelled.
@@ -49,7 +49,7 @@ class Character(DefaultCharacter):
 ```
 
 When moving somewhere, [character.move_to](evennia.objects.objects.DefaultObject.move_to) is called. This in turn
-will call `character.at_before_move`. Here we look for an Attribute `is_resting` (which we will assign below)
+will call `character.at_pre_move`. Here we look for an Attribute `is_resting` (which we will assign below)
 to determine if we are stuck on the chair or not.
 
 ## Making the Chair itself

@@ -491,11 +491,18 @@
 <span class="sd">                is if wanting to delete the script from the at_stop method - setting</span>
 <span class="sd">                this will then avoid an infinite recursion.</span>
 
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: If deletion was successful or not. Only time this can fail would be if</span>
+<span class="sd">                the script was already previously deleted, or `at_script_delete` returns</span>
+<span class="sd">                False.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_script_delete</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">stop_task</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_stop_task</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">at_script_delete</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -506,10 +513,13 @@
 
     <span class="k">def</span> <span class="nf">at_script_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called when script is deleted, after at_stop.</span>
+<span class="sd">        Called when script is deleted, before the script timer stops.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: If False, deletion is aborted.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
+        <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -769,10 +779,13 @@
 
 <div class="viewcode-block" id="DefaultScript.at_script_delete"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_script_delete">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Called when the Script is deleted, after at_stop().</span>
+<span class="sd">        Called when the Script is deleted, before stopping the timer.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: If False, the deletion is aborted.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="DefaultScript.at_server_reload"><a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.at_server_reload">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

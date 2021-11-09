@@ -843,7 +843,7 @@
 <span class="sd">        can be changed at creation and factor into combat calculations.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="TBRangeCharacter.at_before_move"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeCharacter.at_before_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeCharacter.at_pre_move"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeCharacter.at_pre_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before starting to move this object to</span>
 <span class="sd">        destination.</span>
@@ -877,7 +877,7 @@
 <span class="sd">    objects on your own turn.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TBRangeObject.at_before_drop"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_drop">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropper</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeObject.at_pre_drop"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_pre_drop">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropper</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `drop` command before this object has been</span>
 <span class="sd">        dropped.</span>
@@ -913,7 +913,7 @@
 
 <span class="sd">        Notes:</span>
 <span class="sd">            This hook cannot stop the drop from happening. Use</span>
-<span class="sd">            permissions or the at_before_drop() hook for that.</span>
+<span class="sd">            permissions or the at_pre_drop() hook for that.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># If dropper is currently in combat</span>
@@ -922,7 +922,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="n">dropper</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_turnhandler</span><span class="o">.</span><span class="n">join_rangefield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">anchor_obj</span><span class="o">=</span><span class="n">dropper</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TBRangeObject.at_before_get"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeObject.at_pre_get"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_pre_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `get` command before this object has been</span>
 <span class="sd">        picked up.</span>
@@ -961,7 +961,7 @@
 
 <span class="sd">        Notes:</span>
 <span class="sd">            This hook cannot stop the pickup from happening. Use</span>
-<span class="sd">            permissions or the at_before_get() hook for that.</span>
+<span class="sd">            permissions or the at_pre_get() hook for that.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># If gotten, erase range values</span>
@@ -976,7 +976,7 @@
         <span class="k">if</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="n">getter</span><span class="p">):</span>
             <span class="n">spend_action</span><span class="p">(</span><span class="n">getter</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="s2">&quot;get&quot;</span><span class="p">)</span>  <span class="c1"># Use up one action.</span></div>
 
-<div class="viewcode-block" id="TBRangeObject.at_before_give"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_give">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_give</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">giver</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeObject.at_pre_give"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_pre_give">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_give</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">giver</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `give` command before this object has been</span>
 <span class="sd">        given.</span>
@@ -1020,7 +1020,7 @@
 
 <span class="sd">        Notes:</span>
 <span class="sd">            This hook cannot stop the give from happening. Use</span>
-<span class="sd">            permissions or the at_before_give() hook for that.</span>
+<span class="sd">            permissions or the at_pre_give() hook for that.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Spend an action if in combat</span>

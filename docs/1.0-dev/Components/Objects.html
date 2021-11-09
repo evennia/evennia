@@ -203,16 +203,16 @@ object).</p></li>
 <li><p>In <code class="docutils literal notranslate"><span class="pre">at_traverse</span></code>, <code class="docutils literal notranslate"><span class="pre">object.move_to(destination)</span></code> is triggered. This triggers the following hooks,
 in order:</p>
 <ol class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">obj.at_before_move(destination)</span></code> - if this returns False, move is aborted.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">origin.at_before_leave(obj,</span> <span class="pre">destination)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obj.at_pre_move(destination)</span></code> - if this returns False, move is aborted.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">origin.at_pre_leave(obj,</span> <span class="pre">destination)</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">obj.announce_move_from(destination)</span></code></p></li>
 <li><p>Move is performed by changing <code class="docutils literal notranslate"><span class="pre">obj.location</span></code> from source location to <code class="docutils literal notranslate"><span class="pre">destination</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">obj.announce_move_to(source)</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">destination.at_object_receive(obj,</span> <span class="pre">source)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">obj.at_after_move(source)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obj.at_post_move(source)</span></code></p></li>
 </ol>
 </li>
-<li><p>On the Exit object, <code class="docutils literal notranslate"><span class="pre">at_after_traverse(obj,</span> <span class="pre">source)</span></code> is triggered.</p></li>
+<li><p>On the Exit object, <code class="docutils literal notranslate"><span class="pre">at_post_traverse(obj,</span> <span class="pre">source)</span></code> is triggered.</p></li>
 </ol>
 <p>If the move fails for whatever reason, the Exit will look for an Attribute <code class="docutils literal notranslate"><span class="pre">err_traverse</span></code> on itself
 and display this as an error message. If this is not found, the Exit will instead call
