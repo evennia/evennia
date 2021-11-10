@@ -697,9 +697,9 @@ div.code-block-caption + div > div.highlight > pre {
 }
 
 div.highlight > pre {
-    font-family: "Ubuntu Mono", monospace;
+    font-family: "Courier Prime", monospace;
     line-height: 1.4em;
-    font-size: small;
+    font-size: smaller;
 }
 
 div.doctest > div.highlight span.gp {  /* gp: Generic.Prompt */
@@ -753,6 +753,7 @@ h1 code, h2 code, h3 code, h4 code, h5 code, h6 code {
 div.viewcode-block:target {
     margin: -1px -10px;
     padding: 0 10px;
+    font-family: "Courier Prime", monospace;
 }
 
 /* -- math display ---------------------------------------------------------- */
