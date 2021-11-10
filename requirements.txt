@@ -22,6 +22,7 @@ model_mommy
 mock >= 1.0.1
 anything==0.2.1
 black 
+wheel
 parameterized==0.8.1
 
 # windows-specific
