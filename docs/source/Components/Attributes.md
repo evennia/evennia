@@ -1,6 +1,6 @@
 # Attributes
 
-```{code-block} bash
+```{code-block}
 :caption: In-game
 > set obj/myattr = "test"
 ``` 
