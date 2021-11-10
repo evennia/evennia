@@ -1,10 +1,11 @@
 # Attributes
 
-```python 
-# in-game 
+```{code-block} bash
+:caption: In-game
 > set obj/myattr = "test"
-
-# in code 
+``` 
+```{code-block} python
+:caption: In-code
 obj.db.foo = [1,2,3, "bar"]
 value = obj.db.foo
 

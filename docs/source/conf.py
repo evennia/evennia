@@ -79,7 +79,7 @@ html_logo = "_static/images/evennia_logo.png"
 html_short_title = "Evennia"
 
 # HTML syntax highlighting style
-pygments_style = "sphinx"
+pygments_style = "friendly"
 
 
 # -- Options for LaTeX output ------------------------------------------------
