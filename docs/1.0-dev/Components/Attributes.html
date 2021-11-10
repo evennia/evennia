@@ -42,16 +42,21 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="attributes">
 <h1>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in-game </span>
-<span class="o">&gt;</span> <span class="nb">set</span> <span class="n">obj</span><span class="o">/</span><span class="n">myattr</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
-
-<span class="c1"># in code </span>
-<span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">]</span>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">In-game</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt; <span class="nb">set</span> obj/myattr <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">In-code</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">]</span>
 <span class="n">value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">foo</span>
 
 <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;myattr&quot;</span><span class="p">,</span> <span class="mi">1234</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
 <span class="n">value</span> <span class="o">=</span> <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;myattr&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
 </pre></div>
+</div>
 </div>
 <p><em>Attributes</em> allow you to to store arbitrary data on objects and make sure the data survives a
 server reboot. An Attribute can store pretty much any
@@ -420,8 +425,8 @@ instance will be re-fetched from the database using this information.</p></li>
 <li><p>To convert the database object, Evennia must know it’s there. If you <em>hide</em> a database object
 inside a non-iterable class, you will run into errors - this is not supported!</p></li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Valid assignments</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Valid assignments</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Examples of valid single-value  attribute data:</span>
 <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">test1</span> <span class="o">=</span> <span class="mi">23</span>
 <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">test1</span> <span class="o">=</span> <span class="kc">False</span>
@@ -430,8 +435,8 @@ inside a non-iterable class, you will run into errors - this is not supported!</
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Invalid, ‘hidden’ dbobject</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Invalid, ‘hidden’ dbobject</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># example of an invalid, &quot;hidden&quot; dbobject</span>
 <span class="k">class</span> <span class="nc">Container</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mydbobj</span><span class="p">):</span>

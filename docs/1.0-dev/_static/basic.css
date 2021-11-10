@@ -696,6 +696,12 @@ div.code-block-caption + div > div.highlight > pre {
     margin-top: 0;
 }
 
+div.highlight > pre {
+    font-family: "Ubuntu Mono", monospace;
+    line-height: 1.4em;
+    font-size: small;
+}
+
 div.doctest > div.highlight span.gp {  /* gp: Generic.Prompt */
     user-select: none;
 }
