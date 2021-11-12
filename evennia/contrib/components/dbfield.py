@@ -12,8 +12,7 @@ class DBField(object):
     This allows you to create Templates that you can then duplicate to valid hosts.
     """
 
-    def __init__(self, name, default_value=None):
-        self.name = name
+    def __init__(self, default_value=None):
         self.default_value = default_value
         self._cache = {}
 
@@ -73,6 +72,9 @@ class DBField(object):
         # signal_func = getattr(instance, signal, None)
         # if signal_func:
         #     signal_func()
+
+    def __set_name__(self, owner, name):
+        self.name = name
 
     def __delete__(self, instance):
         if not instance:

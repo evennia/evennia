@@ -10,21 +10,21 @@ from evennia.contrib.components import ComponentHolderMixin, Component, DBField
 @listing.register
 class ComponentTestA(Component):
     name = "test_a"
-    my_int = DBField('my_int', default_value=1)
-    my_list = DBField('my_list', default_value=list)
+    my_int = DBField(default_value=1)
+    my_list = DBField(default_value=list)
 
 @listing.register
 class ComponentTestB(Component):
     name = "test_b"
-    my_int = DBField('my_int', default_value=1)
-    my_list = DBField('my_list', default_value=list)
+    my_int = DBField(default_value=1)
+    my_list = DBField(default_value=list)
 
 
 @listing.register
 class RuntimeComponentTestC(Component):
     name = "test_c"
-    my_int = DBField('my_int', default_value=6)
-    my_dict = DBField('my_dict', default_value=dict)
+    my_int = DBField(default_value=6)
+    my_dict = DBField(default_value=dict)
 
 
 class CharacterWithComponents(ComponentHolderMixin, DefaultCharacter):
