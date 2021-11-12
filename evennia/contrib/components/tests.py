@@ -1,10 +1,7 @@
-import mock
-
 from evennia import DefaultCharacter
-from evennia.utils.test_resources import EvenniaTest
-
-from . import listing
 from evennia.contrib.components import ComponentHolderMixin, Component, DBField
+from evennia.utils.test_resources import EvenniaTest
+from . import listing
 
 
 @listing.register
@@ -12,6 +9,7 @@ class ComponentTestA(Component):
     name = "test_a"
     my_int = DBField(default_value=1)
     my_list = DBField(default_value=list)
+
 
 @listing.register
 class ComponentTestB(Component):
@@ -63,14 +61,6 @@ class TestComponents(EvenniaTest):
         assert len(self.char1.runtime_component_names) == 1
         assert self.char1.runtime_component_names[0] == "test_c"
 
-    def test_component_puppet_hooks_called(self):
-        self.char1.test_b.at_post_puppet = mock.Mock()
-        self.char1.test_b.at_post_unpuppet = mock.Mock()
-        self.char1.at_post_puppet()
-        self.char1.at_post_unpuppet(self.account)
-        self.char1.test_b.at_post_puppet.assert_called()
-        self.char1.test_b.at_post_unpuppet.assert_called()
-
     def test_all_components_show_in_components_instance(self):
         rct = RuntimeComponentTestC.default_create(None)
         self.char1.register_component(rct)
@@ -79,3 +69,12 @@ class TestComponents(EvenniaTest):
         assert components.get("test_a") is self.char1.test_a
         assert components.get("test_b") is self.char1.test_b
         assert components.get("test_c") is rct
+
+    def test_component_template_is_standalone(self):
+        rct = RuntimeComponentTestC.as_template(my_int=10)
+        assert rct.my_int == 10
+
+    def test_component_template_transfers_to_new_host(self):
+        rct = RuntimeComponentTestC.as_template(my_int=10)
+        self.char1.register_component(rct)
+        assert self.char1.test_c.my_int == 10

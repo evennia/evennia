@@ -11,7 +11,7 @@ This helps writing isolated code and reusing it over multiple objects.
    import and inherit the ComponentHolderMixin, similar to this
   ```
   from evennia.contrib.components import ComponentHolderMixin
-  class Character(ComponentHolderMixin, DefaultCharacter):
+  class Character(DefaultCharacter, ComponentHolderMixin):
   ```
 
 - Components need to inherit the Component class and must be registered to the listing
@@ -29,7 +29,7 @@ This helps writing isolated code and reusing it over multiple objects.
     from evennia.contrib.components import Component, listing, DBField
     @listing.register
     class Health(Component):
-        health = DBField('health', default_value=1)
+        health = DBField(default_value=1)
     ```
 
     Note that default_value is optional and may be a callable such as `dict`
@@ -39,6 +39,7 @@ This helps writing isolated code and reusing it over multiple objects.
   You can then import all your components in that package's __init__
   The plug the import of that package early, for example in your typeclasses's __init__
 
+  Circular imports can mess up here, avoid importing typeclasses in your components if you can.
 """
 
 
