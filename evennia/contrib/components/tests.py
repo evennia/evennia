@@ -3,7 +3,8 @@ import mock
 from evennia import DefaultCharacter
 from evennia.utils.test_resources import EvenniaTest
 
-from . import ComponentHolderMixin, Component, listing, DBField
+from . import listing
+from evennia.contrib.components import ComponentHolderMixin, Component, DBField
 
 
 @listing.register
