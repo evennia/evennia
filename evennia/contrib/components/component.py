@@ -1,25 +1,21 @@
-import abc
+import itertools
 
-from evennia.contrib.components import DBField
+from evennia.typeclasses.attributes import AttributeHandler, InMemoryAttributeBackend
 
 
-class Component(metaclass=abc.ABCMeta):
-    @property
-    @abc.abstractmethod
-    def name(self):
-        pass
+class Component:
+    name = ""
 
     def __init__(self, host=None):
-        # TODO Passing a host here is to prevent TDB TNDB from creating
-        # TODO Without host, this should instantiate this component's TDB and TNDB
+        assert self.name, "All Components must have a Name"
         self.host = host
-        self._db_fields = self._get_db_field_names()
+        self._tdb = AttributeHandler(self, InMemoryAttributeBackend) if not host else None
+        self._tndb = AttributeHandler(self, InMemoryAttributeBackend) if not host else None
 
     @classmethod
     def as_template(cls, **kwargs):
         new = cls.default_create(None, **kwargs)
         return new
-
 
     @classmethod
     def default_create(cls, game_object, **kwargs):
@@ -28,13 +24,17 @@ class Component(metaclass=abc.ABCMeta):
          and should return the base initialized state of a component.
         """
         new = cls(game_object)
-        for field_name in new._db_fields:
-            # TODO AttributeHandler has a batch_add that might give better performance
-            provided_value = kwargs.get(field_name)
-            if provided_value is not None:
+        chained = (
+            (new.db_field_names, new.attributes),
+            (new.ndb_field_names, new.nattributes)
+        )
+        for fields, handler in chained:
+            for field_name in fields:
+                provided_value = kwargs.get(field_name)
+                if provided_value is None:
+                    provided_value = cls.__dict__[field_name].get_default_value()
+
                 setattr(new, field_name, provided_value)
-            else:
-                cls.__dict__[field_name].assign_default_value(new)
 
         return new
 
@@ -44,12 +44,12 @@ class Component(metaclass=abc.ABCMeta):
         This is the method to call when supplying kwargs to initialize a component.
         Useful with runtime components
         """
-        new = cls.default_create(game_object)
+        new = cls.default_create(game_object, **kwargs)
         return new
 
     def cleanup(self):
         """ This cleans all attributes from the host's db """
-        for attribute in self._db_fields:
+        for attribute in self._all_db_field_names:
             delattr(self, attribute)
 
     def duplicate(self, new_host):
@@ -59,7 +59,8 @@ class Component(metaclass=abc.ABCMeta):
         Useful for templates
         """
         new = type(self)(new_host)
-        for attribute, value in self._get_db_field_values():
+        for attribute in self._all_db_field_names:
+            value = getattr(self, attribute, None)
             setattr(new, attribute, value)
 
         return new
@@ -68,29 +69,69 @@ class Component(metaclass=abc.ABCMeta):
     def load(cls, game_object):
         return cls(game_object)
 
-    def _get_db_field_names(self):
-        # TODO This does not include inherited DB Fields, to investigate
-        return tuple(name for name, attribute in type(self).__dict__.items()
-                     if isinstance(attribute, DBField))
-
-    def _get_db_field_values(self):
-        return ((name, getattr(self, name, None)) for name in self._db_fields)
-
     def on_register(self, host):
-        # TODO This here should fetch the host's db, ndb or use its own ndb
-        # TODO using its own ndb shud copyover
         if not self.host:
             self.host = host
+            self._copy_temporary_attributes_to_host()
         else:
-            raise ValueError("Components should not register twice!")
+            raise ComponentRegisterError("Components should not register twice!")
 
     def on_unregister(self, host):
         if host != self.host:
-            raise ValueError("Component attempted to unregister from the wrong host.")
+            raise ComponentRegisterError("Component attempted to unregister from the wrong host.")
         self.host = None
+
+    def _copy_temporary_attributes_to_host(self):
+        host = self.host
+        if self._tdb:
+            for attribute in self._tdb.all():
+                host.attributes.add(attribute.key, attribute.value)
+            self._tdb = None
+
+        if self._tndb:
+            for attribute in self._tndb.all():
+                host.nattributes.add(attribute.key, attribute.value)
+            self._tndb = None
 
     def at_post_puppet(self, *args, **kwargs):
         pass
 
     def at_post_unpuppet(self, *args, **kwargs):
         pass
+
+    @property
+    def attributes(self):
+        if self.host:
+            return self.host.attributes
+        else:
+            return self._tdb
+
+    @property
+    def nattributes(self):
+        if self.host:
+            return self.host.nattributes
+        else:
+            return self._tndb
+
+    @property
+    def _all_db_field_names(self):
+        return itertools.chain(self.db_field_names, self.ndb_field_names)
+
+    @property
+    def id(self):
+        # This is needed by the AttributeHandler backend but should be unused.
+        return id(self)
+
+    @property
+    def db_field_names(self):
+        db_fields = getattr(self, "_db_fields", {})
+        return db_fields.keys()
+
+    @property
+    def ndb_field_names(self):
+        ndb_fields = getattr(self, "_ndb_fields", {})
+        return ndb_fields.keys()
+
+
+class ComponentRegisterError(Exception):
+    pass
