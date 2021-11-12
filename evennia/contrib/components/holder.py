@@ -39,32 +39,11 @@ class ComponentHolderMixin(object):
 
             self._set_component(component_instance)
 
-    def at_post_puppet(self, *args, **kwargs):
-        """
-        This allows a component to react to a player logging in.
-        For example, Hunger could start ticking down.
-        """
-        super().at_post_puppet(*args, **kwargs)
-        # TODO Should we only call components who register to this host signal?
-        for component in self.component_instances.values():
-            component.at_post_puppet(*args, **kwargs)
-
-    def at_post_unpuppet(self, *args, **kwargs):
-        """
-        This allows a component to react to a player logging out.
-        For example, Hunger could stop ticking down.
-        """
-        super().at_post_unpuppet(*args, **kwargs)
-        # TODO Should we only call components who register to this host signal?
-        for component in self.component_instances.values():
-            component.at_post_unpuppet(*args, **kwargs)
-
     def initialize_components(self):
         """
         Loads components from DB values and sets them as usable attributes on the object
         """
         for component_class in self.class_components:
-            component_name = component_class.name
             component_instance = component_class.load(self)
             self._set_component(component_instance)
 
