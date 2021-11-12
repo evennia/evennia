@@ -11,6 +11,7 @@ class DBField(object):
     If the parent component's host is not set, values are stored in a local cache.
     This allows you to create Templates that you can then duplicate to valid hosts.
     """
+
     def __init__(self, name, default_value=None):
         self.name = name
         self.default_value = default_value
@@ -25,7 +26,7 @@ class DBField(object):
             host = instance.host
             key = f"{instance.name}_{self.name}"
             if host:
-                setattr(host.db, key, default_value)
+                self.handler(instance).add(key, default_value)
 
         return default_value
 
@@ -43,7 +44,7 @@ class DBField(object):
         host = instance.host
         key = f"{instance.name}_{self.name}"
         if host:
-            value = getattr(host.db, key, UNSET)
+            value = self.handler(instance).get(key, UNSET)
             if value is UNSET or (value is None and self.default_value is not None):
                 return self._get_default_value()
             return value
@@ -59,11 +60,11 @@ class DBField(object):
         self._cache[instance] = value
         if host:
             if not value or value == self._get_default_value():
-                current_value = getattr(host.db, key, UNSET)
+                current_value = self.handler(instance).get(key, UNSET)
                 if current_value is not UNSET:
-                    delattr(host.db, key)
+                    self.handler(instance).remove(key)
             elif value:
-                setattr(host.db, key, value)
+                self.handler(instance).add(key, value)
 
         # TODO This could be taken from a constructor parameter or just erased
         # TODO Since using setters would remove the need of such a thing
@@ -80,9 +81,20 @@ class DBField(object):
         host = instance.host
         if host:
             key = f"{instance.name}_{self.name}"
-            delattr(host.db, key)
+            self.handler(instance).remove(key)
 
         del self._cache[instance]
+
+    @classmethod
+    def handler(cls, instance):
+        return instance.attributes
+
+
+class NDBField(DBField):
+    """ Similar in usage to DBField except in-memory via the NDB attributes """
+    @classmethod
+    def handler(cls, instance):
+        return instance.nattributes
 
 
 

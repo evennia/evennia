@@ -44,6 +44,6 @@ This helps writing isolated code and reusing it over multiple objects.
 
 from . import listing
 from .listing import register
-from evennia.contrib.components.dbfield import DBField
+from evennia.contrib.components.dbfield import DBField, NDBField
 from evennia.contrib.components.component import Component
 from evennia.contrib.components.holder import ComponentHolderMixin
