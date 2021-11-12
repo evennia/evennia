@@ -92,13 +92,7 @@ class Component:
             for attribute in self._tndb.all():
                 host.nattributes.add(attribute.key, attribute.value)
             self._tndb = None
-
-    def at_post_puppet(self, *args, **kwargs):
-        pass
-
-    def at_post_unpuppet(self, *args, **kwargs):
-        pass
-
+            
     @property
     def attributes(self):
         if self.host:
