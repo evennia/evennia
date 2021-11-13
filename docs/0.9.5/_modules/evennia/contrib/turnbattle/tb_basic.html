@@ -223,10 +223,10 @@
 <div class="viewcode-block" id="at_defeat"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_basic.html#evennia.contrib.turnbattle.tb_basic.at_defeat">[docs]</a><span class="k">def</span> <span class="nf">at_defeat</span><span class="p">(</span><span class="n">defeated</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Announces the defeat of a fighter in combat.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        defeated (obj): Fighter that&#39;s been defeated.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Notes:</span>
 <span class="sd">        All this does is announce a defeat message by default, but if you</span>
 <span class="sd">        want anything else to happen to defeated fighters (like putting them</span>
@@ -365,7 +365,7 @@
 <span class="sd">        can be changed at creation and factor into combat calculations.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="TBBasicCharacter.at_before_move"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_basic.html#evennia.contrib.turnbattle.tb_basic.TBBasicCharacter.at_before_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+<div class="viewcode-block" id="TBBasicCharacter.at_pre_move"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_basic.html#evennia.contrib.turnbattle.tb_basic.TBBasicCharacter.at_pre_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before starting to move this object to</span>
 <span class="sd">        destination.</span>
@@ -525,6 +525,7 @@
         <span class="k">if</span> <span class="n">disengage_check</span><span class="p">:</span>  <span class="c1"># All characters have disengaged</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;All fighters have disengaged! Combat is over!&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>  <span class="c1"># Stop this script and end combat.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
             <span class="k">return</span>
 
         <span class="c1"># Check to see if only one character is left standing. If so, end combat.</span>
@@ -540,6 +541,7 @@
                     <span class="n">LastStanding</span> <span class="o">=</span> <span class="n">fighter</span>  <span class="c1"># Pick the one fighter left with HP remaining</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;Only </span><span class="si">%s</span><span class="s2"> remains! Combat is over!&quot;</span> <span class="o">%</span> <span class="n">LastStanding</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>  <span class="c1"># Stop this script and end combat.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
             <span class="k">return</span>
 
         <span class="c1"># Cycle to the next turn.</span>
@@ -846,18 +848,17 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="tb_basic.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

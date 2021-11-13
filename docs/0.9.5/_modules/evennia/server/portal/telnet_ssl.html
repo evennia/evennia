@@ -89,32 +89,29 @@
 
 <span class="c1"># messages</span>
 
-<span class="n">NO_AUTOGEN</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Evennia could not auto-generate the SSL private- and public keys ({{err}}).</span>
+<span class="n">NO_AUTOGEN</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Evennia could not auto-generate the SSL private- and public keys (</span><span class="se">{{</span><span class="s2">err</span><span class="se">}}</span><span class="s2">).</span>
 <span class="s2">If this error persists, create them manually (using the tools for your OS). The files</span>
 <span class="s2">should be placed and named like this:</span>
-<span class="s2">    </span><span class="si">{}</span><span class="s2"></span>
-<span class="s2">    </span><span class="si">{}</span><span class="s2"></span>
-<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-    <span class="n">_PRIVATE_KEY_FILE</span><span class="p">,</span> <span class="n">_PUBLIC_KEY_FILE</span>
-<span class="p">)</span>
+<span class="s2">    </span><span class="si">{</span><span class="n">_PRIVATE_KEY_FILE</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">    </span><span class="si">{</span><span class="n">_PUBLIC_KEY_FILE</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">NO_AUTOCERT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Evennia&#39;s could not auto-generate the SSL certificate ({{err}}).</span>
 <span class="s2">The private key already exists here:</span>
-<span class="s2">    </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">    </span><span class="si">{_PRIVATE_KEY_FILE}</span><span class="s2"></span>
 <span class="s2">If this error persists, create the certificate manually (using the private key and</span>
 <span class="s2">the tools for your OS). The file should be placed and named like this:</span>
-<span class="s2">    </span><span class="si">{}</span><span class="s2"></span>
-<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-    <span class="n">_PRIVATE_KEY_FILE</span><span class="p">,</span> <span class="n">_CERTIFICATE_FILE</span>
-<span class="p">)</span>
+<span class="s2">    </span><span class="si">{_CERTIFICATE_FILE}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="SSLProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_ssl.html#evennia.server.portal.telnet_ssl.SSLProtocol">[docs]</a><span class="k">class</span> <span class="nc">SSLProtocol</span><span class="p">(</span><span class="n">TelnetProtocol</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Communication is the same as telnet, except data transfer</span>
 <span class="sd">    is done with encryption set up by the portal at start time.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="SSLProtocol.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet_ssl.html#evennia.server.portal.telnet_ssl.SSLProtocol.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -221,18 +218,17 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="telnet_ssl.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

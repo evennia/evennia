@@ -279,6 +279,57 @@ class CmdEcho(Command):
     self.caller.msg(self.args.strip())
 ```
 
+For examples of using the Python command-line, use `python` language and `>>>` prompt.
+````
+```python 
+>>> print("Hello World")
+Hello World
+```
+````
+
+```python 
+>>> print("Hello World")
+Hello World
+```
+
+When showing an in-game command, use the `shell` language type and `>` as the prompt. 
+Indent returns from the game.
+
+```` 
+```shell 
+> look at flower
+  Red Flower(#34)
+  A flower with red petals.
+```
+````
+
+```shell
+> look at flower
+  Red Flower(#34)
+  A flower with red petals.
+```
+
+
+For actual shell prompts you can either use `bash` language type or just indent the line. 
+Use `$` for the prompt when wanting to show what is an input and what is an output, otherwise 
+skip it - it can be confusing to users not that familiar with the command line.
+
+```` 
+```bash 
+$ ls
+evennia/ mygame/
+```
+    evennia start --log
+````
+
+```bash 
+$ ls
+evennia/ mygame/
+```
+
+    evennia start --log
+
+
 ## MyST directives 
 
 Markdown is easy to read and use. But while it does most of what we need, there are some things it's

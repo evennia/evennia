@@ -149,7 +149,7 @@ one of the arguments must be given to do a search.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sender</strong> (<em>Object</em><em> or </em><em>Account</em><em>, </em><em>optional</em>) – Get messages sent by a particular account or object</p></li>
+<li><p><strong>sender</strong> (<em>Object</em><em>, </em><em>Account</em><em> or </em><em>Script</em><em>, </em><em>optional</em>) – Get messages sent by a particular sender.</p></li>
 <li><p><strong>receiver</strong> (<em>Object</em><em>, </em><em>Account</em><em> or </em><em>Channel</em><em>, </em><em>optional</em>) – Get messages
 received by a certain account,object or channel</p></li>
 <li><p><strong>freetext</strong> (<em>str</em>) – Search for a text string in a message.  NOTE:
@@ -161,7 +161,7 @@ always gives only one match.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>messages (list or Msg)</em> – A list of message matches or a single match if <strong>dbref</strong> was given.</p>
+<dd class="field-even"><p><em>Queryset</em> – Message matches.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -348,18 +348,17 @@ matches were found.</p>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../1.0-dev/api/evennia.utils.search.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.utils.search.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

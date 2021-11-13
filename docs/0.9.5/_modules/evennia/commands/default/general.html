@@ -46,7 +46,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">evtable</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">NickTemplateInvalid</span>
 
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
@@ -126,7 +126,10 @@
             <span class="n">target</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
                 <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">((</span><span class="n">caller</span><span class="o">.</span><span class="n">at_look</span><span class="p">(</span><span class="n">target</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;look&quot;</span><span class="p">}),</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div></div>
+        <span class="n">desc</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">at_look</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="c1"># add the type=look to the outputfunc to make it</span>
+        <span class="c1"># easy to separate this output in client.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;look&quot;</span><span class="p">}),</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdNick"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdNick">[docs]</a><span class="k">class</span> <span class="nc">CmdNick</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -422,13 +425,10 @@
             <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You are not carrying anything.&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">raw</span> <span class="k">as</span> <span class="n">raw_ansi</span>
-
             <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span><span class="n">border</span><span class="o">=</span><span class="s2">&quot;header&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
-                <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;|C</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">raw_ansi</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
-                <span class="p">)</span>
+                <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|C</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">,</span>
+                              <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">raw_ansi</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
             <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|wYou are carrying:</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
@@ -446,7 +446,7 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;get&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;grab&quot;</span>
-    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all();view:perm(Developer);read:perm(Developer)&quot;</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s|$&quot;</span>
 
 <div class="viewcode-block" id="CmdGet.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdGet.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -470,8 +470,8 @@
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t get that.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="c1"># calling at_before_get hook method</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_before_get</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+        <span class="c1"># calling at_pre_get hook method</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_pre_get</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
             <span class="k">return</span>
 
         <span class="n">success</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -520,8 +520,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="c1"># Call the object script&#39;s at_before_drop() method.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_before_drop</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+        <span class="c1"># Call the object script&#39;s at_pre_drop() method.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_pre_drop</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
             <span class="k">return</span>
 
         <span class="n">success</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -573,8 +573,8 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not holding </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">to_give</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="c1"># calling at_before_give hook method</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">to_give</span><span class="o">.</span><span class="n">at_before_give</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="c1"># calling at_pre_give hook method</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">to_give</span><span class="o">.</span><span class="n">at_pre_give</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
             <span class="k">return</span>
 
         <span class="c1"># give object</span>
@@ -629,6 +629,9 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
+    <span class="c1"># don&#39;t require a space after `say/&#39;/&quot;`</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="kc">None</span>
+
 <div class="viewcode-block" id="CmdSay.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdSay.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Run the say command&quot;&quot;&quot;</span>
 
@@ -640,14 +643,14 @@
 
         <span class="n">speech</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
 
-        <span class="c1"># Calling the at_before_say hook on the character</span>
-        <span class="n">speech</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">at_before_say</span><span class="p">(</span><span class="n">speech</span><span class="p">)</span>
+        <span class="c1"># Calling the at_pre_say hook on the character</span>
+        <span class="n">speech</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">at_pre_say</span><span class="p">(</span><span class="n">speech</span><span class="p">)</span>
 
         <span class="c1"># If speech is empty, stop here</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">speech</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="c1"># Call the at_after_say hook on the character</span>
+        <span class="c1"># Call the at_post_say hook on the character</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">at_say</span><span class="p">(</span><span class="n">speech</span><span class="p">,</span> <span class="n">msg_self</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
 
 
@@ -686,7 +689,7 @@
             <span class="k">return</span>
 
         <span class="c1"># Call a hook to change the speech before whispering</span>
-        <span class="n">speech</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">at_before_say</span><span class="p">(</span><span class="n">speech</span><span class="p">,</span> <span class="n">whisper</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="n">receivers</span><span class="p">)</span>
+        <span class="n">speech</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">at_pre_say</span><span class="p">(</span><span class="n">speech</span><span class="p">,</span> <span class="n">whisper</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="n">receivers</span><span class="p">)</span>
 
         <span class="c1"># no need for self-message if we are whispering to ourselves (for some reason)</span>
         <span class="n">msg_self</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">caller</span> <span class="ow">in</span> <span class="n">receivers</span> <span class="k">else</span> <span class="kc">True</span>
@@ -713,6 +716,11 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;pose&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="s2">&quot;emote&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="c1"># we want to be able to pose without whitespace between</span>
+    <span class="c1"># the command/alias and the pose (e.g. :pose)</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="CmdPose.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdPose.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -797,18 +805,17 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="general.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

@@ -1037,7 +1037,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdCpAttr</span><span class="p">(),</span>
             <span class="s2">&quot;/copy Obj2/test2 = Obj2/test3&quot;</span><span class="p">,</span>
-            <span class="s1">&#39;cpattr: Extra switch &quot;/copy&quot; ignored.|</span><span class="se">\n</span><span class="s1">Copied Obj2.test2 -&gt; Obj2.test3. &#39;</span>
+            <span class="s1">&#39;@cpattr: Extra switch &quot;/copy&quot; ignored.|</span><span class="se">\n</span><span class="s1">Copied Obj2.test2 -&gt; Obj2.test3. &#39;</span>
             <span class="s2">&quot;(value: &#39;value2&#39;)&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdMvAttr</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Usage: &quot;</span><span class="p">)</span>
@@ -1905,90 +1905,6 @@
         <span class="c1"># shows error</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span> <span class="s2">&quot;/examine NO_EXISTS&quot;</span><span class="p">,</span> <span class="s2">&quot;No prototype named &#39;NO_EXISTS&#39; was found.&quot;</span>
-        <span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="TestComms"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestComms">[docs]</a><span class="k">class</span> <span class="nc">TestComms</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
-<div class="viewcode-block" id="TestComms.setUp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestComms.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">comms</span><span class="o">.</span><span class="n">CmdChannelCreate</span><span class="p">(),</span>
-            <span class="s2">&quot;testchan;test=Test Channel&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Created channel testchan and connected to it.&quot;</span><span class="p">,</span>
-            <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="TestComms.test_toggle_com"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestComms.test_toggle_com">[docs]</a>    <span class="k">def</span> <span class="nf">test_toggle_com</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">comms</span><span class="o">.</span><span class="n">CmdAddCom</span><span class="p">(),</span>
-            <span class="s2">&quot;tc = testchan&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;You are already connected to channel testchan.| You can now&quot;</span><span class="p">,</span>
-            <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">comms</span><span class="o">.</span><span class="n">CmdDelCom</span><span class="p">(),</span>
-            <span class="s2">&quot;tc&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Any alias &#39;tc&#39; for channel testchan was cleared.&quot;</span><span class="p">,</span>
-            <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="TestComms.test_all_com"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestComms.test_all_com">[docs]</a>    <span class="k">def</span> <span class="nf">test_all_com</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">comms</span><span class="o">.</span><span class="n">CmdAllCom</span><span class="p">(),</span>
-            <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Available channels:&quot;</span><span class="p">,</span>
-            <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="TestComms.test_clock"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestComms.test_clock">[docs]</a>    <span class="k">def</span> <span class="nf">test_clock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">comms</span><span class="o">.</span><span class="n">CmdClock</span><span class="p">(),</span>
-            <span class="s2">&quot;testchan=send:all()&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Lock(s) applied. Current locks on testchan:&quot;</span><span class="p">,</span>
-            <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="TestComms.test_cdesc"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestComms.test_cdesc">[docs]</a>    <span class="k">def</span> <span class="nf">test_cdesc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">comms</span><span class="o">.</span><span class="n">CmdCdesc</span><span class="p">(),</span>
-            <span class="s2">&quot;testchan = Test Channel&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Description of channel &#39;testchan&#39; set to &#39;Test Channel&#39;.&quot;</span><span class="p">,</span>
-            <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="TestComms.test_cwho"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestComms.test_cwho">[docs]</a>    <span class="k">def</span> <span class="nf">test_cwho</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">comms</span><span class="o">.</span><span class="n">CmdCWho</span><span class="p">(),</span>
-            <span class="s2">&quot;testchan&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Channel subscriptions</span><span class="se">\n</span><span class="s2">testchan:</span><span class="se">\n</span><span class="s2">  TestAccount&quot;</span><span class="p">,</span>
-            <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="TestComms.test_page"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestComms.test_page">[docs]</a>    <span class="k">def</span> <span class="nf">test_page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">comms</span><span class="o">.</span><span class="n">CmdPage</span><span class="p">(),</span>
-            <span class="s2">&quot;TestAccount2 = Test&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;TestAccount2 is offline. They will see your message if they list their pages later.&quot;</span>
-            <span class="s2">&quot;|You paged TestAccount2 with: &#39;Test&#39;.&quot;</span><span class="p">,</span>
-            <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="TestComms.test_cboot"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestComms.test_cboot">[docs]</a>    <span class="k">def</span> <span class="nf">test_cboot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># No one else connected to boot</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">comms</span><span class="o">.</span><span class="n">CmdCBoot</span><span class="p">(),</span>
-            <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Usage: cboot[/quiet] &lt;channel&gt; = &lt;account&gt; [:reason]&quot;</span><span class="p">,</span>
-            <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="TestComms.test_cdestroy"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestComms.test_cdestroy">[docs]</a>    <span class="k">def</span> <span class="nf">test_cdestroy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">comms</span><span class="o">.</span><span class="n">CmdCdestroy</span><span class="p">(),</span>
-            <span class="s2">&quot;testchan&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;[testchan] TestAccount: testchan is being destroyed. Make sure to change your aliases.&quot;</span>
-            <span class="s2">&quot;|Channel &#39;testchan&#39; was destroyed.&quot;</span><span class="p">,</span>
-            <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
         <span class="p">)</span></div></div>
 
 

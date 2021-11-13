@@ -118,6 +118,11 @@ description in use and <strong>db.multidesc</strong> to store all descriptions.<
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.multidescer.CmdMultiDesc.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.multidescer.CmdMultiDesc.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'desc', 'category': 'general', 'key': '+desc', 'no_prefix': 'desc ', 'tags': '', 'text': '\n    Manage multiple descriptions\n\n    Usage:\n        +desc [key]                - show current desc desc with &lt;key&gt;\n        +desc &lt;key&gt; = &lt;text&gt;       - add/replace desc with &lt;key&gt;\n        +desc/list                 - list descriptions (abbreviated)\n        +desc/list/full            - list descriptions (full texts)\n        +desc/edit &lt;key&gt;           - add/edit desc &lt;key&gt; in line editor\n        +desc/del &lt;key&gt;            - delete desc &lt;key&gt;\n        +desc/swap &lt;key1&gt;-&lt;key2&gt;   - swap positions of &lt;key1&gt; and &lt;key2&gt; in list\n        +desc/set &lt;key&gt; [+key+...] - set desc as default or combine multiple descs\n\n    Notes:\n        When combining multiple descs with +desc/set &lt;key&gt; + &lt;key2&gt; + ...,\n        any keys not matching an actual description will be inserted\n        as plain text. Use e.g. ansi line break ||/ to add a new\n        paragraph and + + or ansi space ||_ to add extra whitespace.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.multidescer.CmdMultiDesc.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>
@@ -153,18 +158,17 @@ description in use and <strong>db.multidesc</strong> to store all descriptions.<
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../1.0-dev/api/evennia.contrib.multidescer.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.contrib.multidescer.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

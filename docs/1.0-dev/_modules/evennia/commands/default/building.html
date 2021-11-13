@@ -201,7 +201,7 @@
 <span class="sd">    by everyone.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;alias&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@alias&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;setobjalias&quot;</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">,)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(setobjalias) or perm(Builder)&quot;</span>
@@ -310,7 +310,7 @@
 <span class="sd">    one exact copy of the original object will be created with the name *_copy.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;copy&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@copy&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(copy) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
@@ -401,7 +401,7 @@
 <span class="sd">    If you don&#39;t supply a source object, yourself is used.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;cpattr&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@cpattr&quot;</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;move&quot;</span><span class="p">,)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(cpattr) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
@@ -540,7 +540,7 @@
 <span class="sd">    object. If you don&#39;t supply a source object, yourself is used.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;mvattr&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@mvattr&quot;</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;copy&quot;</span><span class="p">,)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(mvattr) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
@@ -589,7 +589,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;create&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@create&quot;</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;drop&quot;</span><span class="p">,)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(create) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
@@ -681,8 +681,7 @@
 <span class="sd">    describe the current room.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;desc&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;describe&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@desc&quot;</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;edit&quot;</span><span class="p">,)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(desc) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
@@ -766,8 +765,8 @@
 <span class="sd">    You can specify the /force switch to bypass this confirmation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;destroy&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;del&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@destroy&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@delete&quot;</span><span class="p">,</span> <span class="s2">&quot;@del&quot;</span><span class="p">]</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;override&quot;</span><span class="p">,</span> <span class="s2">&quot;force&quot;</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(destroy) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
@@ -908,7 +907,7 @@
 <span class="sd">    would be &#39;north;no;n&#39;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;dig&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@dig&quot;</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;teleport&quot;</span><span class="p">,)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(dig) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
@@ -1064,8 +1063,8 @@
 <span class="sd">    For more flexibility and power in creating rooms, use dig.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;tunnel&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tun&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@tunnel&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@tun&quot;</span><span class="p">]</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;oneway&quot;</span><span class="p">,</span> <span class="s2">&quot;tel&quot;</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd: perm(tunnel) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
@@ -1158,7 +1157,7 @@
 <span class="sd">    currently set destination.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;link&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@link&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(link) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
@@ -1295,7 +1294,7 @@
 <span class="sd">    If no location is given, just view the object&#39;s home location.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;sethome&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@sethome&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(sethome) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
@@ -1347,8 +1346,7 @@
 <span class="sd">    to a user. Defaults to yourself.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;cmdsets&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;listcmsets&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@cmdsets&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(listcmdsets) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
@@ -1378,8 +1376,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;rename&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@name&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@rename&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(rename) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
@@ -1456,7 +1454,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@open&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(open) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
@@ -1658,7 +1656,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;set&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@set&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(set) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
     <span class="n">nested_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\[.*?\]&quot;</span><span class="p">)</span>
@@ -2022,8 +2020,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;typeclass&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;parent&quot;</span><span class="p">,</span> <span class="s2">&quot;swap&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">,</span> <span class="s2">&quot;typeclasses&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@typeclass&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">,</span> <span class="s2">&quot;@parent&quot;</span><span class="p">,</span> <span class="s2">&quot;@swap&quot;</span><span class="p">,</span> <span class="s2">&quot;@update&quot;</span><span class="p">,</span> <span class="s2">&quot;@typeclasses&quot;</span><span class="p">]</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;show&quot;</span><span class="p">,</span> <span class="s2">&quot;examine&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">,</span> <span class="s2">&quot;reset&quot;</span><span class="p">,</span> <span class="s2">&quot;force&quot;</span><span class="p">,</span> <span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;prototype&quot;</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(typeclass) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
@@ -2079,7 +2077,7 @@
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
-        <span class="k">if</span> <span class="s2">&quot;list&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span> <span class="o">==</span> <span class="s1">&#39;typeclasses&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;list&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;typeclasses&#39;</span><span class="p">,</span> <span class="s1">&#39;@typeclasses&#39;</span><span class="p">):</span>
             <span class="n">tclasses</span> <span class="o">=</span> <span class="n">get_all_typeclasses</span><span class="p">()</span>
             <span class="n">contribs</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">tclasses</span><span class="p">)</span> <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;evennia.contrib&quot;</span><span class="p">)]</span> <span class="ow">or</span> <span class="p">[</span>
                 <span class="s2">&quot;&lt;None loaded&gt;&quot;</span>
@@ -2179,10 +2177,10 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">==</span> <span class="s2">&quot;swap&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;swap&quot;</span><span class="p">,</span> <span class="s2">&quot;@swap&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;force&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;reset&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">==</span> <span class="s2">&quot;update&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;update&quot;</span><span class="p">,</span> <span class="s2">&quot;@update&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;force&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;update&quot;</span><span class="p">)</span>
 
@@ -2273,7 +2271,7 @@
 <span class="sd">    matching the given attribute-wildcard search string.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;wipe&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@wipe&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(wipe) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
@@ -2342,8 +2340,8 @@
 <span class="sd">       &#39;get:id(25); delete:perm(Builder)&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;lock&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;locks&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@lock&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@locks&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd: perm(locks) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
@@ -2463,8 +2461,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;examine&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ex&quot;</span><span class="p">,</span> <span class="s2">&quot;exam&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@examine&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@ex&quot;</span><span class="p">,</span> <span class="s2">&quot;@exam&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(examine) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(/\w+?(\s|$))|\s|$&quot;</span>
@@ -2873,8 +2871,8 @@
 <span class="sd">    one is given.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;find&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;search, locate&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@find&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@search&quot;</span><span class="p">,</span> <span class="s2">&quot;@locate&quot;</span><span class="p">]</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;room&quot;</span><span class="p">,</span> <span class="s2">&quot;exit&quot;</span><span class="p">,</span> <span class="s2">&quot;char&quot;</span><span class="p">,</span> <span class="s2">&quot;exact&quot;</span><span class="p">,</span> <span class="s2">&quot;loc&quot;</span><span class="p">,</span> <span class="s2">&quot;startswith&quot;</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(find) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
@@ -3156,8 +3154,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;scripts&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;script&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@scripts&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@script&quot;</span><span class="p">]</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;create&quot;</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;stop&quot;</span><span class="p">,</span> <span class="s2">&quot;pause&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(scripts) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
@@ -3299,8 +3297,7 @@
 <span class="sd">    given, &lt;nr&gt; defaults to 10.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;objects&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;listobjects&quot;</span><span class="p">,</span> <span class="s2">&quot;listobjs&quot;</span><span class="p">,</span> <span class="s2">&quot;stats&quot;</span><span class="p">,</span> <span class="s2">&quot;db&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@objects&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(listobjects) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
@@ -3409,8 +3406,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;tel&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;teleport&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@teleport&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;@tel&quot;</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;quiet&quot;</span><span class="p">,</span> <span class="s2">&quot;intoexit&quot;</span><span class="p">,</span> <span class="s2">&quot;tonone&quot;</span><span class="p">,</span> <span class="s2">&quot;loc&quot;</span><span class="p">)</span>
     <span class="n">rhs_split</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="s2">&quot; to &quot;</span><span class="p">)</span>  <span class="c1"># Prefer = delimiter, but allow &quot; to &quot; usage.</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(teleport) or perm(Builder)&quot;</span>
@@ -3539,8 +3536,8 @@
 <span class="sd">    enough to for most grouping schemes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;tag&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@tag&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@tags&quot;</span><span class="p">]</span>
     <span class="n">options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;search&quot;</span><span class="p">,</span> <span class="s2">&quot;del&quot;</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(tag) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
@@ -3726,8 +3723,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;spawn&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;olc&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@spawn&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@olc&quot;</span><span class="p">]</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;noloc&quot;</span><span class="p">,</span>
         <span class="s2">&quot;search&quot;</span><span class="p">,</span>

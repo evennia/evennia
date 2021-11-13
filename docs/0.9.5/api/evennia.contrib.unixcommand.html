@@ -320,6 +320,11 @@ use its <strong>add_argument</strong> method.</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommand.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.unixcommand.UnixCommand.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'command', 'no_prefix': ' ', 'tags': '', 'text': '\n    Unix-type commands, supporting short and long options.\n\n    This command syntax uses the Unix-style commands with short options\n    (-X) and long options (--something).  The `argparse` module is\n    used to parse the command.\n\n    In order to use it, you should override two methods:\n    - `init_parser`: this method is called when the command is created.\n      It can be used to set options in the parser.  `self.parser`\n      contains the `argparse.ArgumentParser`, so you can add arguments\n      here.\n    - `func`: this method is called to execute the command, but after\n      the parser has checked the arguments given to it are valid.\n      You can access the namespace of valid arguments in `self.opts`\n      at this point.\n\n    The help of UnixCommands is derived from the docstring, in a\n    slightly different way than usual: the first line of the docstring\n    is used to represent the program description (the very short\n    line at the top of the help message).  The other lines below are\n    used as the program\'s &quot;epilog&quot;, displayed below the options.  It\n    means in your docstring, you don\'t have to write the options.\n    They will be automatically provided by the parser and displayed\n    accordingly.  The `argparse` module provides a default \'-h\' or\n    \'--help\' option on the command.  Typing |whelp commandname|n will\n    display the same as |wcommandname -h|n, though this behavior can\n    be changed.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommand.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>
@@ -355,18 +360,17 @@ use its <strong>add_argument</strong> method.</p>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../1.0-dev/api/evennia.contrib.unixcommand.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.contrib.unixcommand.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

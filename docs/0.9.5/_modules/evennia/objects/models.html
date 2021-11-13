@@ -56,6 +56,7 @@
 <span class="sd">the database object. Like everything else, they can be accessed</span>
 <span class="sd">transparently through the decorating TypeClass.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
@@ -67,7 +68,7 @@
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">dbref</span><span class="p">,</span> <span class="n">lazy_property</span>
 
 
-<div class="viewcode-block" id="ContentsHandler"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.admin.ContentsHandler">[docs]</a><span class="k">class</span> <span class="nc">ContentsHandler</span><span class="p">:</span>
+<div class="viewcode-block" id="ContentsHandler"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler">[docs]</a><span class="k">class</span> <span class="nc">ContentsHandler</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handles and caches the contents of an object to avoid excessive</span>
 <span class="sd">    lookups (this is done very often due to cmdhandler needing to look</span>
@@ -75,7 +76,7 @@
 <span class="sd">    of the ObjectDB.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ContentsHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.admin.ContentsHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="ContentsHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets up the contents handler.</span>
 
@@ -85,34 +86,49 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_idcache</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">__instance_cache__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ContentsHandler.init"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.admin.ContentsHandler.init">[docs]</a>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ContentsHandler.load"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves all objects from database. Used for initializing.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Objects (list of ObjectDB)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">locations_set</span><span class="o">.</span><span class="n">all</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="ContentsHandler.init"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.init">[docs]</a>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Re-initialize the content cache</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-            <span class="nb">dict</span><span class="p">((</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
-        <span class="p">)</span></div>
+        <span class="n">objects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span> <span class="o">=</span> <span class="p">{</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ctype</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_content_types</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ContentsHandler.get"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.admin.ContentsHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ContentsHandler.get"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the contents of the cache.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            exclude (Object or list of Object): object(s) to ignore</span>
+<span class="sd">            content_type (str or None): Filter list by a content-type. If None, don&#39;t filter.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            objects (list): the Objects inside this location</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">exclude</span><span class="p">:</span>
-            <span class="n">pks</span> <span class="o">=</span> <span class="p">[</span><span class="n">pk</span> <span class="k">for</span> <span class="n">pk</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span> <span class="k">if</span> <span class="n">pk</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">excl</span><span class="o">.</span><span class="n">pk</span> <span class="k">for</span> <span class="n">excl</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">exclude</span><span class="p">)]]</span>
+        <span class="k">if</span> <span class="n">content_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">content_type</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">pks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span>
+        <span class="k">if</span> <span class="n">exclude</span><span class="p">:</span>
+            <span class="n">pks</span> <span class="o">=</span> <span class="n">pks</span> <span class="o">-</span> <span class="p">{</span><span class="n">excl</span><span class="o">.</span><span class="n">pk</span> <span class="k">for</span> <span class="n">excl</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">exclude</span><span class="p">)}</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_idcache</span><span class="p">[</span><span class="n">pk</span><span class="p">]</span> <span class="k">for</span> <span class="n">pk</span> <span class="ow">in</span> <span class="n">pks</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -122,12 +138,11 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_idcache</span><span class="p">[</span><span class="n">pk</span><span class="p">]</span> <span class="k">for</span> <span class="n">pk</span> <span class="ow">in</span> <span class="n">pks</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                <span class="c1"># this means the central instance_cache was totally flushed.</span>
-                <span class="c1"># Re-fetching from database  will rebuild the necessary parts of the cache</span>
-                <span class="c1"># for next fetch.</span>
-                <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">))</span></div>
+                <span class="c1"># this means an actual failure of caching. Return real database match.</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="s2">&quot;contents cache failed for </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ContentsHandler.add"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.admin.ContentsHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="ContentsHandler.add"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new object to this location</span>
 
@@ -135,9 +150,11 @@
 <span class="sd">            obj (Object): object to add</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ctype</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_content_types</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ContentsHandler.remove"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.admin.ContentsHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="ContentsHandler.remove"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove object from this location</span>
 
@@ -145,14 +162,23 @@
 <span class="sd">            obj (Object): object to remove</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c1"># not in pk cache, but can happen deletions happens</span>
+            <span class="c1"># remotely from out-of-thread.</span>
+            <span class="k">pass</span>
+        <span class="k">for</span> <span class="n">ctype</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_content_types</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ContentsHandler.clear"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.admin.ContentsHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ContentsHandler.clear"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clear the contents cache and re-initialize</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span></div></div>
 
 
@@ -163,7 +189,7 @@
 <span class="c1"># -------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="ObjectDB"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.admin.ObjectDB">[docs]</a><span class="k">class</span> <span class="nc">ObjectDB</span><span class="p">(</span><span class="n">TypedObject</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDB"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ObjectDB">[docs]</a><span class="k">class</span> <span class="nc">ObjectDB</span><span class="p">(</span><span class="n">TypedObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    All objects in the game use the ObjectDB model to store</span>
 <span class="sd">    data in the database. This is handled transparently through</span>
@@ -282,7 +308,7 @@
     <span class="n">__defaultclasspath__</span> <span class="o">=</span> <span class="s2">&quot;evennia.objects.objects.DefaultObject&quot;</span>
     <span class="n">__applabel__</span> <span class="o">=</span> <span class="s2">&quot;objects&quot;</span>
 
-<div class="viewcode-block" id="ObjectDB.contents_cache"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.admin.ObjectDB.contents_cache">[docs]</a>    <span class="nd">@lazy_property</span>
+<div class="viewcode-block" id="ObjectDB.contents_cache"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ObjectDB.contents_cache">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">contents_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ContentsHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
@@ -362,9 +388,11 @@
         <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
             <span class="n">errmsg</span> <span class="o">=</span> <span class="s2">&quot;Error: </span><span class="si">%s</span><span class="s2">.location = </span><span class="si">%s</span><span class="s2"> creates a location loop.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">errmsg</span> <span class="o">=</span> <span class="s2">&quot;Error (</span><span class="si">%s</span><span class="s2">): </span><span class="si">%s</span><span class="s2"> is not a valid location.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">location</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># raising here gives more info for now</span>
+            <span class="k">raise</span>
+            <span class="c1"># errmsg = &quot;Error (%s): %s is not a valid location.&quot; % (str(e), location)</span>
+            <span class="c1"># raise RuntimeError(errmsg)</span>
         <span class="k">return</span>
 
     <span class="k">def</span> <span class="nf">__location_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -374,7 +402,7 @@
 
     <span class="n">location</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__location_get</span><span class="p">,</span> <span class="n">__location_set</span><span class="p">,</span> <span class="n">__location_del</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ObjectDB.at_db_location_postsave"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.admin.ObjectDB.at_db_location_postsave">[docs]</a>    <span class="k">def</span> <span class="nf">at_db_location_postsave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDB.at_db_location_postsave"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ObjectDB.at_db_location_postsave">[docs]</a>    <span class="k">def</span> <span class="nf">at_db_location_postsave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called automatically after the location field was</span>
 <span class="sd">        saved, no matter how. It checks for a variable</span>
@@ -400,7 +428,7 @@
                 <span class="p">)</span>
                 <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">contents_cache</span><span class="o">.</span><span class="n">init</span><span class="p">()</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="n">get_all_cached_instances</span><span class="p">()]</span></div>
 
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Define Django meta options&quot;&quot;&quot;</span>
 
         <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Object&quot;</span>
@@ -430,18 +458,17 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="models.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

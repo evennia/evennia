@@ -91,6 +91,11 @@ the line is just added to the editor buffer).</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoInput.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.commands.default.syscommands.SystemNoInput.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' ', 'tags': '', 'text': '\n    This is called when there is no input given\n    '}</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoInput.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -127,6 +132,11 @@ the line is just added to the editor buffer).</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.syscommands.SystemNoMatch.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoMatch.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.syscommands.SystemNoMatch.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': '__nomatch_command', 'no_prefix': ' ', 'tags': '', 'text': '\n    No command was found matching the given input.\n    '}</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoMatch.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -177,118 +187,9 @@ the <strong>raw_cmdname</strong> is the cmdname unmodified by eventual prefix-st
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemMultimatch.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</dd></dl>
-
-<dl class="py class">
-<dt id="evennia.commands.default.syscommands.SystemSendToChannel">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.syscommands.</code><code class="sig-name descname">SystemSendToChannel</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/syscommands.html#SystemSendToChannel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
-<p>This is a special command that the cmdhandler calls
-when it detects that the command given matches
-an existing Channel object key (or alias).</p>
 <dl class="py attribute">
-<dt id="evennia.commands.default.syscommands.SystemSendToChannel.key">
-<code class="sig-name descname">key</code><em class="property"> = '__send_to_channel_command'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel.key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.syscommands.SystemSendToChannel.locks">
-<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel.locks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.syscommands.SystemSendToChannel.parse">
-<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/syscommands.html#SystemSendToChannel.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel.parse" title="Permalink to this definition">¶</a></dt>
-<dd><p>This method is called by the cmdhandler once the command name
-has been identified. It creates a new set of member variables
-that can be later accessed from self.func() (see below)</p>
-<p>The following variables are available for our use when entering this
-method (from the command definition, and assigned on the fly by the
-cmdhandler):</p>
-<blockquote>
-<div><p>self.key - the name of this command (‘look’)
-self.aliases - the aliases of this cmd (‘l’)
-self.permissions - permission string for this command
-self.help_category - overall category of command</p>
-<p>self.caller - the object calling this command
-self.cmdstring - the actual command name used to call this</p>
-<blockquote>
-<div><dl class="simple">
-<dt>(this allows you to know which alias was used,</dt><dd><p>for example)</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>self.args - the raw input; everything following self.cmdstring.
-self.cmdset - the cmdset from which this command was picked. Not</p>
-<blockquote>
-<div><p>often used (useful for commands like ‘help’ or to
-list all available commands etc)</p>
-</div></blockquote>
-<dl class="simple">
-<dt>self.obj - the object on which this command was defined. It is often</dt><dd><p>the same as self.caller.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>A MUX command has the following possible syntax:</p>
-<blockquote>
-<div><p>name[ with several words][/switch[/switch..]] arg1[,arg2,…] [[=|,] arg[,..]]</p>
-</div></blockquote>
-<p>The ‘name[ with several words]’ part is already dealt with by the
-cmdhandler at this point, and stored in self.cmdname (we don’t use
-it here). The rest of the command is stored in self.args, which can
-start with the switch indicator /.</p>
-<dl class="simple">
-<dt>Optional variables to aid in parsing, if set:</dt><dd><dl class="simple">
-<dt>self.switch_options  - (tuple of valid /switches expected by this</dt><dd><p>command (without the /))</p>
-</dd>
-<dt>self.rhs_split       - Alternate string delimiter or tuple of strings</dt><dd><p>to separate left/right hand sides. tuple form
-gives priority split to first string delimiter.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p>This parser breaks self.args into its constituents and stores them in the
-following variables:</p>
-<blockquote>
-<div><p>self.switches = [list of /switches (without the /)]
-self.raw = This is the raw argument input, including switches
-self.args = This is re-defined to be everything <em>except</em> the switches
-self.lhs = Everything to the left of = (lhs:’left-hand side’). If</p>
-<blockquote>
-<div><p>no = is found, this is identical to self.args.</p>
-</div></blockquote>
-<dl class="simple">
-<dt>self.rhs: Everything to the right of = (rhs:’right-hand side’).</dt><dd><p>If no ‘=’ is found, this is None.</p>
-</dd>
-</dl>
-<p>self.lhslist - [self.lhs split into a list by comma]
-self.rhslist - [list of self.rhs split into a list by comma]
-self.arglist = [list of space-separated args (stripped, including ‘=’ if it exists)]</p>
-<p>All args and list members are stripped of excess whitespace around the
-strings, but case is preserved.</p>
-</div></blockquote>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.syscommands.SystemSendToChannel.func">
-<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/syscommands.html#SystemSendToChannel.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel.func" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a new message and send it to channel, using
-the already formatted input.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.syscommands.SystemSendToChannel.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel.aliases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.syscommands.SystemSendToChannel.help_category">
-<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel.help_category" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.syscommands.SystemSendToChannel.lock_storage">
-<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.syscommands.SystemMultimatch.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': '__multimatch_command', 'no_prefix': ' ', 'tags': '', 'text': &quot;\n    Multiple command matches.\n\n    The cmdhandler adds a special attribute 'matches' to this\n    system command.\n\n      matches = [(cmdname, args, cmdobj, cmdlen, mratio, raw_cmdname) , (cmdname, ...), ...]\n\n    Here, `cmdname` is the command's name and `args` the rest of the incoming string,\n    without said command name. `cmdobj` is the Command instance, the cmdlen is\n    the same as len(cmdname) and mratio is a measure of how big a part of the\n    full input string the cmdname takes up - an exact match would be 1.0. Finally,\n    the `raw_cmdname` is the cmdname unmodified by eventual prefix-stripping.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemMultimatch.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -326,18 +227,17 @@ the already formatted input.</p>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../1.0-dev/api/evennia.commands.default.syscommands.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.commands.default.syscommands.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

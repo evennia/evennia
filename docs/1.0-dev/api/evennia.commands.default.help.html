@@ -297,6 +297,25 @@ always matched before assuming the space begins a subtopic.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.commands.default.help.CmdHelp.strip_cmd_prefix">
+<code class="sig-name descname">strip_cmd_prefix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">all_keys</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp.strip_cmd_prefix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.strip_cmd_prefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conditional strip of a command prefix, such as &#64; in &#64;desc. By default
+this will be hidden unless there is a duplicate without the prefix
+in the full command set (such as &#64;open and open).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – Command key to analyze.</p></li>
+<li><p><strong>all_cmds</strong> (<em>list</em>) – All command-keys (and potentially aliases).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>str</em> – Potentially modified key to use in help display.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.commands.default.help.CmdHelp.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the dynamic help entry creator.</p>
@@ -314,7 +333,7 @@ always matched before assuming the space begins a subtopic.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.help.CmdHelp.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '?', 'category': 'general', 'key': 'help', 'tags': '', 'text': &quot;\n    Get help.\n\n    Usage:\n      help\n      help &lt;topic, command or category&gt;\n      help &lt;topic&gt;/&lt;subtopic&gt;\n      help &lt;topic&gt;/&lt;subtopic&gt;/&lt;subsubtopic&gt; ...\n\n    Use the 'help' command alone to see an index of all help topics, organized\n    by category.eSome big topics may offer additional sub-topics.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '?', 'category': 'general', 'key': 'help', 'no_prefix': ' ', 'tags': '', 'text': &quot;\n    Get help.\n\n    Usage:\n      help\n      help &lt;topic, command or category&gt;\n      help &lt;topic&gt;/&lt;subtopic&gt;\n      help &lt;topic&gt;/&lt;subtopic&gt;/&lt;subsubtopic&gt; ...\n\n    Use the 'help' command alone to see an index of all help topics, organized\n    by category.eSome big topics may offer additional sub-topics.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -421,7 +440,7 @@ the user will be able to enter a partial match to access it.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.help.CmdSetHelp.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'sethelp', 'tags': '', 'text': &quot;\n    Edit the help database.\n\n    Usage:\n      help[/switches] &lt;topic&gt;[[;alias;alias][,category[,locks]] [= &lt;text&gt;]\n\n    Switches:\n      edit - open a line editor to edit the topic's help text.\n      replace - overwrite existing help topic.\n      append - add text to the end of existing topic with a newline between.\n      extend - as append, but don't add a newline.\n      delete - remove help topic.\n\n    Examples:\n      sethelp lore = In the beginning was ...\n      sethelp/append pickpocketing,Thievery = This steals ...\n      sethelp/replace pickpocketing, ,attr(is_thief) = This steals ...\n      sethelp/edit thievery\n\n    If not assigning a category, the `settings.DEFAULT_HELP_CATEGORY` category\n    will be used. If no lockstring is specified, everyone will be able to read\n    the help entry.  Sub-topics are embedded in the help text.\n\n    Note that this cannot modify command-help entries - these are modified\n    in-code, outside the game.\n\n    # SUBTOPICS\n\n    ## Adding subtopics\n\n    Subtopics helps to break up a long help entry into sub-sections. Users can\n    access subtopics with |whelp topic/subtopic/...|n Subtopics are created and\n    stored together with the main topic.\n\n    To start adding subtopics, add the text '# SUBTOPICS' on a new line at the\n    end of your help text. After this you can now add any number of subtopics,\n    each starting with '## &lt;subtopic-name&gt;' on a line, followed by the\n    help-text of that subtopic.\n    Use '### &lt;subsub-name&gt;' to add a sub-subtopic and so on. Max depth is 5. A\n    subtopic's title is case-insensitive and can consist of multiple words -\n    the user will be able to enter a partial match to access it.\n\n    For example:\n\n    | Main help text for &lt;topic&gt;\n    |\n    | # SUBTOPICS\n    |\n    | ## about\n    |\n    | Text for the '&lt;topic&gt;/about' subtopic'\n    |\n    | ### more about-info\n    |\n    | Text for the '&lt;topic&gt;/about/more about-info sub-subtopic\n    |\n    | ## extra\n    |\n    | Text for the '&lt;topic&gt;/extra' subtopic\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'sethelp', 'no_prefix': ' ', 'tags': '', 'text': &quot;\n    Edit the help database.\n\n    Usage:\n      help[/switches] &lt;topic&gt;[[;alias;alias][,category[,locks]] [= &lt;text&gt;]\n\n    Switches:\n      edit - open a line editor to edit the topic's help text.\n      replace - overwrite existing help topic.\n      append - add text to the end of existing topic with a newline between.\n      extend - as append, but don't add a newline.\n      delete - remove help topic.\n\n    Examples:\n      sethelp lore = In the beginning was ...\n      sethelp/append pickpocketing,Thievery = This steals ...\n      sethelp/replace pickpocketing, ,attr(is_thief) = This steals ...\n      sethelp/edit thievery\n\n    If not assigning a category, the `settings.DEFAULT_HELP_CATEGORY` category\n    will be used. If no lockstring is specified, everyone will be able to read\n    the help entry.  Sub-topics are embedded in the help text.\n\n    Note that this cannot modify command-help entries - these are modified\n    in-code, outside the game.\n\n    # SUBTOPICS\n\n    ## Adding subtopics\n\n    Subtopics helps to break up a long help entry into sub-sections. Users can\n    access subtopics with |whelp topic/subtopic/...|n Subtopics are created and\n    stored together with the main topic.\n\n    To start adding subtopics, add the text '# SUBTOPICS' on a new line at the\n    end of your help text. After this you can now add any number of subtopics,\n    each starting with '## &lt;subtopic-name&gt;' on a line, followed by the\n    help-text of that subtopic.\n    Use '### &lt;subsub-name&gt;' to add a sub-subtopic and so on. Max depth is 5. A\n    subtopic's title is case-insensitive and can consist of multiple words -\n    the user will be able to enter a partial match to access it.\n\n    For example:\n\n    | Main help text for &lt;topic&gt;\n    |\n    | # SUBTOPICS\n    |\n    | ## about\n    |\n    | Text for the '&lt;topic&gt;/about' subtopic'\n    |\n    | ### more about-info\n    |\n    | Text for the '&lt;topic&gt;/about/more about-info sub-subtopic\n    |\n    | ## extra\n    |\n    | Text for the '&lt;topic&gt;/extra' subtopic\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

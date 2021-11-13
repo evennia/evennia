@@ -80,7 +80,7 @@
     <span class="s2">&quot;search_message&quot;</span><span class="p">,</span>
     <span class="s2">&quot;search_channel&quot;</span><span class="p">,</span>
     <span class="s2">&quot;search_help_entry&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;search_tag&quot;</span><span class="p">,</span>  <span class="c1"># object-tag</span>
+    <span class="s2">&quot;search_tag&quot;</span><span class="p">,</span>
     <span class="s2">&quot;search_script_tag&quot;</span><span class="p">,</span>
     <span class="s2">&quot;search_account_tag&quot;</span><span class="p">,</span>
     <span class="s2">&quot;search_channel_tag&quot;</span><span class="p">,</span>
@@ -98,13 +98,13 @@
     <span class="n">Tag</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s2">&quot;typeclasses&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;tag&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
 <span class="k">except</span> <span class="n">OperationalError</span><span class="p">:</span>
     <span class="c1"># this is a fallback used during tests/doc building</span>
-   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t initialize search managers - db not set up.&quot;</span><span class="p">)</span>
-   <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
-   <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
-   <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
-   <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span><span class="p">,</span> <span class="n">ChannelDB</span>
-   <span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span>
-   <span class="kn">from</span> <span class="nn">evennia.typeclasses.tags</span> <span class="kn">import</span> <span class="n">Tag</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t initialize search managers - db not set up.&quot;</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+    <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+    <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
+    <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span><span class="p">,</span> <span class="n">ChannelDB</span>
+    <span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span>
+    <span class="kn">from</span> <span class="nn">evennia.typeclasses.tags</span> <span class="kn">import</span> <span class="n">Tag</span>  <span class="c1"># noqa</span>
 
 <span class="c1"># -------------------------------------------------------------------</span>
 <span class="c1"># Search manager-wrappers</span>
@@ -430,18 +430,17 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="search.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

@@ -330,6 +330,48 @@ class CmdEcho(Command):
     <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
 </pre></div>
 </div>
+<p>For examples of using the Python command-line, use <code class="docutils literal notranslate"><span class="pre">python</span></code> language and <code class="docutils literal notranslate"><span class="pre">&gt;&gt;&gt;</span></code> prompt.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```python 
+&gt;&gt;&gt; print(&quot;Hello World&quot;)
+Hello World
+```
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World&quot;</span><span class="p">)</span>
+<span class="go">Hello World</span>
+</pre></div>
+</div>
+<p>When showing an in-game command, use the <code class="docutils literal notranslate"><span class="pre">shell</span></code> language type and <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> as the prompt.
+Indent returns from the game.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```shell 
+&gt; look at flower
+  Red Flower(#34)
+  A flower with red petals.
+```
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt; look at flower
+  Red Flower<span class="o">(</span><span class="c1">#34)</span>
+  A flower with red petals.
+</pre></div>
+</div>
+<p>For actual shell prompts you can either use <code class="docutils literal notranslate"><span class="pre">bash</span></code> language type or just indent the line.
+Use <code class="docutils literal notranslate"><span class="pre">$</span></code> for the prompt when wanting to show what is an input and what is an output, otherwise
+skip it - it can be confusing to users not that familiar with the command line.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```bash 
+$ ls
+evennia/ mygame/
+```
+    evennia start --log
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ ls
+evennia/ mygame/
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia start --log
+</pre></div>
+</div>
 </section>
 </section>
 <section id="myst-directives">

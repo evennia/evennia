@@ -702,6 +702,13 @@ div.highlight > pre {
     font-size: smaller;
 }
 
+/* default ({code-block}, no arg) - used for in-game code */
+div.highlight-shell.notranslate > div.highlight > pre {
+  background-color: #faf2e6;
+  font-weight: bold;
+  font-style: italic;
+} 
+
 div.doctest > div.highlight span.gp {  /* gp: Generic.Prompt */
     user-select: none;
 }

@@ -179,7 +179,7 @@ AMP_PORT = 4006
 ```
 
 The `AMP_PORT` is required to work, since this is the internal port linking Evennia's 
-[Server and Portal](./Portal-And-Server.md) components together. The other ports are encrypted ports that may be
+[Server and Portal](../Components/Portal-And-Server.md) components together. The other ports are encrypted ports that may be
 useful for custom protocols but are otherwise not used.
 
 ### Lockdown mode

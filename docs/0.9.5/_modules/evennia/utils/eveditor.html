@@ -44,56 +44,52 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">EvEditor (Evennia Line Editor)</span>
 
-<span class="sd">This implements an advanced line editor for editing longer texts</span>
-<span class="sd">in-game. The editor mimics the command mechanisms of the &quot;VI&quot; editor</span>
-<span class="sd">(a famous line-by-line editor) as far as reasonable.</span>
+<span class="sd">This implements an advanced line editor for editing longer texts in-game. The</span>
+<span class="sd">editor mimics the command mechanisms of the &quot;VI&quot; editor (a famous line-by-line</span>
+<span class="sd">editor) as far as reasonable.</span>
 
 <span class="sd">Features of the editor:</span>
 
-<span class="sd"> - undo/redo.</span>
-<span class="sd"> - edit/replace on any line of the buffer.</span>
-<span class="sd"> - search&amp;replace text anywhere in buffer.</span>
-<span class="sd"> - formatting of buffer, or selection, to certain width + indentations.</span>
-<span class="sd"> - allow to echo the input or not, depending on your client.</span>
+<span class="sd">- undo/redo.</span>
+<span class="sd">- edit/replace on any line of the buffer.</span>
+<span class="sd">- search&amp;replace text anywhere in buffer.</span>
+<span class="sd">- formatting of buffer, or selection, to certain width + indentations.</span>
+<span class="sd">- allow to echo the input or not, depending on your client.</span>
+<span class="sd">- in-built help</span>
 
-<span class="sd">To use the editor, just import EvEditor from this module</span>
-<span class="sd">and initialize it:</span>
-<span class="sd">::</span>
+<span class="sd">To use the editor, just import EvEditor from this module and initialize it:</span>
 
-<span class="sd">    from evennia.utils.eveditor import EvEditor</span>
-<span class="sd">    EvEditor(caller, loadfunc=None, savefunc=None, quitfunc=None, key=&quot;&quot;, persistent=True)</span>
+<span class="sd">```python</span>
+<span class="sd">from evennia.utils.eveditor import EvEditor</span>
 
-<span class="sd">- `caller` is the user of the editor, the one to see all feedback.</span>
-<span class="sd">- `loadfunc(caller)` is called when the editor is first launched; the</span>
-<span class="sd">  return from this function is loaded as the starting buffer in the</span>
-<span class="sd">  editor.</span>
-<span class="sd">- `safefunc(caller, buffer)` is called with the current buffer when</span>
-<span class="sd">  saving in the editor. The function should return True/False depending</span>
-<span class="sd">  on if the saving was successful or not.</span>
-<span class="sd">- `quitfunc(caller)` is called when the editor exits. If this is given,</span>
-<span class="sd">  no automatic quit messages will be given.</span>
-<span class="sd">- `key` is an optional identifier for the editing session, to be</span>
-<span class="sd">  displayed in the editor.</span>
-<span class="sd">- `persistent` means the editor state will be saved to the database making it</span>
-<span class="sd">  survive a server reload. Note that using this mode, the load- save-</span>
-<span class="sd">  and quit-funcs must all be possible to pickle - notable unusable</span>
-<span class="sd">  callables are class methods and functions defined inside other</span>
-<span class="sd">  functions. With persistent=False, no such restriction exists.</span>
-<span class="sd">- `code` set to True activates features on the EvEditor to enter Python code.</span>
+<span class="sd"># set up an editor to edit the caller&#39;s &#39;desc&#39; Attribute</span>
+<span class="sd">def _loadfunc(caller):</span>
+<span class="sd">    return caller.db.desc</span>
 
-<span class="sd">In addition, the EvEditor can be used to enter Python source code,</span>
-<span class="sd">and offers basic handling of indentation.</span>
+<span class="sd">def _savefunc(caller, buffer):</span>
+<span class="sd">    caller.db.desc = buffer.strip()</span>
+<span class="sd">    return True</span>
 
-<span class="sd">----</span>
+<span class="sd">def _quitfunc(caller):</span>
+<span class="sd">    caller.msg(&quot;Custom quit message&quot;)</span>
+
+<span class="sd"># start the editor</span>
+<span class="sd">EvEditor(caller, loadfunc=None, savefunc=None, quitfunc=None, key=&quot;&quot;,</span>
+<span class="sd">         persistent=True, code=False)</span>
+<span class="sd">```</span>
+
+<span class="sd">The editor can also be used to format Python code and be made to</span>
+<span class="sd">survive a reload. See the `EvEditor` class for more details.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">dedent</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">justify</span><span class="p">,</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">raw</span>
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdhandler</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 <span class="c1"># we use cmdhandler instead of evennia.syscmdkeys to</span>
 <span class="c1"># avoid some cases of loading before evennia init&#39;d</span>
@@ -111,7 +107,7 @@
 <span class="c1">#</span>
 <span class="c1"># -------------------------------------------------------------</span>
 
-<span class="n">_HELP_TEXT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_HELP_TEXT</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2"> &lt;txt&gt;  - any non-command is appended to the end of the buffer.</span>
 <span class="s2"> :  &lt;l&gt; - view buffer or only line(s) &lt;l&gt;</span>
 <span class="s2"> :: &lt;l&gt; - raw-view buffer or only line(s) &lt;l&gt;</span>
@@ -147,66 +143,66 @@
 <span class="s2"> :fd &lt;l&gt;    - de-indent entire buffer or line &lt;l&gt;</span>
 
 <span class="s2"> :echo - turn echoing of the input on/off (helpful for some clients)</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
-<span class="n">_HELP_LEGEND</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_HELP_LEGEND</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    Legend:</span>
 <span class="s2">    &lt;l&gt;   - line number, like &#39;5&#39; or range, like &#39;3:7&#39;.</span>
 <span class="s2">    &lt;w&gt;   - a single word, or multiple words with quotes around them.</span>
 <span class="s2">    &lt;txt&gt; - longer string, usually not needing quotes.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
-<span class="n">_HELP_CODE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_HELP_CODE</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2"> :!    - Execute code buffer without saving</span>
 <span class="s2"> :&lt;    - Decrease the level of automatic indentation for the next lines</span>
 <span class="s2"> :&gt;    - Increase the level of automatic indentation for the next lines</span>
 <span class="s2"> :=    - Switch automatic indentation on/off</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span>
     <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="p">)</span>
+<span class="p">))</span>
 
-<span class="n">_ERROR_LOADFUNC</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ERROR_LOADFUNC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="si">{error}</span><span class="s2"></span>
 
 <span class="s2">|rBuffer load function error. Could not load initial data.|n</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
-<span class="n">_ERROR_SAVEFUNC</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ERROR_SAVEFUNC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="si">{error}</span><span class="s2"></span>
 
 <span class="s2">|rSave function returned an error. Buffer not saved.|n</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
-<span class="n">_ERROR_NO_SAVEFUNC</span> <span class="o">=</span> <span class="s2">&quot;|rNo save function defined. Buffer cannot be saved.|n&quot;</span>
+<span class="n">_ERROR_NO_SAVEFUNC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;|rNo save function defined. Buffer cannot be saved.|n&quot;</span><span class="p">)</span>
 
-<span class="n">_MSG_SAVE_NO_CHANGE</span> <span class="o">=</span> <span class="s2">&quot;No changes need saving&quot;</span>
-<span class="n">_DEFAULT_NO_QUITFUNC</span> <span class="o">=</span> <span class="s2">&quot;Exited editor.&quot;</span>
+<span class="n">_MSG_SAVE_NO_CHANGE</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;No changes need saving&quot;</span><span class="p">)</span>
+<span class="n">_DEFAULT_NO_QUITFUNC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Exited editor.&quot;</span><span class="p">)</span>
 
-<span class="n">_ERROR_QUITFUNC</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ERROR_QUITFUNC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="si">{error}</span><span class="s2"></span>
 
 <span class="s2">|rQuit function gave an error. Skipping.|n</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
-<span class="n">_ERROR_PERSISTENT_SAVING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ERROR_PERSISTENT_SAVING</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="si">{error}</span><span class="s2"></span>
 
 <span class="s2">|rThe editor state could not be saved for persistent mode. Switching</span>
 <span class="s2">to non-persistent mode (which means the editor session won&#39;t survive</span>
 <span class="s2">an eventual server reload - so save often!)|n</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
-<span class="n">_TRACE_PERSISTENT_SAVING</span> <span class="o">=</span> <span class="p">(</span>
+<span class="n">_TRACE_PERSISTENT_SAVING</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
     <span class="s2">&quot;EvEditor persistent-mode error. Commonly, this is because one or &quot;</span>
     <span class="s2">&quot;more of the EvEditor callbacks could not be pickled, for example &quot;</span>
     <span class="s2">&quot;because it&#39;s a class method or is defined inside another function.&quot;</span>
 <span class="p">)</span>
 
 
-<span class="n">_MSG_NO_UNDO</span> <span class="o">=</span> <span class="s2">&quot;Nothing to undo.&quot;</span>
-<span class="n">_MSG_NO_REDO</span> <span class="o">=</span> <span class="s2">&quot;Nothing to redo.&quot;</span>
-<span class="n">_MSG_UNDO</span> <span class="o">=</span> <span class="s2">&quot;Undid one step.&quot;</span>
-<span class="n">_MSG_REDO</span> <span class="o">=</span> <span class="s2">&quot;Redid one step.&quot;</span>
+<span class="n">_MSG_NO_UNDO</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Nothing to undo.&quot;</span><span class="p">)</span>
+<span class="n">_MSG_NO_REDO</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Nothing to redo.&quot;</span><span class="p">)</span>
+<span class="n">_MSG_UNDO</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Undid one step.&quot;</span><span class="p">)</span>
+<span class="n">_MSG_REDO</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Redid one step.&quot;</span><span class="p">)</span>
 
 <span class="c1"># -------------------------------------------------------------</span>
 <span class="c1">#</span>
@@ -228,7 +224,10 @@
     <span class="n">help_cateogory</span> <span class="o">=</span> <span class="s2">&quot;LineEditor&quot;</span>
 
 <div class="viewcode-block" id="CmdSaveYesNo.func"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdSaveYesNo.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implement the yes/no choice.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implement the yes/no choice.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># this is only called from inside the lineeditor</span>
         <span class="c1"># so caller.ndb._lineditor must be set.</span>
 
@@ -243,7 +242,10 @@
 
 
 <div class="viewcode-block" id="SaveYesNoCmdSet"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.SaveYesNoCmdSet">[docs]</a><span class="k">class</span> <span class="nc">SaveYesNoCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Stores the yesno question&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stores the yesno question</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;quitsave_yesno&quot;</span>
     <span class="n">priority</span> <span class="o">=</span> <span class="mi">150</span>  <span class="c1"># override other cmdsets.</span>
@@ -273,17 +275,18 @@
 
 <div class="viewcode-block" id="CmdEditorBase.parse"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdEditorBase.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Handles pre-parsing</span>
+<span class="sd">        Handles pre-parsing. Editor commands are on the form</span>
 
-<span class="sd">        Usage:</span>
+<span class="sd">        ::</span>
+
 <span class="sd">            :cmd [li] [w] [txt]</span>
 
 <span class="sd">        Where all arguments are optional.</span>
 
-<span class="sd">        - li - line number (int), starting from 1. This could also</span>
-<span class="sd">          be a range given as &lt;l&gt;:&lt;l&gt;.</span>
-<span class="sd">        - w - word(s) (string), could be encased in quotes.</span>
-<span class="sd">        - txt - extra text (string), could be encased in quotes.</span>
+<span class="sd">        - `li`  - line number (int), starting from 1. This could also</span>
+<span class="sd">              be a range given as &lt;l&gt;:&lt;l&gt;.</span>
+<span class="sd">        - `w`  - word(s) (string), could be encased in quotes.</span>
+<span class="sd">        - `txt` - extra text (string), could be encased in quotes.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -378,6 +381,7 @@
 <span class="k">def</span> <span class="nf">_load_editor</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load persistent editor from storage.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">saved_options</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_eveditor_saved&quot;</span><span class="p">)</span>
     <span class="n">saved_buffer</span><span class="p">,</span> <span class="n">saved_undo</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_eveditor_buffer_temp&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
@@ -403,6 +407,7 @@
 <div class="viewcode-block" id="CmdLineInput"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdLineInput">[docs]</a><span class="k">class</span> <span class="nc">CmdLineInput</span><span class="p">(</span><span class="n">CmdEditorBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    No command match - Inputs line of text into buffer.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="n">_CMD_NOMATCH</span>
@@ -487,6 +492,7 @@
 <span class="sd">        This command handles all the in-editor :-style commands. Since</span>
 <span class="sd">        each command is small and very limited, this makes for a more</span>
 <span class="sd">        efficient presentation.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="n">editor</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_eveditor</span>
@@ -514,7 +520,7 @@
             <span class="c1"># Insert single colon alone on a line</span>
             <span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">([</span><span class="s2">&quot;:&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">lstart</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">linebuffer</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;:&quot;</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">echo_mode</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Single &#39;:&#39; added to buffer.&quot;</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Single &#39;:&#39; added to buffer.&quot;</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:h&quot;</span><span class="p">:</span>
             <span class="c1"># help entry</span>
             <span class="n">editor</span><span class="o">.</span><span class="n">display_help</span><span class="p">()</span>
@@ -529,7 +535,7 @@
             <span class="c1"># quit. If not saved, will ask</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">editor</span><span class="o">.</span><span class="n">_unsaved</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">SaveYesNoCmdSet</span><span class="p">)</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Save before quitting? |lcyes|lt[Y]|le/|lcno|ltN|le&quot;</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Save before quitting?&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; |lcyes|lt[Y]|le/|lcno|ltN|le&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">editor</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:q!&quot;</span><span class="p">:</span>
@@ -544,24 +550,26 @@
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:UU&quot;</span><span class="p">:</span>
             <span class="c1"># reset buffer</span>
             <span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">(</span><span class="n">editor</span><span class="o">.</span><span class="n">_pristine_buffer</span><span class="p">)</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Reverted all changes to the buffer back to original state.&quot;</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Reverted all changes to the buffer back to original state.&quot;</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:dd&quot;</span><span class="p">:</span>
             <span class="c1"># :dd &lt;l&gt; - delete line &lt;l&gt;</span>
             <span class="n">buf</span> <span class="o">=</span> <span class="n">linebuffer</span><span class="p">[:</span><span class="n">lstart</span><span class="p">]</span> <span class="o">+</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lend</span><span class="p">:]</span>
             <span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Deleted </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Deleted </span><span class="si">{string}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">string</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:dw&quot;</span><span class="p">:</span>
             <span class="c1"># :dw &lt;w&gt; - delete word in entire buffer</span>
             <span class="c1"># :dw &lt;l&gt; &lt;w&gt; delete word only on line(s) &lt;l&gt;</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must give a search word to delete.&quot;</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;You must give a search word to delete.&quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">linerange</span><span class="p">:</span>
                     <span class="n">lstart</span> <span class="o">=</span> <span class="mi">0</span>
                     <span class="n">lend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cline</span> <span class="o">+</span> <span class="mi">1</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Removed </span><span class="si">%s</span><span class="s2"> for lines </span><span class="si">%i</span><span class="s2">-</span><span class="si">%i</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">,</span> <span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">lend</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Removed </span><span class="si">{arg1}</span><span class="s2"> for lines </span><span class="si">{l1}</span><span class="s2">-</span><span class="si">{l2}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">arg1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">,</span> <span class="n">l1</span><span class="o">=</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l2</span><span class="o">=</span><span class="n">lend</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Removed </span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Removed </span><span class="si">{arg1}</span><span class="s2"> for </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">arg1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
                 <span class="n">sarea</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">linebuffer</span><span class="p">[</span><span class="n">lstart</span><span class="p">:</span><span class="n">lend</span><span class="p">])</span>
                 <span class="n">sarea</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sarea</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
                 <span class="n">buf</span> <span class="o">=</span> <span class="n">linebuffer</span><span class="p">[:</span><span class="n">lstart</span><span class="p">]</span> <span class="o">+</span> <span class="n">sarea</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lend</span><span class="p">:]</span>
@@ -576,49 +584,52 @@
                     <span class="n">editor</span><span class="o">.</span><span class="n">_indent</span> <span class="o">=</span> <span class="mi">0</span>
                     <span class="k">if</span> <span class="n">editor</span><span class="o">.</span><span class="n">_persistent</span><span class="p">:</span>
                         <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_eveditor_indent&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Cleared </span><span class="si">%i</span><span class="s2"> lines from buffer.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">nlines</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Cleared </span><span class="si">{nlines}</span><span class="s2"> lines from buffer.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nlines</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nlines</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:y&quot;</span><span class="p">:</span>
             <span class="c1"># :y &lt;l&gt; - yank line(s) to copy buffer</span>
             <span class="n">cbuf</span> <span class="o">=</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lstart</span><span class="p">:</span><span class="n">lend</span><span class="p">]</span>
             <span class="n">editor</span><span class="o">.</span><span class="n">_copy_buffer</span> <span class="o">=</span> <span class="n">cbuf</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2"> yanked.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="n">cbuf</span><span class="p">))</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{line}</span><span class="s2">, </span><span class="si">{cbuf}</span><span class="s2"> yanked.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="n">cbuf</span><span class="o">=</span><span class="n">cbuf</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:x&quot;</span><span class="p">:</span>
             <span class="c1"># :x &lt;l&gt; - cut line to copy buffer</span>
             <span class="n">cbuf</span> <span class="o">=</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lstart</span><span class="p">:</span><span class="n">lend</span><span class="p">]</span>
             <span class="n">editor</span><span class="o">.</span><span class="n">_copy_buffer</span> <span class="o">=</span> <span class="n">cbuf</span>
             <span class="n">buf</span> <span class="o">=</span> <span class="n">linebuffer</span><span class="p">[:</span><span class="n">lstart</span><span class="p">]</span> <span class="o">+</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lend</span><span class="p">:]</span>
             <span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2"> cut.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="n">cbuf</span><span class="p">))</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{line}</span><span class="s2">, </span><span class="si">{cbuf}</span><span class="s2"> cut.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="n">cbuf</span><span class="o">=</span><span class="n">cbuf</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:p&quot;</span><span class="p">:</span>
             <span class="c1"># :p &lt;l&gt; paste line(s) from copy buffer</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">editor</span><span class="o">.</span><span class="n">_copy_buffer</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Copy buffer is empty.&quot;</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Copy buffer is empty.&quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">buf</span> <span class="o">=</span> <span class="n">linebuffer</span><span class="p">[:</span><span class="n">lstart</span><span class="p">]</span> <span class="o">+</span> <span class="n">editor</span><span class="o">.</span><span class="n">_copy_buffer</span> <span class="o">+</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lstart</span><span class="p">:]</span>
                 <span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Pasted buffer </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">editor</span><span class="o">.</span><span class="n">_copy_buffer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Pasted buffer </span><span class="si">{cbuf}</span><span class="s2"> to </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">cbuf</span><span class="o">=</span><span class="n">editor</span><span class="o">.</span><span class="n">_copy_buffer</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:i&quot;</span><span class="p">:</span>
             <span class="c1"># :i &lt;l&gt; &lt;txt&gt; - insert new line</span>
             <span class="n">new_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">new_lines</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You need to enter a new line and where to insert it.&quot;</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;You need to enter a new line and where to insert it.&quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">buf</span> <span class="o">=</span> <span class="n">linebuffer</span><span class="p">[:</span><span class="n">lstart</span><span class="p">]</span> <span class="o">+</span> <span class="n">new_lines</span> <span class="o">+</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lstart</span><span class="p">:]</span>
                 <span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Inserted </span><span class="si">%i</span><span class="s2"> new line(s) at </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_lines</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Inserted </span><span class="si">{num}</span><span class="s2"> new line(s) at </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">new_lines</span><span class="p">),</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:r&quot;</span><span class="p">:</span>
             <span class="c1"># :r &lt;l&gt; &lt;txt&gt; - replace lines</span>
             <span class="n">new_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">new_lines</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You need to enter a replacement string.&quot;</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;You need to enter a replacement string.&quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">buf</span> <span class="o">=</span> <span class="n">linebuffer</span><span class="p">[:</span><span class="n">lstart</span><span class="p">]</span> <span class="o">+</span> <span class="n">new_lines</span> <span class="o">+</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lend</span><span class="p">:]</span>
                 <span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Replaced </span><span class="si">%i</span><span class="s2"> line(s) at </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_lines</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Replaced </span><span class="si">{num}</span><span class="s2"> line(s) at </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">new_lines</span><span class="p">),</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:I&quot;</span><span class="p">:</span>
             <span class="c1"># :I &lt;l&gt; &lt;txt&gt; - insert text at beginning of line(s) &lt;l&gt;</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_string</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">editor</span><span class="o">.</span><span class="n">_codefunc</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You need to enter text to insert.&quot;</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;You need to enter text to insert.&quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">buf</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">linebuffer</span><span class="p">[:</span><span class="n">lstart</span><span class="p">]</span>
@@ -626,11 +637,11 @@
                     <span class="o">+</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lend</span><span class="p">:]</span>
                 <span class="p">)</span>
                 <span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Inserted text at beginning of </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Inserted text at beginning of </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:A&quot;</span><span class="p">:</span>
             <span class="c1"># :A &lt;l&gt; &lt;txt&gt; - append text after end of line(s)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You need to enter text to append.&quot;</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;You need to enter text to append.&quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">buf</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">linebuffer</span><span class="p">[:</span><span class="n">lstart</span><span class="p">]</span>
@@ -638,23 +649,24 @@
                     <span class="o">+</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lend</span><span class="p">:]</span>
                 <span class="p">)</span>
                 <span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Appended text to end of </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Appended text to end of </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:s&quot;</span><span class="p">:</span>
             <span class="c1"># :s &lt;li&gt; &lt;w&gt; &lt;txt&gt; - search and replace words</span>
             <span class="c1"># in entire buffer or on certain lines</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg2</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must give a search word and something to replace it with.&quot;</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;You must give a search word and something to replace it with.&quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">linerange</span><span class="p">:</span>
                     <span class="n">lstart</span> <span class="o">=</span> <span class="mi">0</span>
                     <span class="n">lend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cline</span> <span class="o">+</span> <span class="mi">1</span>
                     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                        <span class="s2">&quot;Search-replaced </span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="s2"> for lines </span><span class="si">%i</span><span class="s2">-</span><span class="si">%i</span><span class="s2">.&quot;</span>
-                        <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg2</span><span class="p">,</span> <span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">lend</span><span class="p">)</span>
+                        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Search-replaced </span><span class="si">{arg1}</span><span class="s2"> -&gt; </span><span class="si">{arg2}</span><span class="s2"> for lines </span><span class="si">{l1}</span><span class="s2">-</span><span class="si">{l2}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">arg1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg2</span><span class="p">,</span> <span class="n">l1</span><span class="o">=</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l2</span><span class="o">=</span><span class="n">lend</span><span class="p">)</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                        <span class="s2">&quot;Search-replaced </span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">)</span>
+                        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Search-replaced </span><span class="si">{arg1}</span><span class="s2"> -&gt; </span><span class="si">{arg2}</span><span class="s2"> for </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">arg1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg2</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">)</span>
                     <span class="p">)</span>
                 <span class="n">sarea</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">linebuffer</span><span class="p">[</span><span class="n">lstart</span><span class="p">:</span><span class="n">lend</span><span class="p">])</span>
 
@@ -676,9 +688,10 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">linerange</span><span class="p">:</span>
                 <span class="n">lstart</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">lend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cline</span> <span class="o">+</span> <span class="mi">1</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Flood filled lines </span><span class="si">%i</span><span class="s2">-</span><span class="si">%i</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">lend</span><span class="p">))</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Flood filled lines </span><span class="si">{l1}</span><span class="s2">-</span><span class="si">{l2}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">l1</span><span class="o">=</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l2</span><span class="o">=</span><span class="n">lend</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Flood filled </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Flood filled </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
             <span class="n">fbuf</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">linebuffer</span><span class="p">[</span><span class="n">lstart</span><span class="p">:</span><span class="n">lend</span><span class="p">])</span>
             <span class="n">fbuf</span> <span class="o">=</span> <span class="n">fill</span><span class="p">(</span><span class="n">fbuf</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
             <span class="n">buf</span> <span class="o">=</span> <span class="n">linebuffer</span><span class="p">[:</span><span class="n">lstart</span><span class="p">]</span> <span class="o">+</span> <span class="n">fbuf</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lend</span><span class="p">:]</span>
@@ -700,16 +713,19 @@
             <span class="n">width</span> <span class="o">=</span> <span class="n">_DEFAULT_WIDTH</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">align_map</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="s2">&quot;Valid justifications are [f]ull (default), [c]enter, [r]right or [l]eft&quot;</span>
+                    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Valid justifications are&quot;</span><span class="p">)</span>
+                    <span class="o">+</span> <span class="s2">&quot; [f]ull (default), [c]enter, [r]right or [l]eft&quot;</span>
                 <span class="p">)</span>
                 <span class="k">return</span>
             <span class="n">align</span> <span class="o">=</span> <span class="n">align_map</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg1</span> <span class="k">else</span> <span class="s2">&quot;f&quot;</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">linerange</span><span class="p">:</span>
                 <span class="n">lstart</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">lend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cline</span> <span class="o">+</span> <span class="mi">1</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-justified lines </span><span class="si">%i</span><span class="s2">-</span><span class="si">%i</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">align_name</span><span class="p">[</span><span class="n">align</span><span class="p">],</span> <span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">lend</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{align}</span><span class="s2">-justified lines </span><span class="si">{l1}</span><span class="s2">-</span><span class="si">{l2}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">align</span><span class="o">=</span><span class="n">align_name</span><span class="p">[</span><span class="n">align</span><span class="p">],</span> <span class="n">l1</span><span class="o">=</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l2</span><span class="o">=</span><span class="n">lend</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-justified </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">align_name</span><span class="p">[</span><span class="n">align</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{align}</span><span class="s2">-justified </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">align</span><span class="o">=</span><span class="n">align_name</span><span class="p">[</span><span class="n">align</span><span class="p">],</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
             <span class="n">jbuf</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">linebuffer</span><span class="p">[</span><span class="n">lstart</span><span class="p">:</span><span class="n">lend</span><span class="p">])</span>
             <span class="n">jbuf</span> <span class="o">=</span> <span class="n">justify</span><span class="p">(</span><span class="n">jbuf</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="n">align</span><span class="p">)</span>
             <span class="n">buf</span> <span class="o">=</span> <span class="n">linebuffer</span><span class="p">[:</span><span class="n">lstart</span><span class="p">]</span> <span class="o">+</span> <span class="n">jbuf</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lend</span><span class="p">:]</span>
@@ -720,9 +736,9 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">linerange</span><span class="p">:</span>
                 <span class="n">lstart</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">lend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cline</span> <span class="o">+</span> <span class="mi">1</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Indented lines </span><span class="si">%i</span><span class="s2">-</span><span class="si">%i</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">lend</span><span class="p">))</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Indented lines </span><span class="si">{l1}</span><span class="s2">-</span><span class="si">{l2}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">l1</span><span class="o">=</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l2</span><span class="o">=</span><span class="n">lend</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Indented </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Indented </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
             <span class="n">fbuf</span> <span class="o">=</span> <span class="p">[</span><span class="n">indent</span> <span class="o">+</span> <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lstart</span><span class="p">:</span><span class="n">lend</span><span class="p">]]</span>
             <span class="n">buf</span> <span class="o">=</span> <span class="n">linebuffer</span><span class="p">[:</span><span class="n">lstart</span><span class="p">]</span> <span class="o">+</span> <span class="n">fbuf</span> <span class="o">+</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lend</span><span class="p">:]</span>
             <span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
@@ -731,9 +747,10 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">linerange</span><span class="p">:</span>
                 <span class="n">lstart</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">lend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cline</span> <span class="o">+</span> <span class="mi">1</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Removed left margin (dedented) lines </span><span class="si">%i</span><span class="s2">-</span><span class="si">%i</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">lend</span><span class="p">))</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Removed left margin (dedented) lines </span><span class="si">{l1}</span><span class="s2">-</span><span class="si">{l2}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">l1</span><span class="o">=</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l2</span><span class="o">=</span><span class="n">lend</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Removed left margin (dedented) </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Removed left margin (dedented) </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
             <span class="n">fbuf</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">linebuffer</span><span class="p">[</span><span class="n">lstart</span><span class="p">:</span><span class="n">lend</span><span class="p">])</span>
             <span class="n">fbuf</span> <span class="o">=</span> <span class="n">dedent</span><span class="p">(</span><span class="n">fbuf</span><span class="p">)</span>
             <span class="n">buf</span> <span class="o">=</span> <span class="n">linebuffer</span><span class="p">[:</span><span class="n">lstart</span><span class="p">]</span> <span class="o">+</span> <span class="n">fbuf</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lend</span><span class="p">:]</span>
@@ -741,45 +758,49 @@
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:echo&quot;</span><span class="p">:</span>
             <span class="c1"># set echoing on/off</span>
             <span class="n">editor</span><span class="o">.</span><span class="n">_echo_mode</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">editor</span><span class="o">.</span><span class="n">_echo_mode</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Echo mode set to </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">editor</span><span class="o">.</span><span class="n">_echo_mode</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Echo mode set to </span><span class="si">{mode}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">editor</span><span class="o">.</span><span class="n">_echo_mode</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:!&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">editor</span><span class="o">.</span><span class="n">_codefunc</span><span class="p">:</span>
                 <span class="n">editor</span><span class="o">.</span><span class="n">_codefunc</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">editor</span><span class="o">.</span><span class="n">_buffer</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This command is only available in code editor mode.&quot;</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;This command is only available in code editor mode.&quot;</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:&lt;&quot;</span><span class="p">:</span>
             <span class="c1"># :&lt;</span>
             <span class="k">if</span> <span class="n">editor</span><span class="o">.</span><span class="n">_codefunc</span><span class="p">:</span>
                 <span class="n">editor</span><span class="o">.</span><span class="n">decrease_indent</span><span class="p">()</span>
                 <span class="n">indent</span> <span class="o">=</span> <span class="n">editor</span><span class="o">.</span><span class="n">_indent</span>
                 <span class="k">if</span> <span class="n">indent</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Decreased indentation: new indentation is </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">indent</span><span class="p">))</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span>
+                        <span class="s2">&quot;Decreased indentation: new indentation is </span><span class="si">{indent}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rManual indentation is OFF.|n Use := to turn it on.&quot;</span><span class="p">)</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;|rManual indentation is OFF.|n Use := to turn it on.&quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This command is only available in code editor mode.&quot;</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;This command is only available in code editor mode.&quot;</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:&gt;&quot;</span><span class="p">:</span>
             <span class="c1"># :&gt;</span>
             <span class="k">if</span> <span class="n">editor</span><span class="o">.</span><span class="n">_codefunc</span><span class="p">:</span>
                 <span class="n">editor</span><span class="o">.</span><span class="n">increase_indent</span><span class="p">()</span>
                 <span class="n">indent</span> <span class="o">=</span> <span class="n">editor</span><span class="o">.</span><span class="n">_indent</span>
                 <span class="k">if</span> <span class="n">indent</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Increased indentation: new indentation is </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">indent</span><span class="p">))</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span>
+                        <span class="s2">&quot;Increased indentation: new indentation is </span><span class="si">{indent}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rManual indentation is OFF.|n Use := to turn it on.&quot;</span><span class="p">)</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;|rManual indentation is OFF.|n Use := to turn it on.&quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This command is only available in code editor mode.&quot;</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;This command is only available in code editor mode.&quot;</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:=&quot;</span><span class="p">:</span>
             <span class="c1"># :=</span>
             <span class="k">if</span> <span class="n">editor</span><span class="o">.</span><span class="n">_codefunc</span><span class="p">:</span>
                 <span class="n">editor</span><span class="o">.</span><span class="n">swap_autoindent</span><span class="p">()</span>
                 <span class="n">indent</span> <span class="o">=</span> <span class="n">editor</span><span class="o">.</span><span class="n">_indent</span>
                 <span class="k">if</span> <span class="n">indent</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Auto-indentation turned on.&quot;</span><span class="p">)</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Auto-indentation turned on.&quot;</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Auto-indentation turned off.&quot;</span><span class="p">)</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Auto-indentation turned off.&quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This command is only available in code editor mode.&quot;</span><span class="p">)</span></div></div>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;This command is only available in code editor mode.&quot;</span><span class="p">))</span></div></div>
 
 
 <div class="viewcode-block" id="EvEditorCmdSet"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditorCmdSet">[docs]</a><span class="k">class</span> <span class="nc">EvEditorCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
@@ -800,7 +821,7 @@
 <span class="c1"># -------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="EvEditor"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor">[docs]</a><span class="k">class</span> <span class="nc">EvEditor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="EvEditor"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor">[docs]</a><span class="k">class</span> <span class="nc">EvEditor</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This defines a line editor object. It creates all relevant commands</span>
 <span class="sd">    and tracks the current state of the buffer. It also cleans up after</span>
@@ -915,7 +936,7 @@
                 <span class="n">persistent</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># Create the commands we need</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">EvEditorCmdSet</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="n">persistent</span><span class="p">)</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">EvEditorCmdSet</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="n">persistent</span><span class="p">)</span>
 
         <span class="c1"># echo inserted text back to caller</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_echo_mode</span> <span class="o">=</span> <span class="kc">True</span>
@@ -926,12 +947,15 @@
 <div class="viewcode-block" id="EvEditor.load_buffer"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor.load_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">load_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load the buffer using the load function hook.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loadfunc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|rBuffer is of type |w</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">)</span><span class="si">}</span><span class="s2">)|r. &quot;</span>
+                                 <span class="s2">&quot;Continuing, it is converted to a string &quot;</span>
+                                 <span class="s2">&quot;(and will be saved as such)!|n&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="n">to_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rNote: input buffer was converted to a string.|n&quot;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 
@@ -1068,7 +1092,7 @@
         <span class="n">header</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s2">&quot;|n&quot;</span>
             <span class="o">+</span> <span class="n">sep</span> <span class="o">*</span> <span class="mi">10</span>
-            <span class="o">+</span> <span class="s2">&quot;Line Editor [</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key</span>
+            <span class="o">+</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Line Editor [</span><span class="si">{name}</span><span class="s2">]&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">)</span>
             <span class="o">+</span> <span class="n">sep</span> <span class="o">*</span> <span class="p">(</span><span class="n">_DEFAULT_WIDTH</span> <span class="o">-</span> <span class="mi">24</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">))</span>
         <span class="p">)</span>
         <span class="n">footer</span> <span class="o">=</span> <span class="p">(</span>
@@ -1076,7 +1100,7 @@
             <span class="o">+</span> <span class="n">sep</span> <span class="o">*</span> <span class="mi">10</span>
             <span class="o">+</span> <span class="s2">&quot;[l:</span><span class="si">%02i</span><span class="s2"> w:</span><span class="si">%03i</span><span class="s2"> c:</span><span class="si">%04i</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">nlines</span><span class="p">,</span> <span class="n">nwords</span><span class="p">,</span> <span class="n">nchars</span><span class="p">)</span>
             <span class="o">+</span> <span class="n">sep</span> <span class="o">*</span> <span class="mi">12</span>
-            <span class="o">+</span> <span class="s2">&quot;(:h for help)&quot;</span>
+            <span class="o">+</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;(:h for help)&quot;</span><span class="p">)</span>
             <span class="o">+</span> <span class="n">sep</span> <span class="o">*</span> <span class="p">(</span><span class="n">_DEFAULT_WIDTH</span> <span class="o">-</span> <span class="mi">54</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">linenums</span><span class="p">:</span>
@@ -1185,18 +1209,17 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="eveditor.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

@@ -47,10 +47,10 @@
 <span class="sd">It also supplies some useful methods to convert between</span>
 <span class="sd">in-mud time and real-world time as well allows to get the</span>
 <span class="sd">total runtime of the server and the current uptime.</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">calendar</span> <span class="kn">import</span> <span class="n">monthrange</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 
 <span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="kn">import</span> <span class="n">OperationalError</span>
@@ -70,6 +70,7 @@
 <span class="k">try</span><span class="p">:</span>
     <span class="n">GAME_TIME_OFFSET</span> <span class="o">=</span> <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;gametime_offset&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="k">except</span> <span class="n">OperationalError</span><span class="p">:</span>
+    <span class="c1"># the db is not initialized</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Gametime offset could not load - db not set up.&quot;</span><span class="p">)</span>
     <span class="n">GAME_TIME_OFFSET</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -103,8 +104,10 @@
 <div class="viewcode-block" id="TimeScript.at_repeat"><a class="viewcode-back" href="../../../api/evennia.utils.gametime.html#evennia.utils.gametime.TimeScript.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Call the callback and reset interval.&quot;&quot;&quot;</span>
         <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">callback</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">schedule_args</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">schedule_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">callback</span><span class="p">:</span>
-            <span class="n">callback</span><span class="p">()</span>
+            <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="n">seconds</span> <span class="o">=</span> <span class="n">real_seconds_until</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gametime</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">restart</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="n">seconds</span><span class="p">)</span></div></div>
@@ -259,7 +262,8 @@
 
 
 <div class="viewcode-block" id="schedule"><a class="viewcode-back" href="../../../api/evennia.utils.gametime.html#evennia.utils.gametime.schedule">[docs]</a><span class="k">def</span> <span class="nf">schedule</span><span class="p">(</span>
-    <span class="n">callback</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">callback</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Call a callback at a given in-game time.</span>
@@ -267,7 +271,8 @@
 <span class="sd">    Args:</span>
 <span class="sd">        callback (function): The callback function that will be called. Note</span>
 <span class="sd">            that the callback must be a module-level function, since the script will</span>
-<span class="sd">            be persistent.</span>
+<span class="sd">            be persistent. The callable should be on form `callable(*args, **kwargs)`</span>
+<span class="sd">            where args/kwargs are passed into this schedule.</span>
 <span class="sd">        repeat (bool, optional): Defines if the callback should be called regularly</span>
 <span class="sd">            at the specified time.</span>
 <span class="sd">        sec (int or None): Number of absolute game seconds at which to run repeat.</span>
@@ -276,13 +281,18 @@
 <span class="sd">        day (int or None): Number of absolute days.</span>
 <span class="sd">        month (int or None): Number of absolute months.</span>
 <span class="sd">        year (int or None): Number of absolute years.</span>
+<span class="sd">        *args, **kwargs: Will be passed into the callable. These must be possible</span>
+<span class="sd">            to store in Attributes on the generated scheduling Script.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        script (Script): The created Script handling the sceduling.</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        schedule(func, min=5, sec=0) # Will call 5 minutes past the next (in-game) hour.</span>
-<span class="sd">        schedule(func, hour=2, min=30, sec=0) # Will call the next (in-game) day at 02:30.</span>
+<span class="sd">        ::</span>
+
+<span class="sd">            schedule(func, min=5, sec=0)  # Will call 5 minutes past the next (in-game) hour.</span>
+<span class="sd">            schedule(func, hour=2, min=30, sec=0)  # Will call the next (in-game) day at 02:30.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">seconds</span> <span class="o">=</span> <span class="n">real_seconds_until</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="nb">min</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="n">month</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="n">year</span><span class="p">)</span>
     <span class="n">script</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span>
@@ -302,6 +312,8 @@
         <span class="s2">&quot;month&quot;</span><span class="p">:</span> <span class="n">month</span><span class="p">,</span>
         <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="n">year</span><span class="p">,</span>
     <span class="p">}</span>
+    <span class="n">script</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">schedule_args</span> <span class="o">=</span> <span class="n">args</span>
+    <span class="n">script</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">schedule_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
     <span class="k">return</span> <span class="n">script</span></div>
 
 
@@ -339,18 +351,17 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="gametime.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>
