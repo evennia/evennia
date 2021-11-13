@@ -28,6 +28,7 @@ evennia.contrib
    evennia.contrib.mapbuilder
    evennia.contrib.menu_login
    evennia.contrib.multidescer
+   evennia.contrib.mux_comms_cmds
    evennia.contrib.puzzles
    evennia.contrib.random_string_generator
    evennia.contrib.rplanguage

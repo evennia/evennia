@@ -993,7 +993,7 @@ class TestBuilding(CommandTest):
         self.call(
             building.CmdCpAttr(),
             "/copy Obj2/test2 = Obj2/test3",
-            'cpattr: Extra switch "/copy" ignored.|\nCopied Obj2.test2 -> Obj2.test3. '
+            '@cpattr: Extra switch "/copy" ignored.|\nCopied Obj2.test2 -> Obj2.test3. '
             "(value: 'value2')",
         )
         self.call(building.CmdMvAttr(), "", "Usage: ")
@@ -1861,90 +1861,6 @@ class TestBuilding(CommandTest):
         # shows error
         self.call(
             building.CmdSpawn(), "/examine NO_EXISTS", "No prototype named 'NO_EXISTS' was found."
-        )
-
-
-class TestComms(CommandTest):
-    def setUp(self):
-        super(CommandTest, self).setUp()
-        self.call(
-            comms.CmdChannelCreate(),
-            "testchan;test=Test Channel",
-            "Created channel testchan and connected to it.",
-            receiver=self.account,
-        )
-
-    def test_toggle_com(self):
-        self.call(
-            comms.CmdAddCom(),
-            "tc = testchan",
-            "You are already connected to channel testchan.| You can now",
-            receiver=self.account,
-        )
-        self.call(
-            comms.CmdDelCom(),
-            "tc",
-            "Any alias 'tc' for channel testchan was cleared.",
-            receiver=self.account,
-        )
-
-    def test_all_com(self):
-        self.call(
-            comms.CmdAllCom(),
-            "",
-            "Available channels:",
-            receiver=self.account,
-        )
-
-    def test_clock(self):
-        self.call(
-            comms.CmdClock(),
-            "testchan=send:all()",
-            "Lock(s) applied. Current locks on testchan:",
-            receiver=self.account,
-        )
-
-    def test_cdesc(self):
-        self.call(
-            comms.CmdCdesc(),
-            "testchan = Test Channel",
-            "Description of channel 'testchan' set to 'Test Channel'.",
-            receiver=self.account,
-        )
-
-    def test_cwho(self):
-        self.call(
-            comms.CmdCWho(),
-            "testchan",
-            "Channel subscriptions\ntestchan:\n  TestAccount",
-            receiver=self.account,
-        )
-
-    def test_page(self):
-        self.call(
-            comms.CmdPage(),
-            "TestAccount2 = Test",
-            "TestAccount2 is offline. They will see your message if they list their pages later."
-            "|You paged TestAccount2 with: 'Test'.",
-            receiver=self.account,
-        )
-
-    def test_cboot(self):
-        # No one else connected to boot
-        self.call(
-            comms.CmdCBoot(),
-            "",
-            "Usage: cboot[/quiet] <channel> = <account> [:reason]",
-            receiver=self.account,
-        )
-
-    def test_cdestroy(self):
-        self.call(
-            comms.CmdCdestroy(),
-            "testchan",
-            "[testchan] TestAccount: testchan is being destroyed. Make sure to change your aliases."
-            "|Channel 'testchan' was destroyed.",
-            receiver=self.account,
         )
 
 
