@@ -103,9 +103,8 @@ def _init_command(cls, **kwargs):
     # strip the @- etc to allow help to be agnostic
     stripped_key = cls.key[1:] if cls.key and cls.key[0] in CMD_IGNORE_PREFIXES else ""
     stripped_aliases = (
-        " ".join(al for al in cls.aliases
-                 if al and al[0] in CMD_IGNORE_PREFIXES for al in cls.aliases)
-    )
+        " ".join(al[1:] if al and al[0] in CMD_IGNORE_PREFIXES else al
+                 for al in cls.aliases))
     cls.search_index_entry = {
         "key": cls.key,
         "aliases": " ".join(cls.aliases),

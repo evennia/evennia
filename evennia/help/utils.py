@@ -57,7 +57,7 @@ def help_search_with_index(query, candidate_entries, suggestion_maxnum=5, fields
         from lunr import get_default_builder as _LUNR_GET_BUILDER
         from lunr import stop_word_filter
         from lunr.stemmer import stemmer
-        from lunr.trimmer import trimmer
+        # from lunr.trimmer import trimmer
 
         # pre-create a lunr index-builder pipeline where we've removed some of
         # the stop-words from the default in lunr.
