@@ -104,8 +104,8 @@
 <span class="sd">    reset to purge) and at_reload() hooks will be called.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;reload&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;restart&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@reload&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@restart&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(reload) or perm(Developer)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
@@ -142,8 +142,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;reset&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;reboot&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@reset&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@reboot&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(reload) or perm(Developer)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
@@ -166,7 +166,7 @@
 <span class="sd">    Gracefully shut down both Server and Portal.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;shutdown&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@shutdown&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(shutdown) or perm(Developer)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
@@ -389,8 +389,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;py&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;!&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@py&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@!&quot;</span><span class="p">]</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="s2">&quot;clientraw&quot;</span><span class="p">,</span> <span class="s2">&quot;noecho&quot;</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(py) or perm(Developer)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
@@ -471,8 +471,8 @@
 <span class="sd">    If not given, &lt;nr&gt; defaults to 10.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;accounts&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;account&quot;</span><span class="p">,</span> <span class="s2">&quot;listaccounts&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@accounts&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@account&quot;</span><span class="p">]</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;delete&quot;</span><span class="p">,)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(listaccounts) or perm(Admin)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
@@ -585,8 +585,8 @@
 <span class="sd">    in the list.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;service&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;services&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@service&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@services&quot;</span><span class="p">]</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;stop&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(service) or perm(Developer)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
@@ -686,8 +686,8 @@
 <span class="sd">    Display info about the game engine.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;about&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;version&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@about&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;@version&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
@@ -734,8 +734,8 @@
 <span class="sd">    and the current time stamp.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;uptime&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@time&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;@uptime&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(time) or perm(Player)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
@@ -802,8 +802,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;server&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;serverload&quot;</span><span class="p">,</span> <span class="s2">&quot;serverprocess&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@server&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@serverload&quot;</span><span class="p">]</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;mem&quot;</span><span class="p">,</span> <span class="s2">&quot;flushmem&quot;</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(list) or perm(Developer)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
@@ -951,7 +951,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;tickers&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@tickers&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(tickers) or perm(Builder)&quot;</span>
 
@@ -1008,8 +1008,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;tasks&quot;</span>
-    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;delays&quot;</span><span class="p">,</span> <span class="s2">&quot;task&quot;</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@tasks&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@delays&quot;</span><span class="p">,</span> <span class="s2">&quot;@task&quot;</span><span class="p">]</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;pause&quot;</span><span class="p">,</span> <span class="s2">&quot;unpause&quot;</span><span class="p">,</span> <span class="s2">&quot;do_task&quot;</span><span class="p">,</span> <span class="s2">&quot;call&quot;</span><span class="p">,</span> <span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="s2">&quot;cancel&quot;</span><span class="p">)</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;perm(Developer)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>

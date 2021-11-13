@@ -76,15 +76,15 @@ are also highly optimized for querying large data sets efficiently.</p></li>
 pay attention to what object you are using, and when you are accessing another through back-
 handling, that you are accessing the right object. In Diku C, accessing character object is normally
 done by:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* creating pointer of both character and room struct */</span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* creating pointer of both character and room struct */</span><span class="w"></span>
 
-<span class="kt">void</span><span class="p">(</span><span class="k">struct</span> <span class="nc">char</span> <span class="n">ch</span><span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">room</span> <span class="n">room</span><span class="o">*</span><span class="p">){</span>
-    <span class="kt">int</span> <span class="n">dam</span><span class="p">;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">ROOM_FLAGGED</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">ROOM_LAVA</span><span class="p">)){</span>
-        <span class="n">dam</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
-        <span class="n">ch</span><span class="o">-&gt;</span><span class="n">damage_taken</span> <span class="o">=</span> <span class="n">dam</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="kt">void</span><span class="p">(</span><span class="k">struct</span> <span class="nc">char</span><span class="w"> </span><span class="n">ch</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="k">struct</span> <span class="nc">room</span><span class="w"> </span><span class="n">room</span><span class="o">*</span><span class="p">){</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">dam</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ROOM_FLAGGED</span><span class="p">(</span><span class="n">room</span><span class="p">,</span><span class="w"> </span><span class="n">ROOM_LAVA</span><span class="p">)){</span><span class="w"></span>
+<span class="w">        </span><span class="n">dam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="n">ch</span><span class="o">-&gt;</span><span class="n">damage_taken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dam</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>As an example for creating Commands in Evennia via the <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia</span> <span class="pre">import</span> <span class="pre">Command</span></code> the character

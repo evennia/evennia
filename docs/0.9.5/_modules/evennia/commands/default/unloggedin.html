@@ -65,7 +65,7 @@
     <span class="s2">&quot;CmdUnconnectedHelp&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CmdUnconnectedEncoding&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CmdUnconnectedInfo&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CmdUnconnectedScreenreader&quot;</span>
+    <span class="s2">&quot;CmdUnconnectedScreenreader&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">MULTISESSION_MODE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MULTISESSION_MODE</span>
@@ -240,6 +240,20 @@
 
         <span class="n">username</span><span class="p">,</span> <span class="n">password</span> <span class="o">=</span> <span class="n">parts</span>
 
+        <span class="c1"># pre-normalize username so the user know what they get</span>
+        <span class="n">non_normalized_username</span> <span class="o">=</span> <span class="n">username</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="n">Account</span><span class="o">.</span><span class="n">normalize_username</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">non_normalized_username</span> <span class="o">!=</span> <span class="n">username</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Note: your username was normalized to strip spaces and remove characters &quot;</span>
+                        <span class="s2">&quot;that could be visually confusing.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># have the user verify their new account was what they intended</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You want to create an account &#39;</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2">&#39; with password &#39;</span><span class="si">{</span><span class="n">password</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                       <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Is this what you intended? [Y]/N?&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">answer</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">):</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Aborted. If your user name contains spaces, surround it by quotes.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
         <span class="c1"># everything&#39;s ok. Create the new account account.</span>
         <span class="n">account</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">Account</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
             <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span>
@@ -340,6 +354,7 @@
 <span class="s2">  |wquit|n - abort the connection</span>
 
 <span class="s2">First create an account e.g. with |wcreate Anna c67jHL8p|n</span>
+<span class="s2">(If you have spaces in your name, use double quotes: |wcreate &quot;Anna the Barbarian&quot; c67jHL8p|n</span>
 <span class="s2">Next you can connect to the game: |wconnect Anna c67jHL8p|n</span>
 
 <span class="s2">You can use the |wlook|n command if you want to see the connect screen again.</span>
@@ -565,18 +580,17 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="unloggedin.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

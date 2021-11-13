@@ -146,9 +146,10 @@
     <span class="p">)</span>
     <span class="n">re_dblspace</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot; {2,}&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
     <span class="n">re_url</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-        <span class="sa">r</span><span class="s1">&#39;((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&amp;\w+;)[^&quot;</span><span class="se">\&#39;</span><span class="s1">,;$*^</span><span class="se">\\</span><span class="s1">()</span><span class="si">{}</span><span class="s1">&lt;&gt;\[\]\s])+)(\.(?:\s|$)|&amp;\w+;|)&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;(?&lt;!=&quot;)((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&amp;\w+;)[^&quot;</span><span class="se">\&#39;</span><span class="s1">,;$*^</span><span class="se">\\</span><span class="s1">()</span><span class="si">{}</span><span class="s1">&lt;&gt;\[\]\s])+)(\.(?:\s|$)|&amp;\w+;|)&#39;</span>
     <span class="p">)</span>
     <span class="n">re_mxplink</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|lc(.*?)\|lt(.*?)\|le&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+    <span class="n">re_mxpurl</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|lu(.*?)\|lt(.*?)\|le&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_sub_bgfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colormatch</span><span class="p">):</span>
         <span class="c1"># print(&quot;colormatch.groups()&quot;, colormatch.groups())</span>
@@ -333,6 +334,21 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">val</span></div>
 
+<div class="viewcode-block" id="TextToHTMLparser.sub_mxp_urls"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.sub_mxp_urls">[docs]</a>    <span class="k">def</span> <span class="nf">sub_mxp_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method to be passed to re.sub,</span>
+<span class="sd">        replaces MXP links with HTML code.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            match (re.Matchobject): Match for substitution.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            text (str): Processed text.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="p">[</span><span class="n">grp</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&amp;quot;&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()]</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">r</span><span class="sd">&quot;&quot;&quot;&lt;a id=&quot;mxplink&quot; href=&quot;{url}&quot; target=&quot;_blank&quot;&gt;{text}&lt;/a&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">val</span></div>
+
 <div class="viewcode-block" id="TextToHTMLparser.sub_text"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.sub_text">[docs]</a>    <span class="k">def</span> <span class="nf">sub_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method to be passed to re.sub,</span>
@@ -380,6 +396,7 @@
         <span class="c1"># convert all ansi to html</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">re_string</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_text</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">re_mxplink</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_mxp_links</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">re_mxpurl</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_mxp_urls</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">re_color</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">re_bold</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">re_underline</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
@@ -434,18 +451,17 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="text2html.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

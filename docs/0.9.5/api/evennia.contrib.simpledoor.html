@@ -174,12 +174,17 @@ unique.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.simpledoor.CmdOpen.key">
-<code class="sig-name descname">key</code><em class="property"> = 'open'</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpen.key" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">key</code><em class="property"> = '&#64;open'</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpen.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.simpledoor.CmdOpen.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(open) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpen.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.simpledoor.CmdOpen.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': '&#64;open', 'no_prefix': 'open ', 'tags': '', 'text': '\n    open a new exit from the current room\n\n    Usage:\n      open &lt;new exit&gt;[;alias;alias..][:typeclass] [,&lt;return exit&gt;[;alias;..][:typeclass]]] = &lt;destination&gt;\n\n    Handles the creation of exits. If a destination is given, the exit\n    will point there. The &lt;return exit&gt; argument sets up an exit at the\n    destination leading back to the current room. Destination name\n    can be given both as a #dbref and a name, if that name is globally\n    unique.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpen.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -225,6 +230,11 @@ close &lt;door&gt;</p>
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpenCloseDoor.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.contrib.simpledoor.CmdOpenCloseDoor.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'close', 'category': 'general', 'key': 'open', 'no_prefix': ' ', 'tags': '', 'text': '\n    Open and close a door\n\n    Usage:\n        open &lt;door&gt;\n        close &lt;door&gt;\n\n    '}</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpenCloseDoor.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>
@@ -260,18 +270,17 @@ close &lt;door&gt;</p>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../1.0-dev/api/evennia.contrib.simpledoor.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.contrib.simpledoor.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

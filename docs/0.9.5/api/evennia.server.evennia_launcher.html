@@ -529,6 +529,35 @@ settings here. The result will be printed to the terminal.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="evennia.server.evennia_launcher.run_custom_commands">
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">run_custom_commands</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">option</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#run_custom_commands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.run_custom_commands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inject a custom option into the evennia launcher command chain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>option</strong> (<em>str</em>) – Incoming option - the first argument after <strong>evennia</strong> on
+the command line.</p></li>
+<li><p><strong>*args</strong> – All args will passed to a found callable.__dict__</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>bool</em> – If a custom command was found and handled the option.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Provide new commands in settings with</p>
+<blockquote>
+<div><p>CUSTOM_EVENNIA_LAUNCHER_COMMANDS = {“mycmd”: “path.to.callable”, …}</p>
+</div></blockquote>
+<p>The callable will be passed any <strong>*args</strong> given on the command line and is expected to
+handle/validate the input correctly. Use like any other evennia command option on
+in the terminal/console, for example:</p>
+<blockquote>
+<div><p>evennia mycmd foo bar</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
 <dt id="evennia.server.evennia_launcher.run_menu">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">run_menu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#run_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.run_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>This launches an interactive menu.</p>
@@ -573,18 +602,17 @@ settings here. The result will be printed to the terminal.</p>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../1.0-dev/api/evennia.server.evennia_launcher.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.server.evennia_launcher.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

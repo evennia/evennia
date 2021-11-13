@@ -57,6 +57,7 @@
 <span class="n">_AccountDB</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">_ObjectDB</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">_ChannelDB</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_ScriptDB</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">_SESSIONS</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="c1"># error class</span>
@@ -97,6 +98,8 @@
             <span class="k">return</span> <span class="n">inp</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span>
         <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;ChannelDB&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">inp</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span>
+        <span class="k">elif</span> <span class="n">clsname</span> <span class="o">==</span> <span class="s2">&quot;ScriptDB&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">inp</span><span class="p">,</span> <span class="s2">&quot;script&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">inp</span><span class="p">,</span> <span class="s2">&quot;string&quot;</span>
     <span class="k">elif</span> <span class="n">dbref</span><span class="p">(</span><span class="n">inp</span><span class="p">):</span>
@@ -146,6 +149,14 @@
             <span class="k">return</span> <span class="n">_ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">objtype</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">inp</span><span class="p">)))</span>
         <span class="k">raise</span> <span class="n">CommError</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">objtype</span> <span class="o">==</span> <span class="s2">&quot;script&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;string&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;dbref&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">objtype</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">inp</span><span class="p">)))</span>
+        <span class="k">raise</span> <span class="n">CommError</span><span class="p">()</span>
+
     <span class="c1"># an unknown</span>
     <span class="k">return</span> <span class="kc">None</span></div>
 
@@ -201,48 +212,30 @@
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="MsgManager.get_messages_by_sender"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.MsgManager.get_messages_by_sender">[docs]</a>    <span class="k">def</span> <span class="nf">get_messages_by_sender</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">exclude_channel_messages</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="MsgManager.get_messages_by_sender"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.MsgManager.get_messages_by_sender">[docs]</a>    <span class="k">def</span> <span class="nf">get_messages_by_sender</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sender</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all messages sent by one entity - this could be either a</span>
 <span class="sd">        account or an object</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            sender (Account or Object): The sender of the message.</span>
-<span class="sd">            exclude_channel_messages (bool, optional): Only return messages</span>
-<span class="sd">                not aimed at a channel (that is, private tells for example)</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            messages (list): List of matching messages</span>
+<span class="sd">            QuerySet: Matching messages.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            CommError: For incorrect sender types.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">obj</span><span class="p">,</span> <span class="n">typ</span> <span class="o">=</span> <span class="n">identify_object</span><span class="p">(</span><span class="n">sender</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">exclude_channel_messages</span><span class="p">:</span>
-            <span class="c1"># explicitly exclude channel recipients</span>
-            <span class="k">if</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">list</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_sender_accounts</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">db_receivers_channels__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span>
-                        <span class="n">db_hide_from_accounts</span><span class="o">=</span><span class="n">obj</span>
-                    <span class="p">)</span>
-                <span class="p">)</span>
-            <span class="k">elif</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">list</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_sender_objects</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">db_receivers_channels__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span>
-                        <span class="n">db_hide_from_objects</span><span class="o">=</span><span class="n">obj</span>
-                    <span class="p">)</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">CommError</span>
+        <span class="k">if</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_sender_accounts</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_hide_from_accounts</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_sender_objects</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_hide_from_objects</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;script&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_sender_scripts</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># get everything, channel or not</span>
-            <span class="k">if</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_sender_accounts</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_hide_from_accounts</span><span class="o">=</span><span class="n">obj</span><span class="p">))</span>
-            <span class="k">elif</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_sender_objects</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_hide_from_objects</span><span class="o">=</span><span class="n">obj</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">CommError</span></div>
+            <span class="k">raise</span> <span class="n">CommError</span></div>
 
 <div class="viewcode-block" id="MsgManager.get_messages_by_receiver"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.MsgManager.get_messages_by_receiver">[docs]</a>    <span class="k">def</span> <span class="nf">get_messages_by_receiver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipient</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -252,7 +245,7 @@
 <span class="sd">            recipient (Object, Account or Channel): The recipient of the messages to search for.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            messages (list): Matching messages.</span>
+<span class="sd">            Queryset: Matching messages.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            CommError: If the `recipient` is not of a valid type.</span>
@@ -260,26 +253,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">obj</span><span class="p">,</span> <span class="n">typ</span> <span class="o">=</span> <span class="n">identify_object</span><span class="p">(</span><span class="n">recipient</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_receivers_accounts</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_hide_from_accounts</span><span class="o">=</span><span class="n">obj</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_receivers_accounts</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_hide_from_accounts</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_receivers_objects</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_hide_from_objects</span><span class="o">=</span><span class="n">obj</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;channel&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_receivers_channels</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_hide_from_channels</span><span class="o">=</span><span class="n">obj</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_receivers_objects</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_hide_from_objects</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">typ</span> <span class="o">==</span> <span class="s1">&#39;script&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_receivers_scripts</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">CommError</span></div>
-
-<div class="viewcode-block" id="MsgManager.get_messages_by_channel"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.MsgManager.get_messages_by_channel">[docs]</a>    <span class="k">def</span> <span class="nf">get_messages_by_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get all persistent messages sent to one channel.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            channel (Channel): The channel to find messages for.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            messages (list): Persistent Msg objects saved for this channel.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_receivers_channels</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_hide_from_channels</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MsgManager.search_message"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.MsgManager.search_message">[docs]</a>    <span class="k">def</span> <span class="nf">search_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">freetext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -287,7 +267,7 @@
 <span class="sd">        one of the arguments must be given to do a search.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            sender (Object or Account, optional): Get messages sent by a particular account or object</span>
+<span class="sd">            sender (Object, Account or Script, optional): Get messages sent by a particular sender.</span>
 <span class="sd">            receiver (Object, Account or Channel, optional): Get messages</span>
 <span class="sd">                received by a certain account,object or channel</span>
 <span class="sd">            freetext (str): Search for a text string in a message.  NOTE:</span>
@@ -298,40 +278,45 @@
 <span class="sd">                    always gives only one match.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            messages (list or Msg): A list of message matches or a single match if `dbref` was given.</span>
+<span class="sd">            Queryset: Message matches.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># unique msg id</span>
         <span class="k">if</span> <span class="n">dbref</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dbref</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">msg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dbref</span><span class="p">)</span>
 
         <span class="c1"># We use Q objects to gradually build up the query - this way we only</span>
         <span class="c1"># need to do one database lookup at the end rather than gradually</span>
         <span class="c1"># refining with multiple filter:s. Django Note: Q objects can be</span>
         <span class="c1"># combined with &amp; and | (=AND,OR). ~ negates the queryset</span>
 
-        <span class="c1"># filter by sender</span>
+        <span class="c1"># filter by sender (we need __pk to avoid an error with empty Q() objects)</span>
         <span class="n">sender</span><span class="p">,</span> <span class="n">styp</span> <span class="o">=</span> <span class="n">identify_object</span><span class="p">(</span><span class="n">sender</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sender</span><span class="p">:</span>
+            <span class="n">spk</span> <span class="o">=</span> <span class="n">sender</span><span class="o">.</span><span class="n">pk</span>
         <span class="k">if</span> <span class="n">styp</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
-            <span class="n">sender_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_sender_accounts</span><span class="o">=</span><span class="n">sender</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">Q</span><span class="p">(</span><span class="n">db_hide_from_accounts</span><span class="o">=</span><span class="n">sender</span><span class="p">)</span>
+            <span class="n">sender_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_sender_accounts__pk</span><span class="o">=</span><span class="n">spk</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">Q</span><span class="p">(</span><span class="n">db_hide_from_accounts__pk</span><span class="o">=</span><span class="n">spk</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">styp</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
-            <span class="n">sender_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_sender_objects</span><span class="o">=</span><span class="n">sender</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">Q</span><span class="p">(</span><span class="n">db_hide_from_objects</span><span class="o">=</span><span class="n">sender</span><span class="p">)</span>
+            <span class="n">sender_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_sender_objects__pk</span><span class="o">=</span><span class="n">spk</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">Q</span><span class="p">(</span><span class="n">db_hide_from_objects__pk</span><span class="o">=</span><span class="n">spk</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">styp</span> <span class="o">==</span> <span class="s1">&#39;script&#39;</span><span class="p">:</span>
+            <span class="n">sender_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_sender_scripts__pk</span><span class="o">=</span><span class="n">spk</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">sender_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">()</span>
         <span class="c1"># filter by receiver</span>
         <span class="n">receiver</span><span class="p">,</span> <span class="n">rtyp</span> <span class="o">=</span> <span class="n">identify_object</span><span class="p">(</span><span class="n">receiver</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">receiver</span><span class="p">:</span>
+            <span class="n">rpk</span> <span class="o">=</span> <span class="n">receiver</span><span class="o">.</span><span class="n">pk</span>
         <span class="k">if</span> <span class="n">rtyp</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
-            <span class="n">receiver_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_receivers_accounts</span><span class="o">=</span><span class="n">receiver</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">Q</span><span class="p">(</span>
-                <span class="n">db_hide_from_accounts</span><span class="o">=</span><span class="n">receiver</span>
-            <span class="p">)</span>
+            <span class="n">receiver_restrict</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">Q</span><span class="p">(</span><span class="n">db_receivers_accounts__pk</span><span class="o">=</span><span class="n">rpk</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">Q</span><span class="p">(</span><span class="n">db_hide_from_accounts__pk</span><span class="o">=</span><span class="n">rpk</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">rtyp</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
-            <span class="n">receiver_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_receivers_objects</span><span class="o">=</span><span class="n">receiver</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">Q</span><span class="p">(</span><span class="n">db_hide_from_objects</span><span class="o">=</span><span class="n">receiver</span><span class="p">)</span>
+            <span class="n">receiver_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_receivers_objects__pk</span><span class="o">=</span><span class="n">rpk</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">Q</span><span class="p">(</span><span class="n">db_hide_from_objects__pk</span><span class="o">=</span><span class="n">rpk</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">rtyp</span> <span class="o">==</span> <span class="s1">&#39;script&#39;</span><span class="p">:</span>
+            <span class="n">receiver_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_receivers_scripts__pk</span><span class="o">=</span><span class="n">rpk</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">rtyp</span> <span class="o">==</span> <span class="s2">&quot;channel&quot;</span><span class="p">:</span>
-            <span class="n">receiver_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_receivers_channels</span><span class="o">=</span><span class="n">receiver</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">Q</span><span class="p">(</span>
-                <span class="n">db_hide_from_channels</span><span class="o">=</span><span class="n">receiver</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+                <span class="s2">&quot;Msg.objects.search don&#39;t accept channel recipients since &quot;</span>
+                <span class="s2">&quot;Channels no longer accepts Msg objects.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">receiver_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">()</span>
         <span class="c1"># filter by full text</span>
@@ -340,7 +325,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">fulltext_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">()</span>
         <span class="c1"># execute the query</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">sender_restrict</span> <span class="o">&amp;</span> <span class="n">receiver_restrict</span> <span class="o">&amp;</span> <span class="n">fulltext_restrict</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">sender_restrict</span> <span class="o">&amp;</span> <span class="n">receiver_restrict</span> <span class="o">&amp;</span> <span class="n">fulltext_restrict</span><span class="p">)</span></div>
 
     <span class="c1"># back-compatibility alias</span>
     <span class="n">message_search</span> <span class="o">=</span> <span class="n">search_message</span></div>
@@ -481,18 +466,17 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="managers.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

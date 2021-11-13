@@ -62,6 +62,9 @@
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
 
 
+<span class="n">CMD_IGNORE_PREFIXES</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMD_IGNORE_PREFIXES</span>
+
+
 <div class="viewcode-block" id="InterruptCommand"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.InterruptCommand">[docs]</a><span class="k">class</span> <span class="nc">InterruptCommand</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;Cleanly interrupt a command.&quot;&quot;&quot;</span>
@@ -141,12 +144,19 @@
     <span class="bp">cls</span><span class="o">.</span><span class="n">help_category</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">help_category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
     <span class="c1"># pre-prepare a help index entry for quicker lookup</span>
+    <span class="c1"># strip the @- etc to allow help to be agnostic</span>
+    <span class="n">stripped_key</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">key</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">CMD_IGNORE_PREFIXES</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">stripped_aliases</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">al</span> <span class="k">for</span> <span class="n">al</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">aliases</span>
+                 <span class="k">if</span> <span class="n">al</span> <span class="ow">and</span> <span class="n">al</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">CMD_IGNORE_PREFIXES</span> <span class="k">for</span> <span class="n">al</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">aliases</span><span class="p">)</span>
+    <span class="p">)</span>
     <span class="bp">cls</span><span class="o">.</span><span class="n">search_index_entry</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
         <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">aliases</span><span class="p">),</span>
+        <span class="s2">&quot;no_prefix&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stripped_key</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">stripped_aliases</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
         <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">help_category</span><span class="p">,</span>
         <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
-        <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
     <span class="p">}</span>
 
 

@@ -70,7 +70,7 @@
 <span class="sd">        /alias to reference objects in the room. You can use any</span>
 <span class="sd">        number of sdesc sub-parts to differentiate a local sdesc, or</span>
 <span class="sd">        use /1-sdesc etc to differentiate them. The emote also</span>
-<span class="sd">        identifies nested says.</span>
+<span class="sd">        identifies nested says and separates case.</span>
 <span class="sd">    - sdesc obscuration of real character names for use in emotes</span>
 <span class="sd">        and in any referencing such as object.search().  This relies</span>
 <span class="sd">        on an SdescHandler `sdesc` being set on the Character and</span>
@@ -103,12 +103,17 @@
 <span class="sd">by the player of the tall man, so that people looking at him can tell</span>
 <span class="sd">at a glance what is going on.</span>
 
-<span class="sd">&gt; emote /me looks at /tall and says &quot;Hello!&quot;</span>
+<span class="sd">&gt; emote /me looks at /Tall and says &quot;Hello!&quot;</span>
 
 <span class="sd">I see:</span>
 <span class="sd">    Griatch looks at Tall man and says &quot;Hello&quot;.</span>
 <span class="sd">Tall man (assuming his name is Tom) sees:</span>
 <span class="sd">    The godlike figure looks at Tom and says &quot;Hello&quot;.</span>
+
+<span class="sd">Note that by default, the case of the tag matters, so `/tall` will</span>
+<span class="sd">lead to &#39;tall man&#39; while `/Tall` will become &#39;Tall man&#39; and /TALL</span>
+<span class="sd">becomes /TALL MAN. If you don&#39;t want this behavior, you can pass</span>
+<span class="sd">case_sensitive=False to the `send_emote` function.</span>
 
 <span class="sd">Verbose Installation Instructions:</span>
 
@@ -132,19 +137,23 @@
 <span class="sd">       Inherit `ContribRPObject`:</span>
 <span class="sd">           Change `class Object(DefaultObject):` to</span>
 <span class="sd">           `class Object(ContribRPObject):`</span>
-<span class="sd">    4. Reload the server (@reload or from console: &quot;evennia reload&quot;)</span>
+<span class="sd">    4. Reload the server (`reload` or from console: &quot;evennia reload&quot;)</span>
 <span class="sd">    5. Force typeclass updates as required. Example for your character:</span>
-<span class="sd">           @type/reset/force me = typeclasses.characters.Character</span>
+<span class="sd">           `type/reset/force me = typeclasses.characters.Character`</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">escape</span> <span class="k">as</span> <span class="n">re_escape</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">ObjectDB</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ansi</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">variable_from_module</span>
+
+<span class="n">_REGEX_TUPLE_CACHE</span> <span class="o">=</span> <span class="p">{}</span>
 
 <span class="n">_AT_SEARCH_RESULT</span> <span class="o">=</span> <span class="n">variable_from_module</span><span class="p">(</span><span class="o">*</span><span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_AT_RESULT</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 <span class="c1"># ------------------------------------------------------------</span>
@@ -185,8 +194,9 @@
 <span class="n">_RE_LEFT_BRACKETS</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\{+&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">)</span>
 <span class="n">_RE_RIGHT_BRACKETS</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\}+&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">)</span>
 <span class="c1"># Reference markers are used internally when distributing the emote to</span>
-<span class="c1"># all that can see it. They are never seen by players and are on the form {#dbref}.</span>
-<span class="n">_RE_REF</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\{+\#([0-9]+)\}+&quot;</span><span class="p">)</span>
+<span class="c1"># all that can see it. They are never seen by players and are on the form {#dbref&lt;char&gt;}</span>
+<span class="c1"># with the &lt;char&gt; indicating case of the original reference query (like ^ for uppercase)</span>
+<span class="n">_RE_REF</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\{+\#([0-9]+[\^\~tv]{0,1})\}+&quot;</span><span class="p">)</span>
 
 <span class="c1"># This regex is used to quickly reference one self in an emote.</span>
 <span class="n">_RE_SELF_REF</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/me|@&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">)</span>
@@ -299,12 +309,18 @@
 <span class="sd">        regex_tuple (tuple): A tuple</span>
 <span class="sd">            (ordered_permutation_regex, obj, key/alias)</span>
 
+
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">(</span>
-        <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">ordered_permutation_regex</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">())),</span> <span class="n">_RE_FLAGS</span><span class="p">),</span>
-        <span class="n">obj</span><span class="p">,</span>
-        <span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
-    <span class="p">)</span></div>
+    <span class="k">global</span> <span class="n">_REGEX_TUPLE_CACHE</span>
+    <span class="n">permutation_string</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">permutation_string</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_REGEX_TUPLE_CACHE</span><span class="p">:</span>
+        <span class="n">_REGEX_TUPLE_CACHE</span><span class="p">[</span><span class="n">permutation_string</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">ordered_permutation_regex</span><span class="p">(</span><span class="n">permutation_string</span><span class="p">),</span> <span class="n">_RE_FLAGS</span><span class="p">),</span>
+            <span class="n">obj</span><span class="p">,</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_REGEX_TUPLE_CACHE</span><span class="p">[</span><span class="n">permutation_string</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="parse_language"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.parse_language">[docs]</a><span class="k">def</span> <span class="nf">parse_language</span><span class="p">(</span><span class="n">speaker</span><span class="p">,</span> <span class="n">emote</span><span class="p">):</span>
@@ -326,7 +342,8 @@
 <span class="sd">            the markers and a tuple (langname, saytext), where</span>
 <span class="sd">            langname can be None.</span>
 <span class="sd">    Raises:</span>
-<span class="sd">        rplanguage.LanguageError: If an invalid language was specified.</span>
+<span class="sd">        evennia.contrib.rpsystem.LanguageError: If an invalid language was</span>
+<span class="sd">        specified.</span>
 
 <span class="sd">    Notes:</span>
 <span class="sd">        Note that no errors are raised if the wrong language identifier</span>
@@ -365,7 +382,7 @@
     <span class="k">return</span> <span class="n">emote</span><span class="p">,</span> <span class="n">mapping</span></div>
 
 
-<div class="viewcode-block" id="parse_sdescs_and_recogs"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.parse_sdescs_and_recogs">[docs]</a><span class="k">def</span> <span class="nf">parse_sdescs_and_recogs</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">search_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_sdescs_and_recogs"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.parse_sdescs_and_recogs">[docs]</a><span class="k">def</span> <span class="nf">parse_sdescs_and_recogs</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">search_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read a raw emote and parse it into an intermediary</span>
 <span class="sd">    format for distributing to all observers.</span>
@@ -378,6 +395,11 @@
 <span class="sd">    string (str): The string (like an emote) we want to analyze for keywords.</span>
 <span class="sd">    search_mode (bool, optional): If `True`, the &quot;emote&quot; is a query string</span>
 <span class="sd">        we want to analyze. If so, the return value is changed.</span>
+<span class="sd">    case_sensitive (bool, optional); If set, the case of /refs matter, so that</span>
+<span class="sd">        /tall will come out as &#39;tall man&#39; while /Tall will become &#39;Tall man&#39;.</span>
+<span class="sd">        This allows for more grammatically correct emotes at the cost of being</span>
+<span class="sd">        a little more to learn for players. If disabled, the original sdesc case</span>
+<span class="sd">        is always kept and are inserted as-is.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (emote, mapping) (tuple): If `search_mode` is `False`</span>
@@ -484,10 +506,32 @@
         <span class="k">elif</span> <span class="n">nmatches</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_EMOTE_NOMATCH_ERROR</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="n">marker_match</span><span class="o">.</span><span class="n">group</span><span class="p">()))</span>
         <span class="k">elif</span> <span class="n">nmatches</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="p">[:</span><span class="n">istart0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;{</span><span class="si">%s</span><span class="s2">}&quot;</span> <span class="o">%</span> <span class="n">key</span> <span class="o">+</span> <span class="n">string</span><span class="p">[</span><span class="n">istart</span> <span class="o">+</span> <span class="n">maxscore</span> <span class="p">:]</span>
+            <span class="c1"># a unique match - parse into intermediary representation</span>
+            <span class="n">case</span> <span class="o">=</span> <span class="s1">&#39;~&#39;</span>  <span class="c1"># retain original case of sdesc</span>
+            <span class="k">if</span> <span class="n">case_sensitive</span><span class="p">:</span>
+                <span class="c1"># case sensitive mode</span>
+                <span class="c1"># internal flags for the case used for the original /query</span>
+                <span class="c1"># - t for titled input (like /Name)</span>
+                <span class="c1"># - ^ for all upercase input (likle /NAME)</span>
+                <span class="c1"># - v for lower-case input (like /name)</span>
+                <span class="c1"># - ~ for mixed case input (like /nAmE)</span>
+                <span class="n">matchtext</span> <span class="o">=</span> <span class="n">marker_match</span><span class="o">.</span><span class="n">group</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">_RE_SELF_REF</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">matchtext</span><span class="p">):</span>
+                    <span class="c1"># self-refs are kept as-is, others are parsed by case</span>
+                    <span class="n">matchtext</span> <span class="o">=</span> <span class="n">marker_match</span><span class="o">.</span><span class="n">group</span><span class="p">()</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">_PREFIX</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">matchtext</span><span class="o">.</span><span class="n">istitle</span><span class="p">():</span>
+                        <span class="n">case</span> <span class="o">=</span> <span class="s1">&#39;t&#39;</span>
+                    <span class="k">elif</span> <span class="n">matchtext</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
+                        <span class="n">case</span> <span class="o">=</span> <span class="s1">&#39;^&#39;</span>
+                    <span class="k">elif</span> <span class="n">matchtext</span><span class="o">.</span><span class="n">islower</span><span class="p">():</span>
+                        <span class="n">case</span> <span class="o">=</span> <span class="s1">&#39;v&#39;</span>
+
+            <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">%i%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="p">[:</span><span class="n">istart0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;{</span><span class="si">%s</span><span class="s2">}&quot;</span> <span class="o">%</span> <span class="n">key</span> <span class="o">+</span> <span class="n">string</span><span class="p">[</span><span class="n">istart</span> <span class="o">+</span> <span class="n">maxscore</span><span class="p">:]</span>
             <span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+
         <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># multimatch error</span>
             <span class="n">refname</span> <span class="o">=</span> <span class="n">marker_match</span><span class="o">.</span><span class="n">group</span><span class="p">()</span>
             <span class="n">reflist</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="s2">&quot;</span><span class="si">%s%s%s</span><span class="s2"> (</span><span class="si">%s%s</span><span class="s2">)&quot;</span>
@@ -539,30 +583,42 @@
 <span class="sd">            - None: No auto-add at anonymous emote</span>
 <span class="sd">            - &#39;last&#39;: Add sender to the end of emote as [sender]</span>
 <span class="sd">            - &#39;first&#39;: Prepend sender to start of emote.</span>
+<span class="sd">    Kwargs:</span>
+<span class="sd">        case_sensitive (bool): Defaults to True, but can be unset</span>
+<span class="sd">            here. When enabled, /tall will lead to a lowercase</span>
+<span class="sd">            &#39;tall man&#39; while /Tall will lead to &#39;Tall man&#39; and</span>
+<span class="sd">            /TALL will lead to &#39;TALL MAN&#39;. If disabled, the sdesc&#39;s</span>
+<span class="sd">            case will always be used, regardless of the /ref case used.</span>
+<span class="sd">        any: Other kwargs will be passed on into the receiver&#39;s process_sdesc and</span>
+<span class="sd">            process_recog methods, and can thus be used to customize those.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">case_sensitive</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;case_sensitive&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">emote</span><span class="p">,</span> <span class="n">obj_mapping</span> <span class="o">=</span> <span class="n">parse_sdescs_and_recogs</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">emote</span><span class="p">)</span>
+        <span class="n">emote</span><span class="p">,</span> <span class="n">obj_mapping</span> <span class="o">=</span> <span class="n">parse_sdescs_and_recogs</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">emote</span><span class="p">,</span>
+                                                     <span class="n">case_sensitive</span><span class="o">=</span><span class="n">case_sensitive</span><span class="p">)</span>
         <span class="n">emote</span><span class="p">,</span> <span class="n">language_mapping</span> <span class="o">=</span> <span class="n">parse_language</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">emote</span><span class="p">)</span>
     <span class="k">except</span> <span class="p">(</span><span class="n">EmoteError</span><span class="p">,</span> <span class="n">LanguageError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="c1"># handle all error messages, don&#39;t hide actual coding errors</span>
         <span class="n">sender</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
         <span class="k">return</span>
+
+    <span class="n">skey</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sender</span><span class="o">.</span><span class="n">id</span>
+
     <span class="c1"># we escape the object mappings since we&#39;ll do the language ones first</span>
     <span class="c1"># (the text could have nested object mappings).</span>
     <span class="n">emote</span> <span class="o">=</span> <span class="n">_RE_REF</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;{{#\1}}&quot;</span><span class="p">,</span> <span class="n">emote</span><span class="p">)</span>
     <span class="c1"># if anonymous_add is passed as a kwarg, collect and remove it from kwargs</span>
     <span class="k">if</span> <span class="s1">&#39;anonymous_add&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="n">anonymous_add</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;anonymous_add&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">anonymous_add</span> <span class="ow">and</span> <span class="ow">not</span> <span class="s2">&quot;#</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sender</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">obj_mapping</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">anonymous_add</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">obj_mapping</span> <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">skey</span><span class="p">)):</span>
         <span class="c1"># no self-reference in the emote - add to the end</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sender</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">obj_mapping</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">sender</span>
+        <span class="n">obj_mapping</span><span class="p">[</span><span class="n">skey</span><span class="p">]</span> <span class="o">=</span> <span class="n">sender</span>
         <span class="k">if</span> <span class="n">anonymous_add</span> <span class="o">==</span> <span class="s2">&quot;first&quot;</span><span class="p">:</span>
             <span class="n">possessive</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">emote</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot; &quot;</span>
-            <span class="n">emote</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;{{</span><span class="si">%s</span><span class="s2">}}&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">,</span> <span class="n">possessive</span><span class="p">,</span> <span class="n">emote</span><span class="p">)</span>
+            <span class="n">emote</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;{{</span><span class="si">%s</span><span class="s2">}}&quot;</span> <span class="o">%</span> <span class="n">skey</span><span class="p">,</span> <span class="n">possessive</span><span class="p">,</span> <span class="n">emote</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">emote</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> [</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">emote</span><span class="p">,</span> <span class="s2">&quot;{{</span><span class="si">%s</span><span class="s2">}}&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
+            <span class="n">emote</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> [</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">emote</span><span class="p">,</span> <span class="s2">&quot;{{</span><span class="si">%s</span><span class="s2">}}&quot;</span> <span class="o">%</span> <span class="n">skey</span><span class="p">)</span>
 
     <span class="c1"># broadcast emote to everyone</span>
     <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">receivers</span><span class="p">:</span>
@@ -576,7 +632,7 @@
             <span class="c1"># color says</span>
             <span class="n">receiver_lang_mapping</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">process_language</span><span class="p">(</span><span class="n">saytext</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">langname</span><span class="p">)</span>
         <span class="c1"># map the language {##num} markers. This will convert the escaped sdesc markers on</span>
-        <span class="c1"># the form {{#num}} to {#num} markers ready to sdescmat in the next step.</span>
+        <span class="c1"># the form {{#num}} to {#num} markers ready to sdesc-map in the next step.</span>
         <span class="n">sendemote</span> <span class="o">=</span> <span class="n">emote</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">receiver_lang_mapping</span><span class="p">)</span>
 
         <span class="c1"># handle sdesc mappings. we make a temporary copy that we can modify</span>
@@ -593,22 +649,27 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">recog_get</span> <span class="o">=</span> <span class="n">receiver</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">get</span>
             <span class="n">receiver_sdesc_mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">process_recog</span><span class="p">(</span><span class="n">recog_get</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">obj</span><span class="p">))</span> <span class="k">for</span> <span class="n">ref</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">process_recog</span><span class="p">(</span><span class="n">recog_get</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">obj</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">ref</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="n">receiver_sdesc_mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
                 <span class="p">(</span>
                     <span class="n">ref</span><span class="p">,</span>
-                    <span class="n">process_sdesc</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">obj</span><span class="p">)</span>
+                    <span class="n">process_sdesc</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">obj</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">)</span>
                     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;sdesc&quot;</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="n">process_sdesc</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">obj</span><span class="p">),</span>
+                    <span class="k">else</span> <span class="n">process_sdesc</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">),</span>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">ref</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="p">)</span>
         <span class="c1"># make sure receiver always sees their real name</span>
-        <span class="n">rkey</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">receiver</span><span class="o">.</span><span class="n">id</span>
-        <span class="k">if</span> <span class="n">rkey</span> <span class="ow">in</span> <span class="n">receiver_sdesc_mapping</span><span class="p">:</span>
-            <span class="n">receiver_sdesc_mapping</span><span class="p">[</span><span class="n">rkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">process_sdesc</span><span class="p">(</span><span class="n">receiver</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">receiver</span><span class="p">)</span>
+        <span class="n">rkey_start</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">receiver</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">rkey_keep_case</span> <span class="o">=</span> <span class="n">rkey_start</span> <span class="o">+</span> <span class="s1">&#39;~&#39;</span>  <span class="c1"># signifies keeping the case</span>
+        <span class="k">for</span> <span class="n">rkey</span> <span class="ow">in</span> <span class="p">(</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">receiver_sdesc_mapping</span> <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">rkey_start</span><span class="p">)):</span>
+            <span class="c1"># we could have #%i^, #%it etc depending on input case - we want the</span>
+            <span class="c1"># self-reference to retain case.</span>
+            <span class="n">receiver_sdesc_mapping</span><span class="p">[</span><span class="n">rkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">process_sdesc</span><span class="p">(</span>
+                <span class="n">receiver</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">receiver</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">rkey_keep_case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="c1"># do the template replacement of the sdesc/recog {#num} markers</span>
         <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">sendemote</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">receiver_sdesc_mapping</span><span class="p">),</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -619,7 +680,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="SdescHandler"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.SdescHandler">[docs]</a><span class="k">class</span> <span class="nc">SdescHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="SdescHandler"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.SdescHandler">[docs]</a><span class="k">class</span> <span class="nc">SdescHandler</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This Handler wraps all operations with sdescs. We</span>
 <span class="sd">    need to use this since we do a lot preparations on</span>
@@ -722,7 +783,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdesc_regex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span></div></div>
 
 
-<div class="viewcode-block" id="RecogHandler"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.RecogHandler">[docs]</a><span class="k">class</span> <span class="nc">RecogHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="RecogHandler"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.RecogHandler">[docs]</a><span class="k">class</span> <span class="nc">RecogHandler</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This handler manages the recognition mapping</span>
 <span class="sd">    of an Object.</span>
@@ -914,6 +975,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;emote&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;:&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
 <div class="viewcode-block" id="CmdEmote.func"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdEmote.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Perform the emote.&quot;</span>
@@ -941,6 +1003,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;say&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
 <div class="viewcode-block" id="CmdSay.func"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdSay.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Run the say command&quot;</span>
@@ -952,7 +1015,7 @@
             <span class="k">return</span>
 
         <span class="c1"># calling the speech modifying hook</span>
-        <span class="n">speech</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">at_before_say</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">speech</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">at_pre_say</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
         <span class="c1"># preparing the speech with sdesc/speech parsing.</span>
         <span class="n">targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span>
         <span class="n">send_emote</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">speech</span><span class="p">,</span> <span class="n">anonymous_add</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div></div>
@@ -1592,11 +1655,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_recog_obj2regex</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_recog_obj2recog</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">RPSystemCmdSet</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">RPSystemCmdSet</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># initializing sdesc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;A normal person&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ContribRPCharacter.at_before_say"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPCharacter.at_before_say">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_say</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribRPCharacter.at_pre_say"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPCharacter.at_pre_say">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_say</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called before the object says or whispers anything, return modified message.</span>
 
@@ -1622,11 +1685,33 @@
 <span class="sd">                you are viewing yourself (and sdesc is your key).</span>
 <span class="sd">                This is not used by default.</span>
 
+<span class="sd">        Kwargs:</span>
+<span class="sd">            ref (str): The reference marker found in string to replace.</span>
+<span class="sd">                This is on the form #{num}{case}, like &#39;#12^&#39;, where</span>
+<span class="sd">                the number is a processing location in the string and the</span>
+<span class="sd">                case symbol indicates the case of the original tag input</span>
+<span class="sd">                - `t` - input was Titled, like /Tall</span>
+<span class="sd">                - `^` - input was all uppercase, like /TALL</span>
+<span class="sd">                - `v` - input was all lowercase, like /tall</span>
+<span class="sd">                - `~` - input case should be kept, or was mixed-case</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            sdesc (str): The processed sdesc ready</span>
 <span class="sd">                for display.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sdesc</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">ref</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ref&#39;</span><span class="p">,</span> <span class="s1">&#39;~&#39;</span><span class="p">)</span>  <span class="c1"># ~ to keep sdesc unchanged</span>
+        <span class="k">if</span> <span class="s1">&#39;t&#39;</span> <span class="ow">in</span> <span class="n">ref</span><span class="p">:</span>
+            <span class="c1"># we only want to capitalize the first letter if there are many words</span>
+            <span class="n">sdesc</span> <span class="o">=</span> <span class="n">sdesc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">sdesc</span> <span class="o">=</span> <span class="n">sdesc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">sdesc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sdesc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">sdesc</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="s1">&#39;^&#39;</span> <span class="ow">in</span> <span class="n">ref</span><span class="p">:</span>
+            <span class="n">sdesc</span> <span class="o">=</span> <span class="n">sdesc</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="s1">&#39;v&#39;</span> <span class="ow">in</span> <span class="n">ref</span><span class="p">:</span>
+            <span class="n">sdesc</span> <span class="o">=</span> <span class="n">sdesc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">return</span> <span class="s2">&quot;|b</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">sdesc</span></div>
 
 <div class="viewcode-block" id="ContribRPCharacter.process_recog"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPCharacter.process_recog">[docs]</a>    <span class="k">def</span> <span class="nf">process_recog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recog</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1638,12 +1723,14 @@
 <span class="sd">                translated from the original sdesc at this point.</span>
 <span class="sd">            obj (Object): The object the recog:ed string belongs to.</span>
 <span class="sd">                This is not used by default.</span>
+<span class="sd">        Kwargs:</span>
+<span class="sd">            ref (str): See process_sdesc.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            recog (str): The modified recog string.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_sdesc</span><span class="p">(</span><span class="n">recog</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_sdesc</span><span class="p">(</span><span class="n">recog</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ContribRPCharacter.process_language"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPCharacter.process_language">[docs]</a>    <span class="k">def</span> <span class="nf">process_language</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">speaker</span><span class="p">,</span> <span class="n">language</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1692,18 +1779,17 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="rpsystem.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

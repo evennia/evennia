@@ -75,15 +75,15 @@ are also highly optimized for querying large data sets efficiently.</p></li>
 pay attention to what object you are using, and when you are accessing another through back-
 handling, that you are accessing the right object. In Diku C, accessing character object is normally
 done by:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* creating pointer of both character and room struct */</span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* creating pointer of both character and room struct */</span><span class="w"></span>
 
-<span class="kt">void</span><span class="p">(</span><span class="k">struct</span> <span class="nc">char</span> <span class="n">ch</span><span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">room</span> <span class="n">room</span><span class="o">*</span><span class="p">){</span>
-    <span class="kt">int</span> <span class="n">dam</span><span class="p">;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">ROOM_FLAGGED</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">ROOM_LAVA</span><span class="p">)){</span>
-        <span class="n">dam</span> <span class="o">=</span> <span class="mi">100</span>
-        <span class="n">ch</span><span class="o">-&gt;</span><span class="n">damage_taken</span> <span class="o">=</span> <span class="n">dam</span>
-    <span class="p">};</span>
-<span class="p">};</span>
+<span class="kt">void</span><span class="p">(</span><span class="k">struct</span> <span class="nc">char</span><span class="w"> </span><span class="n">ch</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="k">struct</span> <span class="nc">room</span><span class="w"> </span><span class="n">room</span><span class="o">*</span><span class="p">){</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">dam</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ROOM_FLAGGED</span><span class="p">(</span><span class="n">room</span><span class="p">,</span><span class="w"> </span><span class="n">ROOM_LAVA</span><span class="p">)){</span><span class="w"></span>
+<span class="w">        </span><span class="n">dam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="w"></span>
+<span class="w">        </span><span class="n">ch</span><span class="o">-&gt;</span><span class="n">damage_taken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dam</span><span class="w"></span>
+<span class="w">    </span><span class="p">};</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 </pre></div>
 </div>
 <p>As an example for creating Commands in Evennia via the <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia</span> <span class="pre">import</span> <span class="pre">Command</span></code> the character
@@ -260,18 +260,17 @@ your mob.</p>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Evennia-for-Diku-Users.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

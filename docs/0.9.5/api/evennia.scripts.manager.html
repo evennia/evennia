@@ -119,57 +119,9 @@ specific game object</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.scripts.manager.ScriptDBManager.remove_non_persistent">
-<code class="sig-name descname">remove_non_persistent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/manager.html#ScriptDBManager.remove_non_persistent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.manager.ScriptDBManager.remove_non_persistent" title="Permalink to this definition">¶</a></dt>
-<dd><p>This cleans up the script database of all non-persistent
-scripts. It is called every time the server restarts.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>obj</strong> (<em>Object</em><em>, </em><em>optional</em>) – Only remove non-persistent scripts
-assigned to this object.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.scripts.manager.ScriptDBManager.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scripts</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dbref</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">init_mode</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/manager.html#ScriptDBManager.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.manager.ScriptDBManager.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>This will step through the script database and make sure
-all objects run scripts that are still valid in the context
-they are in. This is called by the game engine at regular
-intervals but can also be initiated by player scripts.</p>
-<p>Only one of the arguments are supposed to be supplied
-at a time, since they are exclusive to each other.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>scripts</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of script objects to
-validate.</p></li>
-<li><p><strong>obj</strong> (<em>Object</em><em>, </em><em>optional</em>) – Validate only scripts defined on
-this object.</p></li>
-<li><p><strong>key</strong> (<em>str</em>) – Validate only scripts with this key.</p></li>
-<li><p><strong>dbref</strong> (<em>int</em>) – Validate only the single script with this
-particular id.</p></li>
-<li><p><strong>init_mode</strong> (<em>str</em><em>, </em><em>optional</em>) – This is used during server
-upstart and can have three values:
-- <strong>None</strong> (no init mode). Called during run.
-- <strong>“reset”</strong> - server reboot. Kill non-persistent scripts
-- <strong>“reload”</strong> - server reload. Keep non-persistent scripts.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>nr_started, nr_stopped (tuple)</em> –</p>
-<dl class="simple">
-<dt>Statistics on how many objects</dt><dd><p>where started and stopped.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This method also makes sure start any scripts it validates
-which should be harmless, since already-active scripts have
-the property ‘is_running’ set and will be skipped.</p>
+<dt id="evennia.scripts.manager.ScriptDBManager.update_scripts_after_server_start">
+<code class="sig-name descname">update_scripts_after_server_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/manager.html#ScriptDBManager.update_scripts_after_server_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.manager.ScriptDBManager.update_scripts_after_server_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update/sync/restart/delete scripts after server shutdown/restart.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -268,18 +220,17 @@ the original.</p></li>
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../1.0-dev/api/evennia.scripts.manager.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.scripts.manager.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

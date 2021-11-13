@@ -125,7 +125,7 @@ are given, the target is a location on the XYZGrid.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.xyzgrid.commands.CmdXYZTeleport.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['teleport']</em><a class="headerlink" href="#evennia.contrib.xyzgrid.commands.CmdXYZTeleport.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;tel']</em><a class="headerlink" href="#evennia.contrib.xyzgrid.commands.CmdXYZTeleport.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -135,7 +135,7 @@ are given, the target is a location on the XYZGrid.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.xyzgrid.commands.CmdXYZTeleport.key">
-<code class="sig-name descname">key</code><em class="property"> = 'tel'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.commands.CmdXYZTeleport.key" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">key</code><em class="property"> = '&#64;teleport'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.commands.CmdXYZTeleport.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -145,7 +145,7 @@ are given, the target is a location on the XYZGrid.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.xyzgrid.commands.CmdXYZTeleport.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'teleport', 'category': 'building', 'key': 'tel', 'tags': '', 'text': &quot;\n    teleport object to another location\n\n    Usage:\n      tel/switch [&lt;object&gt; to||=] &lt;target location&gt;\n      tel/switch [&lt;object&gt; to||=] (X,Y[,Z])\n\n    Examples:\n      tel Limbo\n      tel/quiet box = Limbo\n      tel/tonone box\n      tel (3, 3, the small cave)\n      tel (4, 1)   # on the same map\n      tel/map Z|mapname\n\n    Switches:\n      quiet  - don't echo leave/arrive messages to the source/target\n               locations for the move.\n      intoexit - if target is an exit, teleport INTO\n                 the exit object instead of to its destination\n      tonone - if set, teleport the object to a None-location. If this\n               switch is set, &lt;target location&gt; is ignored.\n               Note that the only way to retrieve\n               an object from a None location is by direct #dbref\n               reference. A puppeted object cannot be moved to None.\n      loc - teleport object to the target's location instead of its contents\n      map - show coordinate map of given Zcoord/mapname.\n\n    Teleports an object somewhere. If no object is given, you yourself are\n    teleported to the target location. If (X,Y) or (X,Y,Z) coordinates\n    are given, the target is a location on the XYZGrid.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.commands.CmdXYZTeleport.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;tel', 'category': 'building', 'key': '&#64;teleport', 'no_prefix': 'teleport &#64;tel', 'tags': '', 'text': &quot;\n    teleport object to another location\n\n    Usage:\n      tel/switch [&lt;object&gt; to||=] &lt;target location&gt;\n      tel/switch [&lt;object&gt; to||=] (X,Y[,Z])\n\n    Examples:\n      tel Limbo\n      tel/quiet box = Limbo\n      tel/tonone box\n      tel (3, 3, the small cave)\n      tel (4, 1)   # on the same map\n      tel/map Z|mapname\n\n    Switches:\n      quiet  - don't echo leave/arrive messages to the source/target\n               locations for the move.\n      intoexit - if target is an exit, teleport INTO\n                 the exit object instead of to its destination\n      tonone - if set, teleport the object to a None-location. If this\n               switch is set, &lt;target location&gt; is ignored.\n               Note that the only way to retrieve\n               an object from a None location is by direct #dbref\n               reference. A puppeted object cannot be moved to None.\n      loc - teleport object to the target's location instead of its contents\n      map - show coordinate map of given Zcoord/mapname.\n\n    Teleports an object somewhere. If no object is given, you yourself are\n    teleported to the target location. If (X,Y) or (X,Y,Z) coordinates\n    are given, the target is a location on the XYZGrid.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.commands.CmdXYZTeleport.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -189,7 +189,7 @@ the cases, see the module doc.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.xyzgrid.commands.CmdXYZOpen.key">
-<code class="sig-name descname">key</code><em class="property"> = 'open'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.commands.CmdXYZOpen.key" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">key</code><em class="property"> = '&#64;open'</em><a class="headerlink" href="#evennia.contrib.xyzgrid.commands.CmdXYZOpen.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -199,7 +199,7 @@ the cases, see the module doc.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.xyzgrid.commands.CmdXYZOpen.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'open', 'tags': '', 'text': '\n    open a new exit from the current room\n\n    Usage:\n      open &lt;new exit&gt;[;alias;..][:typeclass] [,&lt;return exit&gt;[;alias;..][:typeclass]]] = &lt;destination&gt;\n      open &lt;new exit&gt;[;alias;..][:typeclass] [,&lt;return exit&gt;[;alias;..][:typeclass]]] = (X,Y,Z)\n\n    Handles the creation of exits. If a destination is given, the exit\n    will point there. The destination can also be given as an (X,Y,Z) coordinate on the\n    XYZGrid - this command is used to link non-grid rooms to the grid and vice-versa.\n\n    The &lt;return exit&gt; argument sets up an exit at the destination leading back to the current room.\n    Apart from (X,Y,Z) coordinate, destination name can be given both as a #dbref and a name, if\n    that name is globally unique.\n\n    Examples:\n        open kitchen = Kitchen\n        open north, south = Town Center\n        open cave mouth;cave = (3, 4, the small cave)\n\n    '}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.commands.CmdXYZOpen.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': '&#64;open', 'no_prefix': 'open ', 'tags': '', 'text': '\n    open a new exit from the current room\n\n    Usage:\n      open &lt;new exit&gt;[;alias;..][:typeclass] [,&lt;return exit&gt;[;alias;..][:typeclass]]] = &lt;destination&gt;\n      open &lt;new exit&gt;[;alias;..][:typeclass] [,&lt;return exit&gt;[;alias;..][:typeclass]]] = (X,Y,Z)\n\n    Handles the creation of exits. If a destination is given, the exit\n    will point there. The destination can also be given as an (X,Y,Z) coordinate on the\n    XYZGrid - this command is used to link non-grid rooms to the grid and vice-versa.\n\n    The &lt;return exit&gt; argument sets up an exit at the destination leading back to the current room.\n    Apart from (X,Y,Z) coordinate, destination name can be given both as a #dbref and a name, if\n    that name is globally unique.\n\n    Examples:\n        open kitchen = Kitchen\n        open north, south = Town Center\n        open cave mouth;cave = (3, 4, the small cave)\n\n    '}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.commands.CmdXYZOpen.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -263,7 +263,7 @@ can then automatically walk you there.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.xyzgrid.commands.CmdGoto.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'path', 'category': 'general', 'key': 'goto', 'tags': '', 'text': &quot;\n    Go to a named location in this area via the shortest path.\n\n    Usage:\n        path &lt;location&gt;      - find shortest path to target location (don't move)\n        goto &lt;location&gt;      - auto-move to target location, using shortest path\n        path                 - show current target location and shortest path\n        goto                 - abort current goto, otherwise show current path\n        path clear           - clear current path\n\n    Finds the shortest route to a location in your current area and\n    can then automatically walk you there.\n\n    Builders can optionally specify a specific grid coordinate (X,Y) to go to.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.commands.CmdGoto.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'path', 'category': 'general', 'key': 'goto', 'no_prefix': ' ', 'tags': '', 'text': &quot;\n    Go to a named location in this area via the shortest path.\n\n    Usage:\n        path &lt;location&gt;      - find shortest path to target location (don't move)\n        goto &lt;location&gt;      - auto-move to target location, using shortest path\n        path                 - show current target location and shortest path\n        goto                 - abort current goto, otherwise show current path\n        path clear           - clear current path\n\n    Finds the shortest route to a location in your current area and\n    can then automatically walk you there.\n\n    Builders can optionally specify a specific grid coordinate (X,Y) to go to.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.commands.CmdGoto.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -312,7 +312,7 @@ map list</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.xyzgrid.commands.CmdMap.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'map', 'tags': '', 'text': '\n    Show a map of an area\n\n    Usage:\n        map [Zcoord]\n        map list\n\n    This is a builder-command.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.commands.CmdMap.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'map', 'no_prefix': ' ', 'tags': '', 'text': '\n    Show a map of an area\n\n    Usage:\n        map [Zcoord]\n        map list\n\n    This is a builder-command.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.xyzgrid.commands.CmdMap.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

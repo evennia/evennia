@@ -259,13 +259,18 @@
             <span class="n">ipregex</span> <span class="o">=</span> <span class="n">ipregex</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;[0-9]{1,3}&quot;</span><span class="p">)</span>
             <span class="n">ipregex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">ipregex</span><span class="p">)</span>
             <span class="n">bantup</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ban</span><span class="p">,</span> <span class="n">ipregex</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Are you sure you want to </span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s2">-ban &#39;|w</span><span class="si">{</span><span class="n">ban</span><span class="si">}</span><span class="s2">|n&#39; [Y]/N?&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
         <span class="c1"># save updated banlist</span>
         <span class="n">banlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bantup</span><span class="p">)</span>
         <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_bans&quot;</span><span class="p">,</span> <span class="n">banlist</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-Ban |w</span><span class="si">%s</span><span class="s2">|n was added.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="n">ban</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s2">-ban &#39;|w</span><span class="si">{</span><span class="n">ban</span><span class="si">}</span><span class="s2">|n&#39; was added. Use |wunban|n to reinstate.&quot;</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
-            <span class="s2">&quot;Banned </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2"> (Caller: </span><span class="si">%s</span><span class="s2">, IP: </span><span class="si">%s</span><span class="s2">).&quot;</span>
-            <span class="o">%</span> <span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="n">ban</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+            <span class="s2">&quot;Banned </span><span class="si">{typ}</span><span class="s2">: {ban.strip()} (Caller: </span><span class="si">{self.caller}</span><span class="s2">, IP: </span><span class="si">{self.session.address}</span><span class="s2">).&quot;</span>
         <span class="p">)</span></div></div>
 
 
@@ -307,15 +312,20 @@
         <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">banlist</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Ban id |w</span><span class="si">%s</span><span class="s2">|x was not found.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># all is ok, clear ban</span>
+            <span class="c1"># all is ok, ask, then clear ban</span>
             <span class="n">ban</span> <span class="o">=</span> <span class="n">banlist</span><span class="p">[</span><span class="n">num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ban</span><span class="p">[:</span><span class="mi">2</span><span class="p">]])</span>
+
+            <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Are you sure you want to unban </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2">: &#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; [Y]/N?&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
             <span class="k">del</span> <span class="n">banlist</span><span class="p">[</span><span class="n">num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
             <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_bans&quot;</span><span class="p">,</span> <span class="n">banlist</span><span class="p">)</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ban</span><span class="p">[:</span><span class="mi">2</span><span class="p">]])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Cleared ban </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cleared ban </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2">: &#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
-                <span class="s2">&quot;Unbanned: </span><span class="si">%s</span><span class="s2"> (Caller: </span><span class="si">%s</span><span class="s2">, IP: </span><span class="si">%s</span><span class="s2">).&quot;</span>
-                <span class="o">%</span> <span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+                <span class="s2">&quot;Unbanned: {value.strip()} (Caller: </span><span class="si">{self.caller}</span><span class="s2">, IP: </span><span class="si">{self.session.address}</span><span class="s2">).&quot;</span>
             <span class="p">)</span></div></div>
 
 
@@ -661,18 +671,17 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="admin.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

@@ -60,10 +60,8 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">html</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.protocol</span> <span class="kn">import</span> <span class="n">Protocol</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.server.session</span> <span class="kn">import</span> <span class="n">Session</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">mod_import</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">class_from_module</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">parse_ansi</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.text2html</span> <span class="kn">import</span> <span class="n">parse_html</span>
 <span class="kn">from</span> <span class="nn">autobahn.twisted.websocket</span> <span class="kn">import</span> <span class="n">WebSocketServerProtocol</span>
@@ -83,21 +81,23 @@
 <span class="c1">#   called when the browser is navigating away from the page</span>
 <span class="n">GOING_AWAY</span> <span class="o">=</span> <span class="n">WebSocketServerProtocol</span><span class="o">.</span><span class="n">CLOSE_STATUS_CODE_GOING_AWAY</span>
 
-<span class="n">STATE_CLOSING</span> <span class="o">=</span> <span class="n">WebSocketServerProtocol</span><span class="o">.</span><span class="n">STATE_CLOSING</span>
+<span class="n">_BASE_SESSION_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_SESSION_CLASS</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="WebSocketClient"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient">[docs]</a><span class="k">class</span> <span class="nc">WebSocketClient</span><span class="p">(</span><span class="n">WebSocketServerProtocol</span><span class="p">,</span> <span class="n">Session</span><span class="p">):</span>
+<div class="viewcode-block" id="WebSocketClient"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient">[docs]</a><span class="k">class</span> <span class="nc">WebSocketClient</span><span class="p">(</span><span class="n">WebSocketServerProtocol</span><span class="p">,</span> <span class="n">_BASE_SESSION_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the server-side of the Websocket connection.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># nonce value, used to prevent the webclient from erasing the</span>
     <span class="c1"># webclient_authenticated_uid value of csession on disconnect</span>
-    <span class="n">nonce</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">nonce</span> <span class="o">=</span> <span class="mi">0</span>
 
 <div class="viewcode-block" id="WebSocketClient.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol_key</span> <span class="o">=</span> <span class="s2">&quot;webclient/websocket&quot;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol_key</span> <span class="o">=</span> <span class="s2">&quot;webclient/websocket&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">browserstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="WebSocketClient.get_client_session"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient.get_client_session">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -109,7 +109,8 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">csessid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">http_request_uri</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># client will connect with wsurl?csessid&amp;browserid</span>
+            <span class="n">webarg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">http_request_uri</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
             <span class="c1"># this may happen for custom webclients not caring for the</span>
             <span class="c1"># browser session.</span>
@@ -121,6 +122,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">csessid</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
             <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">csessid</span><span class="p">,</span> <span class="o">*</span><span class="n">browserstr</span> <span class="o">=</span> <span class="n">webarg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">browserstr</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">browserstr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">browserstr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">csessid</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_CLIENT_SESSIONS</span><span class="p">(</span><span class="n">session_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">csessid</span><span class="p">)</span></div>
 
@@ -162,7 +168,8 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">sessid</span> <span class="o">=</span> <span class="n">old_session</span><span class="o">.</span><span class="n">sessid</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">old_session</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;CLIENTNAME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Evennia Webclient (websocket)&quot;</span>
+        <span class="n">browserstr</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">browserstr</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">browserstr</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;CLIENTNAME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Evennia Webclient (websocket</span><span class="si">{</span><span class="n">browserstr</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;OOB&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -187,7 +194,7 @@
             <span class="c1"># set *before* this disconnect (disconnect called after a new client</span>
             <span class="c1"># connects, which occurs in some &#39;fast&#39; browsers like Google Chrome</span>
             <span class="c1"># and Mobile Safari)</span>
-            <span class="k">if</span> <span class="n">csession</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;webclient_authenticated_nonce&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">nonce</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">csession</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;webclient_authenticated_nonce&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">nonce</span><span class="p">:</span>
                 <span class="n">csession</span><span class="p">[</span><span class="s2">&quot;webclient_authenticated_uid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">csession</span><span class="p">[</span><span class="s2">&quot;webclient_authenticated_nonce&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">csession</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
@@ -200,7 +207,7 @@
         <span class="c1"># in case anyone wants to expose this functionality later.</span>
         <span class="c1">#</span>
         <span class="c1"># sendClose() under autobahn/websocket/interfaces.py</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sendClose</span><span class="p">(</span><span class="n">CLOSE_NORMAL</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendClose</span><span class="p">(</span><span class="n">CLOSE_NORMAL</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WebSocketClient.onClose"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient.onClose">[docs]</a>    <span class="k">def</span> <span class="nf">onClose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wasClean</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -304,8 +311,6 @@
                 <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="c1"># just to be sure</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="n">to_str</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
         <span class="n">flags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_flags</span>
 
@@ -377,18 +382,17 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="webclient.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

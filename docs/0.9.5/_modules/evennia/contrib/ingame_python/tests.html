@@ -91,7 +91,7 @@
         <span class="sd">&quot;&quot;&quot;Stop the event handler.&quot;&quot;&quot;</span>
         <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="n">CallbackHandler</span><span class="o">.</span><span class="n">script</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span></div>
 
@@ -313,11 +313,11 @@
         <span class="sd">&quot;&quot;&quot;Stop the callback handler.&quot;&quot;&quot;</span>
         <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
             <span class="n">db_typeclass_path</span><span class="o">=</span><span class="s2">&quot;evennia.contrib.ingame_python.scripts.TimeEventScript&quot;</span>
         <span class="p">):</span>
-            <span class="n">script</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="n">script</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 
         <span class="n">CallbackHandler</span><span class="o">.</span><span class="n">script</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span></div>
@@ -492,7 +492,7 @@
         <span class="sd">&quot;&quot;&quot;Stop the callback handler.&quot;&quot;&quot;</span>
         <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="n">CallbackHandler</span><span class="o">.</span><span class="n">script</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span></div>
 
@@ -609,18 +609,17 @@
   <li><a href="https://www.evennia.com">Home page</a> </li>
   <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
   <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
-    <a href="https://discord.gg/NecFePw">Discord</a> - 
-      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
   </li>
-  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
 </ul>
 <h3>Versions</h3>
 <ul>
   <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="tests.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
-
 
         </div>
       </div>

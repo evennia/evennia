@@ -320,6 +320,31 @@ incoming string is already split up and parsed in suitable ways by its parent.</
 <p>Before you can actually use the command in your game, you must now store it
 within a <em>command set</em>. See the <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">Command Sets</span></a> page.</p>
 </section>
+<section id="command-prefixes">
+<h3>Command prefixes<a class="headerlink" href="#command-prefixes" title="Permalink to this headline">¶</a></h3>
+<p>Historically, many MU* servers used to use prefix, such as <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> or <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> to signify that
+a command is used for administration or requires staff privileges. The problem with this is that
+newcomers to MU often find such extra symbols confusing. Evennia allows commands that can be
+accessed both with- or without such a prefix.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CMD_IGNORE_PREFIXES = &quot;@&amp;/+`
+</pre></div>
+</div>
+<p>This is a setting consisting of a string of characters. Each is a prefix that will be considered
+a skippable prefix - <em>if the command is still unique in its cmdset when skipping the prefix</em>.</p>
+<p>So if you wanted to write <code class="docutils literal notranslate"><span class="pre">&#64;look</span></code> instead of <code class="docutils literal notranslate"><span class="pre">look</span></code> you can do so - the <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> will be ignored. But If
+we added an actual <code class="docutils literal notranslate"><span class="pre">&#64;look</span></code> command (with a <code class="docutils literal notranslate"><span class="pre">key</span></code> or alias <code class="docutils literal notranslate"><span class="pre">&#64;look</span></code>) then we would need to use the
+<code class="docutils literal notranslate"><span class="pre">&#64;</span></code> to separate between the two.</p>
+<p>This is also used in the default commands. For example, <code class="docutils literal notranslate"><span class="pre">&#64;open</span></code> is a building
+command that allows you to create new exits to link two rooms together. Its <code class="docutils literal notranslate"><span class="pre">key</span></code> is set to <code class="docutils literal notranslate"><span class="pre">&#64;open</span></code>,
+including the <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> (no alias is set). By default you can use both <code class="docutils literal notranslate"><span class="pre">&#64;open</span></code> and <code class="docutils literal notranslate"><span class="pre">open</span></code> for
+this command. But “open” is a pretty common word and let’s say a developer adds a new <code class="docutils literal notranslate"><span class="pre">open</span></code> command
+for opening a door. Now <code class="docutils literal notranslate"><span class="pre">&#64;open</span></code> and <code class="docutils literal notranslate"><span class="pre">open</span></code> are two different commands and the <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> must be used to
+separate them.</p>
+<blockquote>
+<div><p>The <code class="docutils literal notranslate"><span class="pre">help</span></code> command will prefer to show all command names without prefix if
+possible. Only if there is a collision, will the prefix be shown in the help system.</p>
+</div></blockquote>
+</section>
 <section id="on-arg-regex">
 <h3>On arg_regex<a class="headerlink" href="#on-arg-regex" title="Permalink to this headline">¶</a></h3>
 <p>The command parser is very general and does not require a space to end your command name. This means
@@ -712,6 +737,7 @@ on.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#defining-your-own-command-classes">Defining your own command classes</a></li>
+<li><a class="reference internal" href="#command-prefixes">Command prefixes</a></li>
 <li><a class="reference internal" href="#on-arg-regex">On arg_regex</a></li>
 </ul>
 </li>

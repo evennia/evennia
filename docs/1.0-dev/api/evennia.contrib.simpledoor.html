@@ -175,7 +175,7 @@ unique.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.simpledoor.CmdOpen.key">
-<code class="sig-name descname">key</code><em class="property"> = 'open'</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpen.key" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">key</code><em class="property"> = '&#64;open'</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpen.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -185,7 +185,7 @@ unique.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.simpledoor.CmdOpen.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'open', 'tags': '', 'text': '\n    open a new exit from the current room\n\n    Usage:\n      open &lt;new exit&gt;[;alias;alias..][:typeclass] [,&lt;return exit&gt;[;alias;..][:typeclass]]] = &lt;destination&gt;\n\n    Handles the creation of exits. If a destination is given, the exit\n    will point there. The &lt;return exit&gt; argument sets up an exit at the\n    destination leading back to the current room. Destination name\n    can be given both as a #dbref and a name, if that name is globally\n    unique.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpen.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': '&#64;open', 'no_prefix': 'open ', 'tags': '', 'text': '\n    open a new exit from the current room\n\n    Usage:\n      open &lt;new exit&gt;[;alias;alias..][:typeclass] [,&lt;return exit&gt;[;alias;..][:typeclass]]] = &lt;destination&gt;\n\n    Handles the creation of exits. If a destination is given, the exit\n    will point there. The &lt;return exit&gt; argument sets up an exit at the\n    destination leading back to the current room. Destination name\n    can be given both as a #dbref and a name, if that name is globally\n    unique.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpen.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -233,7 +233,7 @@ close &lt;door&gt;</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.simpledoor.CmdOpenCloseDoor.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'close', 'category': 'general', 'key': 'open', 'tags': '', 'text': '\n    Open and close a door\n\n    Usage:\n        open &lt;door&gt;\n        close &lt;door&gt;\n\n    '}</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpenCloseDoor.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'close', 'category': 'general', 'key': 'open', 'no_prefix': ' ', 'tags': '', 'text': '\n    Open and close a door\n\n    Usage:\n        open &lt;door&gt;\n        close &lt;door&gt;\n\n    '}</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpenCloseDoor.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

@@ -52,6 +52,8 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
@@ -68,6 +70,7 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">evennia.help.utils</span> <span class="kn">import</span> <span class="n">help_search_with_index</span><span class="p">,</span> <span class="n">parse_entry_for_subcategories</span>
 
+<span class="n">CMD_IGNORE_PREFIXES</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMD_IGNORE_PREFIXES</span>
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
 <span class="n">HELP_MORE_ENABLED</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">HELP_MORE_ENABLED</span>
 <span class="n">DEFAULT_HELP_CATEGORY</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HELP_CATEGORY</span>
@@ -90,6 +93,7 @@
             <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
             <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
             <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+            <span class="s2">&quot;no_prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
             <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
             <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="p">}</span>
@@ -447,7 +451,7 @@
                 <span class="n">key</span><span class="p">:</span> <span class="n">entry</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">file_help_topics</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">can_list_topic</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">caller</span><span class="p">)}</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># query</span>
+            <span class="c1"># query - check the read lock on entries</span>
             <span class="n">cmd_help_topics</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">cmd</span><span class="o">.</span><span class="n">auto_help_display_key</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;auto_help_display_key&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">cmd</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">cmd</span>
@@ -481,7 +485,8 @@
             <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;boost&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
                 <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;aliases&quot;</span><span class="p">,</span> <span class="s2">&quot;boost&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">},</span>
-                <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="s2">&quot;boost&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;no_prefix&quot;</span><span class="p">,</span> <span class="s2">&quot;boost&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="s2">&quot;boost&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
                 <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="s2">&quot;boost&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>  <span class="c1"># tags are not used by default</span>
             <span class="p">]</span>
         <span class="n">match</span><span class="p">,</span> <span class="n">suggestions</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
@@ -523,6 +528,27 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">topic</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">subtopics</span> <span class="o">=</span> <span class="p">[]</span></div>
 
+<div class="viewcode-block" id="CmdHelp.strip_cmd_prefix"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.strip_cmd_prefix">[docs]</a>    <span class="k">def</span> <span class="nf">strip_cmd_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">all_keys</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Conditional strip of a command prefix, such as @ in @desc. By default</span>
+<span class="sd">        this will be hidden unless there is a duplicate without the prefix</span>
+<span class="sd">        in the full command set (such as @open and open).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): Command key to analyze.</span>
+<span class="sd">            all_cmds (list): All command-keys (and potentially aliases).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Potentially modified key to use in help display.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">and</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">CMD_IGNORE_PREFIXES</span> <span class="ow">and</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_keys</span><span class="p">:</span>
+            <span class="c1"># filter out e.g. `@` prefixes from display if there is duplicate</span>
+            <span class="c1"># with the prefix in the set (such as @open/open)</span>
+            <span class="k">return</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">key</span></div>
+
+
 <div class="viewcode-block" id="CmdHelp.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run the dynamic help entry creator.</span>
@@ -544,7 +570,12 @@
             <span class="c1"># group by category (cmds are listed separately)</span>
             <span class="n">cmd_help_by_category</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
             <span class="n">file_db_help_by_category</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+
+            <span class="c1"># get a collection of all keys + aliases to be able to strip prefixes like @</span>
+            <span class="n">key_and_aliases</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">_keyaliases</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmd_help_topics</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmd_help_topics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip_cmd_prefix</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">key_and_aliases</span><span class="p">)</span>
                 <span class="n">cmd_help_by_category</span><span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">help_category</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">file_db_help_topics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">file_db_help_by_category</span><span class="p">[</span><span class="n">entry</span><span class="o">.</span><span class="n">help_category</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
@@ -592,7 +623,7 @@
                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;boost&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
                 <span class="p">]</span>
 
-                <span class="k">for</span> <span class="n">match_query</span> <span class="ow">in</span> <span class="p">[</span><span class="n">query</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">*&quot;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">match_query</span> <span class="ow">in</span> <span class="p">[</span><span class="n">query</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">*&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]:</span>
                     <span class="n">_</span><span class="p">,</span> <span class="n">suggestions</span> <span class="o">=</span> <span class="n">help_search_with_index</span><span class="p">(</span>
                         <span class="n">match_query</span><span class="p">,</span> <span class="n">entries</span><span class="p">,</span>
                         <span class="n">suggestion_maxnum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">suggestion_maxnum</span><span class="p">,</span>
@@ -603,7 +634,7 @@
                         <span class="n">help_text</span> <span class="o">+=</span> <span class="p">(</span>
                             <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">... But matches where found within the help &quot;</span>
                             <span class="s2">&quot;texts of the suggestions below.&quot;</span><span class="p">)</span>
-                        <span class="k">break</span>
+                        <span class="c1"># break</span>
 
             <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_help_entry</span><span class="p">(</span>
                 <span class="n">topic</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># this will give a no-match style title</span>
@@ -696,10 +727,19 @@
             <span class="c1"># we reached the bottom of the topic tree</span>
             <span class="n">help_text</span> <span class="o">=</span> <span class="n">subtopic_map</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
 
+        <span class="c1"># get a collection of all keys + aliases to be able to strip prefixes like @</span>
+        <span class="n">key_and_aliases</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">_keyaliases</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmd_help_topics</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+        <span class="n">topic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip_cmd_prefix</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">key_and_aliases</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">subtopics</span><span class="p">:</span>
+            <span class="n">aliases</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">strip_cmd_prefix</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="n">key_and_aliases</span><span class="p">)</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">aliases</span><span class="p">]</span>
+        <span class="n">suggested</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">strip_cmd_prefix</span><span class="p">(</span><span class="n">sugg</span><span class="p">,</span> <span class="n">key_and_aliases</span><span class="p">)</span> <span class="k">for</span> <span class="n">sugg</span> <span class="ow">in</span> <span class="n">suggested</span><span class="p">]</span>
+
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_help_entry</span><span class="p">(</span>
             <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span>
             <span class="n">help_text</span><span class="o">=</span><span class="n">help_text</span><span class="p">,</span>
-            <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">subtopics</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span>
             <span class="n">subtopics</span><span class="o">=</span><span class="n">subtopic_index</span><span class="p">,</span>
             <span class="n">suggested</span><span class="o">=</span><span class="n">suggested</span><span class="p">,</span>
             <span class="n">click_topics</span><span class="o">=</span><span class="n">clickable_topics</span>
