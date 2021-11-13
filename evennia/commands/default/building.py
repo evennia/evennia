@@ -157,7 +157,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
     by everyone.
     """
 
-    key = "alias"
+    key = "@alias"
     aliases = "setobjalias"
     switch_options = ("category",)
     locks = "cmd:perm(setobjalias) or perm(Builder)"
@@ -266,7 +266,7 @@ class CmdCopy(ObjManipCommand):
     one exact copy of the original object will be created with the name *_copy.
     """
 
-    key = "copy"
+    key = "@copy"
     locks = "cmd:perm(copy) or perm(Builder)"
     help_category = "Building"
 
@@ -357,7 +357,7 @@ class CmdCpAttr(ObjManipCommand):
     If you don't supply a source object, yourself is used.
     """
 
-    key = "cpattr"
+    key = "@cpattr"
     switch_options = ("move",)
     locks = "cmd:perm(cpattr) or perm(Builder)"
     help_category = "Building"
@@ -496,7 +496,7 @@ class CmdMvAttr(ObjManipCommand):
     object. If you don't supply a source object, yourself is used.
     """
 
-    key = "mvattr"
+    key = "@mvattr"
     switch_options = ("copy",)
     locks = "cmd:perm(mvattr) or perm(Builder)"
     help_category = "Building"
@@ -545,7 +545,7 @@ class CmdCreate(ObjManipCommand):
 
     """
 
-    key = "create"
+    key = "@create"
     switch_options = ("drop",)
     locks = "cmd:perm(create) or perm(Builder)"
     help_category = "Building"
@@ -637,8 +637,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     describe the current room.
     """
 
-    key = "desc"
-    aliases = "describe"
+    key = "@desc"
     switch_options = ("edit",)
     locks = "cmd:perm(desc) or perm(Builder)"
     help_category = "Building"
@@ -722,8 +721,8 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
     You can specify the /force switch to bypass this confirmation.
     """
 
-    key = "destroy"
-    aliases = ["delete", "del"]
+    key = "@destroy"
+    aliases = ["@delete", "@del"]
     switch_options = ("override", "force")
     locks = "cmd:perm(destroy) or perm(Builder)"
     help_category = "Building"
@@ -864,7 +863,7 @@ class CmdDig(ObjManipCommand):
     would be 'north;no;n'.
     """
 
-    key = "dig"
+    key = "@dig"
     switch_options = ("teleport",)
     locks = "cmd:perm(dig) or perm(Builder)"
     help_category = "Building"
@@ -1020,8 +1019,8 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
     For more flexibility and power in creating rooms, use dig.
     """
 
-    key = "tunnel"
-    aliases = ["tun"]
+    key = "@tunnel"
+    aliases = ["@tun"]
     switch_options = ("oneway", "tel")
     locks = "cmd: perm(tunnel) or perm(Builder)"
     help_category = "Building"
@@ -1114,7 +1113,7 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
     currently set destination.
     """
 
-    key = "link"
+    key = "@link"
     locks = "cmd:perm(link) or perm(Builder)"
     help_category = "Building"
 
@@ -1251,7 +1250,7 @@ class CmdSetHome(CmdLink):
     If no location is given, just view the object's home location.
     """
 
-    key = "sethome"
+    key = "@sethome"
     locks = "cmd:perm(sethome) or perm(Builder)"
     help_category = "Building"
 
@@ -1303,8 +1302,7 @@ class CmdListCmdSets(COMMAND_DEFAULT_CLASS):
     to a user. Defaults to yourself.
     """
 
-    key = "cmdsets"
-    aliases = "listcmsets"
+    key = "@cmdsets"
     locks = "cmd:perm(listcmdsets) or perm(Builder)"
     help_category = "Building"
 
@@ -1334,8 +1332,8 @@ class CmdName(ObjManipCommand):
 
     """
 
-    key = "name"
-    aliases = ["rename"]
+    key = "@name"
+    aliases = ["@rename"]
     locks = "cmd:perm(rename) or perm(Builder)"
     help_category = "Building"
 
@@ -1412,7 +1410,7 @@ class CmdOpen(ObjManipCommand):
 
     """
 
-    key = "open"
+    key = "@open"
     locks = "cmd:perm(open) or perm(Builder)"
     help_category = "Building"
 
@@ -1614,7 +1612,7 @@ class CmdSetAttribute(ObjManipCommand):
 
     """
 
-    key = "set"
+    key = "@set"
     locks = "cmd:perm(set) or perm(Builder)"
     help_category = "Building"
     nested_re = re.compile(r"\[.*?\]")
@@ -1978,8 +1976,8 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "typeclass"
-    aliases = ["type", "parent", "swap", "update", "typeclasses"]
+    key = "@typeclass"
+    aliases = ["@type", "@parent", "@swap", "@update", "@typeclasses"]
     switch_options = ("show", "examine", "update", "reset", "force", "list", "prototype")
     locks = "cmd:perm(typeclass) or perm(Builder)"
     help_category = "Building"
@@ -2035,7 +2033,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
         caller = self.caller
 
-        if "list" in self.switches or self.cmdname == 'typeclasses':
+        if "list" in self.switches or self.cmdname in ('typeclasses', '@typeclasses'):
             tclasses = get_all_typeclasses()
             contribs = [key for key in sorted(tclasses) if key.startswith("evennia.contrib")] or [
                 "<None loaded>"
@@ -2135,10 +2133,10 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             caller.msg(string)
             return
 
-        if self.cmdstring == "swap":
+        if self.cmdstring in ("swap", "@swap"):
             self.switches.append("force")
             self.switches.append("reset")
-        elif self.cmdstring == "update":
+        elif self.cmdstring in ("update", "@update"):
             self.switches.append("force")
             self.switches.append("update")
 
@@ -2229,7 +2227,7 @@ class CmdWipe(ObjManipCommand):
     matching the given attribute-wildcard search string.
     """
 
-    key = "wipe"
+    key = "@wipe"
     locks = "cmd:perm(wipe) or perm(Builder)"
     help_category = "Building"
 
@@ -2298,8 +2296,8 @@ class CmdLock(ObjManipCommand):
        'get:id(25); delete:perm(Builder)'
     """
 
-    key = "lock"
-    aliases = ["locks"]
+    key = "@lock"
+    aliases = ["@locks"]
     locks = "cmd: perm(locks) or perm(Builder)"
     help_category = "Building"
 
@@ -2419,8 +2417,8 @@ class CmdExamine(ObjManipCommand):
 
     """
 
-    key = "examine"
-    aliases = ["ex", "exam"]
+    key = "@examine"
+    aliases = ["@ex", "@exam"]
     locks = "cmd:perm(examine) or perm(Builder)"
     help_category = "Building"
     arg_regex = r"(/\w+?(\s|$))|\s|$"
@@ -2829,8 +2827,8 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
     one is given.
     """
 
-    key = "find"
-    aliases = "search, locate"
+    key = "@find"
+    aliases = ["@search", "@locate"]
     switch_options = ("room", "exit", "char", "exact", "loc", "startswith")
     locks = "cmd:perm(find) or perm(Builder)"
     help_category = "Building"
@@ -3112,8 +3110,8 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "scripts"
-    aliases = ["script"]
+    key = "@scripts"
+    aliases = ["@script"]
     switch_options = ("create", "start", "stop", "pause", "delete")
     locks = "cmd:perm(scripts) or perm(Builder)"
     help_category = "System"
@@ -3255,8 +3253,7 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
     given, <nr> defaults to 10.
     """
 
-    key = "objects"
-    aliases = ["listobjects", "listobjs", "stats", "db"]
+    key = "@objects"
     locks = "cmd:perm(listobjects) or perm(Builder)"
     help_category = "System"
 
@@ -3365,8 +3362,8 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "tel"
-    aliases = "teleport"
+    key = "@teleport"
+    aliases = "@tel"
     switch_options = ("quiet", "intoexit", "tonone", "loc")
     rhs_split = ("=", " to ")  # Prefer = delimiter, but allow " to " usage.
     locks = "cmd:perm(teleport) or perm(Builder)"
@@ -3495,8 +3492,8 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
     enough to for most grouping schemes.
     """
 
-    key = "tag"
-    aliases = ["tags"]
+    key = "@tag"
+    aliases = ["@tags"]
     options = ("search", "del")
     locks = "cmd:perm(tag) or perm(Builder)"
     help_category = "Building"
@@ -3682,8 +3679,8 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "spawn"
-    aliases = ["olc"]
+    key = "@spawn"
+    aliases = ["@olc"]
     switch_options = (
         "noloc",
         "search",

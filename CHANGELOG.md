@@ -120,6 +120,10 @@ Up requirements to Django 3.2+, Twisted 21+
   the standard calendar form ... there is no month 0 every year after all).
 - `AttributeProperty`/`NAttributeProperty` to allow managing Attributes/NAttributes
   on typeclasses in the same way as Django fields.
+- Give build/system commands a `@name` to fall back to if the non-@ name is used
+  by another command (like `open` and `@open`. If no duplicate, @ is optional.
+- Move legacy channel-management commands (`ccreate`, `addcom` etc) to a contrib
+  since their work is now fully handled by the single `channel` command.
 
 ### Evennia 0.9.5 (2019-2020)
 

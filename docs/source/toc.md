@@ -240,6 +240,7 @@ api/evennia.contrib.mail
 api/evennia.contrib.mapbuilder
 api/evennia.contrib.menu_login
 api/evennia.contrib.multidescer
+api/evennia.contrib.mux_comms_cmds
 api/evennia.contrib.puzzles
 api/evennia.contrib.random_string_generator
 api/evennia.contrib.rplanguage
@@ -321,7 +322,6 @@ api/evennia.server.game_index_client.service
 api/evennia.server.initial_setup
 api/evennia.server.inputfuncs
 api/evennia.server.manager
-api/evennia.server.markup
 api/evennia.server.models
 api/evennia.server.portal
 api/evennia.server.portal.amp

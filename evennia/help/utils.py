@@ -71,7 +71,8 @@ def help_search_with_index(query, candidate_entries, suggestion_maxnum=5, fields
                 pass
 
         custom_stop_words_filter = stop_word_filter.generate_stop_word_filter(stop_words)
-        _LUNR_BUILDER_PIPELINE = (trimmer, custom_stop_words_filter, stemmer)
+        # _LUNR_BUILDER_PIPELINE = (trimmer, custom_stop_words_filter, stemmer)
+        _LUNR_BUILDER_PIPELINE = (custom_stop_words_filter, stemmer)
 
     indx = [cnd.search_index_entry for cnd in candidate_entries]
     mapping = {indx[ix]["key"]: cand for ix, cand in enumerate(candidate_entries)}

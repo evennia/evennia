@@ -60,8 +60,8 @@ class CmdReload(COMMAND_DEFAULT_CLASS):
     reset to purge) and at_reload() hooks will be called.
     """
 
-    key = "reload"
-    aliases = ["restart"]
+    key = "@reload"
+    aliases = ["@restart"]
     locks = "cmd:perm(reload) or perm(Developer)"
     help_category = "System"
 
@@ -98,8 +98,8 @@ class CmdReset(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "reset"
-    aliases = ["reboot"]
+    key = "@reset"
+    aliases = ["@reboot"]
     locks = "cmd:perm(reload) or perm(Developer)"
     help_category = "System"
 
@@ -122,7 +122,7 @@ class CmdShutdown(COMMAND_DEFAULT_CLASS):
     Gracefully shut down both Server and Portal.
     """
 
-    key = "shutdown"
+    key = "@shutdown"
     locks = "cmd:perm(shutdown) or perm(Developer)"
     help_category = "System"
 
@@ -345,8 +345,8 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "py"
-    aliases = ["!"]
+    key = "@py"
+    aliases = ["@!"]
     switch_options = ("time", "edit", "clientraw", "noecho")
     locks = "cmd:perm(py) or perm(Developer)"
     help_category = "System"
@@ -427,8 +427,8 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
     If not given, <nr> defaults to 10.
     """
 
-    key = "accounts"
-    aliases = ["account", "listaccounts"]
+    key = "@accounts"
+    aliases = ["@account"]
     switch_options = ("delete",)
     locks = "cmd:perm(listaccounts) or perm(Admin)"
     help_category = "System"
@@ -541,8 +541,8 @@ class CmdService(COMMAND_DEFAULT_CLASS):
     in the list.
     """
 
-    key = "service"
-    aliases = ["services"]
+    key = "@service"
+    aliases = ["@services"]
     switch_options = ("list", "start", "stop", "delete")
     locks = "cmd:perm(service) or perm(Developer)"
     help_category = "System"
@@ -642,8 +642,8 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
     Display info about the game engine.
     """
 
-    key = "about"
-    aliases = "version"
+    key = "@about"
+    aliases = "@version"
     locks = "cmd:all()"
     help_category = "System"
 
@@ -690,8 +690,8 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
     and the current time stamp.
     """
 
-    key = "time"
-    aliases = "uptime"
+    key = "@time"
+    aliases = "@uptime"
     locks = "cmd:perm(time) or perm(Player)"
     help_category = "System"
 
@@ -758,8 +758,8 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "server"
-    aliases = ["serverload", "serverprocess"]
+    key = "@server"
+    aliases = ["@serverload"]
     switch_options = ("mem", "flushmem")
     locks = "cmd:perm(list) or perm(Developer)"
     help_category = "System"
@@ -907,7 +907,7 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "tickers"
+    key = "@tickers"
     help_category = "System"
     locks = "cmd:perm(tickers) or perm(Builder)"
 
@@ -964,8 +964,8 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "tasks"
-    aliases = ["delays", "task"]
+    key = "@tasks"
+    aliases = ["@delays", "@task"]
     switch_options = ("pause", "unpause", "do_task", "call", "remove", "cancel")
     locks = "perm(Developer)"
     help_category = "System"
