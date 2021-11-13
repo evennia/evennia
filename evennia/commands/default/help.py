@@ -176,6 +176,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             subtopics = ''
 
         if suggested:
+            suggested = sorted(suggested)
             if click_topics:
                 suggested = [f"|lchelp {sug}|lt|w{sug}|n|le" for sug in suggested]
             else:
@@ -544,10 +545,14 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
             return
 
-        # search for a specific entry. We need to check for 'read' access here before # building the
-        # set of possibilities.
+        # search for a specific entry. We need to check for 'read' access here before
+        # building the set of possibilities.
         cmd_help_topics, db_help_topics, file_help_topics = \
             self.collect_topics(caller, mode='query')
+
+        # get a collection of all keys + aliases to be able to strip prefixes like @
+        key_and_aliases = set(
+            chain(*(cmd._keyaliases for cmd in cmd_help_topics.values())))
 
         # db-help topics takes priority over file-help
         file_db_help_topics = {**file_help_topics, **db_help_topics}
@@ -585,12 +590,13 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                         suggestion_maxnum=self.suggestion_maxnum,
                         fields=search_fields
                     )
-
                     if suggestions:
                         help_text += (
                             "\n... But matches where found within the help "
                             "texts of the suggestions below.")
-                        # break
+                        suggestions = [self.strip_cmd_prefix(sugg, key_and_aliases)
+                                       for sugg in suggestions]
+                        break
 
             output = self.format_help_entry(
                 topic=None,  # this will give a no-match style title
@@ -683,8 +689,6 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             # we reached the bottom of the topic tree
             help_text = subtopic_map[None]
 
-        # get a collection of all keys + aliases to be able to strip prefixes like @
-        key_and_aliases = set(chain(*(cmd._keyaliases for cmd in cmd_help_topics.values())))
         topic = self.strip_cmd_prefix(topic, key_and_aliases)
         if subtopics:
             aliases = None

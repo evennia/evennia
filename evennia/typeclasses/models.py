@@ -572,8 +572,8 @@ class TypedObject(SharedMemoryModel):
                 will be cleared.
             run_start_hooks (str or None, optional): This is either None,
                 to not run any hooks, "all" to run all hooks defined by
-                at_first_start, or a string giving the name of the hook
-                to run (for example 'at_object_creation'). This will
+                at_first_start, or a string with space-separated hook-names to run
+                (for example 'at_object_creation'). This will
                 always be called without arguments.
             no_default (bool, optiona): If set, the swapper will not
                 allow for swapping to a default typeclass in case the
@@ -621,7 +621,8 @@ class TypedObject(SharedMemoryModel):
             self.at_first_save()
         elif run_start_hooks:
             # a custom hook-name to call.
-            getattr(self, run_start_hooks)()
+            for start_hook in str(run_start_hooks).split():
+                getattr(self, run_start_hooks)()
 
     #
     # Lock / permission methods
