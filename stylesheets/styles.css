@@ -426,7 +426,7 @@ footer {
   top: 5px;
 }
 
-/* News feed */ 
+/* News feed */
 
 .news-event {
   margin-bottom: 7px;
@@ -437,7 +437,7 @@ footer {
 }
 
 .events-fetch {
-  font-style: italic; 
+  font-style: italic;
 }
 
 /* sponsor buttons */
@@ -462,6 +462,37 @@ footer {
     padding: 2px;
 }
 
+/* Dev Blog */
+
+a.devblog-headerlink {
+    visibility: hidden;
+}
+h1:hover > a.devblog-headerlink {
+    visibility: visible;
+}
+.devblog-title-date {
+    font-size: small;
+}
+.devblog-calendar > ul a + .devblog-calendar-closed {
+    max-height: 0;
+    overflow: hidden;
+    transition: 0.1s linear;
+    margin-bottom:0px;
+}
+.devblog-calendar > ul a:focus + .devblog-calendar-closed {
+    max-height: 15em;
+}
+a[href="devblog-posts"]:focus {
+    pointer-events: none;
+}
+.devblog-calendar-post {
+  margin-left: 1em;
+}
+.blog_post > p > img {
+    opacity: 1.0;
+}
+
+
 
 /* Media alternatives */
 
@@ -482,8 +513,8 @@ footer {
   }
 
   footer {
-    margin-top: 0px; 
-  } 
+    margin-top: 0px;
+  }
 
   section {
     padding:20px 8px 100px 25px;
@@ -509,7 +540,7 @@ footer {
   }
 
   .img, .img.screenshot {
-    max-width: 720px; 
+    max-width: 720px;
   }
 
   .newsfeed {
@@ -526,7 +557,7 @@ footer {
   }
 
   .buttonsidetext {
-    display: none; 
+    display: none;
   }
 
 
@@ -563,7 +594,7 @@ footer {
   }
 
   .img, .img.screenshot {
-    max-width: 480px; 
+    max-width: 480px;
   }
 
   .newsfeed, .sponsor {
@@ -586,29 +617,29 @@ footer {
   }
 
   .img, .img.screenshot {
-    max-width: 400px; 
+    max-width: 400px;
   }
 
 }
 
 @media print, screen and (max-width: 435px) {
 
-  /*header > h1.header, 
+  /*header > h1.header,
   header > p.header,
   .sponsor {
     display: none;
   }*/
 
   .img, .img.screenshot {
-    max-width: 300px; 
+    max-width: 300px;
   }
 
   header {
-    padding: 70px; 
+    padding: 70px;
   }
   section {
-    padding-left: 5px;   
-    padding-right: 5px;   
+    padding-left: 5px;
+    padding-right: 5px;
   }
 
 }

@@ -4,15 +4,11 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="chrome=1">
         <title>Devblog: Evennia Python MUD/MU creation system</title>
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
-        <link rel="stylesheet" href="stylesheets/styles.css">
-        <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+        <link rel="shortcut icon" type="image/x-icon" href="../../images/favicon.ico">
+        <link rel="stylesheet" href="../../stylesheets/styles.css">
+        <link rel="stylesheet" href="../../stylesheets/pygment_trac.css">
         <link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
         <link href='https://fonts.googleapis.com/css?family=Arvo' rel='stylesheet'>
-        <script src="javascripts/scale.fix.js">
-        </script>
-        <script src="javascripts/newsfeed.js">
-        </script>
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         <meta name="description" content="Evennia is a modern Python library and server for creating text-based        multi-player games and virtual worlds (also known as MUD, MUSH, MU, MUX, MUCK, etc). While Evennia handles all the necessary things every online game needs, like database and networking, you create the game of your dreams by writing normal Python modules.">
         <!--[if lt IE 9]>
@@ -24,7 +20,7 @@
         <div class="wrapper">
             <header>
                 <p>
-                <img class="logo" src="images/evennia_logo.png" alt="Evennia logo">
+                <img class="logo" src="../../images/evennia_logo.png" alt="Evennia logo">
                 </p>
                 <h1 class="header">Evennia</h1>
                 <p class="header header-text">The Python MU* Development Library</p>
@@ -36,7 +32,24 @@
                             </li>
                     </ul>
                         </div>
-                        <div class="newsfeed">
+                        <div class="devblog-calendar">
+                            <ul>
+                                {% for year, postlist in calendar.items() %}
+                                    <li><a href=#devblog-posts>{{ year }} ({{ postlist|length }})
+                                        {% if year == page_year %}
+                                            <ul class="devblog-calendar-open">
+                                        {% else %}
+                                            <ul class="devblog-calendar-closed">
+                                        {% endif %}
+                                            {% for post in postlist %}
+                                                <li class="devblog-calendar-post">
+                                                    <a href="{{ post.permalink }}">{{ post.date_short}}</a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         </div>
             </header>
             <section>
@@ -47,20 +60,18 @@
                     </a>Evennia Dev Blog<div class="sponsor">
                         <div class="sponsor-column">
                             <a href="https://www.patreon.com/griatch">
-                                <img class="patreon" src="images/evennia_patreon_100x100.png" alt="Patreon">
+                                <img class="patreon" src="../../images/evennia_patreon_100x100.png" alt="Patreon">
                             </a>
                             <p>
                             <a href="https://www.paypal.me/GriatchEvennia">
-                                <img class="paypal" src="images/btn_donateCC_LG.gif" alt="Paypal donate">
+                                <img class="paypal" src="../../images/btn_donateCC_LG.gif" alt="Paypal donate">
                             </a>
                         </div>
                 </h1>
                 {% for post in posts %}
-                    {% if not loop.first %}
-                        <hr>
-                    {% endif %}
+                    {% if not loop.first %}<hr>{% endif %}
                     <div class="blog_post">
-                    {{ post }}
+                    {{ post.html }}
                     </div>
                 {% endfor %}
             </section>

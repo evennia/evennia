@@ -1,0 +1,329 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        <title>Devblog: Evennia Python MUD/MU creation system</title>
+        <link rel="shortcut icon" type="image/x-icon" href="../../images/favicon.ico">
+        <link rel="stylesheet" href="../../stylesheets/styles.css">
+        <link rel="stylesheet" href="../../stylesheets/pygment_trac.css">
+        <link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
+        <link href='https://fonts.googleapis.com/css?family=Arvo' rel='stylesheet'>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <meta name="description" content="Evennia is a modern Python library and server for creating text-based        multi-player games and virtual worlds (also known as MUD, MUSH, MU, MUX, MUCK, etc). While Evennia handles all the necessary things every online game needs, like database and networking, you create the game of your dreams by writing normal Python modules.">
+        <!--[if lt IE 9]>
+            <script src="//html5shiv.googlecode.com/svn/trunk/html5.js">
+            </script>
+        <![endif]-->
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <p>
+                <img class="logo" src="../../images/evennia_logo.png" alt="Evennia logo">
+                </p>
+                <h1 class="header">Evennia</h1>
+                <p class="header header-text">The Python MU* Development Library</p>
+                <div class="linksection">
+                    <ul>
+                        <div class="buttonsection">
+                            <li>
+                                <a class="buttons" href="https://www.evennia.com">Back to Evennia</a>
+                            </li>
+                    </ul>
+                        </div>
+                        <div class="devblog-calendar">
+                            <ul>
+                                
+                                    <li><a href=#devblog-posts>2021 (4)
+                                        
+                                            <ul class="devblog-calendar-open">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2021.html#2021-11-14-where-do-i-begin">November 14</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2021.html#2021-11-10-second-blog">November 10</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2021.html#2021-10-01-first-blog">October  1</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2021.html#2021-05-01-another-way-to-do-things">May  1</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href=#devblog-posts>2020 (1)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2020.html#2020-05-02-initial-blog">May  2</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                            </ul>
+                        </div>
+            </header>
+            <section>
+                <h1>
+                    <a name="evennia-mudmu-creation-system" class="anchor"  href="#evennia-mudmu-creation-system">
+                        <span class="octicon octicon-link">
+                        </span>
+                    </a>Evennia Dev Blog<div class="sponsor">
+                        <div class="sponsor-column">
+                            <a href="https://www.patreon.com/griatch">
+                                <img class="patreon" src="../../images/evennia_patreon_100x100.png" alt="Patreon">
+                            </a>
+                            <p>
+                            <a href="https://www.paypal.me/GriatchEvennia">
+                                <img class="paypal" src="../../images/btn_donateCC_LG.gif" alt="Paypal donate">
+                            </a>
+                        </div>
+                </h1>
+                
+                    
+                    <div class="blog_post">
+                    <h1 id=2021-11-14-where-do-i-begin>
+     Where do I begin
+    <a class="devblog-headerlink" href="2021-11-14-where-do-i-begin" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- November 14, 2021</div>
+</h1>
+<blockquote>
+<p><em>This is a repost of an article I originally wrote for the Imaginary Realities e-zine, Volume 7, issue 3 back in 2015. It's not Evennia-specific but meant for a wider audience interested in making a text-based multiplayer game (MUD/MU*). Since IR is no longer active, I repost it here with only some minor cleanup.</em></p>
+</blockquote>
+<h2>Where do I begin?</h2>
+<p>When a new user has everything installed and drops into Evennia’s IRC support chat or mailing list, there is one question that we regularly get in various variations:</p>
+<p><img src="images/yellow_world_by_griatch_art-d7a6e5n.jpg" alt="painted image of the beginning of a road in autumn" /></p>
+<p><em>“Where do I begin?”</em></p>
+<p>How to actually start down that long road towards your own game is an important question. Unfortunately it has no one-size-fits-all answer. So it usually leads to a series of counter-questions. In this article I will try to (without being Evennia-specific) pose those questions in a way that would not fit in a chat window.</p>
+<h2>What is your motivation for doing this?</h2>
+<p>So you want to make a game. First you need to make a few things clear to yourself.</p>
+<p>Making a multiplayer online game is a big undertaking. You will (if you are like most of us) be doing it as a hobby, without getting paid. And you’ll be doing it for a long time.</p>
+<p>So the very first thing you should ask yourself (and your team, if you have any) is why am I doing this? Do some soul-searching here. Here are some possible answers:</p>
+<ul>
+<li>
+<p>I want to earn recognition and fame from my online community and/or among my friends.</p>
+</li>
+<li>
+<p>I want to build the game so I can play and enjoy it myself.</p>
+</li>
+<li>
+<p>I want to build the same game I already play but without the bad people.</p>
+</li>
+<li>
+<p>I want to create a game so that I can control it and be the head honcho.</p>
+</li>
+<li>
+<p>A friend or online acquaintance talked me into working on it.</p>
+</li>
+<li>
+<p>I work on this because I’m paid to (wow!)</p>
+</li>
+<li>
+<p>I only build this for my own benefit or to see if I can pull it off.</p>
+</li>
+<li>
+<p>I want to create something to give back to the community I love.</p>
+</li>
+<li>
+<p>I want to use this project as a stepping-stone towards other projects (like a career in game design or programming).</p>
+</li>
+<li>
+<p>I am interested in coding or server and network architectures, making a MUD just seems to be a good way to teach myself.</p>
+</li>
+<li>
+<p>I want to build a commercial game and earn money.</p>
+</li>
+<li>
+<p>I want to fulfill a life-long dream of game making.</p>
+</li>
+</ul>
+<p>There are many other possibilities. How “solid” your answer is for a long-term development project is up to you. The important point is that you ask yourself the question.</p>
+<p>Answering this question you may find that you should not start a new project - maybe it’s better to build on or help improve something that already exists. Maybe you find you are more of a game engine developer than a game designer. Some answers may also suggest that you are driven by emotions of revenge or disconcert - emotions that may have abated later when the project most needs your enthusiasm and motivation.</p>
+<p>If your aim is to earn money your design goals may well be very different from those of a person who only builds for their own benefit.</p>
+<p>Whichever your motivation, you should at least have it clear in your own mind. It’s worth to make sure your eventual team is on the same page too.</p>
+<h2>What are your skills?</h2>
+<p>Once you have your motivations straight you need to take stock of your own skills and the skills available in your team, if you have one.</p>
+<p>Your game will have two principal components and you will need skills to cater for both:</p>
+<ul>
+<li>
+<p>The game engine (“the code base”)</p>
+</li>
+<li>
+<p>The assets created for using the game engine (“the game world”)</p>
+</li>
+</ul>
+<h2>The game engine</h2>
+<p>The game engine is maintained and modified by programmers (coders). It represents the infrastructure that runs the game - the network code, the protocol support, the handling of commands, scripting and data storage.</p>
+<p>Creating your game engine from scratch can be a worthwhile and rewarding endeavour. It is however not a small one and if your main goal is to create a running game I would recommend building on an existing engine. It’s worth to take your time and do your research here. Searching the net and various MUD sites will bring you a slew of options. I will give some things to look for here.</p>
+<p>Whereas some engines/code bases offer a lot of pre-existing coded systems, there is no denying that your team will always need someone who either already knows some basic programming or is willing to learn it.</p>
+<p>When judging which engine you want to use, consider:</p>
+<ul>
+<li>
+<p>The engine’s community - hang out in the community/forums/chat surrounding the respective engine. Expect to need to ask a lot of “stupid” questions as you start developing (hint: no question is stupid). Is this a community in which you would feel comfortable doing so?</p>
+</li>
+<li>
+<p>Active development - is the code base actively maintained? If there are bugs in the engine, does it seem likely they will be fixed upstream or will you be patching bugs yourself? Or alternatively, are there many active users that can help you out with known quirks?</p>
+</li>
+<li>
+<p>Other available documentation - does the engine come with a manual? Are there online tutorials or other help resources to read?</p>
+</li>
+<li>
+<p>Which language is the engine coded in? What is it scripted in? Do you or your team already know this language or are you willing to learn it?</p>
+</li>
+<li>
+<p>If you don’t know the language, do a few beginner tutorial so that you can at least vaguely recognize the syntax. Does the engine’s code seem easy to read and well documented? If the engine is poorly documented, the time of development may rise dramatically.</p>
+</li>
+<li>
+<p>Something to remember here is that computers of today are very powerful. And while scaling may be interesting if your game really takes off, a text game is, for the most part, not very demanding. So I’d recommend you pick your language and engine not primarily based on performance but on what you feel comfortable and productive working with.</p>
+</li>
+<li>
+<p>What is the engine’s license? This is mainly important if you plan to ever earn money with your game. Some common engines explicitly forbid commercial use.</p>
+</li>
+</ul>
+<h2>Asset creation</h2>
+<p>Compared to the level of work needed to produce professional graphics for an MMORPG, detailed text assets for a mud are cheap to create. This is one of the many reasons muds are so well suited for a small team.</p>
+<p>This is not to say that making “professional” text content is easy though. Knowing how to write imaginative and grammatically correct prose is only the minimal starting requirement. A good asset-creator (traditionally called a “builder”) must also be able to utilize the tools of the game engine to its fullest in order to script events, make quests, triggers and interactive, interesting environments.</p>
+<p>Some game engines will offer generic online building tools while others will depend on the coders to create tools specific for their game. What you go for may be influenced by just how technically savvy your builders are and what skills they are willing to pick up along the way.</p>
+<p>Your team’s in-house builders will be the first ones to actually “use” your game framework and build tools. They will stumble on all the bugs. This means that you need people who are just not “artsy” or “good with words”. Assuming coders and builders are not the same people, builders need to be able to collaborate well and give clear and concise feedback.</p>
+<h2>So, where <em>do</em> I begin?</h2>
+<p>Right, after all this soul-searching and skill-inventory-checking, let’s go back to the original question. And maybe you’ll find that you have a better feeling for the answer yourself already:</p>
+<ul>
+<li>
+<p>If you are learning a new programming language, you should follow basic tutorials so that you can read, understand and replicate example code without being completely in the dark.</p>
+</li>
+<li>
+<p>If you have decided on your game engine you should dive into its manual and basic tutorials. Also make sure to introduce yourself to its community so you can get as much help as possible.</p>
+</li>
+<li>
+<p>If the game engine offers tutorials on making some small example game, do that carefully. Even if the resulting demo game has nothing to do with what you aim to build. If there are no tutorials maybe you can instead find a full example code that you can examine in the same way. Not only will this give you a better understanding of how parts of the engine hangs together, it will also give you ideas for what you can do with it. If something is surprisingly easy to do, you might even be able to expand your plans!</p>
+</li>
+<li>
+<p>If your game engine comes with pre-made game tools or building commands, the builders can start getting familiar with it. But keep in mind that these will not reflect the full capabilities of the game - your game is not yet built! So don’t set builders off to build large zone projects at this point. If they are building anything at all, it should be small test areas in order to agree on a homogenous form, mood and literary style.</p>
+</li>
+</ul>
+<p>With a few tutorials and game examples under your belt you are ready to start some preliminary coding-tests of your own. You won’t be making a full game yet! Working without a step-by-step tutorial will give you an idea of just how easy or hard this stuff is to figure out in practice at your current skill level, chosen game engine and language. Make ample use of any manuals, help channels or other resources you can find - anything you will also have access to when you code the real thing. This allows you to judge the quality and usefulness of those resources at the same time.</p>
+<p>You or any builders may also get some building exercise here, using the commands and objects you create for simple testing. Here is a list of things to try out (you should be able to do these in any game engine worth its salt):</p>
+<ul>
+<li>
+<p>Change some phrasing in the output of an already existing command.</p>
+</li>
+<li>
+<p>Make a new command and add it to the game engine. Make it just echo back whatever argument you give it.</p>
+</li>
+<li>
+<p>Code an object that echoes “tick” to everyone at its location every 20 seconds.</p>
+</li>
+<li>
+<p>Make a new command that creates new ticking objects where you are, but with a name given by you.</p>
+</li>
+<li>
+<p>Make a room whose description changes every time you enter it.</p>
+</li>
+<li>
+<p>Make an object that deletes itself when its “health” property is changed to zero.</p>
+</li>
+<li>
+<p>Make an “attack” command that randomly reduces the “health” property of a target object until it deletes itself.</p>
+</li>
+<li>
+<p>These are all simple things but it should give you an idea of what your chosen game engine is capable of and, most importantly, where to find help when you get stuck. If you can’t get past this step even with help you might need to go back and read up on the programming bit some more. Or maybe you should consider an easier game engine.</p>
+</li>
+</ul>
+<h2>What is your scope?</h2>
+<p>We are now past the “things to do first”. Welcome to the things you do later.</p>
+<p>To reiterate, at this point you should have pondered why you are doing this and made an inventory of your available skills. You have gotten a first taste of the kind of coding work you will need to do and what that entails. You have built a few things to see how that works. Maybe you even changed game engine somewhere in the middle. Still ready to roll? Excellent.</p>
+<p>You should now hopefully have enough information to be able to realistically set the scope of your game.</p>
+<p>Everyone wants to make the best game ever. You want a whole world simulated in minute detail with next-generation artificial intelligence. You want instant action that puts Hollywood to shame and emergent storytelling worthy of Shakespeare.</p>
+<p>It’s okay to dream big, but your first goal now is to get something out. Something that players can actually connect to and give feedback on. Having players enjoying an early version of your game is a great motivational boost in itself, you should try to reach that stage quickly. You are aiming for a first version, not the ultimate version. All online mmo:s keep improving the game after release, that’s the name of the game.</p>
+<p>So keep your grand plans in mind but limit your scope for your first release. For a group of hobbyist developers (which is, frankly what almost all MU* development teams are) your motivational time is precious. You are likely not getting paid during development which means that it’s imperative that you set out to create something you are capable of finishing while still having fun. Adjust the scope to fit this time. If you run out of steam before this time you’ll know you went for too big a scope.</p>
+<h2>How to continue from here?</h2>
+<p>How to progress is depending on your preference. Some prefer to just jump straight into coding and figure out things as they go. It's not a bad idea to to sit down and plan a little first though - and remember that you want <em>a first version</em> of your game at this point, not the <em>final, ultimate</em> version.</p>
+<p>This is beyond the first question asked in this article (which is long enough as it is) but I have written about this process in <a href="https://www.blogger.com/#">Evennia’s game planning documentation</a>. This reiterates some aspects of this article while expanding on others.</p>
+<p>… But in the end, remember that what kills a hobby game project will usually be <em>your own lack of motivation</em>. So do whatever you can to keep that motivation burning strong! Even if it means deviating from what you read in articles like this one. Just get that game out there, whichever way works best for you.</p>
+
+<footer>
+    <p>
+    <small><p>Images: <a href="https://deviantart.com/griatch-art">©Griatch</a></p>
+</small>
+    </p>
+</footer>
+                    </div>
+                
+                    <hr>
+                    <div class="blog_post">
+                    <h1 id=2021-11-10-second-blog>
+    Second-Blog
+    <a class="devblog-headerlink" href="2021-11-10-second-blog" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- November 10, 2021</div>
+</h1>
+<h1>A way to do things</h1>
+<p>This is a test blog page for using markdown to write</p>
+<p><a href="https://www.evennia.com">Evennia</a> devblog posts.</p>
+<h2>Starting out</h2>
+<p>I'm experimenting with a new section of the docs containing these</p>
+<p>blog posts (obviously the blogs are CC anyway).</p>
+
+<footer>
+    <p>
+    <small></small>
+    </p>
+</footer>
+                    </div>
+                
+                    <hr>
+                    <div class="blog_post">
+                    <h1 id=2021-10-01-first-blog>
+    First-Blog
+    <a class="devblog-headerlink" href="2021-10-01-first-blog" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- October  1, 2021</div>
+</h1>
+<h1>A way to do things</h1>
+<p>This is a test blog page for using markdown to write</p>
+<p><a href="https://www.evennia.com">Evennia</a> devblog posts.</p>
+<h2>Starting out</h2>
+<p>I'm experimenting with a new section of the docs containing these</p>
+<p>blog posts (obviously the blogs are CC anyway).</p>
+
+<footer>
+    <p>
+    <small></small>
+    </p>
+</footer>
+                    </div>
+                
+                    <hr>
+                    <div class="blog_post">
+                    <h1 id=2021-05-01-another-way-to-do-things>
+     Another way to do things
+    <a class="devblog-headerlink" href="2021-05-01-another-way-to-do-things" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- May  1, 2021</div>
+</h1>
+<h1>A way to do things</h1>
+<p>This is a test blog page for using markdown to write</p>
+<p><a href="https://www.evennia.com">Evennia</a> devblog posts.</p>
+<h2>Starting out</h2>
+<p>I'm experimenting with a new section of the docs containing these</p>
+<p>blog posts (obviously the blogs are CC anyway).</p>
+
+<footer>
+    <p>
+    <small><p>©Griatch images from <a href="https://deviantart.com/griatch-art">deviantart</a></p>
+</small>
+    </p>
+</footer>
+                    </div>
+                
+            </section>
+    </body>
+</html>
