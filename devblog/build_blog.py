@@ -22,7 +22,7 @@ Here starts the main text ...
 import glob
 from dataclasses import dataclass
 from collections import defaultdict
-from dateutil import parser as dateparser
+from dateutils import parser as dateparser
 from datetime import datetime
 from os.path import abspath, dirname, join as pathjoin, sep
 import mistletoe
@@ -36,6 +36,7 @@ TEMPLATE_DIR = pathjoin(SOURCE_DIR, "templates")
 
 BLOG_TEMPLATE = "blog.html"
 POST_TEMPLATE = "post.html"
+
 
 @dataclass
 class Post:
@@ -52,8 +53,8 @@ def md2html():
     blog_template = jinja_env.get_template(BLOG_TEMPLATE)
     post_template = jinja_env.get_template(POST_TEMPLATE)
 
-    calendar = defaultdict(dict)
-    posts = {}
+    calendar = defaultdict(list)
+    posts = []
 
     for file_path in glob.glob(pathjoin(SOURCE_DIR, "*.md")):
         # parse/check if file is on form YY-MM-DD-Blog-Name.md
@@ -89,9 +90,6 @@ def md2html():
                 elif line.startswith("images"):
                     image_refs = line
 
-        # unique id for post
-        post_id = hash(str(date.toordinal()) + title)
-
         markdown_post = "\n".join(lines)
         # convert markdown to html
         html_post = mistletoe.markdown(markdown_post)
@@ -105,12 +103,26 @@ def md2html():
         }
         html_page = post_template.render(context)
 
-        posts[post_id] = html_page
-        calendar[date.year][post_id]
+        # store
+        post = Post(title=title, date=date, image_refs=image_refs, html=html_page)
+        posts.append(post)
+        calendar[date.year].append(post)
 
     # we have all posts, now insert them into the blog
 
+    posts = sorted(posts, key=lambda pst: -pst.date.toordinal())
+    for year in calendar:
+        calendar[year] = sorted(calendar[year], key=lambda pst: -pst.date.toordinal())
+
+    context = {
+        posts: posts,
+        calendar: calendar
+    }
+
+    html_page = blog_template.render(context)
+
+    return html_page
 
 
-
-
+if __name__ == "__main__":
+    print(md2html())
