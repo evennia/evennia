@@ -32,6 +32,7 @@ class DBField(object):
         value = self.handler(instance).get(key, UNSET)
         if value is UNSET or (value is None and self.default_value is not None):
             return self.get_default_value()
+
         return value
 
     def __set__(self, instance, value):
@@ -59,10 +60,8 @@ class DBField(object):
         if not instance:
             raise NoInstanceError(f"{self.name} can only be deleted from instances.")
 
-        host = instance.host
-        if host:
-            key = f"{instance.name}__{self.name}"
-            self.handler(instance).remove(key)
+        key = f"{instance.name}__{self.name}"
+        self.handler(instance).remove(key)
 
     @classmethod
     def handler(cls, instance):
