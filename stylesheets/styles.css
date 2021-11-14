@@ -491,7 +491,12 @@ a[href="devblog-posts"]:focus {
 .blog_post > p > img {
     opacity: 1.0;
 }
-
+.blog_post > ul { 
+    list-style: inherit;
+}
+.blog_post > ul > li > p {
+    margin-bottom: 0.5em;
+}
 
 
 /* Media alternatives */

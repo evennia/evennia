@@ -1,5 +1,3 @@
-#! /usr/bin/python
-
 """
 A simple tool for building the blog from markdown files. Uses Jinja2 for templating and
 mistletoe for markdown->html generation.
