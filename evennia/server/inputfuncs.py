@@ -38,8 +38,22 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 
 
+_STRIP_INCOMING_MXP = settings.MXP_ENABLED and settings.MXP_OUTGOING_ONLY
+_STRIP_MXP = None
+
+
+
 def _NA(o):
     return "N/A"
+
+
+def _maybe_strip_incoming_mxp(txt):
+    global _STRIP_MXP
+    if _STRIP_INCOMING_MXP:
+        if not _STRIP_MXP:
+            from evennia.utils.ansi import strip_mxp as _STRIP_MXP
+        return _STRIP_MXP(txt)
+    return txt
 
 
 _ERROR_INPUT = "Inputfunc {name}({session}): Wrong/unrecognized input: {inp}"
@@ -74,6 +88,9 @@ def text(session, *args, **kwargs):
     if txt.strip() in _IDLE_COMMAND:
         session.update_session_counters(idle=True)
         return
+
+    txt = _maybe_strip_incoming_mxp(txt)
+
     if session.account:
         # nick replacement
         puppet = session.puppet
@@ -112,6 +129,9 @@ def bot_data_in(session, *args, **kwargs):
     if txt.strip() in _IDLE_COMMAND:
         session.update_session_counters(idle=True)
         return
+
+    txt = _maybe_strip_incoming_mxp(txt)
+
     kwargs.pop("options", None)
     # Trigger the execute_cmd method of the corresponding bot.
     session.account.execute_cmd(session=session, txt=txt, **kwargs)
@@ -122,6 +142,9 @@ def echo(session, *args, **kwargs):
     """
     Echo test function
     """
+    if _STRIP_INCOMING_MXP:
+        txt = strip_mxp(txt)
+
     session.data_out(text="Echo returns: %s" % args)
 
 
@@ -614,9 +637,18 @@ def msdp_send(session, *args, **kwargs):
 # client specific
 
 
-def external_discord_hello(session, *args, **kwargs):
+def _not_implemented(session, *args, **kwargs):
     """
-    Sent by Mudlet as a greeting; added here to avoid
-    logging a missing inputfunc for it.
+    Dummy used to swallow missing-inputfunc errors for
+    common clients.
     """
     pass
+
+
+# GMCP External.Discord.Hello is sent by Mudlet as a greeting
+# (see https://wiki.mudlet.org/w/Manual:Technical_Manual)
+external_discord_hello = _not_implemented
+
+
+# GMCP Client.Gui is sent by Mudlet for gui setup.
+client_gui = _not_implemented

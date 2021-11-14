@@ -1092,18 +1092,22 @@ class AccessableCommand(Command):
 
 class _CmdTest1(AccessableCommand):
     key = "test1"
+    arg_regex = None
 
 
 class _CmdTest2(AccessableCommand):
     key = "another command"
+    arg_regex = None
 
 
 class _CmdTest3(AccessableCommand):
     key = "&the third command"
+    arg_regex = None
 
 
 class _CmdTest4(AccessableCommand):
     key = "test2"
+    arg_regex = None
 
 
 class _CmdSetTest(CmdSet):

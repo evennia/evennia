@@ -18,6 +18,9 @@ from evennia.utils.evtable import EvTable
 from evennia.utils.ansi import ANSIString
 
 
+CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
+
+
 class InterruptCommand(Exception):
 
     """Cleanly interrupt a command."""
@@ -97,12 +100,18 @@ def _init_command(cls, **kwargs):
     cls.help_category = cls.help_category.lower()
 
     # pre-prepare a help index entry for quicker lookup
+    # strip the @- etc to allow help to be agnostic
+    stripped_key = cls.key[1:] if cls.key and cls.key[0] in CMD_IGNORE_PREFIXES else ""
+    stripped_aliases = (
+        " ".join(al[1:] if al and al[0] in CMD_IGNORE_PREFIXES else al
+                 for al in cls.aliases))
     cls.search_index_entry = {
         "key": cls.key,
         "aliases": " ".join(cls.aliases),
+        "no_prefix": f"{stripped_key} {stripped_aliases}",
         "category": cls.help_category,
         "text": cls.__doc__,
-        "tags": "",
+        "tags": ""
     }
 
 

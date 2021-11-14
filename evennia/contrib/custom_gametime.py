@@ -125,7 +125,7 @@ def gametime_to_realtime(format=False, **kwargs):
     return rtime
 
 
-def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0, weeks=0, months=0, yrs=0, format=False):
+def realtime_to_gametime(secs=0, mins=0, hrs=0, days=1, weeks=1, months=1, yrs=0, format=False):
     """
     This method calculates how much in-game time a real-world time
     interval would correspond to. This is usually a lot less
@@ -139,10 +139,24 @@ def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0, weeks=0, months=0, yrs=0
         time (float or tuple): The gametime difference or the same
             time split up into time units.
 
-     Example:
+    Note:
+        days/weeks/months start from 1 (there is no day/week/month 0). This makes it
+            consistent with the real world datetime.
+
+    Raises:
+        ValueError: If trying to add a days/weeks/months of <=0.
+
+    Example:
       realtime_to_gametime(days=2) -> number of game-world seconds
 
     """
+    if days <= 0 or weeks <= 0 or months <= 0:
+        raise ValueError("realtime_to_gametime: days/weeks/months cannot be set <= 0, "
+                         "they start from 1.")
+
+    # days/weeks/months start from 1, we need to adjust them to work mathematically.
+    days, weeks, months = days - 1, weeks - 1, months - 1
+
     gtime = TIMEFACTOR * (
         secs
         + mins * 60
@@ -198,6 +212,9 @@ def real_seconds_until(**kwargs):
     Returns:
         The number of real seconds before the given game time is up.
 
+    Notes:
+        day/week/month start from 1, not from 0 (there is no month 0 for example)
+
     """
     current = gametime.gametime(absolute=True)
     units = sorted(set(UNITS.values()), reverse=True)
@@ -209,9 +226,13 @@ def real_seconds_until(**kwargs):
     units.append(1)
     higher_unit = None
     for unit, value in kwargs.items():
+        if unit in ("day", "week", "month"):
+            # these start from 1 so we must adjust
+            value -= 1
+
         # Get the unit's index
         if unit not in UNITS:
-            raise ValueError("unknown unit".format(unit))
+            raise ValueError(f"Unknown unit '{unit}'. Allowed: {', '.join(UNITS)}")
 
         seconds = UNITS[unit]
         index = units.index(seconds)

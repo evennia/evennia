@@ -54,6 +54,7 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.protocol_key = "webclient/websocket"
+        self.browserstr = ""
 
     def get_client_session(self):
         """
@@ -65,7 +66,8 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
 
         """
         try:
-            self.csessid = self.http_request_uri.split("?", 1)[1]
+            # client will connect with wsurl?csessid&browserid
+            webarg = self.http_request_uri.split("?", 1)[1]
         except IndexError:
             # this may happen for custom webclients not caring for the
             # browser session.
@@ -77,6 +79,11 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
             self.csessid = None
             logger.log_trace(str(self))
             return None
+
+        self.csessid, *browserstr = webarg.split("&", 1)
+        if browserstr:
+            self.browserstr = str(browserstr[0])
+
         if self.csessid:
             return _CLIENT_SESSIONS(session_key=self.csessid)
 
@@ -118,7 +125,8 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
                     self.sessid = old_session.sessid
                     self.sessionhandler.disconnect(old_session)
 
-        self.protocol_flags["CLIENTNAME"] = "Evennia Webclient (websocket)"
+        browserstr = f":{self.browserstr}" if self.browserstr else ""
+        self.protocol_flags["CLIENTNAME"] = f"Evennia Webclient (websocket{browserstr})"
         self.protocol_flags["UTF-8"] = True
         self.protocol_flags["OOB"] = True
 

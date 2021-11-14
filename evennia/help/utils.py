@@ -57,7 +57,7 @@ def help_search_with_index(query, candidate_entries, suggestion_maxnum=5, fields
         from lunr import get_default_builder as _LUNR_GET_BUILDER
         from lunr import stop_word_filter
         from lunr.stemmer import stemmer
-        from lunr.trimmer import trimmer
+        # from lunr.trimmer import trimmer
 
         # pre-create a lunr index-builder pipeline where we've removed some of
         # the stop-words from the default in lunr.
@@ -71,7 +71,8 @@ def help_search_with_index(query, candidate_entries, suggestion_maxnum=5, fields
                 pass
 
         custom_stop_words_filter = stop_word_filter.generate_stop_word_filter(stop_words)
-        _LUNR_BUILDER_PIPELINE = (trimmer, custom_stop_words_filter, stemmer)
+        # _LUNR_BUILDER_PIPELINE = (trimmer, custom_stop_words_filter, stemmer)
+        _LUNR_BUILDER_PIPELINE = (custom_stop_words_filter, stemmer)
 
     indx = [cnd.search_index_entry for cnd in candidate_entries]
     mapping = {indx[ix]["key"]: cand for ix, cand in enumerate(candidate_entries)}

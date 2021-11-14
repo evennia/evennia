@@ -588,7 +588,7 @@ class TBEArmor(DefaultObject):
             -4
         )  # Amount to modify defense value (pos = harder to hit, neg = easier)
 
-    def at_before_drop(self, dropper):
+    def at_pre_drop(self, dropper):
         """
         Can't drop in combat.
         """
@@ -605,7 +605,7 @@ class TBEArmor(DefaultObject):
             dropper.db.worn_armor = None
             dropper.location.msg_contents("%s removes %s." % (dropper, self))
 
-    def at_before_give(self, giver, getter):
+    def at_pre_give(self, giver, getter):
         """
         Can't give away in combat.
         """
@@ -649,7 +649,7 @@ class TBEquipCharacter(DefaultCharacter):
         can be changed at creation and factor into combat calculations.
         """
 
-    def at_before_move(self, destination):
+    def at_pre_move(self, destination):
         """
         Called just before starting to move this object to
         destination.

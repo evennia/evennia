@@ -751,7 +751,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         # call the parent to continue execution (will use the desc we just set)
         return super().return_appearance(caller)
 
-    def at_after_traverse(self, traverser, source_location):
+    def at_post_traverse(self, traverser, source_location):
         """
         This is called after we traversed this exit. Cleans up and resets
         the puzzle.

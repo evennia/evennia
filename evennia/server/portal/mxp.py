@@ -14,6 +14,7 @@ http://www.gammon.com.au/mushclient/addingservermxp.htm
 
 """
 import re
+from django.conf import settings
 
 LINKS_SUB = re.compile(r"\|lc(.*?)\|lt(.*?)\|le", re.DOTALL)
 URL_SUB = re.compile(r"\|lu(.*?)\|lt(.*?)\|le", re.DOTALL)
@@ -60,7 +61,8 @@ class Mxp:
         """
         self.protocol = protocol
         self.protocol.protocol_flags["MXP"] = False
-        self.protocol.will(MXP).addCallbacks(self.do_mxp, self.no_mxp)
+        if settings.MXP_ENABLED:
+            self.protocol.will(MXP).addCallbacks(self.do_mxp, self.no_mxp)
 
     def no_mxp(self, option):
         """
@@ -81,6 +83,9 @@ class Mxp:
             option (Option): Not used.
 
         """
-        self.protocol.protocol_flags["MXP"] = True
-        self.protocol.requestNegotiation(MXP, b"")
+        if settings.MXP_ENABLED:
+            self.protocol.protocol_flags["MXP"] = True
+            self.protocol.requestNegotiation(MXP, b"")
+        else:
+            self.protocol.wont(MXP)
         self.protocol.handshake_done()

@@ -894,13 +894,13 @@ class TestCustomGameTime(EvenniaTest):
         )
 
     def test_realtime_to_gametime(self):
-        self.assertEqual(custom_gametime.realtime_to_gametime(days=2, mins=34), 349680.0)
+        self.assertEqual(custom_gametime.realtime_to_gametime(days=3, mins=34), 349680.0)
         self.assertEqual(
-            custom_gametime.realtime_to_gametime(days=2, mins=34, format=True),
+            custom_gametime.realtime_to_gametime(days=3, mins=34, format=True),
             (0, 0, 0, 4, 1, 8, 0),
         )
         self.assertEqual(
-            custom_gametime.realtime_to_gametime(format=True, days=2, mins=4), (0, 0, 0, 4, 0, 8, 0)
+            custom_gametime.realtime_to_gametime(format=True, days=3, mins=4), (0, 0, 0, 4, 0, 8, 0)
         )
 
     def test_custom_gametime(self):
@@ -909,7 +909,7 @@ class TestCustomGameTime(EvenniaTest):
 
     def test_real_seconds_until(self):
         self.assertEqual(
-            custom_gametime.real_seconds_until(year=2300, month=11, day=6), 31911667199.77
+            custom_gametime.real_seconds_until(year=2300, month=12, day=7), 31911667199.77
         )
 
     def test_schedule(self):
@@ -3355,3 +3355,92 @@ class TestBuildingMenu(CommandTest):
         self.assertEqual(self.char1.ndb._building_menu.obj, self.room1)
         self.call(CmdNoMatch(building_menu=self.menu), "q")
         self.assertEqual(self.exit.key, "in")
+
+
+from evennia.contrib import mux_comms_cmds as comms  # noqa
+
+class TestLegacyMuxComms(CommandTest):
+    """
+    Test the legacy comms contrib.
+    """
+    def setUp(self):
+        super(CommandTest, self).setUp()
+        self.call(
+            comms.CmdChannelCreate(),
+            "testchan;test=Test Channel",
+            "Created channel testchan and connected to it.",
+            receiver=self.account,
+        )
+
+    def test_toggle_com(self):
+        self.call(
+            comms.CmdAddCom(),
+            "tc = testchan",
+            "You are already connected to channel testchan.| You can now",
+            receiver=self.account,
+        )
+        self.call(
+            comms.CmdDelCom(),
+            "tc",
+            "Any alias 'tc' for channel testchan was cleared.",
+            receiver=self.account,
+        )
+
+    def test_all_com(self):
+        self.call(
+            comms.CmdAllCom(),
+            "",
+            "Available channels:",
+            receiver=self.account,
+        )
+
+    def test_clock(self):
+        self.call(
+            comms.CmdClock(),
+            "testchan=send:all()",
+            "Lock(s) applied. Current locks on testchan:",
+            receiver=self.account,
+        )
+
+    def test_cdesc(self):
+        self.call(
+            comms.CmdCdesc(),
+            "testchan = Test Channel",
+            "Description of channel 'testchan' set to 'Test Channel'.",
+            receiver=self.account,
+        )
+
+    def test_cwho(self):
+        self.call(
+            comms.CmdCWho(),
+            "testchan",
+            "Channel subscriptions\ntestchan:\n  TestAccount",
+            receiver=self.account,
+        )
+
+    def test_page(self):
+        self.call(
+            comms.CmdPage(),
+            "TestAccount2 = Test",
+            "TestAccount2 is offline. They will see your message if they list their pages later."
+            "|You paged TestAccount2 with: 'Test'.",
+            receiver=self.account,
+        )
+
+    def test_cboot(self):
+        # No one else connected to boot
+        self.call(
+            comms.CmdCBoot(),
+            "",
+            "Usage: cboot[/quiet] <channel> = <account> [:reason]",
+            receiver=self.account,
+        )
+
+    def test_cdestroy(self):
+        self.call(
+            comms.CmdCdestroy(),
+            "testchan",
+            "[testchan] TestAccount: testchan is being destroyed. Make sure to change your aliases."
+            "|Channel 'testchan' was destroyed.",
+            receiver=self.account,
+        )

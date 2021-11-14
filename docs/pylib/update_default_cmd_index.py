@@ -79,7 +79,9 @@ def run_update(no_autodoc=False):
 
     cmd_infos = []
     for cmd in cmds_alphabetically:
-        aliases = f" [{', '.join(cmd.aliases)}]" if cmd.aliases else ""
+        aliases = [alias[1:] if alias and alias[0] == "@" else alias
+                   for alias in sorted(cmd.aliases)]
+        aliases = f" [{', '.join(sorted(cmd.aliases))}]" if aliases else ""
         cmdlink = f"[**{cmd.key}**{aliases}]({cmd.__module__}.{cmd.__name__})"
         category = f"help-category: _{cmd.help_category.capitalize()}_"
         cmdset = cmd_to_cmdset_map.get(f"{cmd.__module__}.{cmd.__name__}", None)

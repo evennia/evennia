@@ -932,6 +932,7 @@ class CmdEmote(RPCommand):  # replaces the main emote
     key = "emote"
     aliases = [":"]
     locks = "cmd:all()"
+    arg_regex = ""
 
     def func(self):
         "Perform the emote."
@@ -959,6 +960,7 @@ class CmdSay(RPCommand):  # replaces standard say
     key = "say"
     aliases = ['"', "'"]
     locks = "cmd:all()"
+    arg_regex = ""
 
     def func(self):
         "Run the say command"
@@ -970,7 +972,7 @@ class CmdSay(RPCommand):  # replaces standard say
             return
 
         # calling the speech modifying hook
-        speech = caller.at_before_say(self.args)
+        speech = caller.at_pre_say(self.args)
         # preparing the speech with sdesc/speech parsing.
         targets = self.caller.location.contents
         send_emote(self.caller, targets, speech, anonymous_add=None)
@@ -1614,7 +1616,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         # initializing sdesc
         self.sdesc.add("A normal person")
 
-    def at_before_say(self, message, **kwargs):
+    def at_pre_say(self, message, **kwargs):
         """
         Called before the object says or whispers anything, return modified message.
 

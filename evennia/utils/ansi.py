@@ -73,6 +73,8 @@ from evennia.utils import logger
 
 from evennia.utils.utils import to_str
 
+MXP_ENABLED = settings.MXP_ENABLED
+
 
 # ANSI definitions
 
@@ -583,6 +585,14 @@ def strip_unsafe_tokens(string, parser=ANSI_PARSER):
     return parser.strip_unsafe_tokens(string)
 
 
+def strip_mxp(string, parser=ANSI_PARSER):
+    """
+    Strip MXP markup.
+
+    """
+    return parser.strip_mxp(string)
+
+
 def raw(string):
     """
     Escapes a string into a form which won't be colorized by the ansi
@@ -792,8 +802,8 @@ class ANSIString(str, metaclass=ANSIMeta):
             decoded = True
         if not decoded:
             # Completely new ANSI String
-            clean_string = parser.parse_ansi(string, strip_ansi=True, mxp=True)
-            string = parser.parse_ansi(string, xterm256=True, mxp=True)
+            clean_string = parser.parse_ansi(string, strip_ansi=True, mxp=MXP_ENABLED)
+            string = parser.parse_ansi(string, xterm256=True, mxp=MXP_ENABLED)
         elif clean_string is not None:
             # We have an explicit clean string.
             pass

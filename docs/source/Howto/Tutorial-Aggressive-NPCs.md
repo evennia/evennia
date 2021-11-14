@@ -81,14 +81,14 @@ This room checks the typeclass of objects entering it (using `utils.inherits_fro
 contents and inform any `NPCs inside by calling their `at_char_entered` method.
 
 You'll also see that we have added a 'look' into this code. This is because, by default, the
-`at_object_receive` is carried out *before* the character's `at_after_move` which, we will now
+`at_object_receive` is carried out *before* the character's `at_post_move` which, we will now
 overload.  This means that a character entering would see the NPC perform its actions before the
 'look' command. Deactivate the look command in the default `Character` class within the
 `typeclasses.characters` module:
 
 ```python
     # Add this hook in any blank area within your Character class.
-    def at_after_move(self, source_location):
+    def at_post_move(self, source_location):
         """
         Default is to look around after a move 
         Note:  This has been moved to Room.at_object_receive

@@ -427,8 +427,8 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
                 caller.msg("You can't get that.")
             return
 
-        # calling at_before_get hook method
-        if not obj.at_before_get(caller):
+        # calling at_pre_get hook method
+        if not obj.at_pre_get(caller):
             return
 
         success = obj.move_to(caller, quiet=True)
@@ -477,8 +477,8 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
         if not obj:
             return
 
-        # Call the object script's at_before_drop() method.
-        if not obj.at_before_drop(caller):
+        # Call the object script's at_pre_drop() method.
+        if not obj.at_pre_drop(caller):
             return
 
         success = obj.move_to(caller.location, quiet=True)
@@ -530,8 +530,8 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
             caller.msg("You are not holding %s." % to_give.key)
             return
 
-        # calling at_before_give hook method
-        if not to_give.at_before_give(caller, target):
+        # calling at_pre_give hook method
+        if not to_give.at_pre_give(caller, target):
             return
 
         # give object
@@ -586,6 +586,9 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
     aliases = ['"', "'"]
     locks = "cmd:all()"
 
+    # don't require a space after `say/'/"`
+    arg_regex = None
+
     def func(self):
         """Run the say command"""
 
@@ -597,14 +600,14 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
 
         speech = self.args
 
-        # Calling the at_before_say hook on the character
-        speech = caller.at_before_say(speech)
+        # Calling the at_pre_say hook on the character
+        speech = caller.at_pre_say(speech)
 
         # If speech is empty, stop here
         if not speech:
             return
 
-        # Call the at_after_say hook on the character
+        # Call the at_post_say hook on the character
         caller.at_say(speech, msg_self=True)
 
 
@@ -643,7 +646,7 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
             return
 
         # Call a hook to change the speech before whispering
-        speech = caller.at_before_say(speech, whisper=True, receivers=receivers)
+        speech = caller.at_pre_say(speech, whisper=True, receivers=receivers)
 
         # no need for self-message if we are whispering to ourselves (for some reason)
         msg_self = None if caller in receivers else True
@@ -670,6 +673,11 @@ class CmdPose(COMMAND_DEFAULT_CLASS):
     key = "pose"
     aliases = [":", "emote"]
     locks = "cmd:all()"
+    arg_regex = ""
+
+    # we want to be able to pose without whitespace between
+    # the command/alias and the pose (e.g. :pose)
+    arg_regex = None
 
     def parse(self):
         """

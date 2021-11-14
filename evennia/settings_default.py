@@ -27,6 +27,10 @@ SERVERNAME = "Evennia"
 # Short one-sentence blurb describing your game. Shown under the title
 # on the website and could be used in online listings of your game etc.
 GAME_SLOGAN = "The Python MUD/MU* creation system"
+# The url address to your server, like mymudgame.com. This should be the publicly
+# visible location. This is used e.g. on the web site to show how you connect to the
+# game over telnet. Default is localhost (only on your machine).
+SERVER_HOSTNAME = "localhost"
 # Lockdown mode will cut off the game from any external connections
 # and only allow connections from localhost. Requires a cold reboot.
 LOCKDOWN_MODE = False
@@ -188,6 +192,14 @@ ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
 # of users with screen readers. Note that ANSI/MXP doesn't need to
 # be stripped this way, that is handled automatically.
 SCREENREADER_REGEX_STRIP = r"\+-+|\+$|\+~|--+|~~+|==+"
+# MXP support means the ability to show clickable links in the client. Clicking
+# the link will execute a game command. It's a way to add mouse input to the game.
+MXP_ENABLED = True
+# If this is set, MXP can only be sent by the server and not added from the
+# client side. Disabling this is a potential security risk because it could
+# allow malevolent players to lure others to execute commands they did not
+# intend to.
+MXP_OUTGOING_ONLY = True
 # Database objects are cached in what is known as the idmapper. The idmapper
 # caching results in a massive speedup of the server (since it dramatically
 # limits the number of database accesses needed) and also allows for
@@ -472,9 +484,9 @@ CMDSET_FALLBACKS = {
 COMMAND_DEFAULT_CLASS = "evennia.commands.default.muxcommand.MuxCommand"
 # Command.arg_regex is a regular expression desribing how the arguments
 # to the command must be structured for the command to match a given user
-# input. By default there is no restriction as long as the input string
-# starts with the command name.
-COMMAND_DEFAULT_ARG_REGEX = None
+# input. By default the command-name should end with a space or / (since the
+# default commands uses MuxCommand and /switches).
+COMMAND_DEFAULT_ARG_REGEX = r'^[ /]+.*$|$'
 # By default, Command.msg will only send data to the Session calling
 # the Command in the first place. If set, Command.msg will instead return
 # data to all Sessions connected to the Account/Character associated with

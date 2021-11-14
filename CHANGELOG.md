@@ -99,8 +99,31 @@ Up requirements to Django 3.2+, Twisted 21+
   because it's used for handlers, and e.g. self.locks=[] is a common beginner mistake.
 - Add `$pron()` inlinefunc for pronoun parsing in actor-stance strings using
   `msg_contents`.
-
-
+- Update defauklt website to show Telnet/SSL/SSH connect info. Added new
+  `SERVER_HOSTNAME` setting for use in the server:port stanza.
+- Changed all `at_before/after_*` hooks to `at_pre/post_*` for consistency
+  across Evennia (the old names still work but are deprecated)
+- Change `settings.COMMAND_DEFAULT_ARG_REGEX` default from `None` to a regex meaning that
+  a space or `/` must separate the cmdname and args. This better fits common expectations.
+- Add confirmation question to `ban`/`unban` commands.
+- Check new `teleport` and `teleport_here` lock-types in `teleport` command to optionally
+  allow to limit teleportation of an object or to a specific destination.
+- Add `settings.MXP_ENABLED=True` and `settings.MXP_OUTGOING_ONLY=True` as sane defaults,
+  to avoid known security issues with players entering MXP links.
+- Add browser name to webclient `CLIENT_NAME` in `session.protocol_flags`, e.g.
+  `"Evennia webclient (websocket:firefox)"` or `"evennia webclient (ajax:chrome)"`.
+- `TagHandler.add/has(tag=...)` kwarg changed to `add/has(key=...)` for consistency
+  with other handlers.
+- Make `DefaultScript.delete`, `DefaultChannel.delete` and `DefaultAccount.delete` return
+  bool True/False if deletion was successful (like `DefaultObject.delete` before them)
+- `contrib.custom_gametime` days/weeks/months now always starts from 1 (to match
+  the standard calendar form ... there is no month 0 every year after all).
+- `AttributeProperty`/`NAttributeProperty` to allow managing Attributes/NAttributes
+  on typeclasses in the same way as Django fields.
+- Give build/system commands a `@name` to fall back to if the non-@ name is used
+  by another command (like `open` and `@open`. If no duplicate, @ is optional.
+- Move legacy channel-management commands (`ccreate`, `addcom` etc) to a contrib
+  since their work is now fully handled by the single `channel` command.
 
 ### Evennia 0.9.5 (2019-2020)
 

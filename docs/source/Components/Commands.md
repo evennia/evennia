@@ -279,6 +279,32 @@ incoming string is already split up and parsed in suitable ways by its parent.
 Before you can actually use the command in your game, you must now store it
 within a *command set*. See the [Command Sets](./Command-Sets.md) page.
 
+### Command prefixes 
+
+Historically, many MU* servers used to use prefix, such as `@` or `&` to signify that 
+a command is used for administration or requires staff privileges. The problem with this is that 
+newcomers to MU often find such extra symbols confusing. Evennia allows commands that can be 
+accessed both with- or without such a prefix.
+
+    CMD_IGNORE_PREFIXES = "@&/+`
+
+This is a setting consisting of a string of characters. Each is a prefix that will be considered
+a skippable prefix - _if the command is still unique in its cmdset when skipping the prefix_.
+
+So if you wanted to write `@look` instead of `look` you can do so - the `@` will be ignored. But If 
+we added an actual `@look` command (with a `key` or alias `@look`) then we would need to use the 
+`@` to separate between the two. 
+
+This is also used in the default commands. For example, `@open` is a building 
+command that allows you to create new exits to link two rooms together. Its `key` is set to `@open`, 
+including the `@` (no alias is set). By default you can use both `@open` and `open` for 
+this command. But "open" is a pretty common word and let's say a developer adds a new `open` command
+for opening a door. Now `@open` and `open` are two different commands and the `@` must be used to
+separate them.
+
+> The `help` command will prefer to show all command names without prefix if
+> possible. Only if there is a collision, will the prefix be shown in the help system.
+
 ### On arg_regex
 
 The command parser is very general and does not require a space to end your command name. This means

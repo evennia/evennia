@@ -24,21 +24,55 @@
           into a full-fledged home for your game.
         </p>
           {% if webclient_enabled %}
-        <p>
-          <a href="{% url 'webclient:index' %}" class="playbutton">Play in the browser!</a>
-        </p>
+            <p>
+                <a href="{% url 'webclient:index' %}" class="playbutton">Play in the browser!</a>
+            </p>
+          {% endif %}
+          {% if telnet_enabled %}
+            <p>
+                Telnet: <strong>{{ server_hostname }}</strong>, port
+                {% for port in telnet_ports %}
+                    {% if not forloop.first and forloop.last %} or
+                    {% elif forloop.counter != 1 %},
+                    {% endif %}
+                    <strong>{{ port }}</strong>
+                {% endfor %}
+            </p>
+          {% endif %}
+          {% if telnet_ssl_enabled %}
+            <p>
+                Telnet (SSL): <strong>{{ server_hostname }}</strong>, port
+                {% for port in telnet_ssl_ports %}
+                    {% if not forloop.first and forloop.last %} or
+                    {% elif forloop.counter != 1 %},
+                    {% endif %}
+                    <strong>{{ port }}</strong>
+                {% endfor %}
+            </p>
+          {% endif %}
+          {% if ssh_enabled %}
+            <p>
+                SSH: <strong>{{ server_hostname }}</strong>, port
+                {% for port in ssh_ports %}
+                    {% if not forloop.first and forloop.last %} or
+                    {% elif forloop.counter != 1 %},
+                    {% endif %}
+                    <strong>{{ port }}</strong>
+                {% endfor %}
+            </p>
           {% endif %}
         <p>
-          For more info, take your time to
-          peruse Evennia's extensive online <a href="https://evennia.com/docs/latest">manual</a>.
+          For more info, see the <a href="https://www.evennia.com">Evennia homepage</a> or check
+          out our extensive <a href="https://evennia.com/docs/latest">online documentation</a>.
         </p>
         <p>
-          If you have any questions, don't hesitate to join the Evennia community! Drop a message in the <a href="https://github.com/evennia/evennia/discussions">Evennia forums</a>
-          or come say hi in the support/chat channels (<a href="http://webchat.freenode.net/?channels=evennia">IRC</a>
-          or <a href="https://discord.gg/NecFePw">Discord</a>).
+        Don't hesitate asking questions to the Evennia community!<br>Drop a message
+          in the <a href="https://github.com/evennia/evennia/discussions">Evennia forums</a>
+          or come say hi in the <a href="https://discord.gg/AJJpcRUhtF">Discord support channel</a>.
         </p>
         <p>
-          If you find bugs, please report them to our <a href="https://github.com/evennia/evennia/issues">Issue tracker</a> on GitHub.
+        Evennia is Open source and can be found on <a href="https://github.com/evennia/evennia">GitHub</a>.
+        If you find bugs, please report them to the <a href="https://github.com/evennia/evennia/issues">Issue tracker</a>.
         </p>
       </div>
     </div>

@@ -8,6 +8,8 @@ outside the game in modules given by ``settings.FILE_HELP_ENTRY_MODULES``.
 
 """
 
+import re
+from itertools import chain
 from dataclasses import dataclass
 from django.conf import settings
 from collections import defaultdict
@@ -24,6 +26,7 @@ from evennia.utils.utils import (
 )
 from evennia.help.utils import help_search_with_index, parse_entry_for_subcategories
 
+CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 HELP_MORE_ENABLED = settings.HELP_MORE_ENABLED
 DEFAULT_HELP_CATEGORY = settings.DEFAULT_HELP_CATEGORY
@@ -46,6 +49,7 @@ class HelpCategory:
             "key": self.key,
             "aliases": "",
             "category": self.key,
+            "no_prefix": "",
             "tags": "",
             "text": "",
         }
@@ -172,6 +176,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             subtopics = ''
 
         if suggested:
+            suggested = sorted(suggested)
             if click_topics:
                 suggested = [f"|lchelp {sug}|lt|w{sug}|n|le" for sug in suggested]
             else:
@@ -403,7 +408,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 key: entry for key, entry in file_help_topics.items()
                 if self.can_list_topic(entry, caller)}
         else:
-            # query
+            # query - check the read lock on entries
             cmd_help_topics = {
                 cmd.auto_help_display_key
                 if hasattr(cmd, "auto_help_display_key") else cmd.key: cmd
@@ -437,7 +442,8 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             search_fields = [
                 {"field_name": "key", "boost": 10},
                 {"field_name": "aliases", "boost": 9},
-                {"field_name": "category", "boost": 8},
+                {"field_name": "no_prefix", "boost": 8},
+                {"field_name": "category", "boost": 7},
                 {"field_name": "tags", "boost": 1},  # tags are not used by default
             ]
         match, suggestions = None, None
@@ -479,6 +485,27 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             self.topic = ""
             self.subtopics = []
 
+    def strip_cmd_prefix(self, key, all_keys):
+        """
+        Conditional strip of a command prefix, such as @ in @desc. By default
+        this will be hidden unless there is a duplicate without the prefix
+        in the full command set (such as @open and open).
+
+        Args:
+            key (str): Command key to analyze.
+            all_cmds (list): All command-keys (and potentially aliases).
+
+        Returns:
+            str: Potentially modified key to use in help display.
+
+        """
+        if key and key[0] in CMD_IGNORE_PREFIXES and key[1:] not in all_keys:
+            # filter out e.g. `@` prefixes from display if there is duplicate
+            # with the prefix in the set (such as @open/open)
+            return key[1:]
+        return key
+
+
     def func(self):
         """
         Run the dynamic help entry creator.
@@ -500,7 +527,12 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             # group by category (cmds are listed separately)
             cmd_help_by_category = defaultdict(list)
             file_db_help_by_category = defaultdict(list)
+
+            # get a collection of all keys + aliases to be able to strip prefixes like @
+            key_and_aliases = set(chain(*(cmd._keyaliases for cmd in cmd_help_topics.values())))
+
             for key, cmd in cmd_help_topics.items():
+                key = self.strip_cmd_prefix(key, key_and_aliases)
                 cmd_help_by_category[cmd.help_category].append(key)
             for key, entry in file_db_help_topics.items():
                 file_db_help_by_category[entry.help_category].append(key)
@@ -513,10 +545,14 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
             return
 
-        # search for a specific entry. We need to check for 'read' access here before # building the
-        # set of possibilities.
+        # search for a specific entry. We need to check for 'read' access here before
+        # building the set of possibilities.
         cmd_help_topics, db_help_topics, file_help_topics = \
             self.collect_topics(caller, mode='query')
+
+        # get a collection of all keys + aliases to be able to strip prefixes like @
+        key_and_aliases = set(
+            chain(*(cmd._keyaliases for cmd in cmd_help_topics.values())))
 
         # db-help topics takes priority over file-help
         file_db_help_topics = {**file_help_topics, **db_help_topics}
@@ -548,17 +584,18 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                     {"field_name": "text", "boost": 1},
                 ]
 
-                for match_query in [query, f"{query}*"]:
+                for match_query in [query, f"{query}*", f"*{query}"]:
                     _, suggestions = help_search_with_index(
                         match_query, entries,
                         suggestion_maxnum=self.suggestion_maxnum,
                         fields=search_fields
                     )
-
                     if suggestions:
                         help_text += (
                             "\n... But matches where found within the help "
                             "texts of the suggestions below.")
+                        suggestions = [self.strip_cmd_prefix(sugg, key_and_aliases)
+                                       for sugg in suggestions]
                         break
 
             output = self.format_help_entry(
@@ -652,10 +689,17 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             # we reached the bottom of the topic tree
             help_text = subtopic_map[None]
 
+        topic = self.strip_cmd_prefix(topic, key_and_aliases)
+        if subtopics:
+            aliases = None
+        else:
+            aliases = [self.strip_cmd_prefix(alias, key_and_aliases) for alias in aliases]
+        suggested = [self.strip_cmd_prefix(sugg, key_and_aliases) for sugg in suggested]
+
         output = self.format_help_entry(
             topic=topic,
             help_text=help_text,
-            aliases=aliases if not subtopics else None,
+            aliases=aliases,
             subtopics=subtopic_index,
             suggested=suggested,
             click_topics=clickable_topics

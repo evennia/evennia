@@ -216,7 +216,10 @@ TIME_UNITS = {
 ```
 
 Notice we have set a time epoch of 0.  Using a custom calendar, we will come up with a nice display
-of time on our own. In our case the game time starts at year 0, month 0, day 0, and at midnight.
+of time on our own. In our case the game time starts at year 0, month 1, day 1, and at midnight.
+
+> Year, hour, minute and sec starts from 0, month, week and day starts from 1, this makes them
+> behave consistently with the standard time.
 
 Note that while we use "month", "week" etc in the settings, your game may not use those terms in-
 game, instead referring to them as "cycles", "moons", "sand falls" etc. This is just a matter of you

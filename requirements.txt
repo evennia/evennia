@@ -8,9 +8,9 @@ pytz
 djangorestframework >= 3.10.3, < 3.12
 pyyaml
 django-filter == 2.4
-django-sekizai == 2.0
+django-sekizai == 2.0.0
 inflect >= 5.2.0
-autobahn >= 17.9.3
+autobahn >= 20.7.1, < 21.0.0
 lunr == 0.6.0
 simpleeval <= 1.0
 
@@ -22,6 +22,7 @@ model_mommy
 mock >= 1.0.1
 anything==0.2.1
 black 
+wheel
 parameterized==0.8.1
 
 # windows-specific

@@ -12,6 +12,7 @@
 @import url("basic.css");
 @import url(https://fonts.googleapis.com/css?family=Arvo:400,700,400italic);
 @import url(https://fonts.googleapis.com/css?family=Open%20Sans:400,700,400italic);
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 /* -- page layout ----------------------------------------------------------- */
 
@@ -220,7 +221,7 @@ div.admonition p.admonition-title + p {
     display: inline;
 }
 
-p.admonition-title { 
+p.admonition-title {
     margin-right: 0.2em;
 }
 
@@ -253,7 +254,7 @@ div.warning {
     padding-left: 5.2em;
 }
 
-div.important { 
+div.important {
     text-indent: -5.5em;
     padding-left: 6.1em;
 }
@@ -313,12 +314,12 @@ code {
     color: #6e0e0e;
     /* padding: 1px 2px; */
     font-size: 0.8em;
-	  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+	  font-family: "Courier Prime", Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
     font-weight: bold;
 }
 
 .viewcode-back {
-	  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+	  font-family: "Courier Prime", Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 }
 
 div.viewcode-block:target {
@@ -359,7 +360,7 @@ div.code-block-caption {
 
 
 .class {
-	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+	font-family: "Courier Prime", Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
   font-size: 0.9em;
   background-color: #f5ffff;
   padding: 5px;
@@ -372,7 +373,7 @@ div.code-block-caption {
 }
 
 .sig-param {
-	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+	font-family: "Courier Prime", Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 }
 
 .sig-paren {
@@ -380,7 +381,7 @@ div.code-block-caption {
 }
 
 .property {
-	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+	font-family: "Courier Prime", Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 }
 
 dl.class > dd > p {
