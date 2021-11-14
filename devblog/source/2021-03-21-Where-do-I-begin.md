@@ -31,7 +31,6 @@ Making a multiplayer online game is a big undertaking. You will (if you are like
   
 So the very first thing you should ask yourself (and your team, if you have any) is why am I doing this? Do some soul-searching here. Here are some possible answers: 
 
-  
 
 - I want to earn recognition and fame from my online community and/or among my friends.
 - I want to build the game so I can play and enjoy it myself.
@@ -45,8 +44,6 @@ So the very first thing you should ask yourself (and your team, if you have any)
 - I am interested in coding or server and network architectures, making a MUD just seems to be a good way to teach myself. 
 - I want to build a commercial game and earn money.
 - I want to fulfill a life-long dream of game making.  
-    
-
   
   
 There are many other possibilities. How “solid” your answer is for a long-term development project is up to you. The important point is that you ask yourself the question.  
@@ -81,22 +78,19 @@ The game engine is maintained and modified by programmers (coders). It represent
   
 Creating your game engine from scratch can be a worthwhile and rewarding endeavour. It is however not a small one and if your main goal is to create a running game I would recommend building on an existing engine. It’s worth to take your time and do your research here. Searching the net and various MUD sites will bring you a slew of options. I will give some things to look for here.  
   
-  
 Whereas some engines/code bases offer a lot of pre-existing coded systems, there is no denying that your team will always need someone who either already knows some basic programming or is willing to learn it.  
   
 When judging which engine you want to use, consider:  
   
 
+- The engine’s community - hang out in the community/forums/chat surrounding the respective engine. Expect to need to ask a lot of “stupid” questions as you start developing (hint: no question is stupid). Is this a community in which you would feel comfortable doing so?
+- Active development - is the code base actively maintained? If there are bugs in the engine, does it seem likely they will be fixed upstream or will you be patching bugs yourself? Or alternatively, are there many active users that can help you out with known quirks?
+- Other available documentation - does the engine come with a manual? Are there online tutorials or other help resources to read?
+- Which language is the engine coded in? What is it scripted in? Do you or your team already know this language or are you willing to learn it? 
+- If you don’t know the language, do a few beginner tutorial so that you can at least vaguely recognize the syntax. Does the engine’s code seem easy to read and well documented? If the engine is poorly documented, the time of development may rise dramatically. 
+- Something to remember here is that computers of today are very powerful. And while scaling may be interesting if your game really takes off, a text game is, for the most part, not very demanding. So I’d recommend you pick your language and engine not primarily based on performance but on what you feel comfortable and productive working with. 
+- What is the engine’s license? This is mainly important if you plan to ever earn money with your game. Some common engines explicitly forbid commercial use.  
   
-
--   The engine’s community - hang out in the community/forums/chat surrounding the respective engine. Expect to need to ask a lot of “stupid” questions as you start developing (hint: no question is stupid). Is this a community in which you would feel comfortable doing so?
--   Active development - is the code base actively maintained? If there are bugs in the engine, does it seem likely they will be fixed upstream or will you be patching bugs yourself? Or alternatively, are there many active users that can help you out with known quirks?
--   Other available documentation - does the engine come with a manual? Are there online tutorials or other help resources to read?
--   Which language is the engine coded in? What is it scripted in? Do you or your team already know this language or are you willing to learn it? 
--   If you don’t know the language, do a few beginner tutorial so that you can at least vaguely recognize the syntax. Does the engine’s code seem easy to read and well documented? If the engine is poorly documented, the time of development may rise dramatically. 
--   Something to remember here is that computers of today are very powerful. And while scaling may be interesting if your game really takes off, a text game is, for the most part, not very demanding. So I’d recommend you pick your language and engine not primarily based on performance but on what you feel comfortable and productive working with. 
--   What is the engine’s license? This is mainly important if you plan to ever earn money with your game. Some common engines explicitly forbid commercial use.  
-    
 
   
 
@@ -124,10 +118,10 @@ Right, after all this soul-searching and skill-inventory-checking, let’s go ba
   
   
 
--   If you are learning a new programming language, you should follow basic tutorials so that you can read, understand and replicate example code without being completely in the dark.
--   If you have decided on your game engine you should dive into its manual and basic tutorials. Also make sure to introduce yourself to its community so you can get as much help as possible. 
--   If the game engine offers tutorials on making some small example game, do that carefully. Even if the resulting demo game has nothing to do with what you aim to build. If there are no tutorials maybe you can instead find a full example code that you can examine in the same way. Not only will this give you a better understanding of how parts of the engine hangs together, it will also give you ideas for what you can do with it. If something is surprisingly easy to do, you might even be able to expand your plans! 
--   If your game engine comes with pre-made game tools or building commands, the builders can start getting familiar with it. But keep in mind that these will not reflect the full capabilities of the game - your game is not yet built! So don’t set builders off to build large zone projects at this point. If they are building anything at all, it should be small test areas in order to agree on a homogenous form, mood and literary style.  
+- If you are learning a new programming language, you should follow basic tutorials so that you can read, understand and replicate example code without being completely in the dark.
+- If you have decided on your game engine you should dive into its manual and basic tutorials. Also make sure to introduce yourself to its community so you can get as much help as possible. 
+- If the game engine offers tutorials on making some small example game, do that carefully. Even if the resulting demo game has nothing to do with what you aim to build. If there are no tutorials maybe you can instead find a full example code that you can examine in the same way. Not only will this give you a better understanding of how parts of the engine hangs together, it will also give you ideas for what you can do with it. If something is surprisingly easy to do, you might even be able to expand your plans! 
+- If your game engine comes with pre-made game tools or building commands, the builders can start getting familiar with it. But keep in mind that these will not reflect the full capabilities of the game - your game is not yet built! So don’t set builders off to build large zone projects at this point. If they are building anything at all, it should be small test areas in order to agree on a homogenous form, mood and literary style.  
     
 
   
@@ -138,15 +132,15 @@ With a few tutorials and game examples under your belt you are ready to start so
   
 You or any builders may also get some building exercise here, using the commands and objects you create for simple testing. Here is a list of things to try out (you should be able to do these in any game engine worth its salt):  
 
--   Change some phrasing in the output of an already existing command.
--   Make a new command and add it to the game engine. Make it just echo back whatever argument you give it. 
--   Code an object that echoes “tick” to everyone at its location every 20 seconds.
--   Make a new command that creates new ticking objects where you are, but with a name given by you. 
--   Make a room whose description changes every time you enter it.
--   Make an object that deletes itself when its “health” property is changed to zero. 
--   Make an “attack” command that randomly reduces the “health” property of a target object until it deletes itself.
--   These are all simple things but it should give you an idea of what your chosen game engine is capable of and, most importantly, where to find help when you get stuck. If you can’t get past this step even with help you might need to go back and read up on the programming bit some more. Or maybe you should consider an easier game engine.  
-      
+- Change some phrasing in the output of an already existing command.
+- Make a new command and add it to the game engine. Make it just echo back whatever argument you give it. 
+- Code an object that echoes “tick” to everyone at its location every 20 seconds.
+- Make a new command that creates new ticking objects where you are, but with a name given by you. 
+- Make a room whose description changes every time you enter it.
+- Make an object that deletes itself when its “health” property is changed to zero. 
+- Make an “attack” command that randomly reduces the “health” property of a target object until it deletes itself.
+- These are all simple things but it should give you an idea of what your chosen game engine is capable of and, most importantly, where to find help when you get stuck. If you can’t get past this step even with help you might need to go back and read up on the programming bit some more. Or maybe you should consider an easier game engine.  
+    
     
 
 ## What is your scope?
@@ -175,11 +169,9 @@ So keep your grand plans in mind but limit your scope for your first release. Fo
 ## How to continue from here?
 
   
-  
 How to progress is depending on your preference. Some prefer to just jump straight into coding and figure out things as they go. It's not a bad idea to to sit down and plan a little first though - and remember that you want _a first version_ of your game at this point, not the _final, ultimate_ version. 
 
-This is beyond the first question asked in this article (which is long enough as it is) but I have written about this process in [Evennia’s game planning documentation](https://www.blogger.com/#). This reiterates some aspects of this article while expanding on others. 
+This is beyond the first question asked in this article (which is long enough as it is) but I have written about this process in [Evennia’s game planning documentation](https://evennia.com/docs/latest/Game-Planning). This reiterates some aspects of this article while expanding on others. 
 
-  
   
 … But in the end, remember that what kills a hobby game project will usually be _your own lack of motivation_. So do whatever you can to keep that motivation burning strong! Even if it means deviating from what you read in articles like this one. Just get that game out there, whichever way works best for you.
