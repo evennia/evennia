@@ -52,13 +52,13 @@ class Component:
         for attribute in self._all_db_field_names:
             delattr(self, attribute)
 
-    def duplicate(self, new_host):
+    def duplicate(self, new_host=None):
         """
         This copies the current values of the component instance
-        to a new instance registered to the new host.
-        Useful for templates
+        to a new instance.
+        Useful for registering templates
         """
-        new = type(self)(new_host)
+        new = type(self).default_create(new_host)
         for attribute in self._all_db_field_names:
             value = getattr(self, attribute, None)
             setattr(new, attribute, value)
@@ -92,7 +92,7 @@ class Component:
             for attribute in self._tndb.all():
                 host.nattributes.add(attribute.key, attribute.value)
             self._tndb = None
-            
+
     @property
     def attributes(self):
         if self.host:
