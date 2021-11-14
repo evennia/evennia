@@ -1,267 +1,203 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Evennia Python MUD/MU creation system</title>
-
-    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
-    <link href='https://fonts.googleapis.com/css?family=Arvo' rel='stylesheet'>
-    <script src="javascripts/scale.fix.js"></script>
-    <script src="javascripts/newsfeed.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <meta name="description" content="Evennia is a modern Python library and server for creating text-based
-        multi-player games and virtual worlds (also known as MUD, MUSH, MU, MUX, MUCK, etc).
-        While Evennia handles all the necessary things every online game needs, like database and 
-        networking, you create the game of your dreams by writing normal Python modules.">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <p>
-        <img class="logo" src="images/evennia_logo.png" alt="Evennia logo">
-        </p>
-        <h1 class="header">Evennia</h1>
-        <p class="header header-text">The Python MU* Development Library</p>
-
-        <div class="linksection">
-        <ul>
-          <div class="buttonsection">
-            <li><a class="buttons" href="https://github.com/evennia/evennia">Download (GitHub)</a></li>
-            <li class="documentation"><a class="buttons" href="docs/latest/index.html">Documentation</a></li>
-            <li><a class="buttons" href="https://demo.evennia.com">Live Demo</a></li>
-            <div class="buttonsidetext" style="padding-left:26px;">CODING</div>
-          </div>
-          <div class="buttonsection">
-            <li><a class="buttons community" href="http://games.evennia.com">Game index</a>
-            <!--li><a class="buttons community" href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC channel</a><a class="loglink" href="https://tinyurl.com/evchatlog">logs</a></li-->
-            <li><a class="buttons community" href="https://discord.gg/AJJpcRUhtF">Discord channel</a></li>
-            <li><a class="buttons community" href="https://github.com/evennia/evennia/discussions">Discussions</a></li>
-            <div class="buttonsidetext" style="padding-left:11px;">COMMUNITY</div>
-          </div>
-           <li><a class="buttons community" href="https://evennia.blogspot.com/">Dev Blog</a></li>
-        </ul>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        <title>Evennia Python MUD/MU creation system</title>
+        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+        <link rel="stylesheet" href="stylesheets/styles.css">
+        <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+        <link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
+        <link href='https://fonts.googleapis.com/css?family=Arvo' rel='stylesheet'>
+        <script src="javascripts/scale.fix.js">
+        </script>
+        <script src="javascripts/newsfeed.js">
+        </script>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <meta name="description" content="Evennia is a modern Python library and server for creating text-based        multi-player games and virtual worlds (also known as MUD, MUSH, MU, MUX, MUCK, etc).        While Evennia handles all the necessary things every online game needs, like database and         networking, you create the game of your dreams by writing normal Python modules.">
+        <!--[if lt IE 9]>
+            <script src="//html5shiv.googlecode.com/svn/trunk/html5.js">
+            </script>
+        <![endif]-->
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <p>
+                <img class="logo" src="images/evennia_logo.png" alt="Evennia logo">
+                </p>
+                <h1 class="header">Evennia</h1>
+                <p class="header header-text">The Python MU* Development Library</p>
+                <div class="linksection">
+                    <ul>
+                        <div class="buttonsection">
+                            <li>
+                                <a class="buttons" href="https://github.com/evennia/evennia">Download (GitHub)</a>
+                            </li>
+                            <li class="documentation">
+                                <a class="buttons" href="docs/latest/index.html">Documentation</a>
+                            </li>
+                            <li>
+                                <a class="buttons" href="https://demo.evennia.com">Live Demo</a>
+                            </li>
+                            <div class="buttonsidetext" style="padding-left:26px;">CODING</div>
+                        </div>
+                        <div class="buttonsection">
+                            <li>
+                                <a class="buttons community" href="http://games.evennia.com">Game index</a>
+                                <!--li>
+                                    <a class="buttons community" href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC channel</a>
+                                    <a class="loglink" href="https://tinyurl.com/evchatlog">logs</a>
+                                    </li-->
+                                    <li>
+                                        <a class="buttons community" href="https://discord.gg/AJJpcRUhtF">Discord channel</a>
+                                    </li>
+                                    <li>
+                                        <a class="buttons community" href="https://github.com/evennia/evennia/discussions">Discussions</a>
+                                    </li>
+                                    <div class="buttonsidetext" style="padding-left:11px;">COMMUNITY</div>
+                        </div>
+                        <li>
+                            <a class="buttons community" href="https://evennia.blogspot.com/">Dev Blog</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="newsfeed">
+                    <h3>Latest events</h3>
+                    <div id="latest-events" class="eventslist">
+                        <div class="events-fetch">              Fetching events ...            </div>
+                    </div>
+                </div>
+            </header>
+            <section>
+                <h1>
+                    <a name="evennia-mudmu-creation-system" class="anchor"  href="#evennia-mudmu-creation-system">
+                        <span class="octicon    octicon-link">
+                        </span>
+                    </a>Evennia MUD/MU* Creation System<div class="sponsor">
+                        <div class="sponsor-column">
+                            <a href="https://www.patreon.com/griatch">
+                                <img class="patreon" src="images/evennia_patreon_100x100.png" alt="Patreon">
+                            </a>
+                            <p>
+                            <a href="https://www.paypal.me/GriatchEvennia">
+                                <img class="paypal" src="images/btn_donateCC_LG.gif" alt="Paypal donate">
+                            </a>
+                        </div>
+                    </div>
+                </h1>
+                <p>
+                <em>Evennia</em> is an open-source Python-based framework, codebase andserver for creating text-based multiplayer online games (aka MUD/MU* etc) using moderntechnologies and tools.</p>
+                <!--h3>
+                    <a name="news" class="anchor"  href="#news">
+                    <span class="octicon    octicon-link">
+                    </span>
+                    </a>Latest News</h2>
+                    </h3>
+                    <ul>
+                    <li class="newsitem">Nov 14, 2020: Evennia 0.9.5 released! (<a href="http://evennia.blogspot.com/2020/11/evennia-095-released.html">dev blog</a>|<a href="https://github.com/evennia/evennia/blob/v0.9.5/CHANGELOG.md#evennia-095-nov-2020">changelog</a>)</li>
+                    <li class="newsitem">Nov 14, 2020: New evennia.com and documentation site</li>
+                    </ul-->
+                    <h2>
+                        <a name="live-demo" class="anchor"  href="#live-demo">
+                            <span class="octicon    octicon-link">
+                            </span>
+                        </a>Live demo</h2>
+                        <img class="img floatright" src="images/book.png" alt="Book">
+                        <p>
+                        <a href="https://demo.evennia.com">https://demo.evennia.com</a> hosts analmost default Evennia server with some extra examples. Use it to get a taste forwhat's possible. You can also send questions to our support channel directlyfrom inside the demo - just write <strong>public Hello!</strong> to say hi!<h2>
+                            <a name="installation" class="anchor"  href="#installation">
+                                <span class="octicon    octicon-link">
+                                </span>
+                            </a>Installation</h2>Evennia is installed by cloning and installing its repo from <a href="https://github.com/evennia/evennia">github</a>. The <a href="docs/latest/Getting-Started.html">Getting Started</a> instructions will help you get things set up. Once installed, creating your new game is quick:<div class="codeblock">
+                                <code>    evennia --init mygame<br>    cd mygame<br>    evennia start  </code>
+                            </div>You can now browse your new game's website and play locally in your browser at <a href="http://127.0.0.1:4001">http://localhost:4001</a>. You can also connect to it with a traditional third-party MUD client on <code>localhost, port 4000</code>.  <img class="img screenshot" src="images/evennia_screenshot.jpg" alt="Screenshot">
+                            <div class="screenshot-caption">     An example of a default Evennia install (hover to enlarge). Top left:     Running server just started.  Top right: Default website served by     Evennia. Bottom left: Game open in included HTML5 webclient. Bottom right:     Game open in traditional telnet client     (<a href="https://tintin.mudhalla.net/">tintin++</a>).  </div>
+                            <h2>
+                                <a name="overview" class="anchor"  href="#overview">
+                                    <span class="octicon    octicon-link">
+                                    </span>
+                                </a>Overview</h2>
+                                <img class="img floatleft" src="images/inkwell.png" alt="Inkwell">
+                                <ul>
+                                    <li>
+                                        <strong>A toolbox and framework:</strong> Evennia is intended for game developers    who want to make a game uniquely theirs. But it's also easy enough to be a    popular tool for quick game prototyping and for those who want an    educational project for learning Python.   </li>
+                                    <li>
+                                        <strong>Game agnostic:</strong> Evennia does not prescribe a genre, game    rules, skills, classes, combat system or other things that will be specific    for your game anyway.   </li>
+                                    <li>
+                                        <strong>Optionally a little less unique:</strong> We have a growing library of    commonly needed code-snippets and bigger game systems that you can choose to     build from, copy or be inspired by.   <li>
+                                            <strong>What we do:</strong> Evennia takes care of all the gritty    networking, database-handling and other boring details that all online    games need. The idea is to allow you, the game developer, to focus on    designing your game's systems and content.  </li>
+                                        <li>
+                                            <strong>Modern workflow:</strong> Coding in Evennia is primarily done by    normal Python modules and classes, making the codebase extremely flexible -    you don't tweak the library itself, you just override the defaults and tell    Evennia where to find your changes. For experienced developers, not relying    on some custom in-game scripting language means you can use modern    development tools, version control and workflows.  </li>
+                                        <strong>A lot of help:</strong> Evennia's code is heavily documented should    you want to dive in. We have also spent a lot of time on our <a    href="docs/latest/index.html">extensive documentation</a>. Finally, our  active and friendly developer community is always there to help you if you  get stuck!  </li>
+                                </ul>
+                                <h2>
+                                    <a name="default-content" class="anchor"  href="#default-content">
+                                        <span class="octicon    octicon-link">
+                                        </span>
+                                    </a>Default Content</h2>
+                                    <img class="img floatright" src="images/chest.png" alt="Dice">
+                                    <p>Whereas your Evennia game starts out with no game-specific content, it's notempty! Out of the box you get a 'talker'-style game with basic functionality:You can create rooms and items, pick up stuff, talk to people, walk around, dolight roleplay with emotes ... this starting point is easy to extend orcompletely replace as you prefer.</p>
+                                    <p>Here are some of the default resources and tools available out of the box:</p>
+                                    <ul>
+                                        <li>Classes for persistent objects, exits, rooms and characters.</li>
+                                        <li>Separation between character and their accounts (multi-character play, if desired).</li>
+                                        <li>In-game channels and chats (including linking to external chat channels).  <li>Some 90 commands for administration, building, chatting, basic roleplay etc.</li>
+                                            <li>Available commands and even their function can vary with circumstance and game state.</li>
+                                            <li>Delays, tickers, timers (fully asynchronous, no threading so no risk of race conditions).</li>
+                                            <li>In-game menu-creation system.</li>
+                                            <li>Prototype system, for making variations of objects (like monsters or items) without new classes.</li>
+                                            <li>Lock and access mini-language for very flexible access control.</li>
+                                            <li>Tutorial-world with examples.</li>
+                                            <li>Easy storage of custom data on all game objects.</li>
+                                            <li>Search, creation, and a large number of coding utilities.</li>
+                                            <li>A <code>contrib/</code> folder with optional full systems and shorter snippets.</li>
+                                    </ul>
+                                    <img class="img floatright" src="images/dice.png" alt="Dice">
+                                    <h2>
+                                        <a name="some server features" class="anchor"  href="#some-server-features">
+                                            <span class="octicon    octicon-link">
+                                            </span>
+                                        </a>Technical features</h2>
+                                        <ul>
+                                            <li>Uses Python 3.7+, Django and Twisted frameworks</li>
+                                            <li>HTML5 webclient (websocket with ajax/comet fallback)</li>
+                                            <li>Website via own webserver (HTTP, HTTPS with external proxy)</li>
+                                            <li>Telnet, Telnet+SSL, SSH</li>
+                                            <li>MUD-specific telnet protocols (Webclient uses custom JSON protocol instead):      <ul style="margin-bottom:0px;">
+                                                    <li>GMCP and MSDP out-of-band protocols</li>
+                                                    <li>MXP (inline links only)</li>
+                                                    <li>ANSI and XTerm256 color support</li>
+                                                    <li>MSSP status for websites tracking MUDs</li>
+                                                    <li>NAWS, TTYPE, MCCP etc ...</li>
+                                                </ul>
+                                            </li>
+                                            <li>In-Game channels can link to IRC, Grapevine</li>
+                                            <li>RSS feed, Twitter feed (with snippet from docs)</li>
+                                            <li>Different databases supported via Django: Sqlite3, PostgreSQL, MySQL ...</li>
+                                            <li>Asynchronous, event-driven architecture without risk of race-conditions</i>
+                                            <li>Reload server without disconnecting players</li>
+                                            <li>Extendable protocols for adding custom integrations</li>
+                                            <li>BSD open-source license</li>
+                                        </ul>
+                                        <img class="img floatleft" src="images/ships.png" alt="Ships">
+                                        <h2>
+                                            <a name="more-information" class="anchor" href="#more-information">
+                                                <span    class="octicon octicon-link">
+                                                </span>
+                                            </a>More Information</h2>
+                                            <p>If this piqued your interest, there is a <a  href="docs/latest/Evennia-Introduction.html">lengthier  introduction</a> to Evennia to read.</p>
+                                            <p>To learn how to get your hands on the code base, the <a  href="docs/latest/Getting-Started.html">Getting Started</a> page is the way to go. Otherwise you could browse the <ahref="docs/latest/index.html">Documentation</a> or whynot come join one of the Evennia's community's chat channels or forums. Welcome! </p>
+                                            <footer>
+                                                <p>
+                                                <small>          (Images ©<a href="https://www.deviantart.com/griatch-art">Griatch</a>)          </small>
+                                                </p>
+                                            </footer>
+            </section>
         </div>
-
-        <div class="newsfeed">
-          <h3>Latest events</h3>
-          <div id="latest-events" class="eventslist">
-            <div class="events-fetch">
-              Fetching events ...
-            </div>
-          </div>
-        </div>
-
-      </header>
-      <section>
-<h1>
-<a name="evennia-mudmu-creation-system" class="anchor"
-  href="#evennia-mudmu-creation-system"><span class="octicon
-    octicon-link"></span></a>Evennia MUD/MU* Creation System
-
-<div class="sponsor"> 
-  <div class="sponsor-column">
-    <a href="https://www.patreon.com/griatch"><img class="patreon" src="images/evennia_patreon_100x100.png" alt="Patreon"></a>
-    <p>
-    <a href="https://www.paypal.me/GriatchEvennia"><img class="paypal" src="images/btn_donateCC_LG.gif" alt="Paypal donate"></a>
-  </div>
-</div>
-
-</h1>
-
-<p><em>Evennia</em> is an open-source Python-based framework, codebase and
-server for creating text-based multiplayer online games (aka MUD/MU* etc) using modern
-technologies and tools.</p>
-
-<!--h3>
-<a name="news" class="anchor"
-  href="#news"><span class="octicon
-    octicon-link"></span></a>Latest News</h2>
-</h3>
-<ul>
-  <li class="newsitem">Nov 14, 2020: Evennia 0.9.5 released! (<a href="http://evennia.blogspot.com/2020/11/evennia-095-released.html">dev blog</a>|<a href="https://github.com/evennia/evennia/blob/v0.9.5/CHANGELOG.md#evennia-095-nov-2020">changelog</a>)</li>
-  <li class="newsitem">Nov 14, 2020: New evennia.com and documentation site</li>
-</ul-->
-
-<h2>
-<a name="live-demo" class="anchor"
-  href="#live-demo"><span class="octicon
-    octicon-link"></span></a>Live demo</h2>
-
-<img class="img floatright" src="images/book.png" alt="Book">
-<p>
-<a href="https://demo.evennia.com">https://demo.evennia.com</a> hosts an
-almost default Evennia server with some extra examples. Use it to get a taste for
-what's possible. You can also send questions to our support channel directly
-from inside the demo - just write <strong>public Hello!</strong> to say hi!
-
-<h2>
-<a name="installation" class="anchor"
-  href="#installation"><span class="octicon
-    octicon-link"></span></a>Installation</h2>
-
-Evennia is installed by cloning and installing its repo from 
-<a href="https://github.com/evennia/evennia">github</a>. The 
-<a href="docs/latest/Getting-Started.html">Getting Started</a> instructions will 
-help you get things set up. Once installed, creating your new game is quick:
-
-<div class="codeblock">
-  <code>
-    evennia --init mygame<br>
-    cd mygame<br>
-    evennia start
-  </code>
-</div>
-
-You can now browse your new game's website and play locally in your browser at 
-<a href="http://127.0.0.1:4001">http://localhost:4001</a>. You can also 
-connect to it with a traditional third-party MUD client on <code>localhost, port 4000</code>.
-
-  <img class="img screenshot" src="images/evennia_screenshot.jpg" alt="Screenshot">
-  <div class="screenshot-caption">
-     An example of a default Evennia install (hover to enlarge). Top left:
-     Running server just started.  Top right: Default website served by
-     Evennia. Bottom left: Game open in included HTML5 webclient. Bottom right:
-     Game open in traditional telnet client
-     (<a href="https://tintin.mudhalla.net/">tintin++</a>).
-  </div>
-
-<h2><a name="overview" class="anchor"
-  href="#overview"><span class="octicon
-    octicon-link"></span></a>Overview</h2>
-
-<img class="img floatleft" src="images/inkwell.png" alt="Inkwell">
-
-<ul>
-  <li>
-    <strong>A toolbox and framework:</strong> Evennia is intended for game developers
-    who want to make a game uniquely theirs. But it's also easy enough to be a
-    popular tool for quick game prototyping and for those who want an
-    educational project for learning Python. 
-  </li>
-  <li>
-    <strong>Game agnostic:</strong> Evennia does not prescribe a genre, game
-    rules, skills, classes, combat system or other things that will be specific
-    for your game anyway. 
-  </li>
-  <li>
-    <strong>Optionally a little less unique:</strong> We have a growing library of
-    commonly needed code-snippets and bigger game systems that you can choose to 
-    build from, copy or be inspired by. 
-  <li>
-    <strong>What we do:</strong> Evennia takes care of all the gritty
-    networking, database-handling and other boring details that all online
-    games need. The idea is to allow you, the game developer, to focus on
-    designing your game's systems and content.
-  </li>
-  <li>
-    <strong>Modern workflow:</strong> Coding in Evennia is primarily done by
-    normal Python modules and classes, making the codebase extremely flexible -
-    you don't tweak the library itself, you just override the defaults and tell
-    Evennia where to find your changes. For experienced developers, not relying
-    on some custom in-game scripting language means you can use modern
-    development tools, version control and workflows.
-  </li>
-    <strong>A lot of help:</strong> Evennia's code is heavily documented should
-    you want to dive in. We have also spent a lot of time on our <a
-    href="docs/latest/index.html">extensive documentation</a>. Finally, our
-  active and friendly developer community is always there to help you if you
-  get stuck!
-  </li>
-</ul>
-
-
-<h2><a name="default-content" class="anchor"
-  href="#default-content"><span class="octicon
-    octicon-link"></span></a>Default Content</h2>
-
-<img class="img floatright" src="images/chest.png" alt="Dice">
-
-<p>Whereas your Evennia game starts out with no game-specific content, it's not
-empty! Out of the box you get a 'talker'-style game with basic functionality:
-You can create rooms and items, pick up stuff, talk to people, walk around, do
-light roleplay with emotes ... this starting point is easy to extend or
-completely replace as you prefer.</p>
-
-<p>Here are some of the default resources and tools available out of the box:</p>
-
-<ul>
-  <li>Classes for persistent objects, exits, rooms and characters.</li>
-  <li>Separation between character and their accounts (multi-character play, if desired).</li>
-  <li>In-game channels and chats (including linking to external chat channels).
-  <li>Some 90 commands for administration, building, chatting, basic roleplay etc.</li>
-  <li>Available commands and even their function can vary with circumstance and game state.</li>
-  <li>Delays, tickers, timers (fully asynchronous, no threading so no risk of race conditions).</li>
-  <li>In-game menu-creation system.</li>
-  <li>Prototype system, for making variations of objects (like monsters or items) without new classes.</li>
-  <li>Lock and access mini-language for very flexible access control.</li>
-  <li>Tutorial-world with examples.</li>
-  <li>Easy storage of custom data on all game objects.</li>
-  <li>Search, creation, and a large number of coding utilities.</li>
-  <li>A <code>contrib/</code> folder with optional full systems and shorter snippets.</li>
-</ul>
-
-<img class="img floatright" src="images/dice.png" alt="Dice">
-
-<h2><a name="some server features" class="anchor"
-  href="#some-server-features"><span class="octicon
-    octicon-link"></span></a>Technical features</h2>
-
-  <ul>
-    <li>Uses Python 3.7+, Django and Twisted frameworks</li>
-    <li>HTML5 webclient (websocket with ajax/comet fallback)</li>
-    <li>Website via own webserver (HTTP, HTTPS with external proxy)</li>
-    <li>Telnet, Telnet+SSL, SSH</li>
-    <li>MUD-specific telnet protocols (Webclient uses custom JSON protocol instead):
-      <ul style="margin-bottom:0px;"> 
-        <li>GMCP and MSDP out-of-band protocols</li>
-        <li>MXP (inline links only)</li>
-        <li>ANSI and XTerm256 color support</li>
-        <li>MSSP status for websites tracking MUDs</li>
-        <li>NAWS, TTYPE, MCCP etc ...</li>
-      </ul></li>
-    <li>In-Game channels can link to IRC, Grapevine</li>
-    <li>RSS feed, Twitter feed (with snippet from docs)</li>
-    <li>Different databases supported via Django: Sqlite3, PostgreSQL, MySQL ...</li>
-    <li>Asynchronous, event-driven architecture without risk of race-conditions</i>
-    <li>Reload server without disconnecting players</li>
-    <li>Extendable protocols for adding custom integrations</li>
-    <li>BSD open-source license</li>
-  </ul>
-
-
-<img class="img floatleft" src="images/ships.png" alt="Ships">
-
-<h2>
-<a name="more-information" class="anchor" href="#more-information"><span
-    class="octicon octicon-link"></span></a>More Information</h2>
-
-<p>If this piqued your interest, there is a <a
-  href="docs/latest/Evennia-Introduction.html">lengthier
-  introduction</a> to Evennia to read.</p>
-
-
-<p>To learn how to get your hands on the code base, the <a
-  href="docs/latest/Getting-Started.html">Getting Started</a> page is the way to go. Otherwise you could browse the <a
-href="docs/latest/index.html">Documentation</a> or why
-not come join one of the Evennia's community's chat channels or forums. Welcome! </p>
-      <footer>
-        <p><small>
-          (Images ©<a href="https://www.deviantart.com/griatch-art">Griatch</a>)  
-        </small></p>
-
-      </footer>
-      </section>
-    </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    <script type="text/javascript">
-      fetchGithubData(); 
-	  </script>	
-  </body>
+        <!--[if !IE]>
+            <script>fixScale(document);</script>
+        <![endif]-->
+        <script type="text/javascript">fetchGithubData();</script>
+    </body>
 </html>
