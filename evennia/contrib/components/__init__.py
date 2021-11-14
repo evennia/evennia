@@ -11,7 +11,7 @@ This helps writing isolated code and reusing it over multiple objects.
    import and inherit the ComponentHolderMixin, similar to this
   ```
   from evennia.contrib.components import ComponentHolderMixin
-  class Character(DefaultCharacter, ComponentHolderMixin):
+  class Character(ComponentHolderMixin, DefaultCharacter):
   ```
 
 - Components need to inherit the Component class and must be registered to the listing
@@ -37,9 +37,9 @@ This helps writing isolated code and reusing it over multiple objects.
 - Keep in mind that all components must be imported to be visible in the listing
   As such, I recommend regrouping them in a package
   You can then import all your components in that package's __init__
-  The plug the import of that package early, for example in your typeclasses's __init__
 
-  Circular imports can mess up here, avoid importing typeclasses in your components if you can.
+  Because of how Evennia import typeclasses and the behavior of python imports
+  I recommend placing the components package inside the typeclasses.
 """
 
 
