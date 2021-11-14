@@ -78,3 +78,9 @@ class TestComponents(EvenniaTest):
         rct = RuntimeComponentTestC.as_template(my_int=10)
         self.char1.register_component(rct)
         assert self.char1.test_c.my_int == 10
+
+    def test_component_duplicates_correctly(self):
+        rct = RuntimeComponentTestC.as_template(my_int=10)
+        new_rct = rct.duplicate(self.char1)
+        assert self.char1.test_c.my_int == 10
+        assert new_rct is not rct

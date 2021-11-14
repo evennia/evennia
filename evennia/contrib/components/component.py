@@ -18,12 +18,12 @@ class Component:
         return new
 
     @classmethod
-    def default_create(cls, game_object, **kwargs):
+    def default_create(cls, host, **kwargs):
         """
-        This is called when the game_object is created
+        This is called when the host is created
          and should return the base initialized state of a component.
         """
-        new = cls(game_object)
+        new = cls(host)
         chained = (
             (new.db_field_names, new.attributes),
             (new.ndb_field_names, new.nattributes)
@@ -39,12 +39,15 @@ class Component:
         return new
 
     @classmethod
-    def create(cls, game_object, **kwargs):
+    def create(cls, host, register=True, **kwargs):
         """
         This is the method to call when supplying kwargs to initialize a component.
         Useful with runtime components
         """
-        new = cls.default_create(game_object, **kwargs)
+        new = cls.default_create(host, **kwargs)
+        if host and register:
+            host.register_component(new)
+
         return new
 
     def cleanup(self):
@@ -52,22 +55,27 @@ class Component:
         for attribute in self._all_db_field_names:
             delattr(self, attribute)
 
-    def duplicate(self, new_host=None):
+    def duplicate(self, new_host=None, register=True):
         """
         This copies the current values of the component instance
         to a new instance.
-        Useful for registering templates
+
+        Passing a host without specifying register=False
+        will automatically make the host register it.
         """
         new = type(self).default_create(new_host)
         for attribute in self._all_db_field_names:
             value = getattr(self, attribute, None)
             setattr(new, attribute, value)
 
+        if new_host and register:
+            new_host.register_component(self)
+
         return new
 
     @classmethod
-    def load(cls, game_object):
-        return cls(game_object)
+    def load(cls, host):
+        return cls(host)
 
     def on_register(self, host):
         if not self.host:

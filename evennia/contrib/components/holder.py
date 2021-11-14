@@ -35,7 +35,7 @@ class ComponentHolderMixin(object):
             if inspect.isclass(component_class):
                 component_instance = component_class.default_create(self)
             else:
-                component_instance = component_class.duplicate(self)
+                component_instance = component_class.duplicate(self, register=False)
 
             self._set_component(component_instance)
 
