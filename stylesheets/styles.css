@@ -488,7 +488,10 @@ a[href="devblog-posts"]:focus {
 .devblog-calendar-post {
   margin-left: 1em;
 }
-.blog_post > p > img {
+.blog_post > * > img {
+    opacity: 1.0;
+}
+.blog_post > * > a > img { 
     opacity: 1.0;
 }
 .blog_post > ul { 
@@ -496,6 +499,10 @@ a[href="devblog-posts"]:focus {
 }
 .blog_post > ul > li > p {
     margin-bottom: 0.5em;
+}
+.blog_post > footer {
+    width: initial;
+    float: none;
 }
 
 

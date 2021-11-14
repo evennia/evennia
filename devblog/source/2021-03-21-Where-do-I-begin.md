@@ -1,14 +1,9 @@
-title: Where do I begin
-date: 2021-11-14
+title: Where do I begin?
 copyrights: Images: [©Griatch](https://deviantart.com/griatch-art)
 
 --- 
 
 > _This is a repost of an article I originally wrote for the Imaginary Realities e-zine, Volume 7, issue 3 back in 2015. It's not Evennia-specific but meant for a wider audience interested in making a text-based multiplayer game (MUD/MU*). Since IR is no longer active, I repost it here with only some minor cleanup._
-
-
-## Where do I begin?
-
 
 
 When a new user has everything installed and drops into Evennia’s IRC support chat or mailing list, there is one question that we regularly get in various variations:
