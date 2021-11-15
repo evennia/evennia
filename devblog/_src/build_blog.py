@@ -25,18 +25,18 @@ from dataclasses import dataclass
 from collections import defaultdict
 from dateutil import parser as dateparser
 from datetime import datetime
-from os import mkdir, symlink
+from os import mkdir, symlink, remove
 from os.path import abspath, dirname, join as pathjoin, sep
 import mistletoe
 import jinja2
 
 
 CURRDIR = dirname(abspath(__file__))
-SOURCE_DIR = pathjoin(CURRDIR, "source")
+SOURCE_DIR = pathjoin(CURRDIR, "markdown")
 TEMPLATE_DIR = pathjoin(CURRDIR, "templates")
 IMG_DIR = pathjoin(SOURCE_DIR, "images")
 
-OUTDIR = pathjoin(CURRDIR, "html")
+OUTDIR = dirname(CURRDIR)
 OUTFILE_TEMPLATE = "devblogs_{year}.html"
 OUT_IMG_DIR = pathjoin(OUTDIR, "images")
 
@@ -198,8 +198,10 @@ def build_pages(blog_pages):
     Generate devblog pages.
 
     """
-    shutil.rmtree(OUTDIR, ignore_errors=True)
-    mkdir(OUTDIR)
+    for html_file in glob.glob(pathjoin(OUTDIR, "*.html")):
+        remove(html_file)
+    shutil.rmtree(OUT_IMG_DIR, ignore_errors=True)
+
     mkdir(OUT_IMG_DIR)
     html_pages = md2html()
 
