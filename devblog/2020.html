@@ -1,0 +1,795 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        <title>Devblog: Evennia Python MUD/MU creation system</title>
+        <link rel="shortcut icon" type="image/x-icon" href="../images/favicon.ico">
+        <link rel="stylesheet" href="../stylesheets/styles.css">
+        <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+        <link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
+        <link href='https://fonts.googleapis.com/css?family=Arvo' rel='stylesheet'>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <meta name="description" content="Evennia is a modern Python library and server for creating text-based        multi-player games and virtual worlds (also known as MUD, MUSH, MU, MUX, MUCK, etc). While Evennia handles all the necessary things every online game needs, like database and networking, you create the game of your dreams by writing normal Python modules.">
+        <!--[if lt IE 9]>
+            <script src="//html5shiv.googlecode.com/svn/trunk/html5.js">
+            </script>
+        <![endif]-->
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <p>
+                <img class="logo" src="../images/evennia_logo.png" alt="Evennia logo">
+                </p>
+                <h1 class="header">Evennia</h1>
+                <p class="header header-text">The Python MU* Development Library</p>
+                <div class="linksection">
+                    <ul>
+                        <div class="buttonsection">
+                            <li>
+                                <a class="buttons" href="https://www.evennia.com">Back to Evennia</a>
+                            </li>
+                    </ul>
+                        </div>
+                        <div class="devblog-calendar">
+                            <ul>
+                                
+                                    <li><a href="2021.html">2021 (2)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2021.html#2021-03-21-where-do-i-begin?">Mar 21
+                                                    <span class="devblog-calendar-tooltip-text"> Where do I begin?</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2021.html#2021-01-01-happy-new-years-2021!">Jan  1
+                                                    <span class="devblog-calendar-tooltip-text"> Happy New Years 2021!</span>
+                                                    </a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href="2020.html">2020 (3)
+                                        
+                                            <ul class="devblog-calendar-open">
+                                        
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2020.html#2020-11-14-evennia-0.9.5-released">Nov 14
+                                                    <span class="devblog-calendar-tooltip-text">Evennia 0.9.5 released</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2020.html#2020-10-20-on-using-markdown-with-sphinx">Oct 20
+                                                    <span class="devblog-calendar-tooltip-text">On using Markdown with Sphinx</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2020.html#2020-04-14-spring-updates-while-trying-to-stay-healthy">Apr 14
+                                                    <span class="devblog-calendar-tooltip-text">Spring updates while trying to stay healthy</span>
+                                                    </a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href="2019.html">2019 (7)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2019.html#2019-09-30-blackifying-and-fixing-bugs">Sep 30
+                                                    <span class="devblog-calendar-tooltip-text">Blackifying and fixing bugs</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2019.html#2019-07-04-evennia-0.9-released">Jul  4
+                                                    <span class="devblog-calendar-tooltip-text">Evennia 0.9 released</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2019.html#2019-05-26-creating-evscaperoom-part-2">May 26
+                                                    <span class="devblog-calendar-tooltip-text">Creating Evscaperoom Part 2</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2019.html#2019-05-18-creating-evscaperoom-part-1">May 18
+                                                    <span class="devblog-calendar-tooltip-text">Creating Evscaperoom Part 1</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2019.html#2019-05-09-podcast-about-evennia">May  9
+                                                    <span class="devblog-calendar-tooltip-text">Podcast about Evennia</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2019.html#2019-04-25-steaming-on-eating-jam">Apr 25
+                                                    <span class="devblog-calendar-tooltip-text">Steaming on Eating Jam</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2019.html#2019-01-02-into-2019">Jan  2
+                                                    <span class="devblog-calendar-tooltip-text">Into 2019</span>
+                                                    </a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href="2018.html">2018 (4)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2018.html#2018-09-30-evennia-0.8-released">Sep 30
+                                                    <span class="devblog-calendar-tooltip-text">Evennia 0.8 released</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2018.html#2018-08-18-inline-building-in-upcoming-evennia-0.8">Aug 18
+                                                    <span class="devblog-calendar-tooltip-text">Inline building in upcoming Evennia 0.8</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2018.html#2018-01-27-kicking-into-gear-from-a-distance">Jan 27
+                                                    <span class="devblog-calendar-tooltip-text">Kicking into gear from a distance</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2018.html#2018-01-05-new-year,-new-stuff">Jan  5
+                                                    <span class="devblog-calendar-tooltip-text"> New year, new stuff</span>
+                                                    </a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href="2017.html">2017 (6)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2017.html#2017-10-29-getting-a-mud-rp-scene-going">Oct 29
+                                                    <span class="devblog-calendar-tooltip-text">Getting a MUD RP scene going</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2017.html#2017-10-01-evennia-in-hacktobergest-2017">Oct  1
+                                                    <span class="devblog-calendar-tooltip-text">Evennia in Hacktobergest 2017</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2017.html#2017-09-20-evennia-0.7-released">Sep 20
+                                                    <span class="devblog-calendar-tooltip-text">Evennia 0.7 released</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2017.html#2017-08-25-renaming-django's-auth-user-and-app">Aug 25
+                                                    <span class="devblog-calendar-tooltip-text"> Renaming Django's Auth User and App</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2017.html#2017-04-23-the-luxury-of-a-creative-community">Apr 23
+                                                    <span class="devblog-calendar-tooltip-text">The luxury of a creative community</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2017.html#2017-02-05-news-items-from-the-new-year">Feb  5
+                                                    <span class="devblog-calendar-tooltip-text">News items from the new year</span>
+                                                    </a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href="2016.html">2016 (7)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2016.html#2016-11-30-birthday-retrospective">Nov 30
+                                                    <span class="devblog-calendar-tooltip-text">Birthday retrospective</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2016.html#2016-10-13-season-of-fixes">Oct 13
+                                                    <span class="devblog-calendar-tooltip-text">Season of fixes</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2016.html#2016-07-01-the-art-of-sharing-nicks-and-descriptions">Jul  1
+                                                    <span class="devblog-calendar-tooltip-text">The art of sharing nicks and descriptions</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2016.html#2016-05-31-evennia-in-pictures">May 31
+                                                    <span class="devblog-calendar-tooltip-text">Evennia in Pictures</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2016.html#2016-05-22-evennia-0.6!">May 22
+                                                    <span class="devblog-calendar-tooltip-text"> Evennia 0.6!</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2016.html#2016-03-24-technical-stuff-happening">Mar 24
+                                                    <span class="devblog-calendar-tooltip-text">Technical stuff happening</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2016.html#2016-02-14-climbing-up-branches">Feb 14
+                                                    <span class="devblog-calendar-tooltip-text">Climbing up Branches</span>
+                                                    </a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href="2015.html">2015 (13)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2015.html#2015-12-17-a-summary-of-a-year">Dec 17
+                                                    <span class="devblog-calendar-tooltip-text">A summary of a year</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2015.html#2015-11-12-mit-uses-evennia!">Nov 12
+                                                    <span class="devblog-calendar-tooltip-text"> MIT uses Evennia!</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2015.html#2015-10-11-illustrations-and-soaps">Oct 11
+                                                    <span class="devblog-calendar-tooltip-text">Illustrations and soaps</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2015.html#2015-10-02-emoting-system">Oct  2
+                                                    <span class="devblog-calendar-tooltip-text">Emoting System</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2015.html#2015-09-29-evennia-on-`podcast.__init__`">Sep 29
+                                                    <span class="devblog-calendar-tooltip-text"> Evennia on `podcast.__init__`</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2015.html#2015-09-24-pushing-through-a-straw">Sep 24
+                                                    <span class="devblog-calendar-tooltip-text">Pushing through a straw</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2015.html#2015-08-27-a-wagon-load-of-post-summer-updates">Aug 27
+                                                    <span class="devblog-calendar-tooltip-text">A wagon load of post summer updates</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2015.html#2015-06-22-announcing-the-evennia-example-game-project-"ainneve"">Jun 22
+                                                    <span class="devblog-calendar-tooltip-text"> Announcing the Evennia example-game project "Ainneve"</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2015.html#2015-06-15-need-your-help!">Jun 15
+                                                    <span class="devblog-calendar-tooltip-text"> Need your help!</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2015.html#2015-05-30-dreaming-big?">May 30
+                                                    <span class="devblog-calendar-tooltip-text"> Dreaming big?</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2015.html#2015-05-11-things-goin-on">May 11
+                                                    <span class="devblog-calendar-tooltip-text">Things goin on</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2015.html#2015-05-09-documenting-python-without-sphinx">May  9
+                                                    <span class="devblog-calendar-tooltip-text">Documenting Python without Sphinx</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2015.html#2015-01-19-building-django-proxies-and-mud-libraries">Jan 19
+                                                    <span class="devblog-calendar-tooltip-text">Building Django proxies and MUD libraries</span>
+                                                    </a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href="2014.html">2014 (7)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2014.html#2014-10-02-slowly-moving-through-town">Oct  2
+                                                    <span class="devblog-calendar-tooltip-text">Slowly moving through town</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2014.html#2014-08-04-dance-my-puppets">Aug  4
+                                                    <span class="devblog-calendar-tooltip-text">Dance my puppets</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2014.html#2014-06-30-webby-stuff">Jun 30
+                                                    <span class="devblog-calendar-tooltip-text">Webby stuff</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2014.html#2014-06-15-bringing-back-python-memory">Jun 15
+                                                    <span class="devblog-calendar-tooltip-text">Bringing back Python memory</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2014.html#2014-05-16-imaginary-realities-volume-6,-issue-1">May 16
+                                                    <span class="devblog-calendar-tooltip-text"> Imaginary Realities volume 6, issue 1</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2014.html#2014-02-08-moving-from-google-code-to-github">Feb  8
+                                                    <span class="devblog-calendar-tooltip-text">Moving from Google Code to Github</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2014.html#2014-01-24-looking-forwards-and-backwards">Jan 24
+                                                    <span class="devblog-calendar-tooltip-text">Looking forwards and backwards</span>
+                                                    </a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href="2013.html">2013 (5)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2013.html#2013-12-16-imaginary-realities-is-back">Dec 16
+                                                    <span class="devblog-calendar-tooltip-text">Imaginary Realities is back</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2013.html#2013-11-28-out-of-band-mergings">Nov 28
+                                                    <span class="devblog-calendar-tooltip-text">Out of band mergings</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2013.html#2013-10-22-a-list-of-evennia-topics">Oct 22
+                                                    <span class="devblog-calendar-tooltip-text">A list of Evennia topics</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2013.html#2013-05-13-one-to-many">May 13
+                                                    <span class="devblog-calendar-tooltip-text">One to Many</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2013.html#2013-01-29-churning-behind-the-scenes">Jan 29
+                                                    <span class="devblog-calendar-tooltip-text">Churning behind the scenes</span>
+                                                    </a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href="2012.html">2012 (13)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2012.html#2012-10-28-evennia-changes-to-bsd-license">Oct 28
+                                                    <span class="devblog-calendar-tooltip-text">Evennia changes to BSD license</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2012.html#2012-10-05-community-interest">Oct  5
+                                                    <span class="devblog-calendar-tooltip-text">Community interest</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2012.html#2012-08-31-combining-twisted-and-django">Aug 31
+                                                    <span class="devblog-calendar-tooltip-text">Combining Twisted and Django</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2012.html#2012-08-16-taking-command">Aug 16
+                                                    <span class="devblog-calendar-tooltip-text">Taking command</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2012.html#2012-06-26-extending-time-and-details">Jun 26
+                                                    <span class="devblog-calendar-tooltip-text">Extending time and details</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2012.html#2012-06-11-coding-from-the-inside">Jun 11
+                                                    <span class="devblog-calendar-tooltip-text">Coding from the inside</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2012.html#2012-05-30-dummies-doing-(even-more)-dummy-things">May 30
+                                                    <span class="devblog-calendar-tooltip-text"> Dummies doing (even more) dummy things</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2012.html#2012-03-26-shortcuts-to-goodness">Mar 26
+                                                    <span class="devblog-calendar-tooltip-text">Shortcuts to goodness</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2012.html#2012-02-22-dummies-doing-dummy-things">Feb 22
+                                                    <span class="devblog-calendar-tooltip-text">Dummies doing dummy things</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2012.html#2012-02-17-commands-and-you">Feb 17
+                                                    <span class="devblog-calendar-tooltip-text">Commands and you</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2012.html#2012-02-15-such-a-small-thing-...">Feb 15
+                                                    <span class="devblog-calendar-tooltip-text"> Such a small thing ...</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2012.html#2012-02-05-evennia's-open-bottlenecks">Feb  5
+                                                    <span class="devblog-calendar-tooltip-text"> Evennia's open bottlenecks</span>
+                                                    </a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2012.html#2012-02-05-about-this-dev-blog">Feb  5
+                                                    <span class="devblog-calendar-tooltip-text">About this dev blog</span>
+                                                    </a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                            </ul>
+                        </div>
+            </header>
+            <section>
+                <h1>
+                    <a name="evennia-mudmu-creation-system" class="anchor"  href="#evennia-mudmu-creation-system">
+                        <span class="octicon octicon-link">
+                        </span>
+                    </a>Evennia Dev Blog<div class="sponsor">
+                        <div class="sponsor-column">
+                            <a href="https://www.patreon.com/griatch">
+                                <img class="patreon" src="../images/evennia_patreon_100x100.png" alt="Patreon">
+                            </a>
+                            <p>
+                            <a href="https://www.paypal.me/GriatchEvennia">
+                                <img class="paypal" src="../images/btn_donateCC_LG.gif" alt="Paypal donate">
+                            </a>
+                        </div>
+                </h1>
+
+                <em>Various Evennia- and MUD-related musings by Griatch, the Evennia lead developer.</em>
+
+                
+                    
+                    <div class="blog_post">
+                    <h1 id=2020-11-14-evennia-0.9.5-released>
+    Evennia 0.9.5 released
+    <a class="devblog-headerlink" href="2020.html#2020-11-14-evennia-0.9.5-released" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- November 14, 2020</div>
+</h1>
+<p><a href="https://1.bp.blogspot.com/-WACefg23bBA/X6_6vGTcjbI/AAAAAAAALh0/4FtZQDj5XosG_Dnyj6e-8ScHwyOTaOSzQCLcBGAsYHQ/s1544/evennia_screenshot.png"><img src="https://1.bp.blogspot.com/-WACefg23bBA/X6_6vGTcjbI/AAAAAAAALh0/4FtZQDj5XosG_Dnyj6e-8ScHwyOTaOSzQCLcBGAsYHQ/s320/evennia_screenshot.png" alt="" /></a></p>
+<p>As of today, Evennia 0.9.5 is out. Evennia is a Python based library and framework for creating text-based multiplayer games (MUD/MU*).</p>
+<p>This is a gradual improvement halfway between 0.9 and the upcoming 1.0. So if you have been keeping up-to-date with the <em>master</em> branch of Evennia over the last year you will not notice much difference from this release (time to upgrade if you haven't been keeping up though!).</p>
+<p>While an interim release, there are still a lot of things that has happened since v0.9:</p>
+<h4>Webclient improvements</h4>
+<ul>
+<li>
+<p>Big <strong>web client</strong> improvements (courtesy of contributor friarzen) - players can now save and restore pane layouts directly in the client (so you could have a separate pane for channel chatter, another for look-returns, two input panes etc etc).</p>
+</li>
+<li>
+<p>The layout changes makes it easier for devs to create default layouts to offer to players of their game. People in the Evennia community have already started doing very cool stuff with this, I'll try to gather screenshots for a future blog.</p>
+</li>
+<li>
+<p>Allow to redirect video/music to separate panes.</p>
+</li>
+<li>
+<p>Many other fixes, such as improving the input-history behavior.</p>
+</li>
+</ul>
+<h4>EvMenu improvements</h4>
+<p><strong>EvMenu</strong> is a powerful system for creating in-game text menus.</p>
+<ul>
+<li>
+<p>The <strong>EvMenu</strong> class was refactored to be easier to override. For example, all messages now go through <strong>EvMenu.msg</strong> which allows for easy customization. It also defaults to sending with a <strong>type</strong> of &quot;menu&quot;, making it easier to redirect menus to seprate panes in the webclient.</p>
+</li>
+<li>
+<p>In a node, EvMenu is now accessed via the much more logically named <strong>.ndb._evmenu</strong> instead of <strong>.ndb._menutree</strong> (the old name still works for backwards compatibility, but is deprecated).</p>
+</li>
+<li>
+<p>New optional <strong>EvMenu template</strong> system for quickly building simpler EvMenus without needing so much code. This makes it easy to catch and parse arbitrary input from the user and redirect to the correct node as needed. Creating menu nodes as functions still work (and is a lot more powerful), this can be mixed with templating to create different effects.</p>
+</li>
+</ul>
+<h4>New settings</h4>
+<ul>
+<li>
+<p><strong>INLINEFUNC_STACK_MAXSIZE</strong> is an integer that allows to control how big the inlinefunc nesting stacksize is.</p>
+</li>
+<li>
+<p>New <strong>DEFAULT_CHANNELS</strong> setting to allow customization of which channels should be initialized on startup. This can be modified after initial server start.</p>
+</li>
+<li>
+<p><strong>CHANNEL_HANDLER_CLASS</strong> allows for specifying an alternative to the default <strong>ChannelHandler</strong> if wanting to change how Channels behave.</p>
+</li>
+<li>
+<p><strong>SERVER_LOG_DAY_ROTATION</strong> defines how many days the server log should run before being force-rotated (default is seven days).</p>
+</li>
+<li>
+<p><strong>SERVER_LOG_MAX_SIZE</strong> specifies how big the log must be before it auto-rotates (even if <strong>SERVER_LOG_DAY_ROTATION</strong> days has not passed yet).</p>
+</li>
+<li>
+<p><strong>PORTAL_LOG_DAY_ROTATION, PORTA_LOG_MAX_SIZE</strong> - equivalent for the Portal.</p>
+</li>
+</ul>
+<h4>Other improvements</h4>
+<ul>
+<li>
+<p>The <strong>EvMore</strong> pager saw big performance speedups, making the viewing of large numbers of entries much snappier. You can now also paginate <strong>EvTables</strong> directly and create custom pagers by override the <strong>EvMore class</strong> (useful if you want to e.g. do a EvTable per-page).</p>
+</li>
+<li>
+<p>Improvement to the multi-match parser: Trying to get for example <strong>3-box</strong> will now fail with a no-found if there are only two boxes in the room (before it would show the multi-match menu).</p>
+</li>
+<li>
+<p>New <strong>inside_rec</strong> lockfunc to recursively check if an object is inside another. Putting this on a room will thus also check the contents of any objects in the room, not only the contents themselves. Or if you had something in your wallet (a container).</p>
+</li>
+<li>
+<p>New <strong>$random</strong> inlinefunc for producing a random number in strings.</p>
+</li>
+<li>
+<p><strong>TickerHandler.add()</strong> now returns a <strong>store_key</strong> to uniquely describe the ticker just added. The <strong>TickerHandler.remove()</strong> accepts a new kwarg <strong>store_key</strong> for removing the ticker - this makes it easier to manage tickers instead having to insert the full specifications of the ticker to remove it.</p>
+</li>
+<li>
+<p>Many fixes to the <strong>spawn</strong> command and prototype functionality. The new <strong>spawn/raw</strong> flag will now return the prototype-dict so one can manually edit and copy&amp;paste it.</p>
+</li>
+<li>
+<p>The <strong>evennia.GLOBAL_SCRIPTS</strong> container will now contain all global scripts, not only those explicitly created with the <strong>GLOBAL_SCRIPTS</strong> setting.</p>
+</li>
+<li>
+<p>The <strong>list_to_string</strong> utility converts a list to a nice string-representation, such as <strong>[&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;]</strong> -&gt; <strong><em>&quot;a, b, c and d&quot;</em></strong>. The function is renamed to <strong>iter_to_string</strong> (but old name still works) and now also works with generators and will not crash even when provided a single value.</p>
+</li>
+<li>
+<p>A lot of bug fixes and stability fixes!</p>
+</li>
+</ul>
+<h4>See the <a href="https://github.com/evennia/evennia/blob/master/CHANGELOG.md#evennia-095-nov-2020">changelog here.</a></h4>
+<h3>New documentation system</h3>
+<p>The bigger change with 0.9.5 is that we are moving to a new documentation system. The details of the long road to do this is documented in <a href="">my previous post</a>. The point is that we are stopping the use of the Github wiki in favor of statically generated documentation hosted on github pages. At the same time we also move the old evennia.com website from Google-sites to Github.</p>
+<p>Check it out:</p>
+<ul>
+<li>
+<p>New evennia.com: <a href="https://evennia.com">https://evennia.com</a></p>
+</li>
+<li>
+<p>New static documentation:  <a href="https://evennia.com/docs/latest">https://evennia.com/docs/latest</a></p>
+</li>
+</ul>
+<p>As for the docs, they will be maturing for a long time still. The old wiki will not be updated anymore, but it will also not be going anywhere in the short term. Version 0.9.5 of the docs is pretty much a copy of the wiki and I hope to not have to spend too much more work maintaining it since the wiki is still around.</p>
+<p>New updates and documentation features will primarily be happening in the 1.0-dev version of the documentation. This will include refactoring all pages as well as a new intro-tutorial and many other things.</p>
+<p>But that's for future blogs ...</p>
+
+<footer>
+    <p>
+    <small><em></em></small>
+    </p>
+</footer>
+                    </div>
+                
+                    <hr>
+                    <div class="blog_post">
+                    <h1 id=2020-10-20-on-using-markdown-with-sphinx>
+    On using Markdown with Sphinx
+    <a class="devblog-headerlink" href="2020.html#2020-10-20-on-using-markdown-with-sphinx" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- October 20, 2020</div>
+</h1>
+<p><a href="https://1.bp.blogspot.com/-GNQ1IGvFf3o/X44OC1-OxXI/AAAAAAAALgY/OugrLSGGW7YgPDxHuG-tveB-xcCQ2RVZACLcBGAsYHQ/s207/book.png"><img src="https://1.bp.blogspot.com/-GNQ1IGvFf3o/X44OC1-OxXI/AAAAAAAALgY/OugrLSGGW7YgPDxHuG-tveB-xcCQ2RVZACLcBGAsYHQ/s0/book.png" alt="" /></a></p>
+<p>Last post I wrote about the upcoming v1.0 of Evennia, the Python MU* creation engine. We are not getting to that 1.0 version quite yet though: The next release will be 0.9.5, hopefully out relatively soon (TM).</p>
+<p>Evennia 0.9.5 is, as you may guess, an intermediary release. Apart from the 1.0 roadmap just not being done yet, there is one other big reason for this - we are introducing documentation versioning and for that a proper release is needed as a base to start from. Version 0.9.5 contains everything already in <em>master</em> branch, so if you have kept up-to-date you won't notice too much difference. Here are some highlights compared to version 0.9:</p>
+<ul>
+<li>
+<p>EvMore will paginate and properly handle both EvTables and database query output. For huge data sets, pagination can give a 100-fold speed-increase. This is noticeable e.g. in the <strong>scripts</strong> and <strong>spawn/list</strong> commands, once you have a lot of items.</p>
+</li>
+<li>
+<p>EvMenu templating language, to make it easier to create simpler menus.</p>
+</li>
+<li>
+<p>Webclient improvements: Cleanup of interface and the ability for players to save/load their pane layouts from the client. The developer can still provide a default for them to start out with.</p>
+</li>
+<li>
+<p>MUD/Evennia Intro wizard to the tutorial world to explain basic game controls in an interactive way.</p>
+</li>
+<li>
+<p>Default channels can now be defined in settings instead of having to do so from in-game.</p>
+</li>
+<li>
+<p>New documentation system (see below).</p>
+</li>
+<li>
+<p>Many, many bug fixes and optimizations!</p>
+</li>
+</ul>
+<p>Many contributors helped out along the way. See the <a href="https://github.com/evennia/evennia/blob/master/CHANGELOG.md">changelog</a> where contributors of the bigger new features are listed.</p>
+<h2>The path to a new documentation</h2>
+<p>For many years we've used the Github wiki as our documentation hub. It has served us well. But as mentioned <a href="http://evennia.blogspot.com/2020/04/spring-updates-while-trying-to-stay.html">in my previous post</a>, it has its drawbacks, in particular when it comes to handling documentation for multiple Evennia versions in parallel.</p>
+<p>After considering a bunch of options, I eventually went with <a href="https://www.sphinx-doc.org">sphinx</a>, because it has such a good autodoc functionality (parsing of the source-code docstrings). This is despite our wiki docs are all in markdown and I dislike restructured text quite a bit. Our code also uses friendly and in-code-readable Google-style docstrings instead of Sphinx' hideous and unreadable format.</p>
+<p>Luckily there are extensions for Sphinx to handle this:</p>
+<ul>
+<li>
+<p><a href="https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html">Napoleon</a> to convert Google-style docstrings to reST on the fly</p>
+</li>
+<li>
+<p><a href="https://recommonmark.readthedocs.io/en/latest/index.html">recommonmark</a> to convert our markdown wiki pages to reST on compile-time</p>
+</li>
+<li>
+<p><a href="https://holzhaus.github.io/sphinx-multiversion/master/index.html">sphinx-multiversion</a> to merge docs from one or more GIT branches into a documentation where you can select between the versions.</p>
+</li>
+</ul>
+<p>What could go wrong? Well, it's been quite a ride.</p>
+<h4>Getting Markdown into reST</h4>
+<p>Linking to things in recommonmark turned out to be very flaky. I ended up forking and merging a bunch of PRs from the project but that was not enough: Clearly this thing was not built to convert 200 pages of technical markdown from a github wiki.</p>
+<p>My custom fork of recommonmark had to be tweaked a bit for my needs, such as not having to specify the <strong>.md</strong> file ending in every link and make sure the url-resolver worked as I expected. There were a bunch of other things but I will probably not merge this back, the changes are pretty Evennia-specific.</p>
+<p>Even so, many of my wiki links just wouldn't work. This is not necessarily recommonmark's fault, but how sphinx works by grouping things into <em>toctrees</em>, something that the Evennia wiki doesn't have.</p>
+<p>Also, the recommonmark way to make a toctree in Markdown is to make a list of links - you can't have any descriptive text, making the listing quite useless (apparently people only want bland lists of link-names?). After trying to figure out a way to make this work I eventually capitulated - I make pretty lists in Markdown while using a &quot;hidden&quot; toctree to inform sphinx how the pages are related.</p>
+<h4>Getting the wiki into the new doc site</h4>
+<p>This required more custom code. I wrote a custom importer that reads the wiki and cleans/reformats it in places where recommonmark just dies on them. I also made a preprocessor that not only finds orphan pages but also builds a toctree and remaps all links in all documents to their actual location on compilation. The remapper makes it a lot easier to move things around. The drawback is that every page needs to be uniquely named. Since this was already the case in the wiki, this was a good tradeoff. So with a lot of custom code the wiki eventually could port automatically.</p>
+<p>The thing is, that even with all this processing, recommonmark doesn't support stuff like Markdown tables, so you still have to fall back to reST notation for those. And Napoleon, while doing a good job of parsing google docstrings, do <em>not</em> expect Markdown. So the end result is <em>mostly</em> markdown but we still have to fall back to reST for some things. It's probably as far as we get.</p>
+<h4>Deploying the docs</h4>
+<p>Figuring out how to build and deploy these components together was the next challenge. Sphinx' default Makefile was quite anemic and I also wanted something that regular contributors could use to test their documentation contributions easily. I ended up having to expand the Makefile quite a lot while also adding separate deploy scripts and interfaces to github actions (which we recently started using too).</p>
+<p>Finally, the versioning. The sphinx-multiversion plugin works by extracting the branches you choose from git and running the sphinx compiler in each branch.  The plugin initially had a bug with how our docs are located (not at the root of the package) but after I reported it, it was quickly fixed. The result is a static document site where you can select between the available versions in the sidebar.</p>
+<p>I've not gotten down to trying to make LaTeX/PDF generation work yet. I'm dreading it quite a bit...</p>
+<h4>Where we are</h4>
+<p>The github wiki is now closed for external contributions. The v0.9.5 of the new documentation will pretty much be an import of the last state of the wiki with some minor cleanup (such as tables). While we'll fix outright errors in it, I don't plan to do many fixes of purely visual glitches from the conversion - the old wiki is still there should that be a problem.</p>
+<p>The main refactoring and cleanup of the documentation to fit its new home will instead happen in v1.0. While the rough structure of this is already in place, it's very much a work in progress at this point.</p>
+<h4>Conclusions</h4>
+<p>Evennia 0.9.5 has a lot of features, but the biggest things are 'meta' changes in the project itself. After it is out, it's onward towards 1.0 again!</p>
+
+<footer>
+    <p>
+    <small><em></em></small>
+    </p>
+</footer>
+                    </div>
+                
+                    <hr>
+                    <div class="blog_post">
+                    <h1 id=2020-04-14-spring-updates-while-trying-to-stay-healthy>
+    Spring updates while trying to stay healthy
+    <a class="devblog-headerlink" href="2020.html#2020-04-14-spring-updates-while-trying-to-stay-healthy" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- April 14, 2020</div>
+</h1>
+<p><a href="https://1.bp.blogspot.com/-vnauuJpCVfo/XpXkbERzSRI/AAAAAAAALJQ/lDoYHE6zjWsg7It_fsXn_3roGUISX2HxgCLcBGAsYHQ/s1600/spring-flower-and-snow.jpg"><img src="https://1.bp.blogspot.com/-vnauuJpCVfo/XpXkbERzSRI/AAAAAAAALJQ/lDoYHE6zjWsg7It_fsXn_3roGUISX2HxgCLcBGAsYHQ/s320/spring-flower-and-snow.jpg" alt="" /></a></p>
+<p>So, spring grows nearer for those of us on the Northern hemisphere. With everyone hopefully hunkered down and safe from the Covid-19 pandemic, I thought it overdue to make another dev blog for the progress of Evennia, the Python MU*-creation system.</p>
+<p>The last few months have seen primarily bug fixing on the Evennia front, but it also has seen an uptick of PRs from the community and the re-opening of the develop branch in earnest. There is still quite a lot of work to do before we can add that extra 0.1 and go from version 0.9 to 1.0.</p>
+<h3>What's in a version?</h3>
+<p>For me personally, I never put much stock in the notion of versions. Evennia didn't even have versions until a few years back: We used to just have a rolling git release. But eventually it became clear that our user base was big enough that we needed to more clearly separate major (and possibly breaking) updates from what came before. So I started versioning at Evennia 0.5 and have had roughly a new release every year since (not a plan or a promise, it just happened to turn out that way).</p>
+<p>Evennia has been useful (and been used) for game development for many years already. But there is no denying that a 1.x label tends to convey more confidence in a system than a 0.x label, that's just the way things are. So while the new version is still quite some way off, there are a bunch of changes and improvements that we want to do in this release to mark the version change in a good way.</p>
+<h3>Documentation changes</h3>
+<p>Our documentation will move away from our trusty <a href="https://github.com/evennia/evennia/wiki">Github wiki</a>. Instead we will convert the wiki into a static github page built from sources inside evennia/docs/.</p>
+<p>The advantage of the wiki is that it is a very low entry for people to contribute and fix things using Github's editing system. We have had a lot of use of this over the years and the wiki has served us well. The drawbacks are starting to get ever more noticeable, however:</p>
+<ul>
+<li>
+<p>Whereas the wiki is itself version-controlled, we cannot show multiple versions of the wiki at the same time. This makes it hard to update the documentation at the same time as non-released code is being written. This is probably my main reason for doing the change.</p>
+</li>
+<li>
+<p>The wiki today consists of some 200+ pages. It is hard to get an overview of what is where and what needs to be updated.</p>
+</li>
+<li>
+<p>The wiki word-search functionality is not really great.</p>
+</li>
+<li>
+<p>It's impossible to review changes before they go live, to check consistency and style. This has led to some documentation pages overlapping.</p>
+</li>
+<li>
+<p>Building the documentation to local HTML or PDF is an archaic process that I doubt anyone but me has done with any regularity.</p>
+</li>
+</ul>
+<p>The change so far planned is to switch to the <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> documentation build-system (same as Python/Django etc is using). We will use it with extensions that allows us to still use Markdown like in the old wiki. This also allows us to build a more comprehensive (and pretty) API documentation of the entire library. We have more options to add comprehensive online search functionality in this solution as well.</p>
+<p>Furthermore, will hopefully be able to set it up so that we can maintain and publish separate documentations for each forthcoming release. That is, you should be able to read the docs for 1.0, 1.1 or the latest master development as you like (similarly to how Django does it, although probably not as fancy from the onset).</p>
+<p>This means that contributions to the documentation will be done as PRs through GitHub, just like when contributing any other code. While this does add a little more of a hurdle to contributions, hopefully the benefits will far outweigh those. Building the docs locally will not require a running Evennia server (unless you want the api docs) and we will try to set everything up for to make it easy to contribute.</p>
+<p>Many of the details around the docs are still up in the air. This is still very much work-in-progress, like everything else.</p>
+<p>Work with this has started in the static-file-docs branch of Evennia. But we have not closed the wiki either - the two will exist in parallel for now.</p>
+<h3>PyPi</h3>
+<p>As mentioned before,  we will finally start to distribute Evennia via PyPi (the Python Package Index) - that is, you will be able to run <code>pip install evennia</code>. Using GIT will no longer be a requirement to get started.</p>
+<p>Considering how quickly people in open-source throw up their three lines of code on PyPi these days, it may be surprising Evennia is not already on PyPi. I have however felt that reading and referencing the highly-commented code is a big part and requirement for getting the most out of the library.</p>
+<p>With the new documentation system, this would improve. And you can of course still use git and follow master branch like the good ol' days if you want!</p>
+<h3>Web Admin improvements</h3>
+<p>For the longest time, the Django-admin component has been somewhat on the back-burner. With the help of community contributors, this is improving so you will be able to do more work the Admin GUI related to creating and managing objects, tie puppets to Accounts etc.</p>
+<h3>API improvements</h3>
+<p>Whereas the last few months have been mostly spent fixing lingering bugs, one thing planned for version 1.0 is a general cleanup of legacy strangeness in the API. For example, certain methods can return a list or a single object depending situation, which makes it hard to generalize. There are a lot of small quirks like that which we hope to address and make more consistent.</p>
+<p>There has also been a recent flurry of contributor PRs intended to help decouple Evennia's systems and make them easier to replace for those inclined to do so. Many of this is still being worked on, but it's likely you'll be able to replace many more &quot;core&quot; components for 1.0 with your own variations without doing any hacking in upstream code at all.</p>
+<p>... Needless to say, this is an advanced feature that most developers will never need. But Evennia was always intended to be heavily customizable and having the option is a good thing!</p>
+<p>Another feature that will come for 1.0 is a REST-API, added by one of our contributors. This uses Django-REST-Framework and makes it easier for external programs to authenticate and fetch data out of the Evennia database (great both for external apps, websites or custom what-have-you).</p>
+<p>At this time you can only fetch database objects via this interface, you cannot perform Command-calls or &quot;play the game&quot; this way (REST is a stateless concept and Evennia Commands tend to retain state).</p>
+<h3>Many other fixes and contributions</h3>
+<p>There's a truckload of stuff already available in master branch, but with the latest contributions of bigger code changes, we have started to use the Evennia develop branch again in earnest again. For a summary of the changes so far, check out the <a href="https://github.com/evennia/evennia/blob/develop/CHANGELOG.md">Changelog</a>.</p>
+<p>However, unless you want to contribute to Evennia itself (or really, really want to be on the bleeding edge), you are still recommended to use the master branch for now. A lot of work still to do, as said.</p>
+
+<footer>
+    <p>
+    <small><em><p>Image: ©George Hodan, released under CC0 Public Domain</p>
+</em></small>
+    </p>
+</footer>
+                    </div>
+                
+            </section>
+    </body>
+</html>

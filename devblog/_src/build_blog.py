@@ -25,7 +25,7 @@ from dataclasses import dataclass
 from collections import defaultdict
 from dateutil import parser as dateparser
 from datetime import datetime
-from os import mkdir, symlink, remove
+from os import mkdir, symlink, remove, chdir
 from os.path import abspath, dirname, join as pathjoin, sep
 import mistletoe
 import jinja2
@@ -34,13 +34,17 @@ import jinja2
 CURRDIR = dirname(abspath(__file__))
 SOURCE_DIR = pathjoin(CURRDIR, "markdown")
 TEMPLATE_DIR = pathjoin(CURRDIR, "templates")
-IMG_DIR = pathjoin(SOURCE_DIR, "images")
+
+IMG_DIR_NAME = "images"
+IMG_DIR = pathjoin(CURRDIR, "images")
+IMG_REL_LINK = "_src/images"
 
 OUTDIR = dirname(CURRDIR)
-OUTFILE_TEMPLATE = "devblogs_{year}.html"
-OUT_IMG_DIR = pathjoin(OUTDIR, "images")
+OUTFILE_TEMPLATE = "{year}.html"
+OUT_IMG_DIR = "images"
 
 START_PAGE = "index.html"
+
 BLOG_TEMPLATE = "blog.html"
 POST_TEMPLATE = "post.html"
 
@@ -100,8 +104,6 @@ def md2html():
         except ValueError:
             print(f"Warning: Markdown file '{filename}' is not on a recognized format. Skipping.")
             continue
-
-        print(f"Processing {filename}...")
 
         title = title[:-3]  # remove .md ending
         blurb = title[:11] + "..."
@@ -180,6 +182,8 @@ def md2html():
     # build the blog pages, per year
     html_pages = {}
     for blogpage in blogpages:
+        print(f"Processing blogs from {blogpage.year} ...")
+
         context = {
             "pageyear": blogpage.year,
             "blogpage": blogpage,
@@ -198,11 +202,18 @@ def build_pages(blog_pages):
     Generate devblog pages.
 
     """
+
     for html_file in glob.glob(pathjoin(OUTDIR, "*.html")):
         remove(html_file)
-    shutil.rmtree(OUT_IMG_DIR, ignore_errors=True)
+    try:
+        remove(pathjoin(OUTDIR, START_PAGE))
+    except FileNotFoundError:
+        pass
+    try:
+        remove(pathjoin(OUTDIR, IMG_DIR_NAME))
+    except FileNotFoundError:
+        pass
 
-    mkdir(OUT_IMG_DIR)
     html_pages = md2html()
 
     latest_year = -1
@@ -211,14 +222,15 @@ def build_pages(blog_pages):
         filename = pathjoin(OUTDIR, OUTFILE_TEMPLATE.format(year=year))
         if year > latest_year:
             latest_year = year
-            latest_page = filename
+            latest_page = filename.rsplit(sep, 1)[1] if sep in filename else filename
         with open(filename, 'w') as fil:
             fil.write(html_page)
 
-    shutil.copytree(IMG_DIR, OUT_IMG_DIR, dirs_exist_ok=True)
-    symlink(latest_page, pathjoin(OUTDIR, START_PAGE))
+    chdir(OUTDIR)
+    symlink(IMG_REL_LINK, IMG_DIR_NAME)
+    symlink(latest_page, START_PAGE)
 
-    print(f"Output written to {OUTDIR}. Latest year is {latest_year}.")
+    print(f"Output htmls written to {OUTDIR}{sep}. Latest year is {latest_year}.")
 
 
 if __name__ == "__main__":
