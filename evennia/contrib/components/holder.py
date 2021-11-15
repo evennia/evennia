@@ -1,7 +1,87 @@
-import inspect
+from evennia.contrib import components
 
-from evennia.contrib.components import listing
-from evennia.utils import logger
+
+class ComponentProperty:
+    def __init__(self, component_name, **kwargs):
+        self.component_name = component_name
+        self.values = kwargs
+
+    def __get__(self, instance, owner):
+        component = instance.components.get(self.component_name)
+        return component
+
+    def __set__(self, instance, value):
+        instance.components.replace(value)
+
+    def __set_name__(self, owner, name):
+        class_components = getattr(owner, "_class_components", None)
+        if not class_components:
+            class_components = []
+            setattr(owner, "_class_components", class_components)
+
+        class_components.append((self.component_name, self.values))
+
+
+class ComponentHandler:
+    def __init__(self, host):
+        self.host = host
+        self._loaded_components = {}
+
+    def add(self, component):
+        self._set_component(component)
+        self.db_names.append(component.name)
+        component.on_added(self.host)
+
+    def add_default(self, name):
+        component = components.get_component_class(name)
+        if not component:
+            raise ComponentDoesNotExist(f"Component {name} does not exist.")
+
+        new_component = component.default_create(self.host)
+        self._set_component(new_component)
+        self.db_names.append(name)
+        new_component.on_added(self.host)
+
+    def remove(self, name):
+        instance = self.get(name)
+        if not instance:
+            message = f"Cannot remove {name} from {self.host.name} as it is not registered."
+            raise ComponentIsNotRegistered(message)
+
+        instance.on_removed(self.host)
+        self.db_names.remove(name)
+
+    def replace(self, name, new_component):
+        if self.has(name):
+            self.remove(name)
+        self.add(new_component)
+
+    def get(self, name):
+        return self._loaded_components.get(name)
+
+    def has(self, name):
+        return name in self._loaded_components
+
+    def initialize(self):
+        component_names = self.db_names
+        if not component_names:
+            return
+
+        for component_name in component_names:
+            component = components.get_component_class(component_name)
+            if component:
+                component_instance = component.load(self)
+                self._set_component(component_instance)
+            else:
+                message = f"Could not initialize runtime component {component_name} of {self.host.name}"
+                raise ComponentDoesNotExist(message)
+
+    def _set_component(self, component):
+        self._loaded_components[component.name] = component
+
+    @property
+    def db_names(self):
+        return self.host.attributes.get("component_names")
 
 
 class ComponentHolderMixin(object):
@@ -12,97 +92,32 @@ class ComponentHolderMixin(object):
     All registered components are initialized on the typeclass.
     They will be of None value if not present in the class components or runtime components.
     """
-    class_components = []
 
     def at_init(self):
-        self.component_instances = {}
-        for component in listing.all_components:
-            setattr(self, component.name, None)
-
         super(ComponentHolderMixin, self).at_init()
-        self.initialize_components()
+        setattr(self, "_component_handler", ComponentHandler(self))
+        self.components.initialize()
 
     def at_object_creation(self):
-        """
-        This initializes a newly created object to hold components.
-        Class components will be instanced via default_create.
-        If a class component is already instanced it will be duplicated instead.
-        """
-        self.component_instances = {}
-        self.db.runtime_components = []
-        super(ComponentHolderMixin, self).at_object_creation()
-        for component_class in self.class_components:
-            if inspect.isclass(component_class):
-                component_instance = component_class.default_create(self)
-            else:
-                component_instance = component_class.duplicate(self, register=False)
-
-            self._set_component(component_instance)
-
-    def initialize_components(self):
-        """
-        Loads components from DB values and sets them as usable attributes on the object
-        """
-        for component_class in self.class_components:
-            component_instance = component_class.load(self)
-            self._set_component(component_instance)
-
-        runtime_component_names = self.runtime_component_names
-        if not runtime_component_names:
-            return
-
-        for component_name in runtime_component_names:
-            component = listing.get(component_name)
-            if component:
-                component_instance = component.load(self)
-                self._set_component(component_instance)
-            else:
-                logger.log_err(f"Could not initialize runtime component {component_name} from {self.name}")
-
-    def register_component(self, component):
-        """
-        Registers new components as runtime or replaces an existing component.
-        """
-        existing_component = self.component_instances.get(component.name)
-        if existing_component:
-            self.unregister_component(existing_component)
-        else:
-            self.db.runtime_components.append(component.name)
-
-        self._set_component(component)
-        component.on_register(self)
-
-    def unregister_component(self, component):
-        """
-        Unregisters a component, only works for runtime components
-        """
-        if component.name in self.class_components_names:
-            raise ValueError("Cannot unregister class components.")
-
-        component.on_unregister(self)
-        if component.name in self.runtime_component_names:
-            self.db.runtime_components.remove(component.name)
-
-        setattr(self, component.name, None)
-        del self.component_instances[component.name]
+        super().at_object_creation()
+        component_names = []
+        setattr(self, "_component_handler", ComponentHandler(self))
+        class_components = getattr(self, "_class_components", None)
+        for component_name, values in class_components:
+            component_class = components.get_component_class(component_name)
+            component = component_class.create(self, **values)
+            component_names.append(component_name)
+            self.components._loaded_components[component_name] = component
+        self.db.component_names = component_names
 
     @property
-    def runtime_components(self):
-        runtime_component_names = self.db.runtime_components
-        component_instances = [
-            self.component_instances.get(name)
-            for name in runtime_component_names
-        ]
-        return component_instances
+    def components(self) -> ComponentHandler:
+        return getattr(self, "_component_handler", None)
 
-    @property
-    def runtime_component_names(self):
-        return self.db.runtime_components
 
-    @property
-    def class_component_names(self):
-        return [c.name for c in self.class_components]
+class ComponentDoesNotExist(Exception):
+    pass
 
-    def _set_component(self, component):
-        self.component_instances[component.name] = component
-        setattr(self, component.name, component)
+
+class ComponentIsNotRegistered(Exception):
+    pass

@@ -1,35 +1,29 @@
-from evennia import DefaultCharacter
-from evennia.contrib.components import ComponentHolderMixin, Component, DBField
+from evennia.contrib.components import ComponentHolderMixin, Component, DBField, ComponentProperty
+from evennia.objects.objects import DefaultCharacter
 from evennia.utils.test_resources import EvenniaTest
-from . import listing
 
 
-@listing.register
 class ComponentTestA(Component):
     name = "test_a"
-    my_int = DBField(default_value=1)
-    my_list = DBField(default_value=list)
+    my_int = DBField(default=1)
+    my_list = DBField(default=[])
 
 
-@listing.register
 class ComponentTestB(Component):
     name = "test_b"
-    my_int = DBField(default_value=1)
-    my_list = DBField(default_value=list)
+    my_int = DBField(default=1)
+    my_list = DBField(default=[])
 
 
-@listing.register
 class RuntimeComponentTestC(Component):
     name = "test_c"
-    my_int = DBField(default_value=6)
-    my_dict = DBField(default_value=dict)
+    my_int = DBField(default=6)
+    my_dict = DBField(default={})
 
 
 class CharacterWithComponents(ComponentHolderMixin, DefaultCharacter):
-    class_components = [
-        ComponentTestA,
-        ComponentTestB.as_template(my_int=3, my_list=[1, 2, 3])
-    ]
+    test_a = ComponentProperty("test_a")
+    test_b = ComponentProperty("test_b", my_int=3, my_list=[1, 2, 3])
 
 
 class TestComponents(EvenniaTest):
@@ -52,35 +46,24 @@ class TestComponents(EvenniaTest):
         assert self.char1.test_b.my_list == [1, 2, 3]
 
     def test_character_can_register_runtime_component(self):
-        rct = RuntimeComponentTestC.default_create(None)
-        self.char1.register_component(rct)
+        rct = RuntimeComponentTestC.as_template()
+        self.char1.components.add(rct)
+        test_c = self.char1.components.get('test_c')
 
-        assert self.char1.test_c
-        assert self.char1.test_c.my_int == 6
-        assert self.char1.test_c.my_dict == {}
-        assert len(self.char1.runtime_component_names) == 1
-        assert self.char1.runtime_component_names[0] == "test_c"
-
-    def test_all_components_show_in_components_instance(self):
-        rct = RuntimeComponentTestC.default_create(None)
-        self.char1.register_component(rct)
-        components = self.char1.component_instances
-
-        assert components.get("test_a") is self.char1.test_a
-        assert components.get("test_b") is self.char1.test_b
-        assert components.get("test_c") is rct
+        assert test_c
+        assert test_c.my_int == 6
+        assert test_c.my_dict == {}
 
     def test_component_template_is_standalone(self):
         rct = RuntimeComponentTestC.as_template(my_int=10)
-        assert rct.my_int == 10
 
-    def test_component_template_transfers_to_new_host(self):
-        rct = RuntimeComponentTestC.as_template(my_int=10)
-        self.char1.register_component(rct)
-        assert self.char1.test_c.my_int == 10
+        assert rct.my_int == 10
 
     def test_component_duplicates_correctly(self):
         rct = RuntimeComponentTestC.as_template(my_int=10)
         new_rct = rct.duplicate(self.char1)
-        assert self.char1.test_c.my_int == 10
+        self.char1.components.add(new_rct)
+        test_c = self.char1.components.get('test_c')
+
+        assert test_c.my_int == 10
         assert new_rct is not rct

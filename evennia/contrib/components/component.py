@@ -9,84 +9,83 @@ class Component:
     def __init__(self, host=None):
         assert self.name, "All Components must have a Name"
         self.host = host
-        self._tdb = AttributeHandler(self, InMemoryAttributeBackend) if not host else None
-        self._tndb = AttributeHandler(self, InMemoryAttributeBackend) if not host else None
+        self._tdb = None
+        self._tndb = None
 
     @classmethod
     def as_template(cls, **kwargs):
-        new = cls.default_create(None, **kwargs)
+        """
+        This allows you to create a stand alone Component that will
+        store its own values in memory.
+        You can then duplicate it or add it to a host later.
+        """
+        new = cls.default_create(None)
+        new._tdb = AttributeHandler(new, InMemoryAttributeBackend)
+        new._tndb = AttributeHandler(new, InMemoryAttributeBackend)
+        for key, value in kwargs.items():
+            setattr(new, key, value)
+
         return new
 
     @classmethod
-    def default_create(cls, host, **kwargs):
+    def default_create(cls, host):
         """
         This is called when the host is created
          and should return the base initialized state of a component.
         """
         new = cls(host)
-        chained = (
-            (new.db_field_names, new.attributes),
-            (new.ndb_field_names, new.nattributes)
-        )
-        for fields, handler in chained:
-            for field_name in fields:
-                provided_value = kwargs.get(field_name)
-                if provided_value is None:
-                    provided_value = cls.__dict__[field_name].get_default_value()
-
-                setattr(new, field_name, provided_value)
-
         return new
 
     @classmethod
-    def create(cls, host, register=True, **kwargs):
+    def create(cls, host, **kwargs):
         """
         This is the method to call when supplying kwargs to initialize a component.
         Useful with runtime components
         """
-        new = cls.default_create(host, **kwargs)
-        if host and register:
-            host.register_component(new)
+        new = cls.default_create(host)
+        for key, value in kwargs.items():
+            setattr(new, key, value)
 
         return new
 
     def cleanup(self):
-        """ This cleans all attributes from the host's db """
+        """ This cleans all component fields from the host's db """
         for attribute in self._all_db_field_names:
             delattr(self, attribute)
 
-    def duplicate(self, new_host=None, register=True):
+    def duplicate(self, new_host=None):
         """
         This copies the current values of the component instance
         to a new instance.
 
-        Passing a host without specifying register=False
-        will automatically make the host register it.
+        When passing a host, the values will be written directly to it.
         """
         new = type(self).default_create(new_host)
         for attribute in self._all_db_field_names:
             value = getattr(self, attribute, None)
             setattr(new, attribute, value)
 
-        if new_host and register:
-            new_host.register_component(self)
-
         return new
 
     @classmethod
     def load(cls, host):
+        """ This is called whenever a component is loaded (ex: Server Restart) """
         return cls(host)
 
-    def on_register(self, host):
-        if not self.host:
-            self.host = host
-            self._copy_temporary_attributes_to_host()
-        else:
-            raise ComponentRegisterError("Components should not register twice!")
+    def on_added(self, host):
+        if self.host:
+            if self.host == host:
+                return
+            else:
+                raise ComponentRegisterError("Components must not register twice!")
 
-    def on_unregister(self, host):
+        self.host = host
+        if self._tdb or self._tndb:
+            self._copy_temporary_attributes_to_host()
+
+    def on_removed(self, host):
         if host != self.host:
-            raise ComponentRegisterError("Component attempted to unregister from the wrong host.")
+            raise ComponentRegisterError("Component attempted to remove from the wrong host.")
         self.host = None
 
     def _copy_temporary_attributes_to_host(self):

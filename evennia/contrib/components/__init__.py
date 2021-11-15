@@ -42,9 +42,12 @@ This helps writing isolated code and reusing it over multiple objects.
   I recommend placing the components package inside the typeclasses.
 """
 
-
-from . import listing
-from .listing import register
-from evennia.contrib.components.dbfield import DBField, NDBField
 from evennia.contrib.components.component import Component
-from evennia.contrib.components.holder import ComponentHolderMixin
+from evennia.contrib.components.dbfield import DBField, NDBField
+from evennia.contrib.components.holder import ComponentHolderMixin, ComponentProperty
+
+
+def get_component_class(component_name):
+    subclasses = Component.__subclasses__()
+    component_class = next((sc for sc in subclasses if sc.name == component_name))
+    return component_class
