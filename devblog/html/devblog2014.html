@@ -1,0 +1,735 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        <title>Devblog: Evennia Python MUD/MU creation system</title>
+        <link rel="shortcut icon" type="image/x-icon" href="../../images/favicon.ico">
+        <link rel="stylesheet" href="../../stylesheets/styles.css">
+        <link rel="stylesheet" href="../../stylesheets/pygment_trac.css">
+        <link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
+        <link href='https://fonts.googleapis.com/css?family=Arvo' rel='stylesheet'>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <meta name="description" content="Evennia is a modern Python library and server for creating text-based        multi-player games and virtual worlds (also known as MUD, MUSH, MU, MUX, MUCK, etc). While Evennia handles all the necessary things every online game needs, like database and networking, you create the game of your dreams by writing normal Python modules.">
+        <!--[if lt IE 9]>
+            <script src="//html5shiv.googlecode.com/svn/trunk/html5.js">
+            </script>
+        <![endif]-->
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <p>
+                <img class="logo" src="../../images/evennia_logo.png" alt="Evennia logo">
+                </p>
+                <h1 class="header">Evennia</h1>
+                <p class="header header-text">The Python MU* Development Library</p>
+                <div class="linksection">
+                    <ul>
+                        <div class="buttonsection">
+                            <li>
+                                <a class="buttons" href="https://www.evennia.com">Back to Evennia</a>
+                            </li>
+                    </ul>
+                        </div>
+                        <div class="devblog-calendar">
+                            <ul>
+                                
+                                    <li><a href=#devblog-posts>2021 (2)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2021.html#2021-03-21-where-do-i-begin?">March 21</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2021.html#2021-01-01-happy-new-years-2021!">January  1</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href=#devblog-posts>2020 (3)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2020.html#2020-11-14-evennia-0.9.5-released">November 14</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2020.html#2020-10-20-on-using-markdown-with-sphinx">October 20</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2020.html#2020-04-14-spring-updates-while-trying-to-stay-healthy">April 14</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href=#devblog-posts>2019 (7)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2019.html#2019-09-30-blackifying-and-fixing-bugs">September 30</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2019.html#2019-07-04-evennia-0.9-released">July  4</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2019.html#2019-05-26-creating-evscaperoom-part-2">May 26</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2019.html#2019-05-18-creating-evscaperoom-part-1">May 18</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2019.html#2019-05-09-podcast-about-evennia">May  9</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2019.html#2019-04-25-steaming-on-eating-jam">April 25</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2019.html#2019-01-02-into-2019">January  2</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href=#devblog-posts>2018 (4)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2018.html#2018-09-30-evennia-0.8-released">September 30</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2018.html#2018-08-18-inline-building-in-upcoming-evennia-0.8">August 18</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2018.html#2018-01-27-kicking-into-gear-from-a-distance">January 27</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2018.html#2018-01-05-new-year,-new-stuff">January  5</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href=#devblog-posts>2017 (6)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2017.html#2017-10-29-getting-a-mud-rp-scene-going">October 29</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2017.html#2017-10-01-evennia-in-hacktobergest-2017">October  1</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2017.html#2017-09-20-evennia-0.7-released">September 20</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2017.html#2017-08-25-renaming-django's-auth-user-and-app">August 25</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2017.html#2017-04-23-the-luxury-of-a-creative-community">April 23</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2017.html#2017-02-05-news-items-from-the-new-year">February  5</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href=#devblog-posts>2016 (7)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2016.html#2016-11-30-birthday-retrospective">November 30</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2016.html#2016-10-13-season-of-fixes">October 13</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2016.html#2016-07-01-the-art-of-sharing-nicks-and-descriptions">July  1</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2016.html#2016-05-31-evennia-in-pictures">May 31</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2016.html#2016-05-22-evennia-0.6!">May 22</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2016.html#2016-03-24-technical-stuff-happening">March 24</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2016.html#2016-02-14-climbing-up-branches">February 14</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href=#devblog-posts>2015 (13)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2015.html#2015-12-17-a-summary-of-a-year">December 17</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2015.html#2015-11-12-mit-uses-evennia!">November 12</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2015.html#2015-10-11-illustrations-and-soaps">October 11</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2015.html#2015-10-02-emoting-system">October  2</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2015.html#2015-09-29-evennia-on-`podcast.__init__`">September 29</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2015.html#2015-09-24-pushing-through-a-straw">September 24</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2015.html#2015-08-27-a-wagon-load-of-post-summer-updates">August 27</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2015.html#2015-06-22-announcing-the-evennia-example-game-project-"ainneve"">June 22</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2015.html#2015-06-15-need-your-help!">June 15</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2015.html#2015-05-30-dreaming-big?">May 30</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2015.html#2015-05-11-things-goin-on">May 11</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2015.html#2015-05-09-documenting-python-without-sphinx">May  9</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2015.html#2015-01-19-building-django-proxies-and-mud-libraries">January 19</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href=#devblog-posts>2014 (7)
+                                        
+                                            <ul class="devblog-calendar-open">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2014.html#2014-10-02-slowly-moving-through-town">October  2</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2014.html#2014-08-04-dance-my-puppets">August  4</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2014.html#2014-06-30-webby-stuff">June 30</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2014.html#2014-06-15-bringing-back-python-memory">June 15</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2014.html#2014-05-16-imaginary-realities-volume-6,-issue-1">May 16</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2014.html#2014-02-08-moving-from-google-code-to-github">February  8</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2014.html#2014-01-24-looking-forwards-and-backwards">January 24</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href=#devblog-posts>2013 (5)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2013.html#2013-12-16-imaginary-realities-is-back">December 16</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2013.html#2013-11-28-out-of-band-mergings">November 28</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2013.html#2013-10-22-a-list-of-evennia-topics">October 22</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2013.html#2013-05-13-one-to-many">May 13</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2013.html#2013-01-29-churning-behind-the-scenes">January 29</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href=#devblog-posts>2012 (13)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2012.html#2012-10-28-evennia-changes-to-bsd-license">October 28</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2012.html#2012-10-05-community-interest">October  5</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2012.html#2012-08-31-combining-twisted-and-django">August 31</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2012.html#2012-08-16-taking-command">August 16</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2012.html#2012-06-26-extending-time-and-details">June 26</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2012.html#2012-06-11-coding-from-the-inside">June 11</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2012.html#2012-05-30-dummies-doing-(even-more)-dummy-things">May 30</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2012.html#2012-03-26-shortcuts-to-goodness">March 26</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2012.html#2012-02-22-dummies-doing-dummy-things">February 22</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2012.html#2012-02-17-commands-and-you">February 17</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2012.html#2012-02-15-such-a-small-thing-...">February 15</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2012.html#2012-02-05-evennia's-open-bottlenecks">February  5</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2012.html#2012-02-05-about-this-dev-blog">February  5</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                            </ul>
+                        </div>
+            </header>
+            <section>
+                <h1>
+                    <a name="evennia-mudmu-creation-system" class="anchor"  href="#evennia-mudmu-creation-system">
+                        <span class="octicon octicon-link">
+                        </span>
+                    </a>Evennia Dev Blog<div class="sponsor">
+                        <div class="sponsor-column">
+                            <a href="https://www.patreon.com/griatch">
+                                <img class="patreon" src="../../images/evennia_patreon_100x100.png" alt="Patreon">
+                            </a>
+                            <p>
+                            <a href="https://www.paypal.me/GriatchEvennia">
+                                <img class="paypal" src="../../images/btn_donateCC_LG.gif" alt="Paypal donate">
+                            </a>
+                        </div>
+                </h1>
+
+                <em>Random Evennia- and MUD-related musings of Griatch, the Evennia lead developer.</em>
+
+                
+                    
+                    <div class="blog_post">
+                    <h1 id=2014-10-02-slowly-moving-through-town>
+    Slowly moving through town
+    <a class="devblog-headerlink" href="devblog2014.html#2014-10-02-slowly-moving-through-town" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- October  2, 2014</div>
+</h1>
+<p><a href="https://4.bp.blogspot.com/-LEAcNfC4EmQ/VC1ySqlz7cI/AAAAAAAAEO4/yVEgs7T6jlo/s1600/Grapevinesnail_01.jpg"><img src="https://4.bp.blogspot.com/-LEAcNfC4EmQ/VC1ySqlz7cI/AAAAAAAAEO4/yVEgs7T6jlo/s1600/Grapevinesnail_01.jpg" alt="" /></a></p>
+<p>After getting questions about it I recently added the <a href="https://github.com/evennia/evennia/blob/master/contrib/slow_exit.py">Slow Exit contribution</a> to the main repository as an example.</p>
+<p>Delayed movement is something often seen in various text games, it simply means that the time to move from room to room is artificially extended.</p>
+<p>Evennia's default model uses traditional MU* rooms. These are simple nodes with exits linking them together. Such Rooms have no internal size and no inherent spatial relationship to each other. Moving from any Room to any other is happening as fast as the system can process the movement.</p>
+<p>Introducing a delay on exit traversal can have a surprisingly big effect on a game:</p>
+<ul>
+<li>
+<p>It dramatically changes the &quot;feel&quot; of the game. It often makes the game feel less &quot;twitch&quot; and slows things down in a very real way. It lets Players consider movement as a &quot;cost&quot;.</p>
+</li>
+<li>
+<p>It simulates movement speed. A &quot;quick&quot; (or maybe well-rested) character might perceive an actual difference in traversal. The traversal speed can vary depending on if the Character is &quot;running&quot; or &quot;walking&quot;.</p>
+</li>
+<li>
+<p>It can emulate travel distance. An Exit leading to &quot;the top of the mountain&quot; may take longer to traverse than going &quot;inside the tent&quot;.</p>
+</li>
+<li>
+<p>It makes movement a &quot;cost&quot; to take into consideration in the game. Moving back and forth over and over across a distance of multiple rooms becomes a much more daunting prospect with a time delay than if you could just zip along as quickly as you could press the button. This also has effects on map and quest design.</p>
+</li>
+</ul>
+<p>Introducing delayed movement in Evennia is simple. But to explain the idea, let's first briefly explain how Evennia implements Exits.</p>
+<h4>A brief sideline: About Exits</h4>
+<p>An Exit in Evennia is a persistent Object sitting in a room. The Exit class is just like any Object except for two things - it stores a &quot;destination&quot; property and it houses a CommandSet on itself. This particular CommandSet holds a single command with the same name as the Exit object.</p>
+<p>Commands and CommandSets are things <a href="http://evennia.blogspot.se/2012/08/taking-command.html">I've covered in earlier blog posts</a>. Suffice to say is that any number of command sets can be merged together dynamically to at any moment represent the commands available to the Character at any given time or situation.</p>
+<p>What happens when an Exit bject is in the same room as a Character is that the Exit's command set is dynamically merged with that of the Character. This means a new command - which always has the same name as the Exit - becomes available. The result is that if the Exit object is called &quot;south&quot;, the Character can use the command &quot;south&quot;. By default all the command does is to call a hook method on the Exit object. This hook hooks simply moves the calling Character to the &quot;destination&quot; stored by the Exit. Done!</p>
+<p>The nice thing with this is that the whole system is implemented without any special cases or custom hard-wired code. It also means that the entire Exit system can be changed and modified without ever touching Evennia's core.</p>
+<h4>Delaying Exits</h4>
+<p>To delay the traversal, the principle is simple - after the Exit command has triggered, wait for a little while before continuing.</p>
+<p>Technically we define a new class of Exit, let's call it SlowExit, inheriting from the default Exit. We locate the spot where the Exit normally sends traversing objects on their way (this is a method called move_to()).</p>
+<p>Since Evennia is based on Twisted, we use Twisted's intrinsic CallLater() function to delay the move for as many seconds we desire (in the contrib I use a thin wrapper around CallLater called delay()). The result is that the command is called, you get a little text saying that you have started moving ... and a few seconds later you actually move.</p>
+<p>Once one understands how Exits work it's really quite straight forward - see the <a href="https://github.com/evennia/evennia/blob/master/contrib/slow_exit.py">code on github</a> for more details (it's got plenty of comments).</p>
+<p>In the contrib are also some example utility commands for setting one's movement speed and to abort movement if you change your mind before the timeout has passed.</p>
+<p>This simple start can easily be expanded as befits each individual game. One can imagine introducing anything from stamina costs to make travel time be dynamically calculated based on terrain or other factors.</p>
+
+<footer>
+    <p>
+    <small><em></em></small>
+    </p>
+</footer>
+                    </div>
+                
+                    <hr>
+                    <div class="blog_post">
+                    <h1 id=2014-08-04-dance-my-puppets>
+    Dance my puppets
+    <a class="devblog-headerlink" href="devblog2014.html#2014-08-04-dance-my-puppets" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- August  4, 2014</div>
+</h1>
+<p><a href="http://upload.wikimedia.org/wikipedia/commons/thumb/7/70/5016_-_Archaeological_Museum,_Athens_-_Dolls_-_Photo_by_Giovanni_Dall%27Orto,_Nov_13_2009.jpg/374px-5016_-_Archaeological_Museum,_Athens_-_Dolls_-_Photo_by_Giovanni_Dall%27Orto,_Nov_13_2009.jpg"><img src="https://lh3.googleusercontent.com/proxy/hraqnaf9pLN_5rYSN5vnqysZwOaipiA32vImwp1-TWic6HtbYxqlwtRLjJgl9WQd6IY0TsCGPiPaEw8HEEgcxx_yy9S3E3KRKRk0Ksdm50RDLgAtNaftkVdS2EGU0nuOqdIeUHIWmijKMWNtknEj7891LEFUgjaTDCcsvenRq7f3032soPG_mfUz5bXw7PMGiyQd42PSnvbBh4ufwvzvlQZp-93GVKsTH40MN5vgQm0SfEDVp4fNY49Yyo16MLMQM5MVEfWA9EKmy_HxCPwX07NmWLwIRbRD1_q821tQXDaYeJzzj40If2hJrB1EKPTzo41A7HKfsPbRnla48S9wtqcny_kTO88AdcF1=s0-d" alt="" /></a></p>
+<p>In many traditional multiplayer text engines for MUD/MUSH/MU*, the player connects to the game with an account name that also becomes their character's in-game name. When they log into the game they immediately &quot;become&quot; that character. If they want to play with another character, they need to create a new account.</p>
+<p>A single-login system is easy to implement but many code bases try to expand with some sort of &quot;account system&quot; where a single login &quot;account&quot; will allow you to manage one or more game characters. Matthew “Chaos” Sheahan  beautifully argues for the benefits of an account system in the April issue of <a href="http://journal.imaginary-realities.com/volume-06/issue-01/index.html">Imaginary Realities</a>; you can read his article <a href="http://journal.imaginary-realities.com/volume-06/issue-01/your-mud-should-have-an-account-system/index.html">here</a>.</p>
+<h3>Evennia and account systems</h3>
+<p>First a brief show of how Evennia handles this. We use the following separation:</p>
+<p><strong>Session(s) &lt;-&gt; Player &lt;-&gt; Objects/Characters(s)</strong></p>
+<p>The <em>Session</em> object represents individual client connections to Evennia. The <em>Player</em> is our &quot;account&quot; object. It holds the password hash and your login name but has no in-game existence. Finally we have <em>Objects</em>, the most common being a subclass of Object we call <em>Character.</em> Objects exist in the game. They are &quot;puppeted&quot; by Sessions via the Player account.</p>
+<p>From this separation an account system follows naturally. Evennia also offers fully flexible puppeting out of the box: Changing characters (or for staff to puppet an NPC) is simply a matter of &quot;disconnecting&quot; from one Character and connecting to another (presuming you have permission to do so).</p>
+<h3>The Multisession modes of Evennia</h3>
+<p>This is the main gist of this entry since we just added another of these (mode 3). Evennia now offers four different <em>multisession modes</em> for the game designer to choose between. They affect how you gamers may control their characters and can be changed with just a server reload.</p>
+<h4>Mode 0</h4>
+<p>This is emulates the &quot;traditional&quot; mud codebase style. In mode 0 a Session controls one Character and one character only. Only one Session per account is allowed - that is, if a user try to connect to their Player account with a different client the old connection will be disconnected. In the default command set a new Character is created with the same name as the Player account and the two are automatically connected whenever they log in. To the user this makes Player and Character seem to be virtually the same thing.</p>
+<h4>Mode 1</h4>
+<p>In this mode, multiple Sessions are allowed per Player account. You still only have one Character per account but you can control that Character from any number of simultaneously connected clients. This is a requirement from MUSHes and some slower-moving games where there are communities of gamers who want to conveniently track the progress of the game continuously on multiple clients and computers.</p>
+<h4>Mode 2</h4>
+<p>In multisession mode 2, multiple Characters are allowed per Player account. No Characters are created by default in this mode, rather the default command set will drop you to a simplified OOC management screen where you can create new characters, list the ones you already have and puppet them. This mode offers true multiplaying, where you can connect via several clients simultaneously, each Session controlling a different Character.</p>
+<h4>Mode 3</h4>
+<p>This mode allows gamers not only to play multiple Characters on the same Player account (as in mode 2) but to also connect <em>multiple Sessions to each Character.</em> This is a multi-character version of Mode 1, where players can control the same Character via Player logins from several different clients on different machines in any combination.</p>
+<p>It's interesting that some of these modes may seem silly or superfluous to people used to a certain type of MU* yet are killer features for other communities. It goes to show how different the needs are for users of different game styles.</p>
+
+<footer>
+    <p>
+    <small><em></em></small>
+    </p>
+</footer>
+                    </div>
+                
+                    <hr>
+                    <div class="blog_post">
+                    <h1 id=2014-06-30-webby-stuff>
+    Webby stuff
+    <a class="devblog-headerlink" href="devblog2014.html#2014-06-30-webby-stuff" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- June 30, 2014</div>
+</h1>
+<p><a href="https://3.bp.blogspot.com/-82MT42ksmuU/U7FpMy-LgGI/AAAAAAAADqA/ok6MfvNNTvY/s1600/spiderweb.jpg"><img src="https://3.bp.blogspot.com/-82MT42ksmuU/U7FpMy-LgGI/AAAAAAAADqA/ok6MfvNNTvY/s1600/spiderweb.jpg" alt="" /></a></p>
+<p>Latest Evennia come with a range of improvements, mainly related to its integration with the web.</p>
+<h3>New and improved ways to expand the website/webclient</h3>
+<p>Thanks to the work of contributor Kelketek, Evennia's Django-based web system (website and webclient) has been restructured to be much easier to expand. Previously you had to basically copy the entire web/ folder into your game and modify things in-place. This was not ideal since it made it inherently harder to update when things changed upstream. Now Evennia makes use of Django's <em>collectstatic</em> functionality to allow people to plugin and overload only the media files and templates that they need. Kelketek wrote a new and shiny <a href="https://github.com/evennia/evennia/wiki/Web%20Tutorial">web tutorial</a> explaining just how things work.</p>
+<h3>Websocket-based webclient with OOB</h3>
+<p>Evennia's webclient was an ajax-based one using a long polling (&quot;comet&quot;) paradigm to work. These days all modern browsers support <a href="http://en.wikipedia.org/wiki/WebSocket">websockets</a> though, a protocol that allows asynchronous server-client communication without the cludgery of long polling. So Evennia's new webclient will now use websockets if the browser supports it and fall back to the old comet client if it does not.</p>
+<p>The new client also has full support for OOB (Out-of-band) communication. The client uses JSON for straight forward OOB messaging with the server. As part of this, I had an excuse to go back to clean up and make the OOB backbone of Evennia more complete. The server-side oob commands are borrowed from <a href="http://tintin.sourceforge.net/msdp/">MSDP</a> but the server side is of course independent of communication protocol (so webclient and telnet extensions can call the same server-side callbacks). I've not yet finalized the documentation for how to use the OOB yet, that will come soon-ish.</p>
+
+<footer>
+    <p>
+    <small><em></em></small>
+    </p>
+</footer>
+                    </div>
+                
+                    <hr>
+                    <div class="blog_post">
+                    <h1 id=2014-06-15-bringing-back-python-memory>
+    Bringing back Python memory
+    <a class="devblog-headerlink" href="devblog2014.html#2014-06-15-bringing-back-python-memory" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- June 15, 2014</div>
+</h1>
+<p><a href="https://2.bp.blogspot.com/-AoyW71rwdmw/U52RCQqYoDI/AAAAAAAADnU/KH7QGKf_GmM/s1600/RAM.jpg"><img src="https://2.bp.blogspot.com/-AoyW71rwdmw/U52RCQqYoDI/AAAAAAAADnU/KH7QGKf_GmM/s1600/RAM.jpg" alt="" /></a></p>
+<p>Lately I've done work on the memory management of Evennia. Analyzing the memory footprint of a python program is a rather educational thing in general.</p>
+<p>Python keeps tracks of all objects (from variables to classes and everything in between) via a memory reference. When other objects reference that object it tracks this too.</p>
+<p>Once nothing references an object, it does not need to be in memory any more - in a more low-level languages this might lead to a memory leak. Python's <em>garbage collector</em> handles this for us though - it goes through all abandoned objects and frees the memory for usage by other things. The garbage collector will however <em>not</em> do its thing as long as some other object (which will not be garbage-collected) <em>still</em> holds a reference to the object. This is what you want - you don't want existing objects to stop working because an object they rely on is suddenly not there.</p>
+<p>Normally in Django, whenever you retrieve an database model instance, that exists only in memory then and there. If you later retrieve the same object from the database, the model instance you have to work with is most likely a new one. This is okay for most usage, but Evennia's typeclass system (described in an earlier blog entry) as well our wish to store temporary properties on models (existing until next server restart) does not work if the model instance we get is always different. It would also help if we didn't have to load models from the database more than necessary.</p>
+<p>For this reason, Evennia uses something called the <em>idmapper</em>. This is a cache mechanism (heavily modified for Evennia) that allows objects to be loaded from the database only once and then be reused when later accessed. The speedup achieved from this is important, but as said it also makes critical systems work properly.</p>
+<p>The tradeoff of speed and utility is memory usage. Since the idmapper never drops those references it means that objects will never be garbage collected. The result was that the memory usage of Evennia could rise rapidly with an increasing number of objects. Whereas some objects (like those with temporary attributes) should indeed not be garbage collected, in a working game there is likely to be objects without such volatile data. An example might be objects that are not used some of the time - simply because players or the game don't need them for the moment. For such objects it may be okay to re-load them on demand rather than keep them in memory indefinitely.</p>
+<p>When looking into this I found that simply force-flushing the idmapper did <em>not</em> clean up all objects from memory. The reason for this has to do with how Evennia references objects via a range of other means. The reference count never went to zero and so the garbage collector never got around to it.</p>
+<p>With the excellent <a href="https://pypi.python.org/pypi/objgraph">objgraph</a> library it is actually pretty easy to track just what is referencing what, and to figure out what to remove. Using this I went through a rather prolonged spree of cleanups where I gradually (and carefully) cleaned up Evennia's object referencing to a point where the only external reference to most objects were the idmapper cache reference. So removing that (like when deliberately flushing the cache) will now make the object possible to garbage-collect.</p>
+<p><a href="http://postimg.org/image/p00v4oinl/">This</a> is how the reference map used to look for one type of Evennia object (ObjectDB) before the cleanup. Note the several references into the ObjectDB and the cyclic references for all handlers (the cyclic reference is in itself not a problem for reference-counting but they are slow and unnecessary; I now made all handlers use lazy-loading with weak referencing instead).</p>
+<p><a href="http://postimg.org/image/90i7l4mlt/">This</a> is how the reference map looks for the same object now. The <strong>instance</strong> cache is the idmapper reference. There are also no more cyclic references for handlers (the display don't even pick up on them for this depth of recursion). Just removing that single link will now garbage-collect ObjectDB and its typeclass (ignore the <em>g</em> reference, that is just the variable holding the object in ipython).</p>
+<p>We also see that the dbobj.typeclass &lt;-&gt; typeclass.dbobj references keep each other alive and when one goes the other one goes too - just as expected.</p>
+<p>An curious aspect of Python memory handling is that (C-)Python does <em>not</em> actually release the memory back to operating system when flushing the idmapper cache. Rather Python makes it internally available so that it does not need to request any more. The result is that if you look at Evennia with the <em>top</em> command, its memory requirement (for example while continuously creating new objects) will not actually <em>drop</em> on a idmapper flush, it will just <em>stop rising</em>.  This is discussed at length in <a href="http://effbot.org/pyfaq/why-doesnt-python-release-the-memory-when-i-delete-a-large-object.htm">this blog</a>, it was good to learn it was not something I did at least.</p>
+<p>Apart from the memory stuff, there is work ongoing with fixing the latest batch of user issue reports. Another dev is working on cleaning up the web-related code, it should make it a lot cleaner to overload web functionality with custom code. One of those days I'll also try to sit down and finally convert our web client from long-polling to use web sockets now that Evennia suppports web sockets natively. Time, time ...</p>
+
+<footer>
+    <p>
+    <small><em></em></small>
+    </p>
+</footer>
+                    </div>
+                
+                    <hr>
+                    <div class="blog_post">
+                    <h1 id=2014-05-16-imaginary-realities-volume-6,-issue-1>
+     Imaginary Realities volume 6, issue 1
+    <a class="devblog-headerlink" href="devblog2014.html#2014-05-16-imaginary-realities-volume-6,-issue-1" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- May 16, 2014</div>
+</h1>
+<p><a href="http://imaginary-realities.disinterest.org/pics/logo_new.gif"><img src="https://lh4.googleusercontent.com/proxy/CEw97RBnw7FiR_z7fqlj9ELtwgDU-knwkyiW8Ybjg9tjTUAerwxQ0-omUEwpZAz4jKP1ozmnCLHPBh1A4QxrGZzYD3DEFfIdTReu0TTPJwo=s0-d" alt="" /></a></p>
+<p>I'm a bit late with writing about it, but the latest issue of <em>Imaginary Realities</em> has been out for a month or so now. You can find it <a href="https://www.blogger.com/"></a><a href="http://journal.imaginary-realities.com/volume-06/issue-01/index.html">here</a>.</p>
+<p>Here is a brief summary of the articles in the latest issue.</p>
+<ul>
+<li>
+<p>In <em><strong>A Journey Through Paradice, Part II</strong>,</em> Matthew Chaplan continues his description of the C++ codebase <em>Paradice9</em>, notably focusing on its input handling, which uses character-mode telnet to produce plenty of interesting effects in a custom terminal client. There are plenty of interesting features (or potential features) discussed. An example is the client knowing to store the receiver of a &quot;reply&quot; command the moment the command is entered rather than waiting for the player the press return (at which point someone else might have written to you and the reply-to target would have changed in a traditional setup). There is no denying the power of having a custom client for your game. And whereas I think some more secure protocol than telnet would maybe be better to use when you control both server and client anyway, it's really interesting to see the power and features you can achieve with it.</p>
+</li>
+<li>
+<p><em><strong>Building a Giant Mech in Evennia</strong> -</em> this is my entry for this issue; a short little tutorial on designing a machine of mirth and mayhem in Evennia.</p>
+</li>
+<li>
+<p>Richard “KaVir” Woolcock's <em><strong>Describing a Virtual World</strong></em> covers the different uses of dynamically created descriptions in text games. He summarizes the types, from the most common, fully static room description up unto the character-dependent procedurally generated descriptions in his own <em>GodWarsII</em> mud. It's a fascinating read since it not only goes into rooms but also how to build piecemeal and situation-aware character and object descriptions as well as procedural help and quest info. The techniques are not for every type of game of course. But a good and informative read for anyone interested in game design.</p>
+</li>
+<li>
+<p><em><strong>Dynamic room descriptions</strong>,</em> by Jana, are also covering room descriptions although takes a more conservative conclusion than the full procedural contruction of KaVir's article. This covers the hybrid hand-written description - that is hand-written text that uses a markup language for optional or situation-dependent text. It makes for a good text on implementing such a system (an Evennia equivalent is <em>extended_room.py</em> found in our <em>contrib</em> folder.</p>
+</li>
+<li>
+<p><strong><em>Saddle Up - A Personal Story about Riding Your Demon to Success</em></strong> is a summary and inspirational story by Michael &quot;Drakkos&quot; Heron. It ties back to his work with <em>Epitath</em> and how it has affected and improved (and continues to improve) his personal and professional life. I like that he manages to include his game development work into his teaching and reasearch, a cool way to make use of your hobby. He has a point on the usability of a coding hobby like this: I myself have had lots of use and even landed project work based on my work with Evennia. One of our users landed his current job based on knowledge he learned working with Evennia. So there is definitely an advantage to mud-development outside the hobby realm.</p>
+</li>
+<li>
+<p><em><strong>The Successful Quest Builder</strong></em> by John &quot;TheDude&quot; Robinette and Joanna &quot;Lorana&quot; Liberty covers the construction of a Quest from the designer's perspective. Rather than focusing on gameplay considerations the authors here focus on the technical aspects; learning the codebase's tools and things to think about debugging and developing something that is enjoyable for the players.</p>
+</li>
+<li>
+<p>The article <strong><em>Your MUD Should Have an Account System</em></strong> finally, is Matthew “Chaos” Sheahan's argument as to why a game should use a single login account system rather than the old way of creating a new account per player. Much of the argument is around converting an old-school code base into this configuration and how it's not as hard as one may think. I fully agree on his assessment (although I wonder just how &quot;easy&quot; it is to patch on such a system on an old-running mud). He even mentions Evennia as an example of a modern codebase having this functionality out of the box (yay!).</p>
+</li>
+</ul>
+<p>Deadline for the next issue is <a href="http://posted-stuff.blogspot.se/2014/04/write-article-for-imaginary-realities.html">announced to be May 31 2014</a> so don't be shy to contribute your own article. Richard Tew hints at in his introduction, finding people to write articles is the tricky part still.</p>
+
+<footer>
+    <p>
+    <small><em></em></small>
+    </p>
+</footer>
+                    </div>
+                
+                    <hr>
+                    <div class="blog_post">
+                    <h1 id=2014-02-08-moving-from-google-code-to-github>
+    Moving from Google Code to Github
+    <a class="devblog-headerlink" href="devblog2014.html#2014-02-08-moving-from-google-code-to-github" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- February  8, 2014</div>
+</h1>
+<p><a href="https://1.bp.blogspot.com/-O_mHSjm4u90/UvVmXrY3kkI/AAAAAAAACJc/5bREd9YEbLU/s1600/ar12943602961303.jpg"><img src="https://1.bp.blogspot.com/-O_mHSjm4u90/UvVmXrY3kkI/AAAAAAAACJc/5bREd9YEbLU/s1600/ar12943602961303.jpg" alt="" /></a></p>
+<p>A few weeks back, the Evennia project made the leap from Google Code to GitHub (<a href="https://github.com/evennia/evennia">here</a>). Things have been calming down so it's time to give a summary of how the process went.</p>
+<p>Firstly I want to say that I liked Google Code. It did everything expected of it with little hassle. It had a very good Issue system (better than GitHub in my opinion) and it allowed us to use Mercurial instead of Git for version control (I just happen to like Mercurial better than Git, so sue me). Now, GitHub is getting to be something of a standard these days. But whereas our users have occationaly inquired about us making the move, I've been reluctant to do so.</p>
+<p>The problem I <em>did</em> have with Google Code was that I got the increasing feeling that Google didn't care all that much about it. It worked decently, but it was not really going anywhere either. What finally made me change my mind though was an event just after summer last year. There was a bug in Google Code that made the links to online clones disappear. It was worse than that - creating new online clones of the main repo didn't work - people wanting to contribute using a clone just couldn't.</p>
+<p>This is extremely critical functionality for a code-sharing website to have! I made a bug report and many other projects chimed in seeing the same issues. Eventually the links returned and everything worked the way it had. But it took <em>several months</em> before this critical bug was fixed. Even then Google didn't even bother to close my issue. This suggested quite strongly to me that Google Code is not really a priority even for its parent company. It was time to consider a move.</p>
+<p>I was never personally a fan of Git. It is undoubtedly powerful, but I always felt its syntax way too archaic and the number of ways to shoot yourself in the foot way too many. But I do like GitHub better than BitBucket (I've used both in other projects), so that's where we nevertheless were heading.</p>
+<p>Already last year I created an Evennia &quot;organization&quot; on GitHub and one of our  users first helped to set up a Git Mirror of our Mercurial repo. The idea was a good one - have a mirror on GitHub, allowing the transition to be more gradual. In the end this didn't work out though - there were some issue with the hg-git conversion and the mirror never didn't actually update. When I checked back and it was three months behind we just removed that first ill-fated version.</p>
+<p>In the end I decided to not fiddle about with it, but to move everything over in one go.</p>
+<h3>Converting the repository</h3>
+<p>I set aside a new folder on my hard drive and cloned the original mercurial repo into a new sub folder. A good idea is to set up a quick Python <a href="https://pypi.python.org/pypi/virtualenv">virtual environment</a> for easily getting updated dependencies of build scripts.</p>
+<p>I initialized an empty Git repository and used a program called <a href="https://github.com/frej/fast-export">hg-fast-export</a> to convert. As it turned out there were some finer details to consider when doing that:</p>
+<ul>
+<li>
+<p>The most obvious one was that the conversion initially failed, complaining about the Mercurial original containing &quot;unnamed branches&quot;. These came from a contributor who did <em>something</em> to spawn off all sorts of weird branches with little purpose. I should not have merged those into main in the first place, but in those days I didn't know mercurial well enough to be  concerned. In the end I simply used mercurial's MQ extension to remove the unnamed (and unused) branches so the conversion could complete.</p>
+</li>
+<li>
+<p>The second issue was that Mercurial is less stringent about its author strings than Git is. Git's author string is &quot;name <email>&quot;. Over the years we have gotten contributions from people with all sorts of combinations of names, with or without an email address. So for this we had to supply a mapping file to the converter. It's basically a list of old_author_string = new_author_string and allows for grouping the various used names as needed (some of them were the same person using slightly different author strings).</p>
+</li>
+</ul>
+<p>Once this was in place, the repo conversion worked fine. It was just a matter of changing the .hgignore file to a .gitignore file and change some code that made use of mercurial to get and display the current revision id.</p>
+<h3>Converting the Wiki, part one</h3>
+<p>Evennia's wiki consitutes our documentation, it's some 80+ pages or so by now. Definitely not something we want to loose. Google Code use a dialect of MediaWiki whereas GitHub's wiki supports a few other formats, like markdown or reST. I needed to convert between them.</p>
+<p>Digging around a bit I found <a href="https://github.com/trentm/googlecode2github.git">googlecode2github</a>. This download contains python scripts for converting the wiki as well as Issues. I didn't really get the issues-converter to work, so I had to find another solution for that (see next section).</p>
+<p>All in all, the initial wiki conversion worked decently - all the pages were converted over and were readable. I was even to the point of declaring success when finding the damn thing messed up the links. Googe Code writes links like this: [MyLink Text to see on page]. The script converted this to [[MyLink|Text to see on page]]. Which may look fine except it isn't. GitHub actually wants the syntax in the inverse order: [[Text to see on page|MyLink]].</p>
+<p>Furthermore, in Google Code's wiki, code blocks were marked with</p>
+<pre><code>
+{{{   
+
+ &lt;verbatim code&gt;   
+
+}}}
+
+</code></pre>
+<p>In markdown, code blocks are created just by indenting the block by four spaces. The converter dutifully did this - but it didn't add empty lines above and below the block, which is another thing markdown requires. The result was that all code ended up mixed into the running text output.</p>
+<p>I could have gone back and fixed the converter script, but I suspected there would be enough small things to fix anyway. So in the end I went through 80+ pages of fixing link syntax and adding empty lines by hand. After that I could finally push the first converted wiki version up to the GitHub wiki repository.</p>
+<p>Some time later I also found that there is a way to let GitHub wiki pages use syntax highlighting for the language of your choice. The way to do this is to enclose your code blocks like this:</p>
+<pre><code>
+```python  
+
+  
+
+&lt;verbatim code&gt;  
+
+  
+
+``` 
+
+</code></pre>
+<p>This is apparently &quot;GitHub-flavoured&quot; markdown. So another stint into all the pages followed, to update everything for prettiness.</p>
+<h3>Converting Google Code Issues</h3>
+<p>I didn't want to loose our Issues from Google Code. I looked around a bit and tested some conversions for this (it helps to be able to create and delete repos on GitHub with abandon when things fail). I eventually settled on <a href="https://github.com/arthur-debert/google-code-issues-migrator">google-code-issues-migrator</a>.</p>
+<p>This is a Python script that gathers all the Issues from a given Google Code project. It then uses GitHub's API to re-post the issues. It retains the issue numbers and re-maps the Google Code Issue tags to GitHub's equivalent. It didn't retain most other formatting and whereas I ended up as the creator of all issues, the converter included the name of the original author as well as a link back to the original Google Code one. I found that to be quite sufficient for our needs.</p>
+<h3>Converting the IRC announcer</h3>
+<p>A lot of development discussion goes on in our IRC channel #evennia on Freenode. There is an announcer bot in there that I've written, that collates information from various sources and reports it in the IRC channel:</p>
+<ul>
+<li>
+<p>Repository updates</p>
+</li>
+<li>
+<p>Wiki updates</p>
+</li>
+<li>
+<p>Issue creation and updates</p>
+</li>
+<li>
+<p>Mailing list/forum posts</p>
+</li>
+<li>
+<p>Dev-blog updates (this blog)</p>
+</li>
+</ul>
+<p>Say what you will about Google, but they are great at offering RSS feeds to all their stuff. So my IRC bot was basically a glorified threaded RSS reader that echoed changes to the channel as they came in. This had been working nicely for years.</p>
+<p>GitHub does offer RSS feeds to -some- of their offerings, but it's a lot more patchy. I eventually had to do quite a bit of hacking to get everything reporting the way we were used to.</p>
+<ul>
+<li>
+<p>GitHub has its own IRC announcer bot that reports to IRC. The problem is that this will connect, send message and then disconnect. This causes a lot of spam in the channel. We neither can nor want to set +n on our channel to allow external messages either. The way I solved this was to expand my own custom IRC bot to sit in <em>two</em> irc channels. The GitHub announcer connects to only one of them (so this gets all the spammy connect messages). My IRC bot picks up the announcement and echoes it cleanly to our main #evennia channel.  It works really well.</p>
+</li>
+<li>
+<p>Issues are handled by the GitHub announcer in the same way.</p>
+</li>
+<li>
+<p>GitHub has no automatic way to report wiki updates. It doesn't even have a proper RSS feed. However, a user clued me in on using the <a href="http://pipes.yahoo.com/pipes/pipe.info?_id=02bfefe73ba14054570ce82f1929e433">pipes</a> website to relay an RSS feed from github. I then configured my IRC bot to check that RSS and report it (I also changed the IRC colours to match the GitHub-announcer ones).</p>
+</li>
+<li>
+<p>Mailing list and blog haven't changed, so those are still handled via RSS as before.</p>
+</li>
+</ul>
+<p>All this done, the modified IRC announcement works well.</p>
+<h3>Closing the book on Google Code</h3>
+<p>At this point all the critical things were moved over. So after some heads-up warnings on the mailing list (and users helping to rewrite our documentation to use Git instead of mercurial) we eventually made the official move.</p>
+<p>One thing I really dislike is when a project switches hosts and don't let users know about it in their revision history. So I made a mercurial-only last commit announcing that the repo is closed and giving the link to the new one.</p>
+<p>The Google Code page doesn't go anywhere, but I changed the front page to point to GitHub instead. I even made an issue in the Issue tracker with a title telling people not to use that tracker anymore. Finally I re-pointed all the links on <a href="http://www.evennia.com/">http://www.evennia.com</a> to GitHub and made a mailing list posting. Move was officially complete.</p>
+<h3>Converting the Wiki, part 2</h3>
+<p>At this point were were officially moved over and I started to look into getting fancy with our documentation. We have for the longest time made automated translations of our wiki for compiling by <a href="https://readthedocs.org/projects/evennia/">ReadTheDocs</a>.</p>
+<p>Getting Google Code's special wikimedia syntax into reST (that ReadTheDocs uses) used to mean jumping through a few hoops. My hackish solution worked in two steps. First a custom python script (whose originating url I can no longer find, sorry) converted the Google Code wiki to HTML. Once this was done, <a href="http://johnmacfarlane.net/pandoc/">pandoc</a> converted the files from HTML to reST. The result was ... acceptable. There were some minor issues here and there but mostly the result was readable.</p>
+<p>I figured that converting from the more standard Markdown of the GitHub wiki to reST should be a breeze by comparison. Not so.</p>
+<p>The first hurdle was that the version of pandoc coming with my Linux distribution was too old to support Github-flavoured markdown syntax. I knew from before that Pandoc worked so I didn't want to start with something else. I had to download the several hundred MBs needed by the Haskell build environment and their package manager in order to get and compile all the dependencies and finally the latest version of pandoc. To their credit it was all a very streamlined experience, it just took quite some time.</p>
+<p>The second hurdle came when finally looping pandoc to convert all wiki files. It turns out to be that the [[Text on page|address]] syntax I had manually corrected earlier is a special syntax offered by <em>Gollum,</em> the engine powering GitHub's wiki behind the scenes. None of the markdown-to-reSt converters I looked at (pandoc or otherwise) even recognized this syntax as a link at all. As it turns out, normal markdown actually expects its links in the format <a href="address">Text on page</a>.</p>
+<p>I was not going to go through and edit all those pages <em>again.</em> So my next step was to write a script to scan and replace all the [[...|...]] syntax in our wiki and replace it with the standard markdown one. After this the markdown files converted to reST quite nicely -- formatting-wise they look much better than the old wiki to HTML to reST chain I had to use from Google Code.</p>
+<p>Problem was that when compiling these reST pages into HTML with Sphinx, no links worked.</p>
+<p>Each individual page looked okay, just that the links were not pointing to anything reasonable. In retrospect this was not so strange. Pandoc knows nothing about the relationships between files, and clearly the simple naming scheme used for addresses is something the wiki softwares knows and Sphinx does not.</p>
+<p>Some thinking lead to a custom Python script for renaming the link targets in the converted pages to their html page name. This needed to handle the fact that wiki links also allows whitespace. So the [Start](Getting Started) link would be converted to <a href="GettingStarted.html">Start</a>, which seems to be the format with which Sphinx will generate its pages.</p>
+<p>One also needs to have a &quot;toc&quot; (Table of Contents) to tie all those pages together for the benefit of Sphinx. I just used a &quot;hidden&quot; toc, letting my converter script add this to the bottom of my normal index file. As long as it's included <em>somewhere,</em> Sphinx will be happy.</p>
+<p>Originally I put the reST files in a subfolder of the GitHub wiki repo, I thought I could just point ReadTheDocs to that repo later. The GitHub wiki has a strange &quot;feature&quot; though. It seems to pick its wiki pages from <em>wherever</em> they are in the repo, no matter if they are in the root or in subfolders. Suddenly I was starting to see reST-style pages appear in the online wiki, and sometimes I would get the markdown version (the two would go out of sync). Very strange and confusing.</p>
+<p>Since the files clearly &quot;polluted&quot; our wiki, I had to move the converted reST files to a separate branch of the wiki repository. This has the advantage of keeping all the support scripts and converter mechanisms separate from the normal wiki content. ReadTheDocs can luckily be set to read its information from another branch than master, so finally the latest converted wiki can again be read there!</p>
+<p>That concludes what I think was the last main conversion effort. Phew!</p>
+<h3>Impressions so far</h3>
+<p>GitHub is nice. The merge requests and easy way to comment on them are really good. Since people are more familiar with using GitHub overall, it does seem to be a shorter step for people to make a fork and contribute small things. Doing the same in Google Code was probably not harder per se, just something less people were previously familiar with.</p>
+<p>Due to the modular way Evennia is structured, people are recommended to make a fresh clone of the new Git repo and simply copy their plugin source files and database back into it. So far this seems to have gone smoothly.</p>
+<p>The GitHub issue tracker is worse than the Google Code one. It has no good way to order Issues or list them in a more compact form (nor in a matrix). Not having good issue templates is really limiting; having to reply to issues only to ask for basic info they should include in their issue is an unnecessary time sink.</p>
+<p>I also find that there is no clear way to announce an issue change (like &quot;Needing more information&quot;). Tags work partly for this, but setting them is not announced anywhere as far as I can tell - they are just there.</p>
+<p>Most things also takes so much spaaace. Overall GitHub seems designed for people with big monitors. I have those, but most of the time I prefer working on my laptop. I'm sure it's a matter of habit, but Google Code is very compact by comparison. It gave a lot better overview of things. On GitHub I have to scroll everywhere and this is true both in the repo view, wiki and issues.</p>
+<p>These small quips nonwithstanding, I think this move will serve us well. There is a good wibe of development and continuing improvement going on at GitHub. There's plenty of help and tutorials all over. Since so many people are using GitHub, problems are more likely to have been answered before. And of course we hope this will in effect help more people find Evennia and join the fun.</p>
+
+<footer>
+    <p>
+    <small><em></em></small>
+    </p>
+</footer>
+                    </div>
+                
+                    <hr>
+                    <div class="blog_post">
+                    <h1 id=2014-01-24-looking-forwards-and-backwards>
+    Looking forwards and backwards
+    <a class="devblog-headerlink" href="devblog2014.html#2014-01-24-looking-forwards-and-backwards" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- January 24, 2014</div>
+</h1>
+<p><a href="https://2.bp.blogspot.com/-wjnGsBNyUqg/UuLtTZAo_II/AAAAAAAACJE/vYvxUE0zIpw/s1600/1390625062_binoculars.png"><img src="https://2.bp.blogspot.com/-wjnGsBNyUqg/UuLtTZAo_II/AAAAAAAACJE/vYvxUE0zIpw/s1600/1390625062_binoculars.png" alt="" /></a></p>
+<p>We are almost a month into the new year, time to look forward.</p>
+<p>But first a look backwards. The year of 2013 was a year of big development projects and lots of quiet in the main repository in between. Two major updates were released during the year.</p>
+<p>The first update, the &quot;many sessions per player&quot; update, originated in a feature request that I thought would be easy to implement but which led to far-ranging changes (and honestly, improvements) to how Players and Sessions interconnect. It was a <em>lot</em> more more work than I anticipated.</p>
+<p>The second update was about moving Evennia's web server from the Portal level into the Server-level. The actual moving of the server was actually considerably easier than I thought it would be. But it turned out that a truckload of other things came along with it. Not only did the cache system have to change in order to accommodate the new webs erver, I had to also finalize the Out-of-band structure, since this made use of the cache system. And while I were at it, other fixes were done and ... the update grew and grew. When it finally merged late last year it closed plenty of issues, but it would probably have been better to structure it into more, small updates instead.</p>
+<p>Anyway, 2014 promises continued (and hopefully more continuous and gradual) development of Evennia. The closest upcoming upheaval is our move from Google Code to GitHub in a few days (I'll probably do a blog about that once it's done). Apart from that we are currently in a fixing state, cleaning up and fixing remnant issues from the big mergers.</p>
+<p>Another Issue of the MUD e-zine <a href="http://journal.imaginary-realities.com/volume-05/issue-01/index.html">Imaginary Realities</a> is coming too. I just contributed with an Evennia-related article. If anyone reading this blog has anything MUD-related to write about, do consider <a href="http://posted-stuff.blogspot.se/2013/12/write-article-for-imaginary-realities.html">contributing</a> before January 31, they need more articles! I don't think you need to be too advanced, anything from a mud-development anecdote to retells of good MUD gaming memories might be interesting I would think.</p>
+
+<footer>
+    <p>
+    <small><em></em></small>
+    </p>
+</footer>
+                    </div>
+                
+            </section>
+    </body>
+</html>

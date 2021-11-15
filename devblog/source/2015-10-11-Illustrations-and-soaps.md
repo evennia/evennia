@@ -1,0 +1,13 @@
+[![](https://lh6.googleusercontent.com/proxy/akVd5ALnso-4giJqE1OAHXgxuIZeAx2IYQC-o_zAarsIu1ge2XQkPSQO_nKFz_dX6P5EreO39-HileXV7UmobyAsfE-MlDBUy2J5c1dx4vb5hUjgR6WXzAvOcmrZ20NXVGR2ivvcqKA=s0-d)](http://optionalrealities.com/wp-content/uploads/2015/10/Evennia_illustrated_fig2.png)
+
+I recently made an article presenting the infrastructure and main coding features of Evennia using a series of nifty diagrams.  
+  
+It can hopefully help newcomers get a feeling for the grand structure of an Evennia server/game a little easier. It's published as a feature on [Optional Realities](http://optionalrealities.com/) and you can find the article here: [Evennia Illustrated](http://optionalrealities.com/evennia-illustrated/).  
+  
+I also recently joined [MU Soapbox](http://musoapbox.net/topic/620/evennia-a-python-based-mu-server), a forum predominantly discussing MUSH games, to answer some technical questions on Evennia. Unsurprisingly, some (although so far surprisingly few) MUSHers express concern about Evennia's explicit lack of softcode (that is, the ability for players to use a safe in-game language to code their game rather than to use external Python modules). Their argument is sound:  They are used to in-game coding as a way to easily express creatitivy and easily garner help from players.  
+  
+Evennia's stance here clash a bit with those opinions: Our philosophy is that our command system is powerful enough to offer players any complexity of build commands they want. The design/coding of the game itself should be done using proper coding IDEs and modern version control tools.  
+  
+There is no denying that compared to a softcode-coded game, a player-level contributor to an Evennia game needs some extra tools to create and contribute code over version control. The admin also needs to check such contributions for malicious code before merging it into their running game. Now, these are differences I actually consider _advantages_ from a code-quality perspective. And for finding help, people on average are more likely to know Python than a custom softcode language. But here opinions differ and in a given game community those language adoption numbers can be severely skewed.  
+  
+So far, the MUSHers that have adopted Evennia seems to have done so very much to _get away_ from softcode. It will be interesting to see if things like Kelketek's in-development [Group building Evennia contrib](https://github.com/evennia/evennia/pull/711) will be stirring some interest from those on the fence, or if coding their entire game in softcode is indeed an irreplaceable source of their gaming fun.

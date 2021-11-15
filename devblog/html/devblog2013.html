@@ -53,7 +53,7 @@
                                 
                                     <li><a href=#devblog-posts>2020 (3)
                                         
-                                            <ul class="devblog-calendar-open">
+                                            <ul class="devblog-calendar-closed">
                                         
                                             
                                                 <li class="devblog-calendar-post">
@@ -297,7 +297,7 @@
                                 
                                     <li><a href=#devblog-posts>2013 (5)
                                         
-                                            <ul class="devblog-calendar-closed">
+                                            <ul class="devblog-calendar-open">
                                         
                                             
                                                 <li class="devblog-calendar-post">
@@ -408,109 +408,45 @@
                 
                     
                     <div class="blog_post">
-                    <h1 id=2020-11-14-evennia-0.9.5-released>
-    Evennia 0.9.5 released
-    <a class="devblog-headerlink" href="devblog2020.html#2020-11-14-evennia-0.9.5-released" title="Permalink to this blog post">¶</a>
-    <div class="devblog-title-date">- November 14, 2020</div>
+                    <h1 id=2013-12-16-imaginary-realities-is-back>
+    Imaginary Realities is back
+    <a class="devblog-headerlink" href="devblog2013.html#2013-12-16-imaginary-realities-is-back" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- December 16, 2013</div>
 </h1>
-<p><a href="https://1.bp.blogspot.com/-WACefg23bBA/X6_6vGTcjbI/AAAAAAAALh0/4FtZQDj5XosG_Dnyj6e-8ScHwyOTaOSzQCLcBGAsYHQ/s1544/evennia_screenshot.png"><img src="https://1.bp.blogspot.com/-WACefg23bBA/X6_6vGTcjbI/AAAAAAAALh0/4FtZQDj5XosG_Dnyj6e-8ScHwyOTaOSzQCLcBGAsYHQ/s320/evennia_screenshot.png" alt="" /></a></p>
-<p>As of today, Evennia 0.9.5 is out. Evennia is a Python based library and framework for creating text-based multiplayer games (MUD/MU*).</p>
-<p>This is a gradual improvement halfway between 0.9 and the upcoming 1.0. So if you have been keeping up-to-date with the <em>master</em> branch of Evennia over the last year you will not notice much difference from this release (time to upgrade if you haven't been keeping up though!).</p>
-<p>While an interim release, there are still a lot of things that has happened since v0.9:</p>
-<h4>Webclient improvements</h4>
+<p><a href="http://imaginary-realities.disinterest.org/pics/logo_new.gif"><img src="https://lh4.googleusercontent.com/proxy/CEw97RBnw7FiR_z7fqlj9ELtwgDU-knwkyiW8Ybjg9tjTUAerwxQ0-omUEwpZAz4jKP1ozmnCLHPBh1A4QxrGZzYD3DEFfIdTReu0TTPJwo=s0-d" alt="" /></a>The <em><a href="http://imaginary-realities.disinterest.org/">Imaginariy Realities</a></em> webzine was the place to go to for MUD game design articles in the late 90's. Last released in 2001, its articles are still worth the read for any game designers today.</p>
+<p>But guess what - this venerable ezine has now returned! You can find the new issue <a href="http://journal.imaginary-realities.com/volume-05/issue-01/index.html">here</a>.</p>
+<p>I think this is a good community initiative worthy of support. I contibuted two articles myself (one of which is about Evennia) and would like to thank the staff/editors who took their work very seriously and did sterling work on getting everything in shape.</p>
+<p>Thanks also to the other authors who penned some very interesting articles. Great job guys!</p>
+<p>My impressions:</p>
 <ul>
 <li>
-<p>Big <strong>web client</strong> improvements (courtesy of contributor friarzen) - players can now save and restore pane layouts directly in the client (so you could have a separate pane for channel chatter, another for look-returns, two input panes etc etc).</p>
+<p>KaVir elaborates in <em>A modern interface for a modern MUD</em> on the advantages of not sticking with an outdated UI just for the sake of it. Adding a more accessible presentation is not that hard and won't ruin your game but rather help it. Whereas I have read his argument about this before, this is a good summary to take to heart. Evennia's javascript web client is currently mainly a telnet clone; there's a lot of things we could offer to make it easier for users to offer a more graphical presentation.</p>
 </li>
 <li>
-<p>The layout changes makes it easier for devs to create default layouts to offer to players of their game. People in the Evennia community have already started doing very cool stuff with this, I'll try to gather screenshots for a future blog.</p>
+<p>Molly O’Hara, in her <em>A well built zone is a work of art,</em> outlines a list of useful things to keep in mind when designing a zone. While some of these vary with game type, others do not. I like the suggestion that scripting bugs need not be the most important aspect - syntactic errors can be handled by automated means as long as the design aspect of the zone is solid.</p>
 </li>
 <li>
-<p>Allow to redirect video/music to separate panes.</p>
+<p><em>A journey through Paradice</em> [sic] is Matthew Chaplain's entry on designing a dice-roller using the telnet protocol. Some interesting things here, including making creative use of the telnet character-mode and VT100 control sequences. This ties a bit into KaVir's article, in that the interface used for &quot;modern&quot; MUDs are often voefully missing out on a lot of possibilities.</p>
 </li>
 <li>
-<p>Many other fixes, such as improving the input-history behavior.</p>
+<p><em>Blind accessibility: challenges and opportunities</em> by Matthew “Chaos” Sheahan, is based on interviews with a blind mudder and a game admin having implemented lots of support for seeing-impaired players. This was a really interesting article since I've been pondering myself what could be done from Evennia's core side to help players support players using screen readers. Most seem to be down to configuration options though, and avoiding making colour or ascii art the only sources of information. These are all things Evennia devs implement depend on their game. We may offer some good contribs to build from though.</p>
+</li>
+<li>
+<p><em>Evennia: an introduction -</em> this is mine. It not-so-briefly sums up stuff about Evennia and the more important systems it relies on.</p>
+</li>
+<li>
+<p><em>Getting a roleplaying scene going</em> - another article of mine. This is a light-hearted list of tropes for getting a RP scene going on an RP-mud. It's based on things I've tried or seen myself in play.</p>
+</li>
+<li>
+<p>Darcie “Natilena” Laur laments on the often opaque newbie guides in <em>Introducing new players and redesigning MUD School.</em> It describes how she tested (and improved) her own MUD's starter area while testing it on her kids. It made me think more on having Evennia offering easier ways to dump text logs in all sorts of situations. And we find out that kids have the attention span of zombie squirrels - something new learned every day!</p>
+</li>
+<li>
+<p>Finally, <em>The Hunger Game, or how I learned to break the ship from the bottle</em> is Michael “Drakkos” Heron's epic about his journey developing and releasing his zombie-survival MUD <em>Epitaph.</em> Drakkos is a frequent blogger on the MUD-planet feed, so I knew some of this already, but it's a good read and contains some useful warnings and things-to-think-of for those thinking of starting their own MUD project. We already give some of the same advice (albeit with fewer words) in our wiki but I'm seriously considering linking to Drakkos post from there as well - it gives a more comprehensive treatment and offers a real-world example of the long road to a released game.</p>
 </li>
 </ul>
-<h4>EvMenu improvements</h4>
-<p><strong>EvMenu</strong> is a powerful system for creating in-game text menus.</p>
-<ul>
-<li>
-<p>The <strong>EvMenu</strong> class was refactored to be easier to override. For example, all messages now go through <strong>EvMenu.msg</strong> which allows for easy customization. It also defaults to sending with a <strong>type</strong> of &quot;menu&quot;, making it easier to redirect menus to seprate panes in the webclient.</p>
-</li>
-<li>
-<p>In a node, EvMenu is now accessed via the much more logically named <strong>.ndb._evmenu</strong> instead of <strong>.ndb._menutree</strong> (the old name still works for backwards compatibility, but is deprecated).</p>
-</li>
-<li>
-<p>New optional <strong>EvMenu template</strong> system for quickly building simpler EvMenus without needing so much code. This makes it easy to catch and parse arbitrary input from the user and redirect to the correct node as needed. Creating menu nodes as functions still work (and is a lot more powerful), this can be mixed with templating to create different effects.</p>
-</li>
-</ul>
-<h4>New settings</h4>
-<ul>
-<li>
-<p><strong>INLINEFUNC_STACK_MAXSIZE</strong> is an integer that allows to control how big the inlinefunc nesting stacksize is.</p>
-</li>
-<li>
-<p>New <strong>DEFAULT_CHANNELS</strong> setting to allow customization of which channels should be initialized on startup. This can be modified after initial server start.</p>
-</li>
-<li>
-<p><strong>CHANNEL_HANDLER_CLASS</strong> allows for specifying an alternative to the default <strong>ChannelHandler</strong> if wanting to change how Channels behave.</p>
-</li>
-<li>
-<p><strong>SERVER_LOG_DAY_ROTATION</strong> defines how many days the server log should run before being force-rotated (default is seven days).</p>
-</li>
-<li>
-<p><strong>SERVER_LOG_MAX_SIZE</strong> specifies how big the log must be before it auto-rotates (even if <strong>SERVER_LOG_DAY_ROTATION</strong> days has not passed yet).</p>
-</li>
-<li>
-<p><strong>PORTAL_LOG_DAY_ROTATION, PORTA_LOG_MAX_SIZE</strong> - equivalent for the Portal.</p>
-</li>
-</ul>
-<h4>Other improvements</h4>
-<ul>
-<li>
-<p>The <strong>EvMore</strong> pager saw big performance speedups, making the viewing of large numbers of entries much snappier. You can now also paginate <strong>EvTables</strong> directly and create custom pagers by override the <strong>EvMore class</strong> (useful if you want to e.g. do a EvTable per-page).</p>
-</li>
-<li>
-<p>Improvement to the multi-match parser: Trying to get for example <strong>3-box</strong> will now fail with a no-found if there are only two boxes in the room (before it would show the multi-match menu).</p>
-</li>
-<li>
-<p>New <strong>inside_rec</strong> lockfunc to recursively check if an object is inside another. Putting this on a room will thus also check the contents of any objects in the room, not only the contents themselves. Or if you had something in your wallet (a container).</p>
-</li>
-<li>
-<p>New <strong>$random</strong> inlinefunc for producing a random number in strings.</p>
-</li>
-<li>
-<p><strong>TickerHandler.add()</strong> now returns a <strong>store_key</strong> to uniquely describe the ticker just added. The <strong>TickerHandler.remove()</strong> accepts a new kwarg <strong>store_key</strong> for removing the ticker - this makes it easier to manage tickers instead having to insert the full specifications of the ticker to remove it.</p>
-</li>
-<li>
-<p>Many fixes to the <strong>spawn</strong> command and prototype functionality. The new <strong>spawn/raw</strong> flag will now return the prototype-dict so one can manually edit and copy&amp;paste it.</p>
-</li>
-<li>
-<p>The <strong>evennia.GLOBAL_SCRIPTS</strong> container will now contain all global scripts, not only those explicitly created with the <strong>GLOBAL_SCRIPTS</strong> setting.</p>
-</li>
-<li>
-<p>The <strong>list_to_string</strong> utility converts a list to a nice string-representation, such as <strong>[&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;]</strong> -&gt; <strong><em>&quot;a, b, c and d&quot;</em></strong>. The function is renamed to <strong>iter_to_string</strong> (but old name still works) and now also works with generators and will not crash even when provided a single value.</p>
-</li>
-<li>
-<p>A lot of bug fixes and stability fixes!</p>
-</li>
-</ul>
-<h4>See the <a href="https://github.com/evennia/evennia/blob/master/CHANGELOG.md#evennia-095-nov-2020">changelog here.</a></h4>
-<h3>New documentation system</h3>
-<p>The bigger change with 0.9.5 is that we are moving to a new documentation system. The details of the long road to do this is documented in <a href="">my previous post</a>. The point is that we are stopping the use of the Github wiki in favor of statically generated documentation hosted on github pages. At the same time we also move the old evennia.com website from Google-sites to Github.</p>
-<p>Check it out:</p>
-<ul>
-<li>
-<p>New evennia.com: <a href="https://evennia.com">https://evennia.com</a></p>
-</li>
-<li>
-<p>New static documentation:  <a href="https://evennia.com/docs/latest">https://evennia.com/docs/latest</a></p>
-</li>
-</ul>
-<p>As for the docs, they will be maturing for a long time still. The old wiki will not be updated anymore, but it will also not be going anywhere in the short term. Version 0.9.5 of the docs is pretty much a copy of the wiki and I hope to not have to spend too much more work maintaining it since the wiki is still around.</p>
-<p>New updates and documentation features will primarily be happening in the 1.0-dev version of the documentation. This will include refactoring all pages as well as a new intro-tutorial and many other things.</p>
-<p>But that's for future blogs ...</p>
+<p>The issue also contains a call to help recover old MUDing resources that has gone offline since their heyday. Having browsed through the classic MUD-dev mailing list archives I can agree they are not quite as easily searchable as could be hoped. It would also be great to see the old comment posts tied to the articles of the old <em>Imaginary Realities</em> articles, if those could be found somehow.</p>
+<p>This is actually one thing which I do miss with this first Imaginary Realities issue - a way for readers to comment on the articles. This would likely mean a much higher level of complexity and work though, so I can certainly see why it's not there - using the existing MUD forums is probably enough for now.</p>
+<p>Anyway, I'm happy to see this thing getting off on a good start. I'm already looking forward to the next issue!</p>
 
 <footer>
     <p>
@@ -521,71 +457,33 @@
                 
                     <hr>
                     <div class="blog_post">
-                    <h1 id=2020-10-20-on-using-markdown-with-sphinx>
-    On using Markdown with Sphinx
-    <a class="devblog-headerlink" href="devblog2020.html#2020-10-20-on-using-markdown-with-sphinx" title="Permalink to this blog post">¶</a>
-    <div class="devblog-title-date">- October 20, 2020</div>
+                    <h1 id=2013-11-28-out-of-band-mergings>
+    Out of band mergings
+    <a class="devblog-headerlink" href="devblog2013.html#2013-11-28-out-of-band-mergings" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- November 28, 2013</div>
 </h1>
-<p><a href="https://1.bp.blogspot.com/-GNQ1IGvFf3o/X44OC1-OxXI/AAAAAAAALgY/OugrLSGGW7YgPDxHuG-tveB-xcCQ2RVZACLcBGAsYHQ/s207/book.png"><img src="https://1.bp.blogspot.com/-GNQ1IGvFf3o/X44OC1-OxXI/AAAAAAAALgY/OugrLSGGW7YgPDxHuG-tveB-xcCQ2RVZACLcBGAsYHQ/s0/book.png" alt="" /></a></p>
-<p>Last post I wrote about the upcoming v1.0 of Evennia, the Python MU* creation engine. We are not getting to that 1.0 version quite yet though: The next release will be 0.9.5, hopefully out relatively soon (TM).</p>
-<p>Evennia 0.9.5 is, as you may guess, an intermediary release. Apart from the 1.0 roadmap just not being done yet, there is one other big reason for this - we are introducing documentation versioning and for that a proper release is needed as a base to start from. Version 0.9.5 contains everything already in <em>master</em> branch, so if you have kept up-to-date you won't notice too much difference. Here are some highlights compared to version 0.9:</p>
+<p><a href="https://4.bp.blogspot.com/-RcZi6McnLtc/Upd90AEpnTI/AAAAAAAACHA/ALGE2Ompi6k/s1600/FS-0609-Merger-1.jpg"><img src="https://4.bp.blogspot.com/-RcZi6McnLtc/Upd90AEpnTI/AAAAAAAACHA/ALGE2Ompi6k/s200/FS-0609-Merger-1.jpg" alt="" /></a></p>
+<p>As of today the development repository of Evennia, which has been brewing for a few months now, merged into the main repository. This update grew from one experimental feature to a relatively big update in the end. Together with the &quot;many-character-per-player&quot; feature released earlier, this update covers all the stuff I talked about in my <a href="http://evennia.blogspot.se/2013/01/churning-behind-scenes.html">Behind the Scenes</a> blog post.</p>
 <ul>
 <li>
-<p>EvMore will paginate and properly handle both EvTables and database query output. For huge data sets, pagination can give a 100-fold speed-increase. This is noticeable e.g. in the <strong>scripts</strong> and <strong>spawn/list</strong> commands, once you have a lot of items.</p>
+<p>Evennia's webserver was moved from <em>Portal</em> to <em>Server</em>. This moves all database-modifying operations into the same process and neatly avoids race conditions when modifying a game world from various interfaces.</p>
 </li>
 <li>
-<p>EvMenu templating language, to make it easier to create simpler menus.</p>
+<p>The OOB (Out Of Band) handler was implemented. This goes together with a protocol for telnet sub-negotiations according to the <a href="http://tintin.sourceforge.net/msdp/">MSDP</a> specification. The handler allows on-demand reporting whenever database fields update. It also offers regular polling of properties if needed. A user can customize which oob commands are available to the client and write whatever handlers are needed for their particular game. In the future we'll also add support for GMCP, but the lack of a central, official specification is off-putting (if there is a central document besides accounts of how individual games chose to implement GMCP, please let me know). For our own included web client, we'll likely just use JSON straight off.</p>
 </li>
 <li>
-<p>Webclient improvements: Cleanup of interface and the ability for players to save/load their pane layouts from the client. The developer can still provide a default for them to start out with.</p>
+<p>Our channel system is now <em>typeclassed</em>. If you are not familiar with Evennia this won't mean much to you - In short it means developers will be able to customize their channel system much easier than in the past since a channel can be treated pretty much like any Python class (thanks go to user Kelketek who actually did the implementation).</p>
 </li>
 <li>
-<p>MUD/Evennia Intro wizard to the tutorial world to explain basic game controls in an interactive way.</p>
+<p>We added the concept of <em>Tagging</em>, as a more generalized version of our old <em>Alias</em> system. Tagging is just what it sounds like - it allows you to tag all your objects in order to group them and easily (and efficiently) find them later. Tagging offers a powerful way to create what other code bases refer to as &quot;zones&quot;. There are many other possible uses though, such as having effects appear only in certainly tagged rooms, indicate which Characters have joined a particular guild and so on.</p>
 </li>
 <li>
-<p>Default channels can now be defined in settings instead of having to do so from in-game.</p>
-</li>
-<li>
-<p>New documentation system (see below).</p>
-</li>
-<li>
-<p>Many, many bug fixes and optimizations!</p>
+<p>Behind the scenes there were a lot of cleanups, along with minor API changes mentioned on the mailing list. A slew of older Issues were also fixed with this merge.</p>
 </li>
 </ul>
-<p>Many contributors helped out along the way. See the <a href="https://github.com/evennia/evennia/blob/master/CHANGELOG.md">changelog</a> where contributors of the bigger new features are listed.</p>
-<h2>The path to a new documentation</h2>
-<p>For many years we've used the Github wiki as our documentation hub. It has served us well. But as mentioned <a href="http://evennia.blogspot.com/2020/04/spring-updates-while-trying-to-stay.html">in my previous post</a>, it has its drawbacks, in particular when it comes to handling documentation for multiple Evennia versions in parallel.</p>
-<p>After considering a bunch of options, I eventually went with <a href="https://www.sphinx-doc.org">sphinx</a>, because it has such a good autodoc functionality (parsing of the source-code docstrings). This is despite our wiki docs are all in markdown and I dislike restructured text quite a bit. Our code also uses friendly and in-code-readable Google-style docstrings instead of Sphinx' hideous and unreadable format.</p>
-<p>Luckily there are extensions for Sphinx to handle this:</p>
-<ul>
-<li>
-<p><a href="https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html">Napoleon</a> to convert Google-style docstrings to reST on the fly</p>
-</li>
-<li>
-<p><a href="https://recommonmark.readthedocs.io/en/latest/index.html">recommonmark</a> to convert our markdown wiki pages to reST on compile-time</p>
-</li>
-<li>
-<p><a href="https://holzhaus.github.io/sphinx-multiversion/master/index.html">sphinx-multiversion</a> to merge docs from one or more GIT branches into a documentation where you can select between the versions.</p>
-</li>
-</ul>
-<p>What could go wrong? Well, it's been quite a ride.</p>
-<h4>Getting Markdown into reST</h4>
-<p>Linking to things in recommonmark turned out to be very flaky. I ended up forking and merging a bunch of PRs from the project but that was not enough: Clearly this thing was not built to convert 200 pages of technical markdown from a github wiki.</p>
-<p>My custom fork of recommonmark had to be tweaked a bit for my needs, such as not having to specify the <strong>.md</strong> file ending in every link and make sure the url-resolver worked as I expected. There were a bunch of other things but I will probably not merge this back, the changes are pretty Evennia-specific.</p>
-<p>Even so, many of my wiki links just wouldn't work. This is not necessarily recommonmark's fault, but how sphinx works by grouping things into <em>toctrees</em>, something that the Evennia wiki doesn't have.</p>
-<p>Also, the recommonmark way to make a toctree in Markdown is to make a list of links - you can't have any descriptive text, making the listing quite useless (apparently people only want bland lists of link-names?). After trying to figure out a way to make this work I eventually capitulated - I make pretty lists in Markdown while using a &quot;hidden&quot; toctree to inform sphinx how the pages are related.</p>
-<h4>Getting the wiki into the new doc site</h4>
-<p>This required more custom code. I wrote a custom importer that reads the wiki and cleans/reformats it in places where recommonmark just dies on them. I also made a preprocessor that not only finds orphan pages but also builds a toctree and remaps all links in all documents to their actual location on compilation. The remapper makes it a lot easier to move things around. The drawback is that every page needs to be uniquely named. Since this was already the case in the wiki, this was a good tradeoff. So with a lot of custom code the wiki eventually could port automatically.</p>
-<p>The thing is, that even with all this processing, recommonmark doesn't support stuff like Markdown tables, so you still have to fall back to reST notation for those. And Napoleon, while doing a good job of parsing google docstrings, do <em>not</em> expect Markdown. So the end result is <em>mostly</em> markdown but we still have to fall back to reST for some things. It's probably as far as we get.</p>
-<h4>Deploying the docs</h4>
-<p>Figuring out how to build and deploy these components together was the next challenge. Sphinx' default Makefile was quite anemic and I also wanted something that regular contributors could use to test their documentation contributions easily. I ended up having to expand the Makefile quite a lot while also adding separate deploy scripts and interfaces to github actions (which we recently started using too).</p>
-<p>Finally, the versioning. The sphinx-multiversion plugin works by extracting the branches you choose from git and running the sphinx compiler in each branch.  The plugin initially had a bug with how our docs are located (not at the root of the package) but after I reported it, it was quickly fixed. The result is a static document site where you can select between the available versions in the sidebar.</p>
-<p>I've not gotten down to trying to make LaTeX/PDF generation work yet. I'm dreading it quite a bit...</p>
-<h4>Where we are</h4>
-<p>The github wiki is now closed for external contributions. The v0.9.5 of the new documentation will pretty much be an import of the last state of the wiki with some minor cleanup (such as tables). While we'll fix outright errors in it, I don't plan to do many fixes of purely visual glitches from the conversion - the old wiki is still there should that be a problem.</p>
-<p>The main refactoring and cleanup of the documentation to fit its new home will instead happen in v1.0. While the rough structure of this is already in place, it's very much a work in progress at this point.</p>
-<h4>Conclusions</h4>
-<p>Evennia 0.9.5 has a lot of features, but the biggest things are 'meta' changes in the project itself. After it is out, it's onward towards 1.0 again!</p>
+<p>Now, in the immediate future we'll be working on updating the documentation. Evennia prides itself with having a large body of documentation and this update comes with small changes to various existing systems. There are also a few bigger new features (such as OOB). No doubt the near future will also see other issues popping up as more people try things out.</p>
+<h4>Imaginary Realities update</h4>
+<p>Apparently the reboot of <em>Imaginary Realities</em> (to which I contribute two articles) has been <a href="http://posted-stuff.blogspot.se/2013/11/imaginary-realities-update_15.html">pushed forward a week or two</a>. Reason being, apparently, to finalize the actual presentation of the content. I already signed off on the last editorial fixes way before deadline, so I guess it's just to wait and see what comes of it!</p>
 
 <footer>
     <p>
@@ -596,62 +494,82 @@
                 
                     <hr>
                     <div class="blog_post">
-                    <h1 id=2020-04-14-spring-updates-while-trying-to-stay-healthy>
-    Spring updates while trying to stay healthy
-    <a class="devblog-headerlink" href="devblog2020.html#2020-04-14-spring-updates-while-trying-to-stay-healthy" title="Permalink to this blog post">¶</a>
-    <div class="devblog-title-date">- April 14, 2020</div>
+                    <h1 id=2013-10-22-a-list-of-evennia-topics>
+    A list of Evennia topics
+    <a class="devblog-headerlink" href="devblog2013.html#2013-10-22-a-list-of-evennia-topics" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- October 22, 2013</div>
 </h1>
-<p><a href="https://1.bp.blogspot.com/-vnauuJpCVfo/XpXkbERzSRI/AAAAAAAALJQ/lDoYHE6zjWsg7It_fsXn_3roGUISX2HxgCLcBGAsYHQ/s1600/spring-flower-and-snow.jpg"><img src="https://1.bp.blogspot.com/-vnauuJpCVfo/XpXkbERzSRI/AAAAAAAALJQ/lDoYHE6zjWsg7It_fsXn_3roGUISX2HxgCLcBGAsYHQ/s320/spring-flower-and-snow.jpg" alt="" /></a></p>
-<p>So, spring grows nearer for those of us on the Northern hemisphere. With everyone hopefully hunkered down and safe from the Covid-19 pandemic, I thought it overdue to make another dev blog for the progress of Evennia, the Python MU*-creation system.</p>
-<p>The last few months have seen primarily bug fixing on the Evennia front, but it also has seen an uptick of PRs from the community and the re-opening of the develop branch in earnest. There is still quite a lot of work to do before we can add that extra 0.1 and go from version 0.9 to 1.0.</p>
-<h3>What's in a version?</h3>
-<p>For me personally, I never put much stock in the notion of versions. Evennia didn't even have versions until a few years back: We used to just have a rolling git release. But eventually it became clear that our user base was big enough that we needed to more clearly separate major (and possibly breaking) updates from what came before. So I started versioning at Evennia 0.5 and have had roughly a new release every year since (not a plan or a promise, it just happened to turn out that way).</p>
-<p>Evennia has been useful (and been used) for game development for many years already. But there is no denying that a 1.x label tends to convey more confidence in a system than a 0.x label, that's just the way things are. So while the new version is still quite some way off, there are a bunch of changes and improvements that we want to do in this release to mark the version change in a good way.</p>
-<h3>Documentation changes</h3>
-<p>Our documentation will move away from our trusty <a href="https://github.com/evennia/evennia/wiki">Github wiki</a>. Instead we will convert the wiki into a static github page built from sources inside evennia/docs/.</p>
-<p>The advantage of the wiki is that it is a very low entry for people to contribute and fix things using Github's editing system. We have had a lot of use of this over the years and the wiki has served us well. The drawbacks are starting to get ever more noticeable, however:</p>
-<ul>
-<li>
-<p>Whereas the wiki is itself version-controlled, we cannot show multiple versions of the wiki at the same time. This makes it hard to update the documentation at the same time as non-released code is being written. This is probably my main reason for doing the change.</p>
-</li>
-<li>
-<p>The wiki today consists of some 200+ pages. It is hard to get an overview of what is where and what needs to be updated.</p>
-</li>
-<li>
-<p>The wiki word-search functionality is not really great.</p>
-</li>
-<li>
-<p>It's impossible to review changes before they go live, to check consistency and style. This has led to some documentation pages overlapping.</p>
-</li>
-<li>
-<p>Building the documentation to local HTML or PDF is an archaic process that I doubt anyone but me has done with any regularity.</p>
-</li>
-</ul>
-<p>The change so far planned is to switch to the <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> documentation build-system (same as Python/Django etc is using). We will use it with extensions that allows us to still use Markdown like in the old wiki. This also allows us to build a more comprehensive (and pretty) API documentation of the entire library. We have more options to add comprehensive online search functionality in this solution as well.</p>
-<p>Furthermore, will hopefully be able to set it up so that we can maintain and publish separate documentations for each forthcoming release. That is, you should be able to read the docs for 1.0, 1.1 or the latest master development as you like (similarly to how Django does it, although probably not as fancy from the onset).</p>
-<p>This means that contributions to the documentation will be done as PRs through GitHub, just like when contributing any other code. While this does add a little more of a hurdle to contributions, hopefully the benefits will far outweigh those. Building the docs locally will not require a running Evennia server (unless you want the api docs) and we will try to set everything up for to make it easy to contribute.</p>
-<p>Many of the details around the docs are still up in the air. This is still very much work-in-progress, like everything else.</p>
-<p>Work with this has started in the static-file-docs branch of Evennia. But we have not closed the wiki either - the two will exist in parallel for now.</p>
-<h3>PyPi</h3>
-<p>As mentioned before,  we will finally start to distribute Evennia via PyPi (the Python Package Index) - that is, you will be able to run <code>pip install evennia</code>. Using GIT will no longer be a requirement to get started.</p>
-<p>Considering how quickly people in open-source throw up their three lines of code on PyPi these days, it may be surprising Evennia is not already on PyPi. I have however felt that reading and referencing the highly-commented code is a big part and requirement for getting the most out of the library.</p>
-<p>With the new documentation system, this would improve. And you can of course still use git and follow master branch like the good ol' days if you want!</p>
-<h3>Web Admin improvements</h3>
-<p>For the longest time, the Django-admin component has been somewhat on the back-burner. With the help of community contributors, this is improving so you will be able to do more work the Admin GUI related to creating and managing objects, tie puppets to Accounts etc.</p>
-<h3>API improvements</h3>
-<p>Whereas the last few months have been mostly spent fixing lingering bugs, one thing planned for version 1.0 is a general cleanup of legacy strangeness in the API. For example, certain methods can return a list or a single object depending situation, which makes it hard to generalize. There are a lot of small quirks like that which we hope to address and make more consistent.</p>
-<p>There has also been a recent flurry of contributor PRs intended to help decouple Evennia's systems and make them easier to replace for those inclined to do so. Many of this is still being worked on, but it's likely you'll be able to replace many more &quot;core&quot; components for 1.0 with your own variations without doing any hacking in upstream code at all.</p>
-<p>... Needless to say, this is an advanced feature that most developers will never need. But Evennia was always intended to be heavily customizable and having the option is a good thing!</p>
-<p>Another feature that will come for 1.0 is a REST-API, added by one of our contributors. This uses Django-REST-Framework and makes it easier for external programs to authenticate and fetch data out of the Evennia database (great both for external apps, websites or custom what-have-you).</p>
-<p>At this time you can only fetch database objects via this interface, you cannot perform Command-calls or &quot;play the game&quot; this way (REST is a stateless concept and Evennia Commands tend to retain state).</p>
-<h3>Many other fixes and contributions</h3>
-<p>There's a truckload of stuff already available in master branch, but with the latest contributions of bigger code changes, we have started to use the Evennia develop branch again in earnest again. For a summary of the changes so far, check out the <a href="https://github.com/evennia/evennia/blob/develop/CHANGELOG.md">Changelog</a>.</p>
-<p>However, unless you want to contribute to Evennia itself (or really, really want to be on the bleeding edge), you are still recommended to use the master branch for now. A lot of work still to do, as said.</p>
+<p><a href="https://4.bp.blogspot.com/-WXVxxb06XBA/UmZ_5TSzmrI/AAAAAAAACE4/NbBAjohOi6E/s1600/building-blocks.jpg"><img src="https://4.bp.blogspot.com/-WXVxxb06XBA/UmZ_5TSzmrI/AAAAAAAACE4/NbBAjohOi6E/s1600/building-blocks.jpg" alt="" /></a></p>
+<p>Some Evennia updates.</p>
+<h2>Development</h2>
+<p>Lots of work has been happening in the <a href="http://code.google.com/r/griatch-evennia-dev/source/list">dev-clone</a> of Evennia over the last few months.</p>
+<p>As alluded to in the last blog, the main work has been to move Evennia's webserver component into the <em>Server</em>-half of Evennia for various reasons, the most obvious one to make sure that all database writes happen in the same process, avoiding race conditions. But this move lead to a rework of the cache system, which in turn lead to me having to finalize the plans for how Out-of-Band protocols should be implemented server-side. And once that was finalized, OOB was pretty much implemented anyway. As part of making sure OOB trackers were updated correctly at all times meant reworking some of the ways data is stored ... So one thing led to another making this a bigger update than originally planned.</p>
+<p>I plan to make a more detailed post to the <a href="https://groups.google.com/forum/#%21forum/evennia">mailing list</a> soon with more technical details of the (relatively minor) API changes existing users should expect. The merging of the clone into the main repo is still a little way off, but adventurous users have already started testing things.</p>
+<h2>Google Code</h2>
+<p>I like Google Code. It's easy to manage and maintain, it has a good wiki and Issue system, not to mention that it allows the use of Mercurial. But in the beginning of September, suddenly all links to our user's clone repositories were <em>gone</em> from the front of the project page_._ Not only that, creating new clones just didn't work anymore.</p>
+<p>Now any site can have bugs, and we made an <a href="http://code.google.com/p/support/issues/detail?id=30989">issue</a> for it (other projects were similarly affected). But nothing happened for the longest time - at least two months given that we didn't report it right away. Just recently the functionality came back but there is no confirmation or comments from Google (our issue is not even closed).</p>
+<p>That such a fundamental feature can go unheeded for so long is disturbing to me, driving home the fact that Google is certainly not putting much priority in their code hosting.</p>
+<h2>Community</h2>
+<p>Some furious activity in the <a href="http://webchat.freenode.net/?channels=evennia&amp;uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC chat</a> lately, with new people dropping in to chat and ask about Evennia. For example, an enthusiastic new user learned not only about Evennia but also Python for the first time. It was a lot of fun to see him go from having <em>no programming experience except</em> <em>mush softcode</em> to doing advanced Evennia system implementations in the course of a week and offering good feedback on new features in two. Good show! The freedom you get upgrading from something like softcode to Evennia's use of a full modern programming language was seemingly quite eye-opening.</p>
+<p>Other discussions have concerned the policies around using clones/branches for development as well as the benefits of some other hosting solution. Nothing has been decided on this. There is however now also an official GitHub mirror of Evennia's main repo to be found <a href="https://github.com/Evennia/evennia">here</a>.</p>
+<h2>Imaginary Realities</h2>
+<p>The deadline for entering articles for the <em>Imaginary Realities</em> web zine <a href="http://posted-stuff.blogspot.se/2013/10/imaginary-realities-update.html">reboot</a> has passed. It's a good initiative to bring this back - the <a href="http://en.wikipedia.org/wiki/Imaginary_Realities">original (archived) webzine</a> remains a useful mud-creation resource to this day. I entered two articles, one about Evennia and another about general mud-roleplaying. It will be fun to see how it comes out, apparently the first issue will appear Nov 13</p>
 
 <footer>
     <p>
-    <small><em><p>Image: ©George Hodan, released under CC0 Public Domain</p>
-</em></small>
+    <small><em></em></small>
+    </p>
+</footer>
+                    </div>
+                
+                    <hr>
+                    <div class="blog_post">
+                    <h1 id=2013-05-13-one-to-many>
+    One to Many
+    <a class="devblog-headerlink" href="devblog2013.html#2013-05-13-one-to-many" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- May 13, 2013</div>
+</h1>
+<p><a href="https://4.bp.blogspot.com/-M_YNUYvWuiw/UZCNa-U24lI/AAAAAAAAB2o/6wZzFjpCSvk/s1600/one-in-many.jpg"><img src="https://4.bp.blogspot.com/-M_YNUYvWuiw/UZCNa-U24lI/AAAAAAAAB2o/6wZzFjpCSvk/s320/one-in-many.jpg" alt="" /></a></p>
+<p>As of yesterday, I completed and merged the first of the three upcoming Evennia features I mentioned in my <a href="http://evennia.blogspot.se/2013/01/churning-behind-scenes.html">Churning Behind the Scenes</a> blog post: the &quot;Multiple Characters per Player&quot; feature.</p>
+<p>Evennia makes a strict division between <em>Player</em> (this is an object storing login-info and represents the person connecting to the game) and their <em>Character</em> (their representation in-game; Characters are just Objects with some nice defaults). When you log into the game with a client, a <em>Session</em> tracks that particular connection.</p>
+<p>Previously the Player class would normally only handle one Session at a time. This made for an easy implementation and this behavior is quite familiar to users of many other mud code bases. There was an option to allow more than one Session, but each were then treated equally: all Sessions would see the same returns and the same in-game entities were controlled by all (and giving the quit command from one would kick all out).</p>
+<p>What changed now is that the Player class will manage each Session separately, without interfering with other Sessions connected to the same Player. Each Session can be connected, through the Player, to an individual Character. So multiple Characters could in principle be controlled simultaneously by the same real-world player using different open mud clients. This gives a lot of flexibility for games supporting multi-play but also as a nice way to transparently puppet temporary extras in heavy roleplaying games.</p>
+<p>It is still possible to force Evennia to accept only one Session per Player just like before, but this is now an option, not a limitation. And even in hardcore one-character-at-a-time roleplaying games it is nice for builders and admins to be able to have separate staff or npc characters without needing a separate account for each.</p>
+<p>This feature took a lot more work than I anticipated - it consitutes a lot of under-the-hood changes. But it also gave me ample opportunity to fix and clean up older systems and fix bugs. The outcome is more consistency and standardization in several places. There are plenty of other noteworthy changes that were made along the way in the dev branch along with some API changes users should be aware of.</p>
+<p>So if you are an Evennia game developer you should peek at the more detailed mailing list  <a href="https://groups.google.com/forum/#%21topic/evennia/EjAW8S2N86I">announcement</a> on what has changed. The wiki is not updated yet, that will come soon.</p>
+<p>Now onward to the next feature!</p>
+
+<footer>
+    <p>
+    <small><em></em></small>
+    </p>
+</footer>
+                    </div>
+                
+                    <hr>
+                    <div class="blog_post">
+                    <h1 id=2013-01-29-churning-behind-the-scenes>
+    Churning behind the scenes
+    <a class="devblog-headerlink" href="devblog2013.html#2013-01-29-churning-behind-the-scenes" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- January 29, 2013</div>
+</h1>
+<p><a href="https://1.bp.blogspot.com/-kMcLTjgmpa0/UQfBh7FsD7I/AAAAAAAABys/uGhAhtwG22s/s1600/red_curtain_hand3crop_category.jpg"><img src="https://1.bp.blogspot.com/-kMcLTjgmpa0/UQfBh7FsD7I/AAAAAAAABys/uGhAhtwG22s/s200/red_curtain_hand3crop_category.jpg" alt="" /></a></p>
+<p>At the moment there are several Evennia projects churning along behind the scenes, none of which I've yet gotten to the point of pushing into a finished state.  Apart from bug fixes and other minor things happening, these are the main updates in the pipeline at the moment.</p>
+<h3>Multiple Characters per Player/Session</h3>
+<p>Evennia has for a long time enforced a clean separation between the <em>Player</em> and the <em>Character.</em> It's a much appreciated feature among our users. The <em>Player</em> is &quot;you&quot;, the human playing the game. It knows your password, eventual user profile etc. The <em>Character</em> is your avatar in-game. This setup makes it easy for a Player to have many characters, and to &quot;puppet&quot; characters - all you need to do is &quot;disconnect&quot; the Player object from the Character object, then connect to another Character object (assuming you are allowed to puppet that object, obviously). So far so good.</p>
+<p>What Evennia currently <em>doesn't</em> support is being logged in with <em>different</em> client sessions to the <em>same</em> Player/account while puppeting <em>multiple</em> characters <em>at the same time.</em> Currently multiple client sessions may log into the same Player account, but they will then all just act as separate views of the same action (all will see the same output, you can send commands from each but they will end up with the same Character).</p>
+<p>Allowing each session to control a separate Character suggests changing the way the session is tracked by the player and Character. This turns out to be more work than I originally envisioned when seeing the feature request in the issue tracker. But if my plan works out it will indeed become quite easy to use Evennia to both allow multi-play or not as you please, without having to remember separate passwords for each Character/account.</p>
+<h3>Webserver change to Server level</h3>
+<p>Evennia consists of two main processes, the <em>Portal</em> and the <em>Server.</em> The details of those were covered in an earlier blog post <a href="http://evennia.blogspot.se/2012/08/combining-twisted-and-django.html">here</a>. Evennia comes with a Twisted-based webserver which is currently operating on the <em>Portal</em> level. This has the advantage of not being affected by Server-reboots. The drawback is however that being in a different process from the main Server, accessing the database and notably its server-side caches becomes a problem - changing the database from the Portal side does not automatically update the caches on the Server side, telling them that the database has changed. Also writing to the database from two processes may introduce race conditions.</p>
+<p>For our simple default setup (like a website just listing some database statistics) this is not a terrible problem, but as more users start to use Evennia, there is a growing interest in more advanced uses of the webserver. Several developers want to use the webserver to build game-related rich website experiences for their games - online character generation, tie-in forums and things like that. Out-of-sync caches then becomes a real concern.</p>
+<p>One way around this could be to implement a framework (such as memcached) for homogenizing caches across all Evennia processes. After lots of IRC discussions I'm going with what seems to be the more elegant and clean solution though - moving the webserver into the <em>Server</em> process altogether. The <em>Portal</em> side will thus only hold a web proxy and the webclient protocol. This way all database access will happen from the same process simplifying things a lot. It will make it much easier for users to use django to create rich web experiences without having to worry about pesky behind the scenes things like caches and the like.</p>
+<h3>Out-of-band communication</h3>
+<p>This has been &quot;brewing&quot; for quite some time, I've been strangely unmotivated to finalize it. Out of band communication means the MUD client can send and receive data to/from the server directly, without the player having to necessesarily enter an active command or see any immediate effect. This could be things like updating a health bar in a client-side GUI, redirect text to a specific client window but also potentially more advanced stuff. I created the Evennia-side oob-handler over Christmas; it allows for client sessions to &quot;sign up&quot; for &quot;listening&quot; to attribute updates, do scheduled checks and so on. It's already in the codebase but is not activated nor tested yet.</p>
+<p>On the protocol side (for serializing data to the client) I have a MSDP implementation ready for telnet subnegotiation, it should be simple to add also GMCP once everything is tested. A JSON-based side channel for the webclient is already in place since a long time if I remember correctly, it just need to be connected to the server-side oob-handler once that's finished.</p>
+
+<footer>
+    <p>
+    <small><em></em></small>
     </p>
 </footer>
                     </div>
