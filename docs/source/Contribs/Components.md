@@ -20,8 +20,12 @@ else:
     damage = roll_damage()
     target.damage(damage)
 
-Another advantage is runtime components, allowing you to give and remove
-components to your objects to extend them at any time.
+
+It also works similarly to attributes for components which are not declared
+at compile time, you can use something like
+
+if health := target.components.get('health'):
+    health.heal(10)
 
 
 # How to install
@@ -33,11 +37,11 @@ from evennia.contrib.components import ComponentHolderMixin
 class Character(ComponentHolderMixin, DefaultCharacter):
 ```
 
-Components need to inherit the Component class and must be registered to the listing
+Components need to inherit the Component class directly and require a name
 Example:
 ```
-from evennia.contrib.components import Component, listing
-@listing.register
+from evennia.contrib.components import Component
+
 class Health(Component):
     name = "health"
 ```
@@ -45,35 +49,39 @@ class Health(Component):
 Components may define DBFields or NDBFields at the class level
 Example:
 ```
-from evennia.contrib.components import Component, listing, DBField
-@listing.register
+from evennia.contrib.components import Component, DBField
+
 class Health(Component):
-    health = DBField(default_value=1)
+    health = DBField(default=1)
 ```
 
-Note that default_value is optional and may be a callable such as `dict`
+Note that default is optional
 
 
-Each typeclass using the ComponentHolderMixin can declare its class components.
+Each typeclass using the ComponentHolderMixin can declare its components
+in the class via the ComponentProperty.
 These are components that will always be present in a typeclass.
-The components listed may be a class or an instance to be used as a template.
+You can also pass kwargs to override the default values
 Example
 ```
 from evennia.contrib.components import ComponentHolderMixin
 class Character(ComponentHolderMixin, DefaultCharacter):
-    class_components = (
-            components.Health,
-            components.Mana.as_template(max=100),
-        )
+    health = ComponentProperty("health", hp=10, max_hp=50)
 ```
 
-Runtime Components on the other hand are the components that can be
-added or removed by using a template's duplicate() or a new instance's create()
+You can then use character.health to access the components.
 
+Alternatively you can add those components at runtime.
+You will have to access those via the component handler.
 Example
 ```
 character = self
 vampirism = components.Vampirism.create(character)
+character.components.add(vampirism)
+
+...
+
+vampirism_from_elsewhere = character.components.get("vampirism")
 ```
 
 Keep in mind that all components must be imported to be visible in the listing
@@ -90,7 +98,7 @@ There is both an DBField and a NDBField for components.
 They wrap to use the .db and .ndb of typeclasses.
 This means that DBField will store its value in the database
 but NDBField will only store it in memory.
-
+They use AttributeProperty under the hood.
 
 You can make Components stand-alone as a template.
 To do this, call the component's as_template() method and pass it
@@ -101,8 +109,9 @@ to have the new instance created and registered to the new host.
 Something like
 ```
 character = self
-health_template = components.Health(hp=100)
+health_template = components.Health.create(hp=100)
 new_instance = health_template.duplicate(character)
+character.components.add(new_instance)
 ```
 
 Note that duplicate can also accept not having a host,
@@ -110,5 +119,3 @@ this lets it store values that it will later copy to its future host.
 This is a bit slower than giving it the host straight away.
 You will have to call the register_component from the host.
 
-Components use Evennia's attributes behind the scene so adding too many at once can slow down your game.
-To help with that, default_values are not saved to the database straight away.

@@ -14,11 +14,11 @@ This helps writing isolated code and reusing it over multiple objects.
   class Character(ComponentHolderMixin, DefaultCharacter):
   ```
 
-- Components need to inherit the Component class and must be registered to the listing
+- Components need to inherit the Component class directly and require a name
     Example:
     ```
-    from evennia.contrib.components import Component, listing
-    @listing.register
+    from evennia.contrib.components import Component
+
     class Health(Component):
         name = "health"
     ```
@@ -26,15 +26,14 @@ This helps writing isolated code and reusing it over multiple objects.
 - Components may define DBFields at the class level
     Example:
     ```
-    from evennia.contrib.components import Component, listing, DBField
-    @listing.register
+    from evennia.contrib.components import Component, DBField
     class Health(Component):
-        health = DBField(default_value=1)
+        health = DBField(default=1)
     ```
 
-    Note that default_value is optional and may be a callable such as `dict`
+    Note that default is optional
 
-- Keep in mind that all components must be imported to be visible in the listing
+- Keep in mind that all components must be imported to be visible.
   As such, I recommend regrouping them in a package
   You can then import all your components in that package's __init__
 
