@@ -1,0 +1,21 @@
+[![](https://2.bp.blogspot.com/-WRQkMo7-t8o/V_931Qgj7bI/AAAAAAAAEq4/GN2_I60bzdQGpgqJ_Brl-dFnmxK_2QsiACPcB/s320/New_hampshire_in_autumn.jpg)](https://2.bp.blogspot.com/-WRQkMo7-t8o/V_931Qgj7bI/AAAAAAAAEq4/GN2_I60bzdQGpgqJ_Brl-dFnmxK_2QsiACPcB/s1600/New_hampshire_in_autumn.jpg)
+
+  
+The last few months has been dominated by bug-fixing and testing in Evennia-land. A lot more new users appears to be starting to use Evennia, especially from the [MUSH](https://en.wikipedia.org/wiki/MUSH) world where the Evennia-based _[Arx, After the Reckoning](http://play.arxgame.org/)_ is, while still in alpha, currently leading the charge.  
+  
+With a new influx of users comes the application of all sorts of use- and edge-cases that stretch and exercise the framework in all the places where it matters. There is no better test of code than new users trying to use it unsupervised! Evennia is holding up well overall but there are always things that can be improved.   
+
+-   I reworked the way on-object Attributes was cached (from a stupid but simple way to a lot more sophisticated but harder way) and achieved three times faster performance in certain special cases people had complained about. Other issues also came to view while diving into this, which could be fixed.
+-   I reworked the venerable batch command and batchcode processors (these allow to create a game world from a script file) and made their inputs make more sense to people. This was one of the older parts of Evennia and apart from the module needing a big refactoring to be easier to read, some parts were pretty fragile and prone to break. Especially when passing it file names tended to be confusing since it understood only certain relative paths to the files to read in and not even I could remember if one should include the file ending or not. This was cleaned up a lot. 
+-   Lots of changes and updates were made to the RPSystem contrib, which optionally adds more advanced roleplaying mechanics to Evennia. The use of this in Evennia's demo game ([Ainneve](https://github.com/evennia/ainneve), being separately developed) helps a lot for ironing out any remaining wrinkles.
+-   Lots and lots of other fixes and smaller feature updates were done (About [](https://www.blogger.com/goog_1124770844)[150 commits and 50 Issues](https://github.com/evennia/evennia/commits/master) closed since end of summer).
+
+A fun thing with a growing user base is that we are also starting to see a lot more Pull requests and contributions. Thanks a lot, keep 'em coming!  
+
+-   Map system contrib (merged), for creating a world based on ASCII map. Talking about maps, users contributed not just one but two new tutorials for implementing both static and dynamic maps with Evennia. 
+-   Webclient notifications (pending), for making the webclient show us in a clearer way when it gets updated in a different tab. A more advanced implementation awaits the webclient being expanded with a proper client-side option window; there is currently a feature request for this if anyone's interested in taking it on.   
+-   AI system contrib (pending). This is a full AI backend for adding complex behaviors to game agents. It uses Behavioral trees and is designed to be modified both in code and from inside the game.
+-   Action system contrib (pending). This contrib assigns the actions of Characters a time cost and delays the results of commands the given time. It also allows players to go into turn-based mode to enforce a strict action order. 
+-   _Lots_ of now closed PRs were contributed by the Arx lead developer to fix various bugs and edge-cases as they came up in live use.
+
+The fixing and tightening of the nuts and bolts will likely continue the remainder of the year. I'm currently working on a refactoring of the way command sets are merged together (see the end of my [blog post on Evennia in pictures](http://evennia.blogspot.se/2016/05/evennia-in-pictures.html) for a brief summary of the command system). But with so much new blood in the community, who can tell where things will turn from here!

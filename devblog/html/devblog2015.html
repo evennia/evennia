@@ -1,0 +1,343 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        <title>Devblog: Evennia Python MUD/MU creation system</title>
+        <link rel="shortcut icon" type="image/x-icon" href="../../images/favicon.ico">
+        <link rel="stylesheet" href="../../stylesheets/styles.css">
+        <link rel="stylesheet" href="../../stylesheets/pygment_trac.css">
+        <link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
+        <link href='https://fonts.googleapis.com/css?family=Arvo' rel='stylesheet'>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <meta name="description" content="Evennia is a modern Python library and server for creating text-based        multi-player games and virtual worlds (also known as MUD, MUSH, MU, MUX, MUCK, etc). While Evennia handles all the necessary things every online game needs, like database and networking, you create the game of your dreams by writing normal Python modules.">
+        <!--[if lt IE 9]>
+            <script src="//html5shiv.googlecode.com/svn/trunk/html5.js">
+            </script>
+        <![endif]-->
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <p>
+                <img class="logo" src="../../images/evennia_logo.png" alt="Evennia logo">
+                </p>
+                <h1 class="header">Evennia</h1>
+                <p class="header header-text">The Python MU* Development Library</p>
+                <div class="linksection">
+                    <ul>
+                        <div class="buttonsection">
+                            <li>
+                                <a class="buttons" href="https://www.evennia.com">Back to Evennia</a>
+                            </li>
+                    </ul>
+                        </div>
+                        <div class="devblog-calendar">
+                            <ul>
+                                
+                                    <li><a href=#devblog-posts>2018 (4)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2018.html#2018-09-30-evennia-0.8-released">September 30</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2018.html#2018-08-18-inline-building-in-upcoming-evennia-0.8">August 18</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2018.html#2018-01-27-kicking-into-gear-from-a-distance">January 27</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2018.html#2018-01-05-new-year,-new-stuff">January  5</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href=#devblog-posts>2021 (2)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2021.html#2021-03-21-where-do-i-begin?">March 21</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2021.html#2021-01-01-happy-new-years-2021!">January  1</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href=#devblog-posts>2016 (7)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2016.html#2016-11-30-birthday-retrospective">November 30</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2016.html#2016-10-13-season-of-fixes">October 13</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2016.html#2016-07-01-the-art-of-sharing-nicks-and-descriptions">July  1</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2016.html#2016-05-31-evennia-in-pictures">May 31</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2016.html#2016-05-22-evennia-0.6!">May 22</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2016.html#2016-03-24-technical-stuff-happening">March 24</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2016.html#2016-02-14-climbing-up-branches">February 14</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href=#devblog-posts>2017 (6)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2017.html#2017-10-29-getting-a-mud-rp-scene-going">October 29</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2017.html#2017-10-01-evennia-in-hacktobergest-2017">October  1</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2017.html#2017-09-20-evennia-0.7-released">September 20</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2017.html#2017-08-25-renaming-django's-auth-user-and-app">August 25</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2017.html#2017-04-23-the-luxury-of-a-creative-community">April 23</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2017.html#2017-02-05-news-items-from-the-new-year">February  5</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href=#devblog-posts>2019 (7)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2019.html#2019-09-30-blackifying-and-fixing-bugs">September 30</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2019.html#2019-07-04-evennia-0.9-released">July  4</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2019.html#2019-05-26-creating-evscaperoom-part-2">May 26</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2019.html#2019-05-18-creating-evscaperoom-part-1">May 18</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2019.html#2019-05-09-podcast-about-evennia">May  9</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2019.html#2019-04-25-steaming-on-eating-jam">April 25</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2019.html#2019-01-02-into-2019">January  2</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href=#devblog-posts>2020 (3)
+                                        
+                                            <ul class="devblog-calendar-closed">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2020.html#2020-11-14-evennia-0.9.5-released">November 14</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2020.html#2020-10-20-on-using-markdown-with-sphinx">October 20</a>
+                                                </li>
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2020.html#2020-04-14-spring-updates-while-trying-to-stay-healthy">April 14</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                                    <li><a href=#devblog-posts>2015 (1)
+                                        
+                                            <ul class="devblog-calendar-open">
+                                        
+                                            
+                                                <li class="devblog-calendar-post">
+                                                    <a href="devblog2015.html#2015-12-17-a-summary-of-a-year">December 17</a>
+                                                </li>
+                                            
+                                        </ul>
+                                    </li>
+                                
+                            </ul>
+                        </div>
+            </header>
+            <section>
+                <h1>
+                    <a name="evennia-mudmu-creation-system" class="anchor"  href="#evennia-mudmu-creation-system">
+                        <span class="octicon octicon-link">
+                        </span>
+                    </a>Evennia Dev Blog<div class="sponsor">
+                        <div class="sponsor-column">
+                            <a href="https://www.patreon.com/griatch">
+                                <img class="patreon" src="../../images/evennia_patreon_100x100.png" alt="Patreon">
+                            </a>
+                            <p>
+                            <a href="https://www.paypal.me/GriatchEvennia">
+                                <img class="paypal" src="../../images/btn_donateCC_LG.gif" alt="Paypal donate">
+                            </a>
+                        </div>
+                </h1>
+
+                <em>Random Evennia- and MUD-related musings of Griatch, the Evennia lead developer.</em>
+
+                
+                    
+                    <div class="blog_post">
+                    <h1 id=2015-12-17-a-summary-of-a-year>
+    A summary of a year
+    <a class="devblog-headerlink" href="devblog2015.html#2015-12-17-a-summary-of-a-year" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- December 17, 2015</div>
+</h1>
+<h3><a href="https://evennia.blogspot.com/2015/12/a-summary-of-year.html">A summary of a year</a></h3>
+<p><a href="https://4.bp.blogspot.com/-_8Yxtk6y1KQ/VnLiQf1U18I/AAAAAAAAEew/7zabQTvUEdY/s1600/33-1196545384.jpg"><img src="https://4.bp.blogspot.com/-_8Yxtk6y1KQ/VnLiQf1U18I/AAAAAAAAEew/7zabQTvUEdY/s200/33-1196545384.jpg" alt="" /></a></p>
+<p>As 2015 is slowly drawing to an end, I looked back through Evennia's repository to see just what was going on this year. And it turns out it was a lot! I honestly didn't remember some things happened as recently as they did.</p>
+<p><em>Note: For those reading this not familiar with Evennia, it's a Python library for creating MUDs (text-based multiplayer games).</em></p>
+<h2>Making Evennia into a library</h2>
+<p>In February of 2015 we merged what was likely the biggest change happening for a good while in Evennia - the complete refactoring of the Evennia repository into a library. It used to be that when you cloned the Evennia repo, it would come with a pre-made game/ folder where you were supposed to put your custom files. Mixing the stuff you downloaded from us with your own files (which you might want to keep under version control of your own) was not a very clean solution.</p>
+<p>In the big &quot;library update&quot;, we instead created a stand-alone evennia program which you use to create your own &quot;game dir&quot; with pre-created templates. Not only does this allow you to treat the cloned evennia repo as a proper library, you can also use the same evennia install for multiple games and makes it a lot clearer just what comes from us and what is your custom code.</p>
+<p>Below is a fun Gource representation (courtesy of Youtuber Landon Wilkins) of how the Evennia repository structure has changed over the years. You can see the latest library-change a little after the <a href="https://youtu.be/sXCm78XEJ9c?t=3m20s">3minute, 20 second mark</a>.</p>
+<h2>Typeclasses into proxies</h2>
+<p>At the same time as the library change, I also completely overhauled the way typeclasses are represented in Evennia: Typeclasses are Python classes that links back to a database model under the hood. They used to use a custom overloading of varioust get/set methods, now they instead utilize <a href="https://docs.djangoproject.com/en/1.9/topics/db/models/#proxy-models">django proxy models</a> extended to support multiple inheritance. T</p>
+<p>his radically increased performance and made the code considerably cleaner, as well as completely hid the core django model from the end user (no longer a need to track if you were dealing with a model or its typeclass - you only ever run into typeclasses). This, together with the library-model led to some changes in people's source codes.</p>
+<p>Even so, this change led to a lot less problems and edge-cases than I had anticipated: it seems more people had issues with upgrading django than with adopting their codes to the new typeclass changes ...</p>
+<h2>Evennia Autodocs</h2>
+<p>Following the big library merger I sat down to write a more comprehensive autodoc utility. We had been distributing a Doxygen config file with the repo for a long time, but I wanted something that integrated with our github wiki, using markdown in the source (because frankly, while Sphinx produces very pretty output, ReST markup looks really ugly in source code, in my opinion).</p>
+<p>The result was the api2md program, which is now a part of our wiki repository. It allows our source code to be decorated in &quot;Google style&quot;, very readable output:</p>
+<pre><code class="language-python">
+def funcname(a, b, c, d=False):  &quot;&quot;&quot;  
+
+    This is a brief introduction to the
+
+    function/class/method  
+
+  
+
+    Args:  
+
+        a (str): This is a string argument that
+
+          we can talk about over multiple lines.  
+
+        b (int or str): Another argument  
+
+        c (list): A list argument  
+
+        d (bool, optional): An optional keyword argument  
+
+  
+
+    Returns:  
+
+        str: The result of the function  
+
+  
+
+    Notes:  
+
+        This is an example function. If `d=True`, something 
+
+        amazing will happen.  
+
+  
+
+    &quot;&quot;&quot;
+
+</code></pre>
+<p>This will be parsed and converted to a Markdown entry and put into the Github wiki, one page per module. The result is the automatically generated <a href="https://github.com/evennia/evennia/wiki/evennia">Evennia API autodocs</a>, reachable as any other wiki page.</p>
+<p>The convertion/prettification of all core functions of Evennia to actually <em>use</em> the Google-style docstrings took almost all year, finishing late in autumn. But now almost all of Evennia uses this style. Coincidentally this also secures us at a 45% comment/code ratio. This places us in the top 10% of well-documented open-source projects according to <a href="https://www.openhub.net/p/evennia/factoids#FactoidCommentsVeryHigh">openhub</a> (gotta love statistics).</p>
+<h2>Imaginary realities / Optional Realities</h2>
+<p>Spring of 2015 saw some more articles for the <a href="http://journal.imaginary-realities.com/">Imaginary Realities</a> e-zine as well as some for the newly-opened <a href="http://optionalrealities.com/">Optional Realities</a> web forum (unrelated, despite the similar name). The latter was made by a team working on a commercial Evennia-based sci-fi game, but the forums were open for other games (of any engine) and general discussion on mud and mud design.</p>
+<p>Optional Realities published an impressive range of articles (one every week for several months) and organized several very interesting mud-related contests. It did, I think, a lot for bringing some new life to the mud-development scene.  Unfortunately Optional Realities suffered a complete database loss towards the end of the year, forcing it to sort of reboot from scratch. I hope it will rebound and that the articles can be put back online again!</p>
+<h2>Ainneve</h2>
+<p>Over summer I put out a general roll call for developers willing to lead the development of a small but fully functioning Evennia demo game - a project separate from the main Evennia development. The idea is to have something working for people to rip out and start from. The response to my request was very good and we relatively quickly ended up with two devs willing to lead and direct the effort.</p>
+<p>The work-in-progress demo game they started is called <em><a href="https://github.com/evennia/ainneve">Ainneve</a></em>. It uses the base <a href="http://geekguild.com/openadventure/">Open Adventure</a> RPG rules and is distributed using the same liberal licence as Evennia.</p>
+<p>Ainneve has been sputtering along throughout autumn and winter, and while progress has been a bit ... sporadic, it seems to attract new volunteers to help out. As more of the base systems gets finalized there is going to be even more &quot;low hanging fruit&quot; for people to jump in and help with.</p>
+<h2>EvMenu, EvMore and EvEditor, RPSystem</h2>
+<p>In July I merged some new systems into Evennia's utilities library. <em>EvMenu</em> is a class that builds an in-game menu. It uses multiple-choice questions for the user to navigate its nodes. I had a &quot;menusystem&quot; in our contrib/ folder since many years, but it was showing its age and when I found I myself didn't really understand how it was working I found it time to make something more flexible.</p>
+<p>The <em>EvMore</em> is a page-scroller that allows the server to pause long texts and wait for the user to press a key before continuing. It's functionality is similar to the unix <em>more</em> program.</p>
+<p>For its part, <em>EvEditor</em> has existed for a while as well, but it was moved from the contrib folder into the main utilility library as it turned out to be an important and common resource (it's basically a mud-version of the classic <em>vi</em> editor).</p>
+<p>Finally, some months later, in September, I added the <em>rpsystem</em> and <em>rplanguage</em> contribution modules. The former is an author-stance recognition system similar to what is seen in some rp-heavy muds (where you don't know/see people's name off the bat, but only their description, until you manually assign a name to them).</p>
+<p>The <em>rplanguage</em> module is used for handling foreign (fantasy) languages by obfuscating words heard by different parties depending on their relative language skills.</p>
+<h2>Python 3 ... some day</h2>
+<p>As we know, Evennia uses Python 2. In autumn of 2015 first one and then two of our users took upon themselves to help make Evennia a little more ready for running also under Python 3. After a lot of work, Evennia's core is now using code syntax that is compatible with both Python 2 and 3.</p>
+<p>We <em>don't</em> run under Python 3 at this point though. This is not something under our control, but is due to Twisted not supporting Python 3 yet. But when it becomes possible, we are now better prepared for transitioning to a point where we can (hopefully) support both main Python versions.</p>
+<h2>EvCast</h2>
+<p>In September, user whitenoise started his &quot;EvCast&quot; video tutorial series on Evennia. There are so far two episodes, one on installing Evennia and the second on general Python concepts you need to use Evennia efficiently:</p>
+<iframe width="320" height="266" src="https://www.youtube.com/embed/tjiS2Bx5xb0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<h2><code>Python.__init__</code> Podcast</h2>
+<p>In the end of September I was interviewed by the hosts of the <em>python.<strong>init</strong></em> podcast. Turned into more than an hour of discussion about Evennia. T'was fun! You can <a href="https://plus.google.com/+Podcastinit-the-python-podcast/posts/Vu9dPVjsR9h">listen to it here</a>.</p>
+<h2>Nested inlinefuncs</h2>
+<p>Towards the end of the year I got (via Optional Realities) lured to participate in another text-gaming related website, <a href="http://musoapbox.net/">musoapbox</a>. This is a forum primarily populated by players from the MUSH-side of text-gaming. After some back and forth they made a strong case for increasing the functionality of Evennia's <em>inlinefunctions</em>.</p>
+<p>An inlinefunction is, in Evennia, a function call embedded in a string sent to the server. This is parsed and executed (no, there is no dangerous eval happening, the call is parsed as text and then called as a normal function call). It allows for text to be dynamically replaced at run-time. What the MUSHers suggested was to also allow those inlinefunc's to be nestable - that is, to implement a call stack. The nestable form of inlinefuncs was merged with Evennia master at the end of November.</p>
+<h2>Patreon</h2>
+<p>This actually happened already back in February: after some requests for more ways to support Evennia development, I opened <a href="https://www.patreon.com/griatch?ty=h">a Patreon page</a>. And here at the end of the year, a whole ten patrons have signed up for it. Very encouraging!</p>
+<h2>Next year</h2>
+<p>In 2016 the first upcoming thing that comes to mind is push out the changes to the webclient infrastructure. That has been a long time coming since I've been unsure of how to proceed on it for quite some time. The goal is to make the webclient a lot more &quot;pluggable&quot; and modular than it is, and to clean up its API and way of communicating with the server. Overall I think the web-side of things need some love.</p>
+<p>I'll likely put together some more general-use contribs as well, I have some possibles in mind.</p>
+<p>We'll continue squashing bugs and work down our roadmap.</p>
+<p>I'll also try to get an Evennia Wikipedia.org page together, if you want to look at how it's progressing and help editing it, see the Evennia mailing list for the link.</p>
+<p>... And a lot more I don't know yet, no doubt! On towards a new year!</p>
+
+<footer>
+    <p>
+    <small></small>
+    </p>
+</footer>
+                    </div>
+                
+            </section>
+    </body>
+</html>
