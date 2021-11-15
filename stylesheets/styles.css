@@ -474,14 +474,29 @@ h1:hover > a.devblog-headerlink {
 .devblog-title-date {
     font-size: small;
 }
-.devblog-calendar > ul a + .devblog-calendar-closed {
-    max-height: 0;
-    overflow: hidden;
-    transition: 0.1s linear;
-    margin-bottom:0px;
+.devblog-calendar-closed {
+    max-height: 0px;
+    visibility: hidden;
+    margin-bottom: 0.4em;
 }
-.devblog-calendar > ul a:focus + .devblog-calendar-closed {
-    max-height: 15em;
+.devblog-calendar-open {
+    max-height: 21em;
+    margin-bottom: 0.4em;
+}
+.devblog-calendar-tooltip .devblog-calendar-tooltip-text {
+    visibility: hidden;
+    width: 120px;
+    background-color: #8e8e8e;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    margin-left: 3px;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+}
+.devblog-calendar-tooltip:hover .devblog-calendar-tooltip-text {
+    visibility: visible;
 }
 a[href="devblog-posts"]:focus {
     pointer-events: none;
