@@ -145,8 +145,10 @@ def md2html():
         calendar[date.year].append(post)
 
     # make sure to sort all entries by date
-    for year in calendar:
+    for year in sorted(calendar):
         calendar[year] = list(sorted(calendar[year], key=lambda post: -post.date_sort))
+
+    calendar = {year: calendar[year] for year in sorted(calendar, reverse=True)}
 
     # pair pages with years/filenames
     for year, posts in calendar.items():

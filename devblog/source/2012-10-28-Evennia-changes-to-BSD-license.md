@@ -1,0 +1,7 @@
+[![](https://4.bp.blogspot.com/-mFTXyssJj3Y/UI1NUnfYb-I/AAAAAAAABxs/2yJAilrx3j0/s200/open+neon+95n.jpg)](https://4.bp.blogspot.com/-mFTXyssJj3Y/UI1NUnfYb-I/AAAAAAAABxs/2yJAilrx3j0/s1600/open+neon+95n.jpg)As of today, [Evennia](http://www.evennia.com/) changes to use the very permissive [BSD license.](http://opensource.org/licenses/BSD-3-Clause)  
+  
+Now, our previous "Artistic License" was also very friendly. One main feature was that it made sure that changes people made to the core Evennia library (i.e. not the game-specific files) were also made available for possible inclusion upstream. A good notion perhaps, but the licensing text was also quite long and it was clear some newcomers parsed it as more restrictive than it actually was.  
+  
+... And let's be honest, it's not like I would have come hunting down anyone not complying fully with the Artistic license's terms. Changing to the much simpler and more well-known BSD license better clarifies the actual licensing situation.  
+  
+After all, far too many older MUD-code bases are weighted by a legacy of licensing issues. Anything we can do to avoid this is better in the long run. Indeed we hope this change in licensing will remove eventual licensing doubts for new adopters and have more people join and contribute to the project.
