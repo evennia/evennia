@@ -186,6 +186,7 @@ code, pre {
 	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
   color:#000;
   font-size:14px;
+  line-height: 0.8em;
 }
 
 .codeblock {
@@ -490,11 +491,17 @@ a[href="devblog-posts"]:focus {
 }
 .blog_post > * > img {
     opacity: 1.0;
+    float:left;
+    margin-right:2em;
+    margin-bottom: 1em;
 }
-.blog_post > * > a > img { 
+.blog_post > * > a > img {
     opacity: 1.0;
+    float:left;
+    margin-right:2em;
+    margin-bottom: 1em;
 }
-.blog_post > ul { 
+.blog_post > ul {
     list-style: inherit;
 }
 .blog_post > ul > li > p {
@@ -504,6 +511,8 @@ a[href="devblog-posts"]:focus {
     width: initial;
     float: none;
 }
+
+
 
 
 /* Media alternatives */

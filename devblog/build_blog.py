@@ -87,6 +87,7 @@ def md2html():
         print(f"Processing {filename}...")
 
         title = title[:-3]  # remove .md ending
+        title = " ".join(title.split("-"))
         date = datetime(year=int(year), month=int(month), day=int(day))
         image_copyrights = ""
 

@@ -1,0 +1,21 @@
+title: New year, new stuff
+
+---
+
+[![](https://1.bp.blogspot.com/-Cos98gc1wVU/Wk9Qdu2v6pI/AAAAAAAAH3U/O29xABaYrPYxPT3xubw79li5zU-kj_HVACLcBGAs/s200/child-1539341_640.jpg)](https://1.bp.blogspot.com/-Cos98gc1wVU/Wk9Qdu2v6pI/AAAAAAAAH3U/O29xABaYrPYxPT3xubw79li5zU-kj_HVACLcBGAs/s1600/child-1539341_640.jpg)
+
+Happy 2018 everyone! Here's a little summary of the past Evennia year and what is brewing.  
+  
+_(Evennia is a Python server- and toolbox for creating text-based multiplayer games (MU*))._  
+  
+The biggest challenge for me last year Evennia-wise was the release of Evennia 0.7. Especially designing the migration process for arbitrary users migrating the Django auth-user took a lot of thought to figure out [as described in my blog post here.](http://evennia.blogspot.se/2017/08/renaming-djangos-auth-user-and-app.html) But now 0.7 [is released](http://evennia.blogspot.se/2017/09/evennia-07-released.html) and a few initial minor adjustments could be made after feedback from daring pilot testers. [The final process](https://groups.google.com/forum/#!category-topic/evennia/evennia-news/0JYYNGY-NfE) of migrating from 0.6 to 0.7 is, while involved, a step-by-step copy&paste list that has worked fine for most to follow. I've gotten far fewer questions and complains about it than could be expected so that's a good sign.  
+  
+Working away on the boring but important behind-the-scenes stuff made me less able to keep up with more "mundane" issues and bugs popping up, or with adding new "fun" features to existing code. Luckily the Evennia community has really been thriving this year; It feels like new users pop up in the support channel all the time now. The number of pull requests both fixing issues and offering new features and contribs have really picked up. A bigger part of my time has been spent reviewing Pull Requests this year than any other I think. I would like to take the opportunity to thank everyone contributing, it's really awesome to see others donating their time and energy adding to Evennia. The [Hacktoberfest](http://evennia.blogspot.se/2017/10/evennia-in-hacktoberfest-2017.html) participation was also surprisingly effective in getting people to create PRs - I have a feeling some were just happy to have an "excuse" for getting started to contribute. We should attend that next year too.  
+  
+One thing we added with 0.7 was a more formal branching structure: Evennia now uses fixed **master** and **develop** branches, where master is for bug-fixes and develop is for new features (things that will eventually become evennia 0.8). This is simple but enough for our needs; it also makes it easier to track new from old now that we are actually doing releases.  
+  
+Now that Twisted is at a point where this is possible for us to do, we also now have a [sort-of plan](https://groups.google.com/forum/#!category-topic/evennia/evennia-news/GbLh1GF-ZaY) for finally moving Evennia to Python 3. I won't personally be actively working on it until after 0.8 is out though. I don't expect both Evennia 0.8 and 0.9 (which will be pure py3) to get released this year, but we'll see - so far contributors have done all the work on the conversion.  
+  
+At any rate, this coming year will probably be dominated by catching up on issues and edge cases that are lining our [Issue tracker](https://github.com/evennia/evennia/issues). One side effect of more newcomers is more eyes on the code and finding the creaky-bits. At least for me, most of my Evennia-time will be spent resolving bugs and issues. The fun thing is that unlike previous years this is not only up to me anymore - hopefully others will keep helping to resolve issues/bugs to broaden our bandwidth when it comes to keeping Evennia stable. The faster we can handle the backlog of issues the faster we can focus on new shiny features after all.  
+  
+Finally, a continued great thank you to those of you contributing to the [Patreon](https://www.patreon.com/griatch). Even small donations have a great encouraging value when working on something as niche as a Python MU* game server in 2018 - thanks a lot!
