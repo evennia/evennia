@@ -34,16 +34,18 @@
                         </div>
                         <div class="devblog-calendar">
                             <ul>
-                                {% for year, postlist in calendar.items() %}
-                                    <li><a href=#devblog-posts>{{ year }} ({{ postlist|length }})
-                                        {% if year == page_year %}
+                                {% for page in blogpages %}
+                                    <li><a href="{{page.permalink}}">{{ page.year }} ({{ page.posts|length }})
+                                        {% if pageyear == page.year %}
                                             <ul class="devblog-calendar-open">
                                         {% else %}
                                             <ul class="devblog-calendar-closed">
                                         {% endif %}
-                                            {% for post in postlist %}
-                                                <li class="devblog-calendar-post">
-                                                    <a href="{{ post.permalink }}">{{ post.date_short}}</a>
+                                            {% for blogpost in page.posts %}
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="{{ blogpost.permalink }}">{{ blogpost.date_short}}
+                                                    <span class="devblog-calendar-tooltip-text">{{ blogpost.title }}</span>
+                                                    </a>
                                                 </li>
                                             {% endfor %}
                                         </ul>
@@ -69,12 +71,12 @@
                         </div>
                 </h1>
 
-                <em>Random Evennia- and MUD-related musings of Griatch, the Evennia lead developer.</em>
+                <em>Various Evennia- and MUD-related musings by Griatch, the Evennia lead developer.</em>
 
-                {% for post in posts %}
+                {% for blogpost in blogpage.posts %}
                     {% if not loop.first %}<hr>{% endif %}
                     <div class="blog_post">
-                    {{ post.html }}
+                    {{ blogpost.html }}
                     </div>
                 {% endfor %}
             </section>

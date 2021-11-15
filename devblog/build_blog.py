@@ -37,7 +37,7 @@ TEMPLATE_DIR = pathjoin(CURRDIR, "templates")
 IMG_DIR = pathjoin(SOURCE_DIR, "images")
 
 OUTDIR = pathjoin(CURRDIR, "html")
-OUTFILE_TEMPLATE = "devblog{year}.html"
+OUTFILE_TEMPLATE = "devblogs_{year}.html"
 OUT_IMG_DIR = pathjoin(OUTDIR, "images")
 
 START_PAGE = "index.html"
@@ -48,9 +48,15 @@ CURRENT_YEAR = datetime.now().year
 
 
 @dataclass
-class Post:
+class BlogPost:
+    """
+    A single blog post.
+
+    """
     title: str
+    blurb: str
     permalink: str
+    pagelink: str
     anchor: str
 
     date_pretty: str
@@ -59,6 +65,18 @@ class Post:
 
     image_copyrights: str
     html: str
+
+
+@dataclass
+class BlogPage:
+    """
+    Represents one year/html page of blog posts.
+
+    """
+    year: int
+    permalink: str
+    posts: list
+    calendar: dict
 
 
 def md2html():
@@ -72,7 +90,6 @@ def md2html():
     blog_template = jinja_env.get_template(BLOG_TEMPLATE)
     post_template = jinja_env.get_template(POST_TEMPLATE)
 
-    pages = {}
     calendar = defaultdict(list)
 
     for file_path in glob.glob(pathjoin(SOURCE_DIR, "*.md")):
@@ -87,6 +104,7 @@ def md2html():
         print(f"Processing {filename}...")
 
         title = title[:-3]  # remove .md ending
+        blurb = title[:11] + "..."
         title = " ".join(title.split("-"))
         date = datetime(year=int(year), month=int(month), day=int(day))
         image_copyrights = ""
@@ -94,7 +112,7 @@ def md2html():
         with open(file_path) as fil:
             lines = fil.readlines()
 
-        # check if there is a meta header in the first 5 lines
+        # check if there is a meta header in the first 6 lines
         meta = None
         try:
             meta_end = [lin.strip() for lin in lines[:5]].index("---")
@@ -112,6 +130,8 @@ def md2html():
                 elif line.startswith("copyrights:"):
                     image_copyrights = line[12:]
                     image_copyrights = mistletoe.markdown(image_copyrights)
+                elif line.startswith("blurb:"):
+                    blurb = line[6:].strip()
 
         markdown_post = "\n".join(lines)
         # convert markdown to html
@@ -121,49 +141,56 @@ def md2html():
         anchor = "{}".format(
             date.strftime("%Y-%m-%d-" + "-".join(title.strip().lower().split()))
         )
-        permalink = "{}#{}".format(
-            OUTFILE_TEMPLATE.format(year=date.year),
-            anchor
-        )
-        post = Post(
+        pagelink = OUTFILE_TEMPLATE.format(year=date.year)
+        permalink = "{}#{}".format(pagelink, anchor)
+
+        blogpost = BlogPost(
             title=title,
+            blurb=blurb,
             permalink=permalink,
+            pagelink=pagelink,
             anchor=anchor,
             date_pretty=date.strftime("%B %e, %Y"),
-            date_short=date.strftime("%B %e"),
+            date_short=date.strftime("%b %e"),
             date_sort=date.toordinal(),
             image_copyrights=image_copyrights,
             html=html
         )
-        # populate template with jinja
+        # populate template with jinja and readd to blogpost
         context = {
-            "post": post
+            "blogpost": blogpost
         }
-        post.html = post_template.render(context)
+        blogpost.html = post_template.render(context)
 
         # store
-        calendar[date.year].append(post)
+        calendar[date.year].append(blogpost)
 
     # make sure to sort all entries by date
-    for year in sorted(calendar):
-        calendar[year] = list(sorted(calendar[year], key=lambda post: -post.date_sort))
+    blogpages = []
+    for year in sorted(calendar, reverse=True):
+        blogpages.append(
+            BlogPage(
+                year=year,
+                permalink=OUTFILE_TEMPLATE.format(year=year),
+                posts=list(sorted(calendar[year], key=lambda post: -post.date_sort)),
+                calendar=calendar
+            )
+        )
 
-    calendar = {year: calendar[year] for year in sorted(calendar, reverse=True)}
-
-    # pair pages with years/filenames
-    for year, posts in calendar.items():
-
+    # build the blog pages, per year
+    html_pages = {}
+    for blogpage in blogpages:
         context = {
-            "page_year": year,
-            "posts": posts,
-            "calendar": calendar
+            "pageyear": blogpage.year,
+            "blogpage": blogpage,
+            "blogpages": blogpages
         }
 
         html_page = blog_template.render(context)
 
-        pages[year] = html_page
+        html_pages[blogpage.year] = html_page
 
-    return pages
+    return html_pages
 
 
 def build_pages(blog_pages):

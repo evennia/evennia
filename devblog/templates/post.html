@@ -1,11 +1,11 @@
-<h1 id={{ post.anchor }}>
-    {{ post.title }}
-    <a class="devblog-headerlink" href="{{ post.permalink }}" title="Permalink to this blog post">¶</a>
-    <div class="devblog-title-date">- {{ post.date_pretty }}</div>
+<h1 id={{ blogpost.anchor }}>
+    {{ blogpost.title }}
+    <a class="devblog-headerlink" href="{{ blogpost.permalink }}" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- {{ blogpost.date_pretty }}</div>
 </h1>
-{{ post.html }}
+{{ blogpost.html }}
 <footer>
     <p>
-    <small><em>{{ post.image_copyrights }}</em></small>
+    <small><em>{{ blogpost.image_copyrights }}</em></small>
     </p>
 </footer>
