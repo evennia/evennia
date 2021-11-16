@@ -527,7 +527,7 @@ a[href="devblog-posts"]:focus {
     float: none;
 }
 .blog_post > .highlight > pre {
-    line-height: 0.1em!important;
+    line-height: 0.5em!important;
 }
 
 
@@ -538,7 +538,7 @@ a[href="devblog-posts"]:focus {
 
   div.wrapper {
     width:auto;
-    margin:0;
+    margin: 0;
   }
 
   header, section {
@@ -597,6 +597,24 @@ a[href="devblog-posts"]:focus {
     display: none;
   }
 
+  .devblog-calendar > ul {
+    overflow: hidden;
+    max-width: 50%;
+  }
+
+  .devblog-calendar > ul > li {
+    float: left;
+    padding: 2px;
+  }
+
+  .devblog-calendar-open {
+    max-height: 0;
+  }
+  /*.devblog-calendar-open > a {
+    position: fixed;
+    margin-left: 50%;
+    margin-top: -38%;
+  }*/
 
 }
 
