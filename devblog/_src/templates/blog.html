@@ -34,29 +34,32 @@
                                 <a class="buttons devblog-calendar-tooltip"
                                     href="https://github.com/evennia/evennia/discussions">Discuss (GitHub)</a>
                             </li>
+                        </div>
                     </ul>
-                        </div>
-                        <div class="devblog-calendar">
-                            <ul>
-                                {% for page in blogpages %}
-                                    <li><a href="{{page.permalink}}">{{ page.year }} ({{ page.posts|length }})
-                                        {% if pageyear == page.year %}
-                                            <ul class="devblog-calendar-open">
-                                        {% else %}
-                                            <ul class="devblog-calendar-closed">
-                                        {% endif %}
-                                            {% for blogpost in page.posts %}
-                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                    <a href="{{ blogpost.permalink }}">{{ blogpost.date_short}}
+                </div>
+                <div class="devblog-calendar">
+                    <ul>
+                        {% for page in blogpages %}
+                            <li>
+                                <a href="{{page.permalink}}"> {{ page.year }} ({{ page.posts|length }})
+                                    {% if pageyear == page.year %}
+                                        <ul class="devblog-calendar-open">
+                                    {% else %}
+                                        <ul class="devblog-calendar-closed">
+                                    {% endif %}
+                                        {% for blogpost in page.posts %}
+                                            <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                <a href="{{ blogpost.permalink }}">{{ blogpost.date_short}}
                                                     <span class="devblog-calendar-tooltip-text">{{ blogpost.title }}</span>
-                                                    </a>
-                                                </li>
-                                            {% endfor %}
+                                               </a>
+                                            </li>
+                                        {% endfor %}
                                         </ul>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </header>
             <section>
                 <h1>
