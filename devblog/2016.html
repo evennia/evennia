@@ -797,14 +797,16 @@
 </ol>
 <h2>The MonitorHandler</h2>
 <p><strong>evennia.MONITOR_HANDLER</strong> is the new singleton managing monitoring of on-object field/attribute changes. It is used like this:</p>
-<pre><code>MONITOR_HANDLER.add(obj, field_or_attrname, callback, **kwargs)
-</code></pre>
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>MONITOR_HANDLER.add(obj, field_or_attrname, callback, **kwargs)
+</pre></div>
+
 <p>Here <strong>obj</strong> is a database entity, like a Character or another Object. The <strong>field_or_attrname</strong> is a string giving the name of a <strong>db_</strong>* database field (like <strong>&quot;db_key&quot;, &quot;db_location&quot;</strong> etc). Any name not starting with <strong>db_</strong> is assumed to be the name of an on-object Attribute (like <strong>&quot;health&quot;</strong>). Henceforth, whenever this field or attribute changes in any way (that is, whenever it is re-saved to the database), the <strong>callback</strong> will be called with the optional <strong>kwargs</strong>, as well as a way to easily get to the changed value. As all handlers you can also list and remove monitors using the standard <strong>MONITOR_HANDLER</strong>.<strong>remove()</strong>, <strong>.all()</strong> etc.</p>
 <h2>The TickerHandler</h2>
 <p><strong>evennia.TICKER_HANDLER</strong> should be familiar to Evennia users from before - it's been around for a good while. It allows for creating arbitrary &quot;tickers&quot; that is being &quot;subscribed&quot; to - one ticker will call all subscribers rather than each object or function having its own timer.</p>
 <p>Before, the syntax for adding a new ticker required you specify a typeclassed entity and the name of the method on it to call every N seconds. This will now change. This is the new callsign for creating a new ticker:</p>
-<pre><code>TICKER_HANDLER.add(interval, callback, idstring=&quot;&quot;, persistent=True, *args, **kwargs)
-</code></pre>
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>TICKER_HANDLER.add(interval, callback, idstring=&quot;&quot;, persistent=True, *args, **kwargs)
+</pre></div>
+
 <p>Here**, interval,** like before, defines how often to call **callback(*args, <strong>kwargs)</strong>.</p>
 <p>The big change here is that <strong>callback</strong> should be given as a valid, already imported callable, which can be <em>either</em> an on-entity method (like obj.func) or a global function in any module (like world.test.func) - the TickerHandler will analyze it and internally store it properly.</p>
 <p><strong>idstring</strong> works as before, to separate tickers with the same intervals. Finally <strong>persistent</strong>=<strong>False</strong> means the ticker will behave the same way a Script with <strong>persistent=False</strong> does: it will survive a server reload but will <em>not</em> survive a server shutdown. This latter functionality is particularly useful for client-side commands since the client Session will also not survive a shutdown.</p>

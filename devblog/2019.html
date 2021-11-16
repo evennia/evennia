@@ -653,115 +653,112 @@
 <p><strong>&gt; command [target]</strong></p>
 <p>The parsing I made actually allows for a more complex syntax, but in the end this was all that was really needed, since the currently 'focused' object does not need to be specified. This is the process of using one object with another:</p>
 <p><strong>&gt; examine key</strong></p>
-<pre><code>
-~~ key (examining) ~~   
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>~~ key (examining) ~~   
 
 This is a brass key.  
 
   
 
 (To unlock something with it, use insert into &lt;target&gt;)  
+</pre></div>
 
-</code></pre>
 <p><strong>&gt; insert into door</strong></p>
-<pre><code>You unlock the **door** with the **key**!  
-</code></pre>
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>You unlock the **door** with the **key**!  
+</pre></div>
+
 <p>(the <em>into</em> is optional). Here, we focus on the key. We get the key's description and a hint that you can <em>insert</em> it into things. We then insert it into the door, which is another object in the room. The <em>insert</em> command knows that we are focusing on the key already and that it should look into the room for an object door to use this with.</p>
 <p>Technically, these on-object 'actions' (like <em>insert</em> above), are dynamically generated. Here is an example of the key object:</p>
-<pre><code class="language-python">
-class Key(EvscaperoomObject):  
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">Key</span>(EvscaperoomObject):  
 
-   def at_focus_insert(self, caller, **kwargs):  
+   <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">at_focus_insert</span>(<span style="color: #008000">self</span>, caller, <span style="color: #666666">**</span>kwargs):  
 
-       target = kwargs[&#x27;args&#x27;]  
+       target <span style="color: #666666">=</span> kwargs[<span style="color: #BA2121">&#39;args&#39;</span>]  
 
-       obj = caller.search(obj)  
+       obj <span style="color: #666666">=</span> caller<span style="color: #666666">.</span>search(obj)  
 
-       if not obj:   
+       <span style="color: #008000; font-weight: bold">if</span> <span style="color: #AA22FF; font-weight: bold">not</span> obj:   
 
-           return   
+           <span style="color: #008000; font-weight: bold">return</span>   
 
-       if obj.check_flag(&quot;can_use_key&quot;):  
+       <span style="color: #008000; font-weight: bold">if</span> obj<span style="color: #666666">.</span>check_flag(<span style="color: #BA2121">&quot;can_use_key&quot;</span>):  
 
-           obj.handle_insert(self)  
+           obj<span style="color: #666666">.</span>handle_insert(<span style="color: #008000">self</span>)  
+</pre></div>
 
-</code></pre>
 <p>Not shown here is that I made a wrapper for the &quot;no-match&quot; command of Evennia. This command fires when no other commands match. I made this instead analyze the currently 'focused' object to see if it had a method at_focus_&lt;command_name&gt; on it. If so, I inject the supplied arguments into that method as a keyword argument <em>args</em>.</p>
 <p>So when you focus on the key and give the <em>insert</em> command, the at_focus_insert method on the key will be called with a target to insert the key into_._ We search for the target (the door in the example), check if it even accepts keys and then pass the key to that object to handle. It would then be up to the door to figure out if this particular key unlocks it.</p>
 <p>I created a library of base objects that I can just use as mixins for the object I want to create. Here's an example:</p>
-<pre><code class="language-python">
-from evscaperoom import objects  
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">evscaperoom</span> <span style="color: #008000; font-weight: bold">import</span> objects  
 
   
 
-class Box(objects.Openable,   
+<span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">Box</span>(objects<span style="color: #666666">.</span>Openable,   
 
-    objects.CodeInput,   
+    objects<span style="color: #666666">.</span>CodeInput,   
 
-    objects.Movable):  
+    objects<span style="color: #666666">.</span>Movable):  
 
-    # ...  
+    <span style="color: #408080; font-style: italic"># ...  </span>
+</pre></div>
 
-</code></pre>
 <p>This class will offer actions to open, insert a code and move the object around. It will need some more configuration and addition of messages to show etc. But overall, this method-to-command solution ended up being very stable and extremely easy to use to make complex, interactive objects.</p>
 <h3>Room states</h3>
 <p>I think of the escape room as going through a series of <em>states</em>. A change of state could for example be that the user solved a puzzle to open a secret wall. That wall is now open, making new items and puzzles available. This means room description should change along with new objects being created or old ones deleted.</p>
 <p>I chose to represent states as Python modules in a folder. To be a state, each module needs to have a global-level class <strong>State</strong> inheriting from my new <strong>BaseState</strong> class. This class has methods for initializing and cleaning up the state, as well as was for figuring out which state to go to next. As the system initializes the new state, it gets the current room as argument, so it can modify it.</p>
 <p>This is a (simplified) example of a state module:</p>
-<pre><code class="language-python">
-# module `state_001_start.py`  
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><span style="color: #408080; font-style: italic"># module `state_001_start.py`  </span>
 
       
 
-from evscaperoom.state import BaseState  
+<span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">evscaperoom.state</span> <span style="color: #008000; font-weight: bold">import</span> BaseState  
 
-from evscaperoom import objects  
+<span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">evscaperoom</span> <span style="color: #008000; font-weight: bold">import</span> objects  
 
     
 
-MUG_DESC = &quot;&quot;&quot;  
+MUG_DESC <span style="color: #666666">=</span> <span style="color: #BA2121">&quot;&quot;&quot;  </span>
 
-A blue mug filled with a swirling liquid.   
+<span style="color: #BA2121">A blue mug filled with a swirling liquid.   </span>
 
-On it is written &quot;DRINK ME&quot; with big letters.  
+<span style="color: #BA2121">On it is written &quot;DRINK ME&quot; with big letters.  </span>
 
-&quot;&quot;&quot;  
-
-  
-
-class Mug(objects.EvscapeRoomObject):  
-
-    def at_focus_drink(self, caller, **kwargs):   
-
-        caller.msg(f&quot;You drink {self.key}.&quot;)   
-
-        self.next_state() # trigger next state  
+<span style="color: #BA2121">&quot;&quot;&quot;</span>  
 
   
 
-class State(BaseState):  
+<span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">Mug</span>(objects<span style="color: #666666">.</span>EvscapeRoomObject):  
+
+    <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">at_focus_drink</span>(<span style="color: #008000">self</span>, caller, <span style="color: #666666">**</span>kwargs):   
+
+        caller<span style="color: #666666">.</span>msg(<span style="color: #BA2121">f&quot;You drink </span><span style="color: #BB6688; font-weight: bold">{</span><span style="color: #008000">self</span><span style="color: #666666">.</span>key<span style="color: #BB6688; font-weight: bold">}</span><span style="color: #BA2121">.&quot;</span>)   
+
+        <span style="color: #008000">self</span><span style="color: #666666">.</span>next_state() <span style="color: #408080; font-style: italic"># trigger next state  </span>
 
   
 
-    hints = [&quot;You are feeling a little thirsty...&quot;,  
-
-             &quot;Drink from the mug, dummy.&quot;]  
+<span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">State</span>(BaseState):  
 
   
 
-    next_state = &quot;state_002_big_puzzle&quot;  
+    hints <span style="color: #666666">=</span> [<span style="color: #BA2121">&quot;You are feeling a little thirsty...&quot;</span>,  
+
+             <span style="color: #BA2121">&quot;Drink from the mug, dummy.&quot;</span>]  
 
   
 
-    def init(self):   
+    next_state <span style="color: #666666">=</span> <span style="color: #BA2121">&quot;state_002_big_puzzle&quot;</span>  
 
-        mug = self.create_object(  
+  
 
-        Mug, key=&quot;wooden mug&quot;, aliases=[&quot;mug&quot;])  
+    <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">init</span>(<span style="color: #008000">self</span>):   
 
-        mug.db.desc = MUG_DESC.strip()  
+        mug <span style="color: #666666">=</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>create_object(  
 
-</code></pre>
+        Mug, key<span style="color: #666666">=</span><span style="color: #BA2121">&quot;wooden mug&quot;</span>, aliases<span style="color: #666666">=</span>[<span style="color: #BA2121">&quot;mug&quot;</span>])  
+
+        mug<span style="color: #666666">.</span>db<span style="color: #666666">.</span>desc <span style="color: #666666">=</span> MUG_DESC<span style="color: #666666">.</span>strip()  
+</pre></div>
+
 <p>In this simple state, a mug is created, and when you drink from it, the next state is triggered. The base object has a helper function to trigger the next state since I found that interactive with an object is almost always the reason for switching states.</p>
 <p>The state-class has a lot of useful properties to set, such as which the next state should be (this can be overridden in case of branching paths). You can also store</p>
 <p>a sequence of hints specific for that state.</p>
@@ -770,19 +767,20 @@ class State(BaseState):
 <p>As the amount of text grew (the Evscaperoom has close to 10 000 lines of code, a lot of which is content strings), it became clear that it would not be feasible to manually supply third-persion version strings as well.</p>
 <p>The solution was to add parsing and translation of pronouns and verbs (a concept I first saw on the game <em>Armageddon</em>).</p>
 <p>I write the string like this:</p>
-<pre><code>
-    OPEN_TEXT = &quot;~You ~open the *door.&quot;  
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>    OPEN_TEXT = &quot;~You ~open the *door.&quot;  
+</pre></div>
 
-</code></pre>
 <p>The ~ marks text that should be parsed for second/third-person use (I'll discuss the *door marking in the next section). This I then send to a helper method that either sends it only to you (which means it comes back pretty much the same, but without the special markers) or to you <em>and</em> to the room, in which it will look different depending on who receives it:</p>
 <p>I see</p>
-<pre><code>You open the [door].
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>You<span style="color: #bbbbbb"> </span><span style="color: #008000; font-weight: bold">open</span><span style="color: #bbbbbb"> </span>the<span style="color: #bbbbbb"> </span><span style="color: #666666">[</span>door<span style="color: #666666">]</span>.<span style="color: #bbbbbb"></span>
 
- 
-</code></pre>
+<span style="color: #bbbbbb"> </span>
+</pre></div>
+
 <p>Others see</p>
-<pre><code>Griatch opens the [door]. 
-</code></pre>
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>Griatch<span style="color: #bbbbbb"> </span>opens<span style="color: #bbbbbb"> </span>the<span style="color: #bbbbbb"> </span><span style="color: #666666">[</span>door<span style="color: #666666">]</span>.<span style="color: #bbbbbb"> </span>
+</pre></div>
+
 <p>English is luckily pretty easy to use for this kind of automatic translation - in general you can just add an &quot;s&quot; to the end of the verb. I made a simple mapping for the few irregular verbs I ended up using.</p>
 <p>Overall, this made it quick to present multiple viewpoints with minimal extra text to write.</p>
 <p><a href="https://1.bp.blogspot.com/-HdLAfVl8P5A/XOAWjd_zoDI/AAAAAAAAKek/KnWDYcsFZP0w1Fb9DEFTd64BkWmnAgIFACPcBGAYYCw/s1600/Screenshot%2Bfrom%2B2019-05-17%2B11-49-20.png"><img src="https://1.bp.blogspot.com/-HdLAfVl8P5A/XOAWjd_zoDI/AAAAAAAAKek/KnWDYcsFZP0w1Fb9DEFTd64BkWmnAgIFACPcBGAYYCw/s320/Screenshot%2Bfrom%2B2019-05-17%2B11-49-20.png" alt="Shows the various accessibility options for showing items." title="option menu" /></a></p>

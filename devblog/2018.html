@@ -585,12 +585,11 @@
 <p>In our development branch I've just pushed the first version of the new OLC (OnLine Creator) system. This is a system to allow builders (who may have limited coding knowledge) to customize and spawn new in-game objects more easily without code access. It's started with the <strong>olc</strong> command in-game. This is a visual system for manipulating Evennia <em>Prototypes</em>.</p>
 <h3>Briefly on Prototypes</h3>
 <p>The <em>Prototype</em> is an Evennia concept that has been around a good while. The prototype is a Python dictionary that holds specific keys with values representing properties on a game object. Here's an example of a simple prototype:</p>
-<pre><code>
- {&quot;key&quot;: &quot;My house&quot;, 
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span> {&quot;key&quot;: &quot;My house&quot;, 
 
   &quot;typeclass&quot;: &quot;typeclasses.houses.MyHouse&quot;}
+</pre></div>
 
-</code></pre>
 <p>By passing this dict to the spawner, a new object named &quot;My house&quot; will be created. It will be set up with the given typeclass (a 'typeclass' is, in Evennia lingo, a Python class with a database backend). A prototype can specify all aspects of an in-game object - its attributes (like description and other game-specific properties), tags, aliases, location and so on. Prototypes also support inheritance - so you can expand on an existing template without having to add everything fresh every time.</p>
 <p>There are two main reasons for the Prototypes existing in Evennia:</p>
 <ul>

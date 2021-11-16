@@ -20,15 +20,20 @@ Here starts the main text ...
 """
 
 import glob
-import shutil
 from dataclasses import dataclass
 from collections import defaultdict
 from dateutil import parser as dateparser
 from datetime import datetime
-from os import mkdir, symlink, remove, chdir
+from os import symlink, remove, chdir
 from os.path import abspath, dirname, join as pathjoin, sep
-import mistletoe
 import jinja2
+
+import mistletoe
+from mistletoe import HTMLRenderer
+from pygments import highlight
+from pygments.styles import get_style_by_name as get_style
+from pygments.lexers import get_lexer_by_name as get_lexer, guess_lexer
+from pygments.formatters.html import HtmlFormatter
 
 
 CURRDIR = dirname(abspath(__file__))
@@ -81,6 +86,24 @@ class BlogPage:
     permalink: str
     posts: list
     calendar: dict
+
+
+class PygmentsRenderer(HTMLRenderer):
+    """
+    Custom syntax highlighter for misteltoe (based on
+    https://github.com/miyuchina/mistletoe/blob/master/contrib/pygments_renderer.py)
+    """
+    formatter = HtmlFormatter()
+    formatter.noclasses = True
+
+    def __init__(self, *extras, style='default'):
+        super().__init__(*extras)
+        self.formatter.style = get_style(style)
+
+    def render_block_code(self, token):
+        code = token.children[0].content
+        lexer = get_lexer(token.language) if token.language else guess_lexer(code)
+        return highlight(code, lexer, self.formatter)
 
 
 def md2html():
@@ -137,7 +160,7 @@ def md2html():
 
         markdown_post = "\n".join(lines)
         # convert markdown to html
-        html = mistletoe.markdown(markdown_post)
+        html = mistletoe.markdown(markdown_post, PygmentsRenderer)
 
         # build the permalink
         anchor = "{}".format(
