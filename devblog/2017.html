@@ -817,38 +817,37 @@
 <p>Next I added one new migration in the Account app - this is the migration that copies the data from the player to the equivalent account-named copies in the database. Since Player will not exist if you run this from scratch you have to make sure that the Player model exists at that point in the migration chain. You can't just do this with a normal import and traceback, you need to use the migration infrastructure. This kind of check works:</p>
 </li>
 </ul>
-<pre><code class="language-python">
-  # ...  
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>  <span style="color: #408080; font-style: italic"># ...  </span>
 
  
 
-  def forwards(apps, schema_editor):  
+  <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">forwards</span>(apps, schema_editor):  
 
-      try:  
+      <span style="color: #008000; font-weight: bold">try</span>:  
 
-          PlayerDB = apps.get_model(&quot;players&quot;, &quot;PlayerDB&quot;)  
+          PlayerDB <span style="color: #666666">=</span> apps<span style="color: #666666">.</span>get_model(<span style="color: #BA2121">&quot;players&quot;</span>, <span style="color: #BA2121">&quot;PlayerDB&quot;</span>)  
 
-      except LookupError:  
+      <span style="color: #008000; font-weight: bold">except</span> <span style="color: #D2413A; font-weight: bold">LookupError</span>:  
 
-          return  
-
- 
-
-      # copy data from player-tables to database tables here  
+          <span style="color: #008000; font-weight: bold">return</span>  
 
  
 
- class Migrations(migrations.Migration):  
+      <span style="color: #408080; font-style: italic"># copy data from player-tables to database tables here  </span>
 
-     # ...  
+ 
 
-     operations = [  
+ <span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">Migrations</span>(migrations<span style="color: #666666">.</span>Migration):  
 
-         migrations.RunPython(forwards, migrations.RunPython.noop)  
+     <span style="color: #408080; font-style: italic"># ...  </span>
+
+     operations <span style="color: #666666">=</span> [  
+
+         migrations<span style="color: #666666">.</span>RunPython(forwards, migrations<span style="color: #666666">.</span>RunPython<span style="color: #666666">.</span>noop)  
 
      ]  
+</pre></div>
 
-</code></pre>
 <ul>
 <li>
 <p>Now, a lot of my other apps/models has ForeignKey or Many2Many relations to the Player model. Aided by viewing the tables in the database I visited all of those and added a migration to each where I duplicated the player-relation with a duplicate account relation. So at this point I had set up a parallel, co-existing duplicate of the Player model, named Account.</p>
@@ -860,24 +859,23 @@
 <p>Since the player folder is not there, it's migrations are not there either. So in another app (any would work) I made a migration to remove the player tables from the database. Thing is, the missing player app means other migrations also cannot reference it. It is possible I could have waited to remove the player/ folder so as to be able to do this bit in pure Python. On the other hand, that might have caused issues since you would be trying to migrate with two Auth users - not sure. As it were, I ended up purging the now useless player-tables with raw SQL:</p>
 </li>
 </ul>
-<pre><code class="language-python">
- from django.db import connection  
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span> <span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">django.db</span> <span style="color: #008000; font-weight: bold">import</span> connection  
 
   
 
-    # ...  
+    <span style="color: #408080; font-style: italic"># ...  </span>
 
   
 
-    def _table_exists(db_cursor, tablename):  
+    <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">_table_exists</span>(db_cursor, tablename):  
 
-        &quot;Returns bool if table exists or not&quot;  
+        <span style="color: #BA2121">&quot;Returns bool if table exists or not&quot;</span>  
 
-        sql_check_exists = &quot;SELECT * from %s;&quot; % tablename  
+        sql_check_exists <span style="color: #666666">=</span> <span style="color: #BA2121">&quot;SELECT * from </span><span style="color: #BB6688; font-weight: bold">%s</span><span style="color: #BA2121">;&quot;</span> <span style="color: #666666">%</span> tablename  
 
-    ### [Renaming Django&#x27;s Auth User and App](https://evennia.blogspot.com/2017/08/renaming-djangos-auth-user-and-app.html)
+    <span style="color: #408080; font-style: italic">### [Renaming Django&#39;s Auth User and App](https://evennia.blogspot.com/2017/08/renaming-djangos-auth-user-and-app.html)</span>
+</pre></div>
 
-</code></pre>
 <p><a href="https://4.bp.blogspot.com/-DRHk1mmLB0Y/WaCUd8tmYbI/AAAAAAAAHaU/QXkryhYVJBIVWPykT08nSokCHfFc6-2LACLcBGAs/s1600/birds-1976981_640.jpg"><img src="https://4.bp.blogspot.com/-DRHk1mmLB0Y/WaCUd8tmYbI/AAAAAAAAHaU/QXkryhYVJBIVWPykT08nSokCHfFc6-2LACLcBGAs/s400/birds-1976981_640.jpg" alt="" /></a></p>
 <p>And with this, the migration's design was complete. Below is how to actually <em>use</em> it ...</p>
 <h3>Running the final migration</h3>

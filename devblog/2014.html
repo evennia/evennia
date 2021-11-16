@@ -750,19 +750,17 @@
 <p>Digging around a bit I found <a href="https://github.com/trentm/googlecode2github.git">googlecode2github</a>. This download contains python scripts for converting the wiki as well as Issues. I didn't really get the issues-converter to work, so I had to find another solution for that (see next section).</p>
 <p>All in all, the initial wiki conversion worked decently - all the pages were converted over and were readable. I was even to the point of declaring success when finding the damn thing messed up the links. Googe Code writes links like this: [MyLink Text to see on page]. The script converted this to [[MyLink|Text to see on page]]. Which may look fine except it isn't. GitHub actually wants the syntax in the inverse order: [[Text to see on page|MyLink]].</p>
 <p>Furthermore, in Google Code's wiki, code blocks were marked with</p>
-<pre><code>
-{{{   
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>{{{   
 
  &lt;verbatim code&gt;   
 
 }}}
+</pre></div>
 
-</code></pre>
 <p>In markdown, code blocks are created just by indenting the block by four spaces. The converter dutifully did this - but it didn't add empty lines above and below the block, which is another thing markdown requires. The result was that all code ended up mixed into the running text output.</p>
 <p>I could have gone back and fixed the converter script, but I suspected there would be enough small things to fix anyway. So in the end I went through 80+ pages of fixing link syntax and adding empty lines by hand. After that I could finally push the first converted wiki version up to the GitHub wiki repository.</p>
 <p>Some time later I also found that there is a way to let GitHub wiki pages use syntax highlighting for the language of your choice. The way to do this is to enclose your code blocks like this:</p>
-<pre><code>
-```python  
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>```python  
 
   
 
@@ -771,8 +769,8 @@
   
 
 ``` 
+</pre></div>
 
-</code></pre>
 <p>This is apparently &quot;GitHub-flavoured&quot; markdown. So another stint into all the pages followed, to update everything for prettiness.</p>
 <h3>Converting Google Code Issues</h3>
 <p>I didn't want to loose our Issues from Google Code. I looked around a bit and tested some conversions for this (it helps to be able to create and delete repos on GitHub with abandon when things fail). I eventually settled on <a href="https://github.com/arthur-debert/google-code-issues-migrator">google-code-issues-migrator</a>.</p>

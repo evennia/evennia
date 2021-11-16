@@ -526,8 +526,9 @@ a[href="devblog-posts"]:focus {
     width: initial;
     float: none;
 }
-
-
+.blog_post > .highlight > pre {
+    line-height: 0.1em!important;
+}
 
 
 /* Media alternatives */

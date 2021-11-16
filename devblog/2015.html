@@ -566,46 +566,45 @@
 <h2>Evennia Autodocs</h2>
 <p>Following the big library merger I sat down to write a more comprehensive autodoc utility. We had been distributing a Doxygen config file with the repo for a long time, but I wanted something that integrated with our github wiki, using markdown in the source (because frankly, while Sphinx produces very pretty output, ReST markup looks really ugly in source code, in my opinion).</p>
 <p>The result was the api2md program, which is now a part of our wiki repository. It allows our source code to be decorated in &quot;Google style&quot;, very readable output:</p>
-<pre><code class="language-python">
-def funcname(a, b, c, d=False):  &quot;&quot;&quot;  
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">funcname</span>(a, b, c, d<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">False</span>):  <span style="color: #BA2121">&quot;&quot;&quot;  </span>
 
-    This is a brief introduction to the
+<span style="color: #BA2121">    This is a brief introduction to the</span>
 
-    function/class/method  
+<span style="color: #BA2121">    function/class/method  </span>
 
-  
+<span style="color: #BA2121">  </span>
 
-    Args:  
+<span style="color: #BA2121">    Args:  </span>
 
-        a (str): This is a string argument that
+<span style="color: #BA2121">        a (str): This is a string argument that</span>
 
-          we can talk about over multiple lines.  
+<span style="color: #BA2121">          we can talk about over multiple lines.  </span>
 
-        b (int or str): Another argument  
+<span style="color: #BA2121">        b (int or str): Another argument  </span>
 
-        c (list): A list argument  
+<span style="color: #BA2121">        c (list): A list argument  </span>
 
-        d (bool, optional): An optional keyword argument  
+<span style="color: #BA2121">        d (bool, optional): An optional keyword argument  </span>
 
-  
+<span style="color: #BA2121">  </span>
 
-    Returns:  
+<span style="color: #BA2121">    Returns:  </span>
 
-        str: The result of the function  
+<span style="color: #BA2121">        str: The result of the function  </span>
 
-  
+<span style="color: #BA2121">  </span>
 
-    Notes:  
+<span style="color: #BA2121">    Notes:  </span>
 
-        This is an example function. If `d=True`, something 
+<span style="color: #BA2121">        This is an example function. If `d=True`, something </span>
 
-        amazing will happen.  
+<span style="color: #BA2121">        amazing will happen.  </span>
 
-  
+<span style="color: #BA2121">  </span>
 
-    &quot;&quot;&quot;
+<span style="color: #BA2121">    &quot;&quot;&quot;</span>
+</pre></div>
 
-</code></pre>
 <p>This will be parsed and converted to a Markdown entry and put into the Github wiki, one page per module. The result is the automatically generated <a href="https://github.com/evennia/evennia/wiki/evennia">Evennia API autodocs</a>, reachable as any other wiki page.</p>
 <p>The convertion/prettification of all core functions of Evennia to actually <em>use</em> the Google-style docstrings took almost all year, finishing late in autumn. But now almost all of Evennia uses this style. Coincidentally this also secures us at a 45% comment/code ratio. This places us in the top 10% of well-documented open-source projects according to <a href="https://www.openhub.net/p/evennia/factoids#FactoidCommentsVeryHigh">openhub</a> (gotta love statistics).</p>
 <h2>Imaginary realities / Optional Realities</h2>
@@ -1079,16 +1078,15 @@ def funcname(a, b, c, d=False):  &quot;&quot;&quot;
 <h2>Evennia as a Python library package</h2>
 <p>Evennia has until now been solely distributed as a version controlled source tree (first under SVN, then Mercurial and now via GIT and Github). In its current inception you clone the tree and find inside it a game/ directory where you create your game. A problem we have when helping newbies is that we can't easily put pre-filled templates in there - if people used them there might be merge conflicts when we update the templates upstream. So the way people configure Evennia is to make copies of template modules and then change the settings to point to that copy rather than the default module. This works well but it means a higher threshold of setup for new users and a lot of describing text. Also, while learning GIT is a useful skill, it's another hurdle to get past for those who just want to change something minor to see if Evennia is for them.</p>
 <p>In the devel branch, Evennia is now a library. The game/ folder is no longer distributed as part of the repository but is created dynamically by using the new binary evennia launcher program, which is also responsible for creating (or migrating) the database as well as operating the server:</p>
-<pre><code>
-evennia --init mygame  
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>evennia --init mygame  
 
 cd mygame  
 
 evennia migrate  
 
 evennia start
+</pre></div>
 
-</code></pre>
 <p>Since this new folder is <em>not</em> under our source tree, we can set up and copy pre-made template modules to it that people can just immediately start filling in without worrying about merge conflicts. We can also dynamically create a setting file that fits the environment as well as set up a correct tree for overloading web functionality and so on. It also makes it a lot easier for people wanting to create multiple games and to put their work under separate version control.</p>
 <p>Rather than traversing the repository structure as before you henceforth will just do import evennia in your code to have access to the entirety of the API. And finally this means it will (eventually) be possible to install Evennia from <a href="https://pypi.python.org/pypi/Evennia-MUD-Server/Beta">pypi</a> with something like pip install evennia. This will greatly ease the first steps for those not keen on learning GIT.</p>
 <h2>For existing users</h2>
