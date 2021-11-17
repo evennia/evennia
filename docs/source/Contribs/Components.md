@@ -117,5 +117,3 @@ character.components.add(new_instance)
 Note that duplicate can also accept not having a host,
 this lets it store values that it will later copy to its future host.
 This is a bit slower than giving it the host straight away.
-You will have to call the register_component from the host.
-
