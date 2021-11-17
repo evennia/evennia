@@ -1,4 +1,5 @@
-from evennia.contrib.components import ComponentHolderMixin, Component, DBField, ComponentProperty
+from evennia.contrib.components import Component, DBField
+from evennia.contrib.components.holder import ComponentProperty, ComponentHolderMixin
 from evennia.objects.objects import DefaultCharacter
 from evennia.utils.test_resources import EvenniaTest
 
@@ -67,3 +68,50 @@ class TestComponents(EvenniaTest):
 
         assert test_c.my_int == 10
         assert new_rct is not rct
+
+    def test_handler_can_add_default_component(self):
+        self.char1.components.add_default("test_c")
+        test_c = self.char1.components.get("test_c")
+
+        assert test_c
+        assert test_c.my_int == 6
+
+    def test_handler_has_returns_true_for_any_components(self):
+        rct = RuntimeComponentTestC.create(self.char1)
+        handler = self.char1.components
+        handler.add(rct)
+
+        assert handler.has("test_a")
+        assert handler.has("test_b")
+        assert handler.has("test_c")
+
+    def test_can_remove_component(self):
+        rct = RuntimeComponentTestC.create(self.char1)
+        handler = self.char1.components
+        handler.add(rct)
+        handler.remove(rct)
+
+        assert handler.has("test_a")
+        assert handler.has("test_b")
+        assert not handler.has("test_c")
+
+    def test_can_remove_component_by_name(self):
+        rct = RuntimeComponentTestC.create(self.char1)
+        handler = self.char1.components
+        handler.add(rct)
+        handler.remove_by_name("test_c")
+
+        assert handler.has("test_a")
+        assert handler.has("test_b")
+        assert not handler.has("test_c")
+
+    def test_cannot_replace_component(self):
+        with self.assertRaises(Exception):
+            self.char1.test_a = None
+
+    def test_can_get_component(self):
+        rct = RuntimeComponentTestC.create(self.char1)
+        handler = self.char1.components
+        handler.add(rct)
+
+        assert handler.get("test_c") is rct
