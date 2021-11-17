@@ -11,7 +11,7 @@ class ComponentProperty:
         return component
 
     def __set__(self, instance, value):
-        instance.components.replace(value)
+        raise Exception("Cannot set a class property")
 
     def __set_name__(self, owner, name):
         class_components = getattr(owner, "_class_components", None)
@@ -42,7 +42,17 @@ class ComponentHandler:
         self.db_names.append(name)
         new_component.on_added(self.host)
 
-    def remove(self, name):
+    def remove(self, component):
+        component_name = component.name
+        if component_name in self._loaded_components:
+            component.on_removed(self.host)
+            self.db_names.remove(component_name)
+            del self._loaded_components[component_name]
+        else:
+            message = f"Cannot remove {component_name} from {self.host.name} as it is not registered."
+            raise ComponentIsNotRegistered(message)
+
+    def remove_by_name(self, name):
         instance = self.get(name)
         if not instance:
             message = f"Cannot remove {name} from {self.host.name} as it is not registered."
@@ -50,11 +60,7 @@ class ComponentHandler:
 
         instance.on_removed(self.host)
         self.db_names.remove(name)
-
-    def replace(self, name, new_component):
-        if self.has(name):
-            self.remove(name)
-        self.add(new_component)
+        del self._loaded_components[name]
 
     def get(self, name):
         return self._loaded_components.get(name)
@@ -70,7 +76,7 @@ class ComponentHandler:
         for component_name in component_names:
             component = components.get_component_class(component_name)
             if component:
-                component_instance = component.load(self)
+                component_instance = component.load(self.host)
                 self._set_component(component_instance)
             else:
                 message = f"Could not initialize runtime component {component_name} of {self.host.name}"
