@@ -581,7 +581,7 @@
     <div class="devblog-title-date">- November 18, 2021</div>
 </h1>
 <p><img src="images/to_greener_pastures_by_griatch_art_smallview.jpg" alt="to greener pastures image by Griatch" /></p>
-<p>If you are reading this, you may notice that this blog has moved from <a href="https://evennia.blogspot.com/">its old home</a> over on blogspot. I had not issues with blogspot except for the fact that writing the blog itself was done in a rather clunky editor with limited support for code.</p>
+<p>If you are reading this, you may notice that this blog has moved from <a href="https://evennia.blogspot.com/">its old home</a> over on blogspot. I had no issues with blogspot except for the fact that writing the blog itself was done in a rather clunky editor with limited support for code.</p>
 <p>Every other text in Evennia (docs, comments etc) is written in <a href="https://en.wikipedia.org/wiki/Markdown">markdown</a> and I figured it would be nice to be able to use that also for my dev blog.</p>
 <p>So I put together my own little blog platform.</p>
 <h2>Making a little blog platform</h2>
@@ -598,7 +598,7 @@
 </li>
 </ul>
 <h3>The posts</h3>
-<p>I then decided that all blog posts should be one markdown file with a file name <code>YYYY-MM-DD-The-post-name.md</code>. So this devblog has a file name of <code>2021-11-18-The-blog-moved.md</code>.</p>
+<p>I then decided that each blog post should be one markdown file with a file name <code>YYYY-MM-DD-The-post-name.md</code>. So this current devblog has a file name of <code>2021-11-18-The-blog-moved.md</code>.</p>
 <p>In its simplest form, the date and name of the blog is just parsed from the filename (also makes it easy to find in the file system). But I also decided that each post could have a little optional meta-header for customizing things:</p>
 <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>title: The blog moved!
 
@@ -616,7 +616,7 @@ Here the blog starts...
 </pre></div>
 
 <p>The <code>title</code> is mainly to be able to add characters like <code>!</code> or <code>?</code> that I don't want to add to the file name. I've not used the <code>date</code> yet, but I guess one could use it to publish a text at a different date than the filename (not sure why one would want that ...). The <code>copyrights</code> is to properly credit any resources (mostly images) used.</p>
-<p>I wrote my own <code>build_devblog.py</code> program that simple reads all <code>.md</code> files from one directory. It figures out the date and title (from file name or meta-header) and runs <code>mistletoe</code> on it. I create a dataclass with all the post-relevant properties on it. So far so good. Now we need to inject this into an HTML structure.</p>
+<p>I wrote my own <code>build_devblog.py</code> program that simple reads all <code>.md</code> files from a directory. It figures out the date and title (from file name or meta-header) and runs <code>mistletoe</code> on it. I create a dataclass with all the post-relevant properties on it. So far so good. Now we need to inject this into an HTML structure.</p>
 <h3>The html</h3>
 <p>Next I prepared a little <code>post.html</code> Jinja template:</p>
 <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>&lt;h1 id=<span style="color: #BC7A00">{{</span> <span style="color: #19177C">blogpost.anchor</span> <span style="color: #BC7A00">}}</span>&gt;
