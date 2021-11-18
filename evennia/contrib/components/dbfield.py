@@ -7,7 +7,7 @@ class DBField(AttributeProperty):
     """
 
     def __set_name__(self, owner, name):
-        key = f"{owner}__{name}"
+        key = f"{owner.name}__{name}"
         self._key = key
         db_fields = getattr(owner, "_db_fields", None)
         if db_fields is None:
@@ -22,7 +22,7 @@ class NDBField(NAttributeProperty):
     """
 
     def __set_name__(self, owner, name):
-        key = f"{owner}__{name}"
+        key = f"{owner.name}__{name}"
         self._key = key
         ndb_fields = getattr(owner, "_ndb_fields", None)
         if ndb_fields is None:
