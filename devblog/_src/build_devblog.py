@@ -29,7 +29,7 @@ from os.path import abspath, dirname, join as pathjoin, sep
 import jinja2
 
 import mistletoe
-from mistletoe import HTMLRenderer
+from mistletoe import HTMLRenderer, BaseRenderer
 from pygments import highlight
 from pygments.styles import get_style_by_name as get_style
 from pygments.lexers import get_lexer_by_name as get_lexer, guess_lexer
@@ -129,7 +129,6 @@ def md2html():
             continue
 
         title = title[:-3]  # remove .md ending
-        blurb = title[:11] + "..."
         title = " ".join(title.split("-"))
         date = datetime(year=int(year), month=int(month), day=int(day))
         image_copyrights = ""
@@ -155,11 +154,13 @@ def md2html():
                 elif line.startswith("copyrights:"):
                     image_copyrights = line[12:]
                     image_copyrights = mistletoe.markdown(image_copyrights)
-                elif line.startswith("blurb:"):
-                    blurb = line[6:].strip()
 
+        # get first paragraph as blurb
+        markdown_blurb = "\n".join(
+            [line for line in lines if line and not line.startswith("!")][:3])
         markdown_post = "\n".join(lines)
         # convert markdown to html
+        blurb = mistletoe.markdown(markdown_blurb, BaseRenderer)
         html = mistletoe.markdown(markdown_post, PygmentsRenderer)
 
         # build the permalink
@@ -203,11 +204,17 @@ def md2html():
         )
 
     # build the blog pages, per year
+    latest_post = blogpages[0].posts[0]
+    latest_title = latest_post.title
+    latest_blurb = latest_post.blurb
+
     html_pages = {}
     for blogpage in blogpages:
         print(f"Processing blogs from {blogpage.year} ...")
 
         context = {
+            "latest_title": latest_title,
+            "latest_blurb": latest_blurb,
             "pageyear": blogpage.year,
             "blogpage": blogpage,
             "blogpages": blogpages
