@@ -4,8 +4,9 @@
     <div class="devblog-title-date">- {{ blogpost.date_pretty }}</div>
 </h1>
 {{ blogpost.html }}
-<footer>
-    <p>
-    <small><em>{{ blogpost.image_copyrights }}</em></small>
-    </p>
+<footer class="devblog-footer">
+    <span class="devblog-copyrights">
+        {{ blogpost.image_copyrights }}
+    </span>
+    <a class="devblog-to-toplink" href="{{ blogpost.permalink }}" title="Link to top of post">⇬(top)</a>
 </footer>

@@ -528,6 +528,14 @@ a[href="devblog-posts"]:focus {
 .blog_post > .highlight > pre {
     line-height: 0.5em!important;
 }
+.devblog-copyrights {
+    font-size: smaller;
+    font-style: italic;
+}
+.devblog-to-toplink {
+    float: right;
+    font-size: initial;
+}
 
 
 /* Media alternatives */
