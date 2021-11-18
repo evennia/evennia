@@ -48,11 +48,11 @@
                                         <ul class="devblog-calendar-closed">
                                     {% endif %}
                                         {% for blogpost in page.posts %}
-                                            <li class="devblog-calendar-post devblog-calendar-tooltip">
-                                                <a href="{{ blogpost.permalink }}">{{ blogpost.date_short}}
-                                                    <span class="devblog-calendar-tooltip-text">{{ blogpost.title }}</span>
-                                               </a>
-                                            </li>
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="{{ blogpost.permalink }}">{{ blogpost.date_short}}
+                                                        <span class="devblog-calendar-tooltip-text">{{ blogpost.title }}</span>
+                                                   </a>
+                                                </li>
                                         {% endfor %}
                                         </ul>
                                 </a>
