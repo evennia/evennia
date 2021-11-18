@@ -108,7 +108,7 @@ class ComponentHolderMixin(object):
         super().at_object_creation()
         component_names = []
         setattr(self, "_component_handler", ComponentHandler(self))
-        class_components = getattr(self, "_class_components", None)
+        class_components = getattr(self, "_class_components", ())
         for component_name, values in class_components:
             component_class = components.get_component_class(component_name)
             component = component_class.create(self, **values)
