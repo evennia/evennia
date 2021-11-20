@@ -27,6 +27,7 @@ from datetime import datetime
 from os import symlink, remove, chdir
 from os.path import abspath, dirname, join as pathjoin, sep
 import jinja2
+import rfeed
 
 import mistletoe
 from mistletoe import HTMLRenderer, BaseRenderer
@@ -53,7 +54,9 @@ START_PAGE = "index.html"
 BLOG_TEMPLATE = "blog.html"
 POST_TEMPLATE = "post.html"
 
-CURRENT_YEAR = datetime.now().year
+RSS_FEED = "feed.rss"
+
+CURRENT_YEAR = datetime.utcnow().year
 
 
 @dataclass
@@ -104,6 +107,41 @@ class PygmentsRenderer(HTMLRenderer):
         code = token.children[0].content
         lexer = get_lexer(token.language) if token.language else guess_lexer(code)
         return highlight(code, lexer, self.formatter)
+
+
+def build_rss_feed(blogposts):
+    """
+    Create a rss feed with all blog posts.
+
+    Args:
+        blogposts: A list of `BlogPost` entries.
+
+    """
+    print("Rebuilding RSS feed ...")
+    feeditems = []
+    for blogpost in blogposts:
+        feeditems.append(
+            rfeed.Item(
+                title=blogpost.title,
+                link=blogpost.permalink,
+                description=blogpost.blurb,
+                author="Griatch",
+                guid=rfeed.Guid(blogpost.permalink),
+                pubDate=datetime.fromordinal(blogpost.date_sort),
+            )
+        )
+    return rfeed.Feed(
+        title="Evennia Devblog RSS Feed",
+        link="https://www.evennia.com/devblog/feed.rss",
+        description="""Evennia is a modern Python library and server for creating text-based
+        multi-player games and virtual worlds (also known as MUD, MUSH, MU,
+        MUX, MUCK, etc). While Evennia handles all the necessary things every
+        online game needs, like database and networking, you create the game of
+        your dreams by writing normal Python modules.""",
+        language="en-US",
+        lastBuildDate=datetime.utcnow(),
+        items=feeditems,
+    ).rss()
 
 
 def md2html():
@@ -192,18 +230,24 @@ def md2html():
         calendar[date.year].append(blogpost)
 
     # make sure to sort all entries by date
+    blogpostlist = []
     blogpages = []
     for year in sorted(calendar, reverse=True):
+        blogposts = list(sorted(calendar[year], key=lambda post: -post.date_sort))
+        blogpostlist.extend(blogposts)
         blogpages.append(
             BlogPage(
                 year=year,
                 permalink=OUTFILE_TEMPLATE.format(year=year),
-                posts=list(sorted(calendar[year], key=lambda post: -post.date_sort)),
+                posts=blogposts,
                 calendar=calendar
             )
         )
 
-    # build the blog pages, per year
+    # generate the rss feed
+    rss_feed = build_rss_feed(blogpostlist)
+
+    # build the html blog pages, one per year
     latest_post = blogpages[0].posts[0]
     latest_title = latest_post.title
     latest_blurb = latest_post.blurb
@@ -224,8 +268,7 @@ def md2html():
 
         html_pages[blogpage.year] = html_page
 
-    return html_pages
-
+    return html_pages, rss_feed
 
 def build_pages(blog_pages):
     """
@@ -244,8 +287,9 @@ def build_pages(blog_pages):
     except FileNotFoundError:
         pass
 
-    html_pages = md2html()
+    html_pages, rss_feed = md2html()
 
+    # build html files
     latest_year = -1
     latest_page = None
     for year, html_page in html_pages.items():
@@ -256,6 +300,11 @@ def build_pages(blog_pages):
         with open(filename, 'w') as fil:
             fil.write(html_page)
 
+    # build rss file
+    with open(pathjoin(OUTDIR, RSS_FEED), 'w') as fil:
+        fil.write(rss_feed)
+
+    # link static resources and the start page
     chdir(OUTDIR)
     symlink(IMG_REL_LINK, IMG_DIR_NAME)
     symlink(latest_page, START_PAGE)
