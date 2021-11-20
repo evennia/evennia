@@ -54,6 +54,7 @@ START_PAGE = "index.html"
 BLOG_TEMPLATE = "blog.html"
 POST_TEMPLATE = "post.html"
 
+RSS_FEED_FILE = "feed.rss"
 RSS_FEED = "feed"
 
 CURRENT_YEAR = datetime.utcnow().year
@@ -286,6 +287,10 @@ def build_pages(blog_pages):
         remove(pathjoin(OUTDIR, IMG_DIR_NAME))
     except FileNotFoundError:
         pass
+    try:
+        remove(pathjoin(OUTDIR, RSS_FEED))
+    except FileNotFoundError:
+        pass
 
     html_pages, rss_feed = md2html()
 
@@ -303,13 +308,15 @@ def build_pages(blog_pages):
             fil.write(html_page)
 
     # build rss file
-    with open(pathjoin(OUTDIR, RSS_FEED), 'w') as fil:
+    with open(pathjoin(OUTDIR, RSS_FEED_FILE), 'w') as fil:
         fil.write(rss_feed)
 
     # link static resources and the start page
     chdir(OUTDIR)
+    symlink
     symlink(IMG_REL_LINK, IMG_DIR_NAME)
     symlink(latest_page, START_PAGE)
+    symlink(RSS_FEED_FILE, RSS_FEED)
 
     print(f"Output HTML + RSS written to {OUTDIR}{sep}. Latest year is {latest_year}.")
 
