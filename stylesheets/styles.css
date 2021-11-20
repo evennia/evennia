@@ -536,6 +536,9 @@ a[href="devblog-posts"]:focus {
     float: right;
     font-size: initial;
 }
+.devblog-rss {
+    float: right;
+}
 
 
 /* Media alternatives */

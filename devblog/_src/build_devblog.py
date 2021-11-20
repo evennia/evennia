@@ -54,7 +54,7 @@ START_PAGE = "index.html"
 BLOG_TEMPLATE = "blog.html"
 POST_TEMPLATE = "post.html"
 
-RSS_FEED = "feed.rss"
+RSS_FEED = "feed"
 
 CURRENT_YEAR = datetime.utcnow().year
 
@@ -289,6 +289,8 @@ def build_pages(blog_pages):
 
     html_pages, rss_feed = md2html()
 
+    print("Writing HTML files and RSS feed ...")
+
     # build html files
     latest_year = -1
     latest_page = None
@@ -309,7 +311,7 @@ def build_pages(blog_pages):
     symlink(IMG_REL_LINK, IMG_DIR_NAME)
     symlink(latest_page, START_PAGE)
 
-    print(f"Output htmls written to {OUTDIR}{sep}. Latest year is {latest_year}.")
+    print(f"Output HTML + RSS written to {OUTDIR}{sep}. Latest year is {latest_year}.")
 
 
 if __name__ == "__main__":

@@ -92,7 +92,8 @@ There are a few things that were possible on blogspot that my simple little cust
 
 - Online editing: I'm not posting things on the fly so I'm fine with making a commit. Writing in a proper text editor is more confortable anyway. And the posts are under version control too!
 - Comments: Few people every commented directly in the old blog though - and lately it has mostly been spam. To comment, people'll need to use our forums on github or the support channel.
-- Notifications: I haven't added an RSS feed for this page and there is thus no automatic reporting of new posts in chat etc. I think the amount of posts I do is low enough that I can advertise them manually. I'll probably just make a dedicated announcement thread in Github discussions.
+- Notifications: ~~I haven't added an RSS feed for this page and there is thus no automatic reporting of new posts in chat etc. I think the amount of posts I do is low enough that I can advertise them manually. I'll probably just make a dedicated announcement thread in Github discussions.~~ 
+  **Update**: I added an RSS feed now, see the little ![rss-feed](images/rss-icon.png) icon on the top-right of this page.
 
 
 ## Onward
