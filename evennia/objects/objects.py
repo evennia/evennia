@@ -309,7 +309,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     # main methods
 
-    def get_display_name(self, looker, **kwargs):
+    def get_display_name(self, looker=None, **kwargs):
         """
         Displays the name of the object in a viewer-aware manner.
 
@@ -330,7 +330,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             builders.
 
         """
-        if self.locks.check_lockstring(looker, "perm(Builder)"):
+        if looker and self.locks.check_lockstring(looker, "perm(Builder)"):
             return "{}(#{})".format(self.name, self.id)
         return self.name
 
