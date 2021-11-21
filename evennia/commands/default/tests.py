@@ -918,7 +918,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdExamine(), "*TestAccount", "Name/key: TestAccount")
 
         self.char1.db.test = "testval"
-        self.call(building.CmdExamine(), "self/test", "Persistent attribute(s):\n  test = testval")
+        self.call(building.CmdExamine(), "self/test", "Attribute Char/test [category=None]:\n\ntestval")
         self.call(building.CmdExamine(), "NotFound", "Could not find 'NotFound'.")
         self.call(building.CmdExamine(), "out", "Name/key: out")
 
@@ -927,7 +927,7 @@ class TestBuilding(CommandTest):
         self.call(
             building.CmdExamine(),
             "self/test2",
-            "Persistent attribute(s):\n  test2 = this is a \$random() value.",
+            "Attribute Char/test2 [category=None]:\n\nthis is a \$random() value."
         )
 
         self.room1.scripts.add(self.script.__class__)
@@ -1864,6 +1864,7 @@ class TestBuilding(CommandTest):
         )
 
 
+
 from evennia.utils.create import create_channel  # noqa
 
 class TestCommsChannel(CommandTest):
@@ -2082,6 +2083,21 @@ class TestCommsChannel(CommandTest):
             self.cmdchannel(),
             "/who testchannel",
             "Subscribed to testchannel:\nChar"
+        )
+
+
+from evennia.comms import comms  # noqa
+
+
+class TestComms(CommandTest):
+
+    def test_page(self):
+        self.call(
+            comms.CmdPage(),
+            "TestAccount2 = Test",
+            "TestAccount2 is offline. They will see your message if they list their pages later."
+            "|You paged TestAccount2 with: 'Test'.",
+            receiver=self.account,
         )
 
 

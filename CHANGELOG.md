@@ -124,6 +124,8 @@ Up requirements to Django 3.2+, Twisted 21+
   by another command (like `open` and `@open`. If no duplicate, @ is optional.
 - Move legacy channel-management commands (`ccreate`, `addcom` etc) to a contrib
   since their work is now fully handled by the single `channel` command.
+- Expand `examine` command's code to much more extensible and modular. Show
+  attribute categories and value types (when not strings).
 
 ### Evennia 0.9.5 (2019-2020)
 

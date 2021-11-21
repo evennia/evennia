@@ -3418,15 +3418,6 @@ class TestLegacyMuxComms(CommandTest):
             receiver=self.account,
         )
 
-    def test_page(self):
-        self.call(
-            comms.CmdPage(),
-            "TestAccount2 = Test",
-            "TestAccount2 is offline. They will see your message if they list their pages later."
-            "|You paged TestAccount2 with: 'Test'.",
-            receiver=self.account,
-        )
-
     def test_cboot(self):
         # No one else connected to boot
         self.call(

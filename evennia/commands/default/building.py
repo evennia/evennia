@@ -11,6 +11,7 @@ from evennia.objects.models import ObjectDB
 from evennia.locks.lockhandler import LockException
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
 from evennia.utils import create, utils, search, logger, funcparser
+from evennia.utils.dbserialize import deserialize
 from evennia.utils.utils import (
     inherits_from,
     class_from_module,
@@ -2430,379 +2431,407 @@ class CmdExamine(ObjManipCommand):
     quell_color = "|r"
     separator = "-"
 
-    def list_attribute(self, crop, attr, category, value):
+    def msg(self, text):
         """
-        Formats a single attribute line.
+        Central point for sending messages to the caller. This tags
+        the message as 'examine' for eventual custom markup in the client.
 
-        Args:
-            crop (bool): If output should be cropped if too long.
-            attr (str): Attribute key.
-            category (str): Attribute category.
-            value (any): Attribute value.
-        Returns:
+        Attributes:
+            text (str): The text to send.
+
         """
+        self.caller.msg(text=(text, {"type": "examine"}))
+
+    def format_key(self, obj):
+        return f"{obj.name} ({obj.dbref})"
+
+    def format_aliases(self, obj):
+        if hasattr(obj, "aliases") and obj.aliases.all():
+            return ", ".join(utils.make_iter(str(obj.aliases)))
+
+    def format_typeclass(self, obj):
+        if hasattr(obj, "typeclass"):
+            return f"{obj.typename} ({obj.typeclass_path})"
+
+    def format_sessions(self, obj):
+        if hasattr(obj, "sessions"):
+            sessions = obj.sessions.all()
+            if sessions:
+                return ", ".join(f"#{sess.sessid}" for sess in obj.sessions.all())
+
+    def format_email(self, obj):
+        if hasattr(obj, "email") and obj.email:
+            return f"{self.detail_color}{obj.email}|n"
+
+    def format_account_key(self, account):
+        return f"{self.detail_color}{account.name}|n ({account.dbref})"
+
+    def format_account_typeclass(self, account):
+        return f"{account.typename} ({account.typeclass_path})"
+
+    def format_account_permissions(self, account):
+        perms = account.permissions.all()
+        if account.is_superuser:
+            perms = ["<Superuser>"]
+        elif not perms:
+            perms = ["<None>"]
+        perms = ", ".join(perms)
+        if account.attributes.has("_quell"):
+            perms += f" {self.quell_color}(quelled)|n"
+        return perms
+
+    def format_location(self, obj):
+        if hasattr(obj, "location") and obj.location:
+            return f"{obj.location.key} (#{obj.location.id})"
+
+    def format_home(self, obj):
+        if hasattr(obj, "home") and obj.home:
+            return f"{obj.home.key} (#{obj.home.id})"
+
+    def format_destination(self, obj):
+        if hasattr(obj, "destination") and obj.destination:
+            return f"{obj.destination.key} (#{obj.destination.id})"
+
+    def format_permissions(self, obj):
+        perms = obj.permissions.all()
+        if perms:
+            perms_string = ", ".join(perms)
+            if obj.is_superuser:
+                perms_string += " <Superuser>"
+            return perms_string
+
+    def format_locks(self, obj):
+        locks = str(obj.locks)
+        if locks:
+            return utils.fill(
+                "; ".join([lock for lock in locks.split(";")]), indent=2
+            )
+        return "Default"
+
+    def format_scripts(self, obj):
+        if hasattr(obj, "scripts") and hasattr(obj.scripts, "all") and obj.scripts.all():
+            return f"{obj.scripts}"
+
+    def format_single_tag(self, tag):
+        if tag.db_category:
+            return f"{tag.db_key}[{tag.db_category}]"
+        else:
+            return f"{tag.db_key}"
+
+    def format_tags(self, obj):
+        if hasattr(obj, "tags"):
+            tags = sorted(obj.tags.all(return_objs=True))
+            if tags:
+                formatted_tags = [self.format_single_tag(tag) for tag in tags]
+                return utils.fill(", ".join(formatted_tags), indent=2)
+
+    def format_single_cmdset_options(self, cmdset):
+        def _truefalse(string, value):
+            if value is None:
+                return ""
+            if value:
+                return f"{string}: T"
+            return f"{string}: F"
+        return ", ".join(
+            _truefalse(opt, getattr(cmdset, opt))
+            for opt in ("no_exits", "no_objs", "no_channels", "duplicates")
+            if getattr(cmdset, opt) is not None
+        )
+
+    def format_single_cmdset(self, cmdset):
+        options = self.format_single_cmdset_options(cmdset)
+        return f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype}, prio {cmdset.priority}{options}"
+
+    def format_stored_cmdsets(self, obj):
+        if hasattr(obj, "cmdset"):
+            stored_cmdset_strings = []
+            stored_cmdsets = sorted(obj.cmdset.all(), key=lambda x: x.priority, reverse=True)
+            for cmdset in stored_cmdsets:
+                if cmdset.key != "_EMPTY_CMDSET":
+                    stored_cmdset_strings.append(self.format_single_cmdset(cmdset))
+            return "\n  ".join(stored_cmdset_strings)
+
+    def format_merged_cmdsets(self, obj, current_cmdset):
+        if not hasattr(obj, "cmdset"):
+            return None
+
+        all_cmdsets = [(cmdset.key, cmdset) for cmdset in current_cmdset.merged_from]
+        # we always at least try to add account- and session sets since these are ignored
+        # if we merge on the object level.
+        if hasattr(obj, "account") and obj.account:
+            # get Attribute-cmdsets if they exist
+            all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.account.cmdset.all()])
+            if obj.sessions.count():
+                # if there are more sessions than one on objects it's because of multisession mode
+                # we only show the first session's cmdset here (it is -in principle- possible
+                # that different sessions have different cmdsets but for admins who want such
+                # madness it is better that they overload with their own CmdExamine to handle it).
+                all_cmdsets.extend([(cmdset.key, cmdset)
+                                    for cmdset in obj.account.sessions.all()[0].cmdset.all()])
+        else:
+            try:
+                # we have to protect this since many objects don't have sessions.
+                all_cmdsets.extend([(cmdset.key, cmdset)
+                                    for cmdset in obj.get_session(obj.sessions.get()).cmdset.all()])
+            except (TypeError, AttributeError):
+                # an error means we are merging an object without a session
+                pass
+        all_cmdsets = [cmdset for cmdset in dict(all_cmdsets).values()]
+        all_cmdsets.sort(key=lambda x: x.priority, reverse=True)
+
+        merged_cmdset_strings = []
+        for cmdset in all_cmdsets:
+            if cmdset.key != "_EMPTY_CMDSET":
+                merged_cmdset_strings.append(self.format_single_cmdset(cmdset))
+        return "\n   ".join(merged_cmdset_strings)
+
+    def format_current_cmds(self, obj, current_cmdset):
+        current_commands = sorted([cmd.key for cmd in current_cmdset if cmd.access(obj, "cmd")])
+        return "\n" + utils.fill(", ".join(current_commands), indent=2)
+
+    def _get_attribute_value_type(self, attrvalue):
+        typ = ""
+        if not isinstance(attrvalue, str):
+            try:
+                name = attrvalue.__class__.__name__
+            except AttributeError:
+                try:
+                    name = attrvalue.__name__
+                except AttributeError:
+                    name = attrvalue
+            if str(name).startswith("_Saver"):
+                try:
+                    typ = str(type(deserialize(attrvalue)))
+                except Exception:
+                    typ = str(type(deserialize(attrvalue)))
+            else:
+                typ = str(type(attrvalue))
+        return typ
+
+    def format_single_attribute_detail(self, obj, attr):
         global _FUNCPARSER
         if not _FUNCPARSER:
             _FUNCPARSER = funcparser.FuncParser(settings.FUNCPARSER_OUTGOING_MESSAGES_MODULES)
 
-        if attr is None:
-            return "No such attribute was found."
+        key, category, value = attr.db_key, attr.db_category, attr.value
+        typ = self._get_attribute_value_type(value)
+        typ = f" |B[type: {typ}]|n" if typ else ""
         value = utils.to_str(value)
-        if crop:
-            value = utils.crop(value)
         value = _FUNCPARSER.parse(ansi_raw(value), escape=True)
+        return (f"Attribute {obj.name}/{self.header_color}{key}|n "
+                f"[category={category}]{typ}:\n\n{value}")
+
+    def format_single_attribute(self, attr):
+        global _FUNCPARSER
+        if not _FUNCPARSER:
+            _FUNCPARSER = funcparser.FuncParser(settings.FUNCPARSER_OUTGOING_MESSAGES_MODULES)
+
+        key, category, value = attr.db_key, attr.db_category, attr.value
+        typ = self._get_attribute_value_type(value)
+        typ = f" |B[type: {typ}]|n" if typ else ""
+        value = utils.to_str(value)
+        value = _FUNCPARSER.parse(ansi_raw(value), escape=True)
+        value = utils.crop(value)
         if category:
-            return f"{attr}[{category}] = {value}"
+            return f"{self.header_color}{key}|n[{category}]={value}{typ}"
         else:
-            return f"{attr} = {value}"
+            return f"{self.header_color}{key}|n={value}{typ}"
 
-    def format_attributes(self, obj, attrname=None, crop=True):
-        """
-        Helper function that returns info about attributes and/or
-        non-persistent data stored on object
+    def format_attributes(self, obj):
+        return "\n  " + "\n  ".join(
+            sorted(self.format_single_attribute(attr)
+                   for attr in obj.db_attributes.all())
+        )
 
-        """
-        if attrname:
-            if obj.attributes.has(attrname):
-                db_attr = [(attrname, obj.attributes.get(attrname), None)]
-            else:
-                db_attr = None
-            try:
-                ndb_attr = [(attrname, object.__getattribute__(obj.ndb, attrname))]
-            except Exception:
-                ndb_attr = None
-            if not (db_attr or ndb_attr):
-                return {"Attribue(s)": f"\n  No Attribute '{attrname}' found on {obj.name}"}
-        else:
-            db_attr = [(attr.key, attr.value, attr.category) for attr in obj.db_attributes.all()]
-            try:
-                ndb_attr = obj.nattributes.all(return_tuples=True)
-            except Exception:
-                ndb_attr = (None, None, None)
+    def format_nattributes(self, obj):
+        try:
+            ndb_attr = obj.nattributes.all(return_tuples=True)
+        except Exception:
+            return
 
-        output = {}
-        if db_attr and db_attr[0]:
-            output["Persistent attribute(s)"] = "\n  " + "\n  ".join(
-                sorted(
-                    self.list_attribute(crop, attr, category, value)
-                    for attr, value, category in db_attr
-                )
-            )
         if ndb_attr and ndb_attr[0]:
-            output["Non-Persistent attribute(s)"] = "  \n" + "  \n".join(
-                sorted(self.list_attribute(crop, attr, None, value) for attr, value in ndb_attr)
+            return "\n  " + "  \n".join(
+                sorted(self.format_single_attribute(attr)
+                       for attr, value in ndb_attr)
             )
-        return output
+
+    def format_exits(self, obj):
+        if hasattr(obj, "exits"):
+            exits = ", ".join(f"{exit.name}({exit.dbref})" for exit in obj.exits)
+            return exits if exits else None
+
+    def format_chars(self, obj):
+        if hasattr(obj, "contents"):
+            chars = ", ".join(f"{obj.name}({obj.dbref})" for obj in obj.contents
+                              if obj.account)
+            return chars if chars else None
+
+    def format_things(self, obj):
+        if hasattr(obj, "contents"):
+            things = ", ".join(f"{obj.name}({obj.dbref})" for obj in obj.contents
+                               if not obj.account and not obj.destination)
+            return things if things else None
+
+    def get_formatted_obj_data(self, obj, current_cmdset):
+        """
+        Calls all other `format_*` methods.
+
+        """
+        objdata = {}
+        objdata["Name/key"] = self.format_key(obj)
+        objdata["Aliases"] = self.format_aliases(obj)
+        objdata["Typeclass"] = self.format_typeclass(obj)
+        objdata["Sessions"] = self.format_sessions(obj)
+        objdata["Email"] = self.format_email(obj)
+        if hasattr(obj, "has_account") and obj.has_account:
+            objdata["Account"] = self.format_account_key(obj.account)
+            objdata["  Account Typeclass"] = self.format_account_typeclass(obj.account)
+            objdata["  Account Permissions"] = self.format_account_permissions(obj.account)
+        objdata["Location"] = self.format_location(obj)
+        objdata["Home"] = self.format_home(obj)
+        objdata["Destination"] = self.format_destination(obj)
+        objdata["Permissions"] = self.format_permissions(obj)
+        objdata["Locks"] = self.format_locks(obj)
+        if (current_cmdset
+                and not (len(obj.cmdset.all()) == 1
+                         and obj.cmdset.current.key == "_EMPTY_CMDSET")):
+            objdata["Stored Cmdset(s)"] = self.format_stored_cmdsets(obj)
+            objdata["Merged Cmdset(s)"] = self.format_merged_cmdsets(obj, current_cmdset)
+            objdata[f"Commands vailable to {obj.key} (result of Merged Cmdset(s))"] = (
+                self.format_current_cmds(obj, current_cmdset))
+        objdata["Scripts"] = self.format_scripts(obj)
+        objdata["Tags"] = self.format_tags(obj)
+        objdata["Persistent Attributes"] = self.format_attributes(obj)
+        objdata["Non-Persistent Attributes"] = self.format_nattributes(obj)
+        objdata["Exits"] = self.format_exits(obj)
+        objdata["Characters"] = self.format_chars(obj)
+        objdata["Content"] = self.format_things(obj)
+        return objdata
 
     def format_output(self, obj, current_cmdset):
         """
-        Helper function that creates a nice report about an object.
-
-        Args:
-            obj (any): Object to analyze.
-            current_cmdset (CmdSet): Current cmdset for object.
-
-        Returns:
-            str: The formatted string.
+        Formats the full examine page return.
 
         """
-        hclr = self.header_color
-        dclr = self.detail_color
-        qclr = self.quell_color
+        objdata = self.get_formatted_obj_data(obj, current_cmdset)
 
-        output = {}
-        # main key
-        output["Name/key"] = f"{dclr}{obj.name}|n ({obj.dbref})"
-        # aliases
-        if hasattr(obj, "aliases") and obj.aliases.all():
-            output["Aliases"] = ", ".join(utils.make_iter(str(obj.aliases)))
-        # typeclass
-        output["Typeclass"] = f"{obj.typename} ({obj.typeclass_path})"
-        # sessions
-        if hasattr(obj, "sessions") and obj.sessions.all():
-            output["Session id(s)"] = ", ".join(f"#{sess.sessid}" for sess in obj.sessions.all())
-        # email, if any
-        if hasattr(obj, "email") and obj.email:
-            output["Email"] = f"{dclr}{obj.email}|n"
-        # account, for puppeted objects
-        if hasattr(obj, "has_account") and obj.has_account:
-            output["Account"] = f"{dclr}{obj.account.name}|n ({obj.account.dbref})"
-            # account typeclass
-            output["  Account Typeclass"] = f"{obj.account.typename} ({obj.account.typeclass_path})"
-            # account permissions
-            perms = obj.account.permissions.all()
-            if obj.account.is_superuser:
-                perms = ["<Superuser>"]
-            elif not perms:
-                perms = ["<None>"]
-            perms = ", ".join(perms)
-            if obj.account.attributes.has("_quell"):
-                perms += f" {qclr}(quelled)|n"
-            output["  Account Permissions"] = perms
-        # location
-        if hasattr(obj, "location"):
-            loc = str(obj.location)
-            if obj.location:
-                loc += f" (#{obj.location.id})"
-            output["Location"] = loc
-        # home
-        if hasattr(obj, "home"):
-            home = str(obj.home)
-            if obj.home:
-                home += f" (#{obj.home.id})"
-            output["Home"] = home
-        # destination, for exits
-        if hasattr(obj, "destination") and obj.destination:
-            dest = str(obj.destination)
-            if obj.destination:
-                dest += f" (#{obj.destination.id})"
-            output["Destination"] = dest
-        # main permissions
-        perms = obj.permissions.all()
-        perms_string = ""
-        if perms:
-            perms_string = ", ".join(perms)
-        if obj.is_superuser:
-            perms_string += " <Superuser>"
-        if perms_string:
-            output["Permissions"] = perms_string
-        # locks
-        locks = str(obj.locks)
-        if locks:
-            locks_string = "\n" + utils.fill(
-                "; ".join([lock for lock in locks.split(";")]), indent=2
-            )
-        else:
-            locks_string = " Default"
-        output["Locks"] = locks_string
-        # cmdsets
-        if current_cmdset and not (
-                len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "_EMPTY_CMDSET"):
-            # all() returns a 'stack', so make a copy to sort.
-
-            def _format_options(cmdset):
-                """helper for cmdset-option display"""
-                def _truefalse(string, value):
-                    if value is None:
-                        return ""
-                    if value:
-                        return f"{string}: T"
-                    return f"{string}: F"
-                options = ", ".join(
-                    _truefalse(opt, getattr(cmdset, opt))
-                    for opt in ("no_exits", "no_objs", "no_channels", "duplicates")
-                    if getattr(cmdset, opt) is not None
-                )
-                options = ", " + options if options else ""
-                return options
-
-            # cmdset stored on us
-            stored_cmdsets = sorted(obj.cmdset.all(), key=lambda x: x.priority, reverse=True)
-            stored = []
-            for cmdset in stored_cmdsets:
-                if cmdset.key == "_EMPTY_CMDSET":
-                    continue
-                options = _format_options(cmdset)
-                stored.append(
-                    f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype}, prio {cmdset.priority}{options})")
-            output["Stored Cmdset(s)"] = "\n  " + "\n  ".join(stored)
-
-            # this gets all components of the currently merged set
-            all_cmdsets = [(cmdset.key, cmdset) for cmdset in current_cmdset.merged_from]
-            # we always at least try to add account- and session sets since these are ignored
-            # if we merge on the object level.
-            if hasattr(obj, "account") and obj.account:
-                all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.account.cmdset.all()])
-                if obj.sessions.count():
-                    # if there are more sessions than one on objects it's because of multisession mode 3.
-                    # we only show the first session's cmdset here (it is -in principle- possible that
-                    # different sessions have different cmdsets but for admins who want such madness
-                    # it is better that they overload with their own CmdExamine to handle it).
-                    all_cmdsets.extend(
-                        [
-                            (cmdset.key, cmdset)
-                            for cmdset in obj.account.sessions.all()[0].cmdset.all()
-                        ]
-                    )
-            else:
-                try:
-                    # we have to protect this since many objects don't have sessions.
-                    all_cmdsets.extend(
-                        [
-                            (cmdset.key, cmdset)
-                            for cmdset in obj.get_session(obj.sessions.get()).cmdset.all()
-                        ]
-                    )
-                except (TypeError, AttributeError):
-                    # an error means we are merging an object without a session
-                    pass
-            all_cmdsets = [cmdset for cmdset in dict(all_cmdsets).values()]
-            all_cmdsets.sort(key=lambda x: x.priority, reverse=True)
-
-            # the resulting merged cmdset
-            options = _format_options(current_cmdset)
-            merged = [
-                f"<Current merged cmdset> ({current_cmdset.mergetype} prio {current_cmdset.priority}{options})"]
-
-            # the merge stack
-            for cmdset in all_cmdsets:
-                options = _format_options(cmdset)
-                merged.append(
-                    f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype} prio {cmdset.priority}{options})")
-            output["Merged Cmdset(s)"] = "\n  " + "\n  ".join(merged)
-
-            # list the commands available to this object
-            current_commands = sorted([cmd.key for cmd in current_cmdset if cmd.access(obj, "cmd")])
-            cmdsetstr = "\n" + utils.fill(", ".join(current_commands), indent=2)
-            output[f"Commands available to {obj.key} (result of Merged CmdSets)"] = str(cmdsetstr)
-
-        # scripts
-        if hasattr(obj, "scripts") and hasattr(obj.scripts, "all") and obj.scripts.all():
-            output["Scripts"] = "\n  " + f"{obj.scripts}"
-        # add the attributes
-        output.update(self.format_attributes(obj))
-        # Tags
-        tags = obj.tags.all(return_key_and_category=True)
-        tags_string = "\n" + utils.fill(
-            ", ".join(sorted(f"{tag}[{category}]" for tag, category in tags)), indent=2,
-        )
-        if tags:
-            output["Tags[category]"] = tags_string
-        # Contents of object
-        exits = []
-        pobjs = []
-        things = []
-        if hasattr(obj, "contents"):
-            for content in obj.contents:
-                if content.destination:
-                    exits.append(content)
-                elif content.account:
-                    pobjs.append(content)
-                else:
-                    things.append(content)
-            if exits:
-                output["Exits (has .destination)"] = ", ".join(
-                    f"{exit.name}({exit.dbref})" for exit in exits
-                )
-            if pobjs:
-                output["Characters"] = ", ".join(
-                    f"{dclr}{pobj.name}|n({pobj.dbref})" for pobj in pobjs
-                )
-            if things:
-                output["Contents"] = ", ".join(
-                    f"{cont.name}({cont.dbref})"
-                    for cont in obj.contents
-                    if cont not in exits and cont not in pobjs
-                )
         # format output
+        main_str = []
         max_width = -1
-        for block in output.values():
-            max_width = max(max_width, max(display_len(line) for line in block.split("\n")))
-        max_width = max(0, min(self.client_width(), max_width))
+        for header, block in objdata.items():
+            if block is not None:
+                blockstr = f"{self.header_color}{header}|n: {block}"
+                max_width = max(max_width, max(display_len(line) for line in blockstr.split("\n")))
+                main_str.append(blockstr)
+        main_str = "\n".join(main_str)
 
+        max_width = max(0, min(self.client_width(), max_width))
         sep = self.separator * max_width
-        mainstr = "\n".join(f"{hclr}{header}|n: {block}" for (header, block) in output.items())
-        return f"{sep}\n{mainstr}\n{sep}"
+
+        return f"{sep}\n{main_str}\n{sep}"
+
+    def parse(self):
+        super().parse()
+
+        self.examine_objs = []
+
+        if not self.args:
+            # If no arguments are provided, examine the invoker's location.
+            if hasattr(self.caller, "location"):
+                self.examine_objs.append((self.caller.location, None))
+            else:
+                self.msg("You need to supply a target to examine.")
+                raise InterruptCommand
+        else:
+            for objdef in self.lhs_objattr:
+                obj = None
+                obj_name = objdef["name"]    # name
+                obj_attrs = objdef["attrs"]  # /attrs
+
+                self.account_mode = (
+                    utils.inherits_from(self.caller, "evennia.accounts.accounts.DefaultAccount")
+                    or "account" in self.switches
+                    or obj_name.startswith("*")
+                )
+                if self.account_mode:
+                    try:
+                        obj = self.caller.search_account(obj_name.lstrip("*"))
+                    except AttributeError:
+                        # this means we are calling examine from an account object
+                        obj = self.caller.search(
+                            obj_name.lstrip("*"), search_object="object" in self.switches
+                        )
+                else:
+                    obj = self.caller.search(obj_name)
+
+                if obj:
+                    self.examine_objs.append((obj, obj_attrs))
 
     def func(self):
         """Process command"""
-        caller = self.caller
-
-        def get_cmdset_callback(cmdset):
+        def get_cmdset_callback(current_cmdset):
             """
-            We make use of the cmdhandeler.get_and_merge_cmdsets below. This
+            We make use of the cmdhandler.get_and_merge_cmdsets below. This
             is an asynchronous function, returning a Twisted deferred.
             So in order to properly use this we need use this callback;
             it is called with the result of get_and_merge_cmdsets, whenever
             that function finishes. Taking the resulting cmdset, we continue
             to format and output the result.
             """
-            self.msg(self.format_output(obj, cmdset).strip())
+            self.msg(self.format_output(obj, current_cmdset).strip())
 
-        if not self.args:
-            # If no arguments are provided, examine the invoker's location.
-            if hasattr(caller, "location"):
-                obj = caller.location
-                if not obj.access(caller, "examine"):
-                    # If we don't have special info access, just look at the object instead.
-                    self.msg(caller.at_look(obj))
-                    return
-                obj_session = obj.sessions.get()[0] if obj.sessions.count() else None
+        for obj, obj_attrs in self.examine_objs:
+            # these are parsed out in .parse already
 
-                # using callback for printing result whenever function returns.
-                get_and_merge_cmdsets(
-                    obj, obj_session, self.account, obj, "object", self.raw_string
-                ).addCallback(get_cmdset_callback)
-            else:
-                self.msg("You need to supply a target to examine.")
-            return
-
-        # we have given a specific target object
-        for objdef in self.lhs_objattr:
-
-            obj = None
-            obj_name = objdef["name"]
-            obj_attrs = objdef["attrs"]
-
-            self.account_mode = (
-                utils.inherits_from(caller, "evennia.accounts.accounts.DefaultAccount")
-                or "account" in self.switches
-                or obj_name.startswith("*")
-            )
-            if self.account_mode:
-                try:
-                    obj = caller.search_account(obj_name.lstrip("*"))
-                except AttributeError:
-                    # this means we are calling examine from an account object
-                    obj = caller.search(
-                        obj_name.lstrip("*"), search_object="object" in self.switches
-                    )
-            else:
-                obj = caller.search(obj_name)
-            if not obj:
-                continue
-
-            if not obj.access(caller, "examine"):
+            if not obj.access(self.caller, "examine"):
                 # If we don't have special info access, just look
                 # at the object instead.
-                self.msg(caller.at_look(obj))
+                self.msg(self.caller.at_look(obj))
                 continue
 
             if obj_attrs:
-                for attrname in obj_attrs:
-                    # we are only interested in specific attributes
-                    ret = "\n".join(
-                        f"{self.header_color}{header}|n:{value}"
-                        for header, value in self.format_attributes(
-                            obj, attrname, crop=False
-                        ).items()
-                    )
-                    self.caller.msg(ret)
+                # we are only interested in specific attributes
+                attrs = [attr for attr in obj.db_attributes.all() if attr.db_key in obj_attrs]
+                if not attrs:
+                    self.msg("No attributes found on {obj.name}.")
+                else:
+                    out_strings = []
+                    for attr in attrs:
+                        out_strings.append(self.format_single_attribute_detail(obj, attr))
+                    out_str = "\n".join(out_strings)
+                    max_width = max(display_len(line) for line in out_strings)
+                    max_width = max(0, min(max_width, self.client_width()))
+                    sep = self.separator * max_width
+                    self.msg(f"{sep}\n{out_str}")
+                return
+
+            # examine the obj itself
+
+            # get the cmdset status
+            session = None
+            if obj.sessions.count():
+                mergemode = "session"
+                session = obj.sessions.get()[0]
+            elif self.account_mode:
+                mergemode = "account"
             else:
-                session = None
-                if obj.sessions.count():
-                    mergemode = "session"
-                    session = obj.sessions.get()[0]
-                elif self.account_mode:
-                    mergemode = "account"
-                else:
-                    mergemode = "object"
+                mergemode = "object"
 
-                account = None
-                objct = None
-                if self.account_mode:
-                    account = obj
-                else:
-                    account = obj.account
-                    objct = obj
+            account = None
+            objct = None
+            if self.account_mode:
+                account = obj
+            else:
+                account = obj.account
+                objct = obj
 
-                # this is usually handled when a command runs, but when we examine
-                # we may have leftover inherited cmdsets directly after a move etc.
-                obj.cmdset.update()
-                # using callback to print results whenever function returns.
-                get_and_merge_cmdsets(
-                    obj, session, account, objct, mergemode, self.raw_string
-                ).addCallback(get_cmdset_callback)
+            # this is usually handled when a command runs, but when we examine
+            # we may have leftover inherited cmdsets directly after a move etc.
+            obj.cmdset.update()
+            # using callback to print results whenever function returns.
+            get_and_merge_cmdsets(
+                obj, session, account, objct, mergemode, self.raw_string
+            ).addCallback(get_cmdset_callback)
 
 
 class CmdFind(COMMAND_DEFAULT_CLASS):
@@ -3312,7 +3341,7 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
             )
 
         # last N table
-        objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs - nlim) :]
+        objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs - nlim): ]
         latesttable = self.styled_table(
             "|wcreated|n", "|wdbref|n", "|wname|n", "|wtypeclass|n", align="l", border="table"
         )
