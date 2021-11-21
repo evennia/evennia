@@ -733,7 +733,7 @@ class CmdSetHelp(CmdHelp):
     Edit the help database.
 
     Usage:
-      help[/switches] <topic>[[;alias;alias][,category[,locks]] [= <text>]
+      sethelp[/switches] <topic>[[;alias;alias][,category[,locks]] [= <text>]
 
     Switches:
       edit - open a line editor to edit the topic's help text.
