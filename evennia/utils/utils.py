@@ -344,7 +344,7 @@ def columnize(string, columns=2, spacing=4, align="l", width=None):
     return "\n".join(rows)
 
 
-def iter_to_string(initer, endsep="and", addquote=False):
+def iter_to_string(initer, endsep="and", addquote=False, serialcomma=False):
     """
     This pretty-formats an iterable list as string output, adding an optional
     alternative separator to the second to last entry.  If `addquote`
@@ -358,6 +358,10 @@ def iter_to_string(initer, endsep="and", addquote=False):
             be replaced with this value.
         addquote (bool, optional): This will surround all outgoing
             values with double quotes.
+        serialcomma (bool, optional): This will cause a serial comma to be included
+            before the final item (ex: 'a, b, and c' rather than 'a, b and c').
+            Note that the serial comma is omitted for sequences 2 items long:
+            '[1,2]' becomes '1 and 2' rather than '1, and 2'.
 
     Returns:
         liststr (str): The list represented as a string.
@@ -371,13 +375,15 @@ def iter_to_string(initer, endsep="and", addquote=False):
             [1,2,3] -> '1, 2 and 3'
          # with addquote and endsep
             [1,2,3] -> '"1", "2" and "3"'
+         # with endsep=='and' and serialcomma=True:
+            [1,2,3] -> '1, 2, and 3'
         ```
 
     """
     if not endsep:
         endsep = ","
     else:
-        endsep = " " + endsep
+        endsep = f"{',' if serialcomma and len(initer) > 2 else ''} {endsep}"
     if not initer:
         return ""
     initer = tuple(str(val) for val in make_iter(initer))
