@@ -34,6 +34,19 @@ db_attribute parameter.
     @lazy_property
     def cooldowns(self):
         return CooldownHandler(self, db_attribute="cooldowns")
+
+Example:
+
+Assuming you've installed cooldowns on your Character typeclasses, you can
+use a cooldown to limit how often you can perform a command:
+
+class PowerAttack(Command):
+    def func(self):
+        if self.caller.cooldowns.ready("power attack"):
+            self.do_power_attack()
+            self.caller.cooldowns.set("power attack", 10)
+        else:
+            self.caller.msg("That's not ready yet!")
 """
 
 import math
