@@ -271,16 +271,16 @@ class CmdUnban(COMMAND_DEFAULT_CLASS):
         else:
             # all is ok, ask, then clear ban
             ban = banlist[num - 1]
-            value = " ".join([s for s in ban[:2]])
+            value = (" ".join([s for s in ban[:2]])).strip()
 
-            ret = yield(f"Are you sure you want to unban {num}: '{value}' [Y]/N?")
+            ret = yield(f"Are you sure you want to unban {num}: '|w{value}|n' [Y]/N?")
             if str(ret).lower() in ("n", "no"):
                 self.caller.msg("Aborted.")
                 return
 
             del banlist[num - 1]
             ServerConfig.objects.conf("server_bans", banlist)
-            self.caller.msg(f"Cleared ban {num}: '{value}'" % (num, value))
+            self.caller.msg(f"Cleared ban {num}: '{value}'")
             logger.log_sec(
                 "Unbanned: {value.strip()} (Caller: {self.caller}, IP: {self.session.address})."
             )
