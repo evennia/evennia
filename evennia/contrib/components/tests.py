@@ -115,3 +115,9 @@ class TestComponents(EvenniaTest):
         handler.add(rct)
 
         assert handler.get("test_c") is rct
+
+    def test_can_access_component_regular_get(self):
+        assert self.char1.cmp.test_a is self.char1.components.get('test_a')
+
+    def test_returns_none_with_regular_get_when_no_attribute(self):
+        assert self.char1.cmp.does_not_exist is None

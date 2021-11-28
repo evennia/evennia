@@ -89,6 +89,9 @@ class ComponentHandler:
     def db_names(self):
         return self.host.attributes.get("component_names")
 
+    def __getattr__(self, name):
+        return self.get(name)
+
 
 class ComponentHolderMixin(object):
     """
@@ -119,6 +122,10 @@ class ComponentHolderMixin(object):
     @property
     def components(self) -> ComponentHandler:
         return getattr(self, "_component_handler", None)
+
+    @property
+    def cmp(self) -> ComponentHandler:
+        return self.components
 
 
 class ComponentDoesNotExist(Exception):
