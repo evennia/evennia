@@ -4,7 +4,7 @@
 django >= 3.2, < 3.3
 twisted >= 21.7.0, < 22.0.0
 pytz
-django-sekizai
+django-sekizai==2.0.0
 inflect
 autobahn >= 20.7.1, < 21.0.0
 
