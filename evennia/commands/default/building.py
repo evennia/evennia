@@ -1934,7 +1934,8 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
       update - *only* re-run at_object_creation on this object
               meaning locks or other properties set later may remain.
       reset - clean out *all* the attributes and properties on the
-              object - basically making this a new clean object.
+              object - basically making this a new clean object. This will
+              also reset cmdsets.
       force - change to the typeclass also if the object
               already has a typeclass of the same name.
       list - show available typeclasses. Only typeclasses in modules actually
@@ -2101,7 +2102,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
         else:
             update = "update" in self.switches
             reset = "reset" in self.switches
-            hooks = "at_object_creation" if update else "all"
+            hooks = "at_object_creation" if update and not reset else "all"
             old_typeclass_path = obj.typeclass_path
 
             # special prompt for the user in cases where we want
