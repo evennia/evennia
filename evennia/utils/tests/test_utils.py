@@ -12,7 +12,6 @@ import mock
 from datetime import datetime, timedelta
 
 from django.test import TestCase
-from datetime import datetime
 from twisted.internet import task
 
 from evennia.utils.ansi import ANSIString
@@ -74,7 +73,7 @@ class TestListToString(TestCase):
         self.assertEqual('"1", "2", "3"', utils.list_to_string([1, 2, 3], endsep="", addquote=True))
         self.assertEqual("1, 2, and 3", utils.list_to_string([1, 2, 3]))
         self.assertEqual(
-            '"1", "2", and "3"', utils.list_to_string([1, 2, 3], endsep="and", addquote=True)
+            '"1", "2" and "3"', utils.list_to_string([1, 2, 3], endsep="and", addquote=True)
         )
         self.assertEqual("1 and 2", utils.list_to_string([1, 2]))
 
