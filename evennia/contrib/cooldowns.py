@@ -200,8 +200,8 @@ class CooldownHandler:
         now = time.time()
         cooldowns = dict(self.data)
         keys = [x for x in cooldowns.keys() if cooldowns[x] - now < 0]
-        for key in keys:
-            del cooldowns[key]
         if keys:
+            for key in keys:
+                del cooldowns[key]
             self.obj.attributes.add(self.db_attribute, cooldowns)
             self.data = self.obj.attributes.get(self.db_attribute)
