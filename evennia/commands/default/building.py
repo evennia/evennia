@@ -645,7 +645,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
 
     def edit_handler(self):
         if self.rhs:
-            self.msg("|rYou may specify a value, or use the edit switch, " "but not both.|n")
+            self.msg("|rYou may specify a value, or use the edit switch, but not both.|n")
             return
         if self.args:
             obj = self.caller.search(self.args)
