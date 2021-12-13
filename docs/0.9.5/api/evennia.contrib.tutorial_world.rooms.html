@@ -91,7 +91,7 @@ called <strong>tutorial_info</strong> and display that.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdTutorial.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'tut', 'category': 'tutorialworld', 'key': 'tutorial', 'no_prefix': ' ', 'tags': '', 'text': '\n    Get help during the tutorial\n\n    Usage:\n      tutorial [obj]\n\n    This command allows you to get behind-the-scenes info\n    about an object or the current location.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdTutorial.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'tut', 'category': 'tutorialworld', 'key': 'tutorial', 'no_prefix': ' tut', 'tags': '', 'text': '\n    Get help during the tutorial\n\n    Usage:\n      tutorial [obj]\n\n    This command allows you to get behind-the-scenes info\n    about an object or the current location.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdTutorial.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -186,7 +186,7 @@ code except for adding in the details.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdTutorialLook.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['ls', 'l']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdTutorialLook.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'ls']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdTutorialLook.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -201,7 +201,7 @@ code except for adding in the details.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdTutorialLook.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'ls l', 'category': 'tutorialworld', 'key': 'look', 'no_prefix': ' ', 'tags': '', 'text': '\n    looks at the room and on details\n\n    Usage:\n        look &lt;obj&gt;\n        look &lt;room detail&gt;\n        look *&lt;account&gt;\n\n    Observes your location, details at your location or objects\n    in your vicinity.\n\n    Tutorial: This is a child of the default Look command, that also\n    allows us to look at &quot;details&quot; in the room.  These details are\n    things to examine and offers some extra description without\n    actually having to be actual database objects. It uses the\n    return_detail() hook on TutorialRooms for this.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdTutorialLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l ls', 'category': 'tutorialworld', 'key': 'look', 'no_prefix': ' l ls', 'tags': '', 'text': '\n    looks at the room and on details\n\n    Usage:\n        look &lt;obj&gt;\n        look &lt;room detail&gt;\n        look *&lt;account&gt;\n\n    Observes your location, details at your location or objects\n    in your vicinity.\n\n    Tutorial: This is a child of the default Look command, that also\n    allows us to look at &quot;details&quot; in the room.  These details are\n    things to examine and offers some extra description without\n    actually having to be actual database objects. It uses the\n    return_detail() hook on TutorialRooms for this.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdTutorialLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -242,7 +242,7 @@ to all the variables defined therein.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdTutorialGiveUp.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'abort', 'category': 'general', 'key': 'give up', 'no_prefix': ' ', 'tags': '', 'text': '\n    Give up the tutorial-world quest and return to Limbo, the start room of the\n    server.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdTutorialGiveUp.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'abort', 'category': 'general', 'key': 'give up', 'no_prefix': ' abort', 'tags': '', 'text': '\n    Give up the tutorial-world quest and return to Limbo, the start room of the\n    server.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdTutorialGiveUp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -586,7 +586,7 @@ on the bridge, 0 - 4.</p></li>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdEast.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'e', 'category': 'tutorialworld', 'key': 'east', 'no_prefix': ' ', 'tags': '', 'text': '\n    Go eastwards across the bridge.\n\n    Tutorial info:\n        This command relies on the caller having two Attributes\n        (assigned by the room when entering):\n            - east_exit: a unique name or dbref to the room to go to\n              when exiting east.\n            - west_exit: a unique name or dbref to the room to go to\n              when exiting west.\n       The room must also have the following Attributes\n           - tutorial_bridge_posistion: the current position on\n             on the bridge, 0 - 4.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdEast.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'e', 'category': 'tutorialworld', 'key': 'east', 'no_prefix': ' e', 'tags': '', 'text': '\n    Go eastwards across the bridge.\n\n    Tutorial info:\n        This command relies on the caller having two Attributes\n        (assigned by the room when entering):\n            - east_exit: a unique name or dbref to the room to go to\n              when exiting east.\n            - west_exit: a unique name or dbref to the room to go to\n              when exiting west.\n       The room must also have the following Attributes\n           - tutorial_bridge_posistion: the current position on\n             on the bridge, 0 - 4.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdEast.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -649,7 +649,7 @@ on the bridge, 0 - 4.</p></li>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdWest.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'w', 'category': 'tutorialworld', 'key': 'west', 'no_prefix': ' ', 'tags': '', 'text': '\n    Go westwards across the bridge.\n\n    Tutorial info:\n       This command relies on the caller having two Attributes\n       (assigned by the room when entering):\n           - east_exit: a unique name or dbref to the room to go to\n             when exiting east.\n           - west_exit: a unique name or dbref to the room to go to\n             when exiting west.\n       The room must also have the following property:\n           - tutorial_bridge_posistion: the current position on\n             on the bridge, 0 - 4.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdWest.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'w', 'category': 'tutorialworld', 'key': 'west', 'no_prefix': ' w', 'tags': '', 'text': '\n    Go westwards across the bridge.\n\n    Tutorial info:\n       This command relies on the caller having two Attributes\n       (assigned by the room when entering):\n           - east_exit: a unique name or dbref to the room to go to\n             when exiting east.\n           - west_exit: a unique name or dbref to the room to go to\n             when exiting west.\n       The room must also have the following property:\n           - tutorial_bridge_posistion: the current position on\n             on the bridge, 0 - 4.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdWest.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -698,7 +698,7 @@ if they fall off the bridge.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdLookBridge.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l', 'category': 'tutorialworld', 'key': 'look', 'no_prefix': ' ', 'tags': '', 'text': '\n    looks around at the bridge.\n\n    Tutorial info:\n        This command assumes that the room has an Attribute\n        &quot;fall_exit&quot;, a unique name or dbref to the place they end upp\n        if they fall off the bridge.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdLookBridge.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l', 'category': 'tutorialworld', 'key': 'look', 'no_prefix': ' l', 'tags': '', 'text': '\n    looks around at the bridge.\n\n    Tutorial info:\n        This command assumes that the room has an Attribute\n        &quot;fall_exit&quot;, a unique name or dbref to the place they end upp\n        if they fall off the bridge.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdLookBridge.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -741,7 +741,7 @@ if they fall off the bridge.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdBridgeHelp.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '? h', 'category': 'tutorial world', 'key': 'help', 'no_prefix': ' ', 'tags': '', 'text': '\n    Overwritten help command while on the bridge.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdBridgeHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '? h', 'category': 'tutorial world', 'key': 'help', 'no_prefix': ' ? h', 'tags': '', 'text': '\n    Overwritten help command while on the bridge.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdBridgeHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -867,7 +867,7 @@ to find something.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdLookDark.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'feel around', 'fiddle', 'search', 'feel']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdLookDark.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['search', 'fiddle', 'l', 'feel around', 'feel']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdLookDark.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -895,7 +895,7 @@ random chance of eventually finding a light source.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdLookDark.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l feel around fiddle search feel', 'category': 'tutorialworld', 'key': 'look', 'no_prefix': ' ', 'tags': '', 'text': '\n    Look around in darkness\n\n    Usage:\n      look\n\n    Look around in the darkness, trying\n    to find something.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdLookDark.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'search fiddle l feel around feel', 'category': 'tutorialworld', 'key': 'look', 'no_prefix': ' search fiddle l feel around feel', 'tags': '', 'text': '\n    Look around in darkness\n\n    Usage:\n      look\n\n    Look around in the darkness, trying\n    to find something.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdLookDark.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

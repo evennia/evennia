@@ -615,8 +615,8 @@
 <span class="sd">                will be cleared.</span>
 <span class="sd">            run_start_hooks (str or None, optional): This is either None,</span>
 <span class="sd">                to not run any hooks, &quot;all&quot; to run all hooks defined by</span>
-<span class="sd">                at_first_start, or a string giving the name of the hook</span>
-<span class="sd">                to run (for example &#39;at_object_creation&#39;). This will</span>
+<span class="sd">                at_first_start, or a string with space-separated hook-names to run</span>
+<span class="sd">                (for example &#39;at_object_creation&#39;). This will</span>
 <span class="sd">                always be called without arguments.</span>
 <span class="sd">            no_default (bool, optiona): If set, the swapper will not</span>
 <span class="sd">                allow for swapping to a default typeclass in case the</span>
@@ -664,7 +664,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">at_first_save</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">run_start_hooks</span><span class="p">:</span>
             <span class="c1"># a custom hook-name to call.</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_start_hooks</span><span class="p">)()</span></div>
+            <span class="k">for</span> <span class="n">start_hook</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">run_start_hooks</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_start_hooks</span><span class="p">)()</span></div>
 
     <span class="c1">#</span>
     <span class="c1"># Lock / permission methods</span>

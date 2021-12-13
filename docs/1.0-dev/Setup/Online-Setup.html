@@ -141,11 +141,11 @@ continue to assume that our server address is <code class="docutils literal notr
 </section>
 <section id="telnet">
 <h3>Telnet<a class="headerlink" href="#telnet" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Required. Change to whichever outgoing Telnet port(s) </span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Required. Change to whichever outgoing Telnet port(s)</span>
 <span class="c1"># you are allowed to use on your host.</span>
 <span class="n">TELNET_PORTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4000</span><span class="p">]</span>
-<span class="c1"># Optional for security. Restrict which telnet </span>
-<span class="c1"># interfaces we should accept. Should be set to your </span>
+<span class="c1"># Optional for security. Restrict which telnet</span>
+<span class="c1"># interfaces we should accept. Should be set to your</span>
 <span class="c1"># outward-facing IP address(es). Default is ´0.0.0.0´</span>
 <span class="c1"># which accepts all interfaces.</span>
 <span class="n">TELNET_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">]</span>
@@ -157,19 +157,19 @@ Some hosts will restrict which ports you are allowed you use so make sure to che
 </section>
 <section id="web-server">
 <h3>Web server<a class="headerlink" href="#web-server" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Required. This is a list of tuples </span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Required. This is a list of tuples</span>
 <span class="c1"># (outgoing_port, internal_port). Only the outgoing</span>
-<span class="c1"># port should be open to the world! </span>
+<span class="c1"># port should be open to the world!</span>
 <span class="c1"># set outgoing port to 80 if you want to run Evennia</span>
 <span class="c1"># as the only web server on your machine (if available).</span>
 <span class="n">WEBSERVER_PORTS</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">4001</span><span class="p">,</span> <span class="mi">4005</span><span class="p">)]</span>
-<span class="c1"># Optional for security. Change this to the IP your </span>
-<span class="c1"># server can be reached at (normally the same </span>
+<span class="c1"># Optional for security. Change this to the IP your</span>
+<span class="c1"># server can be reached at (normally the same</span>
 <span class="c1"># as TELNET_INTERFACES)</span>
 <span class="n">WEBSERVER_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">]</span>
-<span class="c1"># Optional for security. Protects against </span>
-<span class="c1"># man-in-the-middle attacks. Change  it to your server&#39;s </span>
-<span class="c1"># IP address or URL when you run a production server. </span>
+<span class="c1"># Optional for security. Protects against</span>
+<span class="c1"># man-in-the-middle attacks. Change  it to your server&#39;s</span>
+<span class="c1"># IP address or URL when you run a production server.</span>
 <span class="n">ALLOWED_HOSTS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;*&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -185,14 +185,14 @@ change the outgoing port unless the default internal port is clashing with some 
 <h3>Web client<a class="headerlink" href="#web-client" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Required. Change this to the main IP address of your server.</span>
 <span class="n">WEBSOCKET_CLIENT_INTERFACE</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span>
-<span class="c1"># Optional and needed only if using a proxy or similar. Change </span>
-<span class="c1"># to the IP or address where the client can reach </span>
+<span class="c1"># Optional and needed only if using a proxy or similar. Change</span>
+<span class="c1"># to the IP or address where the client can reach</span>
 <span class="c1"># your server. The ws:// part is then required. If not given, the client</span>
-<span class="c1"># will use its host location.  </span>
+<span class="c1"># will use its host location.</span>
 <span class="n">WEBSOCKET_CLIENT_URL</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 <span class="c1"># Required. Change to a free port for the websocket client to reach</span>
-<span class="c1"># the server on. This will be automatically appended </span>
-<span class="c1"># to WEBSOCKET_CLIENT_URL by the web client.  </span>
+<span class="c1"># the server on. This will be automatically appended</span>
+<span class="c1"># to WEBSOCKET_CLIENT_URL by the web client.</span>
 <span class="n">WEBSOCKET_CLIENT_PORT</span> <span class="o">=</span> <span class="mi">4002</span>
 </pre></div>
 </div>
@@ -208,10 +208,10 @@ based of the client instead, which tends to be slower.</p>
 <span class="n">SSL_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">]</span>
 <span class="c1"># Optional public facing. Only if you allow SSH connections (off by default).</span>
 <span class="n">SSH_PORTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4004</span><span class="p">]</span>
-<span class="n">SSH_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">]</span> 
+<span class="n">SSH_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">]</span>
 <span class="c1"># Required private. You should only change this if there is a clash</span>
-<span class="c1"># with other services on your host. Should NOT be open to the </span>
-<span class="c1"># outside world. </span>
+<span class="c1"># with other services on your host. Should NOT be open to the</span>
+<span class="c1"># outside world.</span>
 <span class="n">AMP_PORT</span> <span class="o">=</span> <span class="mi">4006</span>
 </pre></div>
 </div>
@@ -235,7 +235,7 @@ drum up interest for your game and also shows people that Evennia is being used.
 even if you are just starting development - if you don’t give any telnet/web address it will appear
 as <em>Not yet public</em> and just be a teaser. If so, pick <em>pre-alpha</em> as the development status.</p>
 <p>To register, stand in your game dir, run</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia connections 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia connections
 </pre></div>
 </div>
 <p>and follow the instructions. See the <a class="reference internal" href="Evennia-Game-Index.html"><span class="doc std std-doc">Game index page</span></a> for more details.</p>
@@ -443,7 +443,17 @@ Evennia users:</p>
 <tr class="row-odd"><td><p><a class="reference external" href="https://amazonlightsail.com">Amazon Lightsail</a></p></td>
 <td><p>Cloud</p></td>
 <td><p>$5/month</p></td>
-<td><p>Free first month. AWS’s new “fixed cost” offering.</p></td>
+<td><p>Free first month. AWS’s “fixed cost” offering.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://azure.microsoft.com/en-us/pricing/details/app-service/windows/">Azure App Services</a></p></td>
+<td><p>Cloud</p></td>
+<td><p>Free</p></td>
+<td><p>Free tier with limited regions for hobbyists.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://activity.huaweicloud.com/intl/en-us/free_packages/index.html">Huawei Cloud</a></p></td>
+<td><p>Cloud</p></td>
+<td><p>on demand</p></td>
+<td><p>Similar to Amazon. Free 12-month tier with limited regions.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://www.genesismuds.com/">Genesis MUD hosting</a></p></td>
 <td><p>Shell account</p></td>
