@@ -388,6 +388,8 @@ Evennia users:
 | [Digital Ocean][2] | VPS | $5/month | You can get a $50 credit if you use the referral link https://m.do.co/c/8f64fec2670c - if you do, once you've had it long enough to have paid $25 we will get that as a referral bonus to help Evennia development.|
 | [Amazon Web services][3] | Cloud | ~$5/month / on-demand | Free Tier first 12 months. Regions available around the globe.|
 | [Amazon Lightsail][9] | Cloud | $5/month | Free first month. AWS's new "fixed cost" offering.|
+| [Azure App Services][12] | Cloud | Free | Provides a free tier for hobbyist. Limited regions to be deployed to under the free tier|
+| [Huawei Cloud][13] | Cloud | on demand | Similar to Amazon. Free Tier first 12 months. Limited regions to be deployed to|
 | [Genesis MUD hosting][4] | Shell account | $8/month | Dedicated MUD host with very limited memory offerings. As for 2017, runs a 13 years old Python version (2.4) so you'd need to either convince them to update or compile yourself. Note that Evennia needs *at least* the "Deluxe" package (50MB RAM) and probably *a lot* higher for a production game. This host is *not* recommended for Evennia.|
 | [Host1Plus][5] | VPS & Cloud | $4/month | $4-$8/month depending on length of sign-up period.
 | [Scaleway][6] | Cloud | &euro;3/month / on-demand | EU based (Paris, Amsterdam). Smallest option provides 2GB RAM. |
@@ -407,6 +409,8 @@ Evennia users:
 [9]: https://amazonlightsail.com
 [10]: https://prgmr.com/
 [11]: https://www.linode.com/
+[12]: https://azure.microsoft.com/en-us/pricing/details/app-service/windows/
+[13]: https://activity.huaweicloud.com/intl/en-us/free_packages/index.html
 
 ## Cloud9
 
