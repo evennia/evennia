@@ -644,7 +644,7 @@ a different language.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdEmote.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ':', 'category': 'general', 'key': 'emote', 'no_prefix': ' ', 'tags': '', 'text': '\n    Emote an action, allowing dynamic replacement of\n    text in the emote.\n\n    Usage:\n      emote text\n\n    Example:\n      emote /me looks around.\n      emote With a flurry /me attacks /tall man with his sword.\n      emote &quot;Hello&quot;, /me says.\n\n    Describes an event in the world. This allows the use of /ref\n    markers to replace with the short descriptions or recognized\n    strings of objects in the same room. These will be translated to\n    emotes to match each person seeing it. Use &quot;...&quot; for saying\n    things and langcode&quot;...&quot; without spaces to say something in\n    a different language.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdEmote.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ':', 'category': 'general', 'key': 'emote', 'no_prefix': ' :', 'tags': '', 'text': '\n    Emote an action, allowing dynamic replacement of\n    text in the emote.\n\n    Usage:\n      emote text\n\n    Example:\n      emote /me looks around.\n      emote With a flurry /me attacks /tall man with his sword.\n      emote &quot;Hello&quot;, /me says.\n\n    Describes an event in the world. This allows the use of /ref\n    markers to replace with the short descriptions or recognized\n    strings of objects in the same room. These will be translated to\n    emotes to match each person seeing it. Use &quot;...&quot; for saying\n    things and langcode&quot;...&quot; without spaces to say something in\n    a different language.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdEmote.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -697,7 +697,7 @@ a different language.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdSay.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '\' &quot;', 'category': 'general', 'key': 'say', 'no_prefix': ' ', 'tags': '', 'text': '\n    speak as your character\n\n    Usage:\n      say &lt;message&gt;\n\n    Talk to those in your current location.\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '\' &quot;', 'category': 'general', 'key': 'say', 'no_prefix': ' \' &quot;', 'tags': '', 'text': '\n    speak as your character\n\n    Usage:\n      say &lt;message&gt;\n\n    Talk to those in your current location.\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -836,7 +836,7 @@ Using the command without arguments will list all current recogs.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdRecog.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['recognize', 'forget']</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['forget', 'recognize']</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -863,7 +863,7 @@ Using the command without arguments will list all current recogs.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdRecog.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'recognize forget', 'category': 'general', 'key': 'recog', 'no_prefix': ' ', 'tags': '', 'text': '\n    Recognize another person in the same room.\n\n    Usage:\n      recog\n      recog sdesc as alias\n      forget alias\n\n    Example:\n        recog tall man as Griatch\n        forget griatch\n\n    This will assign a personal alias for a person, or forget said alias.\n    Using the command without arguments will list all current recogs.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'forget recognize', 'category': 'general', 'key': 'recog', 'no_prefix': ' forget recognize', 'tags': '', 'text': '\n    Recognize another person in the same room.\n\n    Usage:\n      recog\n      recog sdesc as alias\n      forget alias\n\n    Example:\n        recog tall man as Griatch\n        forget griatch\n\n    This will assign a personal alias for a person, or forget said alias.\n    Using the command without arguments will list all current recogs.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -912,7 +912,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdMask.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'unmask', 'category': 'general', 'key': 'mask', 'no_prefix': ' ', 'tags': '', 'text': &quot;\n    Wear a mask\n\n    Usage:\n        mask &lt;new sdesc&gt;\n        unmask\n\n    This will put on a mask to hide your identity. When wearing\n    a mask, your sdesc will be replaced by the sdesc you pick and\n    people's recognitions of you will be disabled.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdMask.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'unmask', 'category': 'general', 'key': 'mask', 'no_prefix': ' unmask', 'tags': '', 'text': &quot;\n    Wear a mask\n\n    Usage:\n        mask &lt;new sdesc&gt;\n        unmask\n\n    This will put on a mask to hide your identity. When wearing\n    a mask, your sdesc will be replaced by the sdesc you pick and\n    people's recognitions of you will be disabled.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdMask.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

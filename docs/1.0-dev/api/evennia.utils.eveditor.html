@@ -121,7 +121,7 @@ command was given specifically as “no” or “n”.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.eveditor.CmdSaveYesNo.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__noinput_command', 'category': 'general', 'key': '__nomatch_command', 'no_prefix': ' ', 'tags': '', 'text': '\n    Save the editor state on quit. This catches\n    nomatches (defaults to Yes), and avoid saves only if\n    command was given specifically as &quot;no&quot; or &quot;n&quot;.\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdSaveYesNo.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__noinput_command', 'category': 'general', 'key': '__nomatch_command', 'no_prefix': ' __noinput_command', 'tags': '', 'text': '\n    Save the editor state on quit. This catches\n    nomatches (defaults to Yes), and avoid saves only if\n    command was given specifically as &quot;no&quot; or &quot;n&quot;.\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdSaveYesNo.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -260,7 +260,7 @@ indentation.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.eveditor.CmdLineInput.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__noinput_command', 'category': 'general', 'key': '__nomatch_command', 'no_prefix': ' ', 'tags': '', 'text': '\n    No command match - Inputs line of text into buffer.\n\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdLineInput.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__noinput_command', 'category': 'general', 'key': '__nomatch_command', 'no_prefix': ' __noinput_command', 'tags': '', 'text': '\n    No command match - Inputs line of text into buffer.\n\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdLineInput.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -277,7 +277,7 @@ indentation.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.eveditor.CmdEditorGroup.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['::', ':echo', ':fd', ':q', ':wq', ':h', ':u', ':S', ':i', ':f', ':dw', ':fi', ':r', ':=', ':::', ':p', ':y', ':I', ':A', ':s', ':dd', ':x', ':w', ':j', ':&gt;', ':DD', ':UU', ':!', ':', ':q!', ':&lt;', ':uu']</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = [':&lt;', ':dd', ':q', ':DD', ':wq', ':q!', ':!', ':x', ':=', ':fi', ':s', ':::', ':f', ':I', ':w', ':echo', ':fd', ':r', ':j', ':uu', '::', ':p', ':UU', ':u', ':', ':dw', ':h', ':A', ':&gt;', ':i', ':y', ':S']</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -305,7 +305,7 @@ efficient presentation.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.eveditor.CmdEditorGroup.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ':: :echo :fd :q :wq :h :u :S :i :f :dw :fi :r := ::: :p :y :I :A :s :dd :x :w :j :&gt; :DD :UU :! : :q! :&lt; :uu', 'category': 'general', 'key': ':editor_command_group', 'no_prefix': ' ', 'tags': '', 'text': '\n    Commands for the editor\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ':&lt; :dd :q :DD :wq :q! :! :x := :fi :s ::: :f :I :w :echo :fd :r :j :uu :: :p :UU :u : :dw :h :A :&gt; :i :y :S', 'category': 'general', 'key': ':editor_command_group', 'no_prefix': ' :&lt; :dd :q :DD :wq :q! :! :x := :fi :s ::: :f :I :w :echo :fd :r :j :uu :: :p :UU :u : :dw :h :A :&gt; :i :y :S', 'tags': '', 'text': '\n    Commands for the editor\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

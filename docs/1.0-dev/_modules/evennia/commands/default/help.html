@@ -220,6 +220,7 @@
             <span class="n">subtopics</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
         <span class="k">if</span> <span class="n">suggested</span><span class="p">:</span>
+            <span class="n">suggested</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">suggested</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">click_topics</span><span class="p">:</span>
                 <span class="n">suggested</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;|lchelp </span><span class="si">{</span><span class="n">sug</span><span class="si">}</span><span class="s2">|lt|w</span><span class="si">{</span><span class="n">sug</span><span class="si">}</span><span class="s2">|n|le&quot;</span> <span class="k">for</span> <span class="n">sug</span> <span class="ow">in</span> <span class="n">suggested</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
@@ -588,10 +589,14 @@
 
             <span class="k">return</span>
 
-        <span class="c1"># search for a specific entry. We need to check for &#39;read&#39; access here before # building the</span>
-        <span class="c1"># set of possibilities.</span>
+        <span class="c1"># search for a specific entry. We need to check for &#39;read&#39; access here before</span>
+        <span class="c1"># building the set of possibilities.</span>
         <span class="n">cmd_help_topics</span><span class="p">,</span> <span class="n">db_help_topics</span><span class="p">,</span> <span class="n">file_help_topics</span> <span class="o">=</span> \
             <span class="bp">self</span><span class="o">.</span><span class="n">collect_topics</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;query&#39;</span><span class="p">)</span>
+
+        <span class="c1"># get a collection of all keys + aliases to be able to strip prefixes like @</span>
+        <span class="n">key_and_aliases</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">_keyaliases</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmd_help_topics</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
 
         <span class="c1"># db-help topics takes priority over file-help</span>
         <span class="n">file_db_help_topics</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">file_help_topics</span><span class="p">,</span> <span class="o">**</span><span class="n">db_help_topics</span><span class="p">}</span>
@@ -629,12 +634,13 @@
                         <span class="n">suggestion_maxnum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">suggestion_maxnum</span><span class="p">,</span>
                         <span class="n">fields</span><span class="o">=</span><span class="n">search_fields</span>
                     <span class="p">)</span>
-
                     <span class="k">if</span> <span class="n">suggestions</span><span class="p">:</span>
                         <span class="n">help_text</span> <span class="o">+=</span> <span class="p">(</span>
                             <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">... But matches where found within the help &quot;</span>
                             <span class="s2">&quot;texts of the suggestions below.&quot;</span><span class="p">)</span>
-                        <span class="c1"># break</span>
+                        <span class="n">suggestions</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">strip_cmd_prefix</span><span class="p">(</span><span class="n">sugg</span><span class="p">,</span> <span class="n">key_and_aliases</span><span class="p">)</span>
+                                       <span class="k">for</span> <span class="n">sugg</span> <span class="ow">in</span> <span class="n">suggestions</span><span class="p">]</span>
+                        <span class="k">break</span>
 
             <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_help_entry</span><span class="p">(</span>
                 <span class="n">topic</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># this will give a no-match style title</span>
@@ -727,8 +733,6 @@
             <span class="c1"># we reached the bottom of the topic tree</span>
             <span class="n">help_text</span> <span class="o">=</span> <span class="n">subtopic_map</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
 
-        <span class="c1"># get a collection of all keys + aliases to be able to strip prefixes like @</span>
-        <span class="n">key_and_aliases</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">_keyaliases</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmd_help_topics</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
         <span class="n">topic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip_cmd_prefix</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">key_and_aliases</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">subtopics</span><span class="p">:</span>
             <span class="n">aliases</span> <span class="o">=</span> <span class="kc">None</span>
@@ -773,7 +777,7 @@
 <span class="sd">    Edit the help database.</span>
 
 <span class="sd">    Usage:</span>
-<span class="sd">      help[/switches] &lt;topic&gt;[[;alias;alias][,category[,locks]] [= &lt;text&gt;]</span>
+<span class="sd">      sethelp[/switches] &lt;topic&gt;[[;alias;alias][,category[,locks]] [= &lt;text&gt;]</span>
 
 <span class="sd">    Switches:</span>
 <span class="sd">      edit - open a line editor to edit the topic&#39;s help text.</span>

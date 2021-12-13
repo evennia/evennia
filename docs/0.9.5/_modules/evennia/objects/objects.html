@@ -352,7 +352,7 @@
 
     <span class="c1"># main methods</span>
 
-<div class="viewcode-block" id="DefaultObject.get_display_name"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.get_display_name"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays the name of the object in a viewer-aware manner.</span>
 
@@ -373,7 +373,7 @@
 <span class="sd">            builders.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;perm(Builder)&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">looker</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;perm(Builder)&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(#</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
 

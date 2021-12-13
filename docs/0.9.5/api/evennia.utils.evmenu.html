@@ -363,7 +363,7 @@ commands the caller can use.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdEvMenuNode.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__nomatch_command', 'category': 'menu', 'key': '__noinput_command', 'no_prefix': ' ', 'tags': '', 'text': '\n    Menu options.\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdEvMenuNode.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__nomatch_command', 'category': 'menu', 'key': '__noinput_command', 'no_prefix': ' __nomatch_command', 'tags': '', 'text': '\n    Menu options.\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdEvMenuNode.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -827,7 +827,7 @@ on the current node page.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdGetInput.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__noinput_command', 'category': 'general', 'key': '__nomatch_command', 'no_prefix': ' ', 'tags': '', 'text': '\n    Enter your data and press return.\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdGetInput.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__noinput_command', 'category': 'general', 'key': '__nomatch_command', 'no_prefix': ' __noinput_command', 'tags': '', 'text': '\n    Enter your data and press return.\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdGetInput.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -942,7 +942,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['no', 'y', 'n', '__nomatch_command', 'yes', 'a', 'abort']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['no', '__nomatch_command', 'abort', 'n', 'y', 'yes', 'a']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -968,7 +968,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'no y n __nomatch_command yes a abort', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' ', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'no __nomatch_command abort n y yes a', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' no __nomatch_command abort n y yes a', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

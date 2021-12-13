@@ -962,7 +962,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;*TestAccount&quot;</span><span class="p">,</span> <span class="s2">&quot;Name/key: TestAccount&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="s2">&quot;testval&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;self/test&quot;</span><span class="p">,</span> <span class="s2">&quot;Persistent attribute(s):</span><span class="se">\n</span><span class="s2">  test = testval&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;self/test&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Char/test [category=None]:</span><span class="se">\n\n</span><span class="s2">testval&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;NotFound&quot;</span><span class="p">,</span> <span class="s2">&quot;Could not find &#39;NotFound&#39;.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="s2">&quot;Name/key: out&quot;</span><span class="p">)</span>
 
@@ -971,7 +971,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span>
             <span class="s2">&quot;self/test2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Persistent attribute(s):</span><span class="se">\n</span><span class="s2">  test2 = this is a \$random() value.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Char/test2 [category=None]:</span><span class="se">\n\n</span><span class="s2">this is a \$random() value.&quot;</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
@@ -1908,6 +1908,7 @@
         <span class="p">)</span></div></div>
 
 
+
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_channel</span>  <span class="c1"># noqa</span>
 
 <div class="viewcode-block" id="TestCommsChannel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel">[docs]</a><span class="k">class</span> <span class="nc">TestCommsChannel</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
@@ -2126,6 +2127,21 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
             <span class="s2">&quot;/who testchannel&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Subscribed to testchannel:</span><span class="se">\n</span><span class="s2">Char&quot;</span>
+        <span class="p">)</span></div></div>
+
+
+<span class="kn">from</span> <span class="nn">evennia.comms</span> <span class="kn">import</span> <span class="n">comms</span>  <span class="c1"># noqa</span>
+
+
+<div class="viewcode-block" id="TestComms"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestComms">[docs]</a><span class="k">class</span> <span class="nc">TestComms</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestComms.test_page"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestComms.test_page">[docs]</a>    <span class="k">def</span> <span class="nf">test_page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">comms</span><span class="o">.</span><span class="n">CmdPage</span><span class="p">(),</span>
+            <span class="s2">&quot;TestAccount2 = Test&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TestAccount2 is offline. They will see your message if they list their pages later.&quot;</span>
+            <span class="s2">&quot;|You paged TestAccount2 with: &#39;Test&#39;.&quot;</span><span class="p">,</span>
+            <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
         <span class="p">)</span></div></div>
 
 
