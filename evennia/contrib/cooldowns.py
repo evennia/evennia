@@ -15,18 +15,21 @@ state. They do not fire callbacks, so are not a good fit for use cases
 where something needs to happen on a specific schedule (use delay or
 a TickerHandler for that instead).
 
+See also the evennia documentation for command cooldowns
+(https://github.com/evennia/evennia/wiki/Command-Cooldown) for more information
+about the concept.
+
 Installation:
 
-To use, simply add the following property to the typeclass definition of
-any object type that you want to support cooldowns. It will expose a
-new `cooldowns` property that persists data to the object's attribute
-storage. You can set this on your base `Object` typeclass to enable cooldown
-tracking on every kind of object, or just put it on your `Character`
-typeclass.
+To use, simply add the following property to the typeclass definition of any
+object type that you want to support cooldowns. It will expose a new `cooldowns`
+property that persists data to the object's attribute storage. You can set this
+on your base `Object` typeclass to enable cooldown tracking on every kind of
+object, or just put it on your `Character` typeclass.
 
-By default the CooldownHandler will use the `cooldowns` property, but you
-can customize this if desired by passing a different value for the
-db_attribute parameter.
+By default the CooldownHandler will use the `cooldowns` property, but you can
+customize this if desired by passing a different value for the db_attribute
+parameter.
 
     from evennia.contrib.cooldowns import Cooldownhandler
     from evennia.utils.utils import lazy_property
@@ -37,14 +40,16 @@ db_attribute parameter.
 
 Example:
 
-Assuming you've installed cooldowns on your Character typeclasses, you can
-use a cooldown to limit how often you can perform a command:
+Assuming you've installed cooldowns on your Character typeclasses, you can use a
+cooldown to limit how often you can perform a command. The following code
+snippet will limit the use of a Power Attack command to once every 10 seconds
+per character.
 
 class PowerAttack(Command):
     def func(self):
         if self.caller.cooldowns.ready("power attack"):
             self.do_power_attack()
-            self.caller.cooldowns.set("power attack", 10)
+            self.caller.cooldowns.add("power attack", 10)
         else:
             self.caller.msg("That's not ready yet!")
 """
@@ -55,42 +60,47 @@ import time
 
 class CooldownHandler:
     """
-    Handler for cooldowns. This can be attached to any object that
-    supports DB attributes (like a Character or Account).
+    Handler for cooldowns. This can be attached to any object that supports DB
+    attributes (like a Character or Account).
 
-    A cooldown is a timer that is usually used to limit how often
-    some action can be performed or some effect can trigger. When a
-    cooldown is first set, it counts down from the amount of time
-    provided back to zero, at which point it is considered ready again.
+    A cooldown is a timer that is usually used to limit how often some action
+    can be performed or some effect can trigger. When a cooldown is first added,
+    it counts down from the amount of time provided back to zero, at which point
+    it is considered ready again.
 
-    Cooldowns are named with an arbitrary string, and that string is used
-    to check on the progression of the cooldown. Each cooldown is tracked
-    separately and independently.
+    Cooldowns are named with an arbitrary string, and that string is used to
+    check on the progression of the cooldown. Each cooldown is tracked
+    separately and independently from other cooldowns on that same object. A
+    cooldown is unique per-object.
 
-    Cooldowns are saved persistently, so they survive reboots. This
-    module does not register or provide callback functionality for when
-    a cooldown becomes ready again. Users of cooldowns are expected to
-    query the state of any cooldowns they are interested in.
+    Cooldowns are saved persistently, so they survive reboots. This module does
+    not register or provide callback functionality for when a cooldown becomes
+    ready again. Users of cooldowns are expected to query the state of any
+    cooldowns they are interested in.
 
     Methods:
     - ready(name): Checks whether a given cooldown name is ready.
     - time_left(name): Returns how much time is left on a cooldown.
-    - set(name, seconds): Sets a given cooldown to last for a certain
+    - add(name, seconds): Sets a given cooldown to last for a certain
         amount of time. Until then, ready() will return False for that
-        cooldown name.
-    - extend(name, seconds): Like set, but adds time to the given
-        cooldown name. If it doesn't exist yet, calling this is equivalent
-        to calling set.
+        cooldown name. set() is an alias.
+    - extend(name, seconds): Like add(), but adds more time to the given
+        cooldown if it already exists. If it doesn't exist yet, calling
+        this is equivalent to calling add().
     - reset(cooldown): Resets a given cooldown, causing ready() to return
         True for that cooldown immediately.
     - clear(): Resets all cooldowns.
     """
+
+    __slots__ = ("data", "db_attribute", "obj")
 
     def __init__(self, obj, db_attribute="cooldowns"):
         if not obj.attributes.has(db_attribute):
             obj.attributes.add(db_attribute, {})
 
         self.data = obj.attributes.get(db_attribute)
+        self.obj = obj
+        self.db_attribute = db_attribute
         self.cleanup()
 
     @property
@@ -102,63 +112,69 @@ class CooldownHandler:
 
     def ready(self, *args):
         """
-        Checks whether all of the provided cooldowns are ready (expired).
-        If a requested cooldown does not exist, it is considered ready.
+        Checks whether all of the provided cooldowns are ready (expired). If a
+        requested cooldown does not exist, it is considered ready.
 
         Args:
-            any (str): One or more cooldown names to check.
+            *args (str): One or more cooldown names to check.
         Returns:
-            (bool): True if each cooldown has expired or does not exist.
+            bool: True if each cooldown has expired or does not exist.
         """
-        return self.time_left(*args) <= 0
+        return self.time_left(*args, use_int=True) <= 0
 
-    def time_left(self, *args):
+    def time_left(self, *args, use_int=False):
         """
-        Returns the maximum amount of time left on one or more given
-        cooldowns. If a requested cooldown does not exist, it is
-        considered to have 0 time left.
+        Returns the maximum amount of time left on one or more given cooldowns.
+        If a requested cooldown does not exist, it is considered to have 0 time
+        left.
 
         Args:
-            any (str): One or more cooldown names to check.
+            *args (str): One or more cooldown names to check.
+            use_int (bool): True to round the return value up to an int,
+                False (default) to return a more precise float.
         Returns:
-            (int): Number of seconds until all provided cooldowns are
-                ready. Returns 0 if all cooldowns are ready (or don't
-                exist.)
+            float or int: Number of seconds until all provided cooldowns are
+                ready. Returns 0 if all cooldowns are ready (or don't exist.)
         """
         now = time.time()
         cooldowns = [self.data[x] - now for x in args if x in self.data]
         if not cooldowns:
-            return 0
-        return math.ceil(max(max(cooldowns), 0))
+            return 0 if use_int else 0.0
+        left = max(max(cooldowns), 0)
+        return math.ceil(left) if use_int else left
 
-    def set(self, cooldown, seconds):
+    def add(self, cooldown, seconds):
         """
-        Sets a given cooldown to last for a specific amount of time.
+        Adds/sets a given cooldown to last for a specific amount of time.
 
-        If this cooldown is already set, this replaces it.
+        If this cooldown already exits, this call replaces it.
 
         Args:
             cooldown (str): The name of the cooldown.
-            seconds (int): The number of seconds before this cooldown is
-                ready again.
+            seconds (float or int): The number of seconds before this cooldown
+                is ready again.
         """
         now = time.time()
-        self.data[cooldown] = int(now) + (max(seconds, 0) if seconds else 0)
+        self.data[cooldown] = now + (max(seconds, 0) if seconds else 0)
+
+    set = add
 
     def extend(self, cooldown, seconds):
         """
         Adds a specific amount of time to an existing cooldown.
 
-        If this cooldown is already ready, this is equivalent to calling
-        set. If the cooldown is not ready, it will be extended by the
-        provided duration.
+        If this cooldown is already ready, this is equivalent to calling set. If
+        the cooldown is not ready, it will be extended by the provided duration.
 
         Args:
             cooldown (str): The name of the cooldown.
-            seconds (int): The number of seconds to extend this cooldown.
+            seconds (float or int): The number of seconds to extend this cooldown.
+        Returns:
+            float: The number of seconds until the cooldown will be ready again.
         """
-        time_left = self.time_left(cooldown)
-        self.set(cooldown, time_left + (seconds if seconds else 0))
+        time_left = self.time_left(cooldown) + (seconds if seconds else 0)
+        self.set(cooldown, time_left)
+        return max(time_left, 0)
 
     def reset(self, cooldown):
         """
@@ -174,8 +190,7 @@ class CooldownHandler:
         """
         Resets all cooldowns.
         """
-        for cooldown in list(self.data.keys()):
-            del self.data[cooldown]
+        self.data.clear()
 
     def cleanup(self):
         """
@@ -183,6 +198,10 @@ class CooldownHandler:
         requirements small.
         """
         now = time.time()
-        keys = [x for x in self.data.keys() if self.data[x] - now < 0]
+        cooldowns = dict(self.data)
+        keys = [x for x in cooldowns.keys() if cooldowns[x] - now < 0]
         for key in keys:
-            del self.data[key]
+            del cooldowns[key]
+        if keys:
+            self.obj.attributes.add(self.db_attribute, cooldowns)
+            self.data = self.obj.attributes.get(self.db_attribute)
