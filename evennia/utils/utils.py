@@ -395,12 +395,13 @@ def iter_to_str(iterable, endsep=", and", addquote=False):
     """
     if not iterable:
         return ""
+    iterable = list(make_iter(iterable))
     len_iter = len(iterable)
 
     if addquote:
-        iterable = tuple(f'"{val}"' for val in make_iter(iterable))
+        iterable = tuple(f'"{val}"' for val in iterable)
     else:
-        iterable = tuple(str(val) for val in make_iter(iterable))
+        iterable = tuple(str(val) for val in iterable)
 
     if endsep.startswith(","):
         # oxford comma alternative

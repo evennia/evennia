@@ -1248,8 +1248,8 @@ class AttributeHandler:
     def remove(
         self,
         key=None,
-        raise_exception=False,
         category=None,
+        raise_exception=False,
         accessing_obj=None,
         default_access=True,
     ):
@@ -1260,11 +1260,11 @@ class AttributeHandler:
             key (str or list, optional): An Attribute key to remove or a list of keys. If
                 multiple keys, they must all be of the same `category`. If None and
                 category is not given, remove all Attributes.
+            category (str, optional): The category within which to
+                remove the Attribute.
             raise_exception (bool, optional): If set, not finding the
                 Attribute to delete will raise an exception instead of
                 just quietly failing.
-            category (str, optional): The category within which to
-                remove the Attribute.
             accessing_obj (object, optional): An object to check
                 against the `attredit` lock. If not given, the check will
                 be skipped.
