@@ -24,6 +24,7 @@ things you want from here into your game folder and change them there.
 * Clothing (FlutterSprite 2017) - A layered clothing system with
   slots for different types of garments auto-showing in description.
 * Color-markups (Griatch, 2017) - Alternative in-game color markups.
+* Cooldowns (Owllex, 2021) - Command cooldowns per-object as a handler.
 * Custom gametime (Griatch, vlgeoff 2017) - Implements Evennia's
   gametime module but for custom game world-specific calendars.
 * Dice (Griatch 2012) - A fully featured dice rolling system.
@@ -75,7 +76,7 @@ things you want from here into your game folder and change them there.
   objects and events using Python from in-game.
 * Turnbattle (FlutterSprite 2017) - A turn-based combat engine meant
   as a start to build from. Has attack/disengage and turn timeouts,
-  and includes optional expansions for equipment and combat movement, magic 
+  and includes optional expansions for equipment and combat movement, magic
   and ranged combat.
 * Tutorial examples (Griatch 2011, 2015) - A folder of basic
   example objects, commands and scripts.
