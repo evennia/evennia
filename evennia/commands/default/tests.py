@@ -965,15 +965,17 @@ class TestBuilding(CommandTest):
         self.call(
             building.CmdSetAttribute(),
             'Obj/test1="value1"',
-            "Created attribute Obj/test1 = 'value1'",
+            "Created attribute Obj/test1 [category:None] = value1",
         )
         self.call(
             building.CmdSetAttribute(),
             'Obj2/test2="value2"',
-            "Created attribute Obj2/test2 = 'value2'",
+            "Created attribute Obj2/test2 [category:None] = value2",
         )
-        self.call(building.CmdSetAttribute(), "Obj2/test2", "Attribute Obj2/test2 = value2")
-        self.call(building.CmdSetAttribute(), "Obj2/NotFound", "Obj2 has no attribute 'notfound'.")
+        self.call(building.CmdSetAttribute(),
+                  "Obj2/test2", "Attribute Obj2/test2 [category:None] = value2")
+        self.call(building.CmdSetAttribute(),
+                  "Obj2/NotFound", "Attribute Obj2/notfound [category:None] does not exist.")
 
         with patch("evennia.commands.default.building.EvEditor") as mock_ed:
             self.call(building.CmdSetAttribute(), "/edit Obj2/test3")
@@ -982,14 +984,18 @@ class TestBuilding(CommandTest):
         self.call(
             building.CmdSetAttribute(),
             'Obj2/test3="value3"',
-            "Created attribute Obj2/test3 = 'value3'",
+            "Created attribute Obj2/test3 [category:None] = value3",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj2/test3 = ",
-            "Deleted attribute 'test3' (= True) from Obj2.",
+            "Deleted attribute Obj2/test3 [category:None].",
         )
-
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj2/test4:Foo = 'Bar'",
+            "Created attribute Obj2/test4 [category:Foo] = Bar",
+        )
         self.call(
             building.CmdCpAttr(),
             "/copy Obj2/test2 = Obj2/test3",
@@ -1008,123 +1014,162 @@ class TestBuilding(CommandTest):
     def test_nested_attribute_commands(self):
         # list - adding white space proves real parsing
         self.call(
-            building.CmdSetAttribute(), "Obj/test1=[1,2]", "Created attribute Obj/test1 = [1, 2]"
+            building.CmdSetAttribute(),
+            "Obj/test1=[1,2]", "Created attribute Obj/test1 [category:None] = [1, 2]"
         )
-        self.call(building.CmdSetAttribute(), "Obj/test1", "Attribute Obj/test1 = [1, 2]")
-        self.call(building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 1")
-        self.call(building.CmdSetAttribute(), "Obj/test1[1]", "Attribute Obj/test1[1] = 2")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test1",
+                  "Attribute Obj/test1 [category:None] = [1, 2]")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test1[0]",
+                  "Attribute Obj/test1[0] [category:None] = 1")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test1[1]",
+                  "Attribute Obj/test1[1] [category:None] = 2")
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[0] = 99",
-            "Modified attribute Obj/test1 = [99, 2]",
+            "Modified attribute Obj/test1 [category:None] = [99, 2]",
         )
-        self.call(building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 99")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test1[0]",
+            "Attribute Obj/test1[0] [category:None] = 99"
+        )
         # list delete
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[0] =",
-            "Deleted attribute 'test1[0]' (= nested) from Obj.",
+            "Deleted attribute Obj/test1[0] [category:None].",
         )
-        self.call(building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 2")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test1[0]",
+            "Attribute Obj/test1[0] [category:None] = 2"
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[1]",
-            "Obj has no attribute 'test1[1]'. (Nested lookups attempted)",
+            "Attribute Obj/test1[1] [category:None] does not exist. (Nested lookups attempted)",
         )
         # Delete non-existent
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[5] =",
-            "Obj has no attribute 'test1[5]'. (Nested lookups attempted)",
+            "No attribute Obj/test1[5] [category: None] was found to "
+            "delete. (Nested lookups attempted)"
         )
         # Append
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[+] = 42",
-            "Modified attribute Obj/test1 = [2, 42]",
+            "Modified attribute Obj/test1 [category:None] = [2, 42]",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[+0] = -1",
-            "Modified attribute Obj/test1 = [-1, 2, 42]",
+            "Modified attribute Obj/test1 [category:None] = [-1, 2, 42]",
         )
 
         # dict - removing white space proves real parsing
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2={ 'one': 1, 'two': 2 }",
-            "Created attribute Obj/test2 = {'one': 1, 'two': 2}",
+            "Created attribute Obj/test2 [category:None] = {'one': 1, 'two': 2}",
         )
         self.call(
-            building.CmdSetAttribute(), "Obj/test2", "Attribute Obj/test2 = {'one': 1, 'two': 2}"
+            building.CmdSetAttribute(),
+            "Obj/test2", "Attribute Obj/test2 [category:None] = {'one': 1, 'two': 2}"
         )
-        self.call(building.CmdSetAttribute(), "Obj/test2['one']", "Attribute Obj/test2['one'] = 1")
-        self.call(building.CmdSetAttribute(), "Obj/test2['one]", "Attribute Obj/test2['one] = 1")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test2['one']",
+            "Attribute Obj/test2['one'] [category:None] = 1"
+        )
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test2['one]",
+            "Attribute Obj/test2['one] [category:None] = 1"
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['one']=99",
-            "Modified attribute Obj/test2 = {'one': 99, 'two': 2}",
+            "Modified attribute Obj/test2 [category:None] = {'one': 99, 'two': 2}",
         )
-        self.call(building.CmdSetAttribute(), "Obj/test2['one']", "Attribute Obj/test2['one'] = 99")
-        self.call(building.CmdSetAttribute(), "Obj/test2['two']", "Attribute Obj/test2['two'] = 2")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test2['one']",
+            "Attribute Obj/test2['one'] [category:None] = 99"
+        )
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test2['two']",
+            "Attribute Obj/test2['two'] [category:None] = 2"
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[+'three']",
-            "Obj has no attribute 'test2[+'three']'. (Nested lookups attempted)",
+            "Attribute Obj/test2[+'three'] [category:None] does not exist. (Nested lookups attempted)"
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[+'three'] = 3",
-            "Modified attribute Obj/test2 = {'one': 99, 'two': 2, \"+'three'\": 3}",
+            "Modified attribute Obj/test2 [category:None] = {'one': 99, 'two': 2, \"+'three'\": 3}",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[+'three'] =",
-            "Deleted attribute 'test2[+'three']' (= nested) from Obj.",
+            "Deleted attribute Obj/test2[+'three'] [category:None]."
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['three']=3",
-            "Modified attribute Obj/test2 = {'one': 99, 'two': 2, 'three': 3}",
+            "Modified attribute Obj/test2 [category:None] = {'one': 99, 'two': 2, 'three': 3}",
         )
         # Dict delete
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['two'] =",
-            "Deleted attribute 'test2['two']' (= nested) from Obj.",
+            "Deleted attribute Obj/test2['two'] [category:None].",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['two']",
-            "Obj has no attribute 'test2['two']'. (Nested lookups attempted)",
+            "Attribute Obj/test2['two'] [category:None] does not exist. (Nested lookups attempted)"
         )
         self.call(
-            building.CmdSetAttribute(), "Obj/test2", "Attribute Obj/test2 = {'one': 99, 'three': 3}"
+            building.CmdSetAttribute(),
+            "Obj/test2",
+            "Attribute Obj/test2 [category:None] = {'one': 99, 'three': 3}"
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[0]",
-            "Obj has no attribute 'test2[0]'. (Nested lookups attempted)",
+            "Attribute Obj/test2[0] [category:None] does not exist. (Nested lookups attempted)"
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['five'] =",
-            "Obj has no attribute 'test2['five']'. (Nested lookups attempted)",
+            "No attribute Obj/test2['five'] [category: None] "
+            "was found to delete. (Nested lookups attempted)"
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[+]=42",
-            "Modified attribute Obj/test2 = {'one': 99, 'three': 3, '+': 42}",
+            "Modified attribute Obj/test2 [category:None] = {'one': 99, 'three': 3, '+': 42}",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[+1]=33",
-            "Modified attribute Obj/test2 = {'one': 99, 'three': 3, '+': 42, '+1': 33}",
+            "Modified attribute Obj/test2 [category:None] = "
+            "{'one': 99, 'three': 3, '+': 42, '+1': 33}",
         )
 
         # tuple
         self.call(
-            building.CmdSetAttribute(), "Obj/tup = (1,2)", "Created attribute Obj/tup = (1, 2)"
+            building.CmdSetAttribute(),
+            "Obj/tup = (1,2)",
+            "Created attribute Obj/tup [category:None] = (1, 2)"
         )
         self.call(
             building.CmdSetAttribute(),
@@ -1145,54 +1190,85 @@ class TestBuilding(CommandTest):
             building.CmdSetAttribute(),
             # Special case for tuple, could have a better message
             "Obj/tup[1] = ",
-            "Obj has no attribute 'tup[1]'. (Nested lookups attempted)",
+            "No attribute Obj/tup[1] [category: None] "
+            "was found to delete. (Nested lookups attempted)"
         )
 
         # Deaper nesting
         self.call(
             building.CmdSetAttribute(),
             "Obj/test3=[{'one': 1}]",
-            "Created attribute Obj/test3 = [{'one': 1}]",
+            "Created attribute Obj/test3 [category:None] = [{'one': 1}]",
         )
         self.call(
-            building.CmdSetAttribute(), "Obj/test3[0]['one']", "Attribute Obj/test3[0]['one'] = 1"
+            building.CmdSetAttribute(),
+            "Obj/test3[0]['one']",
+            "Attribute Obj/test3[0]['one'] [category:None] = 1"
         )
-        self.call(building.CmdSetAttribute(), "Obj/test3[0]", "Attribute Obj/test3[0] = {'one': 1}")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test3[0]",
+            "Attribute Obj/test3[0] [category:None] = {'one': 1}"
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test3[0]['one'] =",
-            "Deleted attribute 'test3[0]['one']' (= nested) from Obj.",
+            "Deleted attribute Obj/test3[0]['one'] [category:None]."
         )
-        self.call(building.CmdSetAttribute(), "Obj/test3[0]", "Attribute Obj/test3[0] = {}")
-        self.call(building.CmdSetAttribute(), "Obj/test3", "Attribute Obj/test3 = [{}]")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test3[0]",
+            "Attribute Obj/test3[0] [category:None] = {}")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test3",
+            "Attribute Obj/test3 [category:None] = [{}]"
+        )
 
         # Naughty keys
         self.call(
             building.CmdSetAttribute(),
             "Obj/test4[0]='foo'",
-            "Created attribute Obj/test4[0] = 'foo'",
+            "Created attribute Obj/test4[0] [category:None] = foo",
         )
-        self.call(building.CmdSetAttribute(), "Obj/test4[0]", "Attribute Obj/test4[0] = foo")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test4[0]",
+            "Attribute Obj/test4[0] [category:None] = foo")
         self.call(
             building.CmdSetAttribute(),
             "Obj/test4=[{'one': 1}]",
-            "Created attribute Obj/test4 = [{'one': 1}]",
+            "Created attribute Obj/test4 [category:None] = [{'one': 1}]",
         )
-        self.call(
-            building.CmdSetAttribute(), "Obj/test4[0]['one']", "Attribute Obj/test4[0]['one'] = 1"
-        )
-        # Prefer nested items
-        self.call(building.CmdSetAttribute(), "Obj/test4[0]", "Attribute Obj/test4[0] = {'one': 1}")
-        self.call(
-            building.CmdSetAttribute(), "Obj/test4[0]['one']", "Attribute Obj/test4[0]['one'] = 1"
-        )
-        # Restored access
-        self.call(building.CmdWipe(), "Obj/test4", "Wiped attributes test4 on Obj.")
-        self.call(building.CmdSetAttribute(), "Obj/test4[0]", "Attribute Obj/test4[0] = foo")
         self.call(
             building.CmdSetAttribute(),
             "Obj/test4[0]['one']",
-            "Obj has no attribute 'test4[0]['one']'.",
+            "Attribute Obj/test4[0]['one'] [category:None] = 1"
+        )
+        # Prefer nested items
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test4[0]",
+            "Attribute Obj/test4[0] [category:None] = {'one': 1}"
+        )
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test4[0]['one']",
+            "Attribute Obj/test4[0]['one'] [category:None] = 1"
+        )
+        # Restored access
+        self.call(
+            building.CmdWipe(),
+            "Obj/test4",
+            "Wiped attributes test4 on Obj.")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test4[0]",
+            "Attribute Obj/test4[0] [category:None] = foo")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test4[0]['one']",
+            "Attribute Obj/test4[0]['one'] [category:None] does not exist. (Nested lookups attempted)"
         )
 
     def test_split_nested_attr(self):
@@ -1864,7 +1940,7 @@ class TestBuilding(CommandTest):
         )
 
 
-
+import evennia.commands.default.comms as cmd_comms  # noqa
 from evennia.utils.create import create_channel  # noqa
 
 class TestCommsChannel(CommandTest):
@@ -1878,7 +1954,7 @@ class TestCommsChannel(CommandTest):
             key="testchannel",
             desc="A test channel")
         self.channel.connect(self.char1)
-        self.cmdchannel = comms.CmdChannel
+        self.cmdchannel = cmd_comms.CmdChannel
         self.cmdchannel.account_caller = False
 
     def tearDown(self):

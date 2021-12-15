@@ -126,6 +126,8 @@ Up requirements to Django 3.2+, Twisted 21+
   since their work is now fully handled by the single `channel` command.
 - Expand `examine` command's code to much more extensible and modular. Show
   attribute categories and value types (when not strings).
+- `AttributeHandler.remove(key, return_exception=False, category=None, ...)` changed
+  to `.remove(key, category=None, return_exception=False, ...)` for consistency.
 
 ### Evennia 0.9.5 (2019-2020)
 
@@ -216,6 +218,7 @@ without arguments starts a full interactive Python console.
 - Add `PermissionHandler.check` method for straight string perm-checks without needing lockstrings.
 - Add `evennia.utils.utils.strip_unsafe_input` for removing html/newlines/tags from user input. The
   `INPUT_CLEANUP_BYPASS_PERMISSIONS` is a list of perms that bypass this safety stripping.
+- Make default `set` and `examine` commands aware of Attribute categories.
 
 
 ## Evennia 0.9 (2018-2019)

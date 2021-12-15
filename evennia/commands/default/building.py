@@ -1577,10 +1577,10 @@ class CmdSetAttribute(ObjManipCommand):
     set attribute on an object or account
 
     Usage:
-      set <obj>/<attr> = <value>
-      set <obj>/<attr> =
-      set <obj>/<attr>
-      set *<account>/<attr> = <value>
+      set[/switch] <obj>/<attr>[:category] = <value>
+      set[/switch] <obj>/<attr>[:category] =                  # delete attribute
+      set[/switch] <obj>/<attr>[:category]                    # view attribute
+      set[/switch] *<account>/<attr>[:category] = <value>
 
     Switch:
         edit: Open the line editor (string values only)
@@ -1631,7 +1631,7 @@ class CmdSetAttribute(ObjManipCommand):
         """
         return True
 
-    def check_attr(self, obj, attr_name):
+    def check_attr(self, obj, attr_name, category):
         """
         This may be overridden by subclasses in case restrictions need to be
         placed on what attributes can be set by who beyond the normal lock.
@@ -1688,7 +1688,7 @@ class CmdSetAttribute(ObjManipCommand):
                 return self.not_found
         return result
 
-    def view_attr(self, obj, attr):
+    def view_attr(self, obj, attr, category):
         """
         Look up the value of an attribute and return a string displaying it.
         """
@@ -1699,45 +1699,49 @@ class CmdSetAttribute(ObjManipCommand):
                 val = obj.attributes.get(key)
                 val = self.do_nested_lookup(val, *nested_keys)
                 if val is not self.not_found:
-                    return "\nAttribute %s/%s = %s" % (obj.name, attr, val)
-        error = "\n%s has no attribute '%s'." % (obj.name, attr)
+                    return f"\nAttribute {obj.name}/|w{attr}|n [category:{category}] = {val}"
+        error = f"\nAttribute {obj.name}/|w{attr} [category:{category}] does not exist."
         if nested:
             error += " (Nested lookups attempted)"
         return error
 
-    def rm_attr(self, obj, attr):
+    def rm_attr(self, obj, attr, category):
         """
         Remove an attribute from the object, or a nested data structure, and report back.
         """
         nested = False
         for key, nested_keys in self.split_nested_attr(attr):
             nested = True
-            if obj.attributes.has(key):
+            if obj.attributes.has(key, category):
                 if nested_keys:
                     del_key = nested_keys[-1]
-                    val = obj.attributes.get(key)
+                    val = obj.attributes.get(key, category=category)
                     deep = self.do_nested_lookup(val, *nested_keys[:-1])
                     if deep is not self.not_found:
                         try:
                             del deep[del_key]
                         except (IndexError, KeyError, TypeError):
                             continue
-                    return "\nDeleted attribute '%s' (= nested) from %s." % (attr, obj.name)
+                    return f"\nDeleted attribute {obj.name}/|w{attr}|n [category:{category}]."
                 else:
-                    exists = obj.attributes.has(key)
-                    obj.attributes.remove(attr)
-                    return "\nDeleted attribute '%s' (= %s) from %s." % (attr, exists, obj.name)
-        error = "\n%s has no attribute '%s'." % (obj.name, attr)
+                    exists = obj.attributes.has(key, category)
+                    if exists:
+                        obj.attributes.remove(attr, category=category)
+                        return f"\nDeleted attribute {obj.name}/|w{attr}|n [category:{category}]."
+                    else:
+                        return (f"\nNo attribute {obj.name}/|w{attr}|n [category: {category}] "
+                                "was found to delete.")
+        error = f"\nNo attribute {obj.name}/|w{attr}|n [category: {category}] was found to delete."
         if nested:
             error += " (Nested lookups attempted)"
         return error
 
-    def set_attr(self, obj, attr, value):
+    def set_attr(self, obj, attr, value, category):
         done = False
         for key, nested_keys in self.split_nested_attr(attr):
-            if obj.attributes.has(key) and nested_keys:
+            if obj.attributes.has(key, category) and nested_keys:
                 acc_key = nested_keys[-1]
-                lookup_value = obj.attributes.get(key)
+                lookup_value = obj.attributes.get(key, category)
                 deep = self.do_nested_lookup(lookup_value, *nested_keys[:-1])
                 if deep is not self.not_found:
                     # To support appending and inserting to lists
@@ -1764,7 +1768,7 @@ class CmdSetAttribute(ObjManipCommand):
                         deep[acc_key] = value
                     except TypeError as err:
                         # Tuples can't be modified
-                        return "\n%s - %s" % (err, deep)
+                        return f"\n{err} - {deep}"
 
                     value = lookup_value
                     attr = key
@@ -1774,8 +1778,8 @@ class CmdSetAttribute(ObjManipCommand):
         verb = "Modified" if obj.attributes.has(attr) else "Created"
         try:
             if not done:
-                obj.attributes.add(attr, value)
-            return "\n%s attribute %s/%s = %s" % (verb, obj.name, attr, repr(value))
+                obj.attributes.add(attr, value, category)
+            return f"\n{verb} attribute {obj.name}/|w{attr}|n [category:{category}] = {value}"
         except SyntaxError:
             # this means literal_eval tried to parse a faulty string
             return (
@@ -1861,13 +1865,14 @@ class CmdSetAttribute(ObjManipCommand):
 
         caller = self.caller
         if not self.args:
-            caller.msg("Usage: set obj/attr = value. Use empty value to clear.")
+            caller.msg("Usage: set obj/attr[:category] = value. Use empty value to clear.")
             return
 
         # get values prepared by the parser
         value = self.rhs
         objname = self.lhs_objattr[0]["name"]
         attrs = self.lhs_objattr[0]["attrs"]
+        category = self.lhs_objs[0].get("option")  # None if unset
 
         obj = self.search_for_obj(objname)
         if not obj:
@@ -1897,11 +1902,11 @@ class CmdSetAttribute(ObjManipCommand):
             if self.rhs is None:
                 # no = means we inspect the attribute(s)
                 if not attrs:
-                    attrs = [attr.key for attr in obj.attributes.all()]
+                    attrs = [attr.key for attr in obj.attributes.get(category=None)]
                 for attr in attrs:
-                    if not self.check_attr(obj, attr):
+                    if not self.check_attr(obj, attr, category):
                         continue
-                    result.append(self.view_attr(obj, attr))
+                    result.append(self.view_attr(obj, attr, category))
                 # we view it without parsing markup.
                 self.caller.msg("".join(result).strip(), options={"raw": True})
                 return
@@ -1911,19 +1916,19 @@ class CmdSetAttribute(ObjManipCommand):
                     caller.msg("You don't have permission to edit %s." % obj.key)
                     return
                 for attr in attrs:
-                    if not self.check_attr(obj, attr):
+                    if not self.check_attr(obj, attr, category):
                         continue
-                    result.append(self.rm_attr(obj, attr))
+                    result.append(self.rm_attr(obj, attr, category))
         else:
             # setting attribute(s). Make sure to convert to real Python type before saving.
             if not (obj.access(self.caller, "control") or obj.access(self.caller, "edit")):
                 caller.msg("You don't have permission to edit %s." % obj.key)
                 return
             for attr in attrs:
-                if not self.check_attr(obj, attr):
+                if not self.check_attr(obj, attr, category):
                     continue
                 value = _convert_from_string(self, value)
-                result.append(self.set_attr(obj, attr, value))
+                result.append(self.set_attr(obj, attr, value, category))
         # send feedback
         caller.msg("".join(result).strip("\n"))
 
