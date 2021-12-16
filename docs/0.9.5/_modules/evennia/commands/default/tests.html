@@ -1008,15 +1008,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s1">&#39;Obj/test1=&quot;value1&quot;&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Created attribute Obj/test1 = &#39;value1&#39;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Created attribute Obj/test1 [category:None] = value1&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s1">&#39;Obj2/test2=&quot;value2&quot;&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Created attribute Obj2/test2 = &#39;value2&#39;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Created attribute Obj2/test2 [category:None] = value2&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj2/test2&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj2/test2 = value2&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj2/NotFound&quot;</span><span class="p">,</span> <span class="s2">&quot;Obj2 has no attribute &#39;notfound&#39;.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+                  <span class="s2">&quot;Obj2/test2&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj2/test2 [category:None] = value2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+                  <span class="s2">&quot;Obj2/NotFound&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj2/notfound [category:None] does not exist.&quot;</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.default.building.EvEditor&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_ed</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;/edit Obj2/test3&quot;</span><span class="p">)</span>
@@ -1025,14 +1027,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s1">&#39;Obj2/test3=&quot;value3&quot;&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Created attribute Obj2/test3 = &#39;value3&#39;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Created attribute Obj2/test3 [category:None] = value3&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj2/test3 = &quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Deleted attribute &#39;test3&#39; (= True) from Obj2.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Deleted attribute Obj2/test3 [category:None].&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj2/test4:Foo = &#39;Bar&#39;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Created attribute Obj2/test4 [category:Foo] = Bar&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdCpAttr</span><span class="p">(),</span>
             <span class="s2">&quot;/copy Obj2/test2 = Obj2/test3&quot;</span><span class="p">,</span>
@@ -1051,123 +1057,162 @@
 <div class="viewcode-block" id="TestBuilding.test_nested_attribute_commands"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_nested_attribute_commands">[docs]</a>    <span class="k">def</span> <span class="nf">test_nested_attribute_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># list - adding white space proves real parsing</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test1=[1,2]&quot;</span><span class="p">,</span> <span class="s2">&quot;Created attribute Obj/test1 = [1, 2]&quot;</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test1=[1,2]&quot;</span><span class="p">,</span> <span class="s2">&quot;Created attribute Obj/test1 [category:None] = [1, 2]&quot;</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test1&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test1 = [1, 2]&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test1[0]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test1[0] = 1&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test1[1]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test1[1] = 2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+                  <span class="s2">&quot;Obj/test1&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Attribute Obj/test1 [category:None] = [1, 2]&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+                  <span class="s2">&quot;Obj/test1[0]&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Attribute Obj/test1[0] [category:None] = 1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+                  <span class="s2">&quot;Obj/test1[1]&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Attribute Obj/test1[1] [category:None] = 2&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test1[0] = 99&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Modified attribute Obj/test1 = [99, 2]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Modified attribute Obj/test1 [category:None] = [99, 2]&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test1[0]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test1[0] = 99&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test1[0]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test1[0] [category:None] = 99&quot;</span>
+        <span class="p">)</span>
         <span class="c1"># list delete</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test1[0] =&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Deleted attribute &#39;test1[0]&#39; (= nested) from Obj.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Deleted attribute Obj/test1[0] [category:None].&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test1[0]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test1[0] = 2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test1[0]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test1[0] [category:None] = 2&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test1[1]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Obj has no attribute &#39;test1[1]&#39;. (Nested lookups attempted)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test1[1] [category:None] does not exist. (Nested lookups attempted)&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># Delete non-existent</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test1[5] =&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Obj has no attribute &#39;test1[5]&#39;. (Nested lookups attempted)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;No attribute Obj/test1[5] [category: None] was found to &quot;</span>
+            <span class="s2">&quot;delete. (Nested lookups attempted)&quot;</span>
         <span class="p">)</span>
         <span class="c1"># Append</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test1[+] = 42&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Modified attribute Obj/test1 = [2, 42]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Modified attribute Obj/test1 [category:None] = [2, 42]&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test1[+0] = -1&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Modified attribute Obj/test1 = [-1, 2, 42]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Modified attribute Obj/test1 [category:None] = [-1, 2, 42]&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># dict - removing white space proves real parsing</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2={ &#39;one&#39;: 1, &#39;two&#39;: 2 }&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Created attribute Obj/test2 = {&#39;one&#39;: 1, &#39;two&#39;: 2}&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Created attribute Obj/test2 [category:None] = {&#39;one&#39;: 1, &#39;two&#39;: 2}&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test2&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test2 = {&#39;one&#39;: 1, &#39;two&#39;: 2}&quot;</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test2&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test2 [category:None] = {&#39;one&#39;: 1, &#39;two&#39;: 2}&quot;</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test2[&#39;one&#39;]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test2[&#39;one&#39;] = 1&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test2[&#39;one]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test2[&#39;one] = 1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test2[&#39;one&#39;]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test2[&#39;one&#39;] [category:None] = 1&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test2[&#39;one]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test2[&#39;one] [category:None] = 1&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[&#39;one&#39;]=99&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Modified attribute Obj/test2 = {&#39;one&#39;: 99, &#39;two&#39;: 2}&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Modified attribute Obj/test2 [category:None] = {&#39;one&#39;: 99, &#39;two&#39;: 2}&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test2[&#39;one&#39;]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test2[&#39;one&#39;] = 99&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test2[&#39;two&#39;]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test2[&#39;two&#39;] = 2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test2[&#39;one&#39;]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test2[&#39;one&#39;] [category:None] = 99&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test2[&#39;two&#39;]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test2[&#39;two&#39;] [category:None] = 2&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[+&#39;three&#39;]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Obj has no attribute &#39;test2[+&#39;three&#39;]&#39;. (Nested lookups attempted)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test2[+&#39;three&#39;] [category:None] does not exist. (Nested lookups attempted)&quot;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[+&#39;three&#39;] = 3&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Modified attribute Obj/test2 = {&#39;one&#39;: 99, &#39;two&#39;: 2, </span><span class="se">\&quot;</span><span class="s2">+&#39;three&#39;</span><span class="se">\&quot;</span><span class="s2">: 3}&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Modified attribute Obj/test2 [category:None] = {&#39;one&#39;: 99, &#39;two&#39;: 2, </span><span class="se">\&quot;</span><span class="s2">+&#39;three&#39;</span><span class="se">\&quot;</span><span class="s2">: 3}&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[+&#39;three&#39;] =&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Deleted attribute &#39;test2[+&#39;three&#39;]&#39; (= nested) from Obj.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Deleted attribute Obj/test2[+&#39;three&#39;] [category:None].&quot;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[&#39;three&#39;]=3&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Modified attribute Obj/test2 = {&#39;one&#39;: 99, &#39;two&#39;: 2, &#39;three&#39;: 3}&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Modified attribute Obj/test2 [category:None] = {&#39;one&#39;: 99, &#39;two&#39;: 2, &#39;three&#39;: 3}&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># Dict delete</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[&#39;two&#39;] =&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Deleted attribute &#39;test2[&#39;two&#39;]&#39; (= nested) from Obj.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Deleted attribute Obj/test2[&#39;two&#39;] [category:None].&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[&#39;two&#39;]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Obj has no attribute &#39;test2[&#39;two&#39;]&#39;. (Nested lookups attempted)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test2[&#39;two&#39;] [category:None] does not exist. (Nested lookups attempted)&quot;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test2&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test2 = {&#39;one&#39;: 99, &#39;three&#39;: 3}&quot;</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test2&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test2 [category:None] = {&#39;one&#39;: 99, &#39;three&#39;: 3}&quot;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[0]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Obj has no attribute &#39;test2[0]&#39;. (Nested lookups attempted)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test2[0] [category:None] does not exist. (Nested lookups attempted)&quot;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[&#39;five&#39;] =&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Obj has no attribute &#39;test2[&#39;five&#39;]&#39;. (Nested lookups attempted)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;No attribute Obj/test2[&#39;five&#39;] [category: None] &quot;</span>
+            <span class="s2">&quot;was found to delete. (Nested lookups attempted)&quot;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[+]=42&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Modified attribute Obj/test2 = {&#39;one&#39;: 99, &#39;three&#39;: 3, &#39;+&#39;: 42}&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Modified attribute Obj/test2 [category:None] = {&#39;one&#39;: 99, &#39;three&#39;: 3, &#39;+&#39;: 42}&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[+1]=33&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Modified attribute Obj/test2 = {&#39;one&#39;: 99, &#39;three&#39;: 3, &#39;+&#39;: 42, &#39;+1&#39;: 33}&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Modified attribute Obj/test2 [category:None] = &quot;</span>
+            <span class="s2">&quot;{&#39;one&#39;: 99, &#39;three&#39;: 3, &#39;+&#39;: 42, &#39;+1&#39;: 33}&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># tuple</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/tup = (1,2)&quot;</span><span class="p">,</span> <span class="s2">&quot;Created attribute Obj/tup = (1, 2)&quot;</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/tup = (1,2)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Created attribute Obj/tup [category:None] = (1, 2)&quot;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
@@ -1188,54 +1233,85 @@
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="c1"># Special case for tuple, could have a better message</span>
             <span class="s2">&quot;Obj/tup[1] = &quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Obj has no attribute &#39;tup[1]&#39;. (Nested lookups attempted)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;No attribute Obj/tup[1] [category: None] &quot;</span>
+            <span class="s2">&quot;was found to delete. (Nested lookups attempted)&quot;</span>
         <span class="p">)</span>
 
         <span class="c1"># Deaper nesting</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test3=[{&#39;one&#39;: 1}]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Created attribute Obj/test3 = [{&#39;one&#39;: 1}]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Created attribute Obj/test3 [category:None] = [{&#39;one&#39;: 1}]&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test3[0][&#39;one&#39;]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test3[0][&#39;one&#39;] = 1&quot;</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test3[0][&#39;one&#39;]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test3[0][&#39;one&#39;] [category:None] = 1&quot;</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test3[0]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test3[0] = {&#39;one&#39;: 1}&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test3[0]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test3[0] [category:None] = {&#39;one&#39;: 1}&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test3[0][&#39;one&#39;] =&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Deleted attribute &#39;test3[0][&#39;one&#39;]&#39; (= nested) from Obj.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Deleted attribute Obj/test3[0][&#39;one&#39;] [category:None].&quot;</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test3[0]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test3[0] = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test3&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test3 = [</span><span class="si">{}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test3[0]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test3[0] [category:None] = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test3 [category:None] = [</span><span class="si">{}</span><span class="s2">]&quot;</span>
+        <span class="p">)</span>
 
         <span class="c1"># Naughty keys</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test4[0]=&#39;foo&#39;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Created attribute Obj/test4[0] = &#39;foo&#39;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Created attribute Obj/test4[0] [category:None] = foo&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test4[0]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test4[0] = foo&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test4[0]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test4[0] [category:None] = foo&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test4=[{&#39;one&#39;: 1}]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Created attribute Obj/test4 = [{&#39;one&#39;: 1}]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Created attribute Obj/test4 [category:None] = [{&#39;one&#39;: 1}]&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test4[0][&#39;one&#39;]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test4[0][&#39;one&#39;] = 1&quot;</span>
-        <span class="p">)</span>
-        <span class="c1"># Prefer nested items</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test4[0]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test4[0] = {&#39;one&#39;: 1}&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test4[0][&#39;one&#39;]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test4[0][&#39;one&#39;] = 1&quot;</span>
-        <span class="p">)</span>
-        <span class="c1"># Restored access</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdWipe</span><span class="p">(),</span> <span class="s2">&quot;Obj/test4&quot;</span><span class="p">,</span> <span class="s2">&quot;Wiped attributes test4 on Obj.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test4[0]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test4[0] = foo&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test4[0][&#39;one&#39;]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Obj has no attribute &#39;test4[0][&#39;one&#39;]&#39;.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test4[0][&#39;one&#39;] [category:None] = 1&quot;</span>
+        <span class="p">)</span>
+        <span class="c1"># Prefer nested items</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test4[0]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test4[0] [category:None] = {&#39;one&#39;: 1}&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test4[0][&#39;one&#39;]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test4[0][&#39;one&#39;] [category:None] = 1&quot;</span>
+        <span class="p">)</span>
+        <span class="c1"># Restored access</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdWipe</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test4&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Wiped attributes test4 on Obj.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test4[0]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test4[0] [category:None] = foo&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test4[0][&#39;one&#39;]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test4[0][&#39;one&#39;] [category:None] does not exist. (Nested lookups attempted)&quot;</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_split_nested_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_split_nested_attr">[docs]</a>    <span class="k">def</span> <span class="nf">test_split_nested_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1907,7 +1983,7 @@
         <span class="p">)</span></div></div>
 
 
-
+<span class="kn">import</span> <span class="nn">evennia.commands.default.comms</span> <span class="k">as</span> <span class="nn">cmd_comms</span>  <span class="c1"># noqa</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_channel</span>  <span class="c1"># noqa</span>
 
 <div class="viewcode-block" id="TestCommsChannel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel">[docs]</a><span class="k">class</span> <span class="nc">TestCommsChannel</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
@@ -1921,7 +1997,7 @@
             <span class="n">key</span><span class="o">=</span><span class="s2">&quot;testchannel&quot;</span><span class="p">,</span>
             <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;A test channel&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span> <span class="o">=</span> <span class="n">comms</span><span class="o">.</span><span class="n">CmdChannel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span> <span class="o">=</span> <span class="n">cmd_comms</span><span class="o">.</span><span class="n">CmdChannel</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="o">.</span><span class="n">account_caller</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.tearDown"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

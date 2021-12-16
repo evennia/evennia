@@ -1291,8 +1291,8 @@
 <div class="viewcode-block" id="AttributeHandler.remove"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">accessing_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">default_access</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
@@ -1303,11 +1303,11 @@
 <span class="sd">            key (str or list, optional): An Attribute key to remove or a list of keys. If</span>
 <span class="sd">                multiple keys, they must all be of the same `category`. If None and</span>
 <span class="sd">                category is not given, remove all Attributes.</span>
+<span class="sd">            category (str, optional): The category within which to</span>
+<span class="sd">                remove the Attribute.</span>
 <span class="sd">            raise_exception (bool, optional): If set, not finding the</span>
 <span class="sd">                Attribute to delete will raise an exception instead of</span>
 <span class="sd">                just quietly failing.</span>
-<span class="sd">            category (str, optional): The category within which to</span>
-<span class="sd">                remove the Attribute.</span>
 <span class="sd">            accessing_obj (object, optional): An object to check</span>
 <span class="sd">                against the `attredit` lock. If not given, the check will</span>
 <span class="sd">                be skipped.</span>
