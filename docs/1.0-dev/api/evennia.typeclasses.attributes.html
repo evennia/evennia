@@ -1142,7 +1142,7 @@ to the database.</p>
 
 <dl class="py method">
 <dt id="evennia.typeclasses.attributes.AttributeHandler.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">raise_exception</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">accessing_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">default_access</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeHandler.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">raise_exception</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">accessing_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">default_access</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeHandler.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove attribute or a list of attributes from object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1150,11 +1150,11 @@ to the database.</p>
 <li><p><strong>key</strong> (<em>str</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – An Attribute key to remove or a list of keys. If
 multiple keys, they must all be of the same <strong>category</strong>. If None and
 category is not given, remove all Attributes.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The category within which to
+remove the Attribute.</p></li>
 <li><p><strong>raise_exception</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, not finding the
 Attribute to delete will raise an exception instead of
 just quietly failing.</p></li>
-<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The category within which to
-remove the Attribute.</p></li>
 <li><p><strong>accessing_obj</strong> (<em>object</em><em>, </em><em>optional</em>) – An object to check
 against the <strong>attredit</strong> lock. If not given, the check will
 be skipped.</p></li>

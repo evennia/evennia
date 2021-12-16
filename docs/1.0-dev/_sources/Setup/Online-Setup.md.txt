@@ -384,7 +384,7 @@ Evennia users:
 
 | Hosting name       |  Type          |  Lowest price  |  Comments |
 |---|---| ---| --- |
-| [silvren.com][1]   | Shell account | Free for MU*  | Private hobby provider so don't assume backups or expect immediate support. To ask for an account,connect with a MUD client to iweb.localecho.net, port 4201 and ask for "Jarin". |
+| [silvren.com][1]   | Shell account | Free for MU*  | Private hobby provider so don't assume backups or expect immediate support. To ask for an account, connect with a MUD client to rostdev.mushpark.com, port 4201 and ask for "Jarin". |
 | [Digital Ocean][2] | VPS | $5/month | You can get a $50 credit if you use the referral link https://m.do.co/c/8f64fec2670c - if you do, once you've had it long enough to have paid $25 we will get that as a referral bonus to help Evennia development.|
 | [Amazon Web services][3] | Cloud | ~$5/month / on-demand | Free Tier first 12 months. Regions available around the globe.|
 | [Amazon Lightsail][9] | Cloud | $5/month | Free first month. AWS's "fixed cost" offering.|
