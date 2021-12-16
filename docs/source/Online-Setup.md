@@ -101,11 +101,11 @@ Read on for a description of the individual settings.
 ### Telnet
 
 ```python
-# Required. Change to whichever outgoing Telnet port(s) 
+# Required. Change to whichever outgoing Telnet port(s)
 # you are allowed to use on your host.
 TELNET_PORTS = [4000]
-# Optional for security. Restrict which telnet 
-# interfaces we should accept. Should be set to your 
+# Optional for security. Restrict which telnet
+# interfaces we should accept. Should be set to your
 # outward-facing IP address(es). Default is ´0.0.0.0´
 # which accepts all interfaces.
 TELNET_INTERFACES = ['0.0.0.0']
@@ -115,22 +115,22 @@ The `TELNET_*` settings are the most important ones for getting a traditional ba
 IP addresses you have available depends on your server hosting solution (see the next sections).
 Some hosts will restrict which ports you are allowed you use so make sure to check.
 
-### Web server 
+### Web server
 
 ```python
-# Required. This is a list of tuples 
+# Required. This is a list of tuples
 # (outgoing_port, internal_port). Only the outgoing
-# port should be open to the world! 
+# port should be open to the world!
 # set outgoing port to 80 if you want to run Evennia
 # as the only web server on your machine (if available).
 WEBSERVER_PORTS = [(4001, 4005)]
-# Optional for security. Change this to the IP your 
-# server can be reached at (normally the same 
+# Optional for security. Change this to the IP your
+# server can be reached at (normally the same
 # as TELNET_INTERFACES)
 WEBSERVER_INTERFACES = ['0.0.0.0']
-# Optional for security. Protects against 
-# man-in-the-middle attacks. Change  it to your server's 
-# IP address or URL when you run a production server. 
+# Optional for security. Protects against
+# man-in-the-middle attacks. Change  it to your server's
+# IP address or URL when you run a production server.
 ALLOWED_HOSTS = ['*']
 ```
 
@@ -147,14 +147,14 @@ change the outgoing port unless the default internal port is clashing with some 
 ```python
 # Required. Change this to the main IP address of your server.
 WEBSOCKET_CLIENT_INTERFACE = '0.0.0.0'
-# Optional and needed only if using a proxy or similar. Change 
-# to the IP or address where the client can reach 
+# Optional and needed only if using a proxy or similar. Change
+# to the IP or address where the client can reach
 # your server. The ws:// part is then required. If not given, the client
-# will use its host location.  
+# will use its host location.
 WEBSOCKET_CLIENT_URL = ""
 # Required. Change to a free port for the websocket client to reach
-# the server on. This will be automatically appended 
-# to WEBSOCKET_CLIENT_URL by the web client.  
+# the server on. This will be automatically appended
+# to WEBSOCKET_CLIENT_URL by the web client.
 WEBSOCKET_CLIENT_PORT = 4002
 ```
 
@@ -171,14 +171,14 @@ SSL_PORTS = [4003]
 SSL_INTERFACES = ['0.0.0.0']
 # Optional public facing. Only if you allow SSH connections (off by default).
 SSH_PORTS = [4004]
-SSH_INTERFACES = ['0.0.0.0'] 
+SSH_INTERFACES = ['0.0.0.0']
 # Required private. You should only change this if there is a clash
-# with other services on your host. Should NOT be open to the 
-# outside world. 
+# with other services on your host. Should NOT be open to the
+# outside world.
 AMP_PORT = 4006
 ```
 
-The `AMP_PORT` is required to work, since this is the internal port linking Evennia's 
+The `AMP_PORT` is required to work, since this is the internal port linking Evennia's
 [Server and Portal](../Components/Portal-And-Server.md) components together. The other ports are encrypted ports that may be
 useful for custom protocols but are otherwise not used.
 
@@ -198,9 +198,9 @@ drum up interest for your game and also shows people that Evennia is being used.
 even if you are just starting development - if you don't give any telnet/web address it will appear
 as _Not yet public_ and just be a teaser. If so, pick _pre-alpha_ as the development status.
 
-To register, stand in your game dir, run 
+To register, stand in your game dir, run
 
-    evennia connections 
+    evennia connections
 
 and follow the instructions. See the [Game index page](./Evennia-Game-Index.md) for more details.
 
@@ -384,7 +384,7 @@ Evennia users:
 
 | Hosting name       |  Type          |  Lowest price  |  Comments |
 |---|---| ---| --- |
-| [silvren.com][1]   | Shell account | Free for MU*  | Private hobby provider so don't assume backups or expect immediate support. To ask for an account,connect with a MUD client to iweb.localecho.net, port 4201 and ask for "Jarin". |
+| [silvren.com][1]   | Shell account | Free for MU*  | Private hobby provider so don't assume backups or expect immediate support. To ask for an account,connect with a MUD client to rostdev.mushpark.com, port 4201 and ask for "Jarin". |
 | [Digital Ocean][2] | VPS | $5/month | You can get a $50 credit if you use the referral link https://m.do.co/c/8f64fec2670c - if you do, once you've had it long enough to have paid $25 we will get that as a referral bonus to help Evennia development.|
 | [Amazon Web services][3] | Cloud | ~$5/month / on-demand | Free Tier first 12 months. Regions available around the globe.|
 | [Amazon Lightsail][9] | Cloud | $5/month | Free first month. AWS's new "fixed cost" offering.|
@@ -396,7 +396,7 @@ Evennia users:
 | [Prgmr][10] | VPS | $5/month | 1 month free with a year prepay. You likely want some experience with servers with this option as they don't have a lot of support.|
 | [Linode][11] | Cloud | $5/month / on-demand | Multiple regions. Smallest option provides 1GB RAM|
 
-*Please help us expand this list.* 
+*Please help us expand this list.*
 
 [1]: https://silvren.com
 [2]: https://www.digitalocean.com/pricing
