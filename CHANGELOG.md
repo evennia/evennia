@@ -128,6 +128,8 @@ Up requirements to Django 3.2+, Twisted 21+
   attribute categories and value types (when not strings).
 - `AttributeHandler.remove(key, return_exception=False, category=None, ...)` changed
   to `.remove(key, category=None, return_exception=False, ...)` for consistency.
+- New `command cooldown` contrib for making it easier to manage commands using
+  dynamic cooldowns between uses (owllex)
 
 ### Evennia 0.9.5 (2019-2020)
 
