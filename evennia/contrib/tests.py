@@ -7,7 +7,6 @@ Testing suite for contrib folder
 import time
 import datetime
 from anything import Anything
-from django.test import override_settings
 from evennia.commands.default.tests import CommandTest
 from evennia.utils.test_resources import EvenniaTest, mockdelay, mockdeferLater
 from mock import Mock, patch

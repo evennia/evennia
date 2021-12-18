@@ -98,7 +98,7 @@ class RandomStringGeneratorScript(DefaultScript):
         self.db.generated = {}
 
 
-class RandomStringGenerator(object):
+class RandomStringGenerator:
 
     """
     A generator class to generate pseudo-random strings with a rule.
@@ -156,7 +156,7 @@ class RandomStringGenerator(object):
             self._find_elements(regex)
 
     def __repr__(self):
-        return "<evennia.contrib.random_string_generator.RandomStringGenerator for {}>".format(
+        return "<evennia.contrib.tutorials.random_string_generator.RandomStringGenerator for {}>".format(
             self.name
         )
 
@@ -168,7 +168,8 @@ class RandomStringGenerator(object):
         try:
             script = ScriptDB.objects.get(db_key="generator_script")
         except ScriptDB.DoesNotExist:
-            script = create_script("contrib.random_string_generator.RandomStringGeneratorScript")
+            script = create_script(
+                "contrib.tutorials.random_string_generator.RandomStringGeneratorScript")
 
         type(self).script = script
         return script

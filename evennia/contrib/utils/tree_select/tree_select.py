@@ -155,6 +155,7 @@ Included in this module is a sample menu and function which will let a player ch
 of their name - feel free to mess with it to get a feel for how this system works by importing
 this module in your game's default_cmdsets.py module and adding CmdNameColor to your default
 character's command set.
+
 """
 
 from evennia.utils import evmenu

@@ -12,8 +12,8 @@ is submitted, the form's data is submitted as a dictionary to any callable of
 your choice.
 
 The function that initializes the fillable form menu is fairly simple, and
-includes the caller, the template for the form, and the callback(caller, result) to which the form
-data will be sent to upon submission.
+includes the caller, the template for the form, and the callback(caller, result)
+to which the form data will be sent to upon submission.
 
     init_fill_field(formtemplate, caller, formcallback)
 

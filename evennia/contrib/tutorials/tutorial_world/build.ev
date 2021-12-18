@@ -16,7 +16,7 @@
 # To load this file, place yourself in Limbo (room #2) and load the
 # file as user #1 with
 #
-#     @batchcommand contrib.tutorial_world.build
+#     batchcommand contrib.tutorials.tutorial_world.build
 #
 # If you give the /interactive switch you can step through the
 # build process command for command.
@@ -285,7 +285,7 @@ start
 #
 @set sign/tutorial_info =
  This is a readable object, of the Typeclass
- evennia.contrib.tutorial_world.objects.TutorialReadable. The sign has a cmdset
+ evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable. The sign has a cmdset
  defined on itself, containing only one command, namely 'read'. This
  command is what allows you to 'read sign'. Doing so returns the
  contents of the Attribute 'readable_sign', containing the information
@@ -488,7 +488,7 @@ north
 #
 bridge
 #
-# Set up properties on bridge room (see contrib.tutorial_world.rooms.BridgeRoom)
+# Set up properties on bridge room (see contrib.tutorials.tutorial_world.rooms.BridgeRoom)
 #
 # connect west edge to cliff
 #
@@ -1363,7 +1363,7 @@ The prize you have been looking for!
  what can be done with Evennia. The tutorial focuses more on showing
  various techniques than to supply any sort of novel storytelling or
  gaming challenge.  The full README and source code for the tutorial
- world can be found under |wcontrib/tutorial_world|g.
+ world can be found under |wcontrib/tutorials/tutorial_world|g.
 
 
  If you went through the tutorial quest once, it can be interesting to

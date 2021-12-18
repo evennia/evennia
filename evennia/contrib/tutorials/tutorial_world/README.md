@@ -1,4 +1,3 @@
-
 # Evennia Tutorial World
 
 Griatch 2011, 2015
@@ -10,30 +9,33 @@ herein are designed to show off features of the engine, not to be a
 very challenging (nor long) gaming experience. As such it's of course
 only skimming the surface of what is possible.
 
+The tutorial world also includes a game tutor menu example, exemplifying
+Evmenu.
 
-## Install
+## Installation
 
 Log in as superuser (#1), then run
 
-    @batchcommand tutorial_world.build
+    batchcommand tutorials.tutorial_world.build
 
 Wait a little while for building to complete and don't run the command
-again. This should build the world and connect it to Limbo.
+again even if it's slow. This builds the world and connect it to Limbo
+and creates a new exit `tutorial`.
 
-If you are a superuser (User `#1`), use the `@quell` command to play
-the tutorial as intended. 
+If you are a superuser (User `#1`), use the `quell` command to play
+the tutorial as intended.
 
 
 ## Comments
 
-The tutorial world is intended for your playing around with the engine.
-It will help you learn how to accomplish some more advanced effects
-and might give some good ideas along the way.
+The tutorial world is intended to be explored and analyzed.  It will help you
+learn how to accomplish some more advanced effects and might give some good
+ideas along the way.
 
-It's suggested you play it through (as a normal user, NOT as
-Superuser!) and explore it a bit, then come back here and start
-looking into the (heavily documented) build/source code to find out
-how things tick - that's the "tutorial" in Tutorial world after all.
+It's suggested you play it through (as a normal user, NOT as Superuser!) and
+explore it a bit, then come back here and start looking into the (heavily
+documented) build/source code to find out how things tick - that's the
+"tutorial" in Tutorial world after all.
 
 Please report bugs in the tutorial to the Evennia issue tracker.
 
@@ -44,6 +46,7 @@ Please report bugs in the tutorial to the Evennia issue tracker.
 
 **Spoilers below - don't read on unless you already played the
 tutorial game**
+
 
 
 

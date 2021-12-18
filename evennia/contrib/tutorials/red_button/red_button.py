@@ -1,4 +1,7 @@
 """
+Red Button
+
+Griatch - 2011
 
 This is a more advanced example object. It combines functions from
 script.examples as well as commands.examples to make an interactive
@@ -6,14 +9,14 @@ button typeclass.
 
 Create this button with
 
- create/drop red_button.RedButton
+    create/drop tutorials.red_button.RedButton
 
 Note that you must drop the button before you can see its messages!
 
 ## Technical
 
 The button's functionality is controlled by CmdSets that gets added and removed
-depending on the 'state' the button is in. 
+depending on the 'state' the button is in.
 
 - Lid-closed state: In this state the button is covered by a glass cover and trying
   to 'push' it will fail. You can 'nudge', 'smash' or 'open' the lid.
