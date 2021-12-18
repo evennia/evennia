@@ -5,8 +5,8 @@ Eventfuncs are just Python functions that can be used inside of calllbacks.
 
 """
 
-from evennia import ObjectDB, ScriptDB
-from evennia.contrib.ingame_python.utils import InterruptEvent
+from evennia import ObjectDB
+from evennia.contrib.base_systems.ingame_python.utils import InterruptEvent
 
 
 def deny():

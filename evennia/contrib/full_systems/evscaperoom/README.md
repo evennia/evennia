@@ -6,19 +6,19 @@ This 'Evennia escaperoom game engine' was created for the MUD Coders Guild game
 Jam, April 14-May 15 2019. The theme for the jam was "One Room". This contains the
 utilities and base classes and an empty example room.
 
-The original code for the contest is found at https://github.com/Griatch/evscaperoom
-but the version on the public Evennia demo is more updated, so if you really
-want the latest bug fixes etc you should rather look at
-https://github.com/evennia/evdemo/tree/master/evdemo/evscaperoom instead.
-A copy of the full game can also be played on the Evennia demo server at
-https://demo.evennia.com - just connect to the server and write `evscaperoom`
+The original code for the contest is found at
+https://github.com/Griatch/evscaperoom but the version on the public Evennia
+demo is more updated, so if you really want the latest bug fixes etc you should
+rather look at https://github.com/evennia/evdemo/tree/master/evdemo/evscaperoom
+instead.  A copy of the full game can also be played on the Evennia demo server
+at https://demo.evennia.com - just connect to the server and write `evscaperoom`
 in the first room to start!
 
 # Introduction
 
 Evscaperoom is, as it sounds, an escaperoom in text form. You start locked into
-a room and have to figure out how to get out. This engine contains everything needed
-to make a fully-featured puzzle game of this type!
+a room and have to figure out how to get out. This engine contains everything
+needed to make a fully-featured puzzle game of this type!
 
 # Installation
 
@@ -38,8 +38,9 @@ class CharacterCmdSet(...):
   self.add(CmdEvscapeRoomStart())
 
 ```
-Reload the server and the `evscaperoom` command will be available. The contrib comes
-with a small (very small) escape room as an example.
+
+Reload the server and the `evscaperoom` command will be available. The contrib
+comes with a small (very small) escape room as an example.
 
 # Making your own evscaperoom
 
@@ -57,20 +58,19 @@ the following to your `mygame/server/conf/settings.py` file:
 
 ```
 
-Reload and the example evscaperoom should still work, but you can now modify and expand
-it from your game dir!
+Reload and the example evscaperoom should still work, but you can now modify and
+expand it from your game dir!
 
 ## Other useful settings
 
 There are a few other settings that may be useful:
 
-- `EVSCAPEROOM_START_STATE` - default is `state_001_start` and is the name of the
-  state-module to start from (without `.py`). You can change this if you want some
-  other naming scheme.
+- `EVSCAPEROOM_START_STATE` - default is `state_001_start` and is the name of
+  the state-module to start from (without `.py`). You can change this if you
+  want some other naming scheme.
 - `HELP_SUMMARY_TEXT` - this is the help blurb shown when entering `help` in
   the room without an argument. The original is found at the top of
   `evennia/contrib/evscaperoom/commands.py`.
-
 
 # Playing the game
 

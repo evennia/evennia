@@ -17,7 +17,7 @@ Then
 
 """
 
-from evennia.contrib.xyzgrid import xymap_legend
+from evennia.contrib.grid.xyzgrid import xymap_legend
 
 # default prototype parent. It's important that
 # the typeclass inherits from the XYZRoom (or XYZExit)

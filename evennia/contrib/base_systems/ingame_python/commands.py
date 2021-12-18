@@ -5,12 +5,11 @@ Module containing the commands of the in-game Python system.
 from datetime import datetime
 
 from django.conf import settings
-from evennia import Command
 from evennia.utils.ansi import raw
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evtable import EvTable
 from evennia.utils.utils import class_from_module, time_format
-from evennia.contrib.ingame_python.utils import get_event_handler
+from evennia.contrib.base_systems.ingame_python.utils import get_event_handler
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 

@@ -4,7 +4,6 @@ Tests for the XYZgrid system.
 
 """
 
-from time import time
 from random import randint
 from parameterized import parameterized
 from django.test import TestCase

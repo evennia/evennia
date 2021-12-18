@@ -73,9 +73,10 @@ from random import random, randint
 from evennia.commands.command import Command, InterruptCommand
 from .crafting import craft, CraftingRecipe, CraftingValidationError
 
-#------------------------------------------------------------
+
+# ------------------------------------------------------------
 # Sword recipe
-#------------------------------------------------------------
+# ------------------------------------------------------------
 
 class PigIronRecipe(CraftingRecipe):
     """

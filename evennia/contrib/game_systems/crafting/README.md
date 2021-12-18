@@ -44,7 +44,7 @@ in there:
 
 ```python
 
-from evennia.contrib.crafting.crafting import CraftingRecipe, CraftingValidationError
+from evennia.contrib.game_systems.crafting import CraftingRecipe, CraftingValidationError
 
 
 class RecipeBread(CraftingRecipe):

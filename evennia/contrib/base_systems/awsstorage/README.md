@@ -1,24 +1,25 @@
-# AWSstorage system 
+# AWSstorage system
 
 Contrib by The Right Honourable Reverend (trhr) 2020
 
-## What is this for? 
+## What is this for?
 
 This plugin migrates the Web-based portion of Evennia, namely images,
-javascript, and other items located inside staticfiles into Amazon AWS (S3) for hosting.
+javascript, and other items located inside staticfiles into Amazon AWS (S3) for
+hosting.
 
 Files hosted on S3 are "in the cloud," and while your personal
 server may be sufficient for serving multimedia to a minimal number of users,
 the perfect use case for this plugin would be:
 
-- Servers supporting heavy web-based traffic (webclient, etc) ... 
+- Servers supporting heavy web-based traffic (webclient, etc) ...
 - With a sizable number of users ...
 - Where the users are globally distributed ...
 - Where multimedia files are served to users as a part of gameplay
 
 Bottom line - if you're sending an image to a player every time they traverse a
-map, the bandwidth reduction of using this will be substantial. If not,
-probably skip this contrib.
+map, the bandwidth reduction of using this will be substantial. If not, probably
+skip this contrib.
 
 ## On costs
 
@@ -35,14 +36,14 @@ pricing structure.
 This is a drop-in replacement that operates deeper than all of Evennia's code,
 so your existing code does not need to change at all to support it.
 
-For example, when Evennia (or Django), tries to save a file permanently
-(say, an image uploaded by a user), the save (or load) communication follows the path:
+For example, when Evennia (or Django), tries to save a file permanently (say, an
+image uploaded by a user), the save (or load) communication follows the path:
 
-Evennia -> Django
-Django -> Storage backend
-Storage backend -> file storage location (e.g. hard drive)
+    Evennia -> Django
+    Django -> Storage backend
+    Storage backend -> file storage location (e.g. hard drive)
 
-https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-STATICFILES_STORAGE
+[django docs](https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-STATICFILES_STORAGE)
 
 This plugin, when enabled, overrides the default storage backend,
 which defaults to saving files at mygame/website/, instead,
@@ -111,7 +112,7 @@ Advanced Users: The second IAM statement, CreateBucket, is only needed
 for initial installation. You can remove it later, or you can
 create the bucket and set the ACL yourself before you continue.
 
-## Dependencies 
+## Dependencies
 
 
 This package requires the dependency "boto3 >= 1.4.4", the official
@@ -120,14 +121,14 @@ extra requirements;
 
 - Activate your `virtualenv`
 - `cd` to the root of the Evennia repository. There should be an `requirements_extra.txt`
-file here. 
-- `pip install -r requirements_extra.txt` 
+file here.
+- `pip install -r requirements_extra.txt`
 
-## Configure Evennia 
+## Configure Evennia
 
 Customize the variables defined below in `secret_settings.py`. No further
 configuration is needed. Note the three lines that you need to set to your
-actual values. 
+actual values.
 
 ```python
 # START OF SECRET_SETTINGS.PY COPY/PASTE >>>
@@ -145,7 +146,7 @@ AWS_S3_OBJECT_PARAMETERS = { 'Expires': 'Thu, 31 Dec 2099 20:00:00 GMT',
 AWS_DEFAULT_ACL = 'public-read'
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % settings.AWS_BUCKET_NAME
 AWS_AUTO_CREATE_BUCKET = True
-STATICFILES_STORAGE = 'evennia.contrib.awsstorage.aws-s3-cdn.S3Boto3Storage'
+STATICFILES_STORAGE = 'evennia.contrib.base_systems.awsstorage.aws-s3-cdn.S3Boto3Storage'
 
 # <<< END OF SECRET_SETTINGS.PY COPY/PASTE
 ```
@@ -153,14 +154,14 @@ STATICFILES_STORAGE = 'evennia.contrib.awsstorage.aws-s3-cdn.S3Boto3Storage'
 You may also store these keys as environment variables of the same name.
 For advanced configuration, refer to the docs for django-storages.
 
-After copying the above, run `evennia reboot`. 
+After copying the above, run `evennia reboot`.
 
 ## Check that it works
 
 Confirm that web assets are being served from S3 by visiting your website, then
 checking the source of any image (for instance, the logo).  It should read
 `https://your-bucket-name.s3.amazonaws.com/path/to/file`. If so, the system
-works and you shouldn't need to do anything else. 
+works and you shouldn't need to do anything else.
 
 # Uninstallation
 

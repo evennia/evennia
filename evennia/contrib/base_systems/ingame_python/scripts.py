@@ -10,13 +10,13 @@ import traceback
 
 from django.conf import settings
 from evennia import DefaultObject, DefaultScript, ChannelDB, ScriptDB
-from evennia import logger, ObjectDB
+from evennia import logger
 from evennia.utils.ansi import raw
 from evennia.utils.create import create_channel
 from evennia.utils.dbserialize import dbserialize
 from evennia.utils.utils import all_from_module, delay, pypath_to_realpath
-from evennia.contrib.ingame_python.callbackhandler import CallbackHandler
-from evennia.contrib.ingame_python.utils import get_next_wait, EVENTS, InterruptEvent
+from evennia.contrib.base_systems.ingame_python.callbackhandler import CallbackHandler
+from evennia.contrib.base_systems.ingame_python.utils import get_next_wait, EVENTS, InterruptEvent
 
 # Constants
 RE_LINE_ERROR = re.compile(r'^  File "\<string\>", line (\d+)')

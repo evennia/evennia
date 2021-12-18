@@ -20,7 +20,7 @@ from os.path import join as pathjoin
 from django.conf import settings
 import evennia
 from evennia.utils import ansi
-from evennia.contrib.xyzgrid.xyzgrid import get_xyzgrid
+from evennia.contrib.grid.xyzgrid.xyzgrid import get_xyzgrid
 
 
 _HELP_SHORT = """

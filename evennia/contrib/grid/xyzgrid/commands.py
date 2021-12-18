@@ -12,8 +12,8 @@ from django.conf import settings
 from evennia import InterruptCommand
 from evennia import default_cmds, CmdSet
 from evennia.commands.default import building
-from evennia.contrib.xyzgrid.xyzroom import XYZRoom
-from evennia.contrib.xyzgrid.xyzgrid import get_xyzgrid
+from evennia.contrib.grid.xyzgrid.xyzroom import XYZRoom
+from evennia.contrib.grid.xyzgrid.xyzgrid import get_xyzgrid
 from evennia.utils import ansi
 from evennia.utils.utils import list_to_string, class_from_module, delay
 
