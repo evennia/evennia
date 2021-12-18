@@ -2,54 +2,62 @@
 
 Vincent Le Goff 2017
 
-This contrib adds the system of in-game Python in Evennia, allowing immortals (or other trusted builders) to
-dynamically add features to individual objects.  Using custom Python set in-game, every immortal or privileged users
-could have a specific room, exit, character, object or something else behave differently from its
-"cousins".  For these familiar with the use of softcode in MU`*`, like SMAUG MudProgs, the ability to
-add arbitrary behavior to individual objects is a step toward freedom.  Keep in mind, however, the
-warning below, and read it carefully before the rest of the documentation.
+This contrib adds the system of in-game Python in Evennia, allowing immortals
+(or other trusted builders) to dynamically add features to individual objects.
+Using custom Python set in-game, every immortal or privileged users could have a
+specific room, exit, character, object or something else behave differently from
+its "cousins".  For these familiar with the use of softcode in MU`*`, like SMAUG
+MudProgs, the ability to add arbitrary behavior to individual objects is a step
+toward freedom.  Keep in mind, however, the warning below, and read it carefully
+before the rest of the documentation.
 
 ## A WARNING REGARDING SECURITY
 
-Evennia's in-game Python system will run arbitrary Python code without much restriction.  Such a system is as
-powerful as potentially dangerous, and you will have to keep in mind these points before deciding to
-install it:
+Evennia's in-game Python system will run arbitrary Python code without much
+restriction.  Such a system is as powerful as potentially dangerous, and you
+will have to keep in mind these points before deciding to install it:
 
-1. Untrusted people can run Python code on your game server with this system.  Be careful about who
-   can use this system (see the permissions below).
-2. You can do all of this in Python outside the game.  The in-game Python system is not to replace all your
-   game feature.
+1. Untrusted people can run Python code on your game server with this system.
+   Be careful about who can use this system (see the permissions below).
+2. You can do all of this in Python outside the game.  The in-game Python system
+   is not to replace all your game feature.
 
 ## Basic structure and vocabulary
 
-- At the basis of the in-game Python system are **events**.  An **event** defines the context in which we
-  would like to call some arbitrary code.  For instance, one event is
-  defined on exits and will fire every time a character traverses through this exit.  Events are described
-  on a [typeclass](https://github.com/evennia/evennia/wiki/Typeclasses) (like
-  [exits](https://github.com/evennia/evennia/wiki/Objects#exits) in our example).  All objects inheriting
-  from this typeclass will have access to this event.
-- **Callbacks** can be set on individual objects, on events defined in code.  These **callbacks**
-  can contain arbitrary code and describe a specific behavior for an object.  When the event fires,
-  all callbacks connected to this object's event are executed.
+- At the basis of the in-game Python system are **events**.  An **event**
+  defines the context in which we would like to call some arbitrary code.  For
+instance, one event is defined on exits and will fire every time a character
+traverses through this exit.  Events are described on a [typeclass](Typeclasses)
+([exits](Objects#exits) in our example).  All objects inheriting from this
+typeclass will have access to this event.
+- **Callbacks** can be set on individual objects, on events defined in code.
+  These **callbacks** can contain arbitrary code and describe a specific
+behavior for an object.  When the event fires, all callbacks connected to this
+object's event are executed.
 
-To see the system in context, when an object is picked up (using the default `get` command), a
-specific event is fired:
+To see the system in context, when an object is picked up (using the default
+`get` command), a specific event is fired:
 
 1. The event "get" is set on objects (on the `Object` typeclass).
-2. When using the "get" command to pick up an object, this object's `at_get` hook is called.
-3. A modified hook of DefaultObject is set by the event system.  This hook will execute (or call)
-   the "get" event on this object.
-4. All callbacks tied to this object's "get" event will be executed in order.  These callbacks act
-   as functions containing Python code that you can write in-game, using specific variables that
-   will be listed when you edit the callback itself.
-5. In individual callbacks, you can add multiple lines of Python code that will be fired at this
-   point.  In this example, the `character` variable will contain the character who has picked up
-   the object, while `obj` will contain the object that was picked up.
+2. When using the "get" command to pick up an object, this object's `at_get`
+   hook is called.
+3. A modified hook of DefaultObject is set by the event system.  This hook will
+   execute (or call) the "get" event on this object.
+4. All callbacks tied to this object's "get" event will be executed in order.
+   These callbacks act as functions containing Python code that you can write
+   in-game, using specific variables that will be listed when you edit the callback
+   itself.
+5. In individual callbacks, you can add multiple lines of Python code that will
+   be fired at this point.  In this example, the `character` variable will
+   contain the character who has picked up the object, while `obj` will contain the
+   object that was picked up.
 
-Following this example, if you create a callback "get" on the object "a sword", and put in it:
+Following this example, if you create a callback "get" on the object "a sword",
+and put in it:
 
 ```python
 character.msg("You have picked up {} and have completed this quest!".format(obj.get_display_name(character)))
+
 ```
 
 When you pick up this object you should see something like:
@@ -59,11 +67,13 @@ When you pick up this object you should see something like:
 
 ## Installation
 
-Being in a separate contrib, the in-game Python system isn't installed by default.  You need to do it
-manually, following these steps:
+Being in a separate contrib, the in-game Python system isn't installed by
+default.  You need to do it manually, following these steps:
+
+This is the quick summary. Scroll down for more detailed help on each step.
 
 1. Launch the main script (important!):
-   ```@py evennia.create_script("evennia.contrib.ingame_python.scripts.EventHandler")```
+   ```py evennia.create_script("evennia.contrib.base_systems.ingame_python.scripts.EventHandler")```
 2. Set the permissions (optional):
    - `EVENTS_WITH_VALIDATION`: a group that can edit callbacks, but will need approval (default to
      `None`).
@@ -72,7 +82,7 @@ manually, following these steps:
    - `EVENTS_VALIDATING`: a group that can validate callbacks (default to `"immortals"`).
    - `EVENTS_CALENDAR`: type of the calendar to be used (either `None`, `"standard"` or `"custom"`,
      default to `None`).
-3. Add the `@call` command.
+3. Add the `call` command.
 4. Inherit from the custom typeclasses of the in-game Python system.
    - `evennia.contrib.ingame_python.typeclasses.EventCharacter`: to replace `DefaultCharacter`.
    - `evennia.contrib.ingame_python.typeclasses.EventExit`: to replace `DefaultExit`.
@@ -89,7 +99,7 @@ that a 'callback' property is not defined. After performing step `1` the error w
 
 To start the event script, you only need a single command, using `@py`.
 
-    @py evennia.create_script("evennia.contrib.ingame_python.scripts.EventHandler")
+    py evennia.create_script("evennia.contrib.base_systems.ingame_python.scripts.EventHandler")
 
 This command will create a global script (that is, a script independent from any object).  This
 script will hold basic configuration, individual callbacks and so on.  You may access it directly,
@@ -107,8 +117,7 @@ By default, callbacks can only be created by immortals: no one except the immort
 callbacks, and immortals don't need validation.  It can easily be changed, either through settings
 or dynamically by changing permissions of users.
 
-The events contrib adds three
-[permissions](https://github.com/evennia/evennia/wiki/Locks#permissions) in the settings.  You can
+The ingame-python contrib adds three [permissions](Permissions)) in the settings.  You can
 override them by changing the settings into your `server/conf/settings.py` file (see below for an
 example).  The settings defined in the events contrib are:
 
@@ -142,9 +151,7 @@ calendar you are using.  By default, time-related events are disabled.  You can 
 `EVENTS_CALENDAR` to set it to:
 
 - `"standard"`: the standard calendar, with standard days, months, years and so on.
-- `"custom"`: a custom calendar that will use the
-  [custom_gametime](https://github.com/evennia/evennia/blob/master/evennia/contrib/custom_gametime.py)
-contrib to schedule events.
+- `"custom"`: a custom calendar that will use the `custom_gametime` contrib to schedule events.
 
 This contrib defines two additional permissions that can be set on individual users:
 
@@ -156,17 +163,17 @@ This contrib defines two additional permissions that can be set on individual us
 For instance, to give the right to edit callbacks without needing approval to the player 'kaldara',
 you might do something like:
 
-    @perm *kaldara = events_without_validation
+    perm *kaldara = events_without_validation
 
 To remove this same permission, just use the `/del` switch:
 
-    @perm/del *kaldara = events_without_validation
+    perm/del *kaldara = events_without_validation
 
-The rights to use the `@call` command are directly related to these permissions: by default, only
+The rights to use the `call` command are directly related to these permissions: by default, only
 users who have the `events_without_validation` permission or are in (or above) the group defined in
 the `EVENTS_WITH_VALIDATION` setting will be able to call the command (with different switches).
 
-### Adding the `@call` command
+### Adding the `call` command
 
 You also have to add the `@call` command to your Character CmdSet.  This command allows your users
 to add, edit and delete callbacks in-game.  In your `commands/default_cmdsets, it might look like
@@ -199,32 +206,34 @@ classes.  For instance, in your `typeclasses/characters.py` module, you should c
 like this:
 
 ```python
-from evennia.contrib.ingame_python.typeclasses import EventCharacter
+from evennia.contrib.base_systems.ingame_python.typeclasses import EventCharacter
 
 class Character(EventCharacter):
 
     # ...
 ```
 
-You should do the same thing for your rooms, exits and objects.  Note that the in-game Python system works by
-overriding some hooks.  Some of these features might not be accessible in your game if you don't
-call the parent methods when overriding hooks.
+You should do the same thing for your rooms, exits and objects.  Note that the
+in-game Python system works by overriding some hooks.  Some of these features
+might not be accessible in your game if you don't call the parent methods when
+overriding hooks.
 
-## Using the `@call` command
+## Using the `call` command
 
-The in-game Python system relies, to a great extent, on its `@call` command.  Who can execute this command,
-and who can do what with it, will depend on your set of permissions.
+The in-game Python system relies, to a great extent, on its `call` command.
+Who can execute this command, and who can do what with it, will depend on your
+set of permissions.
 
-The `@call` command allows to add, edit and delete callbacks on specific objects' events.  The event
+The `call` command allows to add, edit and delete callbacks on specific objects' events.  The event
 system can be used on most Evennia objects, mostly typeclassed objects (excluding players).  The
-first argument of the `@call` command is the name of the object you want to edit.  It can also be
+first argument of the `call` command is the name of the object you want to edit.  It can also be
 used to know what events are available for this specific object.
 
 ### Examining callbacks and events
 
-To see the events connected to an object, use the `@call` command and give the name or ID of the
-object to examine.  For instance, @call here` to examine the events on your current location.  Or
-`@call self` to see the events on yourself.
+To see the events connected to an object, use the `call` command and give the name or ID of the
+object to examine.  For instance, `call here` to examine the events on your current location.  Or
+`call self` to see the events on yourself.
 
 This command will display a table, containing:
 
@@ -233,7 +242,7 @@ This command will display a table, containing:
   second column.
 - A short help to tell you when the event is triggered in the third column.
 
-If you execute `@call #1` for instance, you might see a table like this:
+If you execute `call #1` for instance, you might see a table like this:
 
 ```
 +------------------+---------+-----------------------------------------------+
@@ -292,7 +301,7 @@ If we want to prevent a character from traversing through this exit, the best ev
 
 When we edit the event, we have some more information:
 
-    @call/add north = can_traverse
+    call/add north = can_traverse
 
 Can the character traverse through this exit?
 This event is called when a character is about to traverse this
@@ -308,7 +317,7 @@ Variables you can use in this event:
 The section dedicated to [eventfuncs](#the-eventfuncs) will elaborate on the `deny()` function and
 other eventfuncs.  Let us say, for the time being, that it can prevent an action (in this case, it
 can prevent the character from traversing through this exit).  In the editor that opened when you
-used `@call/add`, you can type something like:
+used `call/add`, you can type something like:
 
 ```python
 if character.id == 1:
@@ -320,11 +329,11 @@ else:
 
 You can now enter `:wq` to leave the editor by saving the callback.
 
-If you enter `@call north`, you should see that "can_traverse" now has an active callback.  You can
-use `@call north = can_traverse` to see more details on the connected callbacks:
+If you enter `call north`, you should see that "can_traverse" now has an active callback.  You can
+use `call north = can_traverse` to see more details on the connected callbacks:
 
 ```
-@call north = can_traverse
+call north = can_traverse
 +--------------+--------------+----------------+--------------+--------------+
 |       Number | Author       | Updated        | Param        | Valid        |
 +~~~~~~~~~~~~~~+~~~~~~~~~~~~~~+~~~~~~~~~~~~~~~~+~~~~~~~~~~~~~~+~~~~~~~~~~~~~~+
@@ -336,7 +345,7 @@ The left column contains callback numbers.  You can use them to have even more i
 specific event.  Here, for instance:
 
 ```
-@call north = can_traverse 1
+call north = can_traverse 1
 Callback can_traverse 1 of north:
 Created by XXXXX on 2017-04-02 17:58:05.
 Updated by XXXXX on 2017-04-02 18:02:50
@@ -360,11 +369,11 @@ the name of the object to edit and the equal sign:
 1. The name of the event (as seen above).
 2. A number, if several callbacks are connected at this location.
 
-You can type `@call/edit <object> = <event name>` to see the callbacks that are linked at this
+You can type `call/edit <object> = <event name>` to see the callbacks that are linked at this
 location.  If there is only one callback, it will be opened in the editor; if more are defined, you
-will be asked for a number to provide (for instance, `@call/edit north = can_traverse 2`).
+will be asked for a number to provide (for instance, `call/edit north = can_traverse 2`).
 
-The command `@call` also provides a `/del` switch to remove a callback.  It takes the same arguments
+The command `call` also provides a `/del` switch to remove a callback.  It takes the same arguments
 as the `/edit` switch.
 
 When removed, callbacks are logged, so an administrator can retrieve its content, assuming the
@@ -435,7 +444,7 @@ One example that will illustrate this system is the "msg_leave" event that can b
 This event can alter the message that will be sent to other characters when someone leaves through
 this exit.
 
-    @call/add down = msg_leave
+    call/add down = msg_leave
 
 Which should display:
 
@@ -467,6 +476,7 @@ If you write something like this in your event:
 
 ```python
 message = "{character} falls into a hole in the ground!"
+
 ```
 
 And if the character Wilfred takes this exit, others in the room will see:
@@ -488,18 +498,18 @@ For instance, let's say we want to create a cool voice-operated elevator.  You e
 elevator and say the floor number... and the elevator moves in the right direction.  In this case,
 we could create an callback with the parameter "one":
 
-    @call/add here = say one
+    call/add here = say one
 
 This callback will only fire when the user says a sentence that contains "one".
 
 But what if we want to have a callback that would fire if the user says 1 or one?  We can provide
 several parameters, separated by a comma.
 
-    @call/add here = say 1, one
+    call/add here = say 1, one
 
 Or, still more keywords:
 
-    @call/add here = say 1, one, ground
+    call/add here = say 1, one, ground
 
 This time, the user could say something like "take me to the ground floor" ("ground" is one of our
 keywords defined in the above callback).
@@ -524,11 +534,12 @@ a mandatory parameter, which is the time you expect this event to fire.
 For instance, let's add an event on this room that should trigger every day, at precisely 12:00 PM
 (the time is given as game time, not real time):
 
-    @call here = time 12:00
+    call here = time 12:00
 
 ```python
 # This will be called every MUD day at 12:00 PM
 room.msg_contents("It's noon, time to have lunch!")
+
 ```
 
 Now, at noon every MUD day, this event will fire and this callback will be executed.  You can use
@@ -580,7 +591,7 @@ the next at regular times.  Connecting exits (opening its doors), waiting a bit,
 rolling around and stopping at a different station.  That's quite a complex set of callbacks, as it
 is, but let's only look at the part that opens and closes the doors:
 
-    @call/add here = time 10:00
+    call/add here = time 10:00
 
 ```python
 # At 10:00 AM, the subway arrives in the room of ID 22.
@@ -617,7 +628,7 @@ This callback will:
 
 And now, what should we have in "chain_1"?
 
-    @call/add here = chain_1
+    call/add here = chain_1
 
 ```python
 # Close the doors
@@ -795,7 +806,7 @@ see a message about a "beautiful ant-hill".
 
 ### Adding new eventfuncs
 
-Eventfuncs, like `deny(), are defined in `contrib/events/eventfuncs.py`.  You can add your own
+Eventfuncs, like `deny()`, are defined in `contrib/events/eventfuncs.py`.  You can add your own
 eventfuncs by creating a file named `eventfuncs.py` in your `world` directory.  The functions
 defined in this file will be added as helpers.
 
@@ -814,7 +825,7 @@ EVENTFUNCS_LOCATIONS = [
 
 If you want to create events with parameters (if you create a "whisper" or "ask" command, for
 instance, and need to have some characters automatically react to words), you can set an additional
-argument in the tuple of events in your typeclass' ```_events``` class variable.  This third argument
+argument in the tuple of events in your typeclass' `_events` class variable.  This third argument
 must contain a callback that will be called to filter through the list of callbacks when the event
 fires.  Two types of parameters are commonly used (but you can define more parameter types, although
 this is out of the scope of this documentation).
@@ -825,8 +836,9 @@ this is out of the scope of this documentation).
   The "say" command uses phrase parameters (you can set a "say" callback to fires if a phrase
 contains one specific word).
 
-In both cases, you need to import a function from `evennia.contrib.ingame_python.utils` and use it as third
-parameter in your event definition.
+In both cases, you need to import a function from
+`evennia.contrib.base_systems.ingame_python.utils` and use it as third parameter in your
+event definition.
 
 - `keyword_event` should be used for keyword parameters.
 - `phrase_event` should be used for phrase parameters.
@@ -834,7 +846,7 @@ parameter in your event definition.
 For example, here is the definition of the "say" event:
 
 ```python
-from evennia.contrib.ingame_python.utils import register_events, phrase_event
+from evennia.contrib.base_systems.ingame_python.utils import register_events, phrase_event
 # ...
 @register_events
 class SomeTypeclass:
@@ -865,5 +877,5 @@ The best way to do this is to use a custom setting, in your setting file
 EVENTS_DISABLED = True
 ```
 
-The in-game Python system will still be accessible (you will have access to the `@call` command, to debug),
+The in-game Python system will still be accessible (you will have access to the `call` command, to debug),
 but no event will be called automatically.

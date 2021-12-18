@@ -4,11 +4,10 @@ Unit tests for the crafting system contrib.
 """
 
 from unittest import mock
-from anything import Something
 from django.test import override_settings
 from django.core.exceptions import ObjectDoesNotExist
 from evennia.commands.default.tests import CommandTest
-from evennia.utils.test_resources import TestCase, EvenniaTest
+from evennia.utils.test_resources import TestCase
 from evennia.utils.create import create_object
 from . import crafting, example_recipes
 
