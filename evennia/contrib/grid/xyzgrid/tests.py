@@ -852,7 +852,7 @@ class TestMap8(_MapTest):
 
         """
         mapstr = self.map.get_visual_range(coord, dist=dist, mode='nodes',
-                                           target=target, target_path_style=".",
+                                           target=target, target_path_style="",
                                            character='@',
                                            max_size=max_size)
         self.assertEqual(expected, mapstr.replace("||", "|"))
@@ -1016,7 +1016,7 @@ class TestMap11(_MapTest):
 
         """
         mapstr = self.map.get_visual_range(coord, dist=dist, mode='nodes',
-                                           target=target, target_path_style=".",
+                                           target=target, target_path_style="",
                                            character='@',
                                            max_size=max_size)
         self.assertEqual(expected, mapstr)
