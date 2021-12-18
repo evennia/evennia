@@ -4,12 +4,12 @@ the `evennia xyzgrid` launcher command.
 
 First add the launcher extension in your mygame/server/conf/settings.py:
 
-    EXTRA_LAUNCHER_COMMANDS['xyzgrid'] = 'evennia.contrib.xyzgrid.launchcmd.xyzcommand'
+    EXTRA_LAUNCHER_COMMANDS['xyzgrid'] = 'evennia.contrib.grid.xyzgrid.launchcmd.xyzcommand'
 
 Then
 
     evennia xyzgrid init
-    evennia xyzgrid add evennia.contrib.xyzgrid.map_example
+    evennia xyzgrid add evennia.contrib.grid.xyzgrid.map_example
     evennia xyzgrid build
 
 
@@ -21,7 +21,7 @@ from evennia.contrib.grid.xyzgrid import xymap_legend
 
 # default prototype parent. It's important that
 # the typeclass inherits from the XYZRoom (or XYZExit)
-# if adding the evennia.contrib.xyzgrid.prototypes to
+# if adding the evennia.contrib.grid.xyzgrid.prototypes to
 # settings.PROTOTYPE_MODULES, one could just set the
 # prototype_parent to 'xyz_room' and 'xyz_exit' here
 # instead.
@@ -30,14 +30,14 @@ ROOM_PARENT = {
     "key": "An empty room",
     "prototype_key": "xyz_exit_prototype",
     # "prototype_parent": "xyz_room",
-    "typeclass": "evennia.contrib.xyzgrid.xyzroom.XYZRoom",
+    "typeclass": "evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom",
     "desc": "An empty room.",
 }
 
 EXIT_PARENT = {
     "prototype_key": "xyz_exit_prototype",
     # "prototype_parent": "xyz_exit",
-    "typeclass": "evennia.contrib.xyzgrid.xyzroom.XYZExit",
+    "typeclass": "evennia.contrib.grid.xyzgrid.xyzroom.XYZExit",
     "desc": "A path to the next location.",
 }
 

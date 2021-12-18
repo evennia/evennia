@@ -210,7 +210,7 @@ class XYMap:
         if not _LOADED_PROTOTYPES:
             # inject default prototypes, but don't override prototype-keys loaded from
             # settings, if they exist (that means the user wants to replace the defaults)
-            protlib.load_module_prototypes("evennia.contrib.xyzgrid.prototypes", override=False)
+            protlib.load_module_prototypes("evennia.contrib.grid.xyzgrid.prototypes", override=False)
             _LOADED_PROTOTYPES = True
 
         self.Z = Z
@@ -636,7 +636,7 @@ class XYMap:
         """
         global _XYZROOMCLASS
         if not _XYZROOMCLASS:
-            from evennia.contrib.xyzgrid.xyzroom import XYZRoom as _XYZROOMCLASS
+            from evennia.contrib.grid.xyzgrid.xyzroom import XYZRoom as _XYZROOMCLASS
         x, y = xy
         wildcard = '*'
         spawned = []

@@ -854,8 +854,6 @@ class TestMap8(_MapTest):
                                            target=target, target_path_style="",
                                            character='@',
                                            max_size=max_size)
-        self.assertEqual(expected, mapstr.replace("||", "|"))
-
     def test_spawn(self):
         """
         Spawn the map into actual objects.
@@ -1018,6 +1016,8 @@ class TestMap11(_MapTest):
                                            target=target, target_path_style="",
                                            character='@',
                                            max_size=max_size)
+        print(f"\n\n{coord}-{target}\n{expected}\n\n{mapstr}")
+
         self.assertEqual(expected, mapstr)
 
     def test_spawn(self):
@@ -1252,6 +1252,7 @@ class TestXYZGridTransition(EvenniaTest):
         self.assertEqual(east_exit.db_destination, room2)
         self.assertEqual(west_exit.db_destination, room1)
 
+
 class TestBuildExampleGrid(EvenniaTest):
     """
     Test building the map-example (this takes about 30s)
@@ -1274,7 +1275,7 @@ class TestBuildExampleGrid(EvenniaTest):
         Build the map example.
 
         """
-        mapdatas = self.grid.maps_from_module("evennia.contrib.xyzgrid.example")
+        mapdatas = self.grid.maps_from_module("evennia.contrib.grid.xyzgrid.example")
         self.assertEqual(len(mapdatas), 2)
 
         self.grid.add_maps(*mapdatas)

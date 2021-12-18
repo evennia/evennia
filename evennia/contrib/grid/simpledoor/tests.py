@@ -12,7 +12,7 @@ class TestSimpleDoor(CommandTest):
     def test_cmdopen(self):
         self.call(
             simpledoor.CmdOpen(),
-            "newdoor;door:contrib.simpledoor.SimpleDoor,backdoor;door = Room2",
+            "newdoor;door:contrib.grid.simpledoor.SimpleDoor,backdoor;door = Room2",
             "Created new Exit 'newdoor' from Room to Room2 (aliases: door).|Note: A door-type exit was "
             "created - ignored eventual custom return-exit type.|Created new Exit 'newdoor' from Room2 to Room (aliases: door).",
         )

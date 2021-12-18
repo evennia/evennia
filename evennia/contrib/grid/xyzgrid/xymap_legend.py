@@ -315,7 +315,7 @@ class MapNode:
             # create a new entity with proper coordinates etc
             tclass = self.prototype['typeclass']
             tclass = (f' ({tclass})'
-                      if tclass != 'evennia.contrib.xyzgrid.xyzroom.XYZRoom'
+                      if tclass != 'evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom'
                       else '')
             self.log(f"  spawning room at xyz={xyz}{tclass}")
             nodeobj, err = NodeTypeclass.create(
@@ -413,7 +413,7 @@ class MapNode:
                 prot = maplinks[key.lower()][3].prototype
                 tclass = prot['typeclass']
                 tclass = (f' ({tclass})'
-                          if tclass != 'evennia.contrib.xyzgrid.xyzroom.XYZExit'
+                          if tclass != 'evennia.contrib.grid.xyzgrid.xyzroom.XYZExit'
                           else '')
                 self.log(f"  spawning/updating exit xyz={xyz}, direction={key}{tclass}")
 

@@ -16,7 +16,7 @@ from evennia.server.serversession import ServerSession
 
 # Attributes governing auditing of commands and where to send log objects
 AUDIT_CALLBACK = getattr(
-    ev_settings, "AUDIT_CALLBACK", "evennia.contrib.security.auditing.outputs.to_file"
+    ev_settings, "AUDIT_CALLBACK", "evennia.contrib.utils.auditing.outputs.to_file"
 )
 AUDIT_IN = getattr(ev_settings, "AUDIT_IN", False)
 AUDIT_OUT = getattr(ev_settings, "AUDIT_OUT", False)

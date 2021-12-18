@@ -1,5 +1,5 @@
 ```{eval-rst}
-evennia.contrib.xyzgrid.commands 
+evennia.contrib.grid.xyzgrid.commands
 =======================================
 
 .. automodule:: evennia.contrib.xyzgrid.commands

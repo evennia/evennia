@@ -399,7 +399,7 @@ class ServerSessionHandler(SessionHandler):
         self.server.at_post_portal_sync(mode)
         # announce the reconnection
         if _BROADCAST_SERVER_RESTART_MESSAGES:
-            self.announce_all(_(" ... Server restarted.")) 
+            self.announce_all(_(" ... Server restarted."))
 
     def portal_disconnect(self, session):
         """

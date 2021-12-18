@@ -4,7 +4,7 @@
 # It allows batch processing of normal Evennia commands.
 # Test it by loading it with @batchcommand:
 #
-#   @batchcommand[/interactive] examples.batch_example
+#   batchcommand[/interactive] examples.batch_example
 #
 # A # as the first symbol on a line begins a comment and
 # marks the end of a previous command definition (important!).
@@ -17,12 +17,12 @@
 
 # This creates a red button
 
-@create button:tutorial_examples.red_button.RedButton
+create button:red_button.RedButton
 
 # This comment ends input for @create
 # Next command:
 
-@set button/desc =
+set button/desc =
   This is a large red button. Now and then
   it flashes in an evil, yet strangely tantalizing way.
 
@@ -48,7 +48,7 @@ know you want to!
 # Now let's place the button where it belongs (let's say limbo #2 is
 # the evil lair in our example).
 
-@teleport #2
+teleport #2
 
 #... and drop it (remember, this comment ends input to @teleport, so don't
 #forget it!) The very last command in the file need not be ended with #.

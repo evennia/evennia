@@ -2162,7 +2162,7 @@ class TestCommsChannel(CommandTest):
         )
 
 
-from evennia.comms import comms  # noqa
+from evennia.commands.default import comms  # noqa
 
 
 class TestComms(CommandTest):
@@ -2179,13 +2179,13 @@ class TestComms(CommandTest):
 
 class TestBatchProcess(CommandTest):
 
-    @patch("evennia.contrib.tutorial_examples.red_button.repeat")
-    @patch("evennia.contrib.tutorial_examples.red_button.delay")
+    @patch("evennia.contrib.tutorials.red_button.red_button.repeat")
+    @patch("evennia.contrib.tutorials.red_button.red_button.delay")
     def test_batch_commands(self, mock_delay, mock_repeat):
         # cannot test batchcode here, it must run inside the server process
         self.call(
             batchprocess.CmdBatchCommands(),
-            "example_batch_cmds",
+            "batchprocessor.example_batch_cmds",
             "Running Batch-command processor - Automatic mode for example_batch_cmds",
         )
         # we make sure to delete the button again here to stop the running reactor
