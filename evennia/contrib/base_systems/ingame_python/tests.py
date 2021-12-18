@@ -12,8 +12,8 @@ from evennia.objects.objects import ExitCommand
 from evennia.utils import ansi, utils
 from evennia.utils.create import create_object, create_script
 from evennia.utils.test_resources import EvenniaTest
-from evennia.contrib.base_systems.ingame_python.commands import CmdCallback
-from evennia.contrib.base_systems.ingame_python.callbackhandler import CallbackHandler
+from .commands import CmdCallback
+from .callbackhandler import CallbackHandler
 
 # Force settings
 settings.EVENTS_CALENDAR = "standard"
