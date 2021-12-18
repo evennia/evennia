@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-This package holds the demo game of Evennia.
+Tutorial world - Griatch, 2011, 2015
+
 """
 
-
-from . import mob, objects, rooms
+from . import mob, objects, rooms  # noqa
