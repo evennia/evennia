@@ -508,7 +508,7 @@ TYPECLASS_PATHS = [
     "typeclasses",
     "evennia",
     "evennia.contrib",
-    "evennia.contrib.tutorial_examples",
+    "evennia.contrib.tutorials",
 ]
 
 # Typeclass for account objects (linked to a character) (fallback)
@@ -602,7 +602,7 @@ VALIDATOR_FUNC_MODULES = ["evennia.utils.validatorfuncs"]
 BASE_BATCHPROCESS_PATHS = [
     "world",
     "evennia.contrib",
-    "evennia.contrib.tutorial_examples",
+    "evennia.contrib.tutorials",
 ]
 
 ######################################################################

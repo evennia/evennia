@@ -1,5 +1,5 @@
 """
-XYZGrid - Evennia 2021
+XYZGrid - Griatch 2021
 
 """
 

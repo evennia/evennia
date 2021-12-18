@@ -3,7 +3,7 @@ Default prototypes for building the XYZ-grid into actual game-rooms.
 
 Add this to mygame/conf/settings/settings.py:
 
-    PROTOTYPE_MODULES += ['evennia.contrib.xyzgrid.prototypes']
+    PROTOTYPE_MODULES += ['evennia.contrib.grid.xyzgrid.prototypes']
 
 The prototypes can then be used in mapping prototypes as
 
@@ -28,7 +28,7 @@ except AttributeError:
 
 room_prototype = {
     'prototype_key': 'xyz_room',
-    'typeclass': 'evennia.contrib.xyzgrid.xyzroom.XYZRoom',
+    'typeclass': 'evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom',
     'prototype_tags': ("xyzroom", ),
     'key': "A room",
     'desc': "An empty room."
@@ -37,7 +37,7 @@ room_prototype.update(room_override)
 
 exit_prototype = {
     'prototype_key': 'xyz_exit',
-    'typeclass': 'evennia.contrib.xyzgrid.xyzroom.XYZExit',
+    'typeclass': 'evennia.contrib.grid.xyzgrid.xyzroom.XYZExit',
     'prototype_tags': ("xyzexit", ),
     'desc': "An exit."
 }

@@ -1,5 +1,5 @@
 ```{eval-rst}
-evennia.contrib 
+evennia.contrib
 =======================
 
 .. automodule:: evennia.contrib
@@ -54,6 +54,6 @@ evennia.contrib
    evennia.contrib.turnbattle
    evennia.contrib.tutorial_examples
    evennia.contrib.tutorial_world
-   evennia.contrib.xyzgrid
+   evennia.contrib.grid.xyzgrid
 
 ```

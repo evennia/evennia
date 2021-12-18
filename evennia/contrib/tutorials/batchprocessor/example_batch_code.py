@@ -45,7 +45,7 @@
 # all other #CODE blocks when they are executed.
 
 from evennia import create_object, search_object
-from evennia.contrib.tutorial_examples import red_button
+from evennia.contrib.tutorials import red_button
 from evennia import DefaultObject
 
 limbo = search_object("Limbo")[0]

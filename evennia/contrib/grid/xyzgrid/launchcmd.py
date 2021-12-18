@@ -5,7 +5,7 @@ server (since this can be slow).
 To use, add to the settings:
 ::
 
-    EXTRA_LAUNCHER_COMMANDS.update({'xyzgrid': 'evennia.contrib.xyzgrid.launchcmd.xyzcommand'})
+    EXTRA_LAUNCHER_COMMANDS.update({'xyzgrid': 'evennia.contrib.grid.xyzgrid.launchcmd.xyzcommand'})
 
 You should now be able to do
 ::
@@ -80,7 +80,7 @@ add <path.to.xymap.module> [<path> <path>,...]
         {"map": mapstring, "zcoord": mapname/zcoord, "legend": dict, "prototypes": dict}
         describing one single XYmap, or
     - a XYMAP_DATA_LIST - a list of multiple dicts on the XYMAP_DATA form. This allows for
-        embedding multiple maps in the same module. See evennia/contrib/xyzgrid/example.py
+        embedding multiple maps in the same module. See evennia/contrib/grid/xyzgrid/example.py
         for an example of how this looks.
 
     Note that adding a map does *not* spawn it. If maps are linked to one another, you should
@@ -89,7 +89,7 @@ add <path.to.xymap.module> [<path> <path>,...]
 
 Examples:
 
-    evennia xyzgrid add evennia.contrib.xyzgrid.example
+    evennia xyzgrid add evennia.contrib.grid.xyzgrid.example
     evennia xyzgrid add world.mymap1 world.mymap2 world.mymap3
 """
 

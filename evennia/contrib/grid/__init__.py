@@ -1,5 +1,5 @@
 """
-Extened Room - Griatch 2012, vincent-lg 2019
+Contribs related to moving in and manipulating the game world and grid.
 
 """
 

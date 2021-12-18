@@ -59,7 +59,7 @@ Exits: northeast and east
 
    and
 
-       PROTOTYPE_MODULES += [’evennia.contrib.xyzgrid.prototypes’]
+       PROTOTYPE_MODULES += [’evennia.contrib.grid.xyzgrid.prototypes’]
 
    This will add the new ability to enter `evennia xyzgrid <option>` on the
    command line.  It will also make the `xyz_room` and `xyz_exit` prototypes
@@ -107,7 +107,7 @@ The `evennia xyzgrid` is a custom launch option added only for this contrib.
 
 The xyzgrid-contrib comes with a full grid example. Let's add it:
 
-    $ evennia xyzgrid add evennia.contrib.xyzgrid.example
+    $ evennia xyzgrid add evennia.contrib.grid.xyzgrid.example
 
 You can now list the maps on your grid:
 
@@ -120,7 +120,7 @@ about each map with the `show` subcommand:
     $ evennia xyzgrid show "the small cave"
 
 If you want to peek at how the grid's code, open
-[evennia/contrib/xyzgrid/example.py](evennia.contrib.xyzgrid.example).
+[evennia/contrib/grid/xyzgrid/example.py](evennia.contrib.xyzgrid.example).
 (We'll explain the details in later sections).
 
 So far the grid is 'abstract' and has no actual in-game presence. Let's
@@ -430,9 +430,9 @@ LEGEND = {
 The legend is optional, and any symbol not explicitly given in your legend will
 fall back to its value in the default legend [outlined below](#default-legend).
 
-- [MapNode](evennia.contrib.xyzgrid.xymap_legend.MapNode)
+- [MapNode](evennia.contrib.grid.xyzgrid.xymap_legend.MapNode)
   is the base class for all nodes.
-- [MapLink](evennia.contrib.xyzgrid.xymap_legend.MapLink)
+- [MapLink](evennia.contrib.grid.xyzgrid.xymap_legend.MapLink)
   is the base class for all links.
 
 As the _Map String_ is parsed, each found symbol is looked up in the legend and
@@ -445,7 +445,7 @@ with a full set of map elements that use these properties in various ways
 (described in the next section).
 
 Some useful properties of the
-[MapNode](evennia.contrib.xyzgrid.xymap_legend.MapNode)
+[MapNode](evennia.contrib.grid.xyzgrid.xymap_legend.MapNode)
 class (see class doc for hook methods):
 
 - `symbol` (str) - The character to parse from the map into this node. By default this
@@ -473,7 +473,7 @@ class (see class doc for hook methods):
   useful for various reasons, mostly map-transitions).
 
 Some useful properties of the
-[MapLink](evennia.contrib.xyzgrid.xymap_legend.MapLink)
+[MapLink](evennia.contrib.grid.xyzgrid.xymap_legend.MapLink)
 class (see class doc for hook methods):
 
 - `symbol` (str) - The character to parse from the map into this node. This must
@@ -530,7 +530,7 @@ Below is an example that changes the map's nodes to show up as red
 (maybe for a lava map?):
 
 ```
-from evennia.contrib.xyzgrid import xymap_legend
+from evennia.contrib.grid.xyzgrid import xymap_legend
 
 class RedMapNode(xymap_legend.MapNode):
     display_symbol = "|r#|n"
@@ -548,7 +548,7 @@ LEGEND = {
 Below is the default map legend. The `symbol` is what should be put in the Map
 string. It must always be a single character. The `display-symbol` is what is
 actually visualized when displaying the map to players in-game. This could have
-colors etc. All classes are found in `evennia.contrib.xyzgrid.xymap_legend` and
+colors etc. All classes are found in `evennia.contrib.grid.xyzgrid.xymap_legend` and
 their names are included to make it easy to know what to override.
 
 ```{eval-rst}
@@ -801,7 +801,7 @@ different (unused) unique symbol in your map legend:
 ```python
 # in your map definition module
 
-from evennia.contrib.xyzgrid import xymap_legend
+from evennia.contrib.grid.xyzgrid import xymap_legend
 
 MAPSTR = r"""
 
@@ -851,7 +851,7 @@ added, with different map-legend symbols:
 ```python
 # in your map definition module (let's say this is mapB)
 
-from evennia.contrib.xyzgrid import xymap_legend
+from evennia.contrib.grid.xyzgrid import xymap_legend
 
 MAPSTR = r"""
 
@@ -924,10 +924,10 @@ across the map boundary.
 [Prototypes](../Components/Prototypes.md) are dicts that describe how to _spawn_ a new instance
 of an object. Each of the _nodes_ and _links_ above have a default prototype
 that allows the `evennia xyzgrid spawn` command to convert them to
-a [XYZRoom](evennia.contrib.xyzgrid.xyzroom.XYZRoom)
-or an [XYZExit](evennia.contrib.xyzgrid.xyzroom.XYZRoom) respectively.
+a [XYZRoom](evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom)
+or an [XYZExit](evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom) respectively.
 
-The default prototypes are found in `evennia.contrib.xyzgrid.prototypes` (added
+The default prototypes are found in `evennia.contrib.grid.xyzgrid.prototypes` (added
 during installation of this contrib), with `prototype_key`s `"xyz_room"` and
 `"xyz_exit"` - use these as `prototype_parent` to add your own custom prototypes.
 
@@ -1012,7 +1012,7 @@ picked up and applied to the existing objects.
 
 #### Extending the base prototypes
 
-The default prototypes are found in `evennia.contrib.xyzgrid.prototypes` and
+The default prototypes are found in `evennia.contrib.grid.xyzgrid.prototypes` and
 should be included as `prototype_parents` for prototypes on the map. Would it
 not be nice to be able to change these and have the change apply to all of the
 grid? You can, by adding the following to your `mygame/server/conf/settings.py`:
@@ -1177,9 +1177,9 @@ To access the grid in-code, there are several ways:
 	grid = evennia.search_script("XYZGrid")[0]
 
   (`search_script` always returns a list)
-- You can get it with `evennia.contrib.xyzgrid.xyzgrid.get_xyzgrid`
+- You can get it with `evennia.contrib.grid.xyzgrid.xyzgrid.get_xyzgrid`
 
-	from evennia.contrib.xyzgrid.xyzgrid import get_xyzgrid
+	from evennia.contrib.grid.xyzgrid.xyzgrid import get_xyzgrid
 	grid = get_xyzgrid()
 
   This will *always* return a grid, creating an empty grid if one didn't

@@ -21,7 +21,7 @@ class ForceUTCDatetime(datetime.datetime):
         return datetime.datetime.utcfromtimestamp(timestamp)
 
 
-@patch("evennia.contrib.extended_room.datetime.datetime", ForceUTCDatetime)
+@patch("evennia.contrib.grid.extended_room.extended_room.datetime.datetime", ForceUTCDatetime)
 # mock gametime to return April 9, 2064, at 21:06 (spring evening)
 @patch("evennia.utils.gametime.gametime", new=Mock(return_value=2975000766))
 class TestExtendedRoom(CommandTest):
