@@ -2178,10 +2178,16 @@ class TestComms(CommandTest):
 
 
 class TestBatchProcess(CommandTest):
+    """
+    Test the batch processor.
+
+    """
+    # there is some sort of issue with the mock; it needs to loaded once to work
+    from evennia.contrib.tutorials.red_button import red_button  # noqa
 
     @patch("evennia.contrib.tutorials.red_button.red_button.repeat")
     @patch("evennia.contrib.tutorials.red_button.red_button.delay")
-    def test_batch_commands(self, mock_delay, mock_repeat):
+    def test_batch_commands(self, mock_tutorials, mock_repeat):
         # cannot test batchcode here, it must run inside the server process
         self.call(
             batchprocess.CmdBatchCommands(),
