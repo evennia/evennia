@@ -70,7 +70,7 @@ class EventHandler(DefaultScript):
         # Generate locals
         self.ndb.current_locals = {}
         self.ndb.fresh_locals = {}
-        addresses = ["evennia.contrib.ingame_python.eventfuncs"]
+        addresses = ["evennia.contrib.base_systems.ingame_python.eventfuncs"]
         addresses.extend(getattr(settings, "EVENTFUNCS_LOCATIONS", ["world.eventfuncs"]))
         for address in addresses:
             if pypath_to_realpath(address):
@@ -87,7 +87,7 @@ class EventHandler(DefaultScript):
             delay(seconds, complete_task, task_id)
 
         # Place the script in the CallbackHandler
-        from evennia.contrib.ingame_python import typeclasses
+        from evennia.contrib.base_systems.ingame_python import typeclasses
 
         CallbackHandler.script = self
         DefaultObject.callbacks = typeclasses.EventObject.callbacks

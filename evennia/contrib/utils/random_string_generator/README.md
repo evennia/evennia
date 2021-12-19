@@ -11,7 +11,7 @@ Here's a very simple example:
 
 ```python
 
-from evennia.contrib.random_string_generator import RandomStringGenerator
+from evennia.contrib.utils.random_string_generator import RandomStringGenerator
 
 # Create a generator for phone numbers
 phone_generator = RandomStringGenerator("phone number", r"555-[0-9]{3}-[0-9]{4}")

@@ -11,7 +11,7 @@ import datetime, gzip, pickle, threading
 _SKIP = False
 try:
     from botocore.exceptions import ClientError
-    from evennia.contrib.awsstorage import aws_s3_cdn as s3boto3
+    from .awsstorage import aws_s3_cdn as s3boto3
 except ImportError:
     _SKIP = True
 

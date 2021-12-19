@@ -8,7 +8,7 @@ sequence instead of requiring you to enter both at once.
 
 To install, add this line to the settings file (`mygame/server/conf/settings.py`):
 
-    CMDSET_UNLOGGEDIN = "evennia.base_systems.contrib.menu_login.UnloggedinCmdSet"
+    CMDSET_UNLOGGEDIN = "evennia.contrib.base_systems.menu_login.UnloggedinCmdSet"
 
 Reload the server and the new connection method will be active. Note that you must
 independently change the connection screen to match this login style, by editing
@@ -244,7 +244,7 @@ class CmdUnloggedinLook(Command):
         """
         EvMenu(
             self.caller,
-            "evennia.contrib.menu_login",
+            "evennia.contrib.base_systems.menu_login",
             startnode="node_enter_username",
             auto_look=False,
             auto_quit=False,

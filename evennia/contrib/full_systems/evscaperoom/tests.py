@@ -271,7 +271,7 @@ class TestStates(EvenniaTest):
         dirname = path.join(path.dirname(__file__), "states")
         states = []
         for imp, module, ispackage in pkgutil.walk_packages(
-            path=[dirname], prefix="evennia.contrib.evscaperoom.states."
+            path=[dirname], prefix="evennia.contrib.full_systems.evscaperoom.states."
         ):
             mod = mod_import(module)
             states.append(mod)

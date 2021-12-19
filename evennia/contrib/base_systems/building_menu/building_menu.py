@@ -60,7 +60,7 @@ The first thing to do is to create a new module and place a class
 inheriting from `BuildingMenu` in it.
 
 ```python
-from evennia.contrib.building_menu.building_menu import BuildingMenu
+from evennia.contrib.base_systems.building_menu.building_menu import BuildingMenu
 
 class RoomBuildingMenu(BuildingMenu):
     # ...

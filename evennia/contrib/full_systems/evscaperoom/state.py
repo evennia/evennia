@@ -24,7 +24,7 @@ from .utils import create_evscaperoom_object, msg_cinematic, parse_for_things
 if hasattr(settings, "EVSCAPEROOM_STATE_PACKAGE"):
     _ROOMSTATE_PACKAGE = settings.EVSCAPEROOM_STATE_PACKAGE
 else:
-    _ROOMSTATE_PACKAGE = "evennia.contrib.evscaperoom.states"
+    _ROOMSTATE_PACKAGE = "evennia.contrib.full_systems.evscaperoom.states"
 if hasattr(settings, "EVSCAPEROOM_START_STATE"):
     _FIRST_STATE = settings.EVSCAPEROOM_START_STATE
 else:

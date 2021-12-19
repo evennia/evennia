@@ -18,7 +18,7 @@ import random
 # A map with a temple (▲) amongst mountains (n,∩) in a forest (♣,♠) on an
 # island surrounded by water (≈). By giving no instructions for the water
 # characters we effectively skip it and create no rooms for those squares.
-EXAMPLE1_MAP = '''
+EXAMPLE1_MAP = '''\
 ≈≈≈≈≈
 ≈♣n♣≈
 ≈∩▲∩≈
@@ -102,7 +102,7 @@ EXAMPLE1_LEGEND = {
 
 # Example two
 
-# @mapbuilder/two evennia.contrib.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND
+# @mapbuilder/two evennia.contrib.grid.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND
 
 # -*- coding: utf-8 -*-
 
@@ -115,7 +115,7 @@ EXAMPLE1_LEGEND = {
 
 # This is the same layout as Example 1 but included are characters for exits.
 # We can use these characters to determine which rooms should be connected.
-EXAMPLE2_MAP = '''
+EXAMPLE2_MAP = '''\
 ≈ ≈ ≈ ≈ ≈
 
 ≈ ♣-♣-♣ ≈

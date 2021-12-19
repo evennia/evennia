@@ -8,9 +8,8 @@ from twisted.trial.unittest import TestCase as TwistedTestCase
 from twisted.internet.base import DelayedCall
 from evennia.commands.default.tests import CommandTest
 from evennia.utils.create import create_object
-from evennia.contrib.tutorial_world import mob, objects as tutobjects
 from evennia.utils.test_resources import EvenniaTest, mockdelay, mockdeferLater
-from evennia.contrib.tutorial_world import rooms as tutrooms
+from . import mob, objects as tutobjects, rooms as tutrooms
 
 
 class TestTutorialWorldMob(EvenniaTest):
@@ -59,7 +58,7 @@ class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
         obelisk = create_object(tutobjects.Obelisk, key="obelisk", location=self.room1)
         self.assertEqual(obelisk.return_appearance(self.char1).startswith("|cobelisk("), True)
 
-    @patch("evennia.contrib.tutorial_world.objects.delay", mockdelay)
+    @patch("evennia.contrib.tutorials.tutorial_world.objects.delay", mockdelay)
     @patch("evennia.scripts.taskhandler.deferLater", mockdeferLater)
     def test_lightsource(self):
         light = create_object(tutobjects.LightSource, key="torch", location=self.room1)
@@ -71,7 +70,7 @@ class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
         )
         self.assertFalse(light.pk)
 
-    @patch("evennia.contrib.tutorial_world.objects.delay", mockdelay)
+    @patch("evennia.contrib.tutorials.tutorial_world.objects.delay", mockdelay)
     @patch("evennia.scripts.taskhandler.deferLater", mockdeferLater)
     def test_crumblingwall(self):
         wall = create_object(tutobjects.CrumblingWall, key="wall", location=self.room1)

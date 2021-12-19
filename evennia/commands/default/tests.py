@@ -2186,7 +2186,7 @@ class TestBatchProcess(CommandTest):
         self.call(
             batchprocess.CmdBatchCommands(),
             "batchprocessor.example_batch_cmds",
-            "Running Batch-command processor - Automatic mode for example_batch_cmds",
+            "Running Batch-command processor - Automatic mode for batchprocessor.example_batch_cmds",
         )
         # we make sure to delete the button again here to stop the running reactor
         confirm = building.CmdDestroy.confirm

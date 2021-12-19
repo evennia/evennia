@@ -1,5 +1,6 @@
 """
 Module containing the test cases for the Audit system.
+
 """
 
 from anything import Anything
@@ -28,7 +29,7 @@ class AuditingTest(EvenniaTest):
             "@ccreate channel = for channeling",
             "@create/drop some stuff",
             "@create rock",
-            "@create a pretty shirt : evennia.contrib.clothing.Clothing",
+            "@create a pretty shirt : evennia.contrib.game_systems.clothing.Clothing",
             "@charcreate johnnyefhiwuhefwhef",
             'Command "@logout" is not available. Maybe you meant "@color" or "@cboot"?',
             '/me says, "what is the password?"',

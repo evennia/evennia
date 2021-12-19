@@ -112,7 +112,7 @@ class CmdTalk(default_cmds.MuxCommand):
 
         # Initiate the menu. Change this if you are putting this on
         # some other custom NPC class.
-        EvMenu(self.caller, "evennia.contrib.talking_npc", startnode="menu_start_node")
+        EvMenu(self.caller, "evennia.contrib.tutorials.talking_npc", startnode="menu_start_node")
 
 
 class TalkingCmdSet(CmdSet):

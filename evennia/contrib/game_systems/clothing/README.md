@@ -46,7 +46,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
 From here, you can use the default builder commands to create clothes
 with which to test the system:
 
-    create a pretty shirt : evennia.contrib.clothing.Clothing
+    create a pretty shirt : evennia.contrib.game_systems.clothing.Clothing
     set shirt/clothing_type = 'top'
     wear shirt
 

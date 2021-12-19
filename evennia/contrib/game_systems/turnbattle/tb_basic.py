@@ -19,7 +19,7 @@ own battle system.
 To install and test, import this module's TBBasicCharacter object into
 your game's character.py module:
 
-    from evennia.contrib.turnbattle.tb_basic import TBBasicCharacter
+    from evennia.contrib.game_systems.turnbattle.tb_basic import TBBasicCharacter
 
 And change your game's character typeclass to inherit from TBBasicCharacter
 instead of the default:
@@ -28,7 +28,7 @@ instead of the default:
 
 Next, import this module into your default_cmdsets.py module:
 
-    from evennia.contrib.turnbattle import tb_basic
+    from evennia.contrib.game_systems.turnbattle import tb_basic
 
 And add the battle command set to your default command set:
 
@@ -585,7 +585,7 @@ class CmdFight(Command):
             return
         here.msg_contents("%s starts a fight!" % self.caller)
         # Add a turn handler script to the room, which starts combat.
-        here.scripts.add("contrib.turnbattle.tb_basic.TBBasicTurnHandler")
+        here.scripts.add("contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler")
         # Remember you'll have to change the path to the script if you copy this code to your own modules!
 
 

@@ -485,7 +485,7 @@ class TestCraftSword(TestCase):
         self.crafter.msg = mock.MagicMock()
 
     @override_settings(CRAFT_RECIPE_MODULES=[], DEFAULT_HOME="#999999")
-    @mock.patch("evennia.contrib.crafting.example_recipes.random")
+    @mock.patch("evennia.contrib.game_systems.crafting.example_recipes.random")
     def test_craft_sword(self, mockrandom):
         """
         Craft example sword. For the test, every crafting works.
@@ -652,8 +652,8 @@ class TestCraftSword(TestCase):
         self.assertIsNotNone(cauldron)
 
 
-@mock.patch("evennia.contrib.crafting.crafting._load_recipes", new=mock.MagicMock())
-@mock.patch("evennia.contrib.crafting.crafting._RECIPE_CLASSES", new={"testrecipe": _MockRecipe})
+@mock.patch("evennia.contrib.game_systems.crafting.crafting._load_recipes", new=mock.MagicMock())
+@mock.patch("evennia.contrib.game_systems.crafting.crafting._RECIPE_CLASSES", new={"testrecipe": _MockRecipe})
 @override_settings(CRAFT_RECIPE_MODULES=[], DEFAULT_HOME="#999999")
 class TestCraftCommand(CommandTest):
     """Test the crafting command"""

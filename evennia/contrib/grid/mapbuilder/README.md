@@ -79,7 +79,7 @@ For example:
 
     mapbuilder world.gamemap.MAP world.maplegend.MAP_LEGEND
     mapbuilder evennia.contrib.grid.mapbuilder.EXAMPLE1_MAP EXAMPLE1_LEGEND
-    mapbuilder/two evennia.contrib.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND
+    mapbuilder/two evennia.contrib.grid.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND
             (Legend path defaults to map path)
 
 Below are two examples showcasing the use of automatic exit generation and
@@ -93,7 +93,7 @@ convenience The below example code should be in mymap.py in mygame/world.
 from django.conf import settings
 from evennia.utils import utils
 
-# mapbuilder evennia.contrib.mapbuilder.EXAMPLE1_MAP EXAMPLE1_LEGEND
+# mapbuilder evennia.contrib.grid.mapbuilder.EXAMPLE1_MAP EXAMPLE1_LEGEND
 
 # -*- coding: utf-8 -*-
 
@@ -193,7 +193,7 @@ EXAMPLE1_LEGEND = {
 ## Example Two
 
 ```python
-# @mapbuilder/two evennia.contrib.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND
+# @mapbuilder/two evennia.contrib.grid.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND
 
 # -*- coding: utf-8 -*-
 

@@ -51,7 +51,7 @@ tools will be identified before consumables).
 
 ```python
 
-    from evennia.contrib.crafting import crafting
+    from evennia.contrib.game_systems.crafting import crafting
 
     spiked_club = crafting.craft(crafter, "spiked club", club, nails)
 
@@ -87,7 +87,7 @@ substantially this way.
 
 ```python
 
-    from evennia.contrib.crafting.crafting import CraftingRecipe
+    from evennia.contrib.game_systems.crafting.crafting import CraftingRecipe
 
     class PigIronRecipe(CraftingRecipe):
         # Pig iron is a high-carbon result of melting iron in a blast furnace.
@@ -112,7 +112,7 @@ substantially this way.
 If the above class was added to a module in `CRAFT_RECIPE_MODULES`, it could be
 called using its `.name` property, as "pig iron".
 
-The [example_recipies](api:evennia.contrib.crafting.example_recipes) module has
+The [example_recipies](api:evennia.contrib.game_systems.crafting.example_recipes) module has
 a full example of the components for creating a sword from base components.
 
 ----
@@ -139,7 +139,7 @@ def _load_recipes():
 
     global _RECIPE_CLASSES
     if not _RECIPE_CLASSES:
-        paths = ["evennia.contrib.crafting.example_recipes"]
+        paths = ["evennia.contrib.game_systems.crafting.example_recipes"]
         if hasattr(settings, "CRAFT_RECIPE_MODULES"):
             paths += make_iter(settings.CRAFT_RECIPE_MODULES)
         for path in paths:
@@ -462,7 +462,7 @@ class CraftingRecipe(CraftingRecipeBase):
        this deletes consumables.
 
     Use `.msg` to conveniently send messages to the crafter. Raise
-    `evennia.contrib.crafting.crafting.CraftingError` exception to abort
+    `evennia.contrib.game_systems.crafting.crafting.CraftingError` exception to abort
     crafting at any time in the sequence. If raising with a text, this will be
     shown to the crafter automatically
 
@@ -909,7 +909,8 @@ def craft(crafter, recipe_name, *inputs, raise_exception=False, **kwargs):
 
     Notes:
         If no recipe_module is given, will look for a list `settings.CRAFT_RECIPE_MODULES` and
-        lastly fall back to the example module `"evennia.contrib."`
+        lastly fall back to the example module
+        `"evennia.contrib.game_systems.crafting.example_recipes"`
 
     """
     # delayed loading/caching of recipes

@@ -13,10 +13,11 @@ that will edit any default object offering to change its key and description.
 
 ## Install
 
-1. Import the `GenericBuildingCmd` class from this contrib in your `mygame/commands/default_cmdset.py` file:
+1. Import the `GenericBuildingCmd` class from this contrib in your
+   `mygame/commands/default_cmdset.py` file:
 
     ```python
-    from evennia.base_systems.contrib.building_menu import GenericBuildingCmd
+    from evennia.contrib.base_systems.building_menu import GenericBuildingCmd
     ```
 
 2. Below, add the command in the `CharacterCmdSet`:

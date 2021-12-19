@@ -982,7 +982,7 @@ class TutorialWeapon(TutorialObject):
 
 WEAPON_PROTOTYPES = {
     "weapon": {
-        "typeclass": "evennia.contrib.tutorial_world.objects.TutorialWeapon",
+        "typeclass": "evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon",
         "key": "Weapon",
         "hit": 0.2,
         "parry": 0.2,

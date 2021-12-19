@@ -160,7 +160,7 @@ class TestBuildingMenu(CommandTest):
         """Test to add sub-menus."""
 
         def open_exit(menu):
-            menu.open_submenu("evennia.contrib.tests.Submenu", self.exit)
+            menu.open_submenu("evennia.contrib.base_systems.building_menu.tests.Submenu", self.exit)
             return False
 
         self.menu.add_choice("exit", key="x", on_enter=open_exit)
