@@ -3,4 +3,4 @@ Mirror object - Griatch 2015.
 
 """
 
-from . import TutorialMirror  # noqa
+from .mirror import TutorialMirror  # noqa
