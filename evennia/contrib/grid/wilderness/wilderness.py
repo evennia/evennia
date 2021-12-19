@@ -17,11 +17,11 @@ with their own name. If no name is provided, then a default one is used. Interna
 the wilderness is stored as a Script with the name you specify. If you don't
 specify the name, a script named "default" will be created and used.
 
-    @py from evennia.contrib.grid import wilderness; wilderness.create_wilderness()
+    py from evennia.contrib.grid import wilderness; wilderness.create_wilderness()
 
 Once created, it is possible to move into that wilderness map:
 
-    @py from evennia.contrib.grid import wilderness; wilderness.enter_wilderness(me)
+    py from evennia.contrib.grid import wilderness; wilderness.enter_wilderness(me)
 
 All coordinates used by the wilderness map are in the format of `(x, y)`
 tuples. x goes from left to right and y goes from bottom to top. So `(0, 0)`

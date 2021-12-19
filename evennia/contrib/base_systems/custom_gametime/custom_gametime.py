@@ -291,7 +291,7 @@ def schedule(callback, repeat=False, **kwargs):
     """
     seconds = real_seconds_until(**kwargs)
     script = create_script(
-        "evennia.contrib.custom_gametime.GametimeScript",
+        "evennia.contrib.base_systems.custom_gametime.GametimeScript",
         key="GametimeScript",
         desc="A timegame-sensitive script",
         interval=seconds,

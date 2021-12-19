@@ -47,7 +47,7 @@ To add the `%c-` "mux/mush" style, add the following to your settings file, then
 reboot both Server and Portal:
 
 ```python
-from evennia.contrib import color_markups
+from evennia.contrib.base_systems import color_markups
 COLOR_ANSI_EXTRA_MAP = color_markups.MUX_COLOR_ANSI_EXTRA_MAP
 COLOR_XTERM256_EXTRA_FG = color_markups.MUX_COLOR_XTERM256_EXTRA_FG
 COLOR_XTERM256_EXTRA_BG = color_markups.MUX_COLOR_XTERM256_EXTRA_BG

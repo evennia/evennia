@@ -224,7 +224,7 @@ def init_tree_selection(
     # Initialize menu of selections
     evmenu.EvMenu(
         caller,
-        "evennia.contrib.tree_select",
+        "evennia.contrib.utils.tree_select",
         startnode="menunode_treeselect",
         startnode_input=None,
         cmd_on_exit=cmd_on_exit,

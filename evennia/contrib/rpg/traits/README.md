@@ -34,7 +34,7 @@ Here's an example for adding the TraitHandler to the Character class:
 
 from evennia import DefaultCharacter
 from evennia.utils import lazy_property
-from evennia.contrib.traits import TraitHandler
+from evennia.contrib.rpg.traits import TraitHandler
 
 # ...
 
@@ -71,7 +71,7 @@ other properties/methods on your class.
 
 from evennia import DefaultObject
 from evennia.utils import lazy_property
-from evennia.contrib.traits import TraitProperty
+from evennia.contrib.rpg.traits import TraitProperty
 
 # ...
 
@@ -394,13 +394,13 @@ like a glorified Attribute.
 
 ## Expanding with your own Traits
 
-A Trait is a class inhering from `evennia.contrib.traits.Trait` (or from one of
+A Trait is a class inhering from `evennia.contrib.rpg.traits.Trait` (or from one of
 the existing Trait classes).
 
 ```python
 # in a file, say, 'mygame/world/traits.py'
 
-from evennia.contrib.traits import StaticTrait
+from evennia.contrib.rpg.traits import StaticTrait
 
 class RageTrait(StaticTrait):
 

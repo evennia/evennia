@@ -29,7 +29,7 @@ In `mygame/commands/default_cmdsets.py`:
 
 ```python
 
-from evennia.contrib.evscaperoom.commands import CmdEvscapeRoomStart
+from evennia.contrib.full_systems.evscaperoom.commands import CmdEvscapeRoomStart
 
 class CharacterCmdSet(...):
 
@@ -47,7 +47,7 @@ comes with a small (very small) escape room as an example.
 To do this, you need to make your own states. First make sure you can play the
 simple example room installed above.
 
-Copy `evennia/contrib/evscaperoom/states` to somewhere in your game folder (let's
+Copy `evennia/contrib/full_systems/evscaperoom/states` to somewhere in your game folder (let's
 assume you put it under `mygame/world/`).
 
 Next you need to re-point Evennia to look for states in this new location. Add
@@ -70,7 +70,7 @@ There are a few other settings that may be useful:
   want some other naming scheme.
 - `HELP_SUMMARY_TEXT` - this is the help blurb shown when entering `help` in
   the room without an argument. The original is found at the top of
-  `evennia/contrib/evscaperoom/commands.py`.
+  `evennia/contrib/full_systems/evscaperoom/commands.py`.
 
 # Playing the game
 

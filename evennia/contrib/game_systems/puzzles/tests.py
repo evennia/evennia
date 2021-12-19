@@ -101,7 +101,7 @@ class TestPuzzles(CommandTest):
         self._assert_msg_matched(msg, regexs, re_flags=re.MULTILINE | re.DOTALL)
 
     def test_cmdset_puzzle(self):
-        self.char1.cmdset.add("evennia.contrib.puzzles.PuzzleSystemCmdSet")
+        self.char1.cmdset.add("evennia.contrib.game_systems.puzzles.PuzzleSystemCmdSet")
         # FIXME: testing nothing, this is just to bump up coverage
 
     def test_cmd_puzzle(self):

@@ -31,7 +31,7 @@ the rules of your preferred system or the needs of your own game.
 To install and test, import this module's TBEquipCharacter object into
 your game's character.py module:
 
-    from evennia.contrib.turnbattle.tb_equip import TBEquipCharacter
+    from evennia.contrib.game_systems.turnbattle.tb_equip import TBEquipCharacter
 
 And change your game's character typeclass to inherit from TBEquipCharacter
 instead of the default:
@@ -40,7 +40,7 @@ instead of the default:
 
 Next, import this module into your default_cmdsets.py module:
 
-    from evennia.contrib.turnbattle import tb_equip
+    from evennia.contrib.game_systems.turnbattle import tb_equip
 
 And add the battle command set to your default command set:
 
@@ -722,7 +722,7 @@ class CmdFight(Command):
             return
         here.msg_contents("%s starts a fight!" % self.caller)
         # Add a turn handler script to the room, which starts combat.
-        here.scripts.add("contrib.turnbattle.tb_equip.TBEquipTurnHandler")
+        here.scripts.add("contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler")
         # Remember you'll have to change the path to the script if you copy this code to your own modules!
 
 
@@ -933,7 +933,7 @@ class CmdWield(Command):
         weapon = self.caller.search(self.args, candidates=self.caller.contents)
         if not weapon:
             return
-        if not weapon.is_typeclass("evennia.contrib.turnbattle.tb_equip.TBEWeapon", exact=True):
+        if not weapon.is_typeclass("evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon", exact=True):
             self.caller.msg("That's not a weapon!")
             # Remember to update the path to the weapon typeclass if you move this module!
             return
@@ -1012,7 +1012,7 @@ class CmdDon(Command):
         armor = self.caller.search(self.args, candidates=self.caller.contents)
         if not armor:
             return
-        if not armor.is_typeclass("evennia.contrib.turnbattle.tb_equip.TBEArmor", exact=True):
+        if not armor.is_typeclass("evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor", exact=True):
             self.caller.msg("That's not armor!")
             # Remember to update the path to the armor typeclass if you move this module!
             return
@@ -1088,9 +1088,9 @@ PROTOTYPES START HERE
 ----------------------------------------------------------------------------
 """
 
-BASEWEAPON = {"typeclass": "evennia.contrib.turnbattle.tb_equip.TBEWeapon"}
+BASEWEAPON = {"typeclass": "evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon"}
 
-BASEARMOR = {"typeclass": "evennia.contrib.turnbattle.tb_equip.TBEArmor"}
+BASEARMOR = {"typeclass": "evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor"}
 
 DAGGER = {
     "prototype": "BASEWEAPON",

@@ -43,7 +43,7 @@ can be specified on the item as well, but they are optional.
 To install and test, import this module's TBItemsCharacter object into
 your game's character.py module:
 
-    from evennia.contrib.turnbattle.tb_items import TBItemsCharacter
+    from evennia.contrib.game_systems.turnbattle.tb_items import TBItemsCharacter
 
 And change your game's character typeclass to inherit from TBItemsCharacter
 instead of the default:
@@ -52,7 +52,7 @@ instead of the default:
 
 Next, import this module into your default_cmdsets.py module:
 
-    from evennia.contrib.turnbattle import tb_items
+    from evennia.contrib.game_systems.turnbattle import tb_items
 
 And add the battle command set to your default command set:
 
@@ -866,7 +866,7 @@ class CmdFight(Command):
             return
         here.msg_contents("%s starts a fight!" % self.caller)
         # Add a turn handler script to the room, which starts combat.
-        here.scripts.add("contrib.turnbattle.tb_items.TBItemsTurnHandler")
+        here.scripts.add("contrib.game_systems.turnbattle.tb_items.TBItemsTurnHandler")
         # Remember you'll have to change the path to the script if you copy this code to your own modules!
 
 

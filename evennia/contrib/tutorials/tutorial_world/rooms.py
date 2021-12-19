@@ -15,7 +15,7 @@ from evennia import TICKER_HANDLER
 from evennia import CmdSet, Command, DefaultRoom
 from evennia import utils, create_object, search_object
 from evennia import syscmdkeys, default_cmds
-from evennia.contrib.tutorial_world.objects import LightSource
+from .objects import LightSource
 
 # the system error-handling module is defined in the settings. We load the
 # given setting here using utils.object_from_module. This way we can use
@@ -1158,7 +1158,7 @@ class OutroRoom(TutorialRoom):
             del character.db.combat_parry_mode
             del character.db.tutorial_bridge_position
             for obj in character.contents:
-                if obj.typeclass_path.startswith("evennia.contrib.tutorial_world"):
+                if obj.typeclass_path.startswith("evennia.contrib.tutorials.tutorial_world"):
                     obj.delete()
             character.tags.clear(category="tutorial_world")
 

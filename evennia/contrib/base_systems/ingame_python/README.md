@@ -84,10 +84,10 @@ This is the quick summary. Scroll down for more detailed help on each step.
      default to `None`).
 3. Add the `call` command.
 4. Inherit from the custom typeclasses of the in-game Python system.
-   - `evennia.contrib.ingame_python.typeclasses.EventCharacter`: to replace `DefaultCharacter`.
-   - `evennia.contrib.ingame_python.typeclasses.EventExit`: to replace `DefaultExit`.
-   - `evennia.contrib.ingame_python.typeclasses.EventObject`: to replace `DefaultObject`.
-   - `evennia.contrib.ingame_python.typeclasses.EventRoom`: to replace `DefaultRoom`.
+   - `evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter`: to replace `DefaultCharacter`.
+   - `evennia.contrib.base_systems.ingame_python.typeclasses.EventExit`: to replace `DefaultExit`.
+   - `evennia.contrib.base_systems.ingame_python.typeclasses.EventObject`: to replace `DefaultObject`.
+   - `evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom`: to replace `DefaultRoom`.
 
 The following sections describe in details each step of the installation.
 
@@ -181,7 +181,7 @@ this:
 
 ```python
 from evennia import default_cmds
-from evennia.contrib.ingame_python.commands import CmdCallback
+from evennia.contrib.base_systems.ingame_python.commands import CmdCallback
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
@@ -679,8 +679,8 @@ Here, we want to add a "push" event on objects.  In your `typeclasses/objects.py
 write something like:
 
 ```python
-from evennia.contrib.ingame_python.utils import register_events
-from evennia.contrib.ingame_python.typeclasses import EventObject
+from evennia.contrib.base_systems.ingame_python.utils import register_events
+from evennia.contrib.base_systems.ingame_python.typeclasses import EventObject
 
 EVENT_PUSH = """
 A character push the object.
@@ -806,14 +806,15 @@ see a message about a "beautiful ant-hill".
 
 ### Adding new eventfuncs
 
-Eventfuncs, like `deny()`, are defined in `contrib/events/eventfuncs.py`.  You can add your own
-eventfuncs by creating a file named `eventfuncs.py` in your `world` directory.  The functions
-defined in this file will be added as helpers.
+Eventfuncs, like `deny()`, are defined in
+`contrib/base_systesm/ingame_python/eventfuncs.py`.  You can add your own
+eventfuncs by creating a file named `eventfuncs.py` in your `world` directory.
+The functions defined in this file will be added as helpers.
 
-You can also decide to create your eventfuncs in another location, or even in several locations.  To
-do so, edit the `EVENTFUNCS_LOCATION` setting in your `server/conf/settings.py` file, specifying
-either a python path or a list of Python paths in which your helper functions are defined.  For
-instance:
+You can also decide to create your eventfuncs in another location, or even in
+several locations.  To do so, edit the `EVENTFUNCS_LOCATION` setting in your
+`server/conf/settings.py` file, specifying either a python path or a list of
+Python paths in which your helper functions are defined.  For instance:
 
 ```python
 EVENTFUNCS_LOCATIONS = [

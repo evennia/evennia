@@ -15,7 +15,7 @@ system but they don't necessarily need to follow each other in the exact
 sequence.
 
 Each state module must make a class `State` available in the global scope. This
-should be a child of `evennia.contrib.evscaperoom.state.BaseState`. The
+should be a child of `evennia.contrib.full_systems/evscaperoom.state.BaseState`. The
 methods on this class will be called to initialize the state and clean up etc.
 There are no other restrictions on the module.
 

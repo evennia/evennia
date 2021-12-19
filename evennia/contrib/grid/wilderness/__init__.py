@@ -10,5 +10,3 @@ from .wilderness import WildernessScript  # noqa
 from .wilderness import WildernessExit  # noqa
 from .wilderness import WildernessRoom  # noqa
 from .wilderness import WildernessMapProvider  # noqa
-from .wilderness import Wilderness  # noqa
-from .wilderness import WildernessMap  # noqa

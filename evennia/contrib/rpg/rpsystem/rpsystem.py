@@ -42,7 +42,7 @@ to a game, common to many RP-centric games:
     simple Attribute that modifies how the characters is viewed when
     in a room as sdesc + pose.
 - in-emote says, including seamless integration with language
-    obscuration routine (such as contrib/rplanguage.py)
+    obscuration routine (such as contrib/rpg/rplanguage.py)
 
 Installation:
 
@@ -125,7 +125,7 @@ Extra Installation Instructions:
 
 1. In typeclasses/character.py:
    Import the `ContribRPCharacter` class:
-       `from evennia.contrib.rpsystem import ContribRPCharacter`
+       `from evennia.contrib.rpg.rpsystem import ContribRPCharacter`
    Inherit ContribRPCharacter:
        Change "class Character(DefaultCharacter):" to
        `class Character(ContribRPCharacter):`
@@ -133,13 +133,13 @@ Extra Installation Instructions:
        Add `super().at_object_creation()` as the top line.
 2. In `typeclasses/rooms.py`:
        Import the `ContribRPRoom` class:
-       `from evennia.contrib.rpsystem import ContribRPRoom`
+       `from evennia.contrib.rpg.rpsystem import ContribRPRoom`
    Inherit `ContribRPRoom`:
        Change `class Room(DefaultRoom):` to
        `class Room(ContribRPRoom):`
 3. In `typeclasses/objects.py`
        Import the `ContribRPObject` class:
-       `from evennia.contrib.rpsystem import ContribRPObject`
+       `from evennia.contrib.rpg.rpsystem import ContribRPObject`
    Inherit `ContribRPObject`:
        Change `class Object(DefaultObject):` to
        `class Object(ContribRPObject):`
@@ -348,7 +348,7 @@ def parse_language(speaker, emote):
             the markers and a tuple (langname, saytext), where
             langname can be None.
     Raises:
-        evennia.contrib.rpsystem.LanguageError: If an invalid language was
+        evennia.contrib.rpg.rpsystem.LanguageError: If an invalid language was
         specified.
 
     Notes:
@@ -1756,7 +1756,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         Notes:
             This is designed to work together with a string obfuscator
             such as the `obfuscate_language` or `obfuscate_whisper` in
-            the evennia.contrib.rplanguage module.
+            the evennia.contrib.rpg.rplanguage module.
 
         """
         return "%s|w%s|n" % ("|W(%s)" % language if language else "", text)

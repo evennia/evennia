@@ -15,7 +15,7 @@ also adds the short descriptions and the `sdesc` command).
 Installation:
 
 Edit `mygame/commands/default_cmdsets.py` and add
-`from evennia.contrib.game_system.multidescer import CmdMultiDesc` to the top.
+`from evennia.contrib.game_systems.multidescer import CmdMultiDesc` to the top.
 
 Next, look up the `at_cmdset_create` method of the `CharacterCmdSet`
 class and add a line `self.add(CmdMultiDesc())` to the end

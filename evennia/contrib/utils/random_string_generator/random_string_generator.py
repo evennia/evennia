@@ -11,7 +11,7 @@ stored and won't be available again in order to avoid repetition.
 Here's a very simple example:
 
 ```python
-from evennia.contrib.random_string_generator import RandomStringGenerator
+from evennia.contrib.utils.random_string_generator import RandomStringGenerator
 # Create a generator for phone numbers
 phone_generator = RandomStringGenerator("phone number", r"555-[0-9]{3}-[0-9]{4}")
 # Generate a phone number (555-XXX-XXXX with X as numbers)
@@ -156,7 +156,7 @@ class RandomStringGenerator:
             self._find_elements(regex)
 
     def __repr__(self):
-        return "<evennia.contrib.tutorials.random_string_generator.RandomStringGenerator for {}>".format(
+        return "<evennia.contrib.utils.random_string_generator.RandomStringGenerator for {}>".format(
             self.name
         )
 
@@ -169,7 +169,7 @@ class RandomStringGenerator:
             script = ScriptDB.objects.get(db_key="generator_script")
         except ScriptDB.DoesNotExist:
             script = create_script(
-                "contrib.tutorials.random_string_generator.RandomStringGeneratorScript")
+                "evennia.contrib.utils.random_string_generator.RandomStringGeneratorScript")
 
         type(self).script = script
         return script
