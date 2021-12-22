@@ -3,11 +3,11 @@ Test multidescer contrib.
 
 """
 
-from evennia.commands.default.tests import CommandTest
+from evennia.commands.default.tests import EvenniaCommandTest
 from . import multidescer
 
 
-class TestMultidescer(CommandTest):
+class TestMultidescer(EvenniaCommandTest):
     def test_cmdmultidesc(self):
         self.call(multidescer.CmdMultiDesc(), "/list", "Stored descs:\ncaller:")
         self.call(

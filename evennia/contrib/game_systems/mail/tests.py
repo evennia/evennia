@@ -3,11 +3,11 @@ Test mail contrib
 
 """
 
-from evennia.commands.default.tests import CommandTest
+from evennia.commands.default.tests import EvenniaCommandTest
 from . import mail
 
 
-class TestMail(CommandTest):
+class TestMail(EvenniaCommandTest):
     def test_mail(self):
         self.call(mail.CmdMail(), "2", "'2' is not a valid mail id.", caller=self.account)
         self.call(mail.CmdMail(), "test", "'test' is not a valid mail id.", caller=self.account)

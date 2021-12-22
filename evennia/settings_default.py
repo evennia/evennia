@@ -508,7 +508,11 @@ TYPECLASS_PATHS = [
     "typeclasses",
     "evennia",
     "evennia.contrib",
+    "evennia.contrib.game_systems",
+    "evennia.contrib.base_systems",
+    "evennia.contrib.full_systems",
     "evennia.contrib.tutorials",
+    "evennia.contrib.utils",
 ]
 
 # Typeclass for account objects (linked to a character) (fallback)
@@ -671,7 +675,8 @@ FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED = False
 FUNCPARSER_OUTGOING_MESSAGES_MODULES = ["evennia.utils.funcparser", "server.conf.inlinefuncs"]
 # Prototype values are also parsed with FuncParser. These modules
 # define which $func callables are available to use in prototypes.
-FUNCPARSER_PROTOTYPE_PARSING_MODULES = ["evennia.prototypes.protfuncs", "server.conf.prototypefuncs"]
+FUNCPARSER_PROTOTYPE_PARSING_MODULES = ["evennia.prototypes.protfuncs",
+                                        "server.conf.prototypefuncs"]
 
 ######################################################################
 # Global Scripts

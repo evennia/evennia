@@ -3,7 +3,7 @@ Test map builder.
 
 """
 
-from evennia.commands.default.tests import CommandTest
+from evennia.commands.default.tests import EvenniaCommandTest
 from . import mapbuilder
 
 # -*- coding: utf-8 -*-
@@ -187,7 +187,7 @@ EXAMPLE2_LEGEND = {
 }
 
 
-class TestMapBuilder(CommandTest):
+class TestMapBuilder(EvenniaCommandTest):
     def test_cmdmapbuilder(self):
         self.call(
             mapbuilder.CmdMapBuilder(),

@@ -9,7 +9,7 @@ Just start this global script manually or at server creation.
 
 from evennia import DefaultScript
 
-from evscaperoom.room import EvscapeRoom
+from .room import EvscapeRoom
 
 
 class CleanupScript(DefaultScript):

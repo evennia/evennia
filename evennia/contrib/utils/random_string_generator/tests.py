@@ -4,7 +4,7 @@ Random string tests.
 """
 
 from evennia.utils.test_resources import EvenniaTest
-from evennia.contrib import random_string_generator
+from . import random_string_generator
 
 SIMPLE_GENERATOR = random_string_generator.RandomStringGenerator("simple", "[01]{2}")
 

@@ -8,7 +8,7 @@ from evennia.utils.test_resources import EvenniaTest
 from . import cooldowns
 
 
-@patch("evennia.contrib.game_systems.cooldowns.time.time", return_value=0.0)
+@patch("evennia.contrib.game_systems.cooldowns.cooldowns.time.time", return_value=0.0)
 class TestCooldowns(EvenniaTest):
     def setUp(self):
         super().setUp()
