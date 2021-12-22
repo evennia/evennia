@@ -9,7 +9,7 @@ Unit test module for Trait classes.
 from copy import copy
 from anything import Something
 from mock import MagicMock, patch
-from django.test import TestCase
+from evennia.utils.test_resources import EvenniaTestCase
 from . import traits
 
 
@@ -39,10 +39,10 @@ _TEST_TRAIT_CLASS_PATHS = [
 ]
 
 
-class _TraitHandlerBase(TestCase):
+class _TraitHandlerBase(EvenniaTestCase):
     "Base for trait tests"
 
-    @patch("evennia.contrib.rpg.traits._TRAIT_CLASS_PATHS", new=_TEST_TRAIT_CLASS_PATHS)
+    @patch("evennia.contrib.rpg.traits.traits._TRAIT_CLASS_PATHS", new=_TEST_TRAIT_CLASS_PATHS)
     def setUp(self):
         self.obj = _MockObj()
         self.traithandler = traits.TraitHandler(self.obj)
@@ -494,7 +494,7 @@ class TestTraitCounterTimed(_TraitHandlerBase):
     Test for trait with timer component
     """
 
-    @patch("evennia.contrib.rpg.traits.time", new=MagicMock(return_value=1000))
+    @patch("evennia.contrib.rpg.traits.traits.time", new=MagicMock(return_value=1000))
     def setUp(self):
         super().setUp()
         self.traithandler.add(
@@ -522,7 +522,7 @@ class TestTraitCounterTimed(_TraitHandlerBase):
             self.trait.ratetarget,
         )
 
-    @patch("evennia.contrib.rpg.traits.time")
+    @patch("evennia.contrib.rpg.traits.traits.time")
     def test_timer_rate(self, mock_time):
         """Test time stepping"""
         mock_time.return_value = 1000
@@ -549,7 +549,7 @@ class TestTraitCounterTimed(_TraitHandlerBase):
         mock_time.return_value = 1218
         self.assertEqual(self._get_timer_data(), (0, -2, -10, None, None))
 
-    @patch("evennia.contrib.rpg.traits.time")
+    @patch("evennia.contrib.rpg.traits.traits.time")
     def test_timer_ratetarget(self, mock_time):
         """test ratetarget"""
         mock_time.return_value = 1000
@@ -751,7 +751,7 @@ class TestTraitGaugeTimed(_TraitHandlerBase):
     Test for trait with timer component
     """
 
-    @patch("evennia.contrib.rpg.traits.time", new=MagicMock(return_value=1000))
+    @patch("evennia.contrib.rpg.traits.traits.time", new=MagicMock(return_value=1000))
     def setUp(self):
         super().setUp()
         self.traithandler.add(
@@ -778,7 +778,7 @@ class TestTraitGaugeTimed(_TraitHandlerBase):
             self.trait.ratetarget,
         )
 
-    @patch("evennia.contrib.rpg.traits.time")
+    @patch("evennia.contrib.rpg.traits.traits.time")
     def test_timer_rate(self, mock_time):
         """Test time stepping"""
         mock_time.return_value = 1000
@@ -806,7 +806,7 @@ class TestTraitGaugeTimed(_TraitHandlerBase):
         mock_time.return_value = 1218
         self.assertEqual(self._get_timer_data(), (0, 0, -10, None, None))
 
-    @patch("evennia.contrib.rpg.traits.time")
+    @patch("evennia.contrib.rpg.traits.traits.time")
     def test_timer_ratetarget(self, mock_time):
         """test ratetarget"""
         mock_time.return_value = 1000
@@ -826,7 +826,7 @@ class TestTraitGaugeTimed(_TraitHandlerBase):
         self.assertEqual(self._get_timer_data(), (70, 70, 1, None, 70))
 
 
-class TestNumericTraitOperators(TestCase):
+class TestNumericTraitOperators(EvenniaTestCase):
     """Test case for numeric magic method implementations."""
 
     def setUp(self):
@@ -909,13 +909,13 @@ class DummyCharacter(_MockObj):
     health = traits.TraitProperty("Health value", trait_type="gauge", base=100)
 
 
-class TestTraitFields(TestCase):
+class TestTraitFields(EvenniaTestCase):
     """
     Test the TraitField class.
 
     """
 
-    @patch("evennia.contrib.rpg.traits._TRAIT_CLASS_PATHS", new=_TEST_TRAIT_CLASS_PATHS)
+    @patch("evennia.contrib.rpg.traits.traits._TRAIT_CLASS_PATHS", new=_TEST_TRAIT_CLASS_PATHS)
     def test_traitfields(self):
         obj = DummyCharacter()
         obj2 = DummyCharacter()

@@ -3,7 +3,7 @@ Building menu tests.
 
 """
 
-from evennia.commands.default.tests import CommandTest
+from evennia.commands.default.tests import EvenniaCommandTest
 from . building_menu import BuildingMenu, CmdNoMatch
 
 
@@ -12,7 +12,7 @@ class Submenu(BuildingMenu):
         self.add_choice("title", key="t", attr="key")
 
 
-class TestBuildingMenu(CommandTest):
+class TestBuildingMenu(EvenniaCommandTest):
     def setUp(self):
         super(TestBuildingMenu, self).setUp()
         self.menu = BuildingMenu(caller=self.char1, obj=self.room1, title="test")

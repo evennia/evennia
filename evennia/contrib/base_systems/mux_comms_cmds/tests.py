@@ -3,17 +3,17 @@ Legacy Mux comms tests (extracted from 0.9.5)
 
 """
 
-from evennia.commands.default.tests import CommandTest
+from evennia.commands.default.tests import EvenniaCommandTest
 from . import mux_comms_cmds as comms
 
 
-class TestLegacyMuxComms(CommandTest):
+class TestLegacyMuxComms(EvenniaCommandTest):
     """
     Test the legacy comms contrib.
     """
 
     def setUp(self):
-        super(CommandTest, self).setUp()
+        super().setUp()
         self.call(
             comms.CmdChannelCreate(),
             "testchan;test=Test Channel",

@@ -6,13 +6,13 @@ Unit tests for the crafting system contrib.
 from unittest import mock
 from django.test import override_settings
 from django.core.exceptions import ObjectDoesNotExist
-from evennia.commands.default.tests import CommandTest
-from evennia.utils.test_resources import TestCase
+from evennia.commands.default.tests import EvenniaCommandTest
+from evennia.utils.test_resources import EvenniaTestCase
 from evennia.utils.create import create_object
 from . import crafting, example_recipes
 
 
-class TestCraftUtils(TestCase):
+class TestCraftUtils(EvenniaTestCase):
     """
     Test helper utils for crafting.
 
@@ -52,7 +52,7 @@ class _TestMaterial:
         return self.name
 
 
-class TestCraftingRecipeBase(TestCase):
+class TestCraftingRecipeBase(EvenniaTestCase):
     """
     Test the parent recipe class.
     """
@@ -137,7 +137,7 @@ class _MockRecipe(crafting.CraftingRecipe):
 
 
 @override_settings(CRAFT_RECIPE_MODULES=[])
-class TestCraftingRecipe(TestCase):
+class TestCraftingRecipe(EvenniaTestCase):
     """
     Test the CraftingRecipe class with one recipe
     """
@@ -474,7 +474,7 @@ class TestCraftingRecipe(TestCase):
         self.assertIsNotNone(self.tool2.pk)
 
 
-class TestCraftSword(TestCase):
+class TestCraftSword(EvenniaTestCase):
     """
     Test the `craft` function by crafting the example sword.
 
@@ -655,7 +655,7 @@ class TestCraftSword(TestCase):
 @mock.patch("evennia.contrib.game_systems.crafting.crafting._load_recipes", new=mock.MagicMock())
 @mock.patch("evennia.contrib.game_systems.crafting.crafting._RECIPE_CLASSES", new={"testrecipe": _MockRecipe})
 @override_settings(CRAFT_RECIPE_MODULES=[], DEFAULT_HOME="#999999")
-class TestCraftCommand(CommandTest):
+class TestCraftCommand(EvenniaCommandTest):
     """Test the crafting command"""
 
     def setUp(self):

@@ -3,12 +3,12 @@ Test the contrib barter system
 """
 
 from mock import Mock
-from evennia.commands.default.tests import CommandTest
+from evennia.commands.default.tests import EvenniaCommandTest
 from evennia.utils.create import create_object
 from . import barter
 
 
-class TestBarter(CommandTest):
+class TestBarter(EvenniaCommandTest):
     def setUp(self):
         super().setUp()
         self.tradeitem1 = create_object(key="TradeItem1", location=self.char1)

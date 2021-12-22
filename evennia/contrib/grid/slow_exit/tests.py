@@ -4,7 +4,7 @@ Slow exit tests.
 """
 
 from mock import Mock, patch
-from evennia.commands.default.tests import CommandTest
+from evennia.commands.default.tests import EvenniaCommandTest
 from evennia.utils.create import create_object
 from . import slow_exit
 
@@ -16,7 +16,7 @@ def _cancellable_mockdelay(time, callback, *args, **kwargs):
     return Mock()
 
 
-class TestSlowExit(CommandTest):
+class TestSlowExit(EvenniaCommandTest):
     @patch("evennia.utils.delay", _cancellable_mockdelay)
     def test_exit(self):
         exi = create_object(

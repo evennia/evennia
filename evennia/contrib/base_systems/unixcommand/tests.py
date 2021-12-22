@@ -3,7 +3,7 @@ Test of the Unixcommand.
 
 """
 
-from evennia.commands.default.tests import CommandTest
+from evennia.commands.default.tests import EvenniaCommandTest
 from .unixcommand import UnixCommand
 
 
@@ -30,7 +30,7 @@ class CmdDummy(UnixCommand):
             self.msg("{} * {} = {}".format(nb1, nb2, result))
 
 
-class TestUnixCommand(CommandTest):
+class TestUnixCommand(EvenniaCommandTest):
     def test_success(self):
         """See the command parsing succeed."""
         self.call(CmdDummy(), "5 10", "5 * 10 = 50")

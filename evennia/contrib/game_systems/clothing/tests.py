@@ -3,14 +3,14 @@ Testing clothing contrib
 
 """
 
-from evennia.commands.default.tests import CommandTest
+from evennia.commands.default.tests import EvenniaCommandTest
 from evennia.utils.create import create_object
 from evennia.objects.objects import DefaultRoom
 from evennia.utils.test_resources import EvenniaTest
 from . import clothing
 
 
-class TestClothingCmd(CommandTest):
+class TestClothingCmd(EvenniaCommandTest):
     def test_clothingcommands(self):
         wearer = create_object(clothing.ClothedCharacter, key="Wearer")
         friend = create_object(clothing.ClothedCharacter, key="Friend")

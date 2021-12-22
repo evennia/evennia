@@ -4,13 +4,13 @@ Test gendersub contrib.
 """
 
 
-from evennia.commands.default.tests import CommandTest
+from evennia.commands.default.tests import EvenniaCommandTest
 from evennia.utils.create import create_object
 from mock import patch
 from . import gendersub
 
 
-class TestGenderSub(CommandTest):
+class TestGenderSub(EvenniaCommandTest):
     def test_setgender(self):
         self.call(gendersub.SetGender(), "male", "Your gender was set to male.")
         self.call(gendersub.SetGender(), "ambiguous", "Your gender was set to ambiguous.")
@@ -22,7 +22,7 @@ class TestGenderSub(CommandTest):
         self.assertEqual(
             gendersub._RE_GENDER_PRONOUN.sub(char._get_pronoun, txt), "Test their gender"
         )
-        with patch("evennia.contrib.game_systems.gendersub.DefaultCharacter.msg") as mock_msg:
+        with patch("evennia.contrib.game_systems.gendersub.gendersub.DefaultCharacter.msg") as mock_msg:
             char.db.gender = "female"
             char.msg("Test |p gender")
             mock_msg.assert_called_with("Test her gender", from_obj=None, session=None)

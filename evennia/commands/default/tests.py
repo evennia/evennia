@@ -23,7 +23,7 @@ from unittest.mock import patch, Mock, MagicMock
 
 from evennia import DefaultRoom, DefaultExit, ObjectDB
 from evennia.commands.default.cmdset_character import CharacterCmdSet
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import EvenniaTest, LocalEvenniaTest
 from evennia.commands.default import (
     help as help_module,
     general,
@@ -57,8 +57,11 @@ _RE_STRIP_EVMENU = re.compile(r"^\+|-+\+|\+-+|--+|\|(?:\s|$)", re.MULTILINE)
 # ------------------------------------------------------------
 
 @patch("evennia.server.portal.portal.LoopingCall", new=MagicMock())
-class CommandTest(EvenniaTest):
+class CommandTestMixin:
     """
+    Mixin to add to a test in order to provide the `.call` helper for
+    testing the execution and returns of a command.
+
     Tests a Command by running it and comparing what messages it sends with
     expected values. This tests without actually spinning up the cmdhandler
     for every test, which is more controlled.
@@ -68,7 +71,7 @@ class CommandTest(EvenniaTest):
 
         from commands.echo import CmdEcho
 
-        class MyCommandTest(CommandTest):
+        class MyCommandTest(EvenniaTest, CommandTestMixin):
 
             def test_echo(self):
                 '''
@@ -306,12 +309,26 @@ class CommandTest(EvenniaTest):
         return returned_msgs
 
 
+class EvenniaCommandTest(EvenniaTest, CommandTestMixin):
+    """
+    Commands only using the default settings.
+
+    """
+
+
+class LocalEvenniaCommandTest(LocalEvenniaTest, CommandTestMixin):
+    """
+    Parent class to inherit from - makes tests use your own
+    classes and settings in mygame.
+
+    """
+
 # ------------------------------------------------------------
 # Individual module Tests
 # ------------------------------------------------------------
 
 
-class TestGeneral(CommandTest):
+class TestGeneral(EvenniaCommandTest):
     def test_look(self):
         rid = self.room1.id
         self.call(general.CmdLook(), "here", "Room(#{})\nroom_desc".format(rid))
@@ -407,7 +424,7 @@ class TestGeneral(CommandTest):
         self.call(general.CmdAccess(), "", "Permission Hierarchy (climbing):")
 
 
-class TestHelp(CommandTest):
+class TestHelp(EvenniaCommandTest):
 
     maxDiff = None
 
@@ -557,7 +574,7 @@ class TestHelp(CommandTest):
                   cmdset=TestCmdSet())
 
 
-class TestSystem(CommandTest):
+class TestSystem(EvenniaCommandTest):
     def test_py(self):
         # we are not testing CmdReload, CmdReset and CmdShutdown, CmdService or CmdTime
         # since the server is not running during these tests.
@@ -581,7 +598,7 @@ _TASK_HANDLER = None
 def func_test_cmd_tasks():
     return 'success'
 
-class TestCmdTasks(CommandTest):
+class TestCmdTasks(EvenniaCommandTest):
 
     def setUp(self):
         super().setUp()
@@ -741,7 +758,7 @@ class TestCmdTasks(CommandTest):
         self.call(system.CmdTasks(), f'/cancel', wanted_msg)
 
 
-class TestAdmin(CommandTest):
+class TestAdmin(EvenniaCommandTest):
     def test_emit(self):
         self.call(admin.CmdEmit(), "Char2 = Test", "Emitted to Char2:\nTest")
 
@@ -772,7 +789,7 @@ class TestAdmin(CommandTest):
         )
 
 
-class TestAccount(CommandTest):
+class TestAccount(EvenniaCommandTest):
     def test_ooc_look(self):
         if settings.MULTISESSION_MODE < 2:
             self.call(
@@ -896,7 +913,7 @@ class TestAccount(CommandTest):
         )
 
 
-class TestBuilding(CommandTest):
+class TestBuilding(EvenniaCommandTest):
     def test_create(self):
         name = settings.BASE_OBJECT_TYPECLASS.rsplit(".", 1)[1]
         self.call(
@@ -1943,13 +1960,13 @@ class TestBuilding(CommandTest):
 import evennia.commands.default.comms as cmd_comms  # noqa
 from evennia.utils.create import create_channel  # noqa
 
-class TestCommsChannel(CommandTest):
+class TestCommsChannel(EvenniaCommandTest):
     """
     Test the central `channel` command.
 
     """
     def setUp(self):
-        super(CommandTest, self).setUp()
+        super(EvenniaCommandTest, self).setUp()
         self.channel = create_channel(
             key="testchannel",
             desc="A test channel")
@@ -2165,7 +2182,7 @@ class TestCommsChannel(CommandTest):
 from evennia.commands.default import comms  # noqa
 
 
-class TestComms(CommandTest):
+class TestComms(EvenniaCommandTest):
 
     def test_page(self):
         self.call(
@@ -2177,7 +2194,7 @@ class TestComms(CommandTest):
         )
 
 
-class TestBatchProcess(CommandTest):
+class TestBatchProcess(EvenniaCommandTest):
     """
     Test the batch processor.
 
@@ -2213,13 +2230,13 @@ class CmdInterrupt(Command):
         self.msg("in func")
 
 
-class TestInterruptCommand(CommandTest):
+class TestInterruptCommand(EvenniaCommandTest):
     def test_interrupt_command(self):
         ret = self.call(CmdInterrupt(), "")
         self.assertEqual(ret, "")
 
 
-class TestUnconnectedCommand(CommandTest):
+class TestUnconnectedCommand(EvenniaCommandTest):
     def test_info_command(self):
         # instead of using SERVER_START_TIME (0), we use 86400 because Windows won't let us use anything lower
         gametime.SERVER_START_TIME = 86400
@@ -2239,7 +2256,7 @@ class TestUnconnectedCommand(CommandTest):
 # Test syscommands
 
 
-class TestSystemCommands(CommandTest):
+class TestSystemCommands(EvenniaCommandTest):
     def test_simple_defaults(self):
         self.call(syscommands.SystemNoInput(), "")
         self.call(syscommands.SystemNoMatch(), "Huh?")

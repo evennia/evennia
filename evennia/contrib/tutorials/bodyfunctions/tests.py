@@ -7,7 +7,7 @@ from evennia.utils.test_resources import EvenniaTest
 from .bodyfunctions import BodyFunctions
 
 
-@patch("evennia.contrib.tutorials.bodyfunctions.random")
+@patch("evennia.contrib.tutorials.bodyfunctions.bodyfunctions.random")
 class TestBodyFunctions(EvenniaTest):
     script_typeclass = BodyFunctions
 

@@ -6,7 +6,7 @@ Test tutorial_world/mob
 from mock import patch
 from twisted.trial.unittest import TestCase as TwistedTestCase
 from twisted.internet.base import DelayedCall
-from evennia.commands.default.tests import CommandTest
+from evennia.commands.default.tests import EvenniaCommandTest
 from evennia.utils.create import create_object
 from evennia.utils.test_resources import EvenniaTest, mockdelay, mockdeferLater
 from . import mob, objects as tutobjects, rooms as tutrooms
@@ -30,7 +30,7 @@ class TestTutorialWorldMob(EvenniaTest):
 DelayedCall.debug = True
 
 
-class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
+class TestTutorialWorldObjects(TwistedTestCase, EvenniaCommandTest):
     def test_tutorialobj(self):
         obj1 = create_object(tutobjects.TutorialObject, key="tutobj")
         obj1.reset()
@@ -129,7 +129,7 @@ class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
         self.call(tutobjects.CmdGetWeapon(), "", "You find Rusty sword.", obj=rack)
 
 
-class TestTutorialWorldRooms(CommandTest):
+class TestTutorialWorldRooms(EvenniaCommandTest):
     def test_cmdtutorial(self):
         room = create_object(tutrooms.TutorialRoom, key="tutroom")
         self.char1.location = room

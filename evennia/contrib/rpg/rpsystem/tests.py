@@ -4,7 +4,7 @@ Tests for RP system
 """
 import time
 from anything import Anything
-from evennia.commands.default.tests import CommandTest
+from evennia.commands.default.tests import EvenniaCommandTest
 from evennia.utils.test_resources import EvenniaTest
 from evennia import create_object
 
@@ -278,7 +278,7 @@ class TestRPSystem(EvenniaTest):
         self.assertEqual(result, (Anything, self.speaker, self.speaker.key))
 
 
-class TestRPSystemCommands(CommandTest):
+class TestRPSystemCommands(EvenniaCommandTest):
     def setUp(self):
         super().setUp()
         self.char1.swap_typeclass(rpsystem.ContribRPCharacter)

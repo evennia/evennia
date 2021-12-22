@@ -4,11 +4,11 @@ Tests of simpledoor.
 """
 
 
-from evennia.commands.default.tests import CommandTest
+from evennia.commands.default.tests import EvenniaCommandTest
 from . import simpledoor
 
 
-class TestSimpleDoor(CommandTest):
+class TestSimpleDoor(EvenniaCommandTest):
     def test_cmdopen(self):
         self.call(
             simpledoor.CmdOpen(),
