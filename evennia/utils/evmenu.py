@@ -1335,6 +1335,9 @@ def list_node(option_generator, select=None, pagesize=10):
         ```python
         def select(caller, selection, available_choices=None, **kwargs):
             '''
+            This will be called by all auto-generated options except any 'extra_options'
+            you return from the node (those you need to handle normally).
+
             Args:
                 caller (Object or Account): User of the menu.
                 selection (str): What caller chose in the menu
@@ -1344,6 +1347,7 @@ def list_node(option_generator, select=None, pagesize=10):
             Returns:
                 tuple, str or None: A tuple (nextnodename, **kwargs) or just nextnodename.  Return
                     `None` to go back to the listnode.
+            '''
 
             # (do something with `selection` here)
 

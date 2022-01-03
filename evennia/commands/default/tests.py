@@ -1669,8 +1669,8 @@ class TestBuilding(EvenniaCommandTest):
         self.call(building.CmdScripts(), "Obj", "No scripts defined on Obj")
         self.call(
             building.CmdScripts(),
-            "Obj = scripts.Script",
-            "Script scripts.Script successfully added"
+            "Obj = scripts.scripts.DefaultScript",
+            "Script scripts.scripts.DefaultScript successfully added"
         )
         self.call(
             building.CmdScripts(),
@@ -1690,25 +1690,25 @@ class TestBuilding(EvenniaCommandTest):
         self.call(building.CmdScripts(), "/stop Obj", "Script on Obj Stopped - ")
 
         self.call(
-            building.CmdScripts(), "Obj = scripts.Script",
-            "Script scripts.Script successfully added",
+            building.CmdScripts(), "Obj = scripts.scripts.DefaultScript",
+            "Script scripts.scripts.DefaultScript successfully added",
             inputs=["Y"]
         )
         self.call(
             building.CmdScripts(),
-            "/start Obj = scripts.Script",
+            "/start Obj = scripts.scripts.DefaultScript",
             "Script on Obj Started ",
             inputs=["Y"]
         )
         self.call(
             building.CmdScripts(),
-            "/stop Obj = scripts.Script",
+            "/stop Obj = scripts.scripts.DefaultScript",
             "Script on Obj Stopped ",
             inputs=["Y"]
         )
         self.call(
             building.CmdScripts(),
-            "/delete Obj = scripts.Script",
+            "/delete Obj = scripts.scripts.DefaultScript",
             "Script on Obj Deleted ",
             inputs=["Y"]
         )
