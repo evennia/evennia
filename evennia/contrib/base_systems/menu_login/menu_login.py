@@ -244,7 +244,7 @@ class CmdUnloggedinLook(Command):
         """
         EvMenu(
             self.caller,
-            "evennia.contrib.base_systems.menu_login",
+            "evennia.contrib.base_systems.menu_login.menu_login",
             startnode="node_enter_username",
             auto_look=False,
             auto_quit=False,
