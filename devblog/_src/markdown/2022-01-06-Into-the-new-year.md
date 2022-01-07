@@ -4,7 +4,7 @@ copyrights: Image by <a href="https://pixabay.com/users/tumisu-148124/?utm_sourc
 ---
 
 ![2022 getting started](https://www.nafcu.org/sites/default/files/inline-images/2022-blog.png)
-
+<br>
 I didn't write an end-of-the year summary for 2021, so this first devblog of 2022 will also look back a bit at the past year. It also helps me get used to using this new blog platform I wrote about in the previous post.
 
 ## On Evennia 1.0
