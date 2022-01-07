@@ -67,7 +67,7 @@ game's commands/default_cmdsets.py:
 From here, you can use the default builder commands to create clothes
 with which to test the system:
 
-    @create a pretty shirt : evennia.contrib.game_systems.clothing.Clothing
+    @create a pretty shirt : evennia.contrib.game_systems.clothing.ContribClothing
     @set shirt/clothing_type = 'top'
     wear shirt
 
@@ -84,7 +84,7 @@ from evennia.utils import evtable
 # Maximum character length of 'wear style' strings, or None for unlimited.
 WEARSTYLE_MAXLENGTH = 50
 
-# The rest of these options have to do with clothing types. Clothing types are optional,
+# The rest of these options have to do with clothing types. ContribClothing types are optional,
 # but can be used to give better control over how different items of clothing behave. You
 # can freely add, remove, or change clothing types to suit the needs of your game and use
 # the options below to affect their behavior.
@@ -228,7 +228,7 @@ def single_type_count(clothes_list, type):
     return type_count
 
 
-class Clothing(DefaultObject):
+class ContribClothing(DefaultObject):
     def wear(self, wearer, wearstyle, quiet=False):
         """
         Sets clothes to 'worn' and optionally echoes to the room.
@@ -389,7 +389,7 @@ class CmdWear(MuxCommand):
         if not clothing:
             self.caller.msg("Thing to wear must be in your inventory.")
             return
-        if not clothing.is_typeclass("evennia.contrib.game_systems.clothing.Clothing", exact=False):
+        if not clothing.is_typeclass(ContribClothing, exact=False):
             self.caller.msg("That's not clothes!")
             return
 
@@ -492,10 +492,10 @@ class CmdCover(MuxCommand):
         cover_with = self.caller.search(self.arglist[1], candidates=self.caller.contents)
         if not to_cover or not cover_with:
             return
-        if not to_cover.is_typeclass("evennia.contrib.game_systems.clothing.Clothing", exact=False):
+        if not to_cover.is_typeclass(ContribClothing, exact=False):
             self.caller.msg("%s isn't clothes!" % to_cover.name)
             return
-        if not cover_with.is_typeclass("evennia.contrib.game_systems.clothing.Clothing", exact=False):
+        if not cover_with.is_typeclass(ContribClothing, exact=False):
             self.caller.msg("%s isn't clothes!" % cover_with.name)
             return
         if cover_with.db.clothing_type:

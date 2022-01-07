@@ -3,11 +3,11 @@ Test health bar contrib
 
 """
 
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from . import health_bar
 
 
-class TestHealthBar(EvenniaTest):
+class TestHealthBar(BaseEvenniaTest):
     def test_healthbar(self):
         expected_bar_str = "|[R|w|n|[B|w            test0 / 200test             |n"
         self.assertEqual(

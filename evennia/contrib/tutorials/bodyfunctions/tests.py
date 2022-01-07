@@ -3,12 +3,12 @@ Tests for the bodyfunctions.
 
 """
 from mock import Mock, patch
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from .bodyfunctions import BodyFunctions
 
 
 @patch("evennia.contrib.tutorials.bodyfunctions.bodyfunctions.random")
-class TestBodyFunctions(EvenniaTest):
+class TestBodyFunctions(BaseEvenniaTest):
     script_typeclass = BodyFunctions
 
     def setUp(self):

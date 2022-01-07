@@ -7,7 +7,7 @@ Tests for the XYZgrid system.
 from random import randint
 from parameterized import parameterized
 from django.test import TestCase
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from . import xymap, xyzgrid, xymap_legend, xyzroom
 
 
@@ -340,7 +340,7 @@ MAP12b = r"""
 """
 
 
-class _MapTest(EvenniaTest):
+class _MapTest(BaseEvenniaTest):
     """
     Parent for map tests
 
@@ -1147,7 +1147,7 @@ class TestMapStressTest(TestCase):
         #           f"slower than expected {max_time}s.")
 
 
-class TestXYZGrid(EvenniaTest):
+class TestXYZGrid(BaseEvenniaTest):
     """
     Test base grid class with a single map, including spawning objects.
 
@@ -1196,7 +1196,7 @@ class Map12bTransition(xymap_legend.TransitionMapNode):
     target_map_xyz = (0, 1, "map12a")
 
 
-class TestXYZGridTransition(EvenniaTest):
+class TestXYZGridTransition(BaseEvenniaTest):
     """
     Test the XYZGrid class and transitions between maps.
 
@@ -1254,7 +1254,7 @@ class TestXYZGridTransition(EvenniaTest):
         self.assertEqual(west_exit.db_destination, room1)
 
 
-class TestBuildExampleGrid(EvenniaTest):
+class TestBuildExampleGrid(BaseEvenniaTest):
     """
     Test building the map-example (this takes about 30s)
 

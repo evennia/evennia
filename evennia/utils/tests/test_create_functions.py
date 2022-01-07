@@ -4,12 +4,12 @@ Tests of create functions
 """
 
 from django.test import TestCase
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils import create
 
 
-class TestCreateScript(EvenniaTest):
+class TestCreateScript(BaseEvenniaTest):
     def test_create_script(self):
         class TestScriptA(DefaultScript):
             def at_script_creation(self):
@@ -129,7 +129,7 @@ class TestCreateHelpEntry(TestCase):
         self.assertEqual(entry.tags.all(return_key_and_category=True), tags)
 
 
-class TestCreateMessage(EvenniaTest):
+class TestCreateMessage(BaseEvenniaTest):
 
     msgtext = """
     Qui laborum voluptas quis commodi ipsum quo temporibus eum. Facilis

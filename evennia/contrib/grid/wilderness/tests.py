@@ -3,13 +3,13 @@ Test wilderness
 
 """
 
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from evennia import DefaultCharacter
 from evennia.utils.create import create_object
 from . import wilderness
 
 
-class TestWilderness(EvenniaTest):
+class TestWilderness(BaseEvenniaTest):
     def setUp(self):
         super().setUp()
         self.char1 = create_object(DefaultCharacter, key="char1")

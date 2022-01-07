@@ -4,11 +4,11 @@ from parameterized import parameterized
 from evennia import DefaultScript
 from evennia.scripts.models import ScriptDB, ObjectDoesNotExist
 from evennia.utils.create import create_script
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.scripts.scripts import DoNothing, ExtendedLoopingCall
 
 
-class TestScript(EvenniaTest):
+class TestScript(BaseEvenniaTest):
     def test_create(self):
         "Check the script can be created via the convenience method."
         obj, errors = DefaultScript.create("useless-machine")

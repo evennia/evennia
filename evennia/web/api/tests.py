@@ -2,7 +2,7 @@
 Tests for the REST API.
 
 """
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.web.api import serializers
 from rest_framework.test import APIClient
 from django.urls import reverse
@@ -18,7 +18,7 @@ urlpatterns = [
 
 
 @override_settings(REST_API_ENABLED=True, ROOT_URLCONF=__name__, AUTH_USERNAME_VALIDATORS=[])
-class TestEvenniaRESTApi(EvenniaTest):
+class TestEvenniaRESTApi(BaseEvenniaTest):
     client_class = APIClient
     maxDiff = None
 

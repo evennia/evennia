@@ -3,7 +3,7 @@ Unit tests for typeclass base system
 
 """
 from django.test import override_settings
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.typeclasses import attributes
 from mock import patch
 from parameterized import parameterized
@@ -13,7 +13,7 @@ from parameterized import parameterized
 # ------------------------------------------------------------
 
 
-class TestAttributes(EvenniaTest):
+class TestAttributes(BaseEvenniaTest):
     def test_attrhandler(self):
         key = "testattr"
         value = "test attr value "
@@ -58,7 +58,7 @@ class TestAttributes(EvenniaTest):
         self.assertEqual(attrobj.locks.all(), ["attrread:id(1)"])
 
 
-class TestTypedObjectManager(EvenniaTest):
+class TestTypedObjectManager(BaseEvenniaTest):
     def _manager(self, methodname, *args, **kwargs):
         return list(getattr(self.obj1.__class__.objects, methodname)(*args, **kwargs))
 
@@ -149,7 +149,7 @@ class TestTypedObjectManager(EvenniaTest):
         self.assertEqual(tagobj.db_data, "data4")
 
 
-class TestTags(EvenniaTest):
+class TestTags(BaseEvenniaTest):
     def test_has_tag_key_only(self):
         self.obj1.tags.add("tagC")
         self.assertTrue(self.obj1.tags.has("tagC"))
@@ -175,7 +175,7 @@ class TestTags(EvenniaTest):
         self.assertFalse(self.obj1.tags.has(category="categoryD"))
 
 
-class TestNickHandler(EvenniaTest):
+class TestNickHandler(BaseEvenniaTest):
     """
     Test the nick handler replacement.
 

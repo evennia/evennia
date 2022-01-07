@@ -4,12 +4,12 @@ Cooldowns tests.
 """
 
 from mock import patch
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from . import cooldowns
 
 
 @patch("evennia.contrib.game_systems.cooldowns.cooldowns.time.time", return_value=0.0)
-class TestCooldowns(EvenniaTest):
+class TestCooldowns(BaseEvenniaTest):
     def setUp(self):
         super().setUp()
         self.handler = cooldowns.CooldownHandler(self.char1)

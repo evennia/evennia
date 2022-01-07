@@ -23,7 +23,7 @@ from unittest.mock import patch, Mock, MagicMock
 
 from evennia import DefaultRoom, DefaultExit, ObjectDB
 from evennia.commands.default.cmdset_character import CharacterCmdSet
-from evennia.utils.test_resources import EvenniaTest, LocalEvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTest
 from evennia.commands.default import (
     help as help_module,
     general,
@@ -309,14 +309,24 @@ class CommandTestMixin:
         return returned_msgs
 
 
-class EvenniaCommandTest(EvenniaTest, CommandTestMixin):
+@patch("evennia.commands.account.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.admin.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.batchprocess.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.building.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.comms.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.general.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.help.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.syscommands.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.system.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.unloggedin.COMMAND_DEFAULT_CLASS", MuxCommand)
+class EvenniaCommandTest(BaseEvenniaTest, CommandTestMixin):
     """
     Commands only using the default settings.
 
     """
 
 
-class LocalEvenniaCommandTest(LocalEvenniaTest, CommandTestMixin):
+class CommandTest(EvenniaTest, CommandTestMixin):
     """
     Parent class to inherit from - makes tests use your own
     classes and settings in mygame.
@@ -1959,14 +1969,17 @@ class TestBuilding(EvenniaCommandTest):
 
 import evennia.commands.default.comms as cmd_comms  # noqa
 from evennia.utils.create import create_channel  # noqa
+from evennia.comms.comms import DefaultChannel  # noqa
 
+
+@patch("evennia.commands.default.comms.CHANNEL_DEFAULT_TYPECLASS", DefaultChannel)
 class TestCommsChannel(EvenniaCommandTest):
     """
     Test the central `channel` command.
 
     """
     def setUp(self):
-        super(EvenniaCommandTest, self).setUp()
+        super().setUp()
         self.channel = create_channel(
             key="testchannel",
             desc="A test channel")
@@ -2039,6 +2052,7 @@ class TestCommsChannel(EvenniaCommandTest):
 
     def test_channel__alias__unalias(self):
         """Add and then remove a channel alias"""
+
         # add alias
         self.call(
             self.cmdchannel(),

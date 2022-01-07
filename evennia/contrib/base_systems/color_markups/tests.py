@@ -4,11 +4,11 @@ Test Color markup.
 """
 
 import re
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from . import color_markups
 
 
-class TestColorMarkup(EvenniaTest):
+class TestColorMarkup(BaseEvenniaTest):
     """
     Note: Normally this would be tested by importing the ansi parser and run
     the mappings through it. This is not possible since the ansi module creates

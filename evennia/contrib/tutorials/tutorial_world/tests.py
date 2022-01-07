@@ -8,11 +8,11 @@ from twisted.trial.unittest import TestCase as TwistedTestCase
 from twisted.internet.base import DelayedCall
 from evennia.commands.default.tests import EvenniaCommandTest
 from evennia.utils.create import create_object
-from evennia.utils.test_resources import EvenniaTest, mockdelay, mockdeferLater
+from evennia.utils.test_resources import BaseEvenniaTest, mockdelay, mockdeferLater
 from . import mob, objects as tutobjects, rooms as tutrooms
 
 
-class TestTutorialWorldMob(EvenniaTest):
+class TestTutorialWorldMob(BaseEvenniaTest):
     def test_mob(self):
         mobobj = create_object(mob.Mob, key="mob")
         self.assertEqual(mobobj.db.is_dead, True)

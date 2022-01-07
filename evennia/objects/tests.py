@@ -1,10 +1,10 @@
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from evennia import DefaultObject, DefaultCharacter, DefaultRoom, DefaultExit
 from evennia.objects.models import ObjectDB
 from evennia.utils import create
 
 
-class DefaultObjectTest(EvenniaTest):
+class DefaultObjectTest(BaseEvenniaTest):
 
     ip = "212.216.139.14"
 
@@ -87,7 +87,7 @@ class DefaultObjectTest(EvenniaTest):
         self.assertEqual(self.char1.search("co", stacked=2), None)
 
 
-class TestObjectManager(EvenniaTest):
+class TestObjectManager(BaseEvenniaTest):
     "Test object manager methods"
 
     def test_get_object_with_account(self):
@@ -160,7 +160,7 @@ class TestObjectManager(EvenniaTest):
         self.assertEqual(obj2.attributes.get(key="phrase", category="adventure"), "plugh")
 
 
-class TestContentHandler(EvenniaTest):
+class TestContentHandler(BaseEvenniaTest):
     "Test the ContentHandler (obj.contents)"
 
     def test_object_create_remove(self):

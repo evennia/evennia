@@ -7,12 +7,12 @@ from unittest import mock
 from django.test import override_settings
 from django.core.exceptions import ObjectDoesNotExist
 from evennia.commands.default.tests import EvenniaCommandTest
-from evennia.utils.test_resources import EvenniaTestCase
+from evennia.utils.test_resources import BaseEvenniaTestCase
 from evennia.utils.create import create_object
 from . import crafting, example_recipes
 
 
-class TestCraftUtils(EvenniaTestCase):
+class TestCraftUtils(BaseEvenniaTestCase):
     """
     Test helper utils for crafting.
 
@@ -52,7 +52,7 @@ class _TestMaterial:
         return self.name
 
 
-class TestCraftingRecipeBase(EvenniaTestCase):
+class TestCraftingRecipeBase(BaseEvenniaTestCase):
     """
     Test the parent recipe class.
     """
@@ -137,7 +137,7 @@ class _MockRecipe(crafting.CraftingRecipe):
 
 
 @override_settings(CRAFT_RECIPE_MODULES=[])
-class TestCraftingRecipe(EvenniaTestCase):
+class TestCraftingRecipe(BaseEvenniaTestCase):
     """
     Test the CraftingRecipe class with one recipe
     """
@@ -474,7 +474,7 @@ class TestCraftingRecipe(EvenniaTestCase):
         self.assertIsNotNone(self.tool2.pk)
 
 
-class TestCraftSword(EvenniaTestCase):
+class TestCraftSword(BaseEvenniaTestCase):
     """
     Test the `craft` function by crafting the example sword.
 

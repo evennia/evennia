@@ -9,7 +9,7 @@ Unit test module for Trait classes.
 from copy import copy
 from anything import Something
 from mock import MagicMock, patch
-from evennia.utils.test_resources import EvenniaTestCase
+from evennia.utils.test_resources import BaseEvenniaTestCase
 from . import traits
 
 
@@ -39,7 +39,7 @@ _TEST_TRAIT_CLASS_PATHS = [
 ]
 
 
-class _TraitHandlerBase(EvenniaTestCase):
+class _TraitHandlerBase(BaseEvenniaTestCase):
     "Base for trait tests"
 
     @patch("evennia.contrib.rpg.traits.traits._TRAIT_CLASS_PATHS", new=_TEST_TRAIT_CLASS_PATHS)
@@ -826,7 +826,7 @@ class TestTraitGaugeTimed(_TraitHandlerBase):
         self.assertEqual(self._get_timer_data(), (70, 70, 1, None, 70))
 
 
-class TestNumericTraitOperators(EvenniaTestCase):
+class TestNumericTraitOperators(BaseEvenniaTestCase):
     """Test case for numeric magic method implementations."""
 
     def setUp(self):
@@ -909,7 +909,7 @@ class DummyCharacter(_MockObj):
     health = traits.TraitProperty("Health value", trait_type="gauge", base=100)
 
 
-class TestTraitFields(EvenniaTestCase):
+class TestTraitFields(BaseEvenniaTestCase):
     """
     Test the TraitField class.
 
