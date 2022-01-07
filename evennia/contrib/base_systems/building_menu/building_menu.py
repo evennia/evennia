@@ -418,7 +418,7 @@ class BuildingMenuCmdSet(CmdSet):
 # Menu classes
 
 
-class Choice(object):
+class Choice:
 
     """A choice object, created by `add_choice`."""
 
@@ -554,7 +554,7 @@ class Choice(object):
             )
 
 
-class BuildingMenu(object):
+class BuildingMenu:
 
     """
     Class allowing to create and set building menus to edit specific objects.
