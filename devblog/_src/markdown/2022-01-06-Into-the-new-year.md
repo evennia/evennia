@@ -22,7 +22,7 @@ Soonish™, I hope to have finished the code changes needed for 1.0 and then I'l
 [This is the current TODO list](https://github.com/evennia/evennia/projects/9).
 
 The big one I'm currently doing is to refactor the `contrib/` folder to have more structure (it has grown organically until now). After this, there are a series of bugs and minor features to do. I will also go back and address the low-hanging `master` branch bugs that haven't already been resolved in `develop`.
-Most remaining points are then documentation fixes. Those will be handled in one as the docs are finalized.
+Most remaining points are then documentation fixes. Those will be handled in one go as the docs are finalized.
 
 ### So ...
 
