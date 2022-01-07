@@ -5,7 +5,7 @@ Tests for RP system
 import time
 from anything import Anything
 from evennia.commands.default.tests import EvenniaCommandTest
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from evennia import create_object
 
 from . import rpsystem
@@ -21,7 +21,7 @@ text = (
 )
 
 
-class TestLanguage(EvenniaTest):
+class TestLanguage(BaseEvenniaTest):
     def setUp(self):
         super().setUp()
         rplanguage.add_language(
@@ -99,7 +99,7 @@ emote = 'With a flair, /me looks at /first and /colliding sdesc-guy. She says "T
 case_emote = "/me looks at /first, then /FIRST, /First and /Colliding twice."
 
 
-class TestRPSystem(EvenniaTest):
+class TestRPSystem(BaseEvenniaTest):
     maxDiff = None
 
     def setUp(self):

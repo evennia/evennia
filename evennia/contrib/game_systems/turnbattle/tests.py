@@ -6,7 +6,7 @@ Turnbattle tests.
 from mock import patch, MagicMock
 from evennia.commands.default.tests import EvenniaCommandTest
 from evennia.utils.create import create_object
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.objects.objects import DefaultRoom
 from . import tb_basic, tb_equip, tb_range, tb_items, tb_magic
 
@@ -93,7 +93,7 @@ class TestTurnBattleMagicCmd(EvenniaCommandTest):
         self.call(tb_magic.CmdRest(), "", "Char rests to recover HP and MP.")
 
 
-class TestTurnBattleBasicFunc(EvenniaTest):
+class TestTurnBattleBasicFunc(BaseEvenniaTest):
     def setUp(self):
         super(TestTurnBattleBasicFunc, self).setUp()
         self.testroom = create_object(DefaultRoom, key="Test Room")
@@ -186,7 +186,7 @@ class TestTurnBattleBasicFunc(EvenniaTest):
         self.assertTrue(self.turnhandler.db.fighters == [self.joiner, self.attacker, self.defender])
 
 
-class TestTurnBattleEquipFunc(EvenniaTest):
+class TestTurnBattleEquipFunc(BaseEvenniaTest):
     def setUp(self):
         super(TestTurnBattleEquipFunc, self).setUp()
         self.testroom = create_object(DefaultRoom, key="Test Room")
@@ -278,7 +278,7 @@ class TestTurnBattleEquipFunc(EvenniaTest):
         self.assertTrue(self.turnhandler.db.fighters == [self.joiner, self.attacker, self.defender])
 
 
-class TestTurnBattleRangeFunc(EvenniaTest):
+class TestTurnBattleRangeFunc(BaseEvenniaTest):
     def setUp(self):
         super(TestTurnBattleRangeFunc, self).setUp()
         self.testroom = create_object(DefaultRoom, key="Test Room")
@@ -387,7 +387,7 @@ class TestTurnBattleRangeFunc(EvenniaTest):
         self.assertTrue(tb_range.get_range(self.attacker, self.defender) == 1)
 
 
-class TestTurnBattleItemsFunc(EvenniaTest):
+class TestTurnBattleItemsFunc(BaseEvenniaTest):
     @patch("evennia.contrib.game_systems.turnbattle.tb_items.tickerhandler", new=MagicMock())
     def setUp(self):
         super(TestTurnBattleItemsFunc, self).setUp()
@@ -511,7 +511,7 @@ class TestTurnBattleItemsFunc(EvenniaTest):
         self.assertTrue(self.user.db.conditions == {})
 
 
-class TestTurnBattleMagicFunc(EvenniaTest):
+class TestTurnBattleMagicFunc(BaseEvenniaTest):
     def setUp(self):
         super(TestTurnBattleMagicFunc, self).setUp()
         self.testroom = create_object(DefaultRoom, key="Test Room")

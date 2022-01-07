@@ -3,13 +3,13 @@ Random string tests.
 
 """
 
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from . import random_string_generator
 
 SIMPLE_GENERATOR = random_string_generator.RandomStringGenerator("simple", "[01]{2}")
 
 
-class TestRandomStringGenerator(EvenniaTest):
+class TestRandomStringGenerator(BaseEvenniaTest):
     def test_generate(self):
         """Generate and fail when exhausted."""
         generated = []

@@ -114,9 +114,10 @@ definition of the `EvenniaTest` class in
 ```python
 # in a test module
 
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 
-class TestObject(EvenniaTest):
+
+class TestObject(BaseEvenniaTest):
     def test_object_search(self):
         # char1 and char2 are both created in room1
         self.assertEqual(self.char1.search(self.char2.key), self.char2)
@@ -173,26 +174,26 @@ testing#503435) is currently untested! Please report your findings.
 
 from django.conf import settings
 import django
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 
 OLD_DEFAULT_SETTINGS = settings.INSTALLED_APPS
 DEFAULT_SETTINGS = dict(
     INSTALLED_APPS=(
         'contrib.mycontrib.tests',
-        ),
+    ),
     DATABASES={
         "default": {
             "ENGINE": "django.db.backends.sqlite3"
-            }
-        },
+        }
+    },
     SILENCED_SYSTEM_CHECKS=["1_7.W001"],
-    )
+)
 
-class TestMyModel(EvenniaTest):
+
+class TestMyModel(BaseEvenniaTest):
     def setUp(self):
-
         if not settings.configured:
-           settings.configure(**DEFAULT_SETTINGS)
+            settings.configure(**DEFAULT_SETTINGS)
         django.setup()
 
         from django.core.management import call_command
@@ -212,7 +213,7 @@ class TestMyModel(EvenniaTest):
     # test cases below ...
 
     def test_case(self):
-        # test case here
+# test case here
 ```
 
 ### A note on adding new tests

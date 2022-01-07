@@ -11,7 +11,7 @@ from evennia.commands.default.tests import EvenniaCommandTest
 from evennia.objects.objects import ExitCommand
 from evennia.utils import ansi, utils
 from evennia.utils.create import create_object, create_script
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from .commands import CmdCallback
 from .callbackhandler import CallbackHandler
 
@@ -22,7 +22,7 @@ settings.EVENTS_CALENDAR = "standard"
 OLD_EVENTS = {}
 
 
-class TestEventHandler(EvenniaTest):
+class TestEventHandler(BaseEvenniaTest):
 
     """
     Test cases of the event handler to add, edit or delete events.

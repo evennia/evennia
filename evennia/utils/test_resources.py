@@ -124,7 +124,6 @@ class EvenniaTestMixin:
     """
     Evennia test environment mixin
     """
-
     account_typeclass = DefaultAccount
     object_typeclass = DefaultObject
     character_typeclass = DefaultCharacter
@@ -132,20 +131,27 @@ class EvenniaTestMixin:
     room_typeclass = DefaultRoom
     script_typeclass = DefaultScript
 
-    @patch("evennia.scripts.taskhandler.deferLater", _mock_deferlater)
-    def setUp(self):
-        """
-        Sets up testing environment
-        """
+    def save_backups(self):
         self.backups = (
             SESSIONS.data_out,
             SESSIONS.disconnect,
             settings.DEFAULT_HOME,
             settings.PROTOTYPE_MODULES,
         )
+
+    def restore_backups(self):
+        flush_cache()
+        SESSIONS.data_out = self.backups[0]
+        SESSIONS.disconnect = self.backups[1]
+        settings.DEFAULT_HOME = self.backups[2]
+        settings.PROTOTYPE_MODULES = self.backups[3]
+
+    def mock_sessions(self):
         SESSIONS.data_out = Mock()
         SESSIONS.disconnect = Mock()
+        self.mocked_SESSIONS = SESSIONS
 
+    def create_accounts(self):
         self.account = create.create_account(
             "TestAccount",
             email="test@test.com",
@@ -158,21 +164,33 @@ class EvenniaTestMixin:
             password="testpassword",
             typeclass=self.account_typeclass,
         )
+        self.account.permissions.add("Developer")
+
+    def teardown_accounts(self):
+        self.account.delete()
+        self.account2.delete()
+
+    def create_rooms(self):
         self.room1 = create.create_object(self.room_typeclass, key="Room", nohome=True)
         self.room1.db.desc = "room_desc"
         settings.DEFAULT_HOME = "#%i" % self.room1.id  # we must have a default home
+
         # Set up fake prototype module for allowing tests to use named prototypes.
         settings.PROTOTYPE_MODULES = "evennia.utils.tests.data.prototypes_example"
         self.room2 = create.create_object(self.room_typeclass, key="Room2")
         self.exit = create.create_object(
             self.exit_typeclass, key="out", location=self.room1, destination=self.room2
         )
+
+    def create_objs(self):
         self.obj1 = create.create_object(
             self.object_typeclass, key="Obj", location=self.room1, home=self.room1
         )
         self.obj2 = create.create_object(
             self.object_typeclass, key="Obj2", location=self.room1, home=self.room1
         )
+
+    def create_chars(self):
         self.char1 = create.create_object(
             self.character_typeclass, key="Char", location=self.room1, home=self.room1
         )
@@ -184,11 +202,11 @@ class EvenniaTestMixin:
         self.account.db._last_puppet = self.char1
         self.char2.account = self.account2
         self.account2.db._last_puppet = self.char2
+
+    def create_script(self):
         self.script = create.create_script(self.script_typeclass, key="Script")
-        self.account.permissions.add("Developer")
 
-        # set up a fake session
-
+    def setup_session(self):
         dummysession = ServerSession()
         dummysession.init_session("telnet", ("localhost", "testmode"), SESSIONS)
         dummysession.sessid = 1
@@ -199,21 +217,32 @@ class EvenniaTestMixin:
         SESSIONS.login(session, self.account, testmode=True)
         self.session = session
 
-    def tearDown(self):
-        flush_cache()
-        SESSIONS.data_out = self.backups[0]
-        SESSIONS.disconnect = self.backups[1]
-        settings.DEFAULT_HOME = self.backups[2]
-        settings.PROTOTYPE_MODULES = self.backups[3]
-
+    def teardown_session(self):
         del SESSIONS[self.session.sessid]
-        self.account.delete()
-        self.account2.delete()
+
+    @patch("evennia.scripts.taskhandler.deferLater", _mock_deferlater)
+    def setUp(self):
+        """
+        Sets up testing environment
+        """
+        self.save_backups()
+        self.mock_sessions()
+        self.create_accounts()
+        self.create_rooms()
+        self.create_objs()
+        self.create_chars()
+        self.create_script()
+        self.setup_session()
+
+    def tearDown(self):
+        self.restore_backups()
+        self.teardown_session()
+        self.teardown_accounts()
         super().tearDown()
 
 
 @override_settings(**DEFAULT_SETTINGS)
-class EvenniaTestCase(TestCase):
+class BaseEvenniaTestCase(TestCase):
     """
     Base test (with no default objects) but with
     enforced default settings.
@@ -222,14 +251,14 @@ class EvenniaTestCase(TestCase):
 
 
 @override_settings(**DEFAULT_SETTINGS)
+class BaseEvenniaTest(EvenniaTestMixin, TestCase):
+    """
+    This class parent has all default objects and uses only default settings.
+
+    """
+
+
 class EvenniaTest(EvenniaTestMixin, TestCase):
-    """
-    This class parent uses only default settings.
-
-    """
-
-
-class LocalEvenniaTest(EvenniaTestMixin, TestCase):
     """
     This test class is intended for inheriting in mygame tests.
     It helps ensure your tests are run with your own objects

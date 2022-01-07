@@ -4,7 +4,7 @@ Unit testing for the Command system itself.
 """
 
 from django.test import override_settings
-from evennia.utils.test_resources import EvenniaTest, TestCase
+from evennia.utils.test_resources import BaseEvenniaTest, TestCase
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command
 from evennia.commands import cmdparser
@@ -989,7 +989,7 @@ def _mockdelay(time, func, *args, **kwargs):
     return func(*args, **kwargs)
 
 
-class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
+class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
     "Test the cmdhandler.get_and_merge_cmdsets function."
 
     def setUp(self):
@@ -1176,7 +1176,7 @@ class TestCmdParser(TestCase):
         )
 
 
-class TestCmdSetNesting(EvenniaTest):
+class TestCmdSetNesting(BaseEvenniaTest):
     """
     Test 'nesting' of cmdsets by adding
     """

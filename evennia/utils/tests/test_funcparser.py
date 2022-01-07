@@ -417,7 +417,7 @@ class TestDefaultCallables(TestCase):
         )
 
 
-class TestCallableSearch(test_resources.EvenniaTest):
+class TestCallableSearch(test_resources.BaseEvenniaTest):
     """
     Test the $search(query) callable
 

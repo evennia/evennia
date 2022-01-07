@@ -5,7 +5,7 @@ Testing custom game time
 
 # Testing custom_gametime
 from mock import Mock, patch
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from .. import custom_gametime
 
 
@@ -14,7 +14,7 @@ def _testcallback():
 
 
 @patch("evennia.utils.gametime.gametime", new=Mock(return_value=2975000898.46))
-class TestCustomGameTime(EvenniaTest):
+class TestCustomGameTime(BaseEvenniaTest):
     def tearDown(self):
         if hasattr(self, "timescript"):
             self.timescript.stop()

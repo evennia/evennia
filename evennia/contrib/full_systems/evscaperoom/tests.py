@@ -7,7 +7,7 @@ import pkgutil
 from os import path
 from evennia.commands.default.tests import EvenniaCommandTest
 from evennia import InterruptCommand
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.utils import mod_import
 from . import commands
 from . import state as basestate
@@ -191,7 +191,7 @@ class TestEvscaperoomCommands(EvenniaCommandTest):
         self.call(commands.CmdFocusInteraction(), "", "Hm?")
 
 
-class TestUtils(EvenniaTest):
+class TestUtils(BaseEvenniaTest):
     def test_overwrite(self):
         room = utils.create_evscaperoom_object("evscaperoom.room.EvscapeRoom", key="Testroom")
         obj1 = utils.create_evscaperoom_object(
@@ -227,7 +227,7 @@ class TestUtils(EvenniaTest):
         self.assertEqual(utils.parse_for_things(string, 2), "Looking at |y[book]|n and |y[key]|n.")
 
 
-class TestEvScapeRoom(EvenniaTest):
+class TestEvScapeRoom(BaseEvenniaTest):
     def setUp(self):
         super().setUp()
         self.room = utils.create_evscaperoom_object(
@@ -256,7 +256,7 @@ class TestEvScapeRoom(EvenniaTest):
         self.assertEqual(self.char1.tags.get(category=self.roomtag), None)
 
 
-class TestStates(EvenniaTest):
+class TestStates(BaseEvenniaTest):
     def setUp(self):
         super().setUp()
         self.room = utils.create_evscaperoom_object(

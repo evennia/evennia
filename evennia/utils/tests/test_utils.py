@@ -16,7 +16,7 @@ from twisted.internet import task
 
 from evennia.utils.ansi import ANSIString
 from evennia.utils import utils
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 
 
 class TestIsIter(TestCase):
@@ -259,7 +259,7 @@ class TestDateTimeFormat(TestCase):
 
 
 class TestImportFunctions(TestCase):
-    def _t_dir_file(self, filename):
+    def _path_to_file(self, filename):
         testdir = os.path.dirname(os.path.abspath(__file__))
         return os.path.join(testdir, filename)
 
@@ -272,12 +272,12 @@ class TestImportFunctions(TestCase):
         self.assertIsNone(loaded_mod)
 
     def test_mod_import_from_path(self):
-        test_path = self._t_dir_file("test_eveditor.py")
+        test_path = self._path_to_file("test_eveditor.py")
         loaded_mod = utils.mod_import_from_path(test_path)
         self.assertIsNotNone(loaded_mod)
 
     def test_mod_import_from_path_invalid(self):
-        test_path = self._t_dir_file("invalid_filename.py")
+        test_path = self._path_to_file("invalid_filename.py")
         loaded_mod = utils.mod_import_from_path(test_path)
         self.assertIsNone(loaded_mod)
 
@@ -452,7 +452,7 @@ def dummy_func(obj):
     return True
 
 
-class TestDelay(EvenniaTest):
+class TestDelay(BaseEvenniaTest):
     """
     Test utils.delay.
     """

@@ -6,7 +6,7 @@ Testing clothing contrib
 from evennia.commands.default.tests import EvenniaCommandTest
 from evennia.utils.create import create_object
 from evennia.objects.objects import DefaultRoom
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from . import clothing
 
 
@@ -18,11 +18,11 @@ class TestClothingCmd(EvenniaCommandTest):
         wearer.location = room
         friend.location = room
         # Make a test hat
-        test_hat = create_object(clothing.Clothing, key="test hat")
+        test_hat = create_object(clothing.ContribClothing, key="test hat")
         test_hat.db.clothing_type = "hat"
         test_hat.location = wearer
         # Make a test scarf
-        test_scarf = create_object(clothing.Clothing, key="test scarf")
+        test_scarf = create_object(clothing.ContribClothing, key="test scarf")
         test_scarf.db.clothing_type = "accessory"
         test_scarf.location = wearer
         # Test wear command
@@ -89,21 +89,21 @@ class TestClothingCmd(EvenniaCommandTest):
         )
 
 
-class TestClothingFunc(EvenniaTest):
+class TestClothingFunc(BaseEvenniaTest):
     def test_clothingfunctions(self):
         wearer = create_object(clothing.ClothedCharacter, key="Wearer")
         room = create_object(DefaultRoom, key="room")
         wearer.location = room
         # Make a test hat
-        test_hat = create_object(clothing.Clothing, key="test hat")
+        test_hat = create_object(clothing.ContribClothing, key="test hat")
         test_hat.db.clothing_type = "hat"
         test_hat.location = wearer
         # Make a test shirt
-        test_shirt = create_object(clothing.Clothing, key="test shirt")
+        test_shirt = create_object(clothing.ContribClothing, key="test shirt")
         test_shirt.db.clothing_type = "top"
         test_shirt.location = wearer
         # Make a test pants
-        test_pants = create_object(clothing.Clothing, key="test pants")
+        test_pants = create_object(clothing.ContribClothing, key="test pants")
         test_pants.db.clothing_type = "bottom"
         test_pants.location = wearer
 

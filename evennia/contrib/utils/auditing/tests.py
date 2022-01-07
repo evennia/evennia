@@ -4,17 +4,36 @@ Module containing the test cases for the Audit system.
 """
 
 from anything import Anything
+from mock import patch
 from django.test import override_settings
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 import re
+from .server import AuditedServerSession
+from evennia.server.sessionhandler import SESSIONS
 
 
 @override_settings(
-    AUDIT_CALLBACK="evennia.contrib.utils.auditing.outputs.to_syslog",
-    AUDIT_IN=True,
-    AUDIT_OUT=True,
-    AUDIT_ALLOW_SPARSE=True)
-class AuditingTest(EvenniaTest):
+    AUDIT_MASKS=[])
+class AuditingTest(BaseEvenniaTest):
+
+    @patch("evennia.server.sessionhandler._ServerSession", AuditedServerSession)
+    def setup_session(self):
+        """Overrides default one in EvenniaTest"""
+        dummysession = AuditedServerSession()
+        dummysession.init_session("telnet", ("localhost", "testmode"), SESSIONS)
+        dummysession.sessid = 1
+        SESSIONS.portal_connect(
+            dummysession.get_sync_data()
+        )  # note that this creates a new Session!
+        session = SESSIONS.session_from_sessid(1)  # the real session
+        SESSIONS.login(session, self.account, testmode=True)
+        self.session = session
+        print("session", type(self.session), self.session)
+
+    @patch("evennia.contrib.utils.auditing.server.AUDIT_CALLBACK",
+           "evennia.contrib.utils.auditing.outputs.to_syslog")
+    @patch("evennia.contrib.utils.auditing.server.AUDIT_IN", True)
+    @patch("evennia.contrib.utils.auditing.server.AUDIT_OUT", True)
     def test_mask(self):
         """
         Make sure the 'mask' function is properly masking potentially sensitive
@@ -82,6 +101,10 @@ class AuditingTest(EvenniaTest):
         for secret in secrets:
             self.assertEqual(self.session.mask(secret), secret)
 
+    @patch("evennia.contrib.utils.auditing.server.AUDIT_CALLBACK",
+           "evennia.contrib.utils.auditing.outputs.to_syslog")
+    @patch("evennia.contrib.utils.auditing.server.AUDIT_IN", True)
+    @patch("evennia.contrib.utils.auditing.server.AUDIT_OUT", True)
     def test_audit(self):
         """
         Make sure the 'audit' function is returning a dictionary based on values

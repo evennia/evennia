@@ -3,7 +3,7 @@ Test tree select
 
 """
 
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from . import tree_select
 from evennia.contrib.utils.fieldfill import fieldfill
 
@@ -15,7 +15,7 @@ Bar
 -Qux"""
 
 
-class TestTreeSelectFunc(EvenniaTest):
+class TestTreeSelectFunc(BaseEvenniaTest):
     def test_tree_functions(self):
         # Dash counter
         self.assertTrue(tree_select.dashcount("--test") == 2)
@@ -57,6 +57,6 @@ FIELD_TEST_TEMPLATE = [
 FIELD_TEST_DATA = {"TextTest": None, "NumberTest": None, "DefaultText": "Test", "DefaultNum": 3}
 
 
-class TestFieldFillFunc(EvenniaTest):
+class TestFieldFillFunc(BaseEvenniaTest):
     def test_field_functions(self):
         self.assertTrue(fieldfill.form_template_to_dict(FIELD_TEST_TEMPLATE) == FIELD_TEST_DATA)

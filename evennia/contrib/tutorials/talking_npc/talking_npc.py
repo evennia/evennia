@@ -65,7 +65,8 @@ def info2(caller):
 
 
 def info3(caller):
-    text = "'Well ... I'm sort of busy so, have to go. NPC business. Important stuff. You wouldn't understand.'"
+    text = ("'Well ... I'm sort of busy so, have to go. NPC business. "
+            "Important stuff. You wouldn't understand.'")
 
     options = (
         {"desc": "Oookay ... I won't keep you. Bye.", "goto": "END"},
@@ -112,7 +113,8 @@ class CmdTalk(default_cmds.MuxCommand):
 
         # Initiate the menu. Change this if you are putting this on
         # some other custom NPC class.
-        EvMenu(self.caller, "evennia.contrib.tutorials.talking_npc", startnode="menu_start_node")
+        EvMenu(self.caller, "evennia.contrib.tutorials.talking_npc.talking_npc",
+               startnode="menu_start_node")
 
 
 class TalkingCmdSet(CmdSet):
