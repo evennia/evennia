@@ -134,6 +134,8 @@ Up requirements to Django 3.2+, Twisted 21+
   subfolders. All imports will need to be updated.
 - Made `MonitorHandler.add/remove` support `category` for monitoring Attributes
   with a category (before only key was used, ignoring category entirely).
+- Move `create_*` functions into db managers, leaving `utils.create` only being
+  wrapper functions (consistent with `utils.search`). No change of api otherwise.
 
 ### Evennia 0.9.5 (2019-2020)
 

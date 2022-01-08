@@ -110,7 +110,7 @@ except OperationalError:
 #                      candidates=None,
 #                      attribute_name=None):
 #
-search_object = ObjectDB.objects.object_search
+search_object = ObjectDB.objects.search_object
 search_objects = search_object
 object_search = search_object
 objects = search_objects
@@ -126,7 +126,7 @@ objects = search_objects
 #     ostring = a string or database id.
 #
 
-search_account = AccountDB.objects.account_search
+search_account = AccountDB.objects.search_account
 search_accounts = search_account
 account_search = search_account
 accounts = search_accounts
@@ -144,7 +144,7 @@ accounts = search_accounts
 #                  on a timer.
 #
 
-search_script = ScriptDB.objects.script_search
+search_script = ScriptDB.objects.search_script
 search_scripts = search_script
 script_search = search_script
 scripts = search_scripts
@@ -165,7 +165,7 @@ scripts = search_scripts
 #                one of the other arguments to limit the search.
 #
 
-search_message = Msg.objects.message_search
+search_message = Msg.objects.search_message
 search_messages = search_message
 message_search = search_message
 messages = search_messages
@@ -181,7 +181,7 @@ messages = search_messages
 #     exact -  requires an exact ostring match (not case sensitive)
 #
 
-search_channel = ChannelDB.objects.channel_search
+search_channel = ChannelDB.objects.search_channel
 search_channels = search_channel
 channel_search = search_channel
 channels = search_channels
