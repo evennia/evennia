@@ -949,6 +949,7 @@ class TestPartialTagAttributes(BaseEvenniaTest):
     """
 
     def setUp(self):
+        super().setUp()
         self.prot = {
             'prototype_key': 'rock',
             'typeclass': 'evennia.objects.objects.DefaultObject',

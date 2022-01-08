@@ -28,7 +28,6 @@ class AuditingTest(BaseEvenniaTest):
         session = SESSIONS.session_from_sessid(1)  # the real session
         SESSIONS.login(session, self.account, testmode=True)
         self.session = session
-        print("session", type(self.session), self.session)
 
     @patch("evennia.contrib.utils.auditing.server.AUDIT_CALLBACK",
            "evennia.contrib.utils.auditing.outputs.to_syslog")
