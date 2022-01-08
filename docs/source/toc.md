@@ -124,7 +124,6 @@ Contributing-Docs
 Evennia-API
 Evennia-Introduction
 Glossary
-How-To-Get-And-Give-Help
 Howto/Add-a-wiki-on-your-website
 Howto/Building-a-mech-tutorial
 Howto/Coding-FAQ
