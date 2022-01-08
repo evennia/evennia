@@ -1,10 +1,10 @@
 # Batch processor examples
 
-Contibution - Griatch 2012
+Contibution by Griatch, 2012
 
-The batch processor is used for generating in-game content from one or more
-static files. Files can be stored with version control and then 'applied'
-to the game to create content.
+Simple examples for the batch-processor. The batch processor is used for generating 
+in-game content from one or more static files. Files can be stored with version 
+control and then 'applied' to the game to create content.
 
 There are two batch processor types:
 

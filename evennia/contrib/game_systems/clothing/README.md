@@ -1,9 +1,9 @@
 # Clothing
 
-Evennia contribution - Tim Ashley Jenkins 2017
+Contribution by Tim Ashley Jenkins, 2017
 
-Provides a typeclass and commands for wearable clothing,
-which is appended to a character's description when worn.
+Provides a typeclass and commands for wearable clothing. These 
+look of these clothes are appended to the character's description when worn.
 
 Clothing items, when worn, are added to the character's description
 in a list. For example, if wearing the following clothing items:
@@ -12,6 +12,11 @@ in a list. For example, if wearing the following clothing items:
     a pair of regular ol' shoes
     one nice hat
     a very pretty dress
+
+Would result in this added description: 
+
+    Tim is wearing one nice hat, a thin and delicate necklace,
+    a very pretty dress and a pair of regular ol' shoes.
 
 ## Installation
 

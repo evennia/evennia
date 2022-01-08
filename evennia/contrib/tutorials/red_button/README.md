@@ -1,9 +1,9 @@
 # Red Button example
 
-Griatch - 2011
+Contribution by Griatch, 2011
 
-This is a more advanced example object with its own functionality (commands)
-on it.
+A red button that you can press to have an effect. This is a more advanced example 
+object with its own functionality and state tracking.
 
 Create the button with
 

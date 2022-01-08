@@ -1,8 +1,8 @@
 # TutorialMirror
 
-A simple mirror object to experiment with.
+Contribution by Griatch, 2017
 
-A simple mirror object that
+A simple mirror object to experiment with. It will respond to being looked at.
 
 - echoes back the description of the object looking at it
 - echoes back whatever is being sent to its .msg - to the

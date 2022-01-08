@@ -1,12 +1,12 @@
 # Unix-like Command style parent
 
-Evennia contribution, Vincent Le Geoff 2017
+Contribution by Vincent Le Geoff (vlgeoff), 2017
 
-This module contains a command class that allows for unix-style command syntax
-in-game, using --options, positional arguments and stuff like -n 10 etc
-similarly to a unix command. It might not the best syntax for the average player
+This module contains a command class with an alternate syntax parser implementing 
+Unix-style command syntax in-game. This means `--options`, positional arguments 
+and stuff like `-n 10`. It might not the best syntax for the average player
 but can be really useful for builders when they need to have a single command do
-many things with many options. It uses the ArgumentParser from Python's standard
+many things with many options. It uses the `ArgumentParser` from Python's standard
 library under the hood.
 
 ## Installation

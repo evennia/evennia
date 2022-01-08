@@ -1,9 +1,10 @@
 # Color markups
 
-Contribution, Griatch 2017
+Contrib by Griatch, 2017
 
 Additional color markup styles for Evennia (extending or replacing the default
-`|r`, `|234` etc).
+`|r`, `|234`). Adds support for MUSH-style (`%cr`, `%c123`) and/or legacy-Evennia 
+(`{r`, `{123`).
 
 
 ## Installation

@@ -75,7 +75,6 @@ Concepts/TextTags
 Concepts/Using-MUX-as-a-Standard
 Concepts/Web-Features
 Concepts/Zones
-Contribs/A-voice-operated-elevator-using-events
 Contribs/Arxcode-installing-help
 Contribs/Building-menus
 Contribs/Contrib-AWSStorage
@@ -97,6 +96,8 @@ Contribs/Contrib-Fieldfill
 Contribs/Contrib-Gendersub
 Contribs/Contrib-Health-Bar
 Contribs/Contrib-Ingame-Python
+Contribs/Contrib-Ingame-Python-Tutorial-Dialogue
+Contribs/Contrib-Ingame-Python-Tutorial-Elevator
 Contribs/Contrib-Mail
 Contribs/Contrib-Mapbuilder
 Contribs/Contrib-Menu-Login
@@ -118,11 +119,6 @@ Contribs/Contrib-Tutorial-World
 Contribs/Contrib-Unixcommand
 Contribs/Contrib-Wilderness
 Contribs/Contrib-XYZGrid
-Contribs/Crafting
-Contribs/Dialogues-in-events
-Contribs/Dynamic-In-Game-Map
-Contribs/Static-In-Game-Map
-Contribs/XYZGrid
 Contributing
 Contributing-Docs
 Evennia-API
@@ -137,6 +133,7 @@ Howto/Command-Duration
 Howto/Command-Prompt
 Howto/Coordinates
 Howto/Default-Exit-Errors
+Howto/Dynamic-In-Game-Map
 Howto/Evennia-for-Diku-Users
 Howto/Evennia-for-MUSH-Users
 Howto/Evennia-for-roleplaying-sessions
@@ -174,6 +171,7 @@ Howto/Starting/Part4/Starting-Part4
 Howto/Starting/Part5/Add-a-simple-new-web-page
 Howto/Starting/Part5/Starting-Part5
 Howto/Starting/Part5/Web-Tutorial
+Howto/Static-In-Game-Map
 Howto/Tutorial-Aggressive-NPCs
 Howto/Tutorial-NPCs-listening
 Howto/Tutorial-Tweeting-Game-Stats

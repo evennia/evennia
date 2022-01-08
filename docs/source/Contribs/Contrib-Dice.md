@@ -1,8 +1,12 @@
 # Dice
 
-Rolls dice for roleplaying, in-game gambling or GM:ing
+Contribution by Griatch, 2012
 
-Evennia contribution - Griatch 2012
+A dice roller for any number and side of dice. Adds in-game dice rolling 
+(`roll 2d10 + 1`) as well as conditionals (roll under/over/equal to a target) 
+and functions for rolling dice in code. Command also supports hidden or secret 
+rolls for use by a human game master.
+
 
 # Installation:
 

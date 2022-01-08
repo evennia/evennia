@@ -1,13 +1,15 @@
 # In-Game Mail system
 
-Evennia Contribution - grungies1138 2016
+Contribution by grungies1138 2016
 
-A simple Brandymail style mail system that uses the Msg class from Evennia
-Core. It has two Commands, both of which can be used on their own:
+A simple Brandymail style mail system that uses the `Msg` class from Evennia
+Core. It has two Commands for either sending mails between Accounts (out of game)
+or between Characters (in-game). The two types of mails can be used together or 
+on their own.
 
-   - CmdMail - this should sit on the Account cmdset and makes the `mail` command
+   - `CmdMail` - this should sit on the Account cmdset and makes the `mail` command
     available both IC and OOC. Mails will always go to Accounts (other players).
-   - CmdMailCharacter - this should sit on the Character cmdset and makes the `mail`
+   - `CmdMailCharacter` - this should sit on the Character cmdset and makes the `mail`
     command ONLY available when puppeting a character. Mails will be sent to other
     Characters only and will not be available when OOC.
    - If adding *both* commands to their respective cmdsets, you'll get two separate

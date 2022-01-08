@@ -1,9 +1,10 @@
 # Email-based login system
 
-Evennia contrib - Griatch 2012
+Contrib by Griatch, 2012
 
-This is a variant of the login system that requires an email-address
-instead of a username to login.
+This is a variant of the login system that asks for an email-address
+instead of a username to login. Note that it does not verify the email, 
+it just uses it as the identifier rather than a username.
 
 This used to be the default Evennia login before replacing it with a
 more standard username + password system (having to supply an email

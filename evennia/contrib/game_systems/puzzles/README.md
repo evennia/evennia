@@ -1,18 +1,21 @@
 # Puzzles System
 
-Evennia contribution - Henddher 2018
+Contribution by Henddher 2018
 
-Provides a typeclass and commands for objects that can be combined (i.e. 'use'd)
-to produce new objects.
+Intended for adventure-game style combination puzzles, such as combining fruits
+and a blender to create a smoothie. Provides a typeclass and commands for objects 
+that can be combined (i.e. used together). Unlike the `crafting` contrib, each 
+puzzle is built from unique objects rather than using tags and a builder can create 
+the puzzle entirely from in-game.
 
-A Puzzle is a recipe of what objects (aka parts) must be combined by a player so
+A `Puzzle` is a recipe of what objects (aka parts) must be combined by a player so
 a new set of objects (aka results) are automatically created.
 
 ## Installation
 
-Add the PuzzleSystemCmdSet to all players (e.g. in their Character typeclass).
+Add the `PuzzleSystemCmdSet` to all players (e.g. in their Character typeclass).
 
-Alternatively:
+Alternatively (for quick testing):
 
     py self.cmdset.add('evennia.contrib.game_systems.puzzles.PuzzleSystemCmdSet')
 

@@ -1,10 +1,11 @@
 # Extended Room
 
-Evennia Contribution - Griatch 2012, vincent-lg 2019
+Contribution - Griatch 2012, vincent-lg 2019
 
-This is an extended Room typeclass for Evennia. It is supported
-by an extended `Look` command and an extended `desc` command, also
-in this module.
+This extends the normal `Room` typeclass to allow its description to change 
+with time-of-day and/or season. It also adds 'details' for the player to look at 
+in the room (without having to create a new in-game object for each). The room is 
+supported by new `look` and `desc` commands.
 
 ## Installation/testing:
 

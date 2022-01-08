@@ -1,7 +1,17 @@
 # Roleplaying base system for Evennia
 
-Roleplaying emotes/sdescs - Griatch, 2015
-Language/whisper emotes - Griatch, 2015
+Contribution by Griatch, 2015
+
+A full roleplaying emote system. Short-descriptions and recognition (only
+know people by their looks until you assign a name to them). Room poses. Masks/disguises
+(hide your description). Speak directly in emote, with optional language obscuration
+(words get garbled if you don't know the language, you can also have different languages
+with different 'sounding' garbling). Whispers can be partly overheard from a distance. A 
+very powerful in-emote reference system, for referencing and differentiate targets 
+(including objects).
+
+The system contains of two main modules - the roleplaying emote system and the language 
+obscuration module.
 
 ## Roleplaying emotes
 

@@ -1,13 +1,12 @@
-# Cooldown contrib module.
+# Cooldowns
 
-Evennia contrib - owllex, 2021
+Contribution by owllex, 2021
 
-This contrib provides a simple cooldown handler that can be attached to any
-typeclassed Object or Account. A cooldown is a lightweight persistent
-asynchronous timer that you can query to see if it is ready.
-
-Cooldowns are good for modelling rate-limited actions, like how often a
-character can perform a given command.
+Cooldowns are used modelling rate-limited actions, like how often a
+character can perform a given action; until a certain time has passed their 
+command can not be used again. This contrib provides a simple cooldown 
+handler that can be attached to any typeclass. A cooldown is a lightweight persistent
+asynchronous timer that you can query to see if a certain time has yet passed.
 
 Cooldowns are completely asynchronous and must be queried to know their
 state. They do not fire callbacks, so are not a good fit for use cases

@@ -1,9 +1,9 @@
 # Talkative NPC example
 
-Contribution - Griatch 2011, grungies1138, 2016
+Contribution by Griatch 2011. Updated by grungies1138, 2016
 
-This is a static NPC object capable of holding a simple menu-driven
-conversation. It's just meant as an example.
+This is an example of a static NPC object capable of holding a simple menu-driven
+conversation. Suitable for example as a quest giver or merchant.
 
 ## Installation
 

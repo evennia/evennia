@@ -72,19 +72,18 @@ Each contrib contains installation instructions for how to integrate it
 with your other code. If you want to tweak the code of a contrib, just
 copy its entire folder to your game directory and modify/use it from there.
 
-If you want to contribute yourself, see [here](Contributing)!
-
 > Hint: Additional (potentially un-maintained) code snippets from the community can be found
 in our discussion forum's [Community Contribs & Snippets](https://github.com/evennia/evennia/discussions/categories/community-contribs-snippets) category.
 
+If you want to contribute yourself, see [here](Contributing)!
 """
 
 
 TOCTREE = """
 ```{{toctree}}
-:depth: 2
 
 {listing}
+```
 
 """
 
@@ -101,11 +100,11 @@ _{category_desc}_
 BLURB = """
 ### Contrib: `{name}`
 
-{credits}
+_{credits}_
 
 {blurb}
 
-[Read the documentation]({filename})
+[Read the documentation](./{filename}) - [Browse the Code](api:{code_location})
 
 """
 
@@ -121,7 +120,7 @@ INDEX_FOOTER = """
 
 ----
 
-<small>This document page is auto-generated from the sources. Manual changes
+<small>This document page is auto-generated. Manual changes
 will be overwritten.</small>
 """
 
@@ -140,6 +139,8 @@ def readmes2docs(directory=_SOURCE_DIR):
     for file_path in glob(glob_path):
         # paths are e.g. evennia/contrib/utils/auditing/README.md
         _, category, name, _ = file_path.rsplit(sep, 3)
+
+        pypath = f"evennia.contrib.{category}.{name}"
 
         filename = "Contrib-" + "-".join(
             _FILENAME_MAP.get(
@@ -162,7 +163,7 @@ def readmes2docs(directory=_SOURCE_DIR):
         with open(outfile, 'w') as fil:
             fil.write(data)
 
-        categories[category].append((name, credits, blurb, filename))
+        categories[category].append((name, credits, blurb, filename, pypath))
         ncount += 1
 
     # build the index with blurbs
@@ -179,6 +180,7 @@ def readmes2docs(directory=_SOURCE_DIR):
                     credits=tup[1],
                     blurb=tup[2],
                     filename=tup[3],
+                    code_location=tup[4]
                 )
             )
             filenames.append(f"Contribs{sep}{tup[3]}")
@@ -190,14 +192,12 @@ def readmes2docs(directory=_SOURCE_DIR):
             )
         )
     lines.append(TOCTREE.format(
-        listing="\n".join(filenames))
+        listing="\n  ".join(filenames))
     )
 
     lines.append(INDEX_FOOTER)
 
     text = "\n".join(lines)
-
-
 
     with open(_OUT_INDEX_FILE, 'w') as fil:
         fil.write(text)

@@ -1,15 +1,15 @@
 # Evennia in-game Python system
 
-Vincent Le Goff 2017
+Contrib by Vincent Le Goff 2017
 
-This contrib adds the system of in-game Python in Evennia, allowing immortals
-(or other trusted builders) to dynamically add features to individual objects.
-Using custom Python set in-game, every immortal or privileged users could have a
-specific room, exit, character, object or something else behave differently from
-its "cousins".  For these familiar with the use of softcode in MU`*`, like SMAUG
-MudProgs, the ability to add arbitrary behavior to individual objects is a step
-toward freedom.  Keep in mind, however, the warning below, and read it carefully
-before the rest of the documentation.
+This contrib adds the ability to script with Python in-game. It allows trusted
+staff/builders to dynamically add features and triggers to individual objects
+without needing to do it in external Python modules. Using custom Python in-game,
+specific rooms, exits, characters, objects etc can be made to behave differently from
+its "cousins". This is similar to how softcode works for MU or MudProgs for DIKU.
+Keep in mind, however, that allowing Python in-game comes with _severe_
+security concerns (you must trust your builders deeply), so read the warnings in
+this module carefully before continuing.
 
 ## A WARNING REGARDING SECURITY
 
@@ -21,6 +21,17 @@ will have to keep in mind these points before deciding to install it:
    Be careful about who can use this system (see the permissions below).
 2. You can do all of this in Python outside the game.  The in-game Python system
    is not to replace all your game feature.
+
+## Extra tutorials
+
+These tutorials cover examples of using ingame python. Once you have the system
+installed (see below) they may be an easier way to learn than reading the full
+documentation from beginning to end.
+
+- [Dialogue events](Contribs/Contrib-Ingame-Python-Tutorial-Dialogue.md), where
+  NPCs react to things said.
+- [A voice operated elevator](Contribs/Contrib-Ingame-Python-Tutorial-Elevator.md)
+using ingame-python events.
 
 ## Basic structure and vocabulary
 
@@ -73,7 +84,9 @@ default.  You need to do it manually, following these steps:
 This is the quick summary. Scroll down for more detailed help on each step.
 
 1. Launch the main script (important!):
-   ```py evennia.create_script("evennia.contrib.base_systems.ingame_python.scripts.EventHandler")```
+
+        py evennia.create_script("evennia.contrib.base_systems.ingame_python.scripts.EventHandler")
+
 2. Set the permissions (optional):
    - `EVENTS_WITH_VALIDATION`: a group that can edit callbacks, but will need approval (default to
      `None`).
@@ -176,7 +189,7 @@ the `EVENTS_WITH_VALIDATION` setting will be able to call the command (with diff
 ### Adding the `call` command
 
 You also have to add the `@call` command to your Character CmdSet.  This command allows your users
-to add, edit and delete callbacks in-game.  In your `commands/default_cmdsets, it might look like
+to add, edit and delete callbacks in-game.  In your `commands/default_cmdsets`, it might look like
 this:
 
 ```python
@@ -277,7 +290,7 @@ We'll see callbacks with parameters later.  For the time being, let's try to pre
 from going through the "north" exit of this room:
 
 ```
-@call north
+call north
 +------------------+---------+-----------------------------------------------+
 | Event name       |  Number | Description                                   |
 +~~~~~~~~~~~~~~~~~~+~~~~~~~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+

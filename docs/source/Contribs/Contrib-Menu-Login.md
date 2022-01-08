@@ -1,10 +1,10 @@
 # Menu-based login system
 
-Contribution - Vincent-lg 2016, Griatch 2019 (rework for modern EvMenu)
+Contribution by Vincent-lg 2016. Reworked for modern EvMenu by Griatch, 2019.
 
-This changes the Evennia login to ask for the account name and password in
-sequence instead of requiring you to enter both at once. It uses EvMenu under
-the hood.
+This changes the Evennia login to ask for the account name and password as a series
+of questions instead of requiring you to enter both at once. It uses Evennia's 
+menu system `EvMenu` under the hood.
 
 ## Installation
 

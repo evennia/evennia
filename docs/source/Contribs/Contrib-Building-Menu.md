@@ -1,15 +1,13 @@
 # Building menu
 
-Module containing the building menu system.
-
-Evennia contributor: vincent-lg 2018
+Contrib by vincent-lg, 2018
 
 Building menus are in-game menus, not unlike `EvMenu` though using a
-different approach.  Building menus have been specifically designed to edit
-information as a builder.  Creating a building menu in a command allows
-builders quick-editing of a given object, like a room.  If you follow the
-steps below to add the contrib, you will have access to an `@edit` command
-that will edit any default object offering to change its key and description.
+different approach. Building menus have been specifically designed to edit
+information as a builder. Creating a building menu in a command allows
+builders quick-editing of a given object, like a room. If you follow the
+steps to add the contrib, you will have access to an `edit` command
+that will edit any default object, offering to change its key and description.
 
 ## Install
 

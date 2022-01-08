@@ -1,15 +1,8 @@
 # A voice operated elevator using events
 
-
-- Previous tutorial: [Adding dialogues in events](./Dialogues-in-events.md)
-
 This tutorial will walk you through the steps to create a voice-operated elevator, using the [in-
-game Python
-system](https://github.com/evennia/evennia/blob/master/evennia/contrib/ingame_python/README.md).
-This tutorial assumes the in-game Python system is installed in your game.  If it isn't, you can
-follow the installation steps given in [the documentation on in-game
-Python](https://github.com/evennia/evennia/blob/master/evennia/contrib/ingame_python/README.md), and
-come back on this tutorial once the system is installed.  **You do not need to read** the entire
+game Python system](./Contrib-Ingame-Python.md). This tutorial assumes the in-game Python
+system is installed per the instructions in that doc. **You do not need to read** the entire
 documentation, it's a good reference, but not the easiest way to learn about it.  Hence these
 tutorials.
 
@@ -97,7 +90,8 @@ things to decorate it a bit.
 But what we want now is to be able to say "1", "2" or "3" and have the elevator move in that
 direction.
 
-If you have read [the previous tutorial about adding dialogues in events](./Dialogues-in-events.md), you
+If you have read
+[the other in-game Python tutorial about adding dialogues in events](./Contrib-Ingame-Python-Tutorial-Dialogue.md), you
 may remember what we need to do.  If not, here's a summary: we need to run some code when somebody
 speaks in the room.  So we need to create a callback (the callback will contain our lines of code).
 We just need to know on which event this should be set.  You can enter `call here` to see the
@@ -132,7 +126,7 @@ Variables you can use in this event:
     message: the text having been spoken by the character.
 
 ----------Line Editor [Callback say of Inside of an elevator]---------------------
-01| 
+01|
 ----------[l:01 w:000 c:0000]------------(:h for help)----------------------------
 ```
 
@@ -244,7 +238,7 @@ This is a great opportunity to learn about chained events.  Chained events are v
 pauses.  Contrary to the events we have seen so far, chained events aren't called automatically.
 They must be called by you, and can be called after some time.
 
-- Chained events always have the name "chain_X".  Usually, X is a number, but you can give the
+- Chained events always have the name `"chain_X"`.  Usually, X is a number, but you can give the
 chained event a more explicit name.
 - In our original callback, we will call our chained events in, say, 15 seconds.
 - We'll also have to make sure the elevator isn't already moving.
@@ -254,7 +248,7 @@ event in our elevator, that will only contain the code necessary to open the doo
 
     call/add here = chain_1
 
-The callback is added to the "chain_1" event, an event that will not be automatically called by the
+The callback is added to the `"chain_1"` event, an event that will not be automatically called by the
 system when something happens.  Inside this event, you can paste the code to open the doors at the
 new floor.  You can notice a few differences:
 
@@ -273,7 +267,7 @@ Now let's edit our callback in the "say" event.  We'll have to change it a bit:
 
 - The callback will have to check the elevator isn't already moving.
 - It must change the exits when the elevator move.
-- It has to call the "chain_1" event we have defined.  It should call it 15 seconds later.
+- It has to call the `"chain_1"` event we have defined.  It should call it 15 seconds later.
 
 Let's see the code in our callback.
 
@@ -415,8 +409,8 @@ constraints on persistent attributes.  A callback will not be stored in this way
 This variable will not be available in your chained event.
 - **Q:** when you say I can call my chained events something else than "chain_1", "chain_2" and
 such, what is the naming convention?
-- **A:** chained events have names beginning by "chain_".  This is useful for you and for the
-system.  But after the underscore, you can give a more useful name, like "chain_open_doors" in our
+- **A:** chained events have names beginning by `"chain_"`.  This is useful for you and for the
+system.  But after the underscore, you can give a more useful name, like `"chain_open_doors"` in our
 case.
 - **Q:** do I have to pause several seconds to call a chained event?
 - **A:** no, you can call it right away.  Just leave the third parameter of `call_event` out (it
@@ -424,13 +418,11 @@ will default to 0, meaning the chained event will be called right away).  This w
 task.
 - **Q:** can I have chained events calling themselves?
 - **A:** you can.  There's no limitation.  Just be careful, a callback that calls itself,
-particularly without delay, might be a good recipe for an infinite loop.  However, in some cases, it
+particularly without delay, might be a good recipe for an infinite loop. However, in some cases, it
 is useful to have chained events calling themselves, to do the same repeated action every X seconds
 for instance.
 - **Q:** what if I need several elevators, do I need to copy/paste these callbacks each time?
 - **A:** not advisable.  There are definitely better ways to handle this situation.  One of them is
 to consider adding the code in the source itself.  Another possibility is to call chained events
-with the expected behavior, which makes porting code very easy.  This side of chained events will be
+with the expected behavior, which makes porting code very easy. This side of chained events will be
 shown in the next tutorial.
-
-- Previous tutorial: [Adding dialogues in events](./Dialogues-in-events.md)

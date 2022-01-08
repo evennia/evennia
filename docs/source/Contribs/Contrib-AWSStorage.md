@@ -1,12 +1,10 @@
 # AWSstorage system
 
-Contrib by The Right Honourable Reverend (trhr) 2020
-
-## What is this for?
+Contrib by The Right Honourable Reverend (trhr), 2020
 
 This plugin migrates the Web-based portion of Evennia, namely images,
-javascript, and other items located inside staticfiles into Amazon AWS (S3) for
-hosting.
+javascript, and other items located inside staticfiles into Amazon AWS (S3)
+cloud hosting. Great for those serving media with the game.
 
 Files hosted on S3 are "in the cloud," and while your personal
 server may be sufficient for serving multimedia to a minimal number of users,

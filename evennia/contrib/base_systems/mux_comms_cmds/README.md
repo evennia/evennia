@@ -1,22 +1,24 @@
 # Legacy Comms-commands
 
-Contribution - Griatch 2021
+Contribution by Griatch 2021
 
-In Evennia 1.0, the old Channel commands (originally inspired by MUX) were
-replaced by the single `channel` command that performs all these function.
-That command is still required to talk on channels. This contrib (extracted
-from Evennia 0.9.5) reuses the channel-management of the base Channel command
-but breaks out its functionality into separate Commands with MUX-familiar names.
+In Evennia 1.0+, the old Channel commands (originally inspired by MUX) were
+replaced by the single `channel` command that performs all these functions.
+This contrib (extracted from Evennia 0.9.5) breaks out the functionality into 
+separate Commands more familiar to MU* users. This is just for show though, the 
+main `channel` command is still called under the hood.
 
-- `allcom` - `channel/all` and `channel`
-- `addcom` - `channel/alias`, `channel/sub` and `channel/unmute`
-- `delcom` - `channel/unalias`, `alias/unsub` and `channel/mute`
-- `cboot` - `channel/boot` (`channel/ban` and `/unban` not supported)
-- `cwho` - `channel/who`
-- `ccreate` - `channel/create`
-- `cdestroy` - `channel/destroy`
-- `clock` - `channel/lock`
-- `cdesc` - `channel/desc`
+| Contrib syntax | Default `channel` syntax                                  |
+| -------------- | --------------------------------------------------------- |
+| `allcom`       |  `channel/all` and `channel`                              |
+| `addcom`       | `channel/alias`, `channel/sub` and `channel/unmute`       |
+| `delcom`       | `channel/unalias`, `alias/unsub` and `channel/mute`       |
+| `cboot`        | `channel/boot` (`channel/ban` and `/unban` not supported) |
+| `cwho`         | `channel/who`                                             |
+| `ccreate`      | `channel/create`                                          |
+| `cdestroy`     | `channel/destroy`                                         |
+| `clock`        | `channel/lock`                                            |
+| `cdesc`        | `channel/desc`                                            |
 
 ##  Installation
 
