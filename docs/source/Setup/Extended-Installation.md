@@ -478,7 +478,7 @@ forums](https://groups.google.com/forum/#%21forum/evennia). You can also join th
 Server](https://discord.gg/NecFePw).
 
 Finally, if you are itching to help out or support Evennia (awesome!) have an
-issue to report or a feature to request, [see here](../How-To-Get-And-Give-Help.md).
+issue to report or a feature to request, [see here](../Contributing.md).
 
 Enjoy your stay!
 
