@@ -939,3 +939,25 @@ class Test2474(BaseEvenniaTest):
         sting = spawner.spawn(self.prototypes["WEAPON"], prototype_parents=self.prototypes)[0]
         self.assertEqual(sting.db.magic, False)
 
+
+class TestPartialTagAttributes(BaseEvenniaTest):
+    """
+    Make sure tags and attributes are homogenized if given as incomplete tuples.
+
+    See https://github.com/evennia/evennia/issues/2524.
+
+    """
+
+    def setUp(self):
+        self.prot = {
+            'prototype_key': 'rock',
+            'typeclass': 'evennia.objects.objects.DefaultObject',
+            'key': 'a rock',
+            'tags': [('quantity', 'groupable')],  # missing data field
+            'attrs': [('quantity', 1)],   # missing category and lock fields
+            'desc': 'A good way to get stoned.'
+        }
+
+    def test_partial_spawn(self):
+        obj = spawner.spawn(self.prot)
+        self.assertEqual(obj[0].key, self.prot['key'])
