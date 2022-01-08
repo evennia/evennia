@@ -3129,6 +3129,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
         script/stop myobj = scriptname - stop script on object
         script/pause foo.Bar.Script    - pause global script
         script/delete myobj            - delete ALL scripts on object
+        script/delete #dbref[-#dbref]  - delete script or range by dbref
 
     When given with an `<obj>` as left-hand-side, this creates and
     assigns a new script to that object. Without an `<obj>`, this
@@ -3170,6 +3171,13 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
         scripts = ScriptDB.objects.filter(db_typeclass_path__iendswith=args)
         if scripts:
             return scripts
+        if "-" in args:
+            # may be a dbref-range
+            val1, val2 = (dbref(part.strip()) for part in args.split('-', 1))
+            if val1 and val2:
+                scripts = ScriptDB.objects.filter(id__in=(range(val1, val2 + 1)))
+                if scripts:
+                    return scripts
 
     def func(self):
         """implement method"""
