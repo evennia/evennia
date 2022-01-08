@@ -131,27 +131,6 @@ class EvenniaTestMixin:
     room_typeclass = DefaultRoom
     script_typeclass = DefaultScript
 
-    def save_backups(self):
-        self.backups = (
-            SESSIONS.data_out,
-            SESSIONS.disconnect,
-            settings.DEFAULT_HOME,
-            settings.PROTOTYPE_MODULES,
-        )
-
-    def restore_backups(self):
-        flush_cache()
-        if hasattr(self, "backups"):
-            SESSIONS.data_out = self.backups[0]
-            SESSIONS.disconnect = self.backups[1]
-            settings.DEFAULT_HOME = self.backups[2]
-            settings.PROTOTYPE_MODULES = self.backups[3]
-
-    def mock_sessions(self):
-        SESSIONS.data_out = Mock()
-        SESSIONS.disconnect = Mock()
-        self.mocked_SESSIONS = SESSIONS
-
     def create_accounts(self):
         self.account = create.create_account(
             "TestAccount",
@@ -229,8 +208,15 @@ class EvenniaTestMixin:
         """
         Sets up testing environment
         """
-        self.save_backups()
-        self.mock_sessions()
+        self.backups = (
+            SESSIONS.data_out,
+            SESSIONS.disconnect,
+            settings.DEFAULT_HOME,
+            settings.PROTOTYPE_MODULES,
+        )
+        SESSIONS.data_out = Mock()
+        SESSIONS.disconnect = Mock()
+
         self.create_accounts()
         self.create_rooms()
         self.create_objs()
@@ -239,8 +225,17 @@ class EvenniaTestMixin:
         self.setup_session()
 
     def tearDown(self):
-        self.restore_backups()
-        self.teardown_session()
+        flush_cache()
+        try:
+            SESSIONS.data_out = self.backups[0]
+            SESSIONS.disconnect = self.backups[1]
+            settings.DEFAULT_HOME = self.backups[2]
+            settings.PROTOTYPE_MODULES = self.backups[3]
+        except AttributeError as err:
+            raise AttributeError(f"{err}: Teardown error. If you overrode the `setUp()` method "
+                                 "in your test, make sure you also added `super().setUp()`!")
+
+        del SESSIONS[self.session.sessid]
         self.teardown_accounts()
         super().tearDown()
 
