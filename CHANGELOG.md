@@ -130,6 +130,10 @@ Up requirements to Django 3.2+, Twisted 21+
   to `.remove(key, category=None, return_exception=False, ...)` for consistency.
 - New `command cooldown` contrib for making it easier to manage commands using
   dynamic cooldowns between uses (owllex)
+- Restructured `contrib/` folder, placing all contribs as separate packages under
+  subfolders. All imports will need to be updated.
+- Made `MonitorHandler.add/remove` support `category` for monitoring Attributes
+  with a category (before only key was used, ignoring category entirely).
 
 ### Evennia 0.9.5 (2019-2020)
 
