@@ -141,10 +141,11 @@ class EvenniaTestMixin:
 
     def restore_backups(self):
         flush_cache()
-        SESSIONS.data_out = self.backups[0]
-        SESSIONS.disconnect = self.backups[1]
-        settings.DEFAULT_HOME = self.backups[2]
-        settings.PROTOTYPE_MODULES = self.backups[3]
+        if hasattr(self, "backups"):
+            SESSIONS.data_out = self.backups[0]
+            SESSIONS.disconnect = self.backups[1]
+            settings.DEFAULT_HOME = self.backups[2]
+            settings.PROTOTYPE_MODULES = self.backups[3]
 
     def mock_sessions(self):
         SESSIONS.data_out = Mock()
@@ -167,8 +168,10 @@ class EvenniaTestMixin:
         self.account.permissions.add("Developer")
 
     def teardown_accounts(self):
-        self.account.delete()
-        self.account2.delete()
+        if hasattr(self, "account"):
+            self.account.delete()
+        if hasattr(self, "account2"):
+            self.account2.delete()
 
     def create_rooms(self):
         self.room1 = create.create_object(self.room_typeclass, key="Room", nohome=True)
@@ -218,7 +221,8 @@ class EvenniaTestMixin:
         self.session = session
 
     def teardown_session(self):
-        del SESSIONS[self.session.sessid]
+        if hasattr(self, "sessions"):
+            del SESSIONS[self.session.sessid]
 
     @patch("evennia.scripts.taskhandler.deferLater", _mock_deferlater)
     def setUp(self):
