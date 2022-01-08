@@ -40,7 +40,7 @@ from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.command import Command, InterruptCommand
 from evennia.commands import cmdparser
 from evennia.commands.cmdset import CmdSet
-from evennia.utils import ansi, utils, gametime
+from evennia.utils import ansi, utils, gametime, create
 from evennia.server.sessionhandler import SESSIONS
 from evennia import search_object
 from evennia import DefaultObject, DefaultCharacter
@@ -1728,6 +1728,23 @@ class TestBuilding(EvenniaCommandTest):
             "Global Script Deleted -"
         )
 
+    def test_script_multi_delete(self):
+
+        script1 = create.create_script()
+        script2 = create.create_script()
+        script3 = create.create_script()
+
+        self.call(
+            building.CmdScripts(),
+            "/delete #{}-#{}".format(script1.id, script3.id),
+            "Global Script Deleted - #2 (evennia.scripts.scripts.DefaultScript)|"
+            "Global Script Deleted - #3 (evennia.scripts.scripts.DefaultScript)|"
+            "Global Script Deleted - #4 (evennia.scripts.scripts.DefaultScript)",
+            inputs=["y"]
+        )
+        self.assertFalse(script1.pk)
+        self.assertFalse(script2.pk)
+        self.assertFalse(script3.pk)
 
     def test_teleport(self):
         oid = self.obj1.id
