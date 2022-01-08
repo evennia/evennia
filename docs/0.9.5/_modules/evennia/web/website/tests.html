@@ -47,13 +47,13 @@
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_help_entry</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
 <span class="kn">from</span> <span class="nn">evennia.help</span> <span class="kn">import</span> <span class="n">filehelp</span>
 
 <span class="n">_FILE_HELP_ENTRIES</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="EvenniaWebTest"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.EvenniaWebTest">[docs]</a><span class="k">class</span> <span class="nc">EvenniaWebTest</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaWebTest"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.EvenniaWebTest">[docs]</a><span class="k">class</span> <span class="nc">EvenniaWebTest</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
 
     <span class="c1"># Use the same classes the views are expecting</span>
     <span class="n">account_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span>

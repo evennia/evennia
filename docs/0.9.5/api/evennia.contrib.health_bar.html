@@ -39,65 +39,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="module-evennia.contrib.health_bar">
-<span id="evennia-contrib-health-bar"></span><h1>evennia.contrib.health_bar<a class="headerlink" href="#module-evennia.contrib.health_bar" title="Permalink to this headline">¶</a></h1>
-<p>Health Bar</p>
-<p>Contrib - Tim Ashley Jenkins 2017</p>
-<p>The function provided in this module lets you easily display visual
-bars or meters - “health bar” is merely the most obvious use for this,
-though these bars are highly customizable and can be used for any sort
-of appropriate data besides player health.</p>
-<p>Today’s players may be more used to seeing statistics like health,
-stamina, magic, and etc. displayed as bars rather than bare numerical
-values, so using this module to present this data this way may make it
-more accessible. Keep in mind, however, that players may also be using
-a screen reader to connect to your game, which will not be able to
-represent the colors of the bar in any way. By default, the values
-represented are rendered as text inside the bar which can be read by
-screen readers.</p>
-<p>The health bar will account for current values above the maximum or
-below 0, rendering them as a completely full or empty bar with the
-values displayed within.</p>
-<dl class="py function">
-<dt id="evennia.contrib.health_bar.display_meter">
-<code class="sig-prename descclassname">evennia.contrib.health_bar.</code><code class="sig-name descname">display_meter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cur_value</span></em>, <em class="sig-param"><span class="n">max_value</span></em>, <em class="sig-param"><span class="n">length</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">fill_color</span><span class="o">=</span><span class="default_value">['R', 'Y', 'G']</span></em>, <em class="sig-param"><span class="n">empty_color</span><span class="o">=</span><span class="default_value">'B'</span></em>, <em class="sig-param"><span class="n">text_color</span><span class="o">=</span><span class="default_value">'w'</span></em>, <em class="sig-param"><span class="n">align</span><span class="o">=</span><span class="default_value">'left'</span></em>, <em class="sig-param"><span class="n">pre_text</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">post_text</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">show_values</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/health_bar.html#display_meter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.health_bar.display_meter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Represents a current and maximum value given as a “bar” rendered with
-ANSI or xterm256 background colors.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>cur_value</strong> (<em>int</em>) – Current value to display</p></li>
-<li><p><strong>max_value</strong> (<em>int</em>) – Maximum value to display</p></li>
-</ul>
-</dd>
-</dl>
-<dl>
-<dt>Options:</dt><dd><p>length (int): Length of meter returned, in characters
-fill_color (list): List of color codes for the full portion</p>
-<blockquote>
-<div><p>of the bar, sans any sort of prefix - both ANSI and xterm256
-colors are usable. When the bar is empty, colors toward the
-start of the list will be chosen - when the bar is full, colors
-towards the end are picked. You can adjust the ‘weights’ of
-the changing colors by adding multiple entries of the same
-color - for example, if you only want the bar to change when
-it’s close to empty, you could supply [‘R’,’Y’,’G’,’G’,’G’]</p>
-</div></blockquote>
-<p>empty_color (str): Color code for the empty portion of the bar.
-text_color (str): Color code for text inside the bar.
-align (str): “left”, “right”, or “center” - alignment of text in the bar
-pre_text (str): Text to put before the numbers in the bar
-post_text (str): Text to put after the numbers in the bar
-show_values (bool): If true, shows the numerical values represented by</p>
-<blockquote>
-<div><p>the bar. It’s highly recommended you keep this on, especially if
-there’s no info given in pre_text or post_text, as players on screen
-readers will be unable to read the graphical aspect of the bar.</p>
-</div></blockquote>
-</dd>
-</dl>
-</dd></dl>
-
+  <section id="evennia-contrib-health-bar">
+<h1>evennia.contrib.health_bar<a class="headerlink" href="#evennia-contrib-health-bar" title="Permalink to this headline">¶</a></h1>
 </section>
 
 
@@ -139,7 +82,7 @@ readers will be unable to read the graphical aspect of the bar.</p>
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="../../1.0-dev/api/evennia.contrib.health_bar.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.contrib.health_bar.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 

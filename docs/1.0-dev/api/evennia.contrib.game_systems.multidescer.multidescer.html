@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.game_systems.multidescer.multidescer &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.multidescer.multidescer</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.game_systems.multidescer.multidescer">
+<span id="evennia-contrib-game-systems-multidescer-multidescer"></span><h1>evennia.contrib.game_systems.multidescer.multidescer<a class="headerlink" href="#module-evennia.contrib.game_systems.multidescer.multidescer" title="Permalink to this headline">¶</a></h1>
+<p>Evennia Multidescer</p>
+<p>Contrib - Griatch 2016</p>
+<p>A “multidescer” is a concept from the MUSH world. It allows for
+creating, managing and switching between multiple character
+descriptions. This multidescer will not require any changes to the
+Character class, rather it will use the <strong>multidescs</strong> Attribute (a
+list) and create it if it does not exist.</p>
+<p>This contrib also works well together with the rpsystem contrib (which
+also adds the short descriptions and the <strong>sdesc</strong> command).</p>
+<p>Installation:</p>
+<p>Edit <strong>mygame/commands/default_cmdsets.py</strong> and add
+<strong>from evennia.contrib.game_systems.multidescer import CmdMultiDesc</strong> to the top.</p>
+<p>Next, look up the <strong>at_cmdset_create</strong> method of the <strong>CharacterCmdSet</strong>
+class and add a line <strong>self.add(CmdMultiDesc())</strong> to the end
+of it.</p>
+<p>Reload the server and you should have the +desc command available (it
+will replace the default <strong>desc</strong> command).</p>
+<dl class="py exception">
+<dt id="evennia.contrib.game_systems.multidescer.multidescer.DescValidateError">
+<em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.game_systems.multidescer.multidescer.</code><code class="sig-name descname">DescValidateError</code><a class="reference internal" href="../_modules/evennia/contrib/game_systems/multidescer/multidescer.html#DescValidateError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.multidescer.multidescer.DescValidateError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></p>
+<p>Used for tracebacks from desc systems</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.multidescer.multidescer.CmdMultiDesc">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.multidescer.multidescer.</code><code class="sig-name descname">CmdMultiDesc</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/multidescer/multidescer.html#CmdMultiDesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.multidescer.multidescer.CmdMultiDesc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Manage multiple descriptions</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>+desc [key]                - show current desc desc with &lt;key&gt;
++desc &lt;key&gt; = &lt;text&gt;       - add/replace desc with &lt;key&gt;
++desc/list                 - list descriptions (abbreviated)
++desc/list/full            - list descriptions (full texts)
++desc/edit &lt;key&gt;           - add/edit desc &lt;key&gt; in line editor
++desc/del &lt;key&gt;            - delete desc &lt;key&gt;
++desc/swap &lt;key1&gt;-&lt;key2&gt;   - swap positions of &lt;key1&gt; and &lt;key2&gt; in list
++desc/set &lt;key&gt; [+key+…] - set desc as default or combine multiple descs</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>When combining multiple descs with +desc/set &lt;key&gt; + &lt;key2&gt; + …,
+any keys not matching an actual description will be inserted
+as plain text. Use e.g. ansi line break ||/ to add a new
+paragraph and + + or ansi space ||_ to add extra whitespace.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.multidescer.multidescer.CmdMultiDesc.key">
+<code class="sig-name descname">key</code><em class="property"> = '+desc'</em><a class="headerlink" href="#evennia.contrib.game_systems.multidescer.multidescer.CmdMultiDesc.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.multidescer.multidescer.CmdMultiDesc.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['desc']</em><a class="headerlink" href="#evennia.contrib.game_systems.multidescer.multidescer.CmdMultiDesc.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.multidescer.multidescer.CmdMultiDesc.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.game_systems.multidescer.multidescer.CmdMultiDesc.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.multidescer.multidescer.CmdMultiDesc.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.game_systems.multidescer.multidescer.CmdMultiDesc.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.multidescer.multidescer.CmdMultiDesc.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/multidescer/multidescer.html#CmdMultiDesc.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.multidescer.multidescer.CmdMultiDesc.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements the multidescer.  We will use <strong>db.desc</strong> for the
+description in use and <strong>db.multidesc</strong> to store all descriptions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.multidescer.multidescer.CmdMultiDesc.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.game_systems.multidescer.multidescer.CmdMultiDesc.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.multidescer.multidescer.CmdMultiDesc.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'desc', 'category': 'general', 'key': '+desc', 'no_prefix': 'desc desc', 'tags': '', 'text': '\n    Manage multiple descriptions\n\n    Usage:\n        +desc [key]                - show current desc desc with &lt;key&gt;\n        +desc &lt;key&gt; = &lt;text&gt;       - add/replace desc with &lt;key&gt;\n        +desc/list                 - list descriptions (abbreviated)\n        +desc/list/full            - list descriptions (full texts)\n        +desc/edit &lt;key&gt;           - add/edit desc &lt;key&gt; in line editor\n        +desc/del &lt;key&gt;            - delete desc &lt;key&gt;\n        +desc/swap &lt;key1&gt;-&lt;key2&gt;   - swap positions of &lt;key1&gt; and &lt;key2&gt; in list\n        +desc/set &lt;key&gt; [+key+...] - set desc as default or combine multiple descs\n\n    Notes:\n        When combining multiple descs with +desc/set &lt;key&gt; + &lt;key2&gt; + ...,\n        any keys not matching an actual description will be inserted\n        as plain text. Use e.g. ansi line break ||/ to add a new\n        paragraph and + + or ansi space ||_ to add extra whitespace.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.game_systems.multidescer.multidescer.CmdMultiDesc.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.game_systems.multidescer.multidescer.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.game_systems.multidescer.multidescer.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.multidescer.multidescer</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

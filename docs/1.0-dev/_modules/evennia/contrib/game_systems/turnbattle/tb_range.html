@@ -1,0 +1,1542 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.game_systems.turnbattle.tb_range &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.turnbattle.tb_range</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.game_systems.turnbattle.tb_range</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Simple turn-based combat system with range and movement</span>
+
+<span class="sd">Contrib - Tim Ashley Jenkins 2017</span>
+
+<span class="sd">This is a version of the &#39;turnbattle&#39; contrib that includes a system</span>
+<span class="sd">for abstract movement and positioning in combat, including distinction</span>
+<span class="sd">between melee and ranged attacks. In this system, a fighter or object&#39;s</span>
+<span class="sd">exact position is not recorded - only their relative distance to other</span>
+<span class="sd">actors in combat.</span>
+
+<span class="sd">In this example, the distance between two objects in combat is expressed</span>
+<span class="sd">as an integer value: 0 for &quot;engaged&quot; objects that are right next to each</span>
+<span class="sd">other, 1 for &quot;reach&quot; which is for objects that are near each other but</span>
+<span class="sd">not directly adjacent, and 2 for &quot;range&quot; for objects that are far apart.</span>
+
+<span class="sd">When combat starts, all fighters are at reach with each other and other</span>
+<span class="sd">objects, and at range from any exits. On a fighter&#39;s turn, they can use</span>
+<span class="sd">the &quot;approach&quot; command to move closer to an object, or the &quot;withdraw&quot;</span>
+<span class="sd">command to move further away from an object, either of which takes an</span>
+<span class="sd">action in combat. In this example, fighters are given two actions per</span>
+<span class="sd">turn, allowing them to move and attack in the same round, or to attack</span>
+<span class="sd">twice or move twice.</span>
+
+<span class="sd">When you move toward an object, you will also move toward anything else</span>
+<span class="sd">that&#39;s close to your target - the same goes for moving away from a target,</span>
+<span class="sd">which will also move you away from anything close to your target. Moving</span>
+<span class="sd">toward one target may also move you away from anything you&#39;re already</span>
+<span class="sd">close to, but withdrawing from a target will never inadvertently bring</span>
+<span class="sd">you closer to anything else.</span>
+
+<span class="sd">In this example, there are two attack commands. &#39;Attack&#39; can only hit</span>
+<span class="sd">targets that are &#39;engaged&#39; (range 0) with you. &#39;Shoot&#39; can hit any target</span>
+<span class="sd">on the field, but cannot be used if you are engaged with any other fighters.</span>
+<span class="sd">In addition, strikes made with the &#39;attack&#39; command are more accurate than</span>
+<span class="sd">&#39;shoot&#39; attacks. This is only to provide an example of how melee and ranged</span>
+<span class="sd">attacks can be made to work differently - you can, of course, modify this</span>
+<span class="sd">to fit your rules system.</span>
+
+<span class="sd">When in combat, the ranges of objects are also accounted for - you can&#39;t</span>
+<span class="sd">pick up an object unless you&#39;re engaged with it, and can&#39;t give an object</span>
+<span class="sd">to another fighter without being engaged with them either. Dropped objects</span>
+<span class="sd">are automatically assigned a range of &#39;engaged&#39; with the fighter who dropped</span>
+<span class="sd">them. Additionally, giving or getting an object will take an action in combat.</span>
+<span class="sd">Dropping an object does not take an action, but can only be done on your turn.</span>
+
+<span class="sd">When combat ends, all range values are erased and all restrictions on getting</span>
+<span class="sd">or getting objects are lifted - distances are no longer tracked and objects in</span>
+<span class="sd">the same room can be considered to be in the same space, as is the default</span>
+<span class="sd">behavior of Evennia and most MUDs.</span>
+
+<span class="sd">This system allows for strategies in combat involving movement and</span>
+<span class="sd">positioning to be implemented in your battle system without the use of</span>
+<span class="sd">a &#39;grid&#39; of coordinates, which can be difficult and clunky to navigate</span>
+<span class="sd">in text and disadvantageous to players who use screen readers. This loose,</span>
+<span class="sd">narrative method of tracking position is based around how the matter is</span>
+<span class="sd">handled in tabletop RPGs played without a grid - typically, a character&#39;s</span>
+<span class="sd">exact position in a room isn&#39;t important, only their relative distance to</span>
+<span class="sd">other actors.</span>
+
+<span class="sd">You may wish to expand this system with a method of distinguishing allies</span>
+<span class="sd">from enemies (to prevent allied characters from blocking your ranged attacks)</span>
+<span class="sd">as well as some method by which melee-focused characters can prevent enemies</span>
+<span class="sd">from withdrawing or punish them from doing so, such as by granting &quot;attacks of</span>
+<span class="sd">opportunity&quot; or something similar. If you wish, you can also expand the breadth</span>
+<span class="sd">of values allowed for range - rather than just 0, 1, and 2, you can allow ranges</span>
+<span class="sd">to go up to much higher values, and give attacks and movements more varying</span>
+<span class="sd">values for distance for a more granular system. You may also want to implement</span>
+<span class="sd">a system for fleeing or changing rooms in combat by approaching exits, which</span>
+<span class="sd">are objects placed in the range field like any other.</span>
+
+<span class="sd">To install and test, import this module&#39;s TBRangeCharacter object into</span>
+<span class="sd">your game&#39;s character.py module:</span>
+
+<span class="sd">    from evennia.contrib.game_systems.turnbattle.tb_range import TBRangeCharacter</span>
+
+<span class="sd">And change your game&#39;s character typeclass to inherit from TBRangeCharacter</span>
+<span class="sd">instead of the default:</span>
+
+<span class="sd">    class Character(TBRangeCharacter):</span>
+
+<span class="sd">Do the same thing in your game&#39;s objects.py module for TBRangeObject:</span>
+
+<span class="sd">    from evennia.contrib.game_systems.turnbattle.tb_range import TBRangeObject</span>
+<span class="sd">    class Object(TBRangeObject):</span>
+
+<span class="sd">Next, import this module into your default_cmdsets.py module:</span>
+
+<span class="sd">    from evennia.contrib.game_systems.turnbattle import tb_range</span>
+
+<span class="sd">And add the battle command set to your default command set:</span>
+
+<span class="sd">    #</span>
+<span class="sd">    # any commands you add below will overload the default ones.</span>
+<span class="sd">    #</span>
+<span class="sd">    self.add(tb_range.BattleCmdSet())</span>
+
+<span class="sd">This module is meant to be heavily expanded on, so you may want to copy it</span>
+<span class="sd">to your game&#39;s &#39;world&#39; folder and modify it there rather than importing it</span>
+<span class="sd">in your game and using it as-is.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">Command</span><span class="p">,</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default.help</span> <span class="kn">import</span> <span class="n">CmdHelp</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">OPTIONS</span>
+<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">TURN_TIMEOUT</span> <span class="o">=</span> <span class="mi">30</span>  <span class="c1"># Time before turns automatically end, in seconds</span>
+<span class="n">ACTIONS_PER_TURN</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># Number of actions allowed per turn</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">COMBAT FUNCTIONS START HERE</span>
+<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="roll_init"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.roll_init">[docs]</a><span class="k">def</span> <span class="nf">roll_init</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rolls a number between 1-1000 to determine initiative.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        character (obj): The character to determine initiative for</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        initiative (int): The character&#39;s place in initiative - higher</span>
+<span class="sd">        numbers go first.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        By default, does not reference the character and simply returns</span>
+<span class="sd">        a random integer from 1 to 1000.</span>
+
+<span class="sd">        Since the character is passed to this function, you can easily reference</span>
+<span class="sd">        a character&#39;s stats to determine an initiative roll - for example, if your</span>
+<span class="sd">        character has a &#39;dexterity&#39; attribute, you can use it to give that character</span>
+<span class="sd">        an advantage in turn order, like so:</span>
+
+<span class="sd">        return (randint(1,20)) + character.db.dexterity</span>
+
+<span class="sd">        This way, characters with a higher dexterity will go first more often.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_attack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.get_attack">[docs]</a><span class="k">def</span> <span class="nf">get_attack</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">,</span> <span class="n">attack_type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a value for an attack roll.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        attacker (obj): Character doing the attacking</span>
+<span class="sd">        defender (obj): Character being attacked</span>
+<span class="sd">        attack_type (str): Type of attack (&#39;melee&#39; or &#39;ranged&#39;)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        attack_value (int): Attack roll value, compared against a defense value</span>
+<span class="sd">            to determine whether an attack hits or misses.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        By default, generates a random integer from 1 to 100 without using any</span>
+<span class="sd">        properties from either the attacker or defender, and modifies the result</span>
+<span class="sd">        based on whether it&#39;s for a melee or ranged attack.</span>
+
+<span class="sd">        This can easily be expanded to return a value based on characters stats,</span>
+<span class="sd">        equipment, and abilities. This is why the attacker and defender are passed</span>
+<span class="sd">        to this function, even though nothing from either one are used in this example.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># For this example, just return a random integer up to 100.</span>
+    <span class="n">attack_value</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="c1"># Make melee attacks more accurate, ranged attacks less accurate</span>
+    <span class="k">if</span> <span class="n">attack_type</span> <span class="o">==</span> <span class="s2">&quot;melee&quot;</span><span class="p">:</span>
+        <span class="n">attack_value</span> <span class="o">+=</span> <span class="mi">15</span>
+    <span class="k">if</span> <span class="n">attack_type</span> <span class="o">==</span> <span class="s2">&quot;ranged&quot;</span><span class="p">:</span>
+        <span class="n">attack_value</span> <span class="o">-=</span> <span class="mi">15</span>
+    <span class="k">return</span> <span class="n">attack_value</span></div>
+
+
+<div class="viewcode-block" id="get_defense"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.get_defense">[docs]</a><span class="k">def</span> <span class="nf">get_defense</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">,</span> <span class="n">attack_type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a value for defense, which an attack roll must equal or exceed in order</span>
+<span class="sd">    for an attack to hit.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        attacker (obj): Character doing the attacking</span>
+<span class="sd">        defender (obj): Character being attacked</span>
+<span class="sd">        attack_type (str): Type of attack (&#39;melee&#39; or &#39;ranged&#39;)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        defense_value (int): Defense value, compared against an attack roll</span>
+<span class="sd">            to determine whether an attack hits or misses.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        By default, returns 50, not taking any properties of the defender or</span>
+<span class="sd">        attacker into account.</span>
+
+<span class="sd">        As above, this can be expanded upon based on character stats and equipment.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># For this example, just return 50, for about a 50/50 chance of hit.</span>
+    <span class="n">defense_value</span> <span class="o">=</span> <span class="mi">50</span>
+    <span class="k">return</span> <span class="n">defense_value</span></div>
+
+
+<div class="viewcode-block" id="get_damage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.get_damage">[docs]</a><span class="k">def</span> <span class="nf">get_damage</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a value for damage to be deducted from the defender&#39;s HP after abilities</span>
+<span class="sd">    successful hit.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        attacker (obj): Character doing the attacking</span>
+<span class="sd">        defender (obj): Character being damaged</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        damage_value (int): Damage value, which is to be deducted from the defending</span>
+<span class="sd">            character&#39;s HP.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        By default, returns a random integer from 15 to 25 without using any</span>
+<span class="sd">        properties from either the attacker or defender.</span>
+
+<span class="sd">        Again, this can be expanded upon.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># For this example, just generate a number between 15 and 25.</span>
+    <span class="n">damage_value</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">damage_value</span></div>
+
+
+<div class="viewcode-block" id="apply_damage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.apply_damage">[docs]</a><span class="k">def</span> <span class="nf">apply_damage</span><span class="p">(</span><span class="n">defender</span><span class="p">,</span> <span class="n">damage</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Applies damage to a target, reducing their HP by the damage amount to a</span>
+<span class="sd">    minimum of 0.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        defender (obj): Character taking damage</span>
+<span class="sd">        damage (int): Amount of damage being taken</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">defender</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span> <span class="o">-=</span> <span class="n">damage</span>  <span class="c1"># Reduce defender&#39;s HP by the damage dealt.</span>
+    <span class="c1"># If this reduces it to 0 or less, set HP to 0.</span>
+    <span class="k">if</span> <span class="n">defender</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">defender</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="at_defeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.at_defeat">[docs]</a><span class="k">def</span> <span class="nf">at_defeat</span><span class="p">(</span><span class="n">defeated</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Announces the defeat of a fighter in combat.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        defeated (obj): Fighter that&#39;s been defeated.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        All this does is announce a defeat message by default, but if you</span>
+<span class="sd">        want anything else to happen to defeated fighters (like putting them</span>
+<span class="sd">        into a dying state or something similar) then this is the place to</span>
+<span class="sd">        do it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">defeated</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> has been defeated!&quot;</span> <span class="o">%</span> <span class="n">defeated</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="resolve_attack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.resolve_attack">[docs]</a><span class="k">def</span> <span class="nf">resolve_attack</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">,</span> <span class="n">attack_type</span><span class="p">,</span> <span class="n">attack_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">defense_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Resolves an attack and outputs the result.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        attacker (obj): Character doing the attacking</span>
+<span class="sd">        defender (obj): Character being attacked</span>
+<span class="sd">        attack_type (str): Type of attack (melee or ranged)</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        Even though the attack and defense values are calculated</span>
+<span class="sd">        extremely simply, they are separated out into their own functions</span>
+<span class="sd">        so that they are easier to expand upon.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get an attack roll from the attacker.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">attack_value</span><span class="p">:</span>
+        <span class="n">attack_value</span> <span class="o">=</span> <span class="n">get_attack</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">,</span> <span class="n">attack_type</span><span class="p">)</span>
+    <span class="c1"># Get a defense value from the defender.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">defense_value</span><span class="p">:</span>
+        <span class="n">defense_value</span> <span class="o">=</span> <span class="n">get_defense</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">,</span> <span class="n">attack_type</span><span class="p">)</span>
+    <span class="c1"># If the attack value is lower than the defense value, miss. Otherwise, hit.</span>
+    <span class="k">if</span> <span class="n">attack_value</span> <span class="o">&lt;</span> <span class="n">defense_value</span><span class="p">:</span>
+        <span class="n">attacker</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&#39;s </span><span class="si">%s</span><span class="s2"> attack misses </span><span class="si">%s</span><span class="s2">!&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">attack_type</span><span class="p">,</span> <span class="n">defender</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">damage_value</span> <span class="o">=</span> <span class="n">get_damage</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">)</span>  <span class="c1"># Calculate damage value.</span>
+        <span class="c1"># Announce damage dealt and apply damage.</span>
+        <span class="n">attacker</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> hits </span><span class="si">%s</span><span class="s2"> with a </span><span class="si">%s</span><span class="s2"> attack for </span><span class="si">%i</span><span class="s2"> damage!&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">,</span> <span class="n">attack_type</span><span class="p">,</span> <span class="n">damage_value</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">apply_damage</span><span class="p">(</span><span class="n">defender</span><span class="p">,</span> <span class="n">damage_value</span><span class="p">)</span>
+        <span class="c1"># If defender HP is reduced to 0 or less, call at_defeat.</span>
+        <span class="k">if</span> <span class="n">defender</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">at_defeat</span><span class="p">(</span><span class="n">defender</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_range"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.get_range">[docs]</a><span class="k">def</span> <span class="nf">get_range</span><span class="p">(</span><span class="n">obj1</span><span class="p">,</span> <span class="n">obj2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets the combat range between two objects.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        obj1 (obj): First object</span>
+<span class="sd">        obj2 (obj): Second object</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        range (int or None): Distance between two objects or None if not applicable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Return None if not applicable.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">obj1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">obj2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">obj1</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">obj2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">obj2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">obj1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="c1"># Return the range between the two objects.</span>
+    <span class="k">return</span> <span class="n">obj1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">obj2</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="distance_inc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.distance_inc">[docs]</a><span class="k">def</span> <span class="nf">distance_inc</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function that increases distance in range field between mover and target.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mover (obj): The object moving</span>
+<span class="sd">        target (obj): The object to be moved away from</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">target</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">mover</span><span class="p">]</span> <span class="o">=</span> <span class="n">mover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">target</span><span class="p">]</span>
+    <span class="c1"># Set a cap of 2:</span>
+    <span class="k">if</span> <span class="n">get_range</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">mover</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">mover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="approach"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.approach">[docs]</a><span class="k">def</span> <span class="nf">approach</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Manages a character&#39;s whole approach, including changes in ranges to other characters.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mover (obj): The object moving</span>
+<span class="sd">        target (obj): The object to be moved toward</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        The mover will also automatically move toward any objects that are closer to the</span>
+<span class="sd">        target than the mover is. The mover will also move away from anything they started</span>
+<span class="sd">        out close to.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">distance_dec</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function that decreases distance in range field between mover and target.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mover (obj): The object moving</span>
+<span class="sd">            target (obj): The object to be moved toward</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">mover</span><span class="p">]</span> <span class="o">=</span> <span class="n">mover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">target</span><span class="p">]</span>
+        <span class="c1"># If this brings mover to range 0 (Engaged):</span>
+        <span class="k">if</span> <span class="n">get_range</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Reset range to each other to 0 and copy target&#39;s ranges to mover.</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">mover</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">mover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span>
+            <span class="c1"># Assure everything else has the same distance from the mover and target, now that they&#39;re together</span>
+            <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">mover</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">thing</span> <span class="o">!=</span> <span class="n">mover</span> <span class="ow">and</span> <span class="n">thing</span> <span class="o">!=</span> <span class="n">target</span><span class="p">:</span>
+                    <span class="n">thing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">mover</span><span class="p">]</span> <span class="o">=</span> <span class="n">thing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">target</span><span class="p">]</span>
+
+    <span class="n">contents</span> <span class="o">=</span> <span class="n">mover</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span>
+
+    <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">thing</span> <span class="o">!=</span> <span class="n">mover</span> <span class="ow">and</span> <span class="n">thing</span> <span class="o">!=</span> <span class="n">target</span><span class="p">:</span>
+            <span class="c1"># Move closer to each object closer to the target than you.</span>
+            <span class="k">if</span> <span class="n">get_range</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">thing</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">get_range</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">thing</span><span class="p">):</span>
+                <span class="n">distance_dec</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">thing</span><span class="p">)</span>
+            <span class="c1"># Move further from each object that&#39;s further from you than from the target.</span>
+            <span class="k">if</span> <span class="n">get_range</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">thing</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">get_range</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">thing</span><span class="p">):</span>
+                <span class="n">distance_inc</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">thing</span><span class="p">)</span>
+    <span class="c1"># Lastly, move closer to your target.</span>
+    <span class="n">distance_dec</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="withdraw"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.withdraw">[docs]</a><span class="k">def</span> <span class="nf">withdraw</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Manages a character&#39;s whole withdrawal, including changes in ranges to other characters.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mover (obj): The object moving</span>
+<span class="sd">        target (obj): The object to be moved away from</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        The mover will also automatically move away from objects that are close to the target</span>
+<span class="sd">        of their withdrawl. The mover will never inadvertently move toward anything else while</span>
+<span class="sd">        withdrawing - they can be considered to be moving to open space.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">contents</span> <span class="o">=</span> <span class="n">mover</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span>
+
+    <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">thing</span> <span class="o">!=</span> <span class="n">mover</span> <span class="ow">and</span> <span class="n">thing</span> <span class="o">!=</span> <span class="n">target</span><span class="p">:</span>
+            <span class="c1"># Move away from each object closer to the target than you, if it&#39;s also closer to you than you are to the target.</span>
+            <span class="k">if</span> <span class="n">get_range</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">thing</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">get_range</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">thing</span><span class="p">)</span> <span class="ow">and</span> <span class="n">get_range</span><span class="p">(</span>
+                <span class="n">mover</span><span class="p">,</span> <span class="n">thing</span>
+            <span class="p">)</span> <span class="o">&lt;</span> <span class="n">get_range</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+                <span class="n">distance_inc</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">thing</span><span class="p">)</span>
+            <span class="c1"># Move away from anything your target is engaged with</span>
+            <span class="k">if</span> <span class="n">get_range</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">thing</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">distance_inc</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">thing</span><span class="p">)</span>
+            <span class="c1"># Move away from anything you&#39;re engaged with.</span>
+            <span class="k">if</span> <span class="n">get_range</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">thing</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">distance_inc</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">thing</span><span class="p">)</span>
+    <span class="c1"># Then, move away from your target.</span>
+    <span class="n">distance_inc</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="combat_cleanup"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.combat_cleanup">[docs]</a><span class="k">def</span> <span class="nf">combat_cleanup</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cleans up all the temporary combat-related attributes on a character.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        character (obj): Character to have their combat attributes removed</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        Any attribute whose key begins with &#39;combat_&#39; is temporary and no</span>
+<span class="sd">        longer needed once a fight ends.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">character</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">key</span><span class="p">[:</span><span class="mi">7</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;combat_&quot;</span><span class="p">:</span>  <span class="c1"># If the attribute name starts with &#39;combat_&#39;...</span>
+            <span class="n">character</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>  <span class="c1"># ...then delete it!</span></div>
+
+
+<div class="viewcode-block" id="is_in_combat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.is_in_combat">[docs]</a><span class="k">def</span> <span class="nf">is_in_combat</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns true if the given character is in combat.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        character (obj): Character to determine if is in combat or not</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (bool): True if in combat or False if not in combat</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_turnhandler</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="is_turn"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.is_turn">[docs]</a><span class="k">def</span> <span class="nf">is_turn</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns true if it&#39;s currently the given character&#39;s turn in combat.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        character (obj): Character to determine if it is their turn or not</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (bool): True if it is their turn or False otherwise</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">turnhandler</span> <span class="o">=</span> <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_turnhandler</span>
+    <span class="n">currentchar</span> <span class="o">=</span> <span class="n">turnhandler</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fighters</span><span class="p">[</span><span class="n">turnhandler</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">character</span> <span class="o">==</span> <span class="n">currentchar</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="spend_action"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.spend_action">[docs]</a><span class="k">def</span> <span class="nf">spend_action</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Spends a character&#39;s available combat actions and checks for end of turn.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        character (obj): Character spending the action</span>
+<span class="sd">        actions (int) or &#39;all&#39;: Number of actions to spend, or &#39;all&#39; to spend all actions</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        action_name (str or None): If a string is given, sets character&#39;s last action in</span>
+<span class="sd">        combat to provided string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">action_name</span><span class="p">:</span>
+        <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_lastaction</span> <span class="o">=</span> <span class="n">action_name</span>
+    <span class="k">if</span> <span class="n">actions</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>  <span class="c1"># If spending all actions</span>
+        <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_actionsleft</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Set actions to 0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_actionsleft</span> <span class="o">-=</span> <span class="n">actions</span>  <span class="c1"># Use up actions.</span>
+        <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_actionsleft</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_actionsleft</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Can&#39;t have fewer than 0 actions</span>
+    <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_turnhandler</span><span class="o">.</span><span class="n">turn_end_check</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>  <span class="c1"># Signal potential end of turn.</span></div>
+
+
+<div class="viewcode-block" id="combat_status_message"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.combat_status_message">[docs]</a><span class="k">def</span> <span class="nf">combat_status_message</span><span class="p">(</span><span class="n">fighter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sends a message to a player with their current HP and</span>
+<span class="sd">    distances to other fighters and objects. Called at turn</span>
+<span class="sd">    start and by the &#39;status&#39; command.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">fighter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">max_hp</span><span class="p">:</span>
+        <span class="n">fighter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="n">fighter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">max_hp</span> <span class="o">=</span> <span class="mi">100</span>
+
+    <span class="n">status_msg</span> <span class="o">=</span> <span class="s2">&quot;HP Remaining: </span><span class="si">%i</span><span class="s2"> / </span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fighter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span><span class="p">,</span> <span class="n">fighter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">max_hp</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="n">fighter</span><span class="p">):</span>
+        <span class="n">fighter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">status_msg</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">engaged_obj</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">reach_obj</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">range_obj</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">fighter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">thing</span> <span class="o">!=</span> <span class="n">fighter</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fighter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">thing</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">engaged_obj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fighter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">thing</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">reach_obj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fighter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">thing</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">range_obj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">engaged_obj</span><span class="p">:</span>
+        <span class="n">status_msg</span> <span class="o">+=</span> <span class="s2">&quot;|/Engaged targets: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">engaged_obj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">reach_obj</span><span class="p">:</span>
+        <span class="n">status_msg</span> <span class="o">+=</span> <span class="s2">&quot;|/Reach targets: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">reach_obj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">range_obj</span><span class="p">:</span>
+        <span class="n">status_msg</span> <span class="o">+=</span> <span class="s2">&quot;|/Ranged targets: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">range_obj</span><span class="p">)</span>
+
+    <span class="n">fighter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">status_msg</span><span class="p">)</span></div>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">SCRIPTS START HERE</span>
+<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="TBRangeTurnHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler">[docs]</a><span class="k">class</span> <span class="nc">TBRangeTurnHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the script that handles the progression of combat through turns.</span>
+<span class="sd">    On creation (when a fight is started) it adds all combat-ready characters</span>
+<span class="sd">    to its roster and then sorts them into a turn order. There can only be one</span>
+<span class="sd">    fight going on in a single room at a time, so the script is assigned to a</span>
+<span class="sd">    room as its object.</span>
+
+<span class="sd">    Fights persist until only one participant is left with any HP or all</span>
+<span class="sd">    remaining participants choose to end the combat with the &#39;disengage&#39;</span>
+<span class="sd">    command.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TBRangeTurnHandler.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called once, when the script is created.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Combat Turn Handler&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># Once every 5 seconds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fighters</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Add all fighters in the room with at least 1 HP to the combat.&quot;</span>
+        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">thing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fighters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>
+
+        <span class="c1"># Initialize each fighter for combat</span>
+        <span class="k">for</span> <span class="n">fighter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fighters</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialize_for_combat</span><span class="p">(</span><span class="n">fighter</span><span class="p">)</span>
+
+        <span class="c1"># Add a reference to this script to the room</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_turnhandler</span> <span class="o">=</span> <span class="bp">self</span>
+
+        <span class="c1"># Initialize range field for all objects in the room</span>
+        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_range</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>
+
+        <span class="c1"># Roll initiative and sort the list of fighters depending on who rolls highest to determine turn order.</span>
+        <span class="c1"># The initiative roll is determined by the roll_init function and can be customized easily.</span>
+        <span class="n">ordered_by_roll</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fighters</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">roll_init</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fighters</span> <span class="o">=</span> <span class="n">ordered_by_roll</span>
+
+        <span class="c1"># Announce the turn order.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;Turn order is: </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fighters</span><span class="p">))</span>
+
+        <span class="c1"># Start first fighter&#39;s turn.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_turn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fighters</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># Set up the current turn and turn timeout delay.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="n">TURN_TIMEOUT</span>  <span class="c1"># Set timer to turn timeout specified in options</span></div>
+
+<div class="viewcode-block" id="TBRangeTurnHandler.at_stop"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.at_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called at script termination.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
+            <span class="n">combat_cleanup</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>  <span class="c1"># Clean up the combat attributes for every object in the room.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_turnhandler</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Remove reference to turn handler in location</span></div>
+
+<div class="viewcode-block" id="TBRangeTurnHandler.at_repeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called once every self.interval seconds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">currentchar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fighters</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn</span>
+        <span class="p">]</span>  <span class="c1"># Note the current character in the turn order.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">timer</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span>  <span class="c1"># Count down the timer.</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">timer</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Force current character to disengage if timer runs out.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&#39;s turn timed out!&quot;</span> <span class="o">%</span> <span class="n">currentchar</span><span class="p">)</span>
+            <span class="n">spend_action</span><span class="p">(</span>
+                <span class="n">currentchar</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="s2">&quot;disengage&quot;</span>
+            <span class="p">)</span>  <span class="c1"># Spend all remaining actions.</span>
+            <span class="k">return</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">timer</span> <span class="o">&lt;=</span> <span class="mi">10</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">timeout_warning_given</span><span class="p">:</span>  <span class="c1"># 10 seconds left</span>
+            <span class="c1"># Warn the current character if they&#39;re about to time out.</span>
+            <span class="n">currentchar</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;WARNING: About to time out!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">timeout_warning_given</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="TBRangeTurnHandler.init_range"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.init_range">[docs]</a>    <span class="k">def</span> <span class="nf">init_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_init</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes range values for an object at the start of a fight.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            to_init (object): Object to initialize range field for.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rangedict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># Get a list of objects in the room.</span>
+        <span class="n">objectlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">contents</span>
+        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">objectlist</span><span class="p">:</span>
+            <span class="c1"># Object always at distance 0 from itself</span>
+            <span class="k">if</span> <span class="n">thing</span> <span class="o">==</span> <span class="n">to_init</span><span class="p">:</span>
+                <span class="n">rangedict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">thing</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">thing</span><span class="o">.</span><span class="n">destination</span> <span class="ow">or</span> <span class="n">to_init</span><span class="o">.</span><span class="n">destination</span><span class="p">:</span>
+                    <span class="c1"># Start exits at range 2 to put them at the &#39;edges&#39;</span>
+                    <span class="n">rangedict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">thing</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Start objects at range 1 from other objects</span>
+                    <span class="n">rangedict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">thing</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+        <span class="n">to_init</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span> <span class="o">=</span> <span class="n">rangedict</span></div>
+
+<div class="viewcode-block" id="TBRangeTurnHandler.join_rangefield"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.join_rangefield">[docs]</a>    <span class="k">def</span> <span class="nf">join_rangefield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_init</span><span class="p">,</span> <span class="n">anchor_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_distance</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a new object to the range field of a fight in progress.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            to_init (object): Object to initialize range field for.</span>
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            anchor_obj (object): Object to copy range values from, or None for a random object.</span>
+<span class="sd">            add_distance (int): Distance to put between to_init object and anchor object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get a list of room&#39;s contents without to_init object.</span>
+        <span class="n">contents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">contents</span>
+        <span class="n">contents</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">to_init</span><span class="p">)</span>
+        <span class="c1"># If no anchor object given, pick one in the room at random.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">anchor_obj</span><span class="p">:</span>
+            <span class="n">anchor_obj</span> <span class="o">=</span> <span class="n">contents</span><span class="p">[</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))]</span>
+        <span class="c1"># Copy the range values from the anchor object.</span>
+        <span class="n">to_init</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span> <span class="o">=</span> <span class="n">anchor_obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span>
+        <span class="c1"># Add the new object to everyone else&#39;s ranges.</span>
+        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
+            <span class="n">new_objects_range</span> <span class="o">=</span> <span class="n">thing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">anchor_obj</span><span class="p">]</span>
+            <span class="n">thing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">to_init</span><span class="p">:</span> <span class="n">new_objects_range</span><span class="p">})</span>
+        <span class="c1"># Set the new object&#39;s range to itself to 0.</span>
+        <span class="n">to_init</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">to_init</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+        <span class="c1"># Add additional distance from anchor object, if any.</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">add_distance</span><span class="p">):</span>
+            <span class="n">withdraw</span><span class="p">(</span><span class="n">to_init</span><span class="p">,</span> <span class="n">anchor_obj</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TBRangeTurnHandler.initialize_for_combat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.initialize_for_combat">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_for_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepares a character for combat when starting or entering a fight.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            character (obj): Character to initialize for combat.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">combat_cleanup</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>  <span class="c1"># Clean up leftover combat attributes beforehand, just in case.</span>
+        <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_actionsleft</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mi">0</span>  <span class="c1"># Actions remaining - start of turn adds to this, turn ends when it reaches 0</span>
+        <span class="p">)</span>
+        <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_turnhandler</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span>  <span class="c1"># Add a reference to this turn handler script to the character</span>
+        <span class="p">)</span>
+        <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_lastaction</span> <span class="o">=</span> <span class="s2">&quot;null&quot;</span>  <span class="c1"># Track last action taken in combat</span></div>
+
+<div class="viewcode-block" id="TBRangeTurnHandler.start_turn"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.start_turn">[docs]</a>    <span class="k">def</span> <span class="nf">start_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Readies a character for the start of their turn by replenishing their</span>
+<span class="sd">        available actions and notifying them that their turn has come up.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            character (obj): Character to be readied.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            In this example, characters are given two actions per turn. This allows</span>
+<span class="sd">            characters to both move and attack in the same turn (or, alternately,</span>
+<span class="sd">            move twice or attack twice).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_actionsleft</span> <span class="o">=</span> <span class="n">ACTIONS_PER_TURN</span>  <span class="c1"># Replenish actions</span>
+        <span class="c1"># Prompt the character for their turn and give some information.</span>
+        <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|wIt&#39;s your turn!|n&quot;</span><span class="p">)</span>
+        <span class="n">combat_status_message</span><span class="p">(</span><span class="n">character</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TBRangeTurnHandler.next_turn"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.next_turn">[docs]</a>    <span class="k">def</span> <span class="nf">next_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Advances to the next character in the turn order.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check to see if every character disengaged as their last action. If so, end combat.</span>
+        <span class="n">disengage_check</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">fighter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fighters</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">fighter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_lastaction</span> <span class="o">!=</span> <span class="s2">&quot;disengage&quot;</span>
+            <span class="p">):</span>  <span class="c1"># If a character has done anything but disengage</span>
+                <span class="n">disengage_check</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">disengage_check</span><span class="p">:</span>  <span class="c1"># All characters have disengaged</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;All fighters have disengaged! Combat is over!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>  <span class="c1"># Stop this script and end combat.</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Check to see if only one character is left standing. If so, end combat.</span>
+        <span class="n">defeated_characters</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">fighter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fighters</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fighter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">HP</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">defeated_characters</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># Add 1 for every fighter with 0 HP left (defeated)</span>
+        <span class="k">if</span> <span class="n">defeated_characters</span> <span class="o">==</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fighters</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="p">):</span>  <span class="c1"># If only one character isn&#39;t defeated</span>
+            <span class="k">for</span> <span class="n">fighter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fighters</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">fighter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">HP</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">LastStanding</span> <span class="o">=</span> <span class="n">fighter</span>  <span class="c1"># Pick the one fighter left with HP remaining</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;Only </span><span class="si">%s</span><span class="s2"> remains! Combat is over!&quot;</span> <span class="o">%</span> <span class="n">LastStanding</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>  <span class="c1"># Stop this script and end combat.</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Cycle to the next turn.</span>
+        <span class="n">currentchar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fighters</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># Go to the next in the turn order.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fighters</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Go back to the first in the turn order once you reach the end.</span>
+        <span class="n">newchar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fighters</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn</span><span class="p">]</span>  <span class="c1"># Note the new character</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="n">TURN_TIMEOUT</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_until_next_repeat</span><span class="p">()</span>  <span class="c1"># Reset the timer.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">timeout_warning_given</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Reset the timeout warning.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&#39;s turn ends - </span><span class="si">%s</span><span class="s2">&#39;s turn begins!&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">currentchar</span><span class="p">,</span> <span class="n">newchar</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_turn</span><span class="p">(</span><span class="n">newchar</span><span class="p">)</span>  <span class="c1"># Start the new character&#39;s turn.</span></div>
+
+<div class="viewcode-block" id="TBRangeTurnHandler.turn_end_check"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.turn_end_check">[docs]</a>    <span class="k">def</span> <span class="nf">turn_end_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tests to see if a character&#39;s turn is over, and cycles to the next turn if it is.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            character (obj): Character to test for end of turn</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_actionsleft</span><span class="p">:</span>  <span class="c1"># Character has no actions remaining</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">next_turn</span><span class="p">()</span>
+            <span class="k">return</span></div>
+
+<div class="viewcode-block" id="TBRangeTurnHandler.join_fight"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.join_fight">[docs]</a>    <span class="k">def</span> <span class="nf">join_fight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a new character to a fight already in progress.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            character (obj): Character to be added to the fight.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Inserts the fighter to the turn order, right behind whoever&#39;s turn it currently is.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fighters</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn</span><span class="p">,</span> <span class="n">character</span><span class="p">)</span>
+        <span class="c1"># Tick the turn counter forward one to compensate.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># Initialize the character like you do at the start.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_for_combat</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
+        <span class="c1"># Add the character to the rangefield, at range from everyone, if they&#39;re not on it already.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">join_rangefield</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">add_distance</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div></div>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">TYPECLASSES START HERE</span>
+<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="TBRangeCharacter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeCharacter">[docs]</a><span class="k">class</span> <span class="nc">TBRangeCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A character able to participate in turn-based combat. Has attributes for current</span>
+<span class="sd">    and maximum HP, and access to combat commands.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TBRangeCharacter.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeCharacter.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called once, when this object is first created. This is the</span>
+<span class="sd">        normal hook to overload for most object types.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">max_hp</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># Set maximum HP to 100</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">max_hp</span>  <span class="c1"># Set current HP to maximum</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds attributes for a character&#39;s current and maximum HP.</span>
+<span class="sd">        We&#39;re just going to set this value at &#39;100&#39; by default.</span>
+
+<span class="sd">        You may want to expand this to include various &#39;stats&#39; that</span>
+<span class="sd">        can be changed at creation and factor into combat calculations.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="TBRangeCharacter.at_pre_move"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeCharacter.at_pre_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called just before starting to move this object to</span>
+<span class="sd">        destination.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            destination (Object): The object we are moving to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            shouldmove (bool): If we should move or not.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            If this method returns False/None, the move is cancelled</span>
+<span class="sd">            before it is even started.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Keep the character from moving if at 0 HP or in combat.</span>
+        <span class="k">if</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t exit a room while in combat!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Returning false keeps the character from moving.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">HP</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t move, you&#39;ve been defeated!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+
+
+<div class="viewcode-block" id="TBRangeObject"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject">[docs]</a><span class="k">class</span> <span class="nc">TBRangeObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An object that is assigned range values in combat. Getting, giving, and dropping</span>
+<span class="sd">    the object has restrictions in combat - you must be next to an object to get it,</span>
+<span class="sd">    must be next to your target to give them something, and can only interact with</span>
+<span class="sd">    objects on your own turn.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TBRangeObject.at_pre_drop"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject.at_pre_drop">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropper</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called by the default `drop` command before this object has been</span>
+<span class="sd">        dropped.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dropper (Object): The object which will drop this object.</span>
+<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
+<span class="sd">                overriding the call (unused by default).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            shoulddrop (bool): If the object should be dropped or not.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            If this method returns False/None, the dropping is cancelled</span>
+<span class="sd">            before it is even started.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Can&#39;t drop something if in combat and it&#39;s not your turn</span>
+        <span class="k">if</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="n">dropper</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_turn</span><span class="p">(</span><span class="n">dropper</span><span class="p">):</span>
+            <span class="n">dropper</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can only drop things on your turn!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="TBRangeObject.at_drop"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject.at_drop">[docs]</a>    <span class="k">def</span> <span class="nf">at_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropper</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called by the default `drop` command when this object has been</span>
+<span class="sd">        dropped.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dropper (Object): The object which just dropped this object.</span>
+<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
+<span class="sd">                overriding the call (unused by default).</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This hook cannot stop the drop from happening. Use</span>
+<span class="sd">            permissions or the at_pre_drop() hook for that.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If dropper is currently in combat</span>
+        <span class="k">if</span> <span class="n">dropper</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_turnhandler</span><span class="p">:</span>
+            <span class="c1"># Object joins the range field</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">dropper</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_turnhandler</span><span class="o">.</span><span class="n">join_rangefield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">anchor_obj</span><span class="o">=</span><span class="n">dropper</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TBRangeObject.at_pre_get"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject.at_pre_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called by the default `get` command before this object has been</span>
+<span class="sd">        picked up.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            getter (Object): The object about to get this object.</span>
+<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
+<span class="sd">                overriding the call (unused by default).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            shouldget (bool): If the object should be gotten or not.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            If this method returns False/None, the getting is cancelled</span>
+<span class="sd">            before it is even started.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Restrictions for getting in combat</span>
+        <span class="k">if</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="n">getter</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_turn</span><span class="p">(</span><span class="n">getter</span><span class="p">):</span>  <span class="c1"># Not your turn</span>
+                <span class="n">getter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can only get things on your turn!&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">get_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Too far away</span>
+                <span class="n">getter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You aren&#39;t close enough to get that! (see: help approach)&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="TBRangeObject.at_get"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject.at_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called by the default `get` command when this object has been</span>
+<span class="sd">        picked up.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            getter (Object): The object getting this object.</span>
+<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
+<span class="sd">                overriding the call (unused by default).</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This hook cannot stop the pickup from happening. Use</span>
+<span class="sd">            permissions or the at_pre_get() hook for that.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If gotten, erase range values</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span>
+        <span class="c1"># Remove this object from everyone&#39;s range fields</span>
+        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">getter</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">thing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span> <span class="ow">in</span> <span class="n">thing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">:</span>
+                    <span class="n">thing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># If in combat, getter spends an action</span>
+        <span class="k">if</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="n">getter</span><span class="p">):</span>
+            <span class="n">spend_action</span><span class="p">(</span><span class="n">getter</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="s2">&quot;get&quot;</span><span class="p">)</span>  <span class="c1"># Use up one action.</span></div>
+
+<div class="viewcode-block" id="TBRangeObject.at_pre_give"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject.at_pre_give">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_give</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">giver</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called by the default `give` command before this object has been</span>
+<span class="sd">        given.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            giver (Object): The object about to give this object.</span>
+<span class="sd">            getter (Object): The object about to get this object.</span>
+<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
+<span class="sd">                overriding the call (unused by default).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            shouldgive (bool): If the object should be given or not.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            If this method returns False/None, the giving is cancelled</span>
+<span class="sd">            before it is even started.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Restrictions for giving in combat</span>
+        <span class="k">if</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="n">giver</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_turn</span><span class="p">(</span><span class="n">giver</span><span class="p">):</span>  <span class="c1"># Not your turn</span>
+                <span class="n">giver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can only give things on your turn!&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">get_range</span><span class="p">(</span><span class="n">giver</span><span class="p">,</span> <span class="n">getter</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Too far away from target</span>
+                <span class="n">giver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="s2">&quot;You aren&#39;t close enough to give things to </span><span class="si">%s</span><span class="s2">! (see: help approach)&quot;</span> <span class="o">%</span> <span class="n">getter</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="TBRangeObject.at_give"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject.at_give">[docs]</a>    <span class="k">def</span> <span class="nf">at_give</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">giver</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called by the default `give` command when this object has been</span>
+<span class="sd">        given.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            giver (Object): The object giving this object.</span>
+<span class="sd">            getter (Object): The object getting this object.</span>
+<span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
+<span class="sd">                overriding the call (unused by default).</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This hook cannot stop the give from happening. Use</span>
+<span class="sd">            permissions or the at_pre_give() hook for that.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Spend an action if in combat</span>
+        <span class="k">if</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="n">giver</span><span class="p">):</span>
+            <span class="n">spend_action</span><span class="p">(</span><span class="n">giver</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="s2">&quot;give&quot;</span><span class="p">)</span>  <span class="c1"># Use up one action.</span></div></div>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">COMMANDS START HERE</span>
+<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="CmdFight"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdFight">[docs]</a><span class="k">class</span> <span class="nc">CmdFight</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Starts a fight with everyone in the same room as you.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      fight</span>
+
+<span class="sd">    When you start a fight, everyone in the room who is able to</span>
+<span class="sd">    fight is added to combat, and a turn order is randomly rolled.</span>
+<span class="sd">    When it&#39;s your turn, you can attack other characters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;fight&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
+
+<div class="viewcode-block" id="CmdFight.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdFight.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This performs the actual command.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">here</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span>
+        <span class="n">fighters</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span><span class="p">:</span>  <span class="c1"># If you don&#39;t have any hp</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t start a fight if you&#39;ve been defeated!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>  <span class="c1"># Already in a fight</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You&#39;re already in a fight!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">here</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>  <span class="c1"># Test everything in the room to add it to the fight.</span>
+            <span class="k">if</span> <span class="n">thing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">HP</span><span class="p">:</span>  <span class="c1"># If the object has HP...</span>
+                <span class="n">fighters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>  <span class="c1"># ...then add it to the fight.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fighters</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># If you&#39;re the only able fighter in the room</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;There&#39;s nobody here to fight!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">here</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_turnhandler</span><span class="p">:</span>  <span class="c1"># If there&#39;s already a fight going on...</span>
+            <span class="n">here</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> joins the fight!&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+            <span class="n">here</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_turnhandler</span><span class="o">.</span><span class="n">join_fight</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>  <span class="c1"># Join the fight!</span>
+            <span class="k">return</span>
+        <span class="n">here</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> starts a fight!&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+        <span class="c1"># Add a turn handler script to the room, which starts combat.</span>
+        <span class="n">here</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler&quot;</span><span class="p">)</span></div></div>
+        <span class="c1"># Remember you&#39;ll have to change the path to the script if you copy this code to your own modules!</span>
+
+
+<div class="viewcode-block" id="CmdAttack"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdAttack">[docs]</a><span class="k">class</span> <span class="nc">CmdAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Attacks another character in melee.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      attack &lt;target&gt;</span>
+
+<span class="sd">    When in a fight, you may attack another character. The attack has</span>
+<span class="sd">    a chance to hit, and if successful, will deal damage. You can only</span>
+<span class="sd">    attack engaged targets - that is, targets that are right next to</span>
+<span class="sd">    you. Use the &#39;approach&#39; command to get closer to a target.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;attack&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
+
+<div class="viewcode-block" id="CmdAttack.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdAttack.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;This performs the actual command.&quot;</span>
+        <span class="s2">&quot;Set the attacker to the caller and the defender to the target.&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>  <span class="c1"># If not in combat, can&#39;t attack.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can only do that in combat. (see: help fight)&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_turn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>  <span class="c1"># If it&#39;s not your turn, can&#39;t attack.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can only do that on your turn.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span><span class="p">:</span>  <span class="c1"># Can&#39;t attack if you have no HP.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t attack, you&#39;ve been defeated.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">attacker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">defender</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">defender</span><span class="p">:</span>  <span class="c1"># No valid target given.</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">defender</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span><span class="p">:</span>  <span class="c1"># Target object has no HP left or to begin with</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t fight that!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">attacker</span> <span class="o">==</span> <span class="n">defender</span><span class="p">:</span>  <span class="c1"># Target and attacker are the same</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t attack yourself!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">get_range</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Target isn&#39;t in melee</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is too far away to attack - you need to get closer! (see: help approach)&quot;</span>
+                <span class="o">%</span> <span class="n">defender</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="s2">&quot;If everything checks out, call the attack resolving function.&quot;</span>
+        <span class="n">resolve_attack</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">,</span> <span class="s2">&quot;melee&quot;</span><span class="p">)</span>
+        <span class="n">spend_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="s2">&quot;attack&quot;</span><span class="p">)</span>  <span class="c1"># Use up one action.</span></div></div>
+
+
+<div class="viewcode-block" id="CmdShoot"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdShoot">[docs]</a><span class="k">class</span> <span class="nc">CmdShoot</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Attacks another character from range.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      shoot &lt;target&gt;</span>
+
+<span class="sd">    When in a fight, you may shoot another character. The attack has</span>
+<span class="sd">    a chance to hit, and if successful, will deal damage. You can attack</span>
+<span class="sd">    any target in combat by shooting, but can&#39;t shoot if there are any</span>
+<span class="sd">    targets engaged with you. Use the &#39;withdraw&#39; command to retreat from</span>
+<span class="sd">    nearby enemies.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;shoot&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
+
+<div class="viewcode-block" id="CmdShoot.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdShoot.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;This performs the actual command.&quot;</span>
+        <span class="s2">&quot;Set the attacker to the caller and the defender to the target.&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>  <span class="c1"># If not in combat, can&#39;t attack.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can only do that in combat. (see: help fight)&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_turn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>  <span class="c1"># If it&#39;s not your turn, can&#39;t attack.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can only do that on your turn.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span><span class="p">:</span>  <span class="c1"># Can&#39;t attack if you have no HP.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t attack, you&#39;ve been defeated.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">attacker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">defender</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">defender</span><span class="p">:</span>  <span class="c1"># No valid target given.</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">defender</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span><span class="p">:</span>  <span class="c1"># Target object has no HP left or to begin with</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t fight that!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">attacker</span> <span class="o">==</span> <span class="n">defender</span><span class="p">:</span>  <span class="c1"># Target and attacker are the same</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t attack yourself!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Test to see if there are any nearby enemy targets.</span>
+        <span class="n">in_melee</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">attacker</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">:</span>
+            <span class="c1"># Object is engaged and has HP</span>
+            <span class="k">if</span> <span class="n">get_range</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">target</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span> <span class="ow">and</span> <span class="n">target</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">:</span>
+                <span class="n">in_melee</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>  <span class="c1"># Add to list of targets in melee</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_melee</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;You can&#39;t shoot because there are fighters engaged with you (</span><span class="si">%s</span><span class="s2">) - you need to retreat! (see: help withdraw)&quot;</span>
+                <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">in_melee</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="s2">&quot;If everything checks out, call the attack resolving function.&quot;</span>
+        <span class="n">resolve_attack</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">,</span> <span class="s2">&quot;ranged&quot;</span><span class="p">)</span>
+        <span class="n">spend_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="s2">&quot;attack&quot;</span><span class="p">)</span>  <span class="c1"># Use up one action.</span></div></div>
+
+
+<div class="viewcode-block" id="CmdApproach"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdApproach">[docs]</a><span class="k">class</span> <span class="nc">CmdApproach</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Approaches an object.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      approach &lt;target&gt;</span>
+
+<span class="sd">    Move one space toward a character or object. You can only attack</span>
+<span class="sd">    characters you are 0 spaces away from.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;approach&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
+
+<div class="viewcode-block" id="CmdApproach.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdApproach.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;This performs the actual command.&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>  <span class="c1"># If not in combat, can&#39;t approach.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can only do that in combat. (see: help fight)&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_turn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>  <span class="c1"># If it&#39;s not your turn, can&#39;t approach.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can only do that on your turn.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span><span class="p">:</span>  <span class="c1"># Can&#39;t approach if you have no HP.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t move, you&#39;ve been defeated.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">mover</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>  <span class="c1"># No valid target given.</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">:</span>  <span class="c1"># Target object is not on the range field</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t move toward that!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">mover</span> <span class="o">==</span> <span class="n">target</span><span class="p">:</span>  <span class="c1"># Target and mover are the same</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t move toward yourself!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">get_range</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Already engaged with target</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You&#39;re already next to that target!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># If everything checks out, call the approach resolving function.</span>
+        <span class="n">approach</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="n">mover</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> moves toward </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">))</span>
+        <span class="n">spend_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">)</span>  <span class="c1"># Use up one action.</span></div></div>
+
+
+<div class="viewcode-block" id="CmdWithdraw"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdWithdraw">[docs]</a><span class="k">class</span> <span class="nc">CmdWithdraw</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Moves away from an object.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      withdraw &lt;target&gt;</span>
+
+<span class="sd">    Move one space away from a character or object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;withdraw&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
+
+<div class="viewcode-block" id="CmdWithdraw.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdWithdraw.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;This performs the actual command.&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>  <span class="c1"># If not in combat, can&#39;t withdraw.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can only do that in combat. (see: help fight)&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_turn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>  <span class="c1"># If it&#39;s not your turn, can&#39;t withdraw.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can only do that on your turn.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span><span class="p">:</span>  <span class="c1"># Can&#39;t withdraw if you have no HP.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t move, you&#39;ve been defeated.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">mover</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>  <span class="c1"># No valid target given.</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">:</span>  <span class="c1"># Target object is not on the range field</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t move away from that!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">mover</span> <span class="o">==</span> <span class="n">target</span><span class="p">:</span>  <span class="c1"># Target and mover are the same</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t move away from yourself!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">mover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># Already at maximum distance</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You&#39;re as far as you can get from that target!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># If everything checks out, call the approach resolving function.</span>
+        <span class="n">withdraw</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="n">mover</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> moves away from </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">))</span>
+        <span class="n">spend_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">)</span>  <span class="c1"># Use up one action.</span></div></div>
+
+
+<div class="viewcode-block" id="CmdPass"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdPass">[docs]</a><span class="k">class</span> <span class="nc">CmdPass</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Passes on your turn.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      pass</span>
+
+<span class="sd">    When in a fight, you can use this command to end your turn early, even</span>
+<span class="sd">    if there are still any actions you can take.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;pass&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;wait&quot;</span><span class="p">,</span> <span class="s2">&quot;hold&quot;</span><span class="p">]</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
+
+<div class="viewcode-block" id="CmdPass.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdPass.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This performs the actual command.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>  <span class="c1"># Can only pass a turn in combat.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can only do that in combat. (see: help fight)&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_turn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>  <span class="c1"># Can only pass if it&#39;s your turn.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can only do that on your turn.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> takes no further action, passing the turn.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="p">)</span>
+        <span class="n">spend_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="s2">&quot;pass&quot;</span><span class="p">)</span>  <span class="c1"># Spend all remaining actions.</span></div></div>
+
+
+<div class="viewcode-block" id="CmdDisengage"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdDisengage">[docs]</a><span class="k">class</span> <span class="nc">CmdDisengage</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Passes your turn and attempts to end combat.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      disengage</span>
+
+<span class="sd">    Ends your turn early and signals that you&#39;re trying to end</span>
+<span class="sd">    the fight. If all participants in a fight disengage, the</span>
+<span class="sd">    fight ends.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;disengage&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;spare&quot;</span><span class="p">]</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
+
+<div class="viewcode-block" id="CmdDisengage.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdDisengage.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This performs the actual command.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>  <span class="c1"># If you&#39;re not in combat</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can only do that in combat. (see: help fight)&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_turn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>  <span class="c1"># If it&#39;s not your turn</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can only do that on your turn.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> disengages, ready to stop fighting.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+        <span class="n">spend_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="s2">&quot;disengage&quot;</span><span class="p">)</span>  <span class="c1"># Spend all remaining actions.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The action_name kwarg sets the character&#39;s last action to &quot;disengage&quot;, which is checked by</span>
+<span class="sd">        the turn handler script to see if all fighters have disengaged.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="CmdRest"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdRest">[docs]</a><span class="k">class</span> <span class="nc">CmdRest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Recovers damage.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      rest</span>
+
+<span class="sd">    Resting recovers your HP to its maximum, but you can only</span>
+<span class="sd">    rest if you&#39;re not in a fight.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;rest&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
+
+<div class="viewcode-block" id="CmdRest.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdRest.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;This performs the actual command.&quot;</span>
+
+        <span class="k">if</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>  <span class="c1"># If you&#39;re in combat</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t rest while you&#39;re in combat.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">max_hp</span>  <span class="c1"># Set current HP to maximum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> rests to recover HP.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        You&#39;ll probably want to replace this with your own system for recovering HP.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="CmdStatus"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdStatus">[docs]</a><span class="k">class</span> <span class="nc">CmdStatus</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gives combat information.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      status</span>
+
+<span class="sd">    Shows your current and maximum HP and your distance from</span>
+<span class="sd">    other targets in combat.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;status&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
+
+<div class="viewcode-block" id="CmdStatus.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdStatus.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;This performs the actual command.&quot;</span>
+        <span class="n">combat_status_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdCombatHelp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdCombatHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdCombatHelp</span><span class="p">(</span><span class="n">CmdHelp</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    View help or a list of topics</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      help &lt;topic or command&gt;</span>
+<span class="sd">      help list</span>
+<span class="sd">      help all</span>
+
+<span class="sd">    This will search for help on commands and other</span>
+<span class="sd">    topics related to the game.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Just like the default help command, but will give quick</span>
+    <span class="c1"># tips on combat when used in a fight with no arguments.</span>
+
+<div class="viewcode-block" id="CmdCombatHelp.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdCombatHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>  <span class="c1"># In combat and entered &#39;help&#39; alone</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;Available combat commands:|/&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;|wAttack:|n Attack an engaged target, attempting to deal damage.|/&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;|wShoot:|n Attack from a distance, if not engaged with other fighters.|/&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;|wApproach:|n Move one step cloer to a target.|/&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;|wWithdraw:|n Move one step away from a target.|/&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;|wPass:|n Pass your turn without further action.|/&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;|wStatus:|n View current HP and ranges to other targets.|/&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;|wDisengage:|n End your turn and attempt to end combat.|/&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">CmdCombatHelp</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>  <span class="c1"># Call the default help command</span></div></div>
+
+
+<div class="viewcode-block" id="BattleCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.BattleCmdSet">[docs]</a><span class="k">class</span> <span class="nc">BattleCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This command set includes all the commmands used in the battle system.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
+
+<div class="viewcode-block" id="BattleCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.BattleCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Populates the cmdset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdFight</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdAttack</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdShoot</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdRest</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdPass</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdDisengage</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdApproach</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdWithdraw</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdStatus</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdCombatHelp</span><span class="p">())</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="tb_range.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.turnbattle.tb_range</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

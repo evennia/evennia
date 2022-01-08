@@ -75,7 +75,7 @@ are wise to read their doc-strings yourself for the details.</p>
 </ul>
 <section id="barter-contrib">
 <h2>Barter contrib<a class="headerlink" href="#barter-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="../../../api/evennia.contrib.barter.html"><span class="doc std std-doc">source</span></a></p>
+<p><a class="reference internal" href="../../../api/evennia.contrib.game_systems.barter.html"><span class="doc std std-doc">source</span></a></p>
 <p>Reviewing this contrib suggests that it allows for safe trading between two parties. The basic principle
 is that the parties puts up the stuff they want to sell and the system will guarantee that these systems are
 exactly what is being offered. Both sides can modify their offers (bartering) until both mark themselves happy
@@ -83,16 +83,16 @@ with the deal. Only then the deal is sealed and the objects are exchanged automa
 works just fine for money too - just put coin objects on one side of the transaction.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Sue &gt; trade Tom: Hi, I have a necklace to sell; wanna trade for a healing potion?
 Tom &gt; trade Sue: Hm, I could use a necklace ...
-   &lt;both accepted trade. Start trade&gt; 
-Sue &gt; offer necklace: This necklace is really worth it. 
+   &lt;both accepted trade. Start trade&gt;
+Sue &gt; offer necklace: This necklace is really worth it.
 Tom &gt; evaluate necklace:
    &lt;Tom sees necklace stats&gt;
 Tom &gt; offer ration: I don&#39;t have a healing potion, but I&#39;ll trade you an iron ration!
 Sue &gt; Hey, this is a nice necklace, I need more than a ration for it...
 Tom &gt; offer ration, 10gold: Ok, a ration and 10 gold as well.
-Sue &gt; accept: Ok, that sounds fair! 
+Sue &gt; accept: Ok, that sounds fair!
 Tom &gt; accept: Good! Nice doing business with you.
-   &lt;goods change hands automatically. Trade ends&gt;    
+   &lt;goods change hands automatically. Trade ends&gt;
 </pre></div>
 </div>
 <p>Arguably, in a small game you are just fine to just talk to people and use <code class="docutils literal notranslate"><span class="pre">give</span></code> to do the exchange. The
@@ -102,16 +102,9 @@ to run away with your money.</p>
 add it for NPC shopkeepers and expand it with a little AI, which allows them to potentially trade in other
 things than boring gold coin.</p>
 </section>
-<section id="character-generation-contrib">
-<h2>Character generation contrib<a class="headerlink" href="#character-generation-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="../../../api/evennia.contrib.chargen.html"><span class="doc std std-doc">source</span></a></p>
-<p>This contrib is an example module for creating characters. Since we will be using <code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE=3</span></code> we will
-get a selection screen like this automatically. We also plan to use a proper menu to build our character, so
-we will <em>not</em> be using this contrib.</p>
-</section>
 <section id="clothing-contrib">
 <h2>Clothing contrib<a class="headerlink" href="#clothing-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="../../../api/evennia.contrib.clothing.html"><span class="doc std std-doc">source</span></a></p>
+<p><a class="reference internal" href="../../../api/evennia.contrib.game_systems.clothing.html"><span class="doc std std-doc">source</span></a></p>
 <p>This contrib provides a full system primarily aimed at wearing clothes, but it could also work for armor. You wear
 an object in a particular location and this will then be reflected in your character’s description. You can
 also add roleplaying flavor:</p>
@@ -125,7 +118,7 @@ for things like armor. It’s a good contrib to build from though, so that’s w
 </section>
 <section id="dice-contrib">
 <h2>Dice contrib<a class="headerlink" href="#dice-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="../../../api/evennia.contrib.dice.html"><span class="doc std std-doc">source</span></a></p>
+<p><a class="reference internal" href="../../../api/evennia.contrib.rpg.dice.html"><span class="doc std std-doc">source</span></a></p>
 <p>The dice contrib presents a general dice roller to use in game.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; roll 2d6
 Roll(s): 2 and 5. Total result is 7.
@@ -145,7 +138,7 @@ or play a game, we will not need it for the core of our game.</p>
 </section>
 <section id="extended-room-contrib">
 <h2>Extended room contrib<a class="headerlink" href="#extended-room-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="../../../api/evennia.contrib.extended_room.html"><span class="doc std std-doc">source</span></a></p>
+<p><a class="reference internal" href="../../../api/evennia.contrib.grid.extended_room.html"><span class="doc std std-doc">source</span></a></p>
 <p>This is a custom Room typeclass that changes its description based on time of day and season.</p>
 <p>For example, at night, in wintertime you could show the room as being dark and frost-covered while in daylight
 at summer it could describe a flowering meadow. The description can also contain special markers, so
@@ -160,19 +153,19 @@ game, why not!</p>
 </section>
 <section id="rp-system-contrib">
 <h2>RP-System contrib<a class="headerlink" href="#rp-system-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="../../../api/evennia.contrib.rpsystem.html"><span class="doc std std-doc">source</span></a></p>
+<p><a class="reference internal" href="../../../api/evennia.contrib.rpg.rpsystem.html"><span class="doc std std-doc">source</span></a></p>
 <p>This contrib adds a full roleplaying subsystem to your game. It gives every character a “short-description”
 (sdesc) that is what people will see when first meeting them. Let’s say Tom has an sdesc “A tall man” and
 Sue has the sdesc “A muscular, blonde woman”</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Tom &gt; look 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Tom &gt; look
 Tom: &lt;room desc&gt; ... You see: A muscular, blonde woman
 Tom &gt; emote /me smiles to /muscular.
 Tom: Tom smiles to A muscular, blonde woman.
-Sue: A tall man smiles to Sue. 
+Sue: A tall man smiles to Sue.
 Tom &gt; emote Leaning forward, /me says, &quot;Well hello, what&#39;s yer name?&quot;
 Tom: Leaning forward, Tom says, &quot;Well hello...&quot;
 Sue: Leaning forward, A tall man says, &quot;Well hello, what&#39;s yer name?&quot;
-Sue &gt; emote /me grins. &quot;I&#39;m Angelica&quot;, she says. 
+Sue &gt; emote /me grins. &quot;I&#39;m Angelica&quot;, she says.
 Sue: Sue grins. &quot;I&#39;m Angelica&quot;, she says.
 Tom: A muscular, blonde woman grins. &quot;I&#39;m Angelica&quot;, she says.
 Tom &gt; recog muscular Angelica
@@ -194,18 +187,18 @@ Sue: &lt;room desc&gt; ... A tall man stands by the bar, looking bored.
 <p>You can also wear a mask to hide your identity; your sdesc will then be changed to the sdesc of the mask,
 like <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">person</span> <span class="pre">with</span> <span class="pre">a</span> <span class="pre">mask</span></code>.</p>
 <p>The RPSystem gives a lot of roleplaying power out of the box, so we will add it. There is also a separate
-<a class="reference internal" href="../../../api/evennia.contrib.rplanguage.html"><span class="doc std std-doc">rplanguage</span></a> module that integrates with the spoken words in your emotes and garbles them if you don’t understand
+<a class="reference internal" href="../../../api/evennia.contrib.rpg.rpsystem.html"><span class="doc std std-doc">rplanguage</span></a> module that integrates with the spoken words in your emotes and garbles them if you don’t understand
 the language spoken. In order to restrict the scope we will not include languages for the tutorial game.</p>
 </section>
 <section id="talking-npc-contrib">
 <h2>Talking NPC contrib<a class="headerlink" href="#talking-npc-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="../../../api/evennia.contrib.talking_npc.html"><span class="doc std std-doc">source</span></a></p>
+<p><a class="reference internal" href="../../../api/evennia.contrib.tutorials.talking_npc.html"><span class="doc std std-doc">source</span></a></p>
 <p>This exemplifies an NPC with a menu-driven dialogue tree. We will not use this contrib explicitly, but it’s
 good as inspiration for how we’ll do quest-givers later.</p>
 </section>
 <section id="traits-contrib">
 <h2>Traits contrib<a class="headerlink" href="#traits-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="../../../api/evennia.contrib.traits.html"><span class="doc std std-doc">source</span></a></p>
+<p><a class="reference internal" href="../../../api/evennia.contrib.rpg.traits.html"><span class="doc std std-doc">source</span></a></p>
 <p>An issue with dealing with roleplaying attributes like strength, dexterity, or skills like hunting, sword etc
 is how to keep track of the values in the moment. Your strength may temporarily be buffed by a strength-potion.
 Your swordmanship may be worse because you are encumbered. And when you drink your health potion you must make
@@ -236,7 +229,7 @@ effects of slow poisons and healing both.</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
 <span class="mi">100</span>
-<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">rate</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>         <span class="c1"># poisoned! </span>
+<span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">rate</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>         <span class="c1"># poisoned!</span>
 <span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">ratetarget</span> <span class="o">=</span> <span class="mi">50</span>   <span class="c1"># stop at 50 hp</span>
 <span class="c1"># Wait 30s</span>
 <span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
@@ -246,7 +239,7 @@ effects of slow poisons and healing both.</p></li>
 <span class="mi">50</span>                                    <span class="c1"># stopped at 50</span>
 <span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">rate</span> <span class="o">=</span> <span class="mi">0</span>          <span class="c1"># no more poison</span>
 <span class="o">&gt;</span> <span class="n">py</span> <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">rate</span> <span class="o">=</span> <span class="mi">5</span>          <span class="c1"># healing magic!</span>
-<span class="c1"># wait 5s </span>
+<span class="c1"># wait 5s</span>
 <span class="o">&gt;</span> <span class="n">pyself</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
 <span class="mi">75</span>
 </pre></div>
@@ -255,7 +248,7 @@ effects of slow poisons and healing both.</p></li>
 </section>
 <section id="turnbattle-contrib">
 <h2>Turnbattle contrib<a class="headerlink" href="#turnbattle-contrib" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="../../../api/evennia.contrib.turnbattle.html"><span class="doc std std-doc">source</span></a></p>
+<p><a class="reference internal" href="../../../api/evennia.contrib.game_systems.turnbattle.html"><span class="doc std std-doc">source</span></a></p>
 <p>This contrib consists of several implementations of a turn-based combat system, divivided into complexity:</p>
 <ul class="simple">
 <li><p>basic - initiative and turn order, attacks against defense values, damage.</p></li>
@@ -302,7 +295,6 @@ back to your planning and adjust it as you learn what works and what does not.</
   <ul>
 <li><a class="reference internal" href="#">Planning the use of some useful contribs</a><ul>
 <li><a class="reference internal" href="#barter-contrib">Barter contrib</a></li>
-<li><a class="reference internal" href="#character-generation-contrib">Character generation contrib</a></li>
 <li><a class="reference internal" href="#clothing-contrib">Clothing contrib</a></li>
 <li><a class="reference internal" href="#dice-contrib">Dice contrib</a></li>
 <li><a class="reference internal" href="#extended-room-contrib">Extended room contrib</a></li>

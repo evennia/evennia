@@ -67,7 +67,7 @@
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">ObjectDB</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default.cmdset_character</span> <span class="kn">import</span> <span class="n">CharacterCmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">EvenniaTest</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">help</span> <span class="k">as</span> <span class="n">help_module</span><span class="p">,</span>
     <span class="n">general</span><span class="p">,</span>
@@ -100,9 +100,12 @@
 <span class="c1"># Command testing</span>
 <span class="c1"># ------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="CommandTest"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.CommandTest">[docs]</a><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.portal.portal.LoopingCall&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">())</span>
-<span class="k">class</span> <span class="nc">CommandTest</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="CommandTestMixin"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.CommandTestMixin">[docs]</a><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.portal.portal.LoopingCall&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">())</span>
+<span class="k">class</span> <span class="nc">CommandTestMixin</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mixin to add to a test in order to provide the `.call` helper for</span>
+<span class="sd">    testing the execution and returns of a command.</span>
+
 <span class="sd">    Tests a Command by running it and comparing what messages it sends with</span>
 <span class="sd">    expected values. This tests without actually spinning up the cmdhandler</span>
 <span class="sd">    for every test, which is more controlled.</span>
@@ -112,7 +115,7 @@
 
 <span class="sd">        from commands.echo import CmdEcho</span>
 
-<span class="sd">        class MyCommandTest(CommandTest):</span>
+<span class="sd">        class MyCommandTest(EvenniaTest, CommandTestMixin):</span>
 
 <span class="sd">            def test_echo(self):</span>
 <span class="sd">                &#39;&#39;&#39;</span>
@@ -133,7 +136,7 @@
 <span class="s2">==============================================================================</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
 
-<div class="viewcode-block" id="CommandTest.call"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.CommandTest.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+<div class="viewcode-block" id="CommandTestMixin.call"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.CommandTestMixin.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cmdobj</span><span class="p">,</span>
         <span class="n">input_args</span><span class="p">,</span>
@@ -350,12 +353,36 @@
         <span class="k">return</span> <span class="n">returned_msgs</span></div></div>
 
 
+<div class="viewcode-block" id="EvenniaCommandTest"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.EvenniaCommandTest">[docs]</a><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.account.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.admin.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.batchprocess.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.building.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.comms.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.general.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.help.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.syscommands.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.system.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.unloggedin.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">EvenniaCommandTest</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">CommandTestMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Commands only using the default settings.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="CommandTest"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.CommandTest">[docs]</a><span class="k">class</span> <span class="nc">CommandTest</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">,</span> <span class="n">CommandTestMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parent class to inherit from - makes tests use your own</span>
+<span class="sd">    classes and settings in mygame.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
 <span class="c1"># ------------------------------------------------------------</span>
 <span class="c1"># Individual module Tests</span>
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="TestGeneral"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestGeneral">[docs]</a><span class="k">class</span> <span class="nc">TestGeneral</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestGeneral"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestGeneral">[docs]</a><span class="k">class</span> <span class="nc">TestGeneral</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestGeneral.test_look"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestGeneral.test_look">[docs]</a>    <span class="k">def</span> <span class="nf">test_look</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">rid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">(),</span> <span class="s2">&quot;here&quot;</span><span class="p">,</span> <span class="s2">&quot;Room(#</span><span class="si">{}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">room_desc&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rid</span><span class="p">))</span></div>
@@ -451,7 +478,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">CmdAccess</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Permission Hierarchy (climbing):&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestHelp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestHelp">[docs]</a><span class="k">class</span> <span class="nc">TestHelp</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestHelp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestHelp">[docs]</a><span class="k">class</span> <span class="nc">TestHelp</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
 
     <span class="n">maxDiff</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -601,7 +628,7 @@
                   <span class="n">cmdset</span><span class="o">=</span><span class="n">TestCmdSet</span><span class="p">())</span></div>
 
 
-<div class="viewcode-block" id="TestSystem"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestSystem">[docs]</a><span class="k">class</span> <span class="nc">TestSystem</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestSystem"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestSystem">[docs]</a><span class="k">class</span> <span class="nc">TestSystem</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestSystem.test_py"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestSystem.test_py">[docs]</a>    <span class="k">def</span> <span class="nf">test_py</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># we are not testing CmdReload, CmdReset and CmdShutdown, CmdService or CmdTime</span>
         <span class="c1"># since the server is not running during these tests.</span>
@@ -625,7 +652,7 @@
 <div class="viewcode-block" id="func_test_cmd_tasks"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.func_test_cmd_tasks">[docs]</a><span class="k">def</span> <span class="nf">func_test_cmd_tasks</span><span class="p">():</span>
     <span class="k">return</span> <span class="s1">&#39;success&#39;</span></div>
 
-<div class="viewcode-block" id="TestCmdTasks"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks">[docs]</a><span class="k">class</span> <span class="nc">TestCmdTasks</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCmdTasks"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks">[docs]</a><span class="k">class</span> <span class="nc">TestCmdTasks</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
 
 <div class="viewcode-block" id="TestCmdTasks.setUp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
@@ -785,7 +812,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="sa">f</span><span class="s1">&#39;/cancel&#39;</span><span class="p">,</span> <span class="n">wanted_msg</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestAdmin"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestAdmin">[docs]</a><span class="k">class</span> <span class="nc">TestAdmin</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestAdmin"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestAdmin">[docs]</a><span class="k">class</span> <span class="nc">TestAdmin</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestAdmin.test_emit"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestAdmin.test_emit">[docs]</a>    <span class="k">def</span> <span class="nf">test_emit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">CmdEmit</span><span class="p">(),</span> <span class="s2">&quot;Char2 = Test&quot;</span><span class="p">,</span> <span class="s2">&quot;Emitted to Char2:</span><span class="se">\n</span><span class="s2">Test&quot;</span><span class="p">)</span></div>
 
@@ -816,7 +843,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestAccount"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestAccount">[docs]</a><span class="k">class</span> <span class="nc">TestAccount</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestAccount"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestAccount">[docs]</a><span class="k">class</span> <span class="nc">TestAccount</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestAccount.test_ooc_look"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestAccount.test_ooc_look">[docs]</a>    <span class="k">def</span> <span class="nf">test_ooc_look</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">MULTISESSION_MODE</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -940,7 +967,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestBuilding"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding">[docs]</a><span class="k">class</span> <span class="nc">TestBuilding</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBuilding"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding">[docs]</a><span class="k">class</span> <span class="nc">TestBuilding</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestBuilding.test_create"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_create">[docs]</a>    <span class="k">def</span> <span class="nf">test_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -1696,8 +1723,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;No scripts defined on Obj&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
-            <span class="s2">&quot;Obj = scripts.Script&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Script scripts.Script successfully added&quot;</span>
+            <span class="s2">&quot;Obj = scripts.scripts.DefaultScript&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Script scripts.scripts.DefaultScript successfully added&quot;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
@@ -1717,25 +1744,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;/stop Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;Script on Obj Stopped - &quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;Obj = scripts.Script&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Script scripts.Script successfully added&quot;</span><span class="p">,</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;Obj = scripts.scripts.DefaultScript&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Script scripts.scripts.DefaultScript successfully added&quot;</span><span class="p">,</span>
             <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
-            <span class="s2">&quot;/start Obj = scripts.Script&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;/start Obj = scripts.scripts.DefaultScript&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Script on Obj Started &quot;</span><span class="p">,</span>
             <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
-            <span class="s2">&quot;/stop Obj = scripts.Script&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;/stop Obj = scripts.scripts.DefaultScript&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Script on Obj Stopped &quot;</span><span class="p">,</span>
             <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
-            <span class="s2">&quot;/delete Obj = scripts.Script&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;/delete Obj = scripts.scripts.DefaultScript&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Script on Obj Deleted &quot;</span><span class="p">,</span>
             <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span>
         <span class="p">)</span>
@@ -1986,14 +2013,17 @@
 
 <span class="kn">import</span> <span class="nn">evennia.commands.default.comms</span> <span class="k">as</span> <span class="nn">cmd_comms</span>  <span class="c1"># noqa</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_channel</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">evennia.comms.comms</span> <span class="kn">import</span> <span class="n">DefaultChannel</span>  <span class="c1"># noqa</span>
 
-<div class="viewcode-block" id="TestCommsChannel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel">[docs]</a><span class="k">class</span> <span class="nc">TestCommsChannel</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestCommsChannel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel">[docs]</a><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.default.comms.CHANNEL_DEFAULT_TYPECLASS&quot;</span><span class="p">,</span> <span class="n">DefaultChannel</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TestCommsChannel</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test the central `channel` command.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="TestCommsChannel.setUp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">create_channel</span><span class="p">(</span>
             <span class="n">key</span><span class="o">=</span><span class="s2">&quot;testchannel&quot;</span><span class="p">,</span>
             <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;A test channel&quot;</span><span class="p">)</span>
@@ -2066,6 +2096,7 @@
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__alias__unalias"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__alias__unalias">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__alias__unalias</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add and then remove a channel alias&quot;&quot;&quot;</span>
+
         <span class="c1"># add alias</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
@@ -2206,10 +2237,10 @@
         <span class="p">)</span></div></div>
 
 
-<span class="kn">from</span> <span class="nn">evennia.comms</span> <span class="kn">import</span> <span class="n">comms</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">comms</span>  <span class="c1"># noqa</span>
 
 
-<div class="viewcode-block" id="TestComms"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestComms">[docs]</a><span class="k">class</span> <span class="nc">TestComms</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestComms"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestComms">[docs]</a><span class="k">class</span> <span class="nc">TestComms</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
 
 <div class="viewcode-block" id="TestComms.test_page"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestComms.test_page">[docs]</a>    <span class="k">def</span> <span class="nf">test_page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -2221,16 +2252,22 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestBatchProcess"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBatchProcess">[docs]</a><span class="k">class</span> <span class="nc">TestBatchProcess</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBatchProcess"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBatchProcess">[docs]</a><span class="k">class</span> <span class="nc">TestBatchProcess</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test the batch processor.</span>
 
-<div class="viewcode-block" id="TestBatchProcess.test_batch_commands"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBatchProcess.test_batch_commands">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorial_examples.red_button.repeat&quot;</span><span class="p">)</span>
-    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorial_examples.red_button.delay&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_batch_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_delay</span><span class="p">,</span> <span class="n">mock_repeat</span><span class="p">):</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># there is some sort of issue with the mock; it needs to loaded once to work</span>
+    <span class="kn">from</span> <span class="nn">evennia.contrib.tutorials.red_button</span> <span class="kn">import</span> <span class="n">red_button</span>  <span class="c1"># noqa</span>
+
+<div class="viewcode-block" id="TestBatchProcess.test_batch_commands"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBatchProcess.test_batch_commands">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.red_button.red_button.repeat&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.red_button.red_button.delay&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_batch_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_tutorials</span><span class="p">,</span> <span class="n">mock_repeat</span><span class="p">):</span>
         <span class="c1"># cannot test batchcode here, it must run inside the server process</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">batchprocess</span><span class="o">.</span><span class="n">CmdBatchCommands</span><span class="p">(),</span>
-            <span class="s2">&quot;example_batch_cmds&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Running Batch-command processor - Automatic mode for example_batch_cmds&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;batchprocessor.example_batch_cmds&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Running Batch-command processor - Automatic mode for batchprocessor.example_batch_cmds&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># we make sure to delete the button again here to stop the running reactor</span>
         <span class="n">confirm</span> <span class="o">=</span> <span class="n">building</span><span class="o">.</span><span class="n">CmdDestroy</span><span class="o">.</span><span class="n">confirm</span>
@@ -2251,13 +2288,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;in func&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestInterruptCommand"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestInterruptCommand">[docs]</a><span class="k">class</span> <span class="nc">TestInterruptCommand</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestInterruptCommand"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestInterruptCommand">[docs]</a><span class="k">class</span> <span class="nc">TestInterruptCommand</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestInterruptCommand.test_interrupt_command"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestInterruptCommand.test_interrupt_command">[docs]</a>    <span class="k">def</span> <span class="nf">test_interrupt_command</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdInterrupt</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestUnconnectedCommand"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestUnconnectedCommand">[docs]</a><span class="k">class</span> <span class="nc">TestUnconnectedCommand</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestUnconnectedCommand"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestUnconnectedCommand">[docs]</a><span class="k">class</span> <span class="nc">TestUnconnectedCommand</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestUnconnectedCommand.test_info_command"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestUnconnectedCommand.test_info_command">[docs]</a>    <span class="k">def</span> <span class="nf">test_info_command</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># instead of using SERVER_START_TIME (0), we use 86400 because Windows won&#39;t let us use anything lower</span>
         <span class="n">gametime</span><span class="o">.</span><span class="n">SERVER_START_TIME</span> <span class="o">=</span> <span class="mi">86400</span>
@@ -2277,7 +2314,7 @@
 <span class="c1"># Test syscommands</span>
 
 
-<div class="viewcode-block" id="TestSystemCommands"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestSystemCommands">[docs]</a><span class="k">class</span> <span class="nc">TestSystemCommands</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestSystemCommands"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestSystemCommands">[docs]</a><span class="k">class</span> <span class="nc">TestSystemCommands</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestSystemCommands.test_simple_defaults"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestSystemCommands.test_simple_defaults">[docs]</a>    <span class="k">def</span> <span class="nf">test_simple_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">syscommands</span><span class="o">.</span><span class="n">SystemNoInput</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">syscommands</span><span class="o">.</span><span class="n">SystemNoMatch</span><span class="p">(),</span> <span class="s2">&quot;Huh?&quot;</span><span class="p">)</span></div>

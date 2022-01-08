@@ -1,0 +1,345 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.grid.xyzgrid.xyzgrid &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.xyzgrid.xyzgrid</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.grid.xyzgrid.xyzgrid">
+<span id="evennia-contrib-grid-xyzgrid-xyzgrid"></span><h1>evennia.contrib.grid.xyzgrid.xyzgrid<a class="headerlink" href="#module-evennia.contrib.grid.xyzgrid.xyzgrid" title="Permalink to this headline">¶</a></h1>
+<p>The grid</p>
+<p>This represents the full XYZ grid, which consists of</p>
+<ul class="simple">
+<li><p>2D <strong>Map</strong>-objects parsed from Map strings and Map-legend components. Each represents one
+Z-coordinate or location.</p></li>
+<li><p><strong>Prototypes</strong> for how to build each XYZ component into ‘real’ rooms and exits.</p></li>
+<li><p>Actual in-game rooms and exits, mapped to the game based on Map data.</p></li>
+</ul>
+<p>The grid has three main functions:
+- Building new rooms/exits from scratch based on one or more Maps.
+- Updating the rooms/exits tied to an existing Map when the Map string</p>
+<blockquote>
+<div><p>of that map changes.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Fascilitate communication between the in-game entities and their Map.</p></li>
+</ul>
+<dl class="py class">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.xyzgrid.xyzgrid.</code><code class="sig-name descname">XYZGrid</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xyzgrid.html#XYZGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
+<p>Main grid class. This organizes the Maps based on their name/Z-coordinate.</p>
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.at_script_creation">
+<code class="sig-name descname">at_script_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xyzgrid.html#XYZGrid.at_script_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.at_script_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>What we store persistently is data used to create each map (the legends, names etc)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.grid">
+<em class="property">property </em><code class="sig-name descname">grid</code><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.get_map">
+<code class="sig-name descname">get_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">zcoord</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xyzgrid.html#XYZGrid.get_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.get_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a specific xymap.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>zcoord</strong> (<em>str</em>) – The name/zcoord of the xymap.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>XYMap</em> – Or None if no map was found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.all_maps">
+<code class="sig-name descname">all_maps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xyzgrid.html#XYZGrid.all_maps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.all_maps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all xymaps stored in the grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>list</em> – All initialized xymaps stored with this grid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.log">
+<code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xyzgrid.html#XYZGrid.log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.get_room">
+<code class="sig-name descname">get_room</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xyz</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xyzgrid.html#XYZGrid.get_room"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.get_room" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get one or more room objects from XYZ coordinate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xyz</strong> (<em>tuple</em>) – X,Y,Z coordinate of room to fetch. ‘*’ acts</p></li>
+<li><p><strong>wild cards.</strong> (<em>as</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Queryset</em> – A queryset of XYZRoom(s) found.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.DoesNotExist" title="evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.DoesNotExist"><strong>XYZRoom.DoesNotExist</strong></a> – If room is not found.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This assumes the room was previously built.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.get_exit">
+<code class="sig-name descname">get_exit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xyz</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'north'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xyzgrid.html#XYZGrid.get_exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.get_exit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get one or more exit object at coordinate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xyz</strong> (<em>tuple</em>) – X,Y,Z coordinate of the room the
+exit leads out of. ‘*’ acts as a wildcard.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The full name of the exit, e.g. ‘north’ or ‘northwest’.
+The ‘*’ acts as a wild card.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Queryset</em> – A queryset of XYZExit(s) found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.maps_from_module">
+<code class="sig-name descname">maps_from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xyzgrid.html#XYZGrid.maps_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.maps_from_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load map data from module. The loader will look for a dict XYMAP_DATA or a list of
+XYMAP_DATA_LIST (a list of XYMAP_DATA dicts). Each XYMAP_DATA dict should contain
+<strong>{“xymap”: mapstring, “zcoord”: mapname/zcoord, “legend”: dict, “prototypes”: dict}</strong>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>module_path</strong> (<em>module_path</em>) – A python-path to a module containing
+map data as either <strong>XYMAP_DATA</strong> or <strong>XYMAP_DATA_LIST</strong> variables.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list</em> – List of zero, one or more xy-map data dicts loaded from the module.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.reload">
+<code class="sig-name descname">reload</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xyzgrid.html#XYZGrid.reload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.reload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reload and rebuild the grid. This is done on a server reload.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.add_maps">
+<code class="sig-name descname">add_maps</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">mapdatas</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xyzgrid.html#XYZGrid.add_maps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.add_maps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add map or maps to the grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>*mapdatas</strong> (<em>dict</em>) – Each argument is a dict structure
+<strong>{“map”: &lt;mapstr&gt;, “legend”: &lt;legenddict&gt;, “name”: &lt;name&gt;,
+“prototypes”: &lt;dict-of-dicts&gt;, “module_path”: &lt;str&gt;}</strong>. The <strong>prototypes are
+coordinate-specific overrides for nodes/links on the map, keyed with their
+(X,Y) coordinate within that map. The **module_path</strong> is injected automatically
+by self.maps_from_module.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If mapdata is malformed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.remove_map">
+<code class="sig-name descname">remove_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">zcoords</span></em>, <em class="sig-param"><span class="n">remove_objects</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xyzgrid.html#XYZGrid.remove_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.remove_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove an XYmap from the grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*zoords</strong> (<em>str</em>) – The zcoords/XYmaps to remove.</p></li>
+<li><p><strong>remove_objects</strong> (<em>bool</em><em>, </em><em>optional</em>) – If the synced database objects (rooms/exits) should
+be removed alongside this map.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xyzgrid.html#XYZGrid.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear the entire grid, including database entities, then the grid too.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.spawn">
+<code class="sig-name descname">spawn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xyz</span><span class="o">=</span><span class="default_value">'*', '*', '*'</span></em>, <em class="sig-param"><span class="n">directions</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xyzgrid.html#XYZGrid.spawn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.spawn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create/recreate/update the in-game grid based on the stored Maps or for a specific Map
+or coordinate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xyz</strong> (<em>tuple</em><em>, </em><em>optional</em>) – An (X,Y,Z) coordinate, where Z is the name of the map. <strong>‘*’</strong>
+acts as a wildcard.</p></li>
+<li><p><strong>directions</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of cardinal directions (‘n’, ‘ne’ etc).
+Spawn exits only the given direction. If unset, all needed directions are spawned.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<ul class="simple">
+<li><p><strong>xyz=(‘*’, ‘*’, ‘*’)</strong> (default) - spawn/update all maps.</p></li>
+<li><p><strong>xyz=(1, 3, ‘foo’)</strong> - sync a specific element of map ‘foo’ only.</p></li>
+<li><p><a href="#id1"><span class="problematic" id="id2">**</span></a>xyz=(‘*’, ‘*’, ‘foo’) - sync all elements of map ‘foo’</p></li>
+<li><p><a href="#id3"><span class="problematic" id="id4">**</span></a>xyz=(1, 3, ‘*’) - sync all (1,3) coordinates on all maps (rarely useful)</p></li>
+<li><dl class="simple">
+<dt><strong>xyz=(1, 3, ‘foo’)</strong>, <strong>direction=’ne’</strong> - sync only the north-eastern exit</dt><dd><p>out of the specific node on map ‘foo’.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.DoesNotExist" title="evennia.scripts.scripts.DefaultScript.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned" title="evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'XYZGrid'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.grid.xyzgrid.xyzgrid.get_xyzgrid">
+<code class="sig-prename descclassname">evennia.contrib.grid.xyzgrid.xyzgrid.</code><code class="sig-name descname">get_xyzgrid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">print_errors</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xyzgrid.html#get_xyzgrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xyzgrid.get_xyzgrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper for getting the grid. This will create the XYZGrid global script if it didn’t
+previously exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>print_errors</strong> (<em>bool</em><em>, </em><em>optional</em>) – Print errors directly to console rather than to log.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.grid.xyzgrid.xyzgrid.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.grid.xyzgrid.xyzgrid.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.xyzgrid.xyzgrid</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

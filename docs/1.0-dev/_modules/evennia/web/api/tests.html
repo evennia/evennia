@@ -46,7 +46,7 @@
 <span class="sd">Tests for the REST API.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
 <span class="kn">from</span> <span class="nn">evennia.web.api</span> <span class="kn">import</span> <span class="n">serializers</span>
 <span class="kn">from</span> <span class="nn">rest_framework.test</span> <span class="kn">import</span> <span class="n">APIClient</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
@@ -62,7 +62,7 @@
 
 
 <div class="viewcode-block" id="TestEvenniaRESTApi"><a class="viewcode-back" href="../../../../api/evennia.web.api.tests.html#evennia.web.api.tests.TestEvenniaRESTApi">[docs]</a><span class="nd">@override_settings</span><span class="p">(</span><span class="n">REST_API_ENABLED</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ROOT_URLCONF</span><span class="o">=</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">AUTH_USERNAME_VALIDATORS</span><span class="o">=</span><span class="p">[])</span>
-<span class="k">class</span> <span class="nc">TestEvenniaRESTApi</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">TestEvenniaRESTApi</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
     <span class="n">client_class</span> <span class="o">=</span> <span class="n">APIClient</span>
     <span class="n">maxDiff</span> <span class="o">=</span> <span class="kc">None</span>
 

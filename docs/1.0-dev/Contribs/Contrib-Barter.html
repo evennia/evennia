@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Barter system &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Barter system</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="barter-system">
+<h1>Barter system<a class="headerlink" href="#barter-system" title="Permalink to this headline">¶</a></h1>
+<p>Contribution by Griatch, 2012</p>
+<p>This implements a full barter system - a way for players to safely
+trade items between each other in code rather than simple <code class="docutils literal notranslate"><span class="pre">give/get</span></code>
+commands. This increases both safety (at no time will one player have
+both goods and payment in-hand) and speed, since agreed goods will
+be moved automatically). By just replacing one side with coin objects,
+(or a mix of coins and goods), this also works fine for regular money
+transactions.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Just import the CmdsetTrade command into (for example) the default
+cmdset. This will make the trade (or barter) command available
+in-game.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems</span> <span class="kn">import</span> <span class="n">barter</span>  <span class="c1"># &lt;---</span>
+
+<span class="c1"># ...</span>
+<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+    <span class="k">def</span> <span class="nf">at</span> <span class="n">cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">barter</span><span class="o">.</span><span class="n">CmdsetTrade</span><span class="p">)</span>  <span class="c1"># &lt;---</span>
+
+</pre></div>
+</div>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>In this module, a “barter” is generally referred to as a “trade”.</p>
+<p>Below is an example of a barter sequence. A and B are the parties.
+The <code class="docutils literal notranslate"><span class="pre">A&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">B&gt;</span></code> are their inputs.</p>
+<ol>
+<li><p>opening a trade</p>
+<p>A&gt; trade B: Hi, I have a nice extra sword. You wanna trade?</p>
+<p>B sees:
+A says: “Hi, I have a nice extra sword. You wanna trade?”
+A wants to trade with you. Enter ‘trade A <emote>’ to accept.</p>
+<p>B&gt; trade A: Hm, I could use a good sword …</p>
+<p>A sees:
+B says: “Hm, I could use a good sword …
+B accepts the trade. Use ‘trade help’ for aid.</p>
+<p>B sees:
+You are now trading with A. Use ‘trade help’ for aid.</p>
+</li>
+<li><p>negotiating</p>
+<p>A&gt; offer sword: This is a nice sword. I would need some rations in trade.</p>
+<p>B sees: A says: “This is a nice sword. I would need some rations in trade.”
+[A offers Sword of might.]</p>
+<p>B&gt; evaluate sword
+B sees:
+&lt;Sword’s description and possibly stats&gt;</p>
+<p>B&gt; offer ration: This is a prime ration.</p>
+<p>A sees:
+B says: “This is a prime ration.”
+[B offers iron ration]</p>
+<p>A&gt; say Hey, this is a nice sword, I need something more for it.</p>
+<p>B sees:
+A says: “Hey this is a nice sword, I need something more for it.”</p>
+<p>B&gt; offer sword,apple: Alright. I will also include a magic apple. That’s my last offer.</p>
+<p>A sees:
+B says: “Alright, I will also include a magic apple. That’s my last offer.”
+[B offers iron ration and magic apple]</p>
+<p>A&gt; accept: You are killing me here, but alright.</p>
+<p>B sees: A says: “You are killing me here, but alright.”
+[A accepts your offer. You must now also accept.]</p>
+<p>B&gt; accept: Good, nice making business with you.
+You accept the deal. Deal is made and goods changed hands.</p>
+<p>A sees: B says: “Good, nice making business with you.”
+B accepts the deal. Deal is made and goods changed hands.</p>
+</li>
+</ol>
+<p>At this point the trading system is exited and the negotiated items
+are automatically exchanged between the parties. In this example B was
+the only one changing their offer, but also A could have changed their
+offer until the two parties found something they could agree on. The
+emotes are optional but useful for RP-heavy worlds.</p>
+</section>
+<section id="technical-info">
+<h2>Technical info<a class="headerlink" href="#technical-info" title="Permalink to this headline">¶</a></h2>
+<p>The trade is implemented by use of a TradeHandler. This object is a
+common place for storing the current status of negotiations. It is
+created on the object initiating the trade, and also stored on the
+other party once that party agrees to trade. The trade request times
+out after a certain time - this is handled by a Script. Once trade
+starts, the CmdsetTrade cmdset is initiated on both parties along with
+the commands relevant for the trading.</p>
+</section>
+<section id="ideas-for-npc-bartering">
+<h2>Ideas for NPC bartering<a class="headerlink" href="#ideas-for-npc-bartering" title="Permalink to this headline">¶</a></h2>
+<p>This module is primarily intended for trade between two players. But
+it can also in principle be used for a player negotiating with an
+AI-controlled NPC. If the NPC uses normal commands they can use it
+directly – but more efficient is to have the NPC object send its
+replies directly through the tradehandler to the player. One may want
+to add some functionality to the decline command, so players can
+decline specific objects in the NPC offer (decline <object>) and allow
+the AI to maybe offer something else and make it into a proper
+barter.  Along with an AI that “needs” things or has some sort of
+personality in the trading, this can make bartering with NPCs at least
+moderately more interesting than just plain ‘buy’.</p>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/game_systems/barter/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Barter system</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#technical-info">Technical info</a></li>
+<li><a class="reference internal" href="#ideas-for-npc-bartering">Ideas for NPC bartering</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contrib-Barter.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Contrib-Barter.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Barter system</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

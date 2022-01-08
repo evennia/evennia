@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>In-Game Mail system &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">In-Game Mail system</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="in-game-mail-system">
+<h1>In-Game Mail system<a class="headerlink" href="#in-game-mail-system" title="Permalink to this headline">¶</a></h1>
+<p>Contribution by grungies1138 2016</p>
+<p>A simple Brandymail style mail system that uses the <code class="docutils literal notranslate"><span class="pre">Msg</span></code> class from Evennia
+Core. It has two Commands for either sending mails between Accounts (out of game)
+or between Characters (in-game). The two types of mails can be used together or
+on their own.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CmdMail</span></code> - this should sit on the Account cmdset and makes the <code class="docutils literal notranslate"><span class="pre">mail</span></code> command
+available both IC and OOC. Mails will always go to Accounts (other players).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CmdMailCharacter</span></code> - this should sit on the Character cmdset and makes the <code class="docutils literal notranslate"><span class="pre">mail</span></code>
+command ONLY available when puppeting a character. Mails will be sent to other
+Characters only and will not be available when OOC.</p></li>
+<li><p>If adding <em>both</em> commands to their respective cmdsets, you’ll get two separate
+IC and OOC mailing systems, with different lists of mail for IC and OOC modes.</p></li>
+</ul>
+<section id="installation">
+<h2>Installation:<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Install one or both of the following (see above):</p>
+<ul class="simple">
+<li><p>CmdMail (IC + OOC mail, sent between players)</p></li>
+<li><p>CmdMailCharacter (optional, IC only mail, sent between characters)</p></li>
+</ul>
+<p>Once installed, use <code class="docutils literal notranslate"><span class="pre">help</span> <span class="pre">mail</span></code> in game for help with the mail command. Use
+ic/ooc to switch in and out of IC/OOC modes.</p>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/game_systems/mail/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="mygame-commands-default-cmds-py">
+<h1>mygame/commands/default_cmds.py<a class="headerlink" href="#mygame-commands-default-cmds-py" title="Permalink to this headline">¶</a></h1>
+<p>from evennia.contrib.game_systems import mail</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="in-accountcmdset-at-cmdset-creation">
+<h1>in AccountCmdSet.at_cmdset_creation:<a class="headerlink" href="#in-accountcmdset-at-cmdset-creation" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  self.add(mail.CmdMail())
+</pre></div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>mygame/commands/default_cmds.py<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>from evennia.contrib.game_systems import mail</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="in-charactercmdset-at-cmdset-creation">
+<h1>in CharacterCmdSet.at_cmdset_creation:<a class="headerlink" href="#in-charactercmdset-at-cmdset-creation" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  self.add(mail.CmdMailCharacter())
+</pre></div>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">In-Game Mail system</a><ul>
+<li><a class="reference internal" href="#installation">Installation:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mygame-commands-default-cmds-py">mygame/commands/default_cmds.py</a></li>
+<li><a class="reference internal" href="#in-accountcmdset-at-cmdset-creation">in AccountCmdSet.at_cmdset_creation:</a></li>
+<li><a class="reference internal" href="#id1">mygame/commands/default_cmds.py</a></li>
+<li><a class="reference internal" href="#in-charactercmdset-at-cmdset-creation">in CharacterCmdSet.at_cmdset_creation:</a></li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contrib-Mail.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Contrib-Mail.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">In-Game Mail system</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

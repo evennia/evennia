@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.base_systems.unixcommand.tests &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.unixcommand.tests</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.base_systems.unixcommand.tests</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Test of the Unixcommand.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">EvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">.unixcommand</span> <span class="kn">import</span> <span class="n">UnixCommand</span>
+
+
+<div class="viewcode-block" id="CmdDummy"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.unixcommand.tests.html#evennia.contrib.base_systems.unixcommand.tests.CmdDummy">[docs]</a><span class="k">class</span> <span class="nc">CmdDummy</span><span class="p">(</span><span class="n">UnixCommand</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;A dummy UnixCommand.&quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;dummy&quot;</span>
+
+<div class="viewcode-block" id="CmdDummy.init_parser"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.unixcommand.tests.html#evennia.contrib.base_systems.unixcommand.tests.CmdDummy.init_parser">[docs]</a>    <span class="k">def</span> <span class="nf">init_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fill out options.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;nb1&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;the first number&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;nb2&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;the second number&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CmdDummy.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.unixcommand.tests.html#evennia.contrib.base_systems.unixcommand.tests.CmdDummy.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">nb1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opts</span><span class="o">.</span><span class="n">nb1</span>
+        <span class="n">nb2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opts</span><span class="o">.</span><span class="n">nb2</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">nb1</span> <span class="o">*</span> <span class="n">nb2</span>
+        <span class="n">verbose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opts</span><span class="o">.</span><span class="n">verbose</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> times </span><span class="si">{}</span><span class="s2"> is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nb1</span><span class="p">,</span> <span class="n">nb2</span><span class="p">,</span> <span class="n">result</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> * </span><span class="si">{}</span><span class="s2"> = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nb1</span><span class="p">,</span> <span class="n">nb2</span><span class="p">,</span> <span class="n">result</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="TestUnixCommand"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.unixcommand.tests.html#evennia.contrib.base_systems.unixcommand.tests.TestUnixCommand">[docs]</a><span class="k">class</span> <span class="nc">TestUnixCommand</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestUnixCommand.test_success"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.unixcommand.tests.html#evennia.contrib.base_systems.unixcommand.tests.TestUnixCommand.test_success">[docs]</a>    <span class="k">def</span> <span class="nf">test_success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See the command parsing succeed.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdDummy</span><span class="p">(),</span> <span class="s2">&quot;5 10&quot;</span><span class="p">,</span> <span class="s2">&quot;5 * 10 = 50&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdDummy</span><span class="p">(),</span> <span class="s2">&quot;5 10 -v&quot;</span><span class="p">,</span> <span class="s2">&quot;5 times 10 is 50&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestUnixCommand.test_failure"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.unixcommand.tests.html#evennia.contrib.base_systems.unixcommand.tests.TestUnixCommand.test_failure">[docs]</a>    <span class="k">def</span> <span class="nf">test_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;If not provided with the right info, should fail.&quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdDummy</span><span class="p">(),</span> <span class="s2">&quot;5&quot;</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="n">lin</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;usage:&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">lin</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="n">lin</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;dummy: error:&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">lin</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">))</span>
+
+        <span class="c1"># If we specify an incorrect number as parameter</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdDummy</span><span class="p">(),</span> <span class="s2">&quot;five ten&quot;</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="n">lin</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;usage:&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">lin</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="n">lin</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;dummy: error:&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">lin</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">))</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="tests.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.unixcommand.tests</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,235 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Building menu &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Building menu</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="building-menu">
+<h1>Building menu<a class="headerlink" href="#building-menu" title="Permalink to this headline">¶</a></h1>
+<p>Contrib by vincent-lg, 2018</p>
+<p>Building menus are in-game menus, not unlike <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> though using a
+different approach. Building menus have been specifically designed to edit
+information as a builder. Creating a building menu in a command allows
+builders quick-editing of a given object, like a room. If you follow the
+steps to add the contrib, you will have access to an <code class="docutils literal notranslate"><span class="pre">edit</span></code> command
+that will edit any default object, offering to change its key and description.</p>
+<section id="install">
+<h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
+<ol>
+<li><p>Import the <code class="docutils literal notranslate"><span class="pre">GenericBuildingCmd</span></code> class from this contrib in your
+<code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdset.py</span></code> file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.building_menu</span> <span class="kn">import</span> <span class="n">GenericBuildingCmd</span>
+</pre></div>
+</div>
+</li>
+<li><p>Below, add the command in the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ... These lines should exist in the file</span>
+<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
+
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CharacterCmdSet</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
+        <span class="c1"># ... add the line below</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">GenericBuildingCmd</span><span class="p">())</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">edit</span></code> command will allow you to edit any object.  You will need to
+specify the object name or ID as an argument.  For instance: <code class="docutils literal notranslate"><span class="pre">edit</span> <span class="pre">here</span></code>
+will edit the current room.  However, building menus can perform much more
+than this very simple example, read on for more details.</p>
+<p>Building menus can be set to edit about anything.  Here is an example of
+output you could obtain when editing the room:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">Editing</span> <span class="n">the</span> <span class="n">room</span><span class="p">:</span> <span class="n">Limbo</span><span class="p">(</span><span class="c1">#2)</span>
+
+ <span class="p">[</span><span class="n">T</span><span class="p">]</span><span class="n">itle</span><span class="p">:</span> <span class="n">the</span> <span class="n">limbo</span> <span class="n">room</span>
+ <span class="p">[</span><span class="n">D</span><span class="p">]</span><span class="n">escription</span>
+    <span class="n">This</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">limbo</span> <span class="n">room</span><span class="o">.</span>  <span class="n">You</span> <span class="n">can</span> <span class="n">easily</span> <span class="n">change</span> <span class="n">this</span> <span class="n">default</span> <span class="n">description</span><span class="p">,</span>
+    <span class="n">either</span> <span class="n">by</span> <span class="n">using</span> <span class="n">the</span> <span class="o">|</span><span class="n">y</span><span class="nd">@desc</span><span class="o">/</span><span class="n">edit</span><span class="o">|</span><span class="n">n</span> <span class="n">command</span><span class="p">,</span> <span class="ow">or</span> <span class="n">simply</span> <span class="n">by</span> <span class="n">entering</span> <span class="n">this</span>
+    <span class="n">menu</span> <span class="p">(</span><span class="n">enter</span> <span class="o">|</span><span class="n">yd</span><span class="o">|</span><span class="n">n</span><span class="p">)</span><span class="o">.</span>
+ <span class="p">[</span><span class="n">E</span><span class="p">]</span><span class="n">xits</span><span class="p">:</span>
+     <span class="n">north</span> <span class="n">to</span> <span class="n">A</span> <span class="n">parking</span><span class="p">(</span><span class="c1">#4)</span>
+ <span class="p">[</span><span class="n">Q</span><span class="p">]</span><span class="n">uit</span> <span class="n">this</span> <span class="n">menu</span>
+</pre></div>
+</div>
+<p>From there, you can open the title choice by pressing t.  You can then
+change the room title by simply entering text, and go back to the
+main menu entering &#64; (all this is customizable).  Press q to quit this menu.</p>
+<p>The first thing to do is to create a new module and place a class
+inheriting from <code class="docutils literal notranslate"><span class="pre">BuildingMenu</span></code> in it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.building_menu</span> <span class="kn">import</span> <span class="n">BuildingMenu</span>
+
+<span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+
+</pre></div>
+</div>
+<p>Next, override the <code class="docutils literal notranslate"><span class="pre">init</span></code> method (not <code class="docutils literal notranslate"><span class="pre">__init__</span></code>!).  You can add
+choices (like the title, description, and exits choices as seen above) by using
+the <code class="docutils literal notranslate"><span class="pre">add_choice</span></code> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>That will create the first choice, the title choice.  If one opens your menu
+and enter t, she will be in the title choice.  She can change the title
+(it will write in the room’s <code class="docutils literal notranslate"><span class="pre">key</span></code> attribute) and then go back to the
+main menu using <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">add_choice</span></code> has a lot of arguments and offers a great deal of
+flexibility.  The most useful ones is probably the usage of callbacks,
+as you can set almost any argument in <code class="docutils literal notranslate"><span class="pre">add_choice</span></code> to be a callback, a
+function that you have defined above in your module.  This function will be
+called when the menu element is triggered.</p>
+<p>Notice that in order to edit a description, the best method to call isn’t
+<code class="docutils literal notranslate"><span class="pre">add_choice</span></code>, but <code class="docutils literal notranslate"><span class="pre">add_choice_edit</span></code>.  This is a convenient shortcut
+which is available to quickly open an <code class="docutils literal notranslate"><span class="pre">EvEditor</span></code> when entering this choice
+and going back to the menu when the editor closes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_choice_edit</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;db.desc&quot;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>When you wish to create a building menu, you just need to import your
+class, create it specifying your intended caller and object to edit,
+then call <code class="docutils literal notranslate"><span class="pre">open</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="o">&lt;</span><span class="n">wherever</span><span class="o">&gt;</span> <span class="kn">import</span> <span class="nn">RoomBuildingMenu</span>
+
+<span class="k">class</span> <span class="nc">CmdEdit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;redit&quot;</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">menu</span> <span class="o">=</span> <span class="n">RoomBuildingMenu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+</pre></div>
+</div>
+<p>This is a very short introduction.  For more details, see the <a class="reference external" href="https://github.com/evennia/evennia/wiki/Building-menus">online
+tutorial</a> or read the
+heavily-documented code of the contrib itself.</p>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/base_systems/building_menu/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Building menu</a><ul>
+<li><a class="reference internal" href="#install">Install</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contrib-Building-Menu.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Contrib-Building-Menu.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Building menu</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

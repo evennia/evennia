@@ -1,0 +1,1585 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>XYZgrid &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">XYZgrid</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="xyzgrid">
+<h1>XYZgrid<a class="headerlink" href="#xyzgrid" title="Permalink to this headline">¶</a></h1>
+<p>Contribution by Griatch 2021</p>
+<p>Places Evennia’s game world on an xy (z being different maps) coordinate grid.
+Grid is created and maintained externally by drawing and parsing 2D ASCII maps,
+including teleports, map transitions and special markers to aid pathfinding.
+Supports very fast shortest-route pathfinding on each map. Also includes a
+fast view function for seeing only a limited number of steps away from your
+current location (useful for displaying the grid as an in-game, updating map).</p>
+<p>Grid-management is done outside of the game using a new evennia-launcher
+option.</p>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<script id="asciicast-Zz36JuVAiPF0fSUR09Ii7lcxc" src="https://asciinema.org/a/Zz36JuVAiPF0fSUR09Ii7lcxc.js" async></script>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#-#-#-#   #</span>
+<span class="o">|</span>  <span class="o">/</span>      <span class="n">d</span>
+<span class="c1">#-#       |   #</span>
+   \      <span class="n">u</span>   <span class="o">|</span>\
+<span class="n">o</span><span class="o">---</span><span class="c1">#-----#---+-#-#</span>
+<span class="o">|</span>         <span class="o">^</span>   <span class="o">|/</span>
+<span class="o">|</span>         <span class="o">|</span>   <span class="c1">#</span>
+<span class="n">v</span>         <span class="o">|</span>    \
+<span class="c1">#-#-#-#-#-# #---#</span>
+    <span class="o">|</span><span class="n">x</span><span class="o">|</span><span class="n">x</span><span class="o">|</span>     <span class="o">/</span>
+    <span class="c1">#-#-#    #-</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+                                     <span class="c1">#---#</span>
+                                    <span class="o">/</span>
+                                   <span class="o">@-</span>
+<span class="o">-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span class="n">Dungeon</span> <span class="n">Entrance</span>
+<span class="n">To</span> <span class="n">the</span> <span class="n">east</span><span class="p">,</span> <span class="n">a</span> <span class="n">narrow</span> <span class="n">opening</span> <span class="n">leads</span> <span class="n">into</span> <span class="n">darkness</span><span class="o">.</span>
+<span class="n">Exits</span><span class="p">:</span> <span class="n">northeast</span> <span class="ow">and</span> <span class="n">east</span>
+
+</pre></div>
+</div>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<ol>
+<li><p>XYZGrid requires the <code class="docutils literal notranslate"><span class="pre">scipy</span></code> library. Easiest is to just install the
+optional/contrib requirements in <code class="docutils literal notranslate"><span class="pre">evennia/requirements_extra.txt</span></code> by
+doing</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> (cd to evennia/ folder)
+ pip install -r requirements_extra.txt
+ (then go back to your mygame/ folder)
+</pre></div>
+</div>
+<p>This will install all optional requirements of Evennia.</p>
+</li>
+<li><p>Import and add the <code class="docutils literal notranslate"><span class="pre">evennia.contrib.commands.XYZGridCmdSet</span></code> to the
+<code class="docutils literal notranslate"><span class="pre">CharacterCmdset</span></code> cmdset in <code class="docutils literal notranslate"><span class="pre">mygame/commands.default_cmds.py</span></code>. Reload
+the server. This makes the <code class="docutils literal notranslate"><span class="pre">map</span></code>, <code class="docutils literal notranslate"><span class="pre">goto/path</span></code> and the modified <code class="docutils literal notranslate"><span class="pre">teleport</span></code> and
+<code class="docutils literal notranslate"><span class="pre">open</span></code> commands available in-game.</p></li>
+<li><p>Edit <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> and add</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>EXTRA_LAUNCHER_COMMANDS[&#39;xyzgrid&#39;] = &#39;evennia.contrib.launchcmd.xyzcommand&#39;
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>PROTOTYPE_MODULES += [’evennia.contrib.grid.xyzgrid.prototypes’]
+</pre></div>
+</div>
+<p>This will add the new ability to enter <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span> <span class="pre">&lt;option&gt;</span></code> on the
+command line.  It will also make the <code class="docutils literal notranslate"><span class="pre">xyz_room</span></code> and <code class="docutils literal notranslate"><span class="pre">xyz_exit</span></code> prototypes
+available for use as prototype-parents when spawning the grid.</p>
+</li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span> <span class="pre">help</span></code> for available options.</p></li>
+<li><p>(Optional): By default, the xyzgrid will only spawn module-based
+<a class="reference internal" href="../Components/Prototypes.html"><span class="doc std std-doc">prototypes</span></a>. This is an optimization and usually makes sense
+since the grid is entirely defined outside the game anyway. If you want to
+also make use of in-game (db-) created prototypes, add
+<code class="docutils literal notranslate"><span class="pre">XYZGRID_USE_DB_PROTOTYPES</span> <span class="pre">=</span> <span class="pre">True</span></code> to settings.</p></li>
+</ol>
+</section>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>The grid contrib consists of multiple components.</p>
+<ol class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">XYMap</span></code> - This class parses modules with special <em>Map strings</em>
+and <em>Map legends</em> into one Python object. It has helpers for pathfinding and
+visual-range handling.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">XYZGrid</span></code> - This is a singleton <a class="reference internal" href="../Components/Scripts.html"><span class="doc std std-doc">Script</span></a> that
+stores all <code class="docutils literal notranslate"><span class="pre">XYMaps</span></code> in the game. It is the central point for managing the ‘grid’
+of the game.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">XYZRoom</span></code> and <code class="docutils literal notranslate"><span class="pre">XYZExit</span></code>are custom typeclasses that use
+<a class="reference internal" href="../Components/Tags.html"><span class="doc std std-doc">Tags</span></a>
+to know which X,Y,Z coordinate they are located at. The <code class="docutils literal notranslate"><span class="pre">XYZGrid</span></code> is
+abstract until it is used to <em>spawn</em> these database entities into
+something you can actually interract with in the game. The <code class="docutils literal notranslate"><span class="pre">XYZRoom</span></code>
+typeclass is using its <code class="docutils literal notranslate"><span class="pre">return_appearance</span></code> hook to display the in-game map.</p></li>
+<li><p>Custom <em>Commands</em> have been added for interacting with XYZ-aware locations.</p></li>
+<li><p>A new custom <em>Launcher command</em>, <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span> <span class="pre">&lt;options&gt;</span></code> is used to
+manage the grid from the terminal (no game login is needed).</p></li>
+</ol>
+<p>We’ll start exploring these components with an example.</p>
+</section>
+<section id="first-example-usage">
+<h2>First example usage<a class="headerlink" href="#first-example-usage" title="Permalink to this headline">¶</a></h2>
+<p>After installation, do the following from your command line (where the
+<code class="docutils literal notranslate"><span class="pre">evennia</span></code> command is available):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ evennia xyzgrid init
+</pre></div>
+</div>
+<p>use <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span> <span class="pre">help</span></code> to see all options)
+This will create a new <code class="docutils literal notranslate"><span class="pre">XYZGrid</span></code> <a class="reference internal" href="../Components/Scripts.html"><span class="doc std std-doc">Script</span></a> if one didn’t already exist.
+The <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span></code> is a custom launch option added only for this contrib.</p>
+<p>The xyzgrid-contrib comes with a full grid example. Let’s add it:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ evennia xyzgrid add evennia.contrib.grid.xyzgrid.example
+</pre></div>
+</div>
+<p>You can now list the maps on your grid:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ evennia xyzgrid list
+</pre></div>
+</div>
+<p>You’ll find there are two new maps added. You can find a lot of extra info
+about each map with the <code class="docutils literal notranslate"><span class="pre">show</span></code> subcommand:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ evennia xyzgrid show &quot;the large tree&quot;
+$ evennia xyzgrid show &quot;the small cave&quot;
+</pre></div>
+</div>
+<p>If you want to peek at how the grid’s code, open
+<a class="reference internal" href="../api/evennia.contrib.grid.xyzgrid.example.html#evennia-contrib-grid-xyzgrid-example"><span class="std std-ref">evennia/contrib/grid/xyzgrid/example.py</span></a>.
+(We’ll explain the details in later sections).</p>
+<p>So far the grid is ‘abstract’ and has no actual in-game presence. Let’s
+spawn actual rooms/exits from it. This will take a little while.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ evennia xyzgrid spawn
+</pre></div>
+</div>
+<p>This will take prototypes stored with each map’s <em>map legend</em> and use that
+to build XYZ-aware rooms there. It will also parse all links to make suitable
+exits between locations. You should rerun this command if you ever modify the
+layout/prototypes of your grid. Running it multiple times is safe.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ evennia reload
+</pre></div>
+</div>
+<p>(or <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code> if server was not running). This is important to do after
+every spawning operation, since the <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span></code> operates outside of the
+regular evennia process. Reloading makes sure all caches are refreshed.</p>
+<p>Now you can log into the server. Some new commands should be available to you.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>teleport (3,0,the large tree)
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">teleport</span></code> command now accepts an optional (X, Y, Z) coordinate. Teleporting
+to a room-name or <code class="docutils literal notranslate"><span class="pre">#dbref</span></code> still works the same. This will teleport you onto the
+grid. You should see a map-display. Try walking around.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>map
+</pre></div>
+</div>
+<p>This new builder-only command shows the current map in its full form (also
+showing ‘invisible’ markers usually not visible to users.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>teleport (3, 0)
+</pre></div>
+</div>
+<p>Once you are in a grid-room, you can teleport to another grid room <em>on the same
+map</em> without specifying the Z coordinate/map name.</p>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">open</span></code> to make an exit back to the ‘non-grid’, but remember that you
+mustn’t use a cardinal direction to do so - if you do, the <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span> <span class="pre">spawn</span></code>
+will likely remove it next time you run it.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>open To limbo;limbo = #2
+limbo
+</pre></div>
+</div>
+<p>You are back in Limbo (which doesn’t know anything about XYZ coordinates). You
+can however make a permanent link back into the gridmap:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>open To grid;grid = (3,0,the large tree)
+grid
+</pre></div>
+</div>
+<p>This is how you link non-grid and grid locations together. You could for example
+embed a house ‘inside’ the grid this way.</p>
+<p>the <code class="docutils literal notranslate"><span class="pre">(3,0,the</span> <span class="pre">large</span> <span class="pre">tree)</span></code> is a ‘Dungeon entrance’. If you walk east you’ll
+<em>transition</em> into “the small cave” map. This is a small underground dungeon
+with limited visibility. Go back outside again (back on “the large tree” map).</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>path view
+</pre></div>
+</div>
+<p>This finds the shortest path to the “A gorgeous view” room, high up in the large
+tree. If you have color in your client, you should see the start of the path
+visualized in yellow.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>goto view
+</pre></div>
+</div>
+<p>This will start auto-walking you to the view. On the way you’ll both move up
+into the tree as well as traverse an in-map teleporter. Use <code class="docutils literal notranslate"><span class="pre">goto</span></code> on its own
+to abort the auto-walk.</p>
+<p>When you are done exploring, open the terminal (outside the game) again and
+remove everything:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ evennia xyzgrid delete
+</pre></div>
+</div>
+<p>You will be asked to confirm the deletion of the grid and unloading of the
+XYZGrid script. Reload the server afterwards. If you were on a map that was
+deleted you will have been moved back to your home location.</p>
+</section>
+<section id="defining-an-xymap">
+<h2>Defining an XYMap<a class="headerlink" href="#defining-an-xymap" title="Permalink to this headline">¶</a></h2>
+<p>For a module to be suitable to pass to <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span> <span class="pre">add</span> <span class="pre">&lt;module&gt;</span></code>, the
+module must contain one of the following variables:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">XYMAP_DATA</span></code> - a dict containing data that fully defines the XYMap</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">XYMAP_DATA_LIST</span></code> - a list of <code class="docutils literal notranslate"><span class="pre">XYMAP_DATA</span></code> dicts. If this exists, it will take
+precedence. This allows for storing multiple maps in one module.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">XYMAP_DATA</span></code> dict has the following form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">XYMAP_DATA</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">str</span><span class="o">&gt;</span>
+    <span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">str</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s2">&quot;legend&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">dict</span><span class="p">,</span> <span class="n">optional</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s2">&quot;prototypes&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">dict</span><span class="p">,</span> <span class="n">optional</span><span class="o">&gt;</span>
+    <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">dict</span><span class="p">,</span> <span class="n">optional</span><span class="o">&gt;</span>
+<span class="p">}</span>
+
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;zcoord&quot;</span></code> (str): The Z-coordinate/map name of the map.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;map&quot;</span></code> (str): A <em>Map string</em> describing the topology of the map.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;legend&quot;</span></code> (dict, optional): Maps each symbol on the map to Python code. This
+dict can be left out or only partially filled - any symbol not specified will
+instead use the default legend from the contrib.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;prototypes&quot;</span></code> (dict, optional): This is a dict that maps map-coordinates
+to custom prototype overrides. This is used when spawning the map into
+actual rooms/exits.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;options&quot;</span></code> (dict, optional): These are passed into the <code class="docutils literal notranslate"><span class="pre">return_appearance</span></code>
+hook of the room and allows for customizing how a map should be displayed,
+how pathfinding should work etc.</p></li>
+</ul>
+<p>Here’s a minimal example of the whole setup:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># In, say, a module gamedir/world/mymap.py</span>
+
+<span class="n">MAPSTR</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">+ 0 1 2</span>
+
+<span class="s2">2 #-#-#</span>
+<span class="s2">     /</span>
+<span class="s2">1 #-#</span>
+<span class="s2">  |  \</span>
+<span class="s2">0 #---#</span>
+
+<span class="s2">+ 0 1 2</span>
+
+
+<span class="s2">&quot;&quot;&quot;</span>
+<span class="c1"># use only defaults</span>
+<span class="n">LEGEND</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="c1"># tweak only one room. The &#39;xyz_room/exit&#39; parents are made available</span>
+<span class="c1"># by adding the xyzgrid prototypes to settings during installation.</span>
+<span class="c1"># the &#39;*&#39; are wildcards and allows for giving defaults on this map.</span>
+<span class="n">PROTOTYPES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="p">{</span>
+	<span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_room&quot;</span><span class="p">,</span>
+	<span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;A nice glade&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Sun shines through the branches above.}</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">):</span> <span class="p">{</span>
+	<span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_exit&quot;</span><span class="p">,</span>
+	<span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A quiet path through the foilage&quot;</span>
+    <span class="p">}</span>
+    <span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">):</span> <span class="p">{</span>
+	<span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_room&quot;</span><span class="p">,</span>
+	<span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;In a bright forest&quot;</span><span class="p">,</span>
+	<span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;There is green all around.&quot;</span>
+    <span class="p">},</span>
+    <span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">):</span> <span class="p">{</span>
+	<span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_exit&quot;</span><span class="p">,</span>
+	<span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The path leads further into the forest.&quot;</span>
+<span class="p">}</span>
+
+<span class="c1"># collect all info for this one map</span>
+<span class="n">XYMAP_DATA</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="s2">&quot;mymap&quot;</span>  <span class="c1"># important!</span>
+    <span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="n">MAPSTR</span><span class="p">,</span>
+    <span class="s2">&quot;legend&quot;</span><span class="p">:</span> <span class="n">LEGEND</span><span class="p">,</span>
+    <span class="s2">&quot;prototypes&quot;</span><span class="p">:</span> <span class="n">PROTOTYPES</span><span class="p">,</span>
+    <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="c1"># this can be skipped if there is only one map in module</span>
+<span class="n">XYMAP_DATA_LIST</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">XYMAP_DATA</span>
+<span class="p">]</span>
+
+</pre></div>
+</div>
+<p>The above map would be added to the grid with</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ evennia xyzgrid add world.mymap
+</pre></div>
+</div>
+<p>In the following sections we’ll discuss each component in turn.</p>
+<section id="the-zcoord">
+<h3>The Zcoord<a class="headerlink" href="#the-zcoord" title="Permalink to this headline">¶</a></h3>
+<p>Each XYMap on the grid has a Z-coordinate which usually can be treated just as the
+name of the map. This is a string that must be unique across the entire grid.
+It is added as the key ‘zcoord’ to <code class="docutils literal notranslate"><span class="pre">XYMAP_DATA</span></code>.</p>
+<p>Actual 3D movement is usually impractical in a text-based game, so all movements
+and pathfinding etc happens within each XYMap (up/down is ‘faked’ within the XY
+plane). Even for the most hardcore of sci-fi space game, moving on a 2D plane
+usually makes it much easier for players than to attempt to have them visualize
+actual 3D movements.</p>
+<p>If you really wanted an actual 3D coordinate system, you could theoretically
+make all maps the same size and name them <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code> etc. But even then, you
+could not freely move up/down between every point (a special Transitional Node
+is required as outlined below). Also pathfinding will only work per-XYMap.</p>
+<p>Most users will want to just treat each map as a location, and name the
+“Z-coordinate” things like <code class="docutils literal notranslate"><span class="pre">Dungeon</span> <span class="pre">of</span> <span class="pre">Doom</span></code>, <code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">ice</span> <span class="pre">queen's</span> <span class="pre">palace</span></code> or <code class="docutils literal notranslate"><span class="pre">City</span> <span class="pre">of</span> <span class="pre">Blackhaven</span></code>.</p>
+</section>
+<section id="map-string">
+<h3>Map String<a class="headerlink" href="#map-string" title="Permalink to this headline">¶</a></h3>
+<p>The creation of a new map starts with a <em>Map string</em>. This allows you to ‘draw’
+your map, describing and how rooms are positioned in an X,Y coordinate system.
+It is added to <code class="docutils literal notranslate"><span class="pre">XYMAP_DATA</span></code> with the key ‘map’.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MAPSTR</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">+ 0 1 2</span>
+
+<span class="s2">2 #-#-#</span>
+<span class="s2">     /</span>
+<span class="s2">1 #-#</span>
+<span class="s2">  |  \</span>
+<span class="s2">0 #---#</span>
+
+<span class="s2">+ 0 1 2</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+</pre></div>
+</div>
+<p>On the coordinate axes, only the two <code class="docutils literal notranslate"><span class="pre">+</span></code> are significant - the numbers are
+<em>optional</em>, so this is equivalent:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MAPSTR</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">+</span>
+
+<span class="s2">  #-#-#</span>
+<span class="s2">     /</span>
+<span class="s2">  #-#</span>
+<span class="s2">  | \</span>
+<span class="s2">  #---#</span>
+
+<span class="s2">+</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>Even though it’s optional, it’s highly recommended that you add numbers to
+your axes - if only for your own sanity.</p>
+</div></blockquote>
+<p>The coordinate area starts <em>two spaces to the right</em> and <em>two spaces
+below/above</em> the mandatory <code class="docutils literal notranslate"><span class="pre">+</span></code> signs (which marks the corners of the map area).
+Origo <code class="docutils literal notranslate"><span class="pre">(0,0)</span></code> is in the bottom left (so X-coordinate increases to the right and
+Y-coordinate increases towards the top). There is no limit to how high/wide the
+map can be, but splitting a large world into multiple maps can make it easier
+to organize.</p>
+<p>Position is important on the grid. Full coordinates are placed on every <em>second</em>
+space along all axes. Between these ‘full’ coordinates are <code class="docutils literal notranslate"><span class="pre">.5</span></code> coordinates.
+Note that there are <em>no</em> <code class="docutils literal notranslate"><span class="pre">.5</span></code> coordinates spawned in-game; they are only used
+in the map string to have space to describe how rooms/nodes link to one another.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>+ 0 1 2 3 4 5
+
+4           E
+   B
+3
+
+2         D
+
+1    C
+
+0 A
+
++ 0 1 2 3 4 5
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code> is at origo, <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">0)</span></code> (a ‘full’ coordinate)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code> is at <code class="docutils literal notranslate"><span class="pre">(0.5,</span> <span class="pre">3.5)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code> is at <code class="docutils literal notranslate"><span class="pre">(1.5,</span> <span class="pre">1)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">D</span></code> is at <code class="docutils literal notranslate"><span class="pre">(4,</span> <span class="pre">2)</span></code> (a ‘full’ coordinate).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">E</span></code> is the top-right corner of the map, at <code class="docutils literal notranslate"><span class="pre">(5,</span> <span class="pre">4)</span></code> (a ‘full’ coordinate)</p></li>
+</ul>
+<p>The map string consists of two main classes of entities - <em>nodes</em> and <em>links</em>.</p>
+<ul class="simple">
+<li><p>A <em>node</em> usually represents a <em>room</em> in-game (but not always). Nodes must
+<em>always</em> be placed on a ‘full’ coordinate.</p></li>
+<li><p>A <em>link</em> describes a connection between two nodes. In-game, links are usuallyj
+represented by <em>exits</em>. A link can be placed
+anywhere in the coordinate space (both on full and 0.5 coordinates). Multiple
+links are often <em>chained</em> together, but the chain must always end in nodes
+on both sides.</p></li>
+</ul>
+<blockquote>
+<div><p>Even though a link-chain may consist of several steps, like <code class="docutils literal notranslate"><span class="pre">#-----#</span></code>,
+in-game it will still only represent one ‘step’ (e.g. you go ‘east’ only once
+to move from leftmost to the rightmost node/room).</p>
+</div></blockquote>
+</section>
+<section id="map-legend">
+<h3>Map legend<a class="headerlink" href="#map-legend" title="Permalink to this headline">¶</a></h3>
+<p>There can be many different types of <em>nodes</em> and <em>links</em>. Whereas the map
+string describes where they are located, the <em>Map Legend</em> connects each symbol
+on the map to Python code.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+<span class="n">LEGEND</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;#&#39;</span><span class="p">:</span> <span class="n">xymap_legend</span><span class="o">.</span><span class="n">MapNode</span><span class="p">,</span>
+    <span class="s1">&#39;-&#39;</span><span class="p">:</span> <span class="n">xymap_legende</span><span class="o">.</span><span class="n">EWMapLink</span>
+<span class="p">}</span>
+
+<span class="c1"># added to XYMAP_DATA dict as &#39;legend&#39;: LEGEND below</span>
+
+</pre></div>
+</div>
+<p>The legend is optional, and any symbol not explicitly given in your legend will
+fall back to its value in the default legend <a class="reference internal" href="#default-legend"><span class="std std-doc">outlined below</span></a>.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode" title="evennia.contrib.grid.xyzgrid.xymap_legend.MapNode"><span class="xref myst py py-class">MapNode</span></a>
+is the base class for all nodes.</p></li>
+<li><p><a class="reference internal" href="../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink" title="evennia.contrib.grid.xyzgrid.xymap_legend.MapLink"><span class="xref myst py py-class">MapLink</span></a>
+is the base class for all links.</p></li>
+</ul>
+<p>As the <em>Map String</em> is parsed, each found symbol is looked up in the legend and
+initialized into the corresponding MapNode/Link instance.</p>
+<section id="important-node-link-properties">
+<h4>Important node/link properties<a class="headerlink" href="#important-node-link-properties" title="Permalink to this headline">¶</a></h4>
+<p>These are relevant if you want to customize the map. The contrib already comes
+with a full set of map elements that use these properties in various ways
+(described in the next section).</p>
+<p>Some useful properties of the
+<a class="reference internal" href="../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode" title="evennia.contrib.grid.xyzgrid.xymap_legend.MapNode"><span class="xref myst py py-class">MapNode</span></a>
+class (see class doc for hook methods):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">symbol</span></code> (str) - The character to parse from the map into this node. By default this
+is <code class="docutils literal notranslate"><span class="pre">'#'</span></code> and <em>must</em> be a single character (with the exception of <code class="docutils literal notranslate"><span class="pre">\\</span></code> that must
+be escaped to be used). Whatever this value defaults to, it is replaced at
+run-time by the symbol used in the legend-dict.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">display_symbol</span></code> (str or <code class="docutils literal notranslate"><span class="pre">None</span></code>) - This is what is used to visualize this node
+in-game. This symbol must still only have a visual size of 1, but you could e.g.
+use some fancy unicode character (be aware of encodings to different clients
+though) or, commonly, add color tags around it. The <code class="docutils literal notranslate"><span class="pre">.get_display_symbol</span></code>
+of this class can be customized to generate this dynamically; by default it
+just returns <code class="docutils literal notranslate"><span class="pre">.display_symbol</span></code>. If set to <code class="docutils literal notranslate"><span class="pre">None</span></code> (default), the <code class="docutils literal notranslate"><span class="pre">symbol</span></code> is
+used.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">interrupt_path</span></code> (bool): If this is set, the shortest-path algorithm will
+include this node normally, but the auto-stepper will stop when reaching it,
+even if not having reached its target yet. This is useful for marking ‘points of
+interest’ along a route, or places where you are not expected to be able to
+continue without some
+further in-game action not covered by the map (such as a guard or locked gate
+etc).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">prototype</span></code> (dict) - The default <code class="docutils literal notranslate"><span class="pre">prototype</span></code> dict to use for reproducing this
+map component on the game grid. This is used if not overridden specifically
+for this coordinate in the “prototype” dict of <code class="docutils literal notranslate"><span class="pre">XYMAP_DATA</span></code>… If this is not
+given, nothing will be spawned for this coordinate (a ‘virtual’ node can be
+useful for various reasons, mostly map-transitions).</p></li>
+</ul>
+<p>Some useful properties of the
+<a class="reference internal" href="../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink" title="evennia.contrib.grid.xyzgrid.xymap_legend.MapLink"><span class="xref myst py py-class">MapLink</span></a>
+class (see class doc for hook methods):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">symbol</span></code> (str) - The character to parse from the map into this node. This must
+be a single character, with the exception of <code class="docutils literal notranslate"><span class="pre">\\</span></code>. This will be replaced
+at run-time by the symbol used in the legend-dict.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">display_symbol</span></code> (str or None)  - This is what is used to visualize this node
+later. This symbol must still only have a visual size of 1, but you could e.g.
+use some fancy unicode character (be aware of encodings to different clients
+though) or, commonly, add color tags around it. For further customization, the
+<code class="docutils literal notranslate"><span class="pre">.get_display_symbol</span></code> can be used.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">default_weight</span></code> (int) - Each link direction covered by this link can have its
+separate weight (used for pathfinding). This is used if none specific weight
+is specified in a particular link direction.  This value must be &gt;= 1, and can
+be higher than 1 if a link should be less favored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">directions</span></code> (dict) - this specifies which from which link edge to which other
+link-edge this link is connected; A link connecting the link’s sw edge to its
+easted edge would be written as <code class="docutils literal notranslate"><span class="pre">{'sw':</span> <span class="pre">'e'}</span></code> and read ‘connects from southwest
+to east’ This ONLY takes cardinal directions (not up/down). Note that if you
+want the link to go both ways, also the inverse (east to southwest) must be
+added.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">weights</span> <span class="pre">(dict)</span></code> This maps a link’s start direction to a weight. So for the
+<code class="docutils literal notranslate"><span class="pre">{'sw':</span> <span class="pre">'e'}</span></code> link, a weight would be given as <code class="docutils literal notranslate"><span class="pre">{'sw':</span> <span class="pre">2}</span></code>. If not given, a
+link will use the <code class="docutils literal notranslate"><span class="pre">default_weight</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">average_long_link_weights</span></code> (bool): This applies to the <em>first</em> link out of a
+node only.  When tracing links to another node, multiple links could be
+involved, each with a weight.  So for a link chain with default weights, <code class="docutils literal notranslate"><span class="pre">#---#</span></code>
+would give a total weight of 3. With this setting (default), the weight will
+be (1+1+1) / 3 = 1.  That is, for evenly weighted links, the length of the
+link-chain doesn’t matter (this is usually what makes most sense).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">direction_aliases</span></code> (dict): When displaying a direction during pathfinding,
+one may want to display a different ‘direction’ than the cardinal on-map one.
+For example ‘up’ may be visualized on the map as a ‘n’ movement, but the found
+path over this link should show as ‘u’. In that case, the alias would be
+<code class="docutils literal notranslate"><span class="pre">{'n':</span> <span class="pre">'u'}</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">multilink</span></code> (bool): If set, this link accepts links from all directions. It
+will usually use a custom <code class="docutils literal notranslate"><span class="pre">.get_direction</span></code> method to determine what these are
+based on surrounding topology. This setting is necessary to avoid infinite
+loops when such multilinks are next to each other.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">interrupt_path</span></code> (bool): If set, a shortest-path solution will include this
+link as normal, but auto-stepper will stop short of actually moving past this
+link.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">prototype</span></code> (dict) - The default <code class="docutils literal notranslate"><span class="pre">prototype</span></code> dict to use for reproducing this
+map component on the game grid. This is only relevant for the <em>first</em> link out
+of a Node (the continuation of the link is only used to determine its
+destination). This can be overridden on a per-direction basis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spawn_aliases</span></code> (dict): A mapping <code class="docutils literal notranslate"><span class="pre">{direction:</span> <span class="pre">(key,</span> <span class="pre">alias,</span> <span class="pre">alias,</span> <span class="pre">...),}</span></code>to
+use when spawning actual exits from this link. If not given, a sane set of
+defaults (<code class="docutils literal notranslate"><span class="pre">n=(north,</span> <span class="pre">n)</span></code> etc) will be used. This is required if you use any
+custom directions outside of the cardinal directions + up/down. The exit’s key
+(useful for auto-walk) is usually retrieved by calling
+<code class="docutils literal notranslate"><span class="pre">node.get_exit_spawn_name(direction)</span></code></p></li>
+</ul>
+<p>Below is an example that changes the map’s nodes to show up as red
+(maybe for a lava map?):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid</span> <span class="kn">import</span> <span class="n">xymap_legend</span>
+
+<span class="k">class</span> <span class="nc">RedMapNode</span><span class="p">(</span><span class="n">xymap_legend</span><span class="o">.</span><span class="n">MapNode</span><span class="p">):</span>
+    <span class="n">display_symbol</span> <span class="o">=</span> <span class="s2">&quot;|r#|n&quot;</span>
+
+
+<span class="n">LEGEND</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="s1">&#39;#&#39;</span><span class="p">:</span> <span class="n">RedMapNode</span>
+<span class="p">}</span>
+
+</pre></div>
+</div>
+</section>
+<section id="default-legend">
+<h4>Default Legend<a class="headerlink" href="#default-legend" title="Permalink to this headline">¶</a></h4>
+<p>Below is the default map legend. The <code class="docutils literal notranslate"><span class="pre">symbol</span></code> is what should be put in the Map
+string. It must always be a single character. The <code class="docutils literal notranslate"><span class="pre">display-symbol</span></code> is what is
+actually visualized when displaying the map to players in-game. This could have
+colors etc. All classes are found in <code class="docutils literal notranslate"><span class="pre">evennia.contrib.grid.xyzgrid.xymap_legend</span></code> and
+their names are included to make it easy to know what to override.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 15%" />
+<col style="width: 4%" />
+<col style="width: 21%" />
+<col style="width: 45%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>symbol</p></th>
+<th class="head"><p>display-symbol</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>class</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>#</p></td>
+<td><p>#</p></td>
+<td><p>node</p></td>
+<td><p><cite>BasicMapNode</cite></p></td>
+<td><p>A basic node/room.</p></td>
+</tr>
+<tr class="row-odd"><td><p>T</p></td>
+<td></td>
+<td><p>node</p></td>
+<td><p><cite>MapTransitionNode</cite></p></td>
+<td><p>Transition-target for links between maps
+(see below)</p></td>
+</tr>
+<tr class="row-even"><td><p>I (letter I)</p></td>
+<td><p>#</p></td>
+<td><p>node</p></td>
+<td><p><cite>InterruptMapNode</cite></p></td>
+<td><p>Point of interest, auto-step will always
+stop here (see below).</p></td>
+</tr>
+<tr class="row-odd"><td><p>|</p></td>
+<td><p>|</p></td>
+<td><p>link</p></td>
+<td><p><cite>NSMapLink</cite></p></td>
+<td><p>North-South two-way</p></td>
+</tr>
+<tr class="row-even"><td><p>-</p></td>
+<td><p>-</p></td>
+<td><p>link</p></td>
+<td><p><cite>EWMapLink</cite></p></td>
+<td><p>East-West two-way</p></td>
+</tr>
+<tr class="row-odd"><td><p>/</p></td>
+<td><p>/</p></td>
+<td><p>link</p></td>
+<td><p><cite>NESWMapLink</cite></p></td>
+<td><p>NorthEast-SouthWest two-way</p></td>
+</tr>
+<tr class="row-even"><td><p>\</p></td>
+<td><p>\</p></td>
+<td><p>link</p></td>
+<td><p><cite>SENWMapLink</cite></p></td>
+<td><p>NorthWest two-way</p></td>
+</tr>
+<tr class="row-odd"><td><p>u</p></td>
+<td><p>u</p></td>
+<td><p>link</p></td>
+<td><p><cite>UpMapLink</cite></p></td>
+<td><p>Up, one or two-way (see below)</p></td>
+</tr>
+<tr class="row-even"><td><p>d</p></td>
+<td><p>d</p></td>
+<td><p>link</p></td>
+<td><p><cite>DownMapLink</cite></p></td>
+<td><p>Down, one or two-way (see below)</p></td>
+</tr>
+<tr class="row-odd"><td><p>x</p></td>
+<td><p>x</p></td>
+<td><p>link</p></td>
+<td><p><cite>CrossMapLink</cite></p></td>
+<td><p>SW-NE and SE-NW two-way</p></td>
+</tr>
+<tr class="row-even"><td><p>+</p></td>
+<td><p>+</p></td>
+<td><p>link</p></td>
+<td><p><cite>PlusMapLink</cite></p></td>
+<td><p>Crossing N-S and E-W two-way</p></td>
+</tr>
+<tr class="row-odd"><td><p>v</p></td>
+<td><p>v</p></td>
+<td><p>link</p></td>
+<td><p><cite>NSOneWayMapLink</cite></p></td>
+<td><p>North-South one-way</p></td>
+</tr>
+<tr class="row-even"><td><p>^</p></td>
+<td><p>^</p></td>
+<td><p>link</p></td>
+<td><p><cite>SNOneWayMapLink</cite></p></td>
+<td><p>South-North one-way</p></td>
+</tr>
+<tr class="row-odd"><td><p>&lt;</p></td>
+<td><p>&lt;</p></td>
+<td><p>link</p></td>
+<td><p><cite>EWOneWayMapLink</cite></p></td>
+<td><p>East-West one-way</p></td>
+</tr>
+<tr class="row-even"><td><p>&gt;</p></td>
+<td><p>&gt;</p></td>
+<td><p>link</p></td>
+<td><p><cite>WEOneWayMapLink</cite></p></td>
+<td><p>West-East one-way</p></td>
+</tr>
+<tr class="row-odd"><td><p>o</p></td>
+<td><p>o</p></td>
+<td><p>link</p></td>
+<td><p><cite>RouterMapLink</cite></p></td>
+<td><p>Routerlink, used for making link ‘knees’
+and non-orthogonal crosses (see below)</p></td>
+</tr>
+<tr class="row-even"><td><p>b</p></td>
+<td><p>(varies)</p></td>
+<td><p>link</p></td>
+<td><p><cite>BlockedMapLink</cite></p></td>
+<td><p>Block pathfinder from using this link.
+Will appear as logically placed normal
+link (see below).</p></td>
+</tr>
+<tr class="row-odd"><td><p>i</p></td>
+<td><p>(varies)</p></td>
+<td><p>link</p></td>
+<td><p><cite>InterruptMapLink</cite></p></td>
+<td><p>Interrupt-link; auto-step will never
+cross this link (must move manually, see
+below)</p></td>
+</tr>
+<tr class="row-even"><td><p>t</p></td>
+<td></td>
+<td><p>link</p></td>
+<td><p><cite>TeleporterMapLink</cite></p></td>
+<td><p>Inter-map teleporter; will teleport to
+same-symbol teleporter on the same map.
+(see below)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="map-nodes">
+<h4>Map Nodes<a class="headerlink" href="#map-nodes" title="Permalink to this headline">¶</a></h4>
+<p>The basic map node (<code class="docutils literal notranslate"><span class="pre">#</span></code>) usually represents a ‘room’ in the game world. Links
+can connect to the node from any of the 8 cardinal directions, but since nodes
+must <em>only</em> exist on full coordinates, they can never appear directly next to
+each other.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>\|/
+-#-
+/|\
+
+##     invalid!
+</pre></div>
+</div>
+<p>All links or link-chains <em>must</em> end in nodes on both sides.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#-#-----#
+
+#-#-----   invalid!
+</pre></div>
+</div>
+</section>
+<section id="one-way-links">
+<h4>One-way links<a class="headerlink" href="#one-way-links" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">&gt;</span></code>,<code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">v</span></code>, <code class="docutils literal notranslate"><span class="pre">^</span></code> are used to indicate one-way links. These indicators should
+either be <em>first</em> or <em>last</em> in a link chain (think of them as arrows):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#-----&gt;#
+#&gt;-----#
+</pre></div>
+</div>
+<p>These two are equivalent, but the first one is arguably easier to read. It is also
+faster to parse since the parser on the rightmost node immediately sees that the
+link in that direction is impassable from that direction.</p>
+<blockquote>
+<div><p>Note that there are no one-way equivalents to the <code class="docutils literal notranslate"><span class="pre">\</span></code> and <code class="docutils literal notranslate"><span class="pre">/</span></code> directions. This
+is not because it can’t be done but because there are no obvious ASCII
+characters to represent diagonal arrows. If you want them, it’s easy enough to
+subclass the existing one-way map-legend to add one-way versions of diagonal
+movement as well.</p>
+</div></blockquote>
+</section>
+<section id="up-and-down-links">
+<h4>Up- and Down-links<a class="headerlink" href="#up-and-down-links" title="Permalink to this headline">¶</a></h4>
+<p>Links like <code class="docutils literal notranslate"><span class="pre">u</span></code> and <code class="docutils literal notranslate"><span class="pre">d</span></code> don’t have a clear indicator which directions they
+connect (unlike e.g. <code class="docutils literal notranslate"><span class="pre">|</span></code> and <code class="docutils literal notranslate"><span class="pre">-</span></code>).</p>
+<p>So placing them (and many similar types of map elements) requires that the
+directions are visually clear. For example, multiple links cannot connect to the
+up-down links (it’d be unclear which leads where) and if adjacent to a node, the
+link will prioritize connecting to the node. Here are some examples:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    #
+    u    - moving up in BOTH directions will bring you to the other node (two-way)
+    #
+
+    #
+    |    - one-way up from the lower node to the upper, south to go back
+    u
+    #
+
+    #
+    ^    - true one-way up movement, combined with a one-way &#39;n&#39; link
+    u
+    #
+
+    #
+    d    - one-way up, one-way down again (standard up/down behavior)
+    u
+    #
+
+    #u#
+    u    - invalid since top-left node has two &#39;up&#39; directions to go to
+    #
+
+    #     |
+    u# or u-   - invalid since the direction of u is unclear
+    #     |
+</pre></div>
+</div>
+</section>
+<section id="interrupt-nodes">
+<h4>Interrupt-nodes<a class="headerlink" href="#interrupt-nodes" title="Permalink to this headline">¶</a></h4>
+<p>An interrupt-node (<code class="docutils literal notranslate"><span class="pre">I</span></code>, <code class="docutils literal notranslate"><span class="pre">InterruptMapNode</span></code>) is a node that acts like any other
+node except it is considered a ‘point of interest’ and the auto-walk of the
+<code class="docutils literal notranslate"><span class="pre">goto</span></code> command will always stop auto-stepping at this location.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#-#-I-#-#
+</pre></div>
+</div>
+<p>So if auto-walking from left to right, the auto-walk will correctly map a path
+to the end room, but will always stop at the <code class="docutils literal notranslate"><span class="pre">I</span></code> node. If the user <em>starts</em> from
+the <code class="docutils literal notranslate"><span class="pre">I</span></code> room, they will move away from it without interruption (so you can
+manually run the <code class="docutils literal notranslate"><span class="pre">goto</span></code> again to resume the auto-step).</p>
+<p>The use of this room is to anticipate blocks not covered by the map. For example
+there could be a guard standing in this room that will arrest you unless you
+show them the right paperwork - trying to auto-walk past them would be bad!</p>
+<p>By default, this node looks just like a normal <code class="docutils literal notranslate"><span class="pre">#</span></code> to the player.</p>
+</section>
+<section id="interrupt-links">
+<h4>Interrupt-links<a class="headerlink" href="#interrupt-links" title="Permalink to this headline">¶</a></h4>
+<p>The interrupt-link (<code class="docutils literal notranslate"><span class="pre">i</span></code>, <code class="docutils literal notranslate"><span class="pre">InterruptMapLink</span></code>) is equivalent to the
+<code class="docutils literal notranslate"><span class="pre">InterruptMapNode</span></code> except it applies to a link. While the pathfinder will
+correctly trace a path to the other side, the auto-stepper will never cross an
+interrupting link - you have to do so ‘manually’. Similarly to up/down links,
+the InterruptMapLink must be placed so that its direction is un-ambiguous (with
+a priority of linking to nearby nodes).</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#-#-#i#-#
+</pre></div>
+</div>
+<p>When pathfinding from left to right, the pathfinder will find the end room just
+fine, but when auto-stepping, it will always stop at the node just to the left
+of the <code class="docutils literal notranslate"><span class="pre">i</span></code> link. Rerunning <code class="docutils literal notranslate"><span class="pre">goto</span></code> will not matter.</p>
+<p>This is useful for automatically handle in-game blocks not part of the map.
+An example would be a locked door - rather than having the auto-stepper trying
+to walk accross the door exit (and failing), it should stop and let the user
+cross the threshold manually before they can continue.</p>
+<p>Same as for interrupt-nodes, the interrupt-link looks like the expected link to the user
+(so in the above example, it would show as <code class="docutils literal notranslate"><span class="pre">-</span></code>).</p>
+</section>
+<section id="blocked-links">
+<h4>Blocked links<a class="headerlink" href="#blocked-links" title="Permalink to this headline">¶</a></h4>
+<p>Blockers (<code class="docutils literal notranslate"><span class="pre">b</span></code>, <code class="docutils literal notranslate"><span class="pre">BlockedMapLink</span></code>) indicates a route that the pathfinder should not use. The
+pathfinder will treat it as impassable even though it will be spawned as a
+normal exit in-game.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#-#-#b#-#
+</pre></div>
+</div>
+<p>There is no way to auto-step from left to right because the pathfinder will
+treat the <code class="docutils literal notranslate"><span class="pre">b</span></code> (block) as if there was no link there (technically it sets the
+link’s <code class="docutils literal notranslate"><span class="pre">weight</span></code> to a very high number). The player will need to auto-walk to the
+room just to the left of the block, manually step over the block and then
+continue from there.</p>
+<p>This is useful both for actual blocks (maybe the room is full of rubble?) and in
+order to avoid players auto-walking into hidden areas or finding the way out of
+a labyrinth etc. Just hide the labyrinth’s exit behind a block and <code class="docutils literal notranslate"><span class="pre">goto</span> <span class="pre">exit</span></code>
+will not work (admittedly one may want to turn off pathfinding altogether on
+such maps).</p>
+</section>
+<section id="router-links">
+<h4>Router-links<a class="headerlink" href="#router-links" title="Permalink to this headline">¶</a></h4>
+<p>Routers (<code class="docutils literal notranslate"><span class="pre">o</span></code>, <code class="docutils literal notranslate"><span class="pre">RouterMapLink</span></code>) allow for connecting nodes with links at an
+angle, by creating a ‘knee’.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#----o
+|     \
+#-#-#  o
+       |
+     #-o
+</pre></div>
+</div>
+<p>Above, you can move east between from the top-left room and the bottommost
+room. Remember that the length of links does not matter, so in-game this will
+only be one step (one exit <code class="docutils literal notranslate"><span class="pre">east</span></code> in each of the two rooms).</p>
+<p>Routers can link connect multiple connections as long as there as as many
+‘ingoing’ as there are ‘outgoing’ links. If in doubt, the system will assume a
+link will continue to the outgoing link on the opposite side of the router.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>      /
+    -o    - this is ok, there can only be one path, w-ne
+
+     |
+    -o-   - equivalent to &#39;+&#39;: one n-s and one w-e link crossing
+     |
+
+    \|/
+    -o-   - all links are passing straight through
+    /|\
+
+    -o-   - w-e link pass straight through, other link is sw-s
+    /|
+
+    -o    - invalid; impossible to know which input goes to which output
+    /|
+</pre></div>
+</div>
+</section>
+<section id="teleporter-links">
+<h4>Teleporter Links<a class="headerlink" href="#teleporter-links" title="Permalink to this headline">¶</a></h4>
+<p>Teleporters (<code class="docutils literal notranslate"><span class="pre">TeleportMapLink</span></code>) always come in pairs using the same map symbol
+(<code class="docutils literal notranslate"><span class="pre">'t'</span></code> by default).  When moving into one link, movement continues out the
+matching teleport link. The pair must both be on the same XYMap and both sides
+must connect/chain to a node (like all links). Only a single link (or node) may
+connect to the teleport link.</p>
+<p>Pathfinding will also work correctly across the teleport.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#-t     t-#
+</pre></div>
+</div>
+<p>Moving east from the leftmost node will have you appear at the rightmost node
+and vice versa (think of the two <code class="docutils literal notranslate"><span class="pre">t</span></code> as thinking they are in the same location).</p>
+<p>Teleportation movement is always two-way, but you can use one-way links to
+create the effect of a one-way teleport:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#-t    t&gt;#
+</pre></div>
+</div>
+<p>In this example you can move east across the teleport, but not west since the
+teleporter-link is hidden behind a one-way exit.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#-t#     (invalid!)
+</pre></div>
+</div>
+<p>The above is invalid since only one link/node may connect to the teleport at a
+time.</p>
+<p>You can have multiple teleports on the same map, by assigning each pair a
+different (unused) unique symbol in your map legend:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in your map definition module</span>
+
+<span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid</span> <span class="kn">import</span> <span class="n">xymap_legend</span>
+
+<span class="n">MAPSTR</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">+ 0 1 2 3 4</span>
+
+<span class="s2">2 t q #   q</span>
+<span class="s2">  | v/ \  |</span>
+<span class="s2">1 #-#-p #-#</span>
+<span class="s2">  |       |</span>
+<span class="s2">0 #-t p&gt;#-#</span>
+
+<span class="s2">+ 0 1 2 3 4</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">LEGEND</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;t&#39;</span><span class="p">:</span> <span class="n">xymap_legend</span><span class="o">.</span><span class="n">TeleporterMapLink</span><span class="p">,</span>
+    <span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="n">xymap_legend</span><span class="o">.</span><span class="n">TeleporterMapLink</span><span class="p">,</span>
+    <span class="s1">&#39;q&#39;</span><span class="p">:</span> <span class="n">xymap_legend</span><span class="o">.</span><span class="n">TeleportermapLink</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+</pre></div>
+</div>
+</section>
+<section id="map-transition-nodes">
+<h4>Map-Transition Nodes<a class="headerlink" href="#map-transition-nodes" title="Permalink to this headline">¶</a></h4>
+<p>The map transition (<code class="docutils literal notranslate"><span class="pre">MapTransitionNode</span></code>) teleports between XYMaps (a
+Z-coordinate transition, if you will), like walking from the “Dungeon” map to
+the “Castle” map. Unlike other nodes, the MapTransitionNode is never spawned
+into an actual room (it has no prototype). It just holds an XYZ
+coordinate pointing to somewhere on the other map. The link leading <em>to</em> the
+node will use those coordinates to make an exit pointing there. Only one single
+link may lead to this type of node.</p>
+<p>Unlike for <code class="docutils literal notranslate"><span class="pre">TeleporterMapLink</span></code>, there need <em>not</em> be a matching
+<code class="docutils literal notranslate"><span class="pre">MapTransitionNode</span></code> on the other map - the transition can choose to send the
+player to <em>any</em> valid coordinate on the other map.</p>
+<p>Each MapTransitionNode has a property <code class="docutils literal notranslate"><span class="pre">target_map_xyz</span></code> that holds the XYZ
+coordinate the player should end up in when going towards this node. This
+must be customized in a child class for every transition.</p>
+<p>If there are more than one transition, separate transition classes should be
+added, with different map-legend symbols:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in your map definition module (let&#39;s say this is mapB)</span>
+
+<span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid</span> <span class="kn">import</span> <span class="n">xymap_legend</span>
+
+<span class="n">MAPSTR</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">+ 0 1 2</span>
+
+<span class="s2">2   #-C</span>
+<span class="s2">    |</span>
+<span class="s2">1 #-#-#</span>
+<span class="s2">     \</span>
+<span class="s2">0 A-#-#</span>
+
+<span class="s2">+ 0 1 2</span>
+
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="k">class</span> <span class="nc">TransitionToMapA</span><span class="p">(</span><span class="n">xymap_legend</span><span class="o">.</span><span class="n">MapTransitionNode</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Transition to MapA&quot;&quot;&quot;</span>
+    <span class="n">target_map_xyz</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;mapA&quot;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">TransitionToMapC</span><span class="p">(</span><span class="n">xymap_legend</span><span class="o">.</span><span class="n">MapTransitionNode</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Transition to MapB&quot;&quot;&quot;</span>
+    <span class="n">target_map_xyz</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="s2">&quot;mapC&quot;</span><span class="p">)</span>
+
+<span class="n">LEGEND</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="n">TransitionToMapA</span>
+    <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">TransitionToMapC</span>
+
+<span class="p">}</span>
+
+<span class="n">XYMAP_DATA</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># ...</span>
+    <span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="n">MAPSTR</span><span class="p">,</span>
+    <span class="s2">&quot;legend&quot;</span><span class="p">:</span> <span class="n">LEGEND</span>
+    <span class="c1"># ...</span>
+<span class="p">}</span>
+
+</pre></div>
+</div>
+<p>Moving west from <code class="docutils literal notranslate"><span class="pre">(1,0)</span></code> will bring you to <code class="docutils literal notranslate"><span class="pre">(1,4)</span></code> of MapA, and moving east from
+<code class="docutils literal notranslate"><span class="pre">(1,2)</span></code> will bring you to <code class="docutils literal notranslate"><span class="pre">(12,14)</span></code> on MapC (assuming those maps exist).</p>
+<p>A map transition is always one-way, and can lead to the coordinates of <em>any</em>
+existing node on the other map:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>map1        map2
+
+#-T         #-#---#-#-#-#
+</pre></div>
+</div>
+<p>A player moving east towards <code class="docutils literal notranslate"><span class="pre">T</span></code> could for example end up at the 4th <code class="docutils literal notranslate"><span class="pre">#</span></code> from
+the left on map2 if so desired (even though it doesn’t make sense visually).
+There is no way to get back to map1 from there.</p>
+<p>To create the effect of a two-way transition, one can set up a mirrored
+transition-node on the other map:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>citymap    dungeonmap
+
+#-T        T-#
+</pre></div>
+</div>
+<p>The transition-node of each map above has <code class="docutils literal notranslate"><span class="pre">target_map_xyz</span></code> pointing to the
+coordinate of the <code class="docutils literal notranslate"><span class="pre">#</span></code> node of the other map (<em>not</em> to the other <code class="docutils literal notranslate"><span class="pre">T</span></code>, that is not
+spawned and would lead to the exit finding no destination!). The result is that
+one can go east into the dungeon and then immediately go back west to the city
+across the map boundary.</p>
+</section>
+</section>
+<section id="prototypes">
+<h3>Prototypes<a class="headerlink" href="#prototypes" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference internal" href="../Components/Prototypes.html"><span class="doc std std-doc">Prototypes</span></a> are dicts that describe how to <em>spawn</em> a new instance
+of an object. Each of the <em>nodes</em> and <em>links</em> above have a default prototype
+that allows the <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span> <span class="pre">spawn</span></code> command to convert them to
+a <a class="reference internal" href="../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom" title="evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom"><span class="xref myst py py-class">XYZRoom</span></a>
+or an <a class="reference internal" href="../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom" title="evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom"><span class="xref myst py py-class">XYZExit</span></a> respectively.</p>
+<p>The default prototypes are found in <code class="docutils literal notranslate"><span class="pre">evennia.contrib.grid.xyzgrid.prototypes</span></code> (added
+during installation of this contrib), with <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code>s <code class="docutils literal notranslate"><span class="pre">&quot;xyz_room&quot;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">&quot;xyz_exit&quot;</span></code> - use these as <code class="docutils literal notranslate"><span class="pre">prototype_parent</span></code> to add your own custom prototypes.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&quot;prototypes&quot;</span></code> key of the XYMap-data dict allows you to customize which
+prototype is used for each coordinate in your XYMap. The coordinate is given as
+<code class="docutils literal notranslate"><span class="pre">(X,</span> <span class="pre">Y)</span></code> for nodes/rooms and <code class="docutils literal notranslate"><span class="pre">(X,</span> <span class="pre">Y,</span> <span class="pre">direction)</span></code> for links/exits, where the
+direction is one of “n”, “ne”, “e”, “se”, “s”, “sw”, “w”, “nw”, “u” or “d”. For
+exits, it’s recommended to <em>not</em> set a <code class="docutils literal notranslate"><span class="pre">key</span></code> since this is generated
+automatically by the grid spawner to be as expected (“north” with alias “n”, for
+example).</p>
+<p>A special coordinate is <code class="docutils literal notranslate"><span class="pre">*</span></code>. This acts as a wild card for that coordinate and
+allows you to add ‘default’ prototypes to be used for rooms.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="n">MAPSTR</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">+ 0 1</span>
+
+<span class="s2">1 #-#</span>
+<span class="s2">   \</span>
+<span class="s2">0 #-#</span>
+
+<span class="s2">+ 0 1</span>
+
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<span class="n">PROTOTYPES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">):</span> <span class="p">{</span>
+	<span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_room&quot;</span><span class="p">,</span>
+	<span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;End of a the tunnel&quot;</span><span class="p">,</span>
+	<span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;This is is the end of the dark tunnel. It smells of sewage.&quot;</span>
+    <span class="p">},</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">)</span> <span class="p">:</span> <span class="p">{</span>
+	<span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_exit&quot;</span><span class="p">,</span>
+	<span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The tunnel continues into darkness to the east&quot;</span>
+    <span class="p">},</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span> <span class="p">{</span>
+	<span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_room&quot;</span><span class="p">,</span>
+	<span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Other end of the tunnel&quot;</span><span class="p">,</span>
+	<span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">The</span> <span class="n">other</span> <span class="n">end</span> <span class="n">of</span> <span class="n">the</span> <span class="n">dark</span> <span class="n">tunnel</span><span class="o">.</span> <span class="n">It</span> <span class="n">smells</span> <span class="n">better</span> <span class="n">here</span><span class="o">.</span><span class="s2">&quot;</span>
+    <span class="p">}</span>
+    <span class="c1"># defaults</span>
+    <span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">):</span> <span class="p">{</span>
+    	<span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_room&quot;</span><span class="p">,</span>
+	<span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;A dark tunnel&quot;</span><span class="p">,</span>
+	<span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;It is dark here.&quot;</span>
+    <span class="p">},</span>
+    <span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">):</span> <span class="p">{</span>
+	<span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_exit&quot;</span><span class="p">,</span>
+	<span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The tunnel stretches into darkness.&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">XYMAP_DATA</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># ...</span>
+    <span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="n">MAPSTR</span><span class="p">,</span>
+    <span class="s2">&quot;prototypes&quot;</span><span class="p">:</span> <span class="n">PROTOTYPES</span>
+    <span class="c1"># ...</span>
+<span class="p">}</span>
+
+</pre></div>
+</div>
+<p>When spawning the above map, the room at the bottom-left and top-right of the
+map will get custom descriptions and names, while the others will have default
+values. One exit (the east exit out of the room in the bottom-left will have a
+custom description.</p>
+<blockquote>
+<div><p>If you are used to using prototypes, you may notice that we didn’t add a
+<code class="docutils literal notranslate"><span class="pre">prototype_key</span></code> for the above prototypes. This is normally required for every
+prototype. This is for convenience - if
+you don’t add a <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code>, the grid will automatically generate one for
+you - a hash based on the current XYZ (+ direction) of the node/link to spawn.</p>
+</div></blockquote>
+<p>If you find yourself changing your prototypes after already spawning the
+grid/map, you can rerun <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span> <span class="pre">spawn</span></code> again; The changes will be
+picked up and applied to the existing objects.</p>
+<section id="extending-the-base-prototypes">
+<h4>Extending the base prototypes<a class="headerlink" href="#extending-the-base-prototypes" title="Permalink to this headline">¶</a></h4>
+<p>The default prototypes are found in <code class="docutils literal notranslate"><span class="pre">evennia.contrib.grid.xyzgrid.prototypes</span></code> and
+should be included as <code class="docutils literal notranslate"><span class="pre">prototype_parents</span></code> for prototypes on the map. Would it
+not be nice to be able to change these and have the change apply to all of the
+grid? You can, by adding the following to your <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>XYZROOM_PROTOTYPE_OVERRIDE = {&quot;typeclass&quot;: &quot;myxyzroom.MyXYZRoom&quot;}
+XYZEXIT_PROTOTYPE_OVERRIDE = {...}
+</pre></div>
+</div>
+<blockquote>
+<div><p>If you override the typeclass in your prototypes, the typeclass used  <strong>MUST</strong>
+inherit from <code class="docutils literal notranslate"><span class="pre">XYZRoom</span></code> and/or <code class="docutils literal notranslate"><span class="pre">XYZExit</span></code>. The <code class="docutils literal notranslate"><span class="pre">BASE_ROOM_TYPECLASS</span></code> and
+<code class="docutils literal notranslate"><span class="pre">BASE_EXIT_TYPECLASS</span></code> settings will not help - these are still useful for
+non-xyzgrid rooms/exits though.</p>
+</div></blockquote>
+<p>Only add what you want to change - these dicts will <em>extend</em> the default parent
+prototypes rather than replace them. As long as you define your map’s prototypes
+to use a <code class="docutils literal notranslate"><span class="pre">prototype_parent</span></code> of <code class="docutils literal notranslate"><span class="pre">&quot;xyz_room&quot;</span></code> and/or <code class="docutils literal notranslate"><span class="pre">&quot;xyz_exit&quot;</span></code>, your changes
+will now be applied. You may need to respawn your grid and reload the server
+after a change like this.</p>
+</section>
+</section>
+<section id="options">
+<h3>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h3>
+<p>The last element of the <code class="docutils literal notranslate"><span class="pre">XYMAP_DATA</span></code> dict is the <code class="docutils literal notranslate"><span class="pre">&quot;options&quot;</span></code>, for example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">XYMAP_DATA</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># ...</span>
+    <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span>
+	<span class="s2">&quot;map_visual_range&quot;</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">options</span></code> dict is passed as <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> to <code class="docutils literal notranslate"><span class="pre">XYZRoom.return_appearance</span></code>
+when visualizing the map in-game. It allows for making different maps display
+differently from one another (note that while these options are convenient one
+could of course also override <code class="docutils literal notranslate"><span class="pre">return_appearance</span></code> entirely by inheriting from
+<code class="docutils literal notranslate"><span class="pre">XYZRoom</span></code> and then pointing to it in your prototypes).</p>
+<p>The default visualization is this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+                                     <span class="c1">#---#</span>
+                                    <span class="o">/</span>
+                                   <span class="o">@-</span>
+<span class="o">-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span class="n">Dungeon</span> <span class="n">Entrance</span>
+<span class="n">To</span> <span class="n">the</span> <span class="n">east</span><span class="p">,</span> <span class="n">a</span> <span class="n">narrow</span> <span class="n">opening</span> <span class="n">leads</span> <span class="n">into</span> <span class="n">darkness</span><span class="o">.</span>
+<span class="n">Exits</span><span class="p">:</span> <span class="n">northeast</span> <span class="ow">and</span> <span class="n">east</span>
+
+</pre></div>
+</div>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">map_display</span></code> (bool): This turns off the display entirely for this map.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">map_character_symbol</span></code> (str): The symbol used to show ‘you’ on the map. It can
+have colors but should only take up one character space. By default this is a
+green <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">map_visual_range</span></code> (int): This how far away from your current location you can
+see.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">map_mode</span></code> (str): This is either “node” or “scan” and affects how the visual
+range is calculated.
+In “node” mode, the range shows how many <em>nodes</em> away from that you can see. In “scan”
+mode you can instead see that many <em>on-screen characters</em> away from your character.
+To visualize, assume this is the full map (where ‘&#64;’ is the character location):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#----------------#
+|                |
+|                |
+# @------------#-#
+|                |
+#----------------#
+</pre></div>
+</div>
+<p>This is what the player will see in ‘nodes’ mode with <code class="docutils literal notranslate"><span class="pre">map_visual_range=2</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@------------#-#
+</pre></div>
+</div>
+<p>… and in ‘scan’ mode:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>|
+|
+# @--
+|
+#----
+</pre></div>
+</div>
+<p>The ‘nodes’ mode has the advantage of showing only connected links and is
+great for navigation but depending on the map it can include nodes quite
+visually far away from you. The ‘scan’ mode can accidentally reveal unconnected
+parts of the map (see example above), but limiting the range can be used as a
+way to hide information.</p>
+<p>This is what the player will see in ‘nodes’ mode with <code class="docutils literal notranslate"><span class="pre">map_visual_range=1</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@------------#
+</pre></div>
+</div>
+<p>… and in ‘scan’ mode:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@-
+</pre></div>
+</div>
+<p>One could for example use ‘nodes’ for outdoor/town maps and ‘scan’ for
+exploring dungeons.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">map_align</span></code> (str): One of ‘r’, ‘c’ or ‘l’. This shifts the map relative to
+the room text. By default it’s centered.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">map_target_path_style</span></code>: How to visualize the path to a target. This is a
+string that takes the <code class="docutils literal notranslate"><span class="pre">{display_symbol}</span></code> formatting tag. This will be replaced
+with the <code class="docutils literal notranslate"><span class="pre">display_symbol</span></code> of each map element in the path. By default this is
+<code class="docutils literal notranslate"><span class="pre">&quot;|y{display_symbol}|n&quot;</span></code>, that is, the path is colored yellow.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">map_fill_all</span></code> (bool): If the map area should fill the entire client width
+(default) or change to always only be as wide as the room description. Note
+that in the latter case, the map can end up ‘dancing around’ in the client window
+if descriptions vary a lot in width.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">map_separator_char</span></code> (str): The char to use for the separator-lines between the map
+and the room description. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;|x~|n&quot;</span></code> - wavy, dark-grey lines.</p></li>
+</ul>
+<p>Changing the options of an already spawned map does not require re-spawning the
+map, but you <em>do</em> need to reload the server!</p>
+</section>
+<section id="about-the-pathfinder">
+<h3>About the Pathfinder<a class="headerlink" href="#about-the-pathfinder" title="Permalink to this headline">¶</a></h3>
+<p>The new <code class="docutils literal notranslate"><span class="pre">goto</span></code> command exemplifies the use of the <em>Pathfinder</em>. This
+is an algorithm that calculates the shortest route between nodes (rooms) on an
+XY-map of arbitrary size and complexity. It allows players to quickly move to
+a location if they know that location’s name. Here are some details about</p>
+<ul class="simple">
+<li><p>The pathfinder parses the nodes and links to build a matrix of distances
+of moving from each node to <em>all</em> other nodes on one XYMap. The path
+is solved using the
+<a class="reference external" href="https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Dijkstra algorithm</a>.</p></li>
+<li><p>The pathfinder’s matrices can take a long time to build for very large maps.
+Therefore they are are cached as pickled binary files in
+<code class="docutils literal notranslate"><span class="pre">mygame/server/.cache/</span></code> and only rebuilt if the map changes. They are safe to
+delete (you can also use <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span> <span class="pre">initpath</span></code> to force-create/rebuild the cache files).</p></li>
+<li><p>Once cached, the pathfinder is fast (Finding a 500-step shortest-path over
+20 000 nodes/rooms takes below 0.1s).</p></li>
+<li><p>It’s important to remember that the pathfinder only works within <em>one</em> XYMap.
+It will not find paths across map transitions. If this is a concern, one can consider
+making all regions of the game as one XYMap. This probably works fine, but makes it
+harder to add/remove new maps to/from the grid.</p></li>
+<li><p>The pathfinder will actually sum up the ‘weight’ of each link to determine which is
+the ‘cheapest’ (shortest) route. By default every link except blocking links have
+a cost of 1 (so cost is equal to the number of steps to move between nodes).
+Individual links can however change this to a higher/lower weight (must be &gt;=1).
+A higher weight means the pathfinder will be less likely to use that route
+compared to others (this can also be vidually confusing for the user, so use with care).</p></li>
+<li><p>The pathfinder will <em>average</em> the weight of long link-chains. Since all links
+default to having the same weight (=1), this means that
+<code class="docutils literal notranslate"><span class="pre">#-#</span></code> has the same movement cost as <code class="docutils literal notranslate"><span class="pre">#----#</span></code> even though it is visually ‘shorter’.
+This behavior can be changed per-link by using links with
+<code class="docutils literal notranslate"><span class="pre">average_long_link_weights</span> <span class="pre">=</span> <span class="pre">False</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id1">
+<h2>XYZGrid<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">XYZGrid</span></code> is a <a class="reference internal" href="../Components/Scripts.html"><span class="doc std std-doc">Global Script</span></a> that holds all <code class="docutils literal notranslate"><span class="pre">XYMap</span></code> objects on
+the grid. There should be only one XYZGrid created at any time.</p>
+<p>To access the grid in-code, there are several ways:</p>
+<ul>
+<li><p>You can search for the grid like any other Script. It’s named “XYZGrid”.</p>
+<p>grid = evennia.search_script(“XYZGrid”)[0]</p>
+<p>(<code class="docutils literal notranslate"><span class="pre">search_script</span></code> always returns a list)</p>
+</li>
+<li><p>You can get it with <code class="docutils literal notranslate"><span class="pre">evennia.contrib.grid.xyzgrid.xyzgrid.get_xyzgrid</span></code></p>
+<p>from evennia.contrib.grid.xyzgrid.xyzgrid import get_xyzgrid
+grid = get_xyzgrid()</p>
+<p>This will <em>always</em> return a grid, creating an empty grid if one didn’t
+previously exist. So this is also the recommended way of creating a fresh grid
+in-code.</p>
+</li>
+<li><p>You can get it from an existing XYZRoom/Exit by accessing their <code class="docutils literal notranslate"><span class="pre">.xyzgrid</span></code>
+property</p>
+<p>grid = self.caller.location.xyzgrid  # if currently in grid room</p>
+</li>
+</ul>
+<p>Most tools on the grid class have to do with loading/adding and deleting maps,
+something you are expected to use the <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span></code> commands for. But there
+are also several methods that are generally useful:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.get_room(xyz)</span></code> - Get a room at a specific coordinate <code class="docutils literal notranslate"><span class="pre">(X,</span> <span class="pre">Y,</span> <span class="pre">Z)</span></code>. This will
+only work if the map has been actually spawned first. For example
+<code class="docutils literal notranslate"><span class="pre">.get_room((0,4,&quot;the</span> <span class="pre">dark</span> <span class="pre">castle))</span></code>. Use <code class="docutils literal notranslate"><span class="pre">'*'</span></code> as a wild card, so
+<code class="docutils literal notranslate"><span class="pre">.get_room(('*','*',&quot;the</span> <span class="pre">dark</span> <span class="pre">castle))</span></code> will get you all rooms spawned on the dark
+castle map.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.get_exit(xyz,</span> <span class="pre">name)</span></code> - get a particular exit, e.g.
+<code class="docutils literal notranslate"><span class="pre">.get_exit((0,4,&quot;the</span> <span class="pre">dark</span> <span class="pre">castle&quot;,</span> <span class="pre">&quot;north&quot;)</span></code>. You can also use <code class="docutils literal notranslate"><span class="pre">'*'</span></code> as
+wildcards.</p></li>
+</ul>
+<p>One can also access particular parsed <code class="docutils literal notranslate"><span class="pre">XYMap</span></code> objects on the <code class="docutils literal notranslate"><span class="pre">XYZGrid</span></code> directly:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.grid</span></code> - this is the actual (cached) store of all XYMaps, as <code class="docutils literal notranslate"><span class="pre">{zcoord:</span> <span class="pre">XYMap,</span> <span class="pre">...}</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.get_map(zcoord)</span></code> - get a specific XYMap.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.all_maps()</span></code> - get a list of all XYMaps.</p></li>
+</ul>
+<p>Unless you want to heavily change how the map works (or learn what it does), you
+will probably never need to modify the <code class="docutils literal notranslate"><span class="pre">XYZMap</span></code> object itself. You may want to
+know how to call find the pathfinder though:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">xymap.get_shortest_path(start_xy,</span> <span class="pre">end_xy)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xymap.get_visual_range(xy,</span> <span class="pre">dist=2,</span> <span class="pre">**kwargs)</span></code></p></li>
+</ul>
+<p>See the <a class="reference internal" href="../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.PathData.xymap" title="evennia.contrib.grid.xyzgrid.commands.PathData.xymap"><span class="xref myst py py-attr">XYMap</span></a> documentation for
+details.</p>
+</section>
+<section id="xyzroom-and-xyzexit">
+<h2>XYZRoom and XYZExit<a class="headerlink" href="#xyzroom-and-xyzexit" title="Permalink to this headline">¶</a></h2>
+<p>These are new custom <a class="reference internal" href="../Components/Typeclasses.html"><span class="doc std std-doc">Typeclasses</span></a> located in
+<code class="docutils literal notranslate"><span class="pre">evennia.contrib.xyzgrid.xyzroom</span></code>. They extend the base <code class="docutils literal notranslate"><span class="pre">DefaultRoom</span></code> and
+<code class="docutils literal notranslate"><span class="pre">DefaultExit</span></code> to be aware of their <code class="docutils literal notranslate"><span class="pre">X</span></code>, <code class="docutils literal notranslate"><span class="pre">Y</span></code> and <code class="docutils literal notranslate"><span class="pre">Z</span></code> coordinates.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>You should usually **not** create XYZRooms/Exits manually. They are intended
+to be created/deleted based on the layout of the grid. So to add a new room, add
+a new node to your map. To delete it, you remove it. Then rerun
+**evennia xyzgrid spawn**. Having manually created XYZRooms/exits in the mix
+can lead to them getting deleted or the system getting confused.
+
+If you **still** want to create XYZRoom/Exits manually (don&#39;t say we didn&#39;t
+warn you!), you should do it with their `XYZRoom.create()` and
+`XYZExit.create()` methods. This makes sure the XYZ they use are unique.
+</pre></div>
+</div>
+</div>
+<p>Useful (extra) properties on <code class="docutils literal notranslate"><span class="pre">XYZRoom</span></code>, <code class="docutils literal notranslate"><span class="pre">XYZExit</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">xyz</span></code> The <code class="docutils literal notranslate"><span class="pre">(X,</span> <span class="pre">Y,</span> <span class="pre">Z)</span></code> coordinate of the entity, for example <code class="docutils literal notranslate"><span class="pre">(23,</span> <span class="pre">1,</span> <span class="pre">&quot;greenforest&quot;)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xyzmap</span></code> The <code class="docutils literal notranslate"><span class="pre">XYMap</span></code> this belongs to.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_display_name(looker)</span></code> - this has been modified to show the coordinates of
+the entity as well as the <code class="docutils literal notranslate"><span class="pre">#dbref</span></code> if you have Builder or higher privileges.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">return_appearance(looker,</span> <span class="pre">**kwargs)</span></code> - this has been extensively modified for
+<code class="docutils literal notranslate"><span class="pre">XYZRoom</span></code>, to display the map. The <code class="docutils literal notranslate"><span class="pre">options</span></code> given in <code class="docutils literal notranslate"><span class="pre">XYMAP_DATA</span></code> will appear
+as <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> to this method and if you override this you can customize the
+map display in depth.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xyz_destination</span></code> (only for <code class="docutils literal notranslate"><span class="pre">XYZExits</span></code>) - this gives the xyz-coordinate of
+the exit’s destination.</p></li>
+</ul>
+<p>The coordinates are stored as <a class="reference internal" href="../Components/Tags.html"><span class="doc std std-doc">Tags</span></a> where both rooms and exits tag
+categories <code class="docutils literal notranslate"><span class="pre">room_x_coordinate</span></code>, <code class="docutils literal notranslate"><span class="pre">room_y_coordinate</span></code> and <code class="docutils literal notranslate"><span class="pre">room_z_coordinate</span></code>
+while exits use the same in addition to tags for their destination, with tag
+categories <code class="docutils literal notranslate"><span class="pre">exit_dest_x_coordinate</span></code>, <code class="docutils literal notranslate"><span class="pre">exit_dest_y_coordinate</span></code> and
+<code class="docutils literal notranslate"><span class="pre">exit_dest_z_coordinate</span></code>.</p>
+<p>The make it easier to query the database by coordinates, each typeclass offers
+custom manager methods. The filter methods allow for <code class="docutils literal notranslate"><span class="pre">'*'</span></code> as a wildcard.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="c1"># find a list of all rooms in map foo</span>
+<span class="n">rooms</span> <span class="o">=</span> <span class="n">XYZRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz</span><span class="p">((</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">))</span>
+
+<span class="c1"># find list of all rooms with name &quot;Tunnel&quot; on map foo</span>
+<span class="n">rooms</span> <span class="o">=</span> <span class="n">XYZRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz</span><span class="p">((</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">),</span> <span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;Tunnel&quot;</span><span class="p">)</span>
+
+<span class="c1"># find all rooms in the first column of map footer</span>
+<span class="n">rooms</span> <span class="o">=</span> <span class="n">XYZRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">))</span>
+
+<span class="c1"># find exactly one room at given coordinate (no wildcards allowed)</span>
+<span class="n">room</span> <span class="o">=</span> <span class="n">XYZRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_xyz</span><span class="p">((</span><span class="mi">13</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">foo</span><span class="p">))</span>
+
+<span class="c1"># find all exits in a given room</span>
+<span class="n">exits</span> <span class="o">=</span> <span class="n">XYZExit</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">foo</span><span class="p">))</span>
+
+<span class="c1"># find all exits pointing to a specific destination (from all maps)</span>
+<span class="n">exits</span> <span class="o">=</span> <span class="n">XYZExit</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz_exit</span><span class="p">(</span><span class="n">xyz_destination</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="s1">&#39;bar&#39;</span><span class="p">))</span>
+
+<span class="c1"># find exits from a room to anywhere on another map</span>
+<span class="n">exits</span> <span class="o">=</span> <span class="n">XYZExit</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz_exit</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">),</span> <span class="n">xyz_destination</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">))</span>
+
+<span class="c1"># find exactly one exit to specific destination (no wildcards allowed)</span>
+<span class="n">exit</span> <span class="o">=</span> <span class="n">XYZExit</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_xyz_exit</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">),</span> <span class="n">xyz_destination</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">))</span>
+
+</pre></div>
+</div>
+<p>You can customize the XYZRoom/Exit by having the grid spawn your own subclasses
+of them. To do this you need to override the prototype used to spawn rooms on
+the grid. Easiest is to modify the base prototype-parents in settings (see the
+<a class="reference internal" href="#xyzroom-and-xyzexit"><span class="std std-doc">XYZRoom and XYZExit</span></a> section above).</p>
+</section>
+<section id="working-with-the-grid">
+<h2>Working with the grid<a class="headerlink" href="#working-with-the-grid" title="Permalink to this headline">¶</a></h2>
+<p>The work flow of working with the grid is usually as follows:</p>
+<ol class="simple">
+<li><p>Prepare a module with a <em>Map String</em>, <em>Map Legend</em>, <em>Prototypes</em> and
+<em>Options</em> packaged into a dict <code class="docutils literal notranslate"><span class="pre">XYMAP_DATA</span></code>. Include multiple maps per module
+by adding several <code class="docutils literal notranslate"><span class="pre">XYMAP_DATA</span></code> to a variable <code class="docutils literal notranslate"><span class="pre">XYMAP_DATA_LIST</span></code> instead.</p></li>
+<li><p>If your map contains <code class="docutils literal notranslate"><span class="pre">TransitionMapNodes</span></code>, the target map must either also be
+added or already exist in the grid. If not, you should skip that node for
+now (otherwise you’ll face errors when spawning because the exit-destination
+does not exist).</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span> <span class="pre">add</span> <span class="pre">&lt;module&gt;</span></code> to register the maps with the grid. If no
+grid existed, it will be created by this. Fix any errors reported by the
+parser.</p></li>
+<li><p>Inspect the parsed map(s) with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span> <span class="pre">show</span> <span class="pre">&lt;zcoord&gt;</span></code> and make sure
+they look okay.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span> <span class="pre">spawn</span></code> to spawn/update maps into actual <code class="docutils literal notranslate"><span class="pre">XYZRoom</span></code>s and
+<code class="docutils literal notranslate"><span class="pre">XYZExit</span></code>s.</p></li>
+<li><p>If you want you can now tweak your grid manually by usual building commands.
+Anything you do <em>not</em> specify in your grid prototypes you can
+modify locally in your game - as long as the whole room/exit is not deleted,
+those will be untouched by <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span> <span class="pre">spawn</span></code>.  You can also dig/open
+exits to other rooms ‘embedded’ in your grid. These exits must <em>not</em> be named
+one of the grid directions (north, northeast, etc, nor up/down) or the grid
+will delete it next <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span> <span class="pre">spawn</span></code> runs (since it’s not on the map).</p></li>
+<li><p>If you want to add new grid-rooms/exits you should <em>always</em> do so by
+modifying the <em>Map String</em> and then rerunning <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span> <span class="pre">spawn</span></code> to
+apply the changes.</p></li>
+</ol>
+</section>
+<section id="details">
+<h2>Details<a class="headerlink" href="#details" title="Permalink to this headline">¶</a></h2>
+<p>The default Evennia’s rooms are non-euclidian - they can connect
+to each other with any types of exits without necessarily having a clear
+position relative to each other. This gives maximum flexibility, but many games
+want to use cardinal movements (north, east etc) and also features like finding
+the shortest-path between two points.</p>
+<p>This contrib forces each room to exist on a 3-dimensional XYZ grid and also
+implements very efficient pathfinding along with tools for displaying
+your current visual-range and a lot of related features.</p>
+<p>The rooms of the grid are entirely controlled from outside the game, using
+python modules with strings and dicts defining the map(s) of the game. It’s
+possible to combine grid- with non-grid rooms, and you can decorate
+grid rooms as much as you like in-game, but you cannot spawn new grid
+rooms without editing the map files outside of the game.</p>
+</section>
+<section id="id2">
+<h2>Installation<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<ol>
+<li><p>If you haven’t before, install the extra contrib requirements.
+You can do so by doing <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements_extra.txt</span></code> from the
+<code class="docutils literal notranslate"><span class="pre">evennia/</span></code> folder.</p></li>
+<li><p>Import and add the <code class="docutils literal notranslate"><span class="pre">evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet</span></code> to the
+<code class="docutils literal notranslate"><span class="pre">CharacterCmdset</span></code> cmdset in <code class="docutils literal notranslate"><span class="pre">mygame/commands.default_cmds.py</span></code>. Reload
+the server. This makes the <code class="docutils literal notranslate"><span class="pre">map</span></code>, <code class="docutils literal notranslate"><span class="pre">goto/path</span></code> and modified <code class="docutils literal notranslate"><span class="pre">teleport</span></code>  and
+<code class="docutils literal notranslate"><span class="pre">open</span></code> commands available in-game.</p></li>
+<li><p>Edit <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> and set</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> EXTRA_LAUNCHER_COMMANDS[&#39;xyzgrid&#39;] = &#39;evennia.contrib.grid.xyzgrid.launchcmd.xyzcommand&#39;
+</pre></div>
+</div>
+</li>
+<li><p>Run the new <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">xyzgrid</span> <span class="pre">help</span></code> for instructions on how to spawn the grid.</p></li>
+</ol>
+</section>
+<section id="example-usage">
+<h2>Example usage<a class="headerlink" href="#example-usage" title="Permalink to this headline">¶</a></h2>
+<p>After installation, do the following (from your command line, where the
+<code class="docutils literal notranslate"><span class="pre">evennia</span></code> command is available) to install an example grid:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia xyzgrid init
+evennia xyzgrid add evennia.contrib.grid.xyzgrid.example
+evennia xyzgrid list
+evennia xyzgrid show &quot;the large tree&quot;
+evennia xyzgrid show &quot;the small cave&quot;
+evennia xyzgrid spawn
+evennia reload
+</pre></div>
+</div>
+<p>(remember to reload the server after spawn operations).</p>
+<p>Now you can log into the
+server and do <code class="docutils literal notranslate"><span class="pre">teleport</span> <span class="pre">(3,0,the</span> <span class="pre">large</span> <span class="pre">tree)</span></code> to teleport into the map.</p>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">open</span> <span class="pre">togrid</span> <span class="pre">=</span> <span class="pre">(3,</span> <span class="pre">0,</span> <span class="pre">the</span> <span class="pre">large</span> <span class="pre">tree)</span></code> to open a permanent (one-way)
+exit from your current location into the grid. To make a way back to a non-grid
+location just stand in a grid room and open a new exit out of it:
+<code class="docutils literal notranslate"><span class="pre">open</span> <span class="pre">tolimbo</span> <span class="pre">=</span> <span class="pre">#2</span></code>.</p>
+<p>Try <code class="docutils literal notranslate"><span class="pre">goto</span> <span class="pre">view</span></code> to go to the top of the tree and <code class="docutils literal notranslate"><span class="pre">goto</span> <span class="pre">dungeon</span></code> to go down to
+the dungeon entrance at the bottom of the tree.</p>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/grid/xyzgrid/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">XYZgrid</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#first-example-usage">First example usage</a></li>
+<li><a class="reference internal" href="#defining-an-xymap">Defining an XYMap</a><ul>
+<li><a class="reference internal" href="#the-zcoord">The Zcoord</a></li>
+<li><a class="reference internal" href="#map-string">Map String</a></li>
+<li><a class="reference internal" href="#map-legend">Map legend</a><ul>
+<li><a class="reference internal" href="#important-node-link-properties">Important node/link properties</a></li>
+<li><a class="reference internal" href="#default-legend">Default Legend</a></li>
+<li><a class="reference internal" href="#map-nodes">Map Nodes</a></li>
+<li><a class="reference internal" href="#one-way-links">One-way links</a></li>
+<li><a class="reference internal" href="#up-and-down-links">Up- and Down-links</a></li>
+<li><a class="reference internal" href="#interrupt-nodes">Interrupt-nodes</a></li>
+<li><a class="reference internal" href="#interrupt-links">Interrupt-links</a></li>
+<li><a class="reference internal" href="#blocked-links">Blocked links</a></li>
+<li><a class="reference internal" href="#router-links">Router-links</a></li>
+<li><a class="reference internal" href="#teleporter-links">Teleporter Links</a></li>
+<li><a class="reference internal" href="#map-transition-nodes">Map-Transition Nodes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#prototypes">Prototypes</a><ul>
+<li><a class="reference internal" href="#extending-the-base-prototypes">Extending the base prototypes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#options">Options</a></li>
+<li><a class="reference internal" href="#about-the-pathfinder">About the Pathfinder</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id1">XYZGrid</a></li>
+<li><a class="reference internal" href="#xyzroom-and-xyzexit">XYZRoom and XYZExit</a></li>
+<li><a class="reference internal" href="#working-with-the-grid">Working with the grid</a></li>
+<li><a class="reference internal" href="#details">Details</a></li>
+<li><a class="reference internal" href="#id2">Installation</a></li>
+<li><a class="reference internal" href="#example-usage">Example usage</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contrib-XYZGrid.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Contrib-XYZGrid.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">XYZgrid</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

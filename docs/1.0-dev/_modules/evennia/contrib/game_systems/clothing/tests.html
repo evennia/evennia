@@ -1,0 +1,240 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.game_systems.clothing.tests &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.clothing.tests</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.game_systems.clothing.tests</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Testing clothing contrib</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">EvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultRoom</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">clothing</span>
+
+
+<div class="viewcode-block" id="TestClothingCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingCmd">[docs]</a><span class="k">class</span> <span class="nc">TestClothingCmd</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestClothingCmd.test_clothingcommands"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingCmd.test_clothingcommands">[docs]</a>    <span class="k">def</span> <span class="nf">test_clothingcommands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">wearer</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">ClothedCharacter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Wearer&quot;</span><span class="p">)</span>
+        <span class="n">friend</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">ClothedCharacter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Friend&quot;</span><span class="p">)</span>
+        <span class="n">room</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;room&quot;</span><span class="p">)</span>
+        <span class="n">wearer</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">room</span>
+        <span class="n">friend</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">room</span>
+        <span class="c1"># Make a test hat</span>
+        <span class="n">test_hat</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">ContribClothing</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;test hat&quot;</span><span class="p">)</span>
+        <span class="n">test_hat</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="o">=</span> <span class="s2">&quot;hat&quot;</span>
+        <span class="n">test_hat</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">wearer</span>
+        <span class="c1"># Make a test scarf</span>
+        <span class="n">test_scarf</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">ContribClothing</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;test scarf&quot;</span><span class="p">)</span>
+        <span class="n">test_scarf</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="o">=</span> <span class="s2">&quot;accessory&quot;</span>
+        <span class="n">test_scarf</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">wearer</span>
+        <span class="c1"># Test wear command</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">CmdWear</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Usage: wear &lt;obj&gt; [wear style]&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">wearer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">CmdWear</span><span class="p">(),</span> <span class="s2">&quot;hat&quot;</span><span class="p">,</span> <span class="s2">&quot;Wearer puts on test hat.&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">wearer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">clothing</span><span class="o">.</span><span class="n">CmdWear</span><span class="p">(),</span>
+            <span class="s2">&quot;scarf stylishly&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Wearer wears test scarf stylishly.&quot;</span><span class="p">,</span>
+            <span class="n">caller</span><span class="o">=</span><span class="n">wearer</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Test cover command.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">clothing</span><span class="o">.</span><span class="n">CmdCover</span><span class="p">(),</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Usage: cover &lt;worn clothing&gt; [with] &lt;clothing object&gt;&quot;</span><span class="p">,</span>
+            <span class="n">caller</span><span class="o">=</span><span class="n">wearer</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">clothing</span><span class="o">.</span><span class="n">CmdCover</span><span class="p">(),</span>
+            <span class="s2">&quot;hat with scarf&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Wearer covers test hat with test scarf.&quot;</span><span class="p">,</span>
+            <span class="n">caller</span><span class="o">=</span><span class="n">wearer</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Test remove command.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">CmdRemove</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Could not find &#39;&#39;.&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">wearer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">clothing</span><span class="o">.</span><span class="n">CmdRemove</span><span class="p">(),</span> <span class="s2">&quot;hat&quot;</span><span class="p">,</span> <span class="s2">&quot;You have to take off test scarf first.&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">wearer</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">clothing</span><span class="o">.</span><span class="n">CmdRemove</span><span class="p">(),</span>
+            <span class="s2">&quot;scarf&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Wearer removes test scarf, revealing test hat.&quot;</span><span class="p">,</span>
+            <span class="n">caller</span><span class="o">=</span><span class="n">wearer</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Test uncover command.</span>
+        <span class="n">test_scarf</span><span class="o">.</span><span class="n">wear</span><span class="p">(</span><span class="n">wearer</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">test_hat</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span> <span class="o">=</span> <span class="n">test_scarf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">CmdUncover</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Usage: uncover &lt;worn clothing object&gt;&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">wearer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">CmdUncover</span><span class="p">(),</span> <span class="s2">&quot;hat&quot;</span><span class="p">,</span> <span class="s2">&quot;Wearer uncovers test hat.&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">wearer</span><span class="p">)</span>
+        <span class="c1"># Test drop command.</span>
+        <span class="n">test_hat</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span> <span class="o">=</span> <span class="n">test_scarf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">CmdDrop</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Drop what?&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">wearer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">clothing</span><span class="o">.</span><span class="n">CmdDrop</span><span class="p">(),</span>
+            <span class="s2">&quot;hat&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;You can&#39;t drop that because it&#39;s covered by test scarf.&quot;</span><span class="p">,</span>
+            <span class="n">caller</span><span class="o">=</span><span class="n">wearer</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">CmdDrop</span><span class="p">(),</span> <span class="s2">&quot;scarf&quot;</span><span class="p">,</span> <span class="s2">&quot;You drop test scarf.&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">wearer</span><span class="p">)</span>
+        <span class="c1"># Test give command.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">clothing</span><span class="o">.</span><span class="n">CmdGive</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Usage: give &lt;inventory object&gt; = &lt;target&gt;&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">wearer</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">clothing</span><span class="o">.</span><span class="n">CmdGive</span><span class="p">(),</span>
+            <span class="s2">&quot;hat = Friend&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Wearer removes test hat.|You give test hat to Friend.&quot;</span><span class="p">,</span>
+            <span class="n">caller</span><span class="o">=</span><span class="n">wearer</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Test inventory command.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">clothing</span><span class="o">.</span><span class="n">CmdInventory</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;You are not carrying or wearing anything.&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">wearer</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TestClothingFunc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingFunc">[docs]</a><span class="k">class</span> <span class="nc">TestClothingFunc</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestClothingFunc.test_clothingfunctions"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingFunc.test_clothingfunctions">[docs]</a>    <span class="k">def</span> <span class="nf">test_clothingfunctions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">wearer</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">ClothedCharacter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Wearer&quot;</span><span class="p">)</span>
+        <span class="n">room</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;room&quot;</span><span class="p">)</span>
+        <span class="n">wearer</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">room</span>
+        <span class="c1"># Make a test hat</span>
+        <span class="n">test_hat</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">ContribClothing</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;test hat&quot;</span><span class="p">)</span>
+        <span class="n">test_hat</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="o">=</span> <span class="s2">&quot;hat&quot;</span>
+        <span class="n">test_hat</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">wearer</span>
+        <span class="c1"># Make a test shirt</span>
+        <span class="n">test_shirt</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">ContribClothing</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;test shirt&quot;</span><span class="p">)</span>
+        <span class="n">test_shirt</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="o">=</span> <span class="s2">&quot;top&quot;</span>
+        <span class="n">test_shirt</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">wearer</span>
+        <span class="c1"># Make a test pants</span>
+        <span class="n">test_pants</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">ContribClothing</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;test pants&quot;</span><span class="p">)</span>
+        <span class="n">test_pants</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="o">=</span> <span class="s2">&quot;bottom&quot;</span>
+        <span class="n">test_pants</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">wearer</span>
+
+        <span class="n">test_hat</span><span class="o">.</span><span class="n">wear</span><span class="p">(</span><span class="n">wearer</span><span class="p">,</span> <span class="s2">&quot;on the head&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">test_hat</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">,</span> <span class="s2">&quot;on the head&quot;</span><span class="p">)</span>
+
+        <span class="n">test_hat</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">wearer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">test_hat</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">test_hat</span><span class="o">.</span><span class="n">worn</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">test_hat</span><span class="o">.</span><span class="n">at_get</span><span class="p">(</span><span class="n">wearer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">test_hat</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">clothes_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">test_shirt</span><span class="p">,</span> <span class="n">test_hat</span><span class="p">,</span> <span class="n">test_pants</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">clothing</span><span class="o">.</span><span class="n">order_clothes_list</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">),</span> <span class="p">[</span><span class="n">test_hat</span><span class="p">,</span> <span class="n">test_shirt</span><span class="p">,</span> <span class="n">test_pants</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">test_hat</span><span class="o">.</span><span class="n">wear</span><span class="p">(</span><span class="n">wearer</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">test_pants</span><span class="o">.</span><span class="n">wear</span><span class="p">(</span><span class="n">wearer</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">get_worn_clothes</span><span class="p">(</span><span class="n">wearer</span><span class="p">),</span> <span class="p">[</span><span class="n">test_hat</span><span class="p">,</span> <span class="n">test_pants</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">clothing</span><span class="o">.</span><span class="n">clothing_type_count</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;hat&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;bottom&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">single_type_count</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">,</span> <span class="s2">&quot;hat&quot;</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="tests.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.clothing.tests</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

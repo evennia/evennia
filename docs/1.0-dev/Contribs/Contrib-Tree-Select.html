@@ -1,0 +1,268 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Easy menu selection tree &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Easy menu selection tree</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="easy-menu-selection-tree">
+<h1>Easy menu selection tree<a class="headerlink" href="#easy-menu-selection-tree" title="Permalink to this headline">¶</a></h1>
+<p>Contribution by Tim Ashley Jenkins, 2017</p>
+<p>This utility allows you to create and initialize an entire branching EvMenu
+instance from a multi-line string passed to one function.</p>
+<blockquote>
+<div><p>Note: Since the time this contrib was created, EvMenu itself got its own templating
+language that has more features and is not compatible with the style used in
+this contrib. Both can still be used in parallel.</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> is incredibly powerful and flexible but it can be a little overwhelming
+and offers a lot of power that may not be needed for a simple multiple-choice menu.</p>
+<p>This module provides a function, <code class="docutils literal notranslate"><span class="pre">init_tree_selection</span></code>, which acts as a frontend
+for EvMenu, dynamically sourcing the options from a multi-line string you
+provide.  For example, if you define a string as such:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TEST_MENU = &#39;&#39;&#39;Foo
+Bar
+Baz
+Qux&#39;&#39;&#39;
+</pre></div>
+</div>
+<p>And then use <code class="docutils literal notranslate"><span class="pre">TEST_MENU</span></code> as the ‘treestr’ source when you call
+<code class="docutils literal notranslate"><span class="pre">init_tree_selection</span></code> on a player:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>init_tree_selection(TEST_MENU, caller, callback)
+</pre></div>
+</div>
+<p>The player will be presented with an EvMenu, like so:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>___________________________
+
+Make your selection:
+___________________________
+
+Foo
+Bar
+Baz
+Qux
+</pre></div>
+</div>
+<p>Making a selection will pass the selection’s key to the specified callback as a
+string along with the caller, as well as the index of the selection (the line
+number on the source string) along with the source string for the tree itself.</p>
+<p>In addition to specifying selections on the menu, you can also specify
+categories.  Categories are indicated by putting options below it preceded with
+a ‘-’ character.  If a selection is a category, then choosing it will bring up a
+new menu node, prompting the player to select between those options, or to go
+back to the previous menu. In addition, categories are marked by default with a
+‘[+]’ at the end of their key. Both this marker and the option to go back can be
+disabled.</p>
+<p>Categories can be nested in other categories as well - just go another ‘-’
+deeper. You can do this as many times as you like. There’s no hard limit to the
+number of categories you can go down.</p>
+<p>For example, let’s add some more options to our menu, turning ‘Bar’ into a
+category.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TEST_MENU = &#39;&#39;&#39;Foo
+Bar
+-You&#39;ve got to know
+--When to hold em
+--When to fold em
+--When to walk away
+Baz
+Qux&#39;&#39;&#39;
+</pre></div>
+</div>
+<p>Now when we call the menu, we can see that ‘Bar’ has become a category instead of a
+selectable option.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>_______________________________
+
+Make your selection:
+_______________________________
+
+Foo
+Bar [+]
+Baz
+Qux
+</pre></div>
+</div>
+<p>Note the [+] next to ‘Bar’. If we select ‘Bar’, it’ll show us the option listed
+under it.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>________________________________________________________________
+
+Bar
+________________________________________________________________
+
+You&#39;ve got to know [+]
+&lt;&lt; Go Back: Return to the previous menu.
+</pre></div>
+</div>
+<p>Just the one option, which is a category itself, and the option to go back,
+which will take us back to the previous menu. Let’s select ‘You’ve got to know’.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>________________________________________________________________
+
+You&#39;ve got to know
+________________________________________________________________
+
+When to hold em
+When to fold em
+When to walk away
+&lt;&lt; Go Back: Return to the previous menu.
+</pre></div>
+</div>
+<p>Now we see the three options listed under it, too. We can select one of them or
+use ‘Go Back’ to return to the ‘Bar’ menu we were just at before. It’s very
+simple to make a branching tree of selections!</p>
+<p>One last thing - you can set the descriptions for the various options simply by
+adding a ‘:’ character followed by the description to the option’s line. For
+example, let’s add a description to ‘Baz’ in our menu:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TEST_MENU = &#39;&#39;&#39;Foo
+Bar
+-You&#39;ve got to know
+--When to hold em
+--When to fold em
+--When to walk away
+Baz: Look at this one: the best option.
+Qux&#39;&#39;&#39;
+</pre></div>
+</div>
+<p>Now we see that the Baz option has a description attached that’s separate from its key:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>_______________________________________________________________
+
+Make your selection:
+_______________________________________________________________
+
+Foo
+Bar [+]
+Baz: Look at this one: the best option.
+Qux
+</pre></div>
+</div>
+<p>Once the player makes a selection - let’s say, ‘Foo’ - the menu will terminate
+and call your specified callback with the selection, like so:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>callback(caller, TEST_MENU, 0, &quot;Foo&quot;)
+</pre></div>
+</div>
+<p>The index of the selection is given along with a string containing the
+selection’s key.  That way, if you have two selections in the menu with the same
+key, you can still differentiate between them.</p>
+<p>And that’s all there is to it! For simple branching-tree selections, using this
+system is much easier than manually creating EvMenu nodes. It also makes
+generating menus with dynamic options much easier - since the source of the menu
+tree is just a string, you could easily generate that string procedurally before
+passing it to the <code class="docutils literal notranslate"><span class="pre">init_tree_selection</span></code> function.  For example, if a player casts
+a spell or does an attack without specifying a target, instead of giving them an
+error, you could present them with a list of valid targets to select by
+generating a multi-line string of targets and passing it to
+<code class="docutils literal notranslate"><span class="pre">init_tree_selection</span></code>, with the callable performing the maneuver once a
+selection is made.</p>
+<p>This selection system only works for simple branching trees - doing anything
+really complicated like jumping between categories or prompting for arbitrary
+input would still require a full EvMenu implementation. For simple selections,
+however, I’m sure you will find using this function to be much easier!</p>
+<p>Included in this module is a sample menu and function which will let a player
+change the color of their name - feel free to mess with it to get a feel for how
+this system works by importing this module in your game’s <code class="docutils literal notranslate"><span class="pre">default_cmdsets.py</span></code>
+module and adding <code class="docutils literal notranslate"><span class="pre">CmdNameColor</span></code> to your default character’s command set.</p>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/utils/tree_select/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contrib-Tree-Select.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Contrib-Tree-Select.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Easy menu selection tree</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

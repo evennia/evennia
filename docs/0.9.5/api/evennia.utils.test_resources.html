@@ -78,94 +78,164 @@ loaded once).</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="evennia.utils.test_resources.EvenniaTest">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">EvenniaTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
-<p>Base test for Evennia, sets up a basic environment.</p>
+<dt id="evennia.utils.test_resources.EvenniaTestMixin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">EvenniaTestMixin</code><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Evennia test environment mixin</p>
 <dl class="py attribute">
-<dt id="evennia.utils.test_resources.EvenniaTest.account_typeclass">
-<code class="sig-name descname">account_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.account_typeclass" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.account_typeclass">
+<code class="sig-name descname">account_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.account_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.accounts.DefaultAccount</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.utils.test_resources.EvenniaTest.object_typeclass">
-<code class="sig-name descname">object_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.object_typeclass" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.object_typeclass">
+<code class="sig-name descname">object_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.object_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.utils.test_resources.EvenniaTest.character_typeclass">
-<code class="sig-name descname">character_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.character_typeclass" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.character_typeclass">
+<code class="sig-name descname">character_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.character_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.utils.test_resources.EvenniaTest.exit_typeclass">
-<code class="sig-name descname">exit_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.exit_typeclass" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.exit_typeclass">
+<code class="sig-name descname">exit_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.exit_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit" title="evennia.objects.objects.DefaultExit"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.utils.test_resources.EvenniaTest.room_typeclass">
-<code class="sig-name descname">room_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.room_typeclass" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.room_typeclass">
+<code class="sig-name descname">room_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.room_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom" title="evennia.objects.objects.DefaultRoom"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultRoom</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.utils.test_resources.EvenniaTest.script_typeclass">
-<code class="sig-name descname">script_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.script_typeclass" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.script_typeclass">
+<code class="sig-name descname">script_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.script_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.utils.test_resources.EvenniaTest.setUp">
-<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTest.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.setUp" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.save_backups">
+<code class="sig-name descname">save_backups</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.save_backups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.save_backups" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.restore_backups">
+<code class="sig-name descname">restore_backups</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.restore_backups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.restore_backups" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.mock_sessions">
+<code class="sig-name descname">mock_sessions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.mock_sessions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.mock_sessions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.create_accounts">
+<code class="sig-name descname">create_accounts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.create_accounts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.create_accounts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.teardown_accounts">
+<code class="sig-name descname">teardown_accounts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.teardown_accounts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.teardown_accounts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.create_rooms">
+<code class="sig-name descname">create_rooms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.create_rooms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.create_rooms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.create_objs">
+<code class="sig-name descname">create_objs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.create_objs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.create_objs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.create_chars">
+<code class="sig-name descname">create_chars</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.create_chars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.create_chars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.create_script">
+<code class="sig-name descname">create_script</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.create_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.create_script" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.setup_session">
+<code class="sig-name descname">setup_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.setup_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.setup_session" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.teardown_session">
+<code class="sig-name descname">teardown_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.teardown_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.teardown_session" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.setUp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets up testing environment</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.utils.test_resources.EvenniaTest.tearDown">
-<code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTest.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.tearDown" title="Permalink to this definition">¶</a></dt>
-<dd><p>Hook method for deconstructing the test fixture after testing it.</p>
-</dd></dl>
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.tearDown">
+<code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="evennia.utils.test_resources.LocalEvenniaTest">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">LocalEvenniaTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#LocalEvenniaTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.LocalEvenniaTest" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.utils.test_resources.EvenniaTest" title="evennia.utils.test_resources.EvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTest</span></code></a></p>
+<dt id="evennia.utils.test_resources.BaseEvenniaTestCase">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">BaseEvenniaTestCase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#BaseEvenniaTestCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.BaseEvenniaTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Base test (with no default objects) but with
+enforced default settings.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.test_resources.BaseEvenniaTest">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">BaseEvenniaTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#BaseEvenniaTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.BaseEvenniaTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.test_resources.EvenniaTestMixin" title="evennia.utils.test_resources.EvenniaTestMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTestMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>This class parent has all default objects and uses only default settings.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.test_resources.EvenniaTest">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">EvenniaTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.test_resources.EvenniaTestMixin" title="evennia.utils.test_resources.EvenniaTestMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTestMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
 <p>This test class is intended for inheriting in mygame tests.
-It helps ensure your tests are run with your own objects.</p>
+It helps ensure your tests are run with your own objects
+and settings from your game folder.</p>
 <dl class="py attribute">
-<dt id="evennia.utils.test_resources.LocalEvenniaTest.account_typeclass">
-<code class="sig-name descname">account_typeclass</code><em class="property"> = 'typeclasses.accounts.Account'</em><a class="headerlink" href="#evennia.utils.test_resources.LocalEvenniaTest.account_typeclass" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.test_resources.EvenniaTest.account_typeclass">
+<code class="sig-name descname">account_typeclass</code><em class="property"> = 'typeclasses.accounts.Account'</em><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.account_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.utils.test_resources.LocalEvenniaTest.object_typeclass">
-<code class="sig-name descname">object_typeclass</code><em class="property"> = 'typeclasses.objects.Object'</em><a class="headerlink" href="#evennia.utils.test_resources.LocalEvenniaTest.object_typeclass" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.test_resources.EvenniaTest.object_typeclass">
+<code class="sig-name descname">object_typeclass</code><em class="property"> = 'typeclasses.objects.Object'</em><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.object_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.utils.test_resources.LocalEvenniaTest.character_typeclass">
-<code class="sig-name descname">character_typeclass</code><em class="property"> = 'typeclasses.characters.Character'</em><a class="headerlink" href="#evennia.utils.test_resources.LocalEvenniaTest.character_typeclass" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.test_resources.EvenniaTest.character_typeclass">
+<code class="sig-name descname">character_typeclass</code><em class="property"> = 'typeclasses.characters.Character'</em><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.character_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.utils.test_resources.LocalEvenniaTest.exit_typeclass">
-<code class="sig-name descname">exit_typeclass</code><em class="property"> = 'typeclasses.exits.Exit'</em><a class="headerlink" href="#evennia.utils.test_resources.LocalEvenniaTest.exit_typeclass" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.test_resources.EvenniaTest.exit_typeclass">
+<code class="sig-name descname">exit_typeclass</code><em class="property"> = 'typeclasses.exits.Exit'</em><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.exit_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.utils.test_resources.LocalEvenniaTest.room_typeclass">
-<code class="sig-name descname">room_typeclass</code><em class="property"> = 'typeclasses.rooms.Room'</em><a class="headerlink" href="#evennia.utils.test_resources.LocalEvenniaTest.room_typeclass" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.test_resources.EvenniaTest.room_typeclass">
+<code class="sig-name descname">room_typeclass</code><em class="property"> = 'typeclasses.rooms.Room'</em><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.room_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.utils.test_resources.LocalEvenniaTest.script_typeclass">
-<code class="sig-name descname">script_typeclass</code><em class="property"> = 'typeclasses.scripts.Script'</em><a class="headerlink" href="#evennia.utils.test_resources.LocalEvenniaTest.script_typeclass" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.utils.test_resources.EvenniaTest.script_typeclass">
+<code class="sig-name descname">script_typeclass</code><em class="property"> = 'typeclasses.scripts.Script'</em><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.script_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

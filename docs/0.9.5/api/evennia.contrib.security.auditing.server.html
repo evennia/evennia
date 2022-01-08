@@ -39,89 +39,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="module-evennia.contrib.security.auditing.server">
-<span id="evennia-contrib-security-auditing-server"></span><h1>evennia.contrib.security.auditing.server<a class="headerlink" href="#module-evennia.contrib.security.auditing.server" title="Permalink to this headline">¶</a></h1>
-<p>Auditable Server Sessions:
-Extension of the stock ServerSession that yields objects representing
-user inputs and system outputs.</p>
-<p>Evennia contribution - Johnny 2017</p>
-<dl class="py class">
-<dt id="evennia.contrib.security.auditing.server.AuditedServerSession">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.security.auditing.server.</code><code class="sig-name descname">AuditedServerSession</code><a class="reference internal" href="../_modules/evennia/contrib/security/auditing/server.html#AuditedServerSession"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.security.auditing.server.AuditedServerSession" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.server.serversession.html#evennia.server.serversession.ServerSession" title="evennia.server.serversession.ServerSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.server.serversession.ServerSession</span></code></a></p>
-<p>This particular implementation parses all server inputs and/or outputs and
-passes a dict containing the parsed metadata to a callback method of your
-creation. This is useful for recording player activity where necessary for
-security auditing, usage analysis or post-incident forensic discovery.</p>
-<p><strong>* WARNING *</strong>
-All strings are recorded and stored in plaintext. This includes those strings
-which might contain sensitive data (create, connect, &#64;password). These commands
-have their arguments masked by default, but you must mask or mask any
-custom commands of your own that handle sensitive information.</p>
-<p>See README.md for installation/configuration instructions.</p>
-<dl class="py method">
-<dt id="evennia.contrib.security.auditing.server.AuditedServerSession.audit">
-<code class="sig-name descname">audit</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/security/auditing/server.html#AuditedServerSession.audit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.security.auditing.server.AuditedServerSession.audit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extracts messages and system data from a Session object upon message
-send or receive.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Keyword Arguments</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>src</strong> (<em>str</em>) – Source of data; ‘client’ or ‘server’. Indicates direction.</p></li>
-<li><p><strong>text</strong> (<em>str</em><em> or </em><a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – Client sends messages to server in the form of
-lists. Server sends messages to client as string.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>log (dict)</em> –</p>
-<dl class="simple">
-<dt>Dictionary object containing parsed system and user data</dt><dd><p>related to this message.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.security.auditing.server.AuditedServerSession.mask">
-<code class="sig-name descname">mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/security/auditing/server.html#AuditedServerSession.mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.security.auditing.server.AuditedServerSession.mask" title="Permalink to this definition">¶</a></dt>
-<dd><p>Masks potentially sensitive user information within messages before
-writing to log. Recording cleartext password attempts is bad policy.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>msg</strong> (<em>str</em>) – Raw text string sent from client &lt;-&gt; server</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>msg (str)</em> – Text string with sensitive information masked out.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.security.auditing.server.AuditedServerSession.data_out">
-<code class="sig-name descname">data_out</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/security/auditing/server.html#AuditedServerSession.data_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.security.auditing.server.AuditedServerSession.data_out" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generic hook for sending data out through the protocol.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Keyword Arguments</dt>
-<dd class="field-odd"><p><strong>kwargs</strong> (<em>any</em>) – Other data to the protocol.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.security.auditing.server.AuditedServerSession.data_in">
-<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/security/auditing/server.html#AuditedServerSession.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.security.auditing.server.AuditedServerSession.data_in" title="Permalink to this definition">¶</a></dt>
-<dd><p>Hook for protocols to send incoming data to the engine.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Keyword Arguments</dt>
-<dd class="field-odd"><p><strong>kwargs</strong> (<em>any</em>) – Other data from the protocol.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+  <section id="evennia-contrib-security-auditing-server">
+<h1>evennia.contrib.security.auditing.server<a class="headerlink" href="#evennia-contrib-security-auditing-server" title="Permalink to this headline">¶</a></h1>
 </section>
 
 
@@ -163,7 +82,7 @@ writing to log. Recording cleartext password attempts is bad policy.</p>
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="../../1.0-dev/api/evennia.contrib.security.auditing.server.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.contrib.security.auditing.server.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 

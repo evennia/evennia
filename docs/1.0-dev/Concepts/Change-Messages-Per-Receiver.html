@@ -50,8 +50,8 @@ all <a class="reference internal" href="../Components/Objects.html"><span class=
 </div>
 <p>You can also embed references in the string:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-<span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{anna}</span><span class="s2"> walks into the room.&quot;</span><span class="p">,</span> 
-                  <span class="n">from_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> 
+<span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{anna}</span><span class="s2"> walks into the room.&quot;</span><span class="p">,</span>
+                  <span class="n">from_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
                   <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;anna&#39;</span><span class="p">:</span> <span class="n">anna_object</span><span class="p">})</span>
 </pre></div>
 </div>
@@ -371,20 +371,20 @@ control capitalization.</p></li>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># director stance</span>
 <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Tom picks up the $obj(gun), whistling to himself&quot;</span>
 
-<span class="c1"># actor stance </span>
+<span class="c1"># actor stance</span>
 <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;$You() $conj(pick) up the $obj(gun), whistling to $pron(yourself)&quot;</span>
 
 <span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;gun&quot;</span><span class="p">:</span> <span class="n">gun_object</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>Depending on your game, Tom may now see himself picking up <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">rusty</span> <span class="pre">old</span> <span class="pre">gun</span></code>, whereas an onlooker
-with a high gun smith skill may instead see him picking up <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">rare-make</span> <span class="pre">Smith</span> <span class="pre">&amp;</span> <span class="pre">Wesson</span> <span class="pre">model</span> <span class="pre">686</span>&#160; <span class="pre">in</span> <span class="pre">poor</span> <span class="pre">condition&quot;</span> <span class="pre">...</span></code></p>
+with a high gun smith skill may instead see him picking up <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">rare-make</span> <span class="pre">Smith</span> <span class="pre">&amp;</span> <span class="pre">Wesson</span> <span class="pre">model</span> <span class="pre">686</span> <span class="pre">in</span> <span class="pre">poor</span> <span class="pre">condition&quot;</span> <span class="pre">...</span></code></p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="recog-systems-and-roleplaying">
 <h1>Recog systems and roleplaying<a class="headerlink" href="#recog-systems-and-roleplaying" title="Permalink to this headline">¶</a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">$funcparser</span></code> inline functions are very powerful for the game developer, but they may
 be a bit too much to write for the regular player.</p>
-<p>The <span class="xref myst">rpsystem contrib</span> implements a full dynamic emote/pose and recognition
+<p>The <a class="reference internal" href="../api/evennia.contrib.rpg.rpsystem.html#evennia-contrib-rpg-rpsystem"><span class="std std-ref">rpsystem contrib</span></a> implements a full dynamic emote/pose and recognition
 system with short-descriptions and disguises. It uses director stance with a custom markup
 language, like <code class="docutils literal notranslate"><span class="pre">/me</span></code> <code class="docutils literal notranslate"><span class="pre">/gun</span></code> and <code class="docutils literal notranslate"><span class="pre">/tall</span> <span class="pre">man</span></code> to refer to players and objects in the location. It can be
 worth checking out for inspiration.</p>

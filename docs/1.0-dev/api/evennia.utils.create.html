@@ -63,19 +63,19 @@ objects already existing in the database.</p>
 <strong>#dbref</strong> will be set.</p></li>
 <li><p><strong>location</strong> (<em>Object</em><em> or </em><em>str</em>) – Obj or #dbref to use as the location of the new object.</p></li>
 <li><p><strong>home</strong> (<em>Object</em><em> or </em><em>str</em>) – Obj or #dbref to use as the object’s home location.</p></li>
-<li><p><strong>permissions</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – A list of permission strings or tuples (permstring, category).</p></li>
+<li><p><strong>permissions</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – A list of permission strings or tuples (permstring, category).</p></li>
 <li><p><strong>locks</strong> (<em>str</em>) – one or more lockstrings, separated by semicolons.</p></li>
-<li><p><strong>aliases</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – A list of alternative keys or tuples (aliasstring, category).</p></li>
-<li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – List of tag keys or tuples (tagkey, category) or (tagkey, category, data).</p></li>
+<li><p><strong>aliases</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – A list of alternative keys or tuples (aliasstring, category).</p></li>
+<li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – List of tag keys or tuples (tagkey, category) or (tagkey, category, data).</p></li>
 <li><p><strong>destination</strong> (<em>Object</em><em> or </em><em>str</em>) – Obj or #dbref to use as an Exit’s target.</p></li>
 <li><p><strong>report_to</strong> (<em>Object</em>) – The object to return error messages to.</p></li>
 <li><p><strong>nohome</strong> (<em>bool</em>) – This allows the creation of objects without a
 default home location; only used when creating the default
 location itself or during unittests.</p></li>
-<li><p><strong>attributes</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – Tuples on the form (key, value) or (key, value, category),
+<li><p><strong>attributes</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – Tuples on the form (key, value) or (key, value, category),
 (key, value, lockstring) or (key, value, lockstring, default_access).
 to set as Attributes on the new object.</p></li>
-<li><p><strong>nattributes</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – Non-persistent tuples on the form (key, value). Note that
+<li><p><strong>nattributes</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – Non-persistent tuples on the form (key, value). Note that
 adding this rarely makes sense since this data will not survive a reload.</p></li>
 </ul>
 </dd>
@@ -121,8 +121,8 @@ or not (all Scripts will survive a reload).</p></li>
 created or if the <strong>start</strong> method must be called explicitly.</p></li>
 <li><p><strong>report_to</strong> (<em>Object</em>) – The object to return error messages to.</p></li>
 <li><p><strong>desc</strong> (<em>str</em>) – Optional description of script</p></li>
-<li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – List of tags or tuples (tag, category).</p></li>
-<li><p><strong>attributes</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – List if tuples (key, value) or (key, value, category)
+<li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – List of tags or tuples (tag, category).</p></li>
+<li><p><strong>attributes</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – List if tuples (key, value) or (key, value, category)
 (key, value, lockstring) or (key, value, lockstring, default_access).</p></li>
 </ul>
 </dd>
@@ -209,7 +209,7 @@ keep_log switch.</p>
 <li><p><strong>keep_log</strong> (<em>bool</em>) – Log channel throughput.</p></li>
 <li><p><strong>typeclass</strong> (<em>str</em><em> or </em><em>class</em>) – The typeclass of the Channel (not
 often used).</p></li>
-<li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – A list of tags or tuples <strong>(tag, category)</strong>.</p></li>
+<li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – A list of tags or tuples <strong>(tag, category)</strong>.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
@@ -236,9 +236,9 @@ the empty string, will be set to None.</p></li>
 <li><p><strong>typeclass</strong> (<em>str</em>) – The typeclass to use for the account.</p></li>
 <li><p><strong>is_superuser</strong> (<em>bool</em>) – Wether or not this account is to be a superuser</p></li>
 <li><p><strong>locks</strong> (<em>str</em>) – Lockstring.</p></li>
-<li><p><strong>permission</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – List of permission strings.</p></li>
-<li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – List of Tags on form <strong>(key, category[, data])</strong></p></li>
-<li><p><strong>attributes</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – List of Attributes on form
+<li><p><strong>permission</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – List of permission strings.</p></li>
+<li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – List of Tags on form <strong>(key, category[, data])</strong></p></li>
+<li><p><strong>attributes</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – List of Attributes on form
 <strong>(key, value [, category, [,lockstring [, default_pass]]])</strong></p></li>
 <li><p><strong>report_to</strong> (<em>Object</em>) – An object with a msg() method to report
 errors to. If not given, errors will be logged.</p></li>

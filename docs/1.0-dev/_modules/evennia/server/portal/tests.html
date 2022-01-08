@@ -60,7 +60,7 @@
 
 <span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">MagicMock</span>
 <span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">irc</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
 
 <span class="kn">from</span> <span class="nn">twisted.conch.telnet</span> <span class="kn">import</span> <span class="n">IAC</span><span class="p">,</span> <span class="n">WILL</span><span class="p">,</span> <span class="n">DONT</span><span class="p">,</span> <span class="n">SB</span><span class="p">,</span> <span class="n">SE</span><span class="p">,</span> <span class="n">NAWS</span><span class="p">,</span> <span class="n">DO</span>
 <span class="kn">from</span> <span class="nn">twisted.test</span> <span class="kn">import</span> <span class="n">proto_helpers</span>
@@ -325,7 +325,7 @@
         <span class="k">return</span> <span class="n">d</span></div></div>
 
 
-<div class="viewcode-block" id="TestWebSocket"><a class="viewcode-back" href="../../../../api/evennia.server.portal.tests.html#evennia.server.portal.tests.TestWebSocket">[docs]</a><span class="k">class</span> <span class="nc">TestWebSocket</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestWebSocket"><a class="viewcode-back" href="../../../../api/evennia.server.portal.tests.html#evennia.server.portal.tests.TestWebSocket">[docs]</a><span class="k">class</span> <span class="nc">TestWebSocket</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestWebSocket.setUp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.tests.html#evennia.server.portal.tests.TestWebSocket.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proto</span> <span class="o">=</span> <span class="n">WebSocketClient</span><span class="p">()</span>

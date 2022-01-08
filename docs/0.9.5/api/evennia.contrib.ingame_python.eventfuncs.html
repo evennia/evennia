@@ -39,75 +39,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="module-evennia.contrib.ingame_python.eventfuncs">
-<span id="evennia-contrib-ingame-python-eventfuncs"></span><h1>evennia.contrib.ingame_python.eventfuncs<a class="headerlink" href="#module-evennia.contrib.ingame_python.eventfuncs" title="Permalink to this headline">¶</a></h1>
-<p>Module defining basic eventfuncs for the event system.</p>
-<p>Eventfuncs are just Python functions that can be used inside of calllbacks.</p>
-<dl class="py function">
-<dt id="evennia.contrib.ingame_python.eventfuncs.deny">
-<code class="sig-prename descclassname">evennia.contrib.ingame_python.eventfuncs.</code><code class="sig-name descname">deny</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/eventfuncs.html#deny"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.eventfuncs.deny" title="Permalink to this definition">¶</a></dt>
-<dd><p>Deny, that is stop, the callback here.</p>
-<p class="rubric">Notes</p>
-<p>This function will raise an exception to terminate the callback
-in a controlled way.  If you use this function in an event called
-prior to a command, the command will be cancelled as well.  Good
-situations to use the <strong>deny()</strong> function are in events that begins
-by <strong>can_</strong>, because they usually can be cancelled as easily as that.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.contrib.ingame_python.eventfuncs.get">
-<code class="sig-prename descclassname">evennia.contrib.ingame_python.eventfuncs.</code><code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/eventfuncs.html#get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.eventfuncs.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an object with the given search option or None if None is found.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Keyword Arguments</dt>
-<dd class="field-odd"><p><strong>searchable data</strong><strong> or </strong><strong>property</strong> (<em>Any</em>) – </p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The object found that meet these criteria for research, or
-None if none is found.</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This function is very useful to retrieve objects with a specific
-ID.  You know that room #32 exists, but you don’t have it in
-the callback variables.  Quite simple:</p>
-<blockquote>
-<div><p>room = get(id=32)</p>
-</div></blockquote>
-<p>This function doesn’t perform a search on objects, but a direct
-search in the database.  It’s recommended to use it for objects
-you know exist, using their IDs or other unique attributes.
-Looking for objects by key is possible (use <strong>db_key</strong> as an
-argument) but remember several objects can share the same key.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.contrib.ingame_python.eventfuncs.call_event">
-<code class="sig-prename descclassname">evennia.contrib.ingame_python.eventfuncs.</code><code class="sig-name descname">call_event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">event_name</span></em>, <em class="sig-param"><span class="n">seconds</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/eventfuncs.html#call_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.eventfuncs.call_event" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call the specified event in X seconds.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>obj</strong> (<em>Object</em>) – the typeclassed object containing the event.</p></li>
-<li><p><strong>event_name</strong> (<em>str</em>) – the event name to be called.</p></li>
-<li><p><strong>seconds</strong> (<em>int</em><em> or </em><em>float</em>) – the number of seconds to wait before calling
-the event.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This eventfunc can be used to call other events from inside of an
-event in a given time.  This will create a pause between events.  This
-will not freeze the game, and you can expect characters to move
-around (unless you prevent them from doing so).</p>
-<p>Variables that are accessible in your event using ‘call()’ will be
-kept and passed on to the event to call.</p>
-<p>Chained callbacks are designed for this very purpose: they
-are never called automatically by the game, rather, they need
-to be called from inside another event.</p>
-</dd></dl>
-
+  <section id="evennia-contrib-ingame-python-eventfuncs">
+<h1>evennia.contrib.ingame_python.eventfuncs<a class="headerlink" href="#evennia-contrib-ingame-python-eventfuncs" title="Permalink to this headline">¶</a></h1>
 </section>
 
 
@@ -149,7 +82,7 @@ to be called from inside another event.</p>
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="../../1.0-dev/api/evennia.contrib.ingame_python.eventfuncs.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.contrib.ingame_python.eventfuncs.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 

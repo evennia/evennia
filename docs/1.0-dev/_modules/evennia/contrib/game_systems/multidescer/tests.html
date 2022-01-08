@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.game_systems.multidescer.tests &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.multidescer.tests</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.game_systems.multidescer.tests</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Test multidescer contrib.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">EvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">multidescer</span>
+
+
+<div class="viewcode-block" id="TestMultidescer"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.multidescer.tests.html#evennia.contrib.game_systems.multidescer.tests.TestMultidescer">[docs]</a><span class="k">class</span> <span class="nc">TestMultidescer</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestMultidescer.test_cmdmultidesc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.multidescer.tests.html#evennia.contrib.game_systems.multidescer.tests.TestMultidescer.test_cmdmultidesc">[docs]</a>    <span class="k">def</span> <span class="nf">test_cmdmultidesc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">multidescer</span><span class="o">.</span><span class="n">CmdMultiDesc</span><span class="p">(),</span> <span class="s2">&quot;/list&quot;</span><span class="p">,</span> <span class="s2">&quot;Stored descs:</span><span class="se">\n</span><span class="s2">caller:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">multidescer</span><span class="o">.</span><span class="n">CmdMultiDesc</span><span class="p">(),</span> <span class="s2">&quot;test = Desc 1&quot;</span><span class="p">,</span> <span class="s2">&quot;Stored description &#39;test&#39;: </span><span class="se">\&quot;</span><span class="s2">Desc 1</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">multidescer</span><span class="o">.</span><span class="n">CmdMultiDesc</span><span class="p">(),</span> <span class="s2">&quot;test2 = Desc 2&quot;</span><span class="p">,</span> <span class="s2">&quot;Stored description &#39;test2&#39;: </span><span class="se">\&quot;</span><span class="s2">Desc 2</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">multidescer</span><span class="o">.</span><span class="n">CmdMultiDesc</span><span class="p">(),</span> <span class="s2">&quot;/swap test-test2&quot;</span><span class="p">,</span> <span class="s2">&quot;Swapped descs &#39;test&#39; and &#39;test2&#39;.&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">multidescer</span><span class="o">.</span><span class="n">CmdMultiDesc</span><span class="p">(),</span>
+            <span class="s2">&quot;test3 = Desc 3init&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Stored description &#39;test3&#39;: </span><span class="se">\&quot;</span><span class="s2">Desc 3init</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">multidescer</span><span class="o">.</span><span class="n">CmdMultiDesc</span><span class="p">(),</span>
+            <span class="s2">&quot;/list&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Stored descs:</span><span class="se">\n</span><span class="s2">test3: Desc 3init</span><span class="se">\n</span><span class="s2">test: Desc 1</span><span class="se">\n</span><span class="s2">test2: Desc 2</span><span class="se">\n</span><span class="s2">caller:&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">multidescer</span><span class="o">.</span><span class="n">CmdMultiDesc</span><span class="p">(),</span> <span class="s2">&quot;test3 = Desc 3&quot;</span><span class="p">,</span> <span class="s2">&quot;Stored description &#39;test3&#39;: </span><span class="se">\&quot;</span><span class="s2">Desc 3</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">multidescer</span><span class="o">.</span><span class="n">CmdMultiDesc</span><span class="p">(),</span>
+            <span class="s2">&quot;/set test1 + test2 + + test3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;test1 Desc 2 Desc 3</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="s2">&quot;The above was set as the current description.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">,</span> <span class="s2">&quot;test1 Desc 2 Desc 3&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="tests.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.multidescer.tests</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

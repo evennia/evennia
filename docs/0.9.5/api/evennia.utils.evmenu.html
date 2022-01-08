@@ -762,29 +762,33 @@ given, the decorated node must itself provide a way to continue from the node!</
 </dl>
 <p class="rubric">Example</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="n">available_choices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="s1">&#39;&#39;&#39;</span>
-<span class="s1">    Args:</span>
-<span class="s1">        caller (Object or Account): User of the menu.</span>
-<span class="s1">        selection (str): What caller chose in the menu</span>
-<span class="s1">        available_choices (list): The keys of elements available on the *current listing</span>
-<span class="s1">            page*.</span>
-<span class="s1">        **kwargs: Kwargs passed on from the node.</span>
-<span class="s1">    Returns:</span>
-<span class="s1">        tuple, str or None: A tuple (nextnodename, **kwargs) or just nextnodename.  Return</span>
-<span class="s1">            **None** to go back to the listnode.</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This will be called by all auto-generated options except any &#39;extra_options&#39;</span>
+<span class="sd">    you return from the node (those you need to handle normally).</span>
 
-<span class="s1">    # (do something with **selection** here)</span>
+<span class="sd">    Args:</span>
+<span class="sd">        caller (Object or Account): User of the menu.</span>
+<span class="sd">        selection (str): What caller chose in the menu</span>
+<span class="sd">        available_choices (list): The keys of elements available on the *current listing</span>
+<span class="sd">            page*.</span>
+<span class="sd">        **kwargs: Kwargs passed on from the node.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple, str or None: A tuple (nextnodename, **kwargs) or just nextnodename.  Return</span>
+<span class="sd">            **None** to go back to the listnode.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
 
-<span class="s1">    return &quot;nextnode&quot;, **kwargs</span>
+    <span class="c1"># (do something with **selection** here)</span>
 
-<span class="s1">@list_node([&#39;foo&#39;, &#39;bar&#39;], select)</span>
-<span class="s1">def node_index(caller):</span>
-<span class="s1">    text = &quot;describing the list&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;nextnode&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 
-<span class="s1">    # optional extra options in addition to the list-options</span>
-<span class="s1">    extra_options = []</span>
+<span class="nd">@list_node</span><span class="p">([</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">],</span> <span class="n">select</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">node_index</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;describing the list&quot;</span>
 
-<span class="s1">    return text, extra_options</span>
+    <span class="c1"># optional extra options in addition to the list-options</span>
+    <span class="n">extra_options</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">extra_options</span>
 </pre></div>
 </div>
 <p class="rubric">Notes</p>
@@ -942,7 +946,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['n', 'yes', '__nomatch_command', 'a', 'no', 'abort', 'y']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['n', 'abort', 'yes', 'no', 'a', '__nomatch_command', 'y']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -968,7 +972,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'n yes __nomatch_command a no abort y', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' n yes __nomatch_command a no abort y', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'n abort yes no a __nomatch_command y', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' n abort yes no a __nomatch_command y', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

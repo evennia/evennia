@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.utils.auditing.server &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.utils.auditing.server</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.utils.auditing.server">
+<span id="evennia-contrib-utils-auditing-server"></span><h1>evennia.contrib.utils.auditing.server<a class="headerlink" href="#module-evennia.contrib.utils.auditing.server" title="Permalink to this headline">¶</a></h1>
+<p>Auditable Server Sessions:
+Extension of the stock ServerSession that yields objects representing
+user inputs and system outputs.</p>
+<p>Evennia contribution - Johnny 2017</p>
+<dl class="py class">
+<dt id="evennia.contrib.utils.auditing.server.AuditedServerSession">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.utils.auditing.server.</code><code class="sig-name descname">AuditedServerSession</code><a class="reference internal" href="../_modules/evennia/contrib/utils/auditing/server.html#AuditedServerSession"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.utils.auditing.server.AuditedServerSession" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.server.serversession.html#evennia.server.serversession.ServerSession" title="evennia.server.serversession.ServerSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.server.serversession.ServerSession</span></code></a></p>
+<p>This particular implementation parses all server inputs and/or outputs and
+passes a dict containing the parsed metadata to a callback method of your
+creation. This is useful for recording player activity where necessary for
+security auditing, usage analysis or post-incident forensic discovery.</p>
+<p><strong>* WARNING *</strong>
+All strings are recorded and stored in plaintext. This includes those strings
+which might contain sensitive data (create, connect, &#64;password). These commands
+have their arguments masked by default, but you must mask or mask any
+custom commands of your own that handle sensitive information.</p>
+<p>See README.md for installation/configuration instructions.</p>
+<dl class="py method">
+<dt id="evennia.contrib.utils.auditing.server.AuditedServerSession.audit">
+<code class="sig-name descname">audit</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/utils/auditing/server.html#AuditedServerSession.audit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.utils.auditing.server.AuditedServerSession.audit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts messages and system data from a Session object upon message
+send or receive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> (<em>str</em>) – Source of data; ‘client’ or ‘server’. Indicates direction.</p></li>
+<li><p><strong>text</strong> (<em>str</em><em> or </em><a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – Client sends messages to server in the form of
+lists. Server sends messages to client as string.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>log (dict)</em> –</p>
+<dl class="simple">
+<dt>Dictionary object containing parsed system and user data</dt><dd><p>related to this message.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.utils.auditing.server.AuditedServerSession.mask">
+<code class="sig-name descname">mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/utils/auditing/server.html#AuditedServerSession.mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.utils.auditing.server.AuditedServerSession.mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Masks potentially sensitive user information within messages before
+writing to log. Recording cleartext password attempts is bad policy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>str</em>) – Raw text string sent from client &lt;-&gt; server</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>msg (str)</em> – Text string with sensitive information masked out.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.utils.auditing.server.AuditedServerSession.data_out">
+<code class="sig-name descname">data_out</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/utils/auditing/server.html#AuditedServerSession.data_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.utils.auditing.server.AuditedServerSession.data_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic hook for sending data out through the protocol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>any</em>) – Other data to the protocol.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.utils.auditing.server.AuditedServerSession.data_in">
+<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/utils/auditing/server.html#AuditedServerSession.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.utils.auditing.server.AuditedServerSession.data_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook for protocols to send incoming data to the engine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>any</em>) – Other data from the protocol.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.utils.auditing.server.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.utils.auditing.server.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.utils.auditing.server</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

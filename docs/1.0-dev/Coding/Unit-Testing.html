@@ -143,9 +143,10 @@ definition of the <code class="docutils literal notranslate"><span class="pre">E
 <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/utils/test_resources.py">evennia/utils/test_resources.py</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in a test module</span>
 
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
 
-<span class="k">class</span> <span class="nc">TestObject</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+
+<span class="k">class</span> <span class="nc">TestObject</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">test_object_search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># char1 and char2 are both created in room1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">key</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span>
@@ -199,26 +200,26 @@ testing#503435) is currently untested! Please report your findings.</p>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">import</span> <span class="nn">django</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
 
 <span class="n">OLD_DEFAULT_SETTINGS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">INSTALLED_APPS</span>
 <span class="n">DEFAULT_SETTINGS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
     <span class="n">INSTALLED_APPS</span><span class="o">=</span><span class="p">(</span>
         <span class="s1">&#39;contrib.mycontrib.tests&#39;</span><span class="p">,</span>
-        <span class="p">),</span>
+    <span class="p">),</span>
     <span class="n">DATABASES</span><span class="o">=</span><span class="p">{</span>
         <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;ENGINE&quot;</span><span class="p">:</span> <span class="s2">&quot;django.db.backends.sqlite3&quot;</span>
-            <span class="p">}</span>
-        <span class="p">},</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
     <span class="n">SILENCED_SYSTEM_CHECKS</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;1_7.W001&quot;</span><span class="p">],</span>
-    <span class="p">)</span>
+<span class="p">)</span>
 
-<span class="k">class</span> <span class="nc">TestMyModel</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+
+<span class="k">class</span> <span class="nc">TestMyModel</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
         <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">configured</span><span class="p">:</span>
-           <span class="n">settings</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="o">**</span><span class="n">DEFAULT_SETTINGS</span><span class="p">)</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="o">**</span><span class="n">DEFAULT_SETTINGS</span><span class="p">)</span>
         <span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 
         <span class="kn">from</span> <span class="nn">django.core.management</span> <span class="kn">import</span> <span class="n">call_command</span>
@@ -238,7 +239,7 @@ testing#503435) is currently untested! Please report your findings.</p>
     <span class="c1"># test cases below ...</span>
 
     <span class="k">def</span> <span class="nf">test_case</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># test case here</span>
+<span class="c1"># test case here</span>
 </pre></div>
 </div>
 </section>

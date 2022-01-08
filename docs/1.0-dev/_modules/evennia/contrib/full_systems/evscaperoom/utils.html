@@ -1,0 +1,302 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.full_systems.evscaperoom.utils &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.full_systems.evscaperoom.utils</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.full_systems.evscaperoom.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Helper functions and classes for the evscaperoom contrib.</span>
+
+<span class="sd">Most of these are available directly from wrappers in state/object/room classes</span>
+<span class="sd">and does not need to be imported from here.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">justify</span><span class="p">,</span> <span class="n">inherits_from</span>
+
+<span class="n">_BASE_TYPECLASS_PATH</span> <span class="o">=</span> <span class="s2">&quot;evscaperoom.objects.&quot;</span>
+<span class="n">_RE_PERSPECTIVE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;~(\w+)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">U</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+<span class="n">_RE_THING</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\*(\w+)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">U</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="create_evscaperoom_object"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.create_evscaperoom_object">[docs]</a><span class="k">def</span> <span class="nf">create_evscaperoom_object</span><span class="p">(</span>
+    <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;testobj&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delete_duplicates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a convenience-wrapper for quickly building EvscapeRoom objects. This</span>
+<span class="sd">    is called from the helper-method create_object on states, but is also useful</span>
+<span class="sd">    for the object-create admin command.</span>
+
+<span class="sd">    Note that for the purpose of the Evscaperoom, we only allow one instance</span>
+<span class="sd">    of each *name*, deleting the old version if it already exists.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        typeclass (str): This can take just the class-name in the evscaperoom&#39;s</span>
+<span class="sd">            objects.py module. Otherwise, a full path is needed.</span>
+<span class="sd">        key (str): Name of object.</span>
+<span class="sd">        location (Object): The location to create new object.</span>
+<span class="sd">        delete_duplicates (bool): Delete old object with same key.</span>
+<span class="sd">        kwargs (any): Will be passed into create_object.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        new_obj (Object): The newly created object, if any.</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+        <span class="n">callable</span><span class="p">(</span><span class="n">typeclass</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">typeclass</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;evennia&quot;</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">typeclass</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;typeclasses&quot;</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">typeclass</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;evscaperoom&quot;</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="c1"># unless we specify a full typeclass path or the class itself,</span>
+        <span class="c1"># auto-complete it</span>
+        <span class="n">typeclass</span> <span class="o">=</span> <span class="n">_BASE_TYPECLASS_PATH</span> <span class="o">+</span> <span class="n">typeclass</span>
+
+    <span class="k">if</span> <span class="n">delete_duplicates</span><span class="p">:</span>
+        <span class="n">old_objs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">obj</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">search_object</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;evennia.objects.objects.DefaultCharacter&quot;</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">location</span><span class="p">:</span>
+            <span class="c1"># delete only matching objects in the given location</span>
+            <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">old_objs</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="n">location</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">old_objs</span><span class="p">]</span>
+
+    <span class="n">new_obj</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_obj</span></div>
+
+
+<div class="viewcode-block" id="create_fantasy_word"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.create_fantasy_word">[docs]</a><span class="k">def</span> <span class="nf">create_fantasy_word</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a random semi-pronouncable &#39;word&#39;.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        length (int): The desired length of the &#39;word&#39;.</span>
+<span class="sd">        capitalize (bool): If the return should be capitalized or not</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        word (str): The fictous word of given length.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">length</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="n">phonemes</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;ea oh ae aa eh ah ao aw ai er ey ow ia ih iy oy ua &quot;</span>
+        <span class="s2">&quot;uh uw a e i u y p b t d f v t dh &quot;</span>
+        <span class="s2">&quot;s z sh zh ch jh k ng g m n l r w&quot;</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">word</span> <span class="o">=</span> <span class="p">[</span><span class="n">choice</span><span class="p">(</span><span class="n">phonemes</span><span class="p">)]</span>
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">length</span><span class="p">:</span>
+        <span class="n">word</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">choice</span><span class="p">(</span><span class="n">phonemes</span><span class="p">))</span>
+    <span class="c1"># it&#39;s possible to exceed length limit due to double consonants</span>
+    <span class="n">word</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">word</span><span class="p">)[:</span><span class="n">length</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">word</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">if</span> <span class="n">capitalize</span> <span class="k">else</span> <span class="n">word</span></div>
+
+
+<span class="c1"># special word mappings when going from 2nd person to 3rd</span>
+<span class="n">irregulars</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;were&quot;</span><span class="p">:</span> <span class="s2">&quot;was&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;are&quot;</span><span class="p">:</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mix&quot;</span><span class="p">:</span> <span class="s2">&quot;mixes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;push&quot;</span><span class="p">:</span> <span class="s2">&quot;pushes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;have&quot;</span><span class="p">:</span> <span class="s2">&quot;has&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;focus&quot;</span><span class="p">:</span> <span class="s2">&quot;focuses&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="parse_for_perspectives"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.parse_for_perspectives">[docs]</a><span class="k">def</span> <span class="nf">parse_for_perspectives</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">you</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse a string with special markers to produce versions both</span>
+<span class="sd">    intended for the person doing the action (&#39;you&#39;) and for those</span>
+<span class="sd">    seeing the person doing that action. Also marks &#39;things&#39;</span>
+<span class="sd">    according to style. See example below.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        string (str): String on 2nd person form with ~ markers (&#39;~you ~open ...&#39;)</span>
+<span class="sd">        you (str): What others should see instead of you (Bob opens)</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        second, third_person (tuple): Strings replace to be shown in 2nd and 3rd person</span>
+<span class="sd">            perspective</span>
+<span class="sd">    Example:</span>
+<span class="sd">        &quot;~You ~open&quot;</span>
+<span class="sd">        -&gt;  &quot;You open&quot;, &quot;Bob opens&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_replace_third_person</span><span class="p">(</span><span class="n">match</span><span class="p">):</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">lmatch</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">lmatch</span> <span class="o">==</span> <span class="s2">&quot;you&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;|c</span><span class="si">{}</span><span class="s2">|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">you</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">lmatch</span> <span class="ow">in</span> <span class="n">irregulars</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">irregulars</span><span class="p">[</span><span class="n">lmatch</span><span class="p">]</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">irregulars</span><span class="p">[</span><span class="n">lmatch</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">lmatch</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">match</span> <span class="o">+</span> <span class="s2">&quot;es&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">match</span> <span class="o">+</span> <span class="s2">&quot;s&quot;</span>  <span class="c1"># simple, most normal form</span>
+
+    <span class="n">you</span> <span class="o">=</span> <span class="s2">&quot;They&quot;</span> <span class="k">if</span> <span class="n">you</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">you</span>
+
+    <span class="n">first_person</span> <span class="o">=</span> <span class="n">_RE_PERSPECTIVE</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\1&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+    <span class="n">third_person</span> <span class="o">=</span> <span class="n">_RE_PERSPECTIVE</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">_replace_third_person</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">first_person</span><span class="p">,</span> <span class="n">third_person</span></div>
+
+
+<div class="viewcode-block" id="parse_for_things"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.parse_for_things">[docs]</a><span class="k">def</span> <span class="nf">parse_for_things</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">things_style</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">clr</span><span class="o">=</span><span class="s2">&quot;|y&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse string for special *thing markers and decorate</span>
+<span class="sd">    it.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        string (str): The string to parse.</span>
+<span class="sd">        things_style (int): The style to handle `*things` marked:</span>
+<span class="sd">            0 - no marking (remove `*`)</span>
+<span class="sd">            1 - mark with color</span>
+<span class="sd">            2 - mark with color and [] (default)</span>
+<span class="sd">        clr (str): Which color to use for marker..</span>
+<span class="sd">    Example:</span>
+<span class="sd">        You open *door -&gt; You open [door].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">things_style</span><span class="p">:</span>
+        <span class="c1"># hardcore mode - no marking of focus targets</span>
+        <span class="k">return</span> <span class="n">_RE_THING</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\1&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">things_style</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># only colors</span>
+        <span class="k">return</span> <span class="n">_RE_THING</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">\1|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">clr</span><span class="p">),</span> <span class="n">string</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># colors and brackets</span>
+        <span class="k">return</span> <span class="n">_RE_THING</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">[\1]|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">clr</span><span class="p">),</span> <span class="n">string</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="add_msg_borders"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.add_msg_borders">[docs]</a><span class="k">def</span> <span class="nf">add_msg_borders</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="s2">&quot;Add borders above/below text block&quot;</span>
+    <span class="n">maxwidth</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
+    <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;|w&quot;</span> <span class="o">+</span> <span class="s2">&quot;~&quot;</span> <span class="o">*</span> <span class="n">maxwidth</span> <span class="o">+</span> <span class="s2">&quot;|n&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sep</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">sep</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="n">text</span></div>
+
+
+<div class="viewcode-block" id="msg_cinematic"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.utils.html#evennia.contrib.full_systems.evscaperoom.utils.msg_cinematic">[docs]</a><span class="k">def</span> <span class="nf">msg_cinematic</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">borders</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Display a text as a &#39;cinematic&#39; - centered and</span>
+<span class="sd">    surrounded by borders.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str): Text to format.</span>
+<span class="sd">        borders (bool, optional): Put borders above and below text.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        text (str): Pretty-formatted text.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">justify</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">borders</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">add_msg_borders</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="utils.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.full_systems.evscaperoom.utils</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

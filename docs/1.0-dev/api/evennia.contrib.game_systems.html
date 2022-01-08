@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.game_systems &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.game_systems">
+<span id="evennia-contrib-game-systems"></span><h1>evennia.contrib.game_systems<a class="headerlink" href="#module-evennia.contrib.game_systems" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.barter.html">evennia.contrib.game_systems.barter</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html">evennia.contrib.game_systems.barter.barter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.barter.tests.html">evennia.contrib.game_systems.barter.tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.clothing.html">evennia.contrib.game_systems.clothing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.clothing.clothing.html">evennia.contrib.game_systems.clothing.clothing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.clothing.tests.html">evennia.contrib.game_systems.clothing.tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.cooldowns.html">evennia.contrib.game_systems.cooldowns</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.cooldowns.cooldowns.html">evennia.contrib.game_systems.cooldowns.cooldowns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.cooldowns.tests.html">evennia.contrib.game_systems.cooldowns.tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.crafting.html">evennia.contrib.game_systems.crafting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html">evennia.contrib.game_systems.crafting.crafting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#crafting-in-game">Crafting in game</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#crafting-in-code">Crafting in code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#recipes">Recipes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html">evennia.contrib.game_systems.crafting.example_recipes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#sword-crafting-tree">Sword crafting tree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#recipes-used-for-spell-casting">Recipes used for spell casting</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html">evennia.contrib.game_systems.crafting.tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.gendersub.html">evennia.contrib.game_systems.gendersub</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.gendersub.gendersub.html">evennia.contrib.game_systems.gendersub.gendersub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.gendersub.tests.html">evennia.contrib.game_systems.gendersub.tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.mail.html">evennia.contrib.game_systems.mail</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.mail.mail.html">evennia.contrib.game_systems.mail.mail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.mail.tests.html">evennia.contrib.game_systems.mail.tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.multidescer.html">evennia.contrib.game_systems.multidescer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.multidescer.multidescer.html">evennia.contrib.game_systems.multidescer.multidescer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.multidescer.tests.html">evennia.contrib.game_systems.multidescer.tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.puzzles.html">evennia.contrib.game_systems.puzzles</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.puzzles.puzzles.html">evennia.contrib.game_systems.puzzles.puzzles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.puzzles.tests.html">evennia.contrib.game_systems.puzzles.tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.html">evennia.contrib.game_systems.turnbattle</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html">evennia.contrib.game_systems.turnbattle.tb_basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html">evennia.contrib.game_systems.turnbattle.tb_equip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html">evennia.contrib.game_systems.turnbattle.tb_items</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html">evennia.contrib.game_systems.turnbattle.tb_magic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html">evennia.contrib.game_systems.turnbattle.tb_range</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html">evennia.contrib.game_systems.turnbattle.tests</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.game_systems.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.game_systems.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

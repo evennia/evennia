@@ -1,0 +1,379 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Roleplaying base system for Evennia &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Roleplaying base system for Evennia</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="roleplaying-base-system-for-evennia">
+<h1>Roleplaying base system for Evennia<a class="headerlink" href="#roleplaying-base-system-for-evennia" title="Permalink to this headline">¶</a></h1>
+<p>Contribution by Griatch, 2015</p>
+<p>A full roleplaying emote system. Short-descriptions and recognition (only
+know people by their looks until you assign a name to them). Room poses. Masks/disguises
+(hide your description). Speak directly in emote, with optional language obscuration
+(words get garbled if you don’t know the language, you can also have different languages
+with different ‘sounding’ garbling). Whispers can be partly overheard from a distance. A
+very powerful in-emote reference system, for referencing and differentiate targets
+(including objects).</p>
+<p>The system contains of two main modules - the roleplaying emote system and the language
+obscuration module.</p>
+<section id="roleplaying-emotes">
+<h2>Roleplaying emotes<a class="headerlink" href="#roleplaying-emotes" title="Permalink to this headline">¶</a></h2>
+<p>This module contains the ContribRPObject, ContribRPRoom and
+ContribRPCharacter typeclasses.  If you inherit your
+objects/rooms/character from these (or make them the defaults) from
+these you will get the following features:</p>
+<ul class="simple">
+<li><p>Objects/Rooms will get the ability to have poses and will report
+the poses of items inside them (the latter most useful for Rooms).</p></li>
+<li><p>Characters will get poses and also sdescs (short descriptions)
+that will be used instead of their keys. They will gain commands
+for managing recognition (custom sdesc-replacement), masking
+themselves as well as an advanced free-form emote command.</p></li>
+</ul>
+<p>In more detail, This RP base system introduces the following features
+to a game, common to many RP-centric games:</p>
+<ul class="simple">
+<li><p>emote system using director stance emoting (names/sdescs).
+This uses a customizable replacement noun (/me, &#64; etc) to
+represent you in the emote. You can use /sdesc, /nick, /key or
+/alias to reference objects in the room. You can use any
+number of sdesc sub-parts to differentiate a local sdesc, or
+use /1-sdesc etc to differentiate them. The emote also
+identifies nested says and separates case.</p></li>
+<li><p>sdesc obscuration of real character names for use in emotes
+and in any referencing such as object.search().  This relies
+on an SdescHandler <code class="docutils literal notranslate"><span class="pre">sdesc</span></code> being set on the Character and
+makes use of a custom Character.get_display_name hook. If
+sdesc is not set, the character’s <code class="docutils literal notranslate"><span class="pre">key</span></code> is used instead. This
+is particularly used in the emoting system.</p></li>
+<li><p>recog system to assign your own nicknames to characters, can then
+be used for referencing. The user may recog a user and assign
+any personal nick to them. This will be shown in descriptions
+and used to reference them. This is making use of the nick
+functionality of Evennia.</p></li>
+<li><p>masks to hide your identity (using a simple lock).</p></li>
+<li><p>pose system to set room-persistent poses, visible in room
+descriptions and when looking at the person/object.  This is a
+simple Attribute that modifies how the characters is viewed when
+in a room as sdesc + pose.</p></li>
+<li><p>in-emote says, including seamless integration with language
+obscuration routine (such as contrib/rplanguage.py)</p></li>
+</ul>
+<section id="installation">
+<h3>Installation:<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h3>
+<p>Add <code class="docutils literal notranslate"><span class="pre">RPSystemCmdSet</span></code> from this module to your CharacterCmdSet:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/default_cmdsets.py</span>
+
+<span class="c1"># ...</span>
+
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem</span> <span class="kn">import</span> <span class="n">RPSystemCmdSet</span>  <span class="o">&lt;---</span>
+
+<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdset</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">RPSystemCmdSet</span><span class="p">())</span>  <span class="c1"># &lt;---</span>
+
+</pre></div>
+</div>
+<p>You also need to make your Characters/Objects/Rooms inherit from
+the typeclasses in this module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/characters.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg</span> <span class="kn">import</span> <span class="n">ContribRPCharacter</span>
+
+<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">ContribRPCharacter</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/objects.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg</span> <span class="kn">import</span> <span class="n">ContribRPObject</span>
+
+<span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">ContribRPObject</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/rooms.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg</span> <span class="kn">import</span> <span class="n">ContribRPRoom</span>
+
+<span class="k">class</span> <span class="nc">Room</span><span class="p">(</span><span class="n">ContribRPRoom</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+
+</pre></div>
+</div>
+<p>You will then need to reload the server and potentially force-reload
+your objects, if you originally created them without this.</p>
+<p>Example for your character:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; type/reset/force me = typeclasses.characters.Character
+</pre></div>
+</div>
+<p>Examples:</p>
+<blockquote>
+<div><p>look
+Tavern
+The tavern is full of nice people</p>
+</div></blockquote>
+<p><em>A tall man</em> is standing by the bar.</p>
+<p>Above is an example of a player with an sdesc “a tall man”. It is also
+an example of a static <em>pose</em>: The “standing by the bar” has been set
+by the player of the tall man, so that people looking at him can tell
+at a glance what is going on.</p>
+<blockquote>
+<div><p>emote /me looks at /Tall and says “Hello!”</p>
+</div></blockquote>
+<p>I see:
+Griatch looks at Tall man and says “Hello”.
+Tall man (assuming his name is Tom) sees:
+The godlike figure looks at Tom and says “Hello”.</p>
+<p>Note that by default, the case of the tag matters, so <code class="docutils literal notranslate"><span class="pre">/tall</span></code> will
+lead to ‘tall man’ while <code class="docutils literal notranslate"><span class="pre">/Tall</span></code> will become ‘Tall man’ and /TALL
+becomes /TALL MAN. If you don’t want this behavior, you can pass
+case_sensitive=False to the <code class="docutils literal notranslate"><span class="pre">send_emote</span></code> function.</p>
+</section>
+</section>
+<section id="language-and-whisper-obfuscation-system">
+<h2>Language and whisper obfuscation system<a class="headerlink" href="#language-and-whisper-obfuscation-system" title="Permalink to this headline">¶</a></h2>
+<p>This module is intented to be used with an emoting system (such as
+<code class="docutils literal notranslate"><span class="pre">contrib/rpg/rpsystem.py</span></code>). It offers the ability to obfuscate spoken words
+in the game in various ways:</p>
+<ul class="simple">
+<li><p>Language: The language functionality defines a pseudo-language map
+to any number of languages.  The string will be obfuscated depending
+on a scaling that (most likely) will be input as a weighted average of
+the language skill of the speaker and listener.</p></li>
+<li><p>Whisper: The whisper functionality will gradually “fade out” a
+whisper along as scale 0-1, where the fading is based on gradually
+removing sections of the whisper that is (supposedly) easier to
+overhear (for example “s” sounds tend to be audible even when no other
+meaning can be determined).</p></li>
+</ul>
+<section id="id1">
+<h3>Installation<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>This module adds no new commands; embed it in your say/emote/whisper commands.</p>
+</section>
+<section id="usage">
+<h3>Usage:<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib</span> <span class="kn">import</span> <span class="n">rplanguage</span>
+
+<span class="c1"># need to be done once, here we create the &quot;default&quot; lang</span>
+<span class="n">rplanguage</span><span class="o">.</span><span class="n">add_language</span><span class="p">()</span>
+
+<span class="n">say</span> <span class="o">=</span> <span class="s2">&quot;This is me talking.&quot;</span>
+<span class="n">whisper</span> <span class="o">=</span> <span class="s2">&quot;This is me whispering.</span>
+
+<span class="nb">print</span> <span class="n">rplanguage</span><span class="o">.</span><span class="n">obfuscate_language</span><span class="p">(</span><span class="n">say</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="o">&lt;&lt;&lt;</span> <span class="s2">&quot;This is me talking.&quot;</span>
+<span class="nb">print</span> <span class="n">rplanguage</span><span class="o">.</span><span class="n">obfuscate_language</span><span class="p">(</span><span class="n">say</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="o">&lt;&lt;&lt;</span> <span class="s2">&quot;This is me byngyry.&quot;</span>
+<span class="nb">print</span> <span class="n">rplanguage</span><span class="o">.</span><span class="n">obfuscate_language</span><span class="p">(</span><span class="n">say</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="o">&lt;&lt;&lt;</span> <span class="s2">&quot;Daly ly sy byngyry.&quot;</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">rplanguage</span><span class="o">.</span><span class="n">obfuscate_whisper</span><span class="p">(</span><span class="n">whisper</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="o">&lt;&lt;&lt;</span> <span class="s2">&quot;This is me whispering&quot;</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">rplanguage</span><span class="o">.</span><span class="n">obfuscate_whisper</span><span class="p">(</span><span class="n">whisper</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="o">&lt;&lt;&lt;</span> <span class="s2">&quot;This is m- whisp-ring&quot;</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">rplanguage</span><span class="o">.</span><span class="n">obfuscate_whisper</span><span class="p">(</span><span class="n">whisper</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="o">&lt;&lt;&lt;</span> <span class="s2">&quot;---s -s -- ---s------&quot;</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">rplanguage</span><span class="o">.</span><span class="n">obfuscate_whisper</span><span class="p">(</span><span class="n">whisper</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="o">&lt;&lt;&lt;</span> <span class="s2">&quot;---- -- -- ----------&quot;</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">rplanguage</span><span class="o">.</span><span class="n">obfuscate_whisper</span><span class="p">(</span><span class="n">whisper</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="o">&lt;&lt;&lt;</span> <span class="s2">&quot;...&quot;</span>
+
+</pre></div>
+</div>
+<p>To set up new languages, import and use the <code class="docutils literal notranslate"><span class="pre">add_language()</span></code>
+helper method in this module. This allows you to customize the
+“feel” of the semi-random language you are creating. Especially
+the <code class="docutils literal notranslate"><span class="pre">word_length_variance</span></code> helps vary the length of translated
+words compared to the original and can help change the “feel” for
+the language you are creating. You can also add your own
+dictionary and “fix” random words for a list of input words.</p>
+<p>Below is an example of “elvish”, using “rounder” vowels and sounds:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># vowel/consonant grammar possibilities</span>
+<span class="n">grammar</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;v vv vvc vcc vvcc cvvc vccv vvccv vcvccv vcvcvcc vvccvvcc &quot;</span>
+           <span class="s2">&quot;vcvvccvvc cvcvvcvvcc vcvcvvccvcvv&quot;</span><span class="p">)</span>
+
+<span class="c1"># all not in this group is considered a consonant</span>
+<span class="n">vowels</span> <span class="o">=</span> <span class="s2">&quot;eaoiuy&quot;</span>
+
+<span class="c1"># you need a representative of all of the minimal grammars here, so if a</span>
+<span class="c1"># grammar v exists, there must be atleast one phoneme available with only</span>
+<span class="c1"># one vowel in it</span>
+<span class="n">phonemes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;oi oh ee ae aa eh ah ao aw ay er ey ow ia ih iy &quot;</span>
+            <span class="s2">&quot;oy ua uh uw y p b t d f v t dh s z sh zh ch jh k &quot;</span>
+            <span class="s2">&quot;ng g m n l r w&quot;</span><span class="p">)</span>
+
+<span class="c1"># how much the translation varies in length compared to the original. 0 is</span>
+<span class="c1"># smallest, higher values give ever bigger randomness (including removing</span>
+<span class="c1"># short words entirely)</span>
+<span class="n">word_length_variance</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># if a proper noun (word starting with capitalized letter) should be</span>
+<span class="c1"># translated or not. If not (default) it means e.g. names will remain</span>
+<span class="c1"># unchanged across languages.</span>
+<span class="n">noun_translate</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># all proper nouns (words starting with a capital letter not at the beginning</span>
+<span class="c1"># of a sentence) can have either a postfix or -prefix added at all times</span>
+<span class="n">noun_postfix</span> <span class="o">=</span> <span class="s2">&quot;&#39;la&quot;</span>
+
+<span class="c1"># words in dict will always be translated this way. The &#39;auto_translations&#39;</span>
+<span class="c1"># is instead a list or filename to file with words to use to help build a</span>
+<span class="c1"># bigger dictionary by creating random translations of each word in the</span>
+<span class="c1"># list *once* and saving the result for subsequent use.</span>
+<span class="n">manual_translations</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;the&quot;</span><span class="p">:</span><span class="s2">&quot;y&#39;e&quot;</span><span class="p">,</span> <span class="s2">&quot;we&quot;</span><span class="p">:</span><span class="s2">&quot;uyi&quot;</span><span class="p">,</span> <span class="s2">&quot;she&quot;</span><span class="p">:</span><span class="s2">&quot;semi&quot;</span><span class="p">,</span> <span class="s2">&quot;he&quot;</span><span class="p">:</span><span class="s2">&quot;emi&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;you&quot;</span><span class="p">:</span> <span class="s2">&quot;do&quot;</span><span class="p">,</span> <span class="s1">&#39;me&#39;</span><span class="p">:</span><span class="s1">&#39;mi&#39;</span><span class="p">,</span><span class="s1">&#39;i&#39;</span><span class="p">:</span><span class="s1">&#39;me&#39;</span><span class="p">,</span> <span class="s1">&#39;be&#39;</span><span class="p">:</span><span class="s2">&quot;hy&#39;e&quot;</span><span class="p">,</span> <span class="s1">&#39;and&#39;</span><span class="p">:</span><span class="s1">&#39;y&#39;</span><span class="p">}</span>
+
+<span class="n">rplanguage</span><span class="o">.</span><span class="n">add_language</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;elvish&quot;</span><span class="p">,</span> <span class="n">phonemes</span><span class="o">=</span><span class="n">phonemes</span><span class="p">,</span> <span class="n">grammar</span><span class="o">=</span><span class="n">grammar</span><span class="p">,</span>
+                         <span class="n">word_length_variance</span><span class="o">=</span><span class="n">word_length_variance</span><span class="p">,</span>
+                         <span class="n">noun_translate</span><span class="o">=</span><span class="n">noun_translate</span><span class="p">,</span>
+                         <span class="n">noun_postfix</span><span class="o">=</span><span class="n">noun_postfix</span><span class="p">,</span> <span class="n">vowels</span><span class="o">=</span><span class="n">vowels</span><span class="p">,</span>
+                         <span class="n">manual_translations</span><span class="o">=</span><span class="n">manual_translations</span><span class="p">,</span>
+                         <span class="n">auto_translations</span><span class="o">=</span><span class="s2">&quot;my_word_file.txt&quot;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>This will produce a decicively more “rounded” and “soft” language than the
+default one. The few <code class="docutils literal notranslate"><span class="pre">manual_translations</span></code> also make sure to make it at least
+look superficially “reasonable”.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">auto_translations</span></code> keyword is useful, this accepts either a
+list or a path to a text-file (with one word per line). This listing
+of words is used to ‘fix’ translations for those words according to the
+grammatical rules. These translations are stored persistently as long as the
+language exists.</p>
+<p>This allows to quickly build a large corpus of translated words
+that never change. This produces a language that seem moderately
+consistent, since words like ‘the’ will always be translated to the same thing.
+The disadvantage (or advantage, depending on your game) is that players can
+end up learn what words mean even if their characters don’t know the
+langauge.</p>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/rpg/rpsystem/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Roleplaying base system for Evennia</a><ul>
+<li><a class="reference internal" href="#roleplaying-emotes">Roleplaying emotes</a><ul>
+<li><a class="reference internal" href="#installation">Installation:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#language-and-whisper-obfuscation-system">Language and whisper obfuscation system</a><ul>
+<li><a class="reference internal" href="#id1">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contrib-RPSystem.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Contrib-RPSystem.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Roleplaying base system for Evennia</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

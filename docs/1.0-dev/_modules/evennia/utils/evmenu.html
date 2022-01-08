@@ -1379,6 +1379,9 @@
 <span class="sd">        ```python</span>
 <span class="sd">        def select(caller, selection, available_choices=None, **kwargs):</span>
 <span class="sd">            &#39;&#39;&#39;</span>
+<span class="sd">            This will be called by all auto-generated options except any &#39;extra_options&#39;</span>
+<span class="sd">            you return from the node (those you need to handle normally).</span>
+
 <span class="sd">            Args:</span>
 <span class="sd">                caller (Object or Account): User of the menu.</span>
 <span class="sd">                selection (str): What caller chose in the menu</span>
@@ -1388,6 +1391,7 @@
 <span class="sd">            Returns:</span>
 <span class="sd">                tuple, str or None: A tuple (nextnodename, **kwargs) or just nextnodename.  Return</span>
 <span class="sd">                    `None` to go back to the listnode.</span>
+<span class="sd">            &#39;&#39;&#39;</span>
 
 <span class="sd">            # (do something with `selection` here)</span>
 

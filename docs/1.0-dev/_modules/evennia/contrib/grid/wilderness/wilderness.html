@@ -1,0 +1,881 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.grid.wilderness.wilderness &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.wilderness.wilderness</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.grid.wilderness.wilderness</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Wilderness system</span>
+
+<span class="sd">Evennia contrib - titeuf87 2017</span>
+
+<span class="sd">This contrib provides a wilderness map. This is an area that can be huge where</span>
+<span class="sd">the rooms are mostly similar, except for some small cosmetic changes like the</span>
+<span class="sd">room name.</span>
+
+<span class="sd">## Usage</span>
+
+<span class="sd">This contrib does not provide any new commands. Instead the default `py` command</span>
+<span class="sd">is used.</span>
+
+<span class="sd">A wilderness map needs to created first. There can be different maps, all</span>
+<span class="sd">with their own name. If no name is provided, then a default one is used. Internally,</span>
+<span class="sd">the wilderness is stored as a Script with the name you specify. If you don&#39;t</span>
+<span class="sd">specify the name, a script named &quot;default&quot; will be created and used.</span>
+
+<span class="sd">    py from evennia.contrib.grid import wilderness; wilderness.create_wilderness()</span>
+
+<span class="sd">Once created, it is possible to move into that wilderness map:</span>
+
+<span class="sd">    py from evennia.contrib.grid import wilderness; wilderness.enter_wilderness(me)</span>
+
+<span class="sd">All coordinates used by the wilderness map are in the format of `(x, y)`</span>
+<span class="sd">tuples. x goes from left to right and y goes from bottom to top. So `(0, 0)`</span>
+<span class="sd">is the bottom left corner of the map.</span>
+
+
+<span class="sd">## Customisation</span>
+
+<span class="sd">The defaults, while useable, are meant to be customised. When creating a</span>
+<span class="sd">new wilderness map it is possible to give a &quot;map provider&quot;: this is a</span>
+<span class="sd">python object that is smart enough to create the map.</span>
+
+<span class="sd">The default provider, `WildernessMapProvider`, just creates a grid area that</span>
+<span class="sd">is unlimited in size.</span>
+<span class="sd">This `WildernessMapProvider` can be subclassed to create more interesting</span>
+<span class="sd">maps and also to customize the room/exit typeclass used.</span>
+
+<span class="sd">There is also no command that allows players to enter the wilderness. This</span>
+<span class="sd">still needs to be added: it can be a command or an exit, depending on your</span>
+<span class="sd">needs.</span>
+
+<span class="sd">## Example</span>
+
+<span class="sd">    To give an example of how to customize, we will create a very simple (and</span>
+<span class="sd">    small) wilderness map that is shaped like a pyramid. The map will be</span>
+<span class="sd">    provided as a string: a &quot;.&quot; symbol is a location we can walk on.</span>
+
+<span class="sd">    Let&#39;s create a file world/pyramid.py:</span>
+
+<span class="sd">```python</span>
+<span class="sd">map_str = &#39;&#39;&#39;</span>
+<span class="sd">     .</span>
+<span class="sd">    ...</span>
+<span class="sd">   .....</span>
+<span class="sd">  .......</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">from evennia.contrib.grid import wilderness</span>
+
+<span class="sd">class PyramidMapProvider(wilderness.WildernessMapProvider):</span>
+
+<span class="sd">    def is_valid_coordinates(self, wilderness, coordinates):</span>
+<span class="sd">        &quot;Validates if these coordinates are inside the map&quot;</span>
+<span class="sd">        x, y = coordinates</span>
+<span class="sd">        try:</span>
+<span class="sd">            lines = map_str.split(&quot;\n&quot;)</span>
+<span class="sd">            # The reverse is needed because otherwise the pyramid will be</span>
+<span class="sd">            # upside down</span>
+<span class="sd">            lines.reverse()</span>
+<span class="sd">            line = lines[y]</span>
+<span class="sd">            column = line[x]</span>
+<span class="sd">            return column == &quot;.&quot;</span>
+<span class="sd">        except IndexError:</span>
+<span class="sd">            return False</span>
+
+<span class="sd">    def get_location_name(self, coordinates):</span>
+<span class="sd">        &quot;Set the location name&quot;</span>
+<span class="sd">        x, y = coordinates</span>
+<span class="sd">        if y == 3:</span>
+<span class="sd">            return &quot;Atop the pyramid.&quot;</span>
+<span class="sd">        else:</span>
+<span class="sd">            return &quot;Inside a pyramid.&quot;</span>
+
+<span class="sd">    def at_prepare_room(self, coordinates, caller, room):</span>
+<span class="sd">        &quot;Any other changes done to the room before showing it&quot;</span>
+<span class="sd">        x, y = coordinates</span>
+<span class="sd">        desc = &quot;This is a room in the pyramid.&quot;</span>
+<span class="sd">        if y == 3 :</span>
+<span class="sd">            desc = &quot;You can see far and wide from the top of the pyramid.&quot;</span>
+<span class="sd">        room.db.desc = desc</span>
+<span class="sd">```</span>
+
+<span class="sd">Now we can use our new pyramid-shaped wilderness map. From inside Evennia we</span>
+<span class="sd">create a new wilderness (with the name &quot;default&quot;) but using our new map provider:</span>
+
+<span class="sd">    py from world import pyramid as p; p.wilderness.create_wilderness(mapprovider=p.PyramidMapProvider())</span>
+<span class="sd">    py from evennia.contrib import wilderness; wilderness.enter_wilderness(me, coordinates=(4, 1))</span>
+
+<span class="sd">## Implementation details</span>
+
+<span class="sd">    When a character moves into the wilderness, they get their own room. If</span>
+<span class="sd">    they move, instead of moving the character, the room changes to match the</span>
+<span class="sd">    new coordinates.</span>
+<span class="sd">    If a character meets another character in the wilderness, then their room</span>
+<span class="sd">    merges. When one of the character leaves again, they each get their own</span>
+<span class="sd">    separate rooms.</span>
+<span class="sd">    Rooms are created as needed. Unneeded rooms are stored away to avoid the</span>
+<span class="sd">    overhead cost of creating new rooms again in the future.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">create_script</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span>
+
+
+<div class="viewcode-block" id="create_wilderness"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.create_wilderness">[docs]</a><span class="k">def</span> <span class="nf">create_wilderness</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">mapprovider</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a new wilderness map. Does nothing if a wilderness map already</span>
+<span class="sd">    exists with the same name.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str, optional): the name to use for that wilderness map</span>
+<span class="sd">        mapprovider (WildernessMap instance, optional): an instance of a</span>
+<span class="sd">            WildernessMap class (or subclass) that will be used to provide the</span>
+<span class="sd">            layout of this wilderness map. If none is provided, the default</span>
+<span class="sd">            infinite grid map will be used.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">WildernessScript</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="c1"># Don&#39;t create two wildernesses with the same name</span>
+        <span class="k">return</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">mapprovider</span><span class="p">:</span>
+        <span class="n">mapprovider</span> <span class="o">=</span> <span class="n">WildernessMapProvider</span><span class="p">()</span>
+    <span class="n">script</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="n">WildernessScript</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">script</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mapprovider</span> <span class="o">=</span> <span class="n">mapprovider</span></div>
+
+
+<div class="viewcode-block" id="enter_wilderness"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.enter_wilderness">[docs]</a><span class="k">def</span> <span class="nf">enter_wilderness</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">coordinates</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Moves obj into the wilderness. The wilderness needs to exist first and the</span>
+<span class="sd">    provided coordinates needs to be valid inside that wilderness.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        obj (object): the object to move into the wilderness</span>
+<span class="sd">        coordinates (tuple), optional): the coordinates to move obj to into</span>
+<span class="sd">            the wilderness. If not provided, defaults (0, 0)</span>
+<span class="sd">        name (str, optional): name of the wilderness map, if not using the</span>
+<span class="sd">            default one</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if obj successfully moved into the wilderness.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">WildernessScript</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">script</span> <span class="o">=</span> <span class="n">WildernessScript</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">script</span><span class="o">.</span><span class="n">is_valid_coordinates</span><span class="p">(</span><span class="n">coordinates</span><span class="p">):</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">move_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="get_new_coordinates"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.get_new_coordinates">[docs]</a><span class="k">def</span> <span class="nf">get_new_coordinates</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the coordinates of direction applied to the provided coordinates.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        coordinates: tuple of (x, y)</span>
+<span class="sd">        direction: a direction string (like &quot;northeast&quot;)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: tuple of (x, y) coordinates</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">coordinates</span>
+
+    <span class="k">if</span> <span class="n">direction</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;north&quot;</span><span class="p">,</span> <span class="s2">&quot;northwest&quot;</span><span class="p">,</span> <span class="s2">&quot;northeast&quot;</span><span class="p">):</span>
+        <span class="n">y</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">direction</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;south&quot;</span><span class="p">,</span> <span class="s2">&quot;southwest&quot;</span><span class="p">,</span> <span class="s2">&quot;southeast&quot;</span><span class="p">):</span>
+        <span class="n">y</span> <span class="o">-=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">direction</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;northwest&quot;</span><span class="p">,</span> <span class="s2">&quot;west&quot;</span><span class="p">,</span> <span class="s2">&quot;southwest&quot;</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">-=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">direction</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;northeast&quot;</span><span class="p">,</span> <span class="s2">&quot;east&quot;</span><span class="p">,</span> <span class="s2">&quot;southeast&quot;</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WildernessScript"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessScript">[docs]</a><span class="k">class</span> <span class="nc">WildernessScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the main &quot;handler&quot; for the wilderness system: inside here the</span>
+<span class="sd">    coordinates of every item currently inside the wilderness is stored. This</span>
+<span class="sd">    script is responsible for creating rooms as needed and storing rooms away</span>
+<span class="sd">    into storage when they are not needed anymore.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="WildernessScript.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessScript.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Only called once, when the script is created. This is a default Evennia</span>
+<span class="sd">        hook.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># Store the coordinates of every item that is inside the wilderness</span>
+        <span class="c1"># Key: object, Value: (x, y)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">itemcoordinates</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Store the rooms that are used as views into the wilderness</span>
+        <span class="c1"># Key: (x, y), Value: room object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rooms</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Created rooms that are not needed anymore are stored there. This</span>
+        <span class="c1"># allows quick retrieval if a new room is needed without having to</span>
+        <span class="c1"># create it.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">unused_rooms</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mapprovider</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shortcut property to the map provider.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            MapProvider: the mapprovider used with this wilderness</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mapprovider</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">itemcoordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary with the coordinates of every item inside this</span>
+<span class="sd">        wilderness map. The key is the item, the value are the coordinates as</span>
+<span class="sd">        (x, y) tuple.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            {item: coordinates}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">itemcoordinates</span>
+
+<div class="viewcode-block" id="WildernessScript.at_start"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessScript.at_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when the script is started and also after server reloads.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">room</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rooms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">room</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">wildernessscript</span> <span class="o">=</span> <span class="bp">self</span>
+            <span class="n">room</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">active_coordinates</span> <span class="o">=</span> <span class="n">coordinates</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">itemcoordinates</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="c1"># Items deleted from the wilderness leave None type &#39;ghosts&#39;</span>
+            <span class="c1"># that must be cleaned out</span>
+            <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">itemcoordinates</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+                <span class="k">continue</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">wilderness</span> <span class="o">=</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="WildernessScript.is_valid_coordinates"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessScript.is_valid_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns True if coordinates are valid (and can be travelled to).</span>
+<span class="sd">        Otherwise returns False</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coordinates (tuple): coordinates as (x, y) tuple</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the coordinates are valid</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapprovider</span><span class="o">.</span><span class="n">is_valid_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="WildernessScript.get_obj_coordinates"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessScript.get_obj_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_obj_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the coordinates of obj in the wilderness.</span>
+
+<span class="sd">        Returns (x, y)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (object): an object inside the wilderness</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: (x, y) tuple of where obj is located</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">itemcoordinates</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="WildernessScript.get_objs_at_coordinates"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessScript.get_objs_at_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_objs_at_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of every object at certain coordinates.</span>
+
+<span class="sd">        Imeplementation detail: this uses a naive iteration through every</span>
+<span class="sd">        object inside the wilderness which could cause slow downs when there</span>
+<span class="sd">        are a lot of objects in the map.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coordinates (tuple): a coordinate tuple like (x, y)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [Object, ]: list of Objects at coordinates</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span><span class="p">,</span> <span class="n">item_coordinates</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itemcoordinates</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="c1"># Items deleted from the wilderness leave None type &#39;ghosts&#39;</span>
+            <span class="c1"># that must be cleaned out</span>
+            <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">itemcoordinates</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">coordinates</span> <span class="o">==</span> <span class="n">item_coordinates</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="WildernessScript.move_obj"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessScript.move_obj">[docs]</a>    <span class="k">def</span> <span class="nf">move_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">new_coordinates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Moves obj to new coordinates in this wilderness.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (object): the object to move</span>
+<span class="sd">            new_coordinates (tuple): tuple of (x, y) where to move obj to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Update the position of this obj in the wilderness</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">itemcoordinates</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_coordinates</span>
+        <span class="n">old_room</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">location</span>
+
+        <span class="c1"># Remove the obj&#39;s location. This is needed so that the object does not</span>
+        <span class="c1"># appear in its old room should that room be deleted.</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># See if we already have a room for that location</span>
+            <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rooms</span><span class="p">[</span><span class="n">new_coordinates</span><span class="p">]</span>
+            <span class="c1"># There is. Try to destroy the old_room if it is not needed anymore</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_destroy_room</span><span class="p">(</span><span class="n">old_room</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c1"># There is no room yet at new_location</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">old_room</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">old_room</span><span class="p">,</span> <span class="n">WildernessRoom</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">old_room</span><span class="p">):</span>
+                <span class="c1"># Obj doesn&#39;t originally come from a wilderness room.</span>
+                <span class="c1"># We&#39;ll create a new one then.</span>
+                <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_room</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Obj does come from another wilderness room</span>
+                <span class="n">create_new_room</span> <span class="o">=</span> <span class="kc">False</span>
+
+                <span class="k">if</span> <span class="n">old_room</span><span class="o">.</span><span class="n">wilderness</span> <span class="o">!=</span> <span class="bp">self</span><span class="p">:</span>
+                    <span class="c1"># ... but that other wilderness room belongs to another</span>
+                    <span class="c1"># wilderness map</span>
+                    <span class="n">create_new_room</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">old_room</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">at_post_object_leave</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">old_room</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
+                            <span class="c1"># There is still a player in the old room.</span>
+                            <span class="c1"># Let&#39;s create a new room and not touch that old</span>
+                            <span class="c1"># room.</span>
+                            <span class="n">create_new_room</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="k">break</span>
+
+                <span class="k">if</span> <span class="n">create_new_room</span><span class="p">:</span>
+                    <span class="c1"># Create a new room to hold obj, not touching any obj&#39;s in</span>
+                    <span class="c1"># the old room</span>
+                    <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_room</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># The old_room is empty: we are just going to reuse that</span>
+                    <span class="c1"># room instead of creating a new one</span>
+                    <span class="n">room</span> <span class="o">=</span> <span class="n">old_room</span>
+
+        <span class="n">room</span><span class="o">.</span><span class="n">set_active_coordinates</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">room</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">wilderness</span> <span class="o">=</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="nf">_create_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">report_to</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a new WildernessRoom to be used for the provided coordinates.</span>
+
+<span class="sd">        It first tries to retrieve a room out of storage. If there are no rooms</span>
+<span class="sd">        left a new one will be created.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coordinates (tuple): coordinate tuple of (x, y)</span>
+<span class="sd">            report_to (object): the obj to return error messages to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">unused_rooms</span><span class="p">:</span>
+            <span class="c1"># There is still unused rooms stored in storage, let&#39;s get one of</span>
+            <span class="c1"># those</span>
+            <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">unused_rooms</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># No more unused rooms...time to make a new one.</span>
+
+            <span class="c1"># First, create the room</span>
+            <span class="n">room</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span>
+                <span class="n">typeclass</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mapprovider</span><span class="o">.</span><span class="n">room_typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Wilderness&quot;</span><span class="p">,</span> <span class="n">report_to</span><span class="o">=</span><span class="n">report_to</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Then the exits</span>
+            <span class="n">exits</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="s2">&quot;north&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;northeast&quot;</span><span class="p">,</span> <span class="s2">&quot;ne&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;east&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;southeast&quot;</span><span class="p">,</span> <span class="s2">&quot;se&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;south&quot;</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;southwest&quot;</span><span class="p">,</span> <span class="s2">&quot;sw&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;west&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;northwest&quot;</span><span class="p">,</span> <span class="s2">&quot;nw&quot;</span><span class="p">),</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">exits</span><span class="p">:</span>
+                <span class="n">create_object</span><span class="p">(</span>
+                    <span class="n">typeclass</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mapprovider</span><span class="o">.</span><span class="n">exit_typeclass</span><span class="p">,</span>
+                    <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+                    <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="n">alias</span><span class="p">],</span>
+                    <span class="n">location</span><span class="o">=</span><span class="n">room</span><span class="p">,</span>
+                    <span class="n">destination</span><span class="o">=</span><span class="n">room</span><span class="p">,</span>
+                    <span class="n">report_to</span><span class="o">=</span><span class="n">report_to</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="n">room</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">active_coordinates</span> <span class="o">=</span> <span class="n">coordinates</span>
+        <span class="n">room</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">wildernessscript</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rooms</span><span class="p">[</span><span class="n">coordinates</span><span class="p">]</span> <span class="o">=</span> <span class="n">room</span>
+
+        <span class="k">return</span> <span class="n">room</span>
+
+    <span class="k">def</span> <span class="nf">_destroy_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Moves a room back to storage. If room is not a WildernessRoom or there</span>
+<span class="sd">        is a player inside the room, then this does nothing.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            room (WildernessRoom): the room to put in storage</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">room</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">WildernessRoom</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
+                <span class="c1"># There is still a character in that room. We can&#39;t get rid of</span>
+                <span class="c1"># it just yet</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># No characters left in the room.</span>
+
+            <span class="c1"># Clear the location of every obj in that room first</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">destination</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">destination</span> <span class="o">==</span> <span class="n">room</span><span class="p">:</span>
+                    <span class="c1"># Ignore the exits, they stay in the room</span>
+                    <span class="k">continue</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="c1"># Then delete its reference</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rooms</span><span class="p">[</span><span class="n">room</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">active_coordinates</span><span class="p">]</span>
+            <span class="c1"># And finally put this room away in storage</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">unused_rooms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">room</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WildernessScript.at_post_object_leave"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessScript.at_post_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called after an object left this wilderness map. Used for cleaning up.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (object): the object that left</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Remove that obj from the wilderness&#39;s coordinates dict</span>
+        <span class="n">loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">itemcoordinates</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">itemcoordinates</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span>
+
+        <span class="c1"># And see if we can put that room away into storage.</span>
+        <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rooms</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_destroy_room</span><span class="p">(</span><span class="n">room</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="WildernessRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessRoom">[docs]</a><span class="k">class</span> <span class="nc">WildernessRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a single room inside the wilderness. This room provides a &quot;view&quot;</span>
+<span class="sd">    into the wilderness map. When an account moves around, instead of going to</span>
+<span class="sd">    another room as with traditional rooms, they stay in the same room but the</span>
+<span class="sd">    room itself changes to display another area of the wilderness.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">wilderness</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shortcut property to the wilderness script this room belongs to.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            WildernessScript: the WildernessScript attached to this room</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">wildernessscript</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">location_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the name of the wilderness at this room&#39;s coordinates.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            name (str)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">mapprovider</span><span class="o">.</span><span class="n">get_location_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the coordinates of this room into the wilderness.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: (x, y) coordinates of where this room is inside the</span>
+<span class="sd">                wilderness.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">active_coordinates</span>
+
+<div class="viewcode-block" id="WildernessRoom.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_obj</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called after an object has been moved into this object. This is a</span>
+<span class="sd">        default Evennia hook.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            moved_obj (Object): The object moved into this one.</span>
+<span class="sd">            source_location (Object): Where `moved_obj` came from.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">moved_obj</span><span class="p">,</span> <span class="n">WildernessExit</span><span class="p">):</span>
+            <span class="c1"># Ignore exits looping back to themselves: those are the regular</span>
+            <span class="c1"># n, ne, ... exits.</span>
+            <span class="k">return</span>
+
+        <span class="n">itemcoords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">itemcoordinates</span>
+        <span class="k">if</span> <span class="n">moved_obj</span> <span class="ow">in</span> <span class="n">itemcoords</span><span class="p">:</span>
+            <span class="c1"># This object was already in the wilderness. We need to make sure</span>
+            <span class="c1"># it goes to the correct room it belongs to.</span>
+            <span class="c1"># Otherwise the following issue can come up:</span>
+            <span class="c1"># 1) Player 1 and Player 2 share a room</span>
+            <span class="c1"># 2) Player 1 disconnects</span>
+            <span class="c1"># 3) Player 2 moves around</span>
+            <span class="c1"># 4) Player 1 reconnects</span>
+            <span class="c1"># Player 1 will end up in player 2&#39;s room, which has the wrong</span>
+            <span class="c1"># coordinates</span>
+
+            <span class="n">coordinates</span> <span class="o">=</span> <span class="n">itemcoords</span><span class="p">[</span><span class="n">moved_obj</span><span class="p">]</span>
+            <span class="c1"># Setting the location to None is important here so that we always</span>
+            <span class="c1"># get a &quot;fresh&quot; room</span>
+            <span class="n">moved_obj</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">move_obj</span><span class="p">(</span><span class="n">moved_obj</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># This object wasn&#39;t in the wilderness yet. Let&#39;s add it.</span>
+            <span class="n">itemcoords</span><span class="p">[</span><span class="n">moved_obj</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span></div>
+
+<div class="viewcode-block" id="WildernessRoom.at_object_leave"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessRoom.at_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_obj</span><span class="p">,</span> <span class="n">target_location</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called just before an object leaves from inside this object. This is a</span>
+<span class="sd">        default Evennia hook.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            moved_obj (Object): The object leaving</span>
+<span class="sd">            target_location (Object): Where `moved_obj` is going.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">at_post_object_leave</span><span class="p">(</span><span class="n">moved_obj</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="WildernessRoom.set_active_coordinates"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessRoom.set_active_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">set_active_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_coordinates</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Changes this room to show the wilderness map from other coordinates.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_coordinates (tuple): coordinates as tuple of (x, y)</span>
+<span class="sd">            obj (Object): the object that moved into this room and caused the</span>
+<span class="sd">                coordinates to change</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Remove the reference for the old coordinates...</span>
+        <span class="n">rooms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rooms</span>
+        <span class="k">del</span> <span class="n">rooms</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">]</span>
+        <span class="c1"># ...and add it for the new coordinates.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">active_coordinates</span> <span class="o">=</span> <span class="n">new_coordinates</span>
+        <span class="n">rooms</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+
+        <span class="c1"># Every obj inside this room will get its location set to None</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">destination</span> <span class="ow">or</span> <span class="n">item</span><span class="o">.</span><span class="n">destination</span> <span class="o">!=</span> <span class="n">item</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># And every obj matching the new coordinates will get its location set</span>
+        <span class="c1"># to this room</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">get_objs_at_coordinates</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">):</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span>
+
+        <span class="c1"># Fix the lockfuncs for the exit so we can&#39;t go where we&#39;re not</span>
+        <span class="c1"># supposed to go</span>
+        <span class="k">for</span> <span class="n">exit</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">exit</span><span class="o">.</span><span class="n">destination</span> <span class="o">!=</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">get_new_coordinates</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">,</span> <span class="n">exit</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">valid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">is_valid_coordinates</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">valid</span><span class="p">:</span>
+                <span class="n">exit</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;traverse:true();view:true()&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">exit</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;traverse:false();view:false()&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Finally call the at_prepare_room hook to give a chance to further</span>
+        <span class="c1"># customise it</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">mapprovider</span><span class="o">.</span><span class="n">at_prepare_room</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="WildernessRoom.get_display_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessRoom.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Displays the name of the object in a viewer-aware manner.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            looker (TypedObject): The object or account that is looking</span>
+<span class="sd">                at/getting inforamtion for this object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            name (str): A string containing the name of the object,</span>
+<span class="sd">                including the DBREF if this user is privileged to control</span>
+<span class="sd">                said object and also its coordinates into the wilderness map.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This function could be extended to change how object names</span>
+<span class="sd">            appear to users in character, but be wary. This function</span>
+<span class="sd">            does not change an object&#39;s keys or aliases when</span>
+<span class="sd">            searching, and is expected to produce something useful for</span>
+<span class="sd">            builders.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;perm(Builder)&quot;</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(#</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location_name</span>
+
+        <span class="n">name</span> <span class="o">+=</span> <span class="s2">&quot; </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">name</span></div></div>
+
+
+<div class="viewcode-block" id="WildernessExit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessExit">[docs]</a><span class="k">class</span> <span class="nc">WildernessExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is an Exit object used inside a WildernessRoom. Instead of changing</span>
+<span class="sd">    the location of an Object traversing through it (like a traditional exit</span>
+<span class="sd">    would do) it changes the coordinates of that traversing Object inside</span>
+<span class="sd">    the wilderness map.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">wilderness</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shortcut property to the wilderness script.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            WildernessScript: the WildernessScript attached to this exit&#39;s room</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">wilderness</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mapprovider</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shortcut property to the map provider.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            MapProvider object: the mapprovider object used with this</span>
+<span class="sd">                wilderness map.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">mapprovider</span>
+
+<div class="viewcode-block" id="WildernessExit.at_traverse_coordinates"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessExit.at_traverse_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">current_coordinates</span><span class="p">,</span> <span class="n">new_coordinates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when an object wants to travel from one place inside the</span>
+<span class="sd">        wilderness to another place inside the wilderness.</span>
+
+<span class="sd">        If this returns True, then the traversing can happen. Otherwise it will</span>
+<span class="sd">        be blocked.</span>
+
+<span class="sd">        This method is similar how the `at_traverse` works on normal exits.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            traversing_object (Object): The object doing the travelling.</span>
+<span class="sd">            current_coordinates (tuple): (x, y) coordinates where</span>
+<span class="sd">                `traversing_object` currently is.</span>
+<span class="sd">            new_coordinates (tuple): (x, y) coordinates of where</span>
+<span class="sd">                `traversing_object` wants to travel to.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if traversing_object is allowed to traverse</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="WildernessExit.at_traverse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessExit.at_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This implements the actual traversal. The traverse lock has</span>
+<span class="sd">        already been checked (in the Exit command) at this point.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            traversing_object (Object): Object traversing us.</span>
+<span class="sd">            target_location (Object): Where target is going.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the traverse is allowed to happen</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">itemcoordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">itemcoordinates</span>
+
+        <span class="n">current_coordinates</span> <span class="o">=</span> <span class="n">itemcoordinates</span><span class="p">[</span><span class="n">traversing_object</span><span class="p">]</span>
+        <span class="n">new_coordinates</span> <span class="o">=</span> <span class="n">get_new_coordinates</span><span class="p">(</span><span class="n">current_coordinates</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_traverse_coordinates</span><span class="p">(</span>
+            <span class="n">traversing_object</span><span class="p">,</span> <span class="n">current_coordinates</span><span class="p">,</span> <span class="n">new_coordinates</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">traversing_object</span><span class="o">.</span><span class="n">at_pre_move</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">traversing_object</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> leaves to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">traversing_object</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">new_coordinates</span><span class="p">),</span>
+            <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="n">traversing_object</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">move_obj</span><span class="p">(</span><span class="n">traversing_object</span><span class="p">,</span> <span class="n">new_coordinates</span><span class="p">)</span>
+
+        <span class="n">traversing_object</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> arrives from </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">traversing_object</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">current_coordinates</span><span class="p">),</span>
+            <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="n">traversing_object</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="n">traversing_object</span><span class="o">.</span><span class="n">at_post_move</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+
+
+<div class="viewcode-block" id="WildernessMapProvider"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessMapProvider">[docs]</a><span class="k">class</span> <span class="nc">WildernessMapProvider</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Default Wilderness Map provider.</span>
+
+<span class="sd">    This is a simple provider that just creates an infinite large grid area.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">room_typeclass</span> <span class="o">=</span> <span class="n">WildernessRoom</span>
+    <span class="n">exit_typeclass</span> <span class="o">=</span> <span class="n">WildernessExit</span>
+
+<div class="viewcode-block" id="WildernessMapProvider.is_valid_coordinates"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessMapProvider.is_valid_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wilderness</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns True if coordinates is valid and can be walked to.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            wilderness: the wilderness script</span>
+<span class="sd">            coordinates (tuple): the coordinates to check as (x, y) tuple.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the coordinates are valid</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">coordinates</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="WildernessMapProvider.get_location_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessMapProvider.get_location_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_location_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a name for the position at coordinates.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coordinates (tuple): the coordinates as (x, y) tuple.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            name (str)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;The wilderness&quot;</span></div>
+
+<div class="viewcode-block" id="WildernessMapProvider.at_prepare_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.wilderness.html#evennia.contrib.grid.wilderness.wilderness.WildernessMapProvider.at_prepare_room">[docs]</a>    <span class="k">def</span> <span class="nf">at_prepare_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when a room gets activated for certain coordinates. This happens</span>
+<span class="sd">        after every object is moved in it.</span>
+<span class="sd">        This can be used to set a custom room desc for instance or run other</span>
+<span class="sd">        customisations on the room.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coordinates (tuple): the coordinates as (x, y) where room is</span>
+<span class="sd">                located at</span>
+<span class="sd">            caller (Object): the object that moved into this room</span>
+<span class="sd">            room (WildernessRoom): the room object that will be used at that</span>
+<span class="sd">                wilderness location</span>
+<span class="sd">        Example:</span>
+<span class="sd">            An example use of this would to plug in a randomizer to show different</span>
+<span class="sd">            descriptions for different coordinates, or place a treasure at a special</span>
+<span class="sd">            coordinate.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="wilderness.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.wilderness.wilderness</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,888 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.full_systems.evscaperoom.commands &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.full_systems.evscaperoom.commands</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.full_systems.evscaperoom.commands</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Commands for the Evscaperoom. This contains all in-room commands as well as</span>
+<span class="sd">admin debug-commands to help development.</span>
+
+<span class="sd">Gameplay commands</span>
+
+<span class="sd">- `look` - custom look</span>
+<span class="sd">- `focus` - focus on object (to perform actions on it)</span>
+<span class="sd">- `&lt;action&gt; &lt;obj&gt;` - arbitrary interaction with focused object</span>
+<span class="sd">- `stand` - stand on the floor, resetting any position</span>
+<span class="sd">- `emote` - free-form emote</span>
+<span class="sd">- `say/whisper/shout` - simple communication</span>
+
+<span class="sd">Other commands</span>
+
+<span class="sd">- `evscaperoom` - starts the evscaperoom top-level menu</span>
+<span class="sd">- `help` - custom in-room help command</span>
+<span class="sd">- `options` - set game/accessibility options</span>
+<span class="sd">- `who` - show who&#39;s in the room with you</span>
+<span class="sd">- `quit` - leave a room, return to menu</span>
+
+<span class="sd">Admin/development commands</span>
+
+<span class="sd">- `jumpstate` - jump to specific room state</span>
+<span class="sd">- `flag` - assign a flag to an object</span>
+<span class="sd">- `createobj` - create a room-object set up for Evscaperoom</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">SESSION_HANDLER</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">InterruptCommand</span><span class="p">,</span> <span class="n">default_cmds</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">syscmdkeys</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">variable_from_module</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">create_evscaperoom_object</span>
+
+<span class="n">_AT_SEARCH_RESULT</span> <span class="o">=</span> <span class="n">variable_from_module</span><span class="p">(</span><span class="o">*</span><span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_AT_RESULT</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="n">_RE_ARGSPLIT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s(with|on|to|in|at)\s&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">U</span><span class="p">)</span>
+<span class="n">_RE_EMOTE_SPEECH</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(</span><span class="se">\&quot;</span><span class="s2">.*?</span><span class="se">\&quot;</span><span class="s2">)|(\&#39;.*?\&#39;)&quot;</span><span class="p">)</span>
+<span class="n">_RE_EMOTE_NAME</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(/\w+)&quot;</span><span class="p">)</span>
+<span class="n">_RE_EMOTE_PROPER_END</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\.$|\.[\&#39;</span><span class="se">\&quot;</span><span class="s2">]$|\![\&#39;</span><span class="se">\&quot;</span><span class="s2">]$|\?[\&#39;</span><span class="se">\&quot;</span><span class="s2">]$&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># configurable help</span>
+
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;EVSCAPEROOM_HELP_SUMMARY_TEXT&quot;</span><span class="p">):</span>
+    <span class="n">_HELP_SUMMARY_TEXT</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">EVSCAPEROOM_HELP_SUMMARY_TEXT</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">_HELP_SUMMARY_TEXT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">   |yWhat to do ...|n</span>
+<span class="s2">    - Your goal is to |wescape|n the room. To do that you need to |wlook|n at</span>
+<span class="s2">      your surroundings for clues on how to escape. When you find something</span>
+<span class="s2">      interesting, |wexamine|n it for any actions you could take with it.</span>
+<span class="s2">   |yHow to explore ...|n</span>
+<span class="s2">    - |whelp [obj or command]|n           - get usage help (never puzzle-related)</span>
+<span class="s2">    - |woptions|n                         - set game/accessibility options</span>
+<span class="s2">    - |wlook/l [obj]|n                    - give things a cursory look.</span>
+<span class="s2">    - |wexamine/ex/e [obj]|n              - look closer at an object. Use again to</span>
+<span class="s2">                                        look away.</span>
+<span class="s2">    - |wstand|n                           - stand up if you were sitting, lying etc.</span>
+<span class="s2">   |yHow to express yourself ...|n</span>
+<span class="s2">    - |wwho [all]|n                       - show who&#39;s in the room or on server.</span>
+<span class="s2">    - |wemote/pose/: &lt;something&gt;|n        - free-form emote. Use /me to refer</span>
+<span class="s2">                                        to yourself and /name to refer to other</span>
+<span class="s2">                                        things/players. Use quotes &quot;...&quot; to speak.</span>
+<span class="s2">    - |wsay/; &lt;something&gt;|n               - quick-speak your mind</span>
+<span class="s2">    - |wwhisper &lt;something&gt;|n             - whisper your mind</span>
+<span class="s2">    - |wshout &lt;something&gt;|n               - shout your mind</span>
+<span class="s2">   |yHow to quit like a little baby ...|n</span>
+<span class="s2">    - |wquit / give up|n                  - admit defeat and give up</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">_HELP_FALLBACK_TEXT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">There is no help to be had about |y</span><span class="si">{this}</span><span class="s2">|n. To look away, use |wexamine|n on</span>
+<span class="s2">its own or with another object you are interested in.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">_QUIT_WARNING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">|rDo you really want to quit?|n</span>
+
+<span class="si">{warning}</span><span class="s2"></span>
+
+<span class="s2">Enter |w&#39;quit&#39;|n again to truly give up.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">_QUIT_WARNING_CAN_COME_BACK</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">(Since you are not the last person to leave this room, you |gcan|n get back in here</span>
+<span class="s2">by joining room &#39;|c</span><span class="si">{roomname}</span><span class="s2">|n&#39; from the menu. Note however that if you leave</span>
+<span class="s2">now, any personal achievements you may have gathered so far will be |rlost|n!)</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">_QUIT_WARNING_LAST_CHAR</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">(You are the |rlast|n player to leave this room (&#39;|c</span><span class="si">{roomname}</span><span class="s2">|n&#39;). This means that when you</span>
+<span class="s2">leave, this room will go away and you |rwon&#39;t|n be able to come back to it!)</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="CmdEvscapeRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdEvscapeRoom">[docs]</a><span class="k">class</span> <span class="nc">CmdEvscapeRoom</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base command parent for all Evscaperoom commands.</span>
+
+<span class="sd">    This operates on the premise of &#39;focus&#39; - the &#39;focus&#39;</span>
+<span class="sd">    is set on the caller, then subsequent commands will</span>
+<span class="sd">    operate on that focus. If no focus is set,</span>
+<span class="sd">    the operation will be general or on the room.</span>
+
+<span class="sd">    Syntax:</span>
+
+<span class="sd">       command [&lt;obj1&gt;|&lt;arg1&gt;] [&lt;prep&gt; &lt;obj2&gt;|&lt;arg2&gt;]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># always separate the command from any args with a space</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(/\w+?(\s|$))|\s|$&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Evscaperoom&quot;</span>
+
+    <span class="c1"># these flags allow child classes to determine how strict parsing for obj1/obj2 should be</span>
+    <span class="c1"># (if they are given at all):</span>
+    <span class="c1"># True - obj1/obj2 must be found as Objects, otherwise it&#39;s an error aborting command</span>
+    <span class="c1"># False - obj1/obj2 will remain None, instead self.arg1, arg2 will be stored as strings</span>
+    <span class="c1"># None - if obj1/obj2 are found as Objects, set them, otherwise set arg1/arg2 as strings</span>
+    <span class="n">obj1_search</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">obj2_search</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">required</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This implements the various search modes</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            query (str): The search query</span>
+<span class="sd">            required (bool or None): This defines if query *must* be</span>
+<span class="sd">                found to match a single local Object or not. If None,</span>
+<span class="sd">                a non-match means returning the query unchanged. When</span>
+<span class="sd">                False, immediately return the query. If required is False,</span>
+<span class="sd">                don&#39;t search at all.</span>
+<span class="sd">        Return:</span>
+<span class="sd">            match (Object or str): The match or the search string depending</span>
+<span class="sd">                on the `required` mode.</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            InterruptCommand: Aborts the command quietly.</span>
+<span class="sd">        Notes:</span>
+<span class="sd">            The _AT_SEARCH_RESULT function will handle all error messaging</span>
+<span class="sd">            for us.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">required</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">query</span>
+
+        <span class="n">matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">required</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">query</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must give an argument.&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">_AT_SEARCH_RESULT</span><span class="p">(</span><span class="n">matches</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">InterruptCommand</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">query</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="CmdEvscapeRoom.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdEvscapeRoom.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse incoming arguments for use in all child classes.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="c1"># splits to either [&#39;obj&#39;] or e.g. [&#39;obj&#39;, &#39;on&#39;, &#39;obj&#39;]</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">_RE_ARGSPLIT</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="n">nparts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg1</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prep</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg2</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">nparts</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1_search</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">nparts</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">obj1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prep</span><span class="p">,</span> <span class="n">obj2</span> <span class="o">=</span> <span class="n">parts</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search</span><span class="p">(</span><span class="n">obj1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1_search</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search</span><span class="p">(</span><span class="n">obj2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2_search</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">room</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">location</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roomstate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">state</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">focus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;focus&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tagcategory</span><span class="p">)</span>
+
+    <span class="nd">@focus</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">focus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;focus&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">tagcategory</span><span class="p">)</span>
+
+    <span class="nd">@focus</span><span class="o">.</span><span class="n">deleter</span>
+    <span class="k">def</span> <span class="nf">focus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;focus&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">tagcategory</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CmdGiveUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp">[docs]</a><span class="k">class</span> <span class="nc">CmdGiveUp</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Give up</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      give up</span>
+
+<span class="sd">    Abandons your attempts at escaping and of ever winning the pie-eating contest.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;give up&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;abort&quot;</span><span class="p">,</span> <span class="s2">&quot;chicken out&quot;</span><span class="p">,</span> <span class="s2">&quot;quit&quot;</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CmdGiveUp.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">.menu</span> <span class="kn">import</span> <span class="n">run_evscaperoom_menu</span>
+
+        <span class="n">nchars</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">get_all_characters</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">nchars</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">warning</span> <span class="o">=</span> <span class="n">_QUIT_WARNING_LAST_CHAR</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">roomname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">warning</span> <span class="o">=</span> <span class="n">_QUIT_WARNING</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">warning</span><span class="o">=</span><span class="n">warning</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warning</span> <span class="o">=</span> <span class="n">_QUIT_WARNING_CAN_COME_BACK</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">roomname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">warning</span> <span class="o">=</span> <span class="n">_QUIT_WARNING</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">warning</span><span class="o">=</span><span class="n">warning</span><span class="p">)</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span> <span class="p">(</span><span class="n">warning</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ret</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;QUIT&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|R ... Oh. Okay then. Off you go.|n</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;QUIT: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> used the quit command&quot;</span><span class="p">)</span>
+
+            <span class="c1"># manually call move hooks</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">msg_room</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;|r</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> gave up and was whisked away!|n&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">home</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">home</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">move_hooks</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="c1"># back to menu</span>
+            <span class="n">run_evscaperoom_menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|gYou&#39;re staying? That&#39;s the spirit!|n&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdLook"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdLook">[docs]</a><span class="k">class</span> <span class="nc">CmdLook</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Look at the room, an object or the currently focused object</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      look [obj]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;look&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;l&quot;</span><span class="p">,</span> <span class="s2">&quot;ls&quot;</span><span class="p">]</span>
+    <span class="n">obj1_search</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">obj2_search</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="CmdLook.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">room</span>
+        <span class="c1"># the at_look hook will in turn call return_appearance and</span>
+        <span class="c1"># pass the &#39;unfocused&#39; kwarg to it</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">at_look</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">unfocused</span><span class="o">=</span><span class="p">(</span><span class="n">target</span> <span class="ow">and</span> <span class="n">target</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">msg_char</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">txt</span><span class="p">,</span> <span class="n">client_type</span><span class="o">=</span><span class="s2">&quot;look&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdWho"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdWho">[docs]</a><span class="k">class</span> <span class="nc">CmdWho</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">,</span> <span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdWho</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    List other players in the game.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      who</span>
+<span class="sd">      who all</span>
+
+<span class="sd">    Show who is in the room with you, or (with who all), who is online on the</span>
+<span class="sd">    server as a whole.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;who&quot;</span>
+
+    <span class="n">obj1_search</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">obj2_search</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="CmdWho.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdWho.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">style_table</span><span class="p">(</span><span class="s2">&quot;|wName&quot;</span><span class="p">,</span> <span class="s2">&quot;|wRoom&quot;</span><span class="p">)</span>
+            <span class="n">sessions</span> <span class="o">=</span> <span class="n">SESSION_HANDLER</span><span class="o">.</span><span class="n">get_sessions</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="n">sessions</span><span class="p">:</span>
+                <span class="n">puppet</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get_puppet</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">puppet</span><span class="p">:</span>
+                    <span class="n">location</span> <span class="o">=</span> <span class="n">puppet</span><span class="o">.</span><span class="n">location</span>
+                    <span class="n">locname</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">key</span> <span class="k">if</span> <span class="n">location</span> <span class="k">else</span> <span class="s2">&quot;(Outside somewhere)&quot;</span>
+                    <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">puppet</span><span class="p">,</span> <span class="n">locname</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">account</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get_account</span><span class="p">()</span>
+                    <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">),</span> <span class="s2">&quot;(OOC)&quot;</span><span class="p">)</span>
+
+            <span class="n">txt</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;|cPlayers active on this server|n:</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;(use &#39;who&#39; to see only those in your room)&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">chars</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">get_all_characters</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">caller</span>
+            <span class="p">]</span>
+            <span class="n">chars</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2"> (you)&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">chars</span><span class="p">)</span>
+            <span class="n">txt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|cPlayers in this room (room-name &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;)|n:</span><span class="se">\n</span><span class="s2">  </span><span class="si">{</span><span class="n">chars</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdSpeak"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak">[docs]</a><span class="k">class</span> <span class="nc">CmdSpeak</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform an communication action.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      say &lt;text&gt;</span>
+<span class="sd">      whisper</span>
+<span class="sd">      shout</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;say&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="s2">&quot;shout&quot;</span><span class="p">,</span> <span class="s2">&quot;whisper&quot;</span><span class="p">]</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\w|\s|$&quot;</span>
+
+<div class="viewcode-block" id="CmdSpeak.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="s2">&quot;say&quot;</span> <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;;&quot;</span> <span class="k">else</span> <span class="n">action</span>
+        <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;What do you want to </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">?&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;shout&quot;</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|c</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">|n&quot;</span>
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;whisper&quot;</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|C(</span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2">)|n&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|c</span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2">|n&quot;</span>
+
+        <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;~You ~</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="s2">&quot;msg_room&quot;</span><span class="p">):</span>
+            <span class="n">room</span><span class="o">.</span><span class="n">msg_room</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+            <span class="n">room</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2"> by </span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdEmote"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdEmote">[docs]</a><span class="k">class</span> <span class="nc">CmdEmote</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform a free-form emote. Use /me to</span>
+<span class="sd">    include yourself in the emote and /name</span>
+<span class="sd">    to include other objects or characters.</span>
+<span class="sd">    Use &quot;...&quot; to enact speech.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        emote &lt;emote&gt;</span>
+<span class="sd">        :&lt;emote</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        emote /me smiles at /peter</span>
+<span class="sd">        emote /me points to /box and /lever.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;emote&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="s2">&quot;pose&quot;</span><span class="p">]</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\w|\s|$&quot;</span>
+
+<div class="viewcode-block" id="CmdEmote.you_replace"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.you_replace">[docs]</a>    <span class="k">def</span> <span class="nf">you_replace</span><span class="p">(</span><span class="n">match</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">match</span></div>
+
+<div class="viewcode-block" id="CmdEmote.room_replace"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.room_replace">[docs]</a>    <span class="k">def</span> <span class="nf">room_replace</span><span class="p">(</span><span class="n">match</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">match</span></div>
+
+<div class="viewcode-block" id="CmdEmote.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">emote</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">emote</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s1">&#39;Usage: emote /me points to /door, saying &quot;look over there!&quot;&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">speech_clr</span> <span class="o">=</span> <span class="s2">&quot;|c&quot;</span>
+        <span class="n">obj_clr</span> <span class="o">=</span> <span class="s2">&quot;|y&quot;</span>
+        <span class="n">self_clr</span> <span class="o">=</span> <span class="s2">&quot;|g&quot;</span>
+        <span class="n">player_clr</span> <span class="o">=</span> <span class="s2">&quot;|b&quot;</span>
+        <span class="n">add_period</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">_RE_EMOTE_PROPER_END</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">emote</span><span class="p">)</span>
+
+        <span class="n">emote</span> <span class="o">=</span> <span class="n">_RE_EMOTE_SPEECH</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">speech_clr</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;\1\2|n&quot;</span><span class="p">,</span> <span class="n">emote</span><span class="p">)</span>
+        <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span>
+
+        <span class="n">characters</span> <span class="o">=</span> <span class="n">room</span><span class="o">.</span><span class="n">get_all_characters</span><span class="p">()</span>
+        <span class="n">logged</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
+            <span class="n">txt</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">self_refer</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">_RE_EMOTE_NAME</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">emote</span><span class="p">):</span>
+                <span class="n">nameobj</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="n">part</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">part</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;me&quot;</span><span class="p">:</span>
+                        <span class="n">nameobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+                        <span class="n">self_refer</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">nameobj</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">nameobj</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">target</span> <span class="o">==</span> <span class="n">nameobj</span><span class="p">:</span>
+                        <span class="n">part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">self_clr</span><span class="si">}{</span><span class="n">nameobj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="si">}</span><span class="s2">|n&quot;</span>
+                    <span class="k">elif</span> <span class="n">nameobj</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
+                        <span class="n">part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">player_clr</span><span class="si">}{</span><span class="n">nameobj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="si">}</span><span class="s2">|n&quot;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj_clr</span><span class="si">}{</span><span class="n">nameobj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="si">}</span><span class="s2">|n&quot;</span>
+                <span class="n">txt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">self_refer</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">target</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">:</span>
+                    <span class="n">txt</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">self_clr</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="si">}</span><span class="s2">|n &quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">txt</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">txt</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">player_clr</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="si">}</span><span class="s2">|n &quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">txt</span>
+            <span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;.&quot;</span> <span class="k">if</span> <span class="n">add_period</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">logged</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="s2">&quot;log&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;emote: </span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">logged</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdFocus"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdFocus">[docs]</a><span class="k">class</span> <span class="nc">CmdFocus</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Focus your attention on a target.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      focus &lt;obj&gt;</span>
+
+<span class="sd">    Once focusing on an object, use look to get more information about how it</span>
+<span class="sd">    looks and what actions is available.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;focus&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;examine&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;ex&quot;</span><span class="p">,</span> <span class="s2">&quot;unfocus&quot;</span><span class="p">]</span>
+
+    <span class="n">obj1_search</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="CmdFocus.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">:</span>
+            <span class="n">old_focus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">old_focus</span><span class="p">,</span> <span class="s2">&quot;at_unfocus&quot;</span><span class="p">):</span>
+                <span class="n">old_focus</span><span class="o">.</span><span class="n">at_unfocus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="s2">&quot;at_focus&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Nothing of interest there.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">msg_room</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;~You ~examine *</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">skip_caller</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">focus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">at_focus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;What do you want to focus on?&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">old_focus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You no longer focus on |y</span><span class="si">{</span><span class="n">old_focus</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n.&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdOptions"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdOptions">[docs]</a><span class="k">class</span> <span class="nc">CmdOptions</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Start option menu</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      options</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;options&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="CmdOptions.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdOptions.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">.menu</span> <span class="kn">import</span> <span class="n">run_option_menu</span>
+
+        <span class="n">run_option_menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdGet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdGet">[docs]</a><span class="k">class</span> <span class="nc">CmdGet</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Use focus / examine instead.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;get&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="s2">&quot;inv&quot;</span><span class="p">,</span> <span class="s2">&quot;give&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="CmdGet.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdGet.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Use |wfocus|n or |wexamine|n for handling objects.&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdRerouter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdRerouter">[docs]</a><span class="k">class</span> <span class="nc">CmdRerouter</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interact with an object in focus.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">       &lt;action&gt; [arg]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># reroute commands from the default cmdset to the catch-all</span>
+    <span class="c1"># focus function where needed. This allows us to override</span>
+    <span class="c1"># individual default commands without replacing the entire</span>
+    <span class="c1"># cmdset (we want to keep most of them).</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@dig&quot;</span><span class="p">,</span> <span class="s2">&quot;@open&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="CmdRerouter.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdRerouter.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># reroute to another command</span>
+        <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdhandler</span>
+
+        <span class="n">cmdhandler</span><span class="o">.</span><span class="n">cmdhandler</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdobj</span><span class="o">=</span><span class="n">CmdFocusInteraction</span><span class="p">(),</span> <span class="n">cmdobj_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdFocusInteraction"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdFocusInteraction">[docs]</a><span class="k">class</span> <span class="nc">CmdFocusInteraction</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interact with an object in focus.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">       &lt;action&gt; [arg]</span>
+
+<span class="sd">    This is a special catch-all command which will operate on</span>
+<span class="sd">    the current focus. It will look for a method</span>
+<span class="sd">        `focused_object.at_focus_&lt;action&gt;(caller, **kwargs)` and call</span>
+<span class="sd">    it. This allows objects to just add a new hook to make that</span>
+<span class="sd">    action apply to it. The obj1, prep, obj2, arg1, arg2 are passed</span>
+<span class="sd">    as keys into the method.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># all commands not matching something else goes here.</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">syscmdkeys</span><span class="o">.</span><span class="n">CMD_NOMATCH</span>
+
+    <span class="n">obj1_search</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">obj2_search</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="CmdFocusInteraction.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdFocusInteraction.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We assume this type of command is always on the form `command [arg]`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">parts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span></div>
+
+<div class="viewcode-block" id="CmdFocusInteraction.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdFocusInteraction.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">focused</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span>
+
+        <span class="k">if</span> <span class="n">focused</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">focused</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;at_focus_</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="c1"># there is a suitable hook to call!</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">focused</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;at_focus_</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hm?&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdStand"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdStand">[docs]</a><span class="k">class</span> <span class="nc">CmdStand</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stand up from whatever position you had.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;stand&quot;</span>
+
+<div class="viewcode-block" id="CmdStand.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdStand.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># Positionable objects will set this flag on you.</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">tagcategory</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pos</span><span class="p">:</span>
+            <span class="c1"># we have a position, clean up.</span>
+            <span class="n">obj</span><span class="p">,</span> <span class="n">position</span> <span class="o">=</span> <span class="n">pos</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">tagcategory</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">msg_room</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;~You ~are back standing on the floor again.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are already standing.&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdHelp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdHelp</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">,</span> <span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdHelp</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get help.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      help &lt;topic&gt; or &lt;command&gt;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;help&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;?&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="CmdHelp.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="s2">&quot;get_help&quot;</span><span class="p">):</span>
+                <span class="n">helptxt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">get_help</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">helptxt</span><span class="p">:</span>
+                    <span class="n">helptxt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;There is no help to be had about </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">helptxt</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;|y</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2">|n is &quot;</span>
+                    <span class="s2">&quot;likely |rnot|n part of any of the Jester&#39;s trickery.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">:</span>
+            <span class="c1"># fall back to the normal help command</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">helptxt</span> <span class="o">=</span> <span class="n">_HELP_SUMMARY_TEXT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">helptxt</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span></div></div>
+
+
+<span class="c1"># Debug/help command</span>
+
+
+<div class="viewcode-block" id="CmdCreateObj"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdCreateObj">[docs]</a><span class="k">class</span> <span class="nc">CmdCreateObj</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create command, only for Admins during debugging.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      createobj name[:typeclass]</span>
+
+<span class="sd">    Here, :typeclass is a class in evscaperoom.commands</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;createobj&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cobj&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(Admin)&quot;</span>
+
+    <span class="n">obj1_search</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">obj2_search</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="CmdCreateObj.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdCreateObj.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: createobj name[:typeclass]&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">typeclass</span> <span class="o">=</span> <span class="s2">&quot;EvscaperoomObject&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">name</span><span class="p">,</span> <span class="n">typeclass</span> <span class="o">=</span> <span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">typeclass</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;state_&quot;</span><span class="p">):</span>
+            <span class="c1"># a state class</span>
+            <span class="n">typeclass</span> <span class="o">=</span> <span class="s2">&quot;evscaperoom.states.&quot;</span> <span class="o">+</span> <span class="n">typeclass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">create_evscaperoom_object</span><span class="p">(</span><span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="p">)</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created new object </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">typeclass_path</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdSetFlag"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdSetFlag">[docs]</a><span class="k">class</span> <span class="nc">CmdSetFlag</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Assign a flag to an object. Admin use only</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      flag &lt;obj&gt; with &lt;flagname&gt;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;flag&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;setflag&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(Admin)&quot;</span>
+
+    <span class="n">obj1_search</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">obj2_search</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="CmdSetFlag.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdSetFlag.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: flag &lt;obj&gt; with &lt;flagname&gt;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="s2">&quot;set_flag&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">check_flag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arg2</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">unset_flag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arg2</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|rUnset|n flag &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">arg2</span><span class="si">}</span><span class="s2">&#39; on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arg2</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|gSet|n flag &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">arg2</span><span class="si">}</span><span class="s2">&#39; on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot set flag on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdJumpState"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdJumpState">[docs]</a><span class="k">class</span> <span class="nc">CmdJumpState</span><span class="p">(</span><span class="n">CmdEvscapeRoom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Jump to a given state.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      jumpstate &lt;statename&gt;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;jumpstate&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(Admin)&quot;</span>
+
+    <span class="n">obj1_search</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">obj2_search</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="CmdJumpState.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdJumpState.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying to move to state </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room</span><span class="o">.</span><span class="n">next_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># Helper command to start the Evscaperoom menu</span>
+
+
+<div class="viewcode-block" id="CmdEvscapeRoomStart"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdEvscapeRoomStart">[docs]</a><span class="k">class</span> <span class="nc">CmdEvscapeRoomStart</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Go to the Evscaperoom start menu</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;evscaperoom&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;EvscapeRoom&quot;</span>
+
+<div class="viewcode-block" id="CmdEvscapeRoomStart.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdEvscapeRoomStart.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># need to import here to break circular import</span>
+        <span class="kn">from</span> <span class="nn">.menu</span> <span class="kn">import</span> <span class="n">run_evscaperoom_menu</span>
+
+        <span class="n">run_evscaperoom_menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># command sets</span>
+
+
+<div class="viewcode-block" id="CmdSetEvScapeRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdSetEvScapeRoom">[docs]</a><span class="k">class</span> <span class="nc">CmdSetEvScapeRoom</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="CmdSetEvScapeRoom.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.commands.html#evennia.contrib.full_systems.evscaperoom.commands.CmdSetEvScapeRoom.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdHelp</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdLook</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdGiveUp</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdFocus</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSpeak</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdEmote</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdFocusInteraction</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdStand</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdWho</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdOptions</span><span class="p">())</span>
+        <span class="c1"># rerouters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdGet</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdRerouter</span><span class="p">())</span>
+        <span class="c1"># admin commands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdCreateObj</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSetFlag</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdJumpState</span><span class="p">())</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="commands.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.full_systems.evscaperoom.commands</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

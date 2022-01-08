@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Custom gameime &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Custom gameime</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="custom-gameime">
+<h1>Custom gameime<a class="headerlink" href="#custom-gameime" title="Permalink to this headline">¶</a></h1>
+<p>Contrib by vlgeoff, 2017 - based on Griatch’s core original</p>
+<p>This reimplements the <code class="docutils literal notranslate"><span class="pre">evennia.utils.gametime</span></code> module but with a <em>custom</em>
+calendar (unusual number of days per week/month/year etc) for your game world.
+Like the original, it allows for scheduling events to happen at given
+in-game times, but now taking this custom calendar into account.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Import and use this in the same way as you would the normal
+<code class="docutils literal notranslate"><span class="pre">evennia.utils.gametime</span></code> module.</p>
+<p>Customize the calendar by adding a <code class="docutils literal notranslate"><span class="pre">TIME_UNITS</span></code> dict to your settings (see
+example below).</p>
+</section>
+<section id="usage">
+<h2>Usage:<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia.contrib.base_systems</span> <span class="kn">import</span> <span class="n">custom_gametime</span>
+
+    <span class="n">gametime</span> <span class="o">=</span> <span class="n">custom_gametime</span><span class="o">.</span><span class="n">realtime_to_gametime</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">23</span><span class="p">)</span>
+
+    <span class="c1"># scedule an event to fire every in-game 10 hours</span>
+    <span class="n">custom_gametime</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>The calendar can be customized by adding the <code class="docutils literal notranslate"><span class="pre">TIME_UNITS</span></code> dictionary to your
+settings file. This maps unit names to their length, expressed in the smallest
+unit. Here’s the default as an example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TIME_UNITS = {
+    &quot;sec&quot;: 1,
+    &quot;min&quot;: 60,
+    &quot;hr&quot;: 60 * 60,
+    &quot;hour&quot;: 60 * 60,
+    &quot;day&quot;: 60 * 60 * 24,
+    &quot;week&quot;: 60 * 60 * 24 * 7,
+    &quot;month&quot;: 60 * 60 * 24 * 7 * 4,
+    &quot;yr&quot;: 60 * 60 * 24 * 7 * 4 * 12,
+    &quot;year&quot;: 60 * 60 * 24 * 7 * 4 * 12, }
+</pre></div>
+</div>
+<p>When using a custom calendar, these time unit names are used as kwargs to
+the converter functions in this module. Even if your calendar uses other names
+for months/weeks etc the system needs the default names internally.</p>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/base_systems/custom_gametime/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Custom gameime</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage:</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contrib-Custom-Gametime.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Contrib-Custom-Gametime.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Custom gameime</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>
