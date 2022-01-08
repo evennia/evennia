@@ -1,14 +1,16 @@
 # Easy fillable form
 
-Contrib - Tim Ashley Jenkins 2018
+Contribution by Tim Ashley Jenkins, 2018
 
-This module contains a function that calls an easily customizable EvMenu - this
-menu presents the player with a fillable form, with fields that can be filled
-out in any order. Each field's value can be verified, with the function
-allowing easy checks for text and integer input, minimum and maximum values /
-character lengths, or can even be verified by a custom function. Once the form
-is submitted, the form's data is submitted as a dictionary to any callable of
-your choice.
+This module contains a function that generates an `EvMenu` for you - this
+menu presents the player with a form of fields that can be filled
+out in any order (e.g. for character generation or building). Each field's value can 
+be verified, with the function allowing easy checks for text and integer input, 
+minimum and maximum values / character lengths, or can even be verified by a custom 
+function. Once the form is submitted, the form's data is submitted as a dictionary 
+to any callable of your choice.
+
+## Usage
 
 The function that initializes the fillable form menu is fairly simple, and
 includes the caller, the template for the form, and the callback(caller, result)

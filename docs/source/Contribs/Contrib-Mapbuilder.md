@@ -1,8 +1,8 @@
 # Map Builder
 
-Contribution - Cloud_Keeper 2016
+Contribution by Cloud_Keeper 2016
 
-Build a map from a 2D ASCII map.
+Build a game map from the drawing of a 2D ASCII map.
 
 This is a command which takes two inputs:
 

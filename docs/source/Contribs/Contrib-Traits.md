@@ -1,12 +1,10 @@
 # Traits
 
-Whitenoise 2014, Ainneve contributors,
-Griatch 2020
+Contribution by Griatch 2020, based on code by Whitenoise and Ainneve contribs, 2014
 
 A `Trait` represents a modifiable property on (usually) a Character. They can
 be used to represent everything from attributes (str, agi etc) to skills
-(hunting 10, swords 14 etc) and dynamically changing things like HP, XP etc.
-
+(hunting 10, swords 14 etc) and dynamically changing things like HP, XP etc. 
 Traits differ from normal Attributes in that they track their changes and limit
 themselves to particular value-ranges. One can add/subtract from them easily and
 they can even change dynamically at a particular rate (like you being poisoned or

@@ -1,14 +1,16 @@
 # Easy menu selection tree
 
-Contrib - Tim Ashley Jenkins 2017
+Contribution by Tim Ashley Jenkins, 2017
 
-This module allows you to create and initialize an entire branching EvMenu
-instance with nothing but a multi-line string passed to one function.
+This utility allows you to create and initialize an entire branching EvMenu
+instance from a multi-line string passed to one function.
 
-EvMenu is incredibly powerful and flexible, but using it for simple menus
-can often be fairly cumbersome - a simple menu that can branch into five
-categories would require six nodes, each with options represented as a list
-of dictionaries.
+> Note: Since the time this contrib was created, EvMenu itself got its own templating 
+> language that has more features and is not compatible with the style used in 
+> this contrib. Both can still be used in parallel.
+
+`EvMenu` is incredibly powerful and flexible but it can be a little overwhelming
+and offers a lot of power that may not be needed for a simple multiple-choice menu.
 
 This module provides a function, `init_tree_selection`, which acts as a frontend
 for EvMenu, dynamically sourcing the options from a multi-line string you

@@ -1,13 +1,14 @@
 # Evennia Tutorial World
 
-Griatch 2011, 2015
+Contribution by Griatch 2011, 2015
 
-This is a stand-alone tutorial area for an unmodified Evennia install.
+A stand-alone tutorial area for an unmodified Evennia install.
 Think of it as a sort of single-player adventure rather than a
 full-fledged multi-player game world. The various rooms and objects
-herein are designed to show off features of the engine, not to be a
+are designed to show off features of Evennia, not to be a
 very challenging (nor long) gaming experience. As such it's of course
-only skimming the surface of what is possible.
+only skimming the surface of what is possible. Taking this apart 
+is a great way to start learning the system.
 
 The tutorial world also includes a game tutor menu example, exemplifying
 Evmenu.

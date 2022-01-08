@@ -1,15 +1,16 @@
 # Evennia Multidescer
 
-Contrib - Griatch 2016
+Contribution by Griatch 2016
 
 A "multidescer" is a concept from the MUSH world. It allows for
 creating, managing and switching between multiple character
-descriptions. This multidescer will not require any changes to the
-Character class, rather it will use the `multidescs` Attribute (a
-list) and create it if it does not exist.
+descriptions and is a way for quickly managing your look (such as when 
+changing clothes) in more free-form roleplaying systems. This will also 
+work well together with the `rpsystem` contrib.
 
-This contrib also works well together with the rpsystem contrib (which
-also adds the short descriptions and the `sdesc` command).
+This multidescer will not 
+require any changes to the Character class, rather it will use the `multidescs` 
+Attribute (a list) and create it if it does not exist. 
 
 ## Installation
 

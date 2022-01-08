@@ -1,10 +1,10 @@
 # Wilderness system
 
-Evennia contrib - titeuf87 2017
+Contribution by titeuf87, 2017
 
 This contrib provides a wilderness map without actually creating a large number
-of rooms - as you move, your room is instead updated with different
-descriptions. This means you can make huge areas with little database use as
+of rooms - as you move, you instead end up back in the same room but its description 
+changes. This means you can make huge areas with little database use as
 long as the rooms are relatively similar (name/desc changing).
 
 ## Installation

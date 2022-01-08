@@ -1,16 +1,18 @@
 # EvscapeRoom
 
-Evennia contrib - Griatch 2019
+Contribution by Griatch, 2019
 
-This 'Evennia escaperoom game engine' was created for the MUD Coders Guild game
-Jam, April 14-May 15 2019. The theme for the jam was "One Room". This contains the
-utilities and base classes and an empty example room.
+A full engine for creating multiplayer escape-rooms in Evennia. Allows players to 
+spawn and join puzzle rooms that track their state independently. Any number of players 
+can join to solve a room together. This is the engine created for 'EvscapeRoom', which won 
+the MUD Coders Guild "One Room" Game Jam in April-May, 2019. The contrib has no game 
+content but contains the utilities and base classes and an empty example room.
 
 The original code for the contest is found at
 https://github.com/Griatch/evscaperoom but the version on the public Evennia
 demo is more updated, so if you really want the latest bug fixes etc you should
 rather look at https://github.com/evennia/evdemo/tree/master/evdemo/evscaperoom
-instead.  A copy of the full game can also be played on the Evennia demo server
+instead. A copy of the full game can also be played on the Evennia demo server
 at https://demo.evennia.com - just connect to the server and write `evscaperoom`
 in the first room to start!
 

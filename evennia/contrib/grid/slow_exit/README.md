@@ -1,10 +1,10 @@
 # Slow Exit
 
-Contribution - Griatch 2014
+Contribution by Griatch 2014
 
-This is an example of an Exit-type that delays its traversal. This simulates
-slow movement, common in many different types of games. The contrib also
-contains two commands, `CmdSetSpeed` and CmdStop for changing the movement speed
+An example of an Exit-type that delays its traversal. This simulates
+slow movement, common in many games. The contrib also
+contains two commands, `setspeed` and `stop` for changing the movement speed
 and abort an ongoing traversal, respectively.
 
 ## Installation:

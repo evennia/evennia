@@ -1,10 +1,11 @@
 # Custom gameime
 
-Contrib - Griatch 2017, vlgeoff 2017
+Contrib by vlgeoff, 2017 - based on Griatch's core original
 
-This reimplements the `evennia.utils.gametime` module but supporting a custom
-calendar for your game world. It allows for scheduling events to happen at given
-in-game times, taking this custom calendar into account.
+This reimplements the `evennia.utils.gametime` module but with a _custom_
+calendar (unusual number of days per week/month/year etc) for your game world. 
+Like the original, it allows for scheduling events to happen at given
+in-game times, but now taking this custom calendar into account.
 
 ## Installation
 

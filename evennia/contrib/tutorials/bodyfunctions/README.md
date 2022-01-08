@@ -1,9 +1,9 @@
 # Script example
 
-Griatch - 2012
+Contribution by Griatch, 2012
 
 Example script for testing. This adds a simple timer that has your
-character make observations and notices at irregular intervals.
+character make small verbal observations at irregular intervals.
 
 To test, use (in game)
 

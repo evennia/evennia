@@ -1,10 +1,9 @@
 # Dynamic In Game Map
 
-
-## Introduction 
+## Introduction
 
 An often desired feature in a MUD is to show an in-game map to help navigation. The [Static in-game
-map](./Static-In-Game-Map.md) tutorial solves this by creating a *static* map, meaning the map is pre-
+map](../Contribs/Contrib-Mapbuilder.md) tutorial solves this by creating a *static* map, meaning the map is pre-
 drawn once and for all - the rooms are then created to match that map. When walking around, parts of
 the static map is then cut out and displayed next to the room description.
 
@@ -13,7 +12,7 @@ the relationships we find between already existing rooms.
 
 ## The Grid of Rooms
 
-There are at least two requirements needed for this tutorial to work. 
+There are at least two requirements needed for this tutorial to work.
 
 1. The structure of your mud has to follow a logical layout. Evennia supports the layout of your
 world to be 'logically' impossible with rooms looping to themselves or exits leading to the other
@@ -54,7 +53,7 @@ We are going to create something that displays like this when you type 'look':
 Your current location is defined by `[@]` while the `[.]`s are other rooms that the "worm" has seen
 since departing from your location.
 
-## Setting up the Map Display 
+## Setting up the Map Display
 
 First we must define the components for displaying the map. For the "worm" to know what symbol to
 draw on the map we will have it check an Attribute on the room it visits called `sector_type`. For
@@ -66,9 +65,9 @@ in `mygame/world/map.py.`
 ```python
 # in mygame/world/map.py
 
-# the symbol is identified with a key "sector_type" on the 
-# Room. Keys None and "you" must always exist. 
-SYMBOLS = { None : ' . ', # for rooms without sector_type Attribute 
+# the symbol is identified with a key "sector_type" on the
+# Room. Keys None and "you" must always exist.
+SYMBOLS = { None : ' . ', # for rooms without sector_type Attribute
             'you' : '[@]',
             'SECT_INSIDE': '[.]' }
 ```
@@ -122,7 +121,7 @@ class Map(object):
         return board
 
     def check_grid(self):
-        # this method simply checks the grid to make sure 
+        # this method simply checks the grid to make sure
         # that both max_l and max_w are odd numbers.
         return True if self.max_length % 2 != 0 or self.max_width % 2 != 0\
             else False
@@ -141,7 +140,7 @@ def draw_room_on_map(room, max_distance):
         return
 
     for exit in room.exits:
-        if self.has_drawn(exit.destination):             
+        if self.has_drawn(exit.destination):
             # skip drawing if we already visited the destination
             continue
         else:
@@ -163,14 +162,14 @@ go `4` spaces in either direction:
 
 ```
 [.][.][.][.][@][.][.][.][.]
- 4  3  2  1  0  1  2  3  4   
+ 4  3  2  1  0  1  2  3  4
 ```
 
-The max_distance can be set dynamically based on the size of the display area. As your width/length
+The `max_distance` can be set dynamically based on the size of the display area. As your width/length
 changes it becomes a simple algebraic linear relationship which is simply `max_distance =
 (min(max_width, max_length) -1) / 2`.
 
-## Building the Mapper 
+## Building the Mapper
 
 Now we can start to fill our Map object with some methods. We are still missing a few methods that
 are very important:
@@ -184,8 +183,8 @@ n
 self.curX/Y. .accordingly
 * `self.start_loc_on_grid(self)` - the very first initial draw on the grid representing your
 location in the middle of the grid
-* 'self.show_map` - after everything is done convert the map into a readable string`
-* `self.draw_room_on_map(self, room, max_distance)` - the main method that ties it all together.`
+* `self.show_map` - after everything is done convert the map into a readable string
+* `self.draw_room_on_map(self, room, max_distance)` - the main method that ties it all together.
 
 
 Now that we know which methods we need, let's refine our initial `__init__(self)` to pass some
@@ -209,7 +208,7 @@ class Map(object):
             # we have to store the grid into a variable
             self.grid = self.create_grid()
             # we use the algebraic relationship
-            self.draw_room_on_map(caller.location, 
+            self.draw_room_on_map(caller.location,
                                   ((min(max_width, max_length) -1 ) / 2)
 
 ```
@@ -234,7 +233,7 @@ def draw_room_on_map(self, room, max_distance):
             # we only map in the cardinal directions. Mapping up/down would be
             # an interesting learning project for someone who wanted to try it.
             continue
-        if self.has_drawn(exit.destination): 
+        if self.has_drawn(exit.destination):
             # we've been to the destination already, skip ahead.
             continue
 
@@ -245,7 +244,7 @@ def draw_room_on_map(self, room, max_distance):
 The first thing the "worm" does is to draw your current location in `self.draw`. Lets define that...
 
 ```python
-#in mygame/word/map.py, in the Map class 
+#in mygame/word/map.py, in the Map class
 
 def draw(self, room):
     # draw initial ch location on map first!
@@ -272,7 +271,7 @@ def start_loc_on_grid(self):
     x = self.median(self.max_width)
     y = self.median(self.max_length)
     # x and y are floats by default, can't index lists with float types
-    x, y = int(x), int(y) 
+    x, y = int(x), int(y)
 
     self.grid[x][y] = SYMBOLS['you']
     self.curX, self.curY = x, y # updating worms current location
@@ -295,12 +294,12 @@ position of the worm; we do this in `self.update_pos()` below.
 
 ```python
 def update_pos(self, room, exit_name):
-    # this ensures the coordinates stays up to date 
+    # this ensures the coordinates stays up to date
     # to where the worm is currently at.
     self.curX, self.curY = \
       self.worm_has_mapped[room][0], self.worm_has_mapped[room][1]
 
-    # now we have to actually move the pointer 
+    # now we have to actually move the pointer
     # variables depending on which 'exit' it found
     if exit_name == 'east':
         self.curY += 1
@@ -343,14 +342,14 @@ from evennia import DefaultRoom
 from world.map import Map
 
 class Room(DefaultRoom):
-    
+
     def return_appearance(self, looker):
         # [...]
         string = f"{Map(looker).show_map()}\n"
-        # Add all the normal stuff like room description, 
-        # contents, exits etc. 
+        # Add all the normal stuff like room description,
+        # contents, exits etc.
         string += "\n" + super().return_appearance(looker)
-        return string 
+        return string
 ```
 
 Obviously this method of generating maps doesn't take into account of any doors or exits that are
@@ -369,16 +368,16 @@ to actually call it. Remember that to see different symbols for a location you a
 `sector_type` Attribute on the room to one of the keys in the `SYMBOLS` dictionary. So in this
 example, to make a room be mapped as `[.]` you would set the room's `sector_type` to
 `"SECT_INSIDE"`. Try it out with `@set here/sector_type = "SECT_INSIDE"`. If you wanted all new
-rooms to have a given sector symbol, you could change the default in the `SYMBOLS´ dictionary below,
+rooms to have a given sector symbol, you could change the default in the `SYMBOLS` dictionary below,
 or you could add the Attribute in the Room's `at_object_creation` method.
 
 ```python
-#mygame/world/map.py
+# mygame/world/map.py
 
 # These are keys set with the Attribute sector_type on the room.
 # The keys None and "you" must always exist.
 SYMBOLS = { None : ' . ',  # for rooms without a sector_type attr
-            'you' : '[@]', 
+            'you' : '[@]',
             'SECT_INSIDE': '[.]' }
 
 class Map(object):
@@ -394,16 +393,16 @@ class Map(object):
         if self.check_grid():
             # we actually have to store the grid into a variable
             self.grid = self.create_grid()
-            self.draw_room_on_map(caller.location, 
+            self.draw_room_on_map(caller.location,
                                  ((min(max_width, max_length) -1 ) / 2))
-    
+
     def update_pos(self, room, exit_name):
-        # this ensures the pointer variables always 
+        # this ensures the pointer variables always
         # stays up to date to where the worm is currently at.
         self.curX, self.curY = \
            self.worm_has_mapped[room][0], self.worm_has_mapped[room][1]
 
-        # now we have to actually move the pointer 
+        # now we have to actually move the pointer
         # variables depending on which 'exit' it found
         if exit_name == 'east':
             self.curY += 1
@@ -419,19 +418,19 @@ class Map(object):
 
         if max_distance == 0:
             return
-        
+
         for exit in room.exits:
             if exit.name not in ("north", "east", "west", "south"):
                 # we only map in the cardinal directions. Mapping up/down would be
                 # an interesting learning project for someone who wanted to try it.
                 continue
-            if self.has_drawn(exit.destination): 
+            if self.has_drawn(exit.destination):
                 # we've been to the destination already, skip ahead.
                 continue
 
             self.update_pos(room, exit.name.lower())
             self.draw_room_on_map(exit.destination, max_distance - 1)
-        
+
     def draw(self, room):
         # draw initial caller location on map first!
         if room == self.caller.location:
@@ -441,30 +440,30 @@ class Map(object):
             # map all other rooms
             self.worm_has_mapped[room] = [self.curX, self.curY]
             # this will use the sector_type Attribute or None if not set.
-            self.grid[self.curX][self.curY] = SYMBOLS[room.db.sector_type]      
+            self.grid[self.curX][self.curY] = SYMBOLS[room.db.sector_type]
 
     def median(self, num):
         lst = sorted(range(0, num))
         n = len(lst)
         m = n -1
         return (lst[n//2] + lst[m//2]) / 2.0
-   
+
     def start_loc_on_grid(self):
         x = self.median(self.max_width)
         y = self.median(self.max_length)
         # x and y are floats by default, can't index lists with float types
-        x, y = int(x), int(y) 
+        x, y = int(x), int(y)
 
         self.grid[x][y] = SYMBOLS['you']
         self.curX, self.curY = x, y # updating worms current location
-     
+
 
     def has_drawn(self, room):
         return True if room in self.worm_has_mapped.keys() else False
 
 
     def create_grid(self):
-        # This method simply creates an empty grid 
+        # This method simply creates an empty grid
         # with the specified variables from __init__(self):
         board = []
         for row in range(self.max_width):
@@ -474,7 +473,7 @@ class Map(object):
         return board
 
     def check_grid(self):
-        # this method simply checks the grid to make sure 
+        # this method simply checks the grid to make sure
         # both max_l and max_w are odd numbers
         return True if self.max_length % 2 != 0 or \
                     self.max_width % 2 != 0 else False

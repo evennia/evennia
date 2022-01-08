@@ -1,6 +1,6 @@
 # Turn based battle system framework
 
-Contrib - Tim Ashley Jenkins 2017
+Contribution by Tim Ashley Jenkins, 2017
 
 This is a framework for a simple turn-based combat system, similar
 to those used in D&D-style tabletop role playing games. It allows

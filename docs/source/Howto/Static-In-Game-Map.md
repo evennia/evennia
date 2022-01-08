@@ -84,7 +84,7 @@ In this section we will try to create an actual "map" object that an account can
 at.
 
 Evennia offers a range of [default commands](../Components/Default-Commands.md) for 
-[creating objects and rooms in-game](../Howto/Starting/Part1/Building-Quickstart.md). While readily accessible, these commands are made to do very
+[creating objects and rooms in-game](Starting/Part1/Building-Quickstart.md). While readily accessible, these commands are made to do very
 specific, restricted things and will thus not offer as much flexibility to experiment (for an
 advanced exception see [the FuncParser](../Components/FuncParser.md)). Additionally, entering long
 descriptions and properties over and over in the game client can become tedious; especially when
@@ -412,5 +412,5 @@ easily new game defining features can be added to Evennia.
 
 You can easily build from this tutorial by expanding the map and creating more rooms to explore. Why
 not add more features to your game by trying other tutorials: [Add weather to your world](Weather-
-Tutorial), [fill your world with NPC's](../Howto/Tutorial-Aggressive-NPCs.md) or 
-[implement a combat system](../Howto/Starting/Part3/Turn-based-Combat-System.md).
+Tutorial), [fill your world with NPC's](./Tutorial-Aggressive-NPCs.md) or 
+[implement a combat system](Starting/Part3/Turn-based-Combat-System.md).

@@ -1,15 +1,15 @@
 # Input/Output Auditing
 
-Contrib - Johnny 2017
+Contribution by Johnny, 2017
 
-This is a tap that optionally intercepts all data sent to/from clients and the
-server and passes it to a callback of your choosing.
+Utility that taps and intercepts all data sent to/from clients and the
+server and passes it to a callback of your choosing. This is intended for 
+quality assurance, post-incident investigations and debugging.
 
-It is intended for quality assurance, post-incident investigations and debugging
-but obviously can be abused. All data is recorded in cleartext. Please
-be ethical, and if you are unwilling to properly deal with the implications of
-recording user passwords or private communications, please do not enable
-this module.
+Note that this should be used with care since it can obviously be abused. All 
+data is recorded in cleartext. Please be ethical, and if you are unwilling to 
+properly deal with the implications of recording user passwords or private 
+communications, please do not enable this module.
 
 Some checks have been implemented to protect the privacy of users.
 

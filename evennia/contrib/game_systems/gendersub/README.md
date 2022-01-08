@@ -1,6 +1,6 @@
 # Gendersub
 
-Contrib - Griatch 2015
+Contribution by Griatch 2015
 
 This is a simple gender-aware Character class for allowing users to
 insert custom markers in their text to indicate gender-aware

@@ -1,18 +1,14 @@
 # Barter system
 
-Evennia contribution - Griatch 2012
+Contribution by Griatch, 2012
 
 This implements a full barter system - a way for players to safely
-trade items between each other using code rather than simple free-form
-talking.  The advantage of this is increased buy/sell safety but it
-also streamlines the process and makes it faster when doing many
-transactions (since goods are automatically exchanged once both
-agree).
-
-This system is primarily intended for a barter economy, but can easily
-be used in a monetary economy as well -- just let the "goods" on one
-side be coin objects (this is more flexible than a simple "buy"
-command since you can mix coins and goods in your trade).
+trade items between each other in code rather than simple `give/get`
+commands. This increases both safety (at no time will one player have 
+both goods and payment in-hand) and speed, since agreed goods will 
+be moved automatically). By just replacing one side with coin objects,
+(or a mix of coins and goods), this also works fine for regular money 
+transactions.
 
 ## Installation
 
