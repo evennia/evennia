@@ -3,9 +3,12 @@ The managers for the custom Account object and permissions.
 """
 
 import datetime
+from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import UserManager
 from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
+from evennia.server import signals
+from evennia.utils.utils import make_iter, class_from_module, dbid_to_obj
 
 __all__ = ("AccountManager", "AccountDBManager")
 
@@ -180,6 +183,108 @@ class AccountDBManager(TypedObjectManager, UserManager):
                 **{"db_tags__db_key__iexact" if exact else "db_tags__db_key__icontains": ostring},
             )
         return matches
+
+    def create_account(
+        self,
+        key,
+        email,
+        password,
+        typeclass=None,
+        is_superuser=False,
+        locks=None,
+        permissions=None,
+        tags=None,
+        attributes=None,
+        report_to=None,
+    ):
+        """
+        This creates a new account.
+
+        Args:
+            key (str): The account's name. This should be unique.
+            email (str or None): Email on valid addr@addr.domain form. If
+                the empty string, will be set to None.
+            password (str): Password in cleartext.
+
+        Keyword Args:
+            typeclass (str): The typeclass to use for the account.
+            is_superuser (bool): Wether or not this account is to be a superuser
+            locks (str): Lockstring.
+            permission (list): List of permission strings.
+            tags (list): List of Tags on form `(key, category[, data])`
+            attributes (list): List of Attributes on form
+                 `(key, value [, category, [,lockstring [, default_pass]]])`
+            report_to (Object): An object with a msg() method to report
+                errors to. If not given, errors will be logged.
+
+        Returns:
+            Account: The newly created Account.
+        Raises:
+            ValueError: If `key` already exists in database.
+
+
+        Notes:
+            Usually only the server admin should need to be superuser, all
+            other access levels can be handled with more fine-grained
+            permissions or groups. A superuser bypasses all lock checking
+            operations and is thus not suitable for play-testing the game.
+
+        """
+        typeclass = typeclass if typeclass else settings.BASE_ACCOUNT_TYPECLASS
+        locks = make_iter(locks) if locks is not None else None
+        permissions = make_iter(permissions) if permissions is not None else None
+        tags = make_iter(tags) if tags is not None else None
+        attributes = make_iter(attributes) if attributes is not None else None
+
+        if isinstance(typeclass, str):
+            # a path is given. Load the actual typeclass.
+            typeclass = class_from_module(typeclass, settings.TYPECLASS_PATHS)
+
+        # setup input for the create command. We use AccountDB as baseclass
+        # here to give us maximum freedom (the typeclasses will load
+        # correctly when each object is recovered).
+
+        if not email:
+            email = None
+        if self.model.objects.filter(username__iexact=key):
+            raise ValueError("An Account with the name '%s' already exists." % key)
+
+        # this handles a given dbref-relocate to an account.
+        report_to = dbid_to_obj(report_to, self.model)
+
+        # create the correct account entity, using the setup from
+        # base django auth.
+        now = timezone.now()
+        email = typeclass.objects.normalize_email(email)
+        new_account = typeclass(
+            username=key,
+            email=email,
+            is_staff=is_superuser,
+            is_superuser=is_superuser,
+            last_login=now,
+            date_joined=now,
+        )
+        if password is not None:
+            # the password may be None for 'fake' accounts, like bots
+            valid, error = new_account.validate_password(password, new_account)
+            if not valid:
+                raise error
+
+            new_account.set_password(password)
+
+        new_account._createdict = dict(
+            locks=locks, permissions=permissions,
+            report_to=report_to, tags=tags, attributes=attributes
+        )
+        # saving will trigger the signal that calls the
+        # at_first_save hook on the typeclass, where the _createdict
+        # can be used.
+        new_account.save()
+
+        # note that we don't send a signal here, that is sent from the Account.create helper method
+        # instead.
+
+        return new_account
 
     # back-compatibility alias
     account_search = search_account
