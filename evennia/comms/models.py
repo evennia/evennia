@@ -413,7 +413,7 @@ class Msg(SharedMemoryModel):
 # ------------------------------------------------------------
 
 
-class TempMsg(object):
+class TempMsg:
     """
     This is a non-persistent object for sending temporary messages that will not be stored.  It
     mimics the "real" Msg object, but doesn't require sender to be given.
