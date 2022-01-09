@@ -136,9 +136,11 @@ Up requirements to Django 3.2+, Twisted 21+
   with a category (before only key was used, ignoring category entirely).
 - Move `create_*` functions into db managers, leaving `utils.create` only being
   wrapper functions (consistent with `utils.search`). No change of api otherwise.
+- Add support for `$dbref()` and `$search` when assigning an Attribute value
+  with the `set` command. This allows assigning real objects from in-game.
+
 
 ### Evennia 0.9.5 (2019-2020)
-
 
 Released 2020-11-14.
 A transitional release, including new doc system.

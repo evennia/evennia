@@ -31,6 +31,7 @@ from evennia.utils.ansi import raw as ansi_raw
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 _FUNCPARSER = None
+_ATTRFUNCPARSER = None
 
 # limit symbol import for API
 __all__ = (
@@ -1592,10 +1593,19 @@ class CmdSetAttribute(ObjManipCommand):
         char: Setting an attribute on a character (global search)
         character: Alias for char, as above.
 
+    Example:
+        set self/foo = "bar"
+        set/delete self/foo
+        set self/foo = $dbref(#53)
+
     Sets attributes on objects. The second example form above clears a
     previously set attribute while the third form inspects the current value of
     the attribute (if any). The last one (with the star) is a shortcut for
     operating on a player Account rather than an Object.
+
+    If you want <value> to be an object, use $dbef(#dbref) or
+    $search(key) to assign it. You need control or edit access to
+    the object you are adding.
 
     The most common data to save with this command are strings and
     numbers. You can however also set Python primitives such as lists,
@@ -1921,13 +1931,33 @@ class CmdSetAttribute(ObjManipCommand):
                     result.append(self.rm_attr(obj, attr, category))
         else:
             # setting attribute(s). Make sure to convert to real Python type before saving.
+            # add support for $dbref() and $search() in set argument
+            global _ATTRFUNCPARSER
+            if not _ATTRFUNCPARSER:
+                _ATTRFUNCPARSER = funcparser.FuncParser(
+                    {"dbref": funcparser.funcparser_callable_search,
+                     "search": funcparser.funcparser_callable_search}
+                )
+
             if not (obj.access(self.caller, "control") or obj.access(self.caller, "edit")):
                 caller.msg("You don't have permission to edit %s." % obj.key)
                 return
             for attr in attrs:
                 if not self.check_attr(obj, attr, category):
                     continue
-                value = _convert_from_string(self, value)
+                # from evennia import set_trace;set_trace()
+                parsed_value = _ATTRFUNCPARSER.parse(value, return_str=False, caller=caller)
+                if hasattr(parsed_value, "access"):
+                    # if this is an object we must have the right to read it, if so,
+                    # we will not convert it to a string
+                    if not (parsed_value.access(caller, "control")
+                            or parsed_value.access(self.caller, "edit")):
+                        caller.msg("You don't have permission to set "
+                                   f"object with identifier '{value}'.")
+                        continue
+                    value = parsed_value
+                else:
+                    value = _convert_from_string(self, value)
                 result.append(self.set_attr(obj, attr, value, category))
         # send feedback
         caller.msg("".join(result).strip("\n"))
