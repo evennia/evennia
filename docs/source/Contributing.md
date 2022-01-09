@@ -177,7 +177,7 @@ dropping a few coins in the cup.
 
 [patron]: https://www.patreon.com/griatch
 [donate]: https://www.paypal.com/donate?token=zbU72YdRqPgsbpTw3M_4vR-5QJ7XvUhL9W6JlnPJw70M9LOqY1xD7xKGx0V1jLFSthY3xAztQpSsqW9n
-[forking]: Version-Control#forking-evennia
+[forking]: Coding/Version-Control#forking-evennia
 [pullrequest]: https://github.com/evennia/evennia/pulls
 [issues]: https://github.com/evennia/evennia/issues
 [patch]: https://secure.wikimedia.org/wikipedia/en/wiki/Patch_%28computing%29
