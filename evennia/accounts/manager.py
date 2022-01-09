@@ -156,14 +156,17 @@ class AccountDBManager(TypedObjectManager, UserManager):
                 (non-case-sensitive fuzzy match).
             typeclass (str or Typeclass, optional): Limit the search only to
                 accounts of this typeclass.
+        Returns:
+            Queryset: A queryset (an iterable) with 0, 1 or more matches.
 
         """
         dbref = self.dbref(ostring)
         if dbref or dbref == 0:
-            # bref search is always exact
-            matches = self.filter(id=dbref)
-            if matches:
-                return matches
+            # dbref search is always exact
+            dbref_match = self.search_dbref(dbref)
+            if dbref_match:
+                return dbref_match
+
         query = {"username__iexact" if exact else "username__icontains": ostring}
         if typeclass:
             # we accept both strings and actual typeclasses
