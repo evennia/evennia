@@ -47,9 +47,12 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">UserManager</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.managers</span> <span class="kn">import</span> <span class="n">TypedObjectManager</span><span class="p">,</span> <span class="n">TypeclassManager</span>
+<span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">signals</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">dbid_to_obj</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;AccountManager&quot;</span><span class="p">,</span> <span class="s2">&quot;AccountDBManager&quot;</span><span class="p">)</span>
 
@@ -197,14 +200,17 @@
 <span class="sd">                (non-case-sensitive fuzzy match).</span>
 <span class="sd">            typeclass (str or Typeclass, optional): Limit the search only to</span>
 <span class="sd">                accounts of this typeclass.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Queryset: A queryset (an iterable) with 0, 1 or more matches.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dbref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbref</span><span class="p">(</span><span class="n">ostring</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dbref</span> <span class="ow">or</span> <span class="n">dbref</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># bref search is always exact</span>
-            <span class="n">matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dbref</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">matches</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">matches</span>
+            <span class="c1"># dbref search is always exact</span>
+            <span class="n">dbref_match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_dbref</span><span class="p">(</span><span class="n">dbref</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dbref_match</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">dbref_match</span>
+
         <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;username__iexact&quot;</span> <span class="k">if</span> <span class="n">exact</span> <span class="k">else</span> <span class="s2">&quot;username__icontains&quot;</span><span class="p">:</span> <span class="n">ostring</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">typeclass</span><span class="p">:</span>
             <span class="c1"># we accept both strings and actual typeclasses</span>
@@ -224,6 +230,108 @@
                 <span class="o">**</span><span class="p">{</span><span class="s2">&quot;db_tags__db_key__iexact&quot;</span> <span class="k">if</span> <span class="n">exact</span> <span class="k">else</span> <span class="s2">&quot;db_tags__db_key__icontains&quot;</span><span class="p">:</span> <span class="n">ostring</span><span class="p">},</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">matches</span></div>
+
+<div class="viewcode-block" id="AccountDBManager.create_account"><a class="viewcode-back" href="../../../api/evennia.accounts.manager.html#evennia.accounts.accounts.AccountDBManager.create_account">[docs]</a>    <span class="k">def</span> <span class="nf">create_account</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">key</span><span class="p">,</span>
+        <span class="n">email</span><span class="p">,</span>
+        <span class="n">password</span><span class="p">,</span>
+        <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_superuser</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">permissions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">report_to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This creates a new account.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): The account&#39;s name. This should be unique.</span>
+<span class="sd">            email (str or None): Email on valid addr@addr.domain form. If</span>
+<span class="sd">                the empty string, will be set to None.</span>
+<span class="sd">            password (str): Password in cleartext.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            typeclass (str): The typeclass to use for the account.</span>
+<span class="sd">            is_superuser (bool): Wether or not this account is to be a superuser</span>
+<span class="sd">            locks (str): Lockstring.</span>
+<span class="sd">            permission (list): List of permission strings.</span>
+<span class="sd">            tags (list): List of Tags on form `(key, category[, data])`</span>
+<span class="sd">            attributes (list): List of Attributes on form</span>
+<span class="sd">                 `(key, value [, category, [,lockstring [, default_pass]]])`</span>
+<span class="sd">            report_to (Object): An object with a msg() method to report</span>
+<span class="sd">                errors to. If not given, errors will be logged.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Account: The newly created Account.</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If `key` already exists in database.</span>
+
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Usually only the server admin should need to be superuser, all</span>
+<span class="sd">            other access levels can be handled with more fine-grained</span>
+<span class="sd">            permissions or groups. A superuser bypasses all lock checking</span>
+<span class="sd">            operations and is thus not suitable for play-testing the game.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">typeclass</span> <span class="o">=</span> <span class="n">typeclass</span> <span class="k">if</span> <span class="n">typeclass</span> <span class="k">else</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span>
+        <span class="n">locks</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span> <span class="k">if</span> <span class="n">locks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">permissions</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">permissions</span><span class="p">)</span> <span class="k">if</span> <span class="n">permissions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="k">if</span> <span class="n">tags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span> <span class="k">if</span> <span class="n">attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># a path is given. Load the actual typeclass.</span>
+            <span class="n">typeclass</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">TYPECLASS_PATHS</span><span class="p">)</span>
+
+        <span class="c1"># setup input for the create command. We use AccountDB as baseclass</span>
+        <span class="c1"># here to give us maximum freedom (the typeclasses will load</span>
+        <span class="c1"># correctly when each object is recovered).</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">email</span><span class="p">:</span>
+            <span class="n">email</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">username__iexact</span><span class="o">=</span><span class="n">key</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;An Account with the name &#39;</span><span class="si">%s</span><span class="s2">&#39; already exists.&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
+
+        <span class="c1"># this handles a given dbref-relocate to an account.</span>
+        <span class="n">report_to</span> <span class="o">=</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">report_to</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+
+        <span class="c1"># create the correct account entity, using the setup from</span>
+        <span class="c1"># base django auth.</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">email</span> <span class="o">=</span> <span class="n">typeclass</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">normalize_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+        <span class="n">new_account</span> <span class="o">=</span> <span class="n">typeclass</span><span class="p">(</span>
+            <span class="n">username</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span>
+            <span class="n">is_staff</span><span class="o">=</span><span class="n">is_superuser</span><span class="p">,</span>
+            <span class="n">is_superuser</span><span class="o">=</span><span class="n">is_superuser</span><span class="p">,</span>
+            <span class="n">last_login</span><span class="o">=</span><span class="n">now</span><span class="p">,</span>
+            <span class="n">date_joined</span><span class="o">=</span><span class="n">now</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">password</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># the password may be None for &#39;fake&#39; accounts, like bots</span>
+            <span class="n">valid</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">new_account</span><span class="o">.</span><span class="n">validate_password</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">new_account</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">error</span>
+
+            <span class="n">new_account</span><span class="o">.</span><span class="n">set_password</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
+
+        <span class="n">new_account</span><span class="o">.</span><span class="n">_createdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">locks</span><span class="o">=</span><span class="n">locks</span><span class="p">,</span> <span class="n">permissions</span><span class="o">=</span><span class="n">permissions</span><span class="p">,</span>
+            <span class="n">report_to</span><span class="o">=</span><span class="n">report_to</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span>
+        <span class="p">)</span>
+        <span class="c1"># saving will trigger the signal that calls the</span>
+        <span class="c1"># at_first_save hook on the typeclass, where the _createdict</span>
+        <span class="c1"># can be used.</span>
+        <span class="n">new_account</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="c1"># note that we don&#39;t send a signal here, that is sent from the Account.create helper method</span>
+        <span class="c1"># instead.</span>
+
+        <span class="k">return</span> <span class="n">new_account</span></div>
 
     <span class="c1"># back-compatibility alias</span>
     <span class="n">account_search</span> <span class="o">=</span> <span class="n">search_account</span></div>

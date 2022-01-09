@@ -781,6 +781,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">comtable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">,</span>
             <span class="s2">&quot;channel&quot;</span><span class="p">,</span>
             <span class="s2">&quot;my aliases&quot;</span><span class="p">,</span>
             <span class="s2">&quot;locks&quot;</span><span class="p">,</span>
@@ -791,17 +792,24 @@
         <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">subscribed</span><span class="p">:</span>
 
             <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span>
+            <span class="n">chanid</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span>
             <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">):</span>
                 <span class="n">locks</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">locks</span>
+                <span class="n">chanid</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">id</span>
 
             <span class="n">my_aliases</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_channel_aliases</span><span class="p">(</span><span class="n">chan</span><span class="p">))</span>
             <span class="n">comtable</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-                <span class="o">*</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">chan</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
-                    <span class="s2">&quot;(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()))</span> <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                <span class="o">*</span><span class="p">(</span>
+                  <span class="n">chanid</span><span class="p">,</span>
+                  <span class="s2">&quot;</span><span class="si">{key}{aliases}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                      <span class="n">key</span><span class="o">=</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                      <span class="n">aliases</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="o">+</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">())</span> <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+                  <span class="p">),</span>
                   <span class="n">my_aliases</span><span class="p">,</span>
                   <span class="n">locks</span><span class="p">,</span>
-                  <span class="n">chan</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">))</span>
+                  <span class="n">chan</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">comtable</span></div>
 
 <div class="viewcode-block" id="CmdChannel.display_all_channels"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.display_all_channels">[docs]</a>    <span class="k">def</span> <span class="nf">display_all_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscribed</span><span class="p">,</span> <span class="n">available</span><span class="p">):</span>

@@ -136,11 +136,25 @@
         <span class="c1"># make sure to clean data from database</span>
         <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">savekey</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
+    <span class="k">def</span> <span class="nf">_attr_category_fieldname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Modify the saved fieldname to make sure to differentiate between Attributes</span>
+<span class="sd">        with different categories.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fieldname</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">]&quot;</span> <span class="k">if</span> <span class="n">category</span> <span class="k">else</span> <span class="n">fieldname</span>
+
 <div class="viewcode-block" id="MonitorHandler.at_update"><a class="viewcode-back" href="../../../api/evennia.scripts.monitorhandler.html#evennia.scripts.monitorhandler.MonitorHandler.at_update">[docs]</a>    <span class="k">def</span> <span class="nf">at_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the field/attribute as it saves.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># if this an Attribute with a category we should differentiate</span>
+        <span class="n">fieldname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_category_fieldname</span><span class="p">(</span>
+            <span class="n">fieldname</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_category</span>
+            <span class="k">if</span> <span class="n">fieldname</span> <span class="o">==</span> <span class="s2">&quot;db_value&quot;</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;db_category&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
         <span class="n">to_delete</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span> <span class="ow">and</span> <span class="n">fieldname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">]:</span>
             <span class="k">for</span> <span class="n">idstring</span><span class="p">,</span> <span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">persistent</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">][</span><span class="n">fieldname</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -153,7 +167,8 @@
         <span class="k">for</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">idstring</span><span class="p">)</span> <span class="ow">in</span> <span class="n">to_delete</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">][</span><span class="n">fieldname</span><span class="p">][</span><span class="n">idstring</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="MonitorHandler.add"><a class="viewcode-back" href="../../../api/evennia.scripts.monitorhandler.html#evennia.scripts.monitorhandler.MonitorHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="MonitorHandler.add"><a class="viewcode-back" href="../../../api/evennia.scripts.monitorhandler.html#evennia.scripts.monitorhandler.MonitorHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add monitoring to a given field or Attribute. A field must</span>
 <span class="sd">        be specified with the full db_* name or it will be assumed</span>
@@ -169,6 +184,9 @@
 <span class="sd">                of the same field and object.</span>
 <span class="sd">            persistent (bool, optional): If False, the monitor will survive</span>
 <span class="sd">                a server reload but not a cold restart. This is default.</span>
+<span class="sd">            category (str, optional): This is only used if `fieldname` refers to</span>
+<span class="sd">                an Attribute (i.e. it does not start with `db_`). You must specify this</span>
+<span class="sd">                if you want to target an Attribute with a category.</span>
 
 <span class="sd">        Keyword Args:</span>
 <span class="sd">            session (Session): If this keyword is given, the monitorhandler will</span>
@@ -183,7 +201,7 @@
             <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fieldname</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
                 <span class="k">return</span>
-            <span class="n">fieldname</span> <span class="o">=</span> <span class="s2">&quot;db_value&quot;</span>
+            <span class="n">fieldname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_category_fieldname</span><span class="p">(</span><span class="s2">&quot;db_value&quot;</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
 
         <span class="c1"># we try to serialize this data to test it&#39;s valid. Otherwise we won&#39;t accept it.</span>
         <span class="k">try</span><span class="p">:</span>
@@ -203,7 +221,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">][</span><span class="n">fieldname</span><span class="p">][</span><span class="n">idstring</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">persistent</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MonitorHandler.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.monitorhandler.html#evennia.scripts.monitorhandler.MonitorHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="MonitorHandler.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.monitorhandler.html#evennia.scripts.monitorhandler.MonitorHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a monitor.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -211,7 +229,7 @@
             <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fieldname</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
                 <span class="k">return</span>
-            <span class="n">fieldname</span> <span class="o">=</span> <span class="s2">&quot;db_value&quot;</span>
+            <span class="n">fieldname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_category_fieldname</span><span class="p">(</span><span class="s2">&quot;db_value&quot;</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
 
         <span class="n">idstring_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">][</span><span class="n">fieldname</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">idstring</span> <span class="ow">in</span> <span class="n">idstring_dict</span><span class="p">:</span>

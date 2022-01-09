@@ -48,10 +48,12 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.managers</span> <span class="kn">import</span> <span class="n">TypedObjectManager</span><span class="p">,</span> <span class="n">TypeclassManager</span>
+<span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">signals</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">dbref</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">dbref</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">class_from_module</span>
 
 <span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
 <span class="n">_AccountDB</span> <span class="o">=</span> <span class="kc">None</span>
@@ -278,7 +280,7 @@
 <span class="sd">                    always gives only one match.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Queryset: Message matches.</span>
+<span class="sd">            Queryset: Iterable with 0, 1 or more matches.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># unique msg id</span>
@@ -328,8 +330,57 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">sender_restrict</span> <span class="o">&amp;</span> <span class="n">receiver_restrict</span> <span class="o">&amp;</span> <span class="n">fulltext_restrict</span><span class="p">)</span></div>
 
     <span class="c1"># back-compatibility alias</span>
-    <span class="n">message_search</span> <span class="o">=</span> <span class="n">search_message</span></div>
+    <span class="n">message_search</span> <span class="o">=</span> <span class="n">search_message</span>
 
+<div class="viewcode-block" id="MsgManager.create_message"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.MsgManager.create_message">[docs]</a>    <span class="k">def</span> <span class="nf">create_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">senderobj</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new communication Msg. Msgs represent a unit of</span>
+<span class="sd">        database-persistent communication between entites.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            senderobj (Object, Account, Script, str or list): The entity (or</span>
+<span class="sd">                entities) sending the Msg. If a `str`, this is the id-string</span>
+<span class="sd">                for an external sender type.</span>
+<span class="sd">            message (str): Text with the message. Eventual headers, titles</span>
+<span class="sd">                etc should all be included in this text string. Formatting</span>
+<span class="sd">                will be retained.</span>
+<span class="sd">            receivers (Object, Account, Script, str or list): An Account/Object to send</span>
+<span class="sd">                to, or a list of them. If a string, it&#39;s an identifier for an external</span>
+<span class="sd">                receiver.</span>
+<span class="sd">            locks (str): Lock definition string.</span>
+<span class="sd">            tags (list): A list of tags or tuples `(tag, category)`.</span>
+<span class="sd">            header (str): Mime-type or other optional information for the message</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            The Comm system is created to be very open-ended, so it&#39;s fully</span>
+<span class="sd">            possible to let a message both go several receivers at the same time,</span>
+<span class="sd">            it&#39;s up to the command definitions to limit this as desired.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;channels&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+                <span class="s2">&quot;create_message() does not accept &#39;channel&#39; kwarg anymore &quot;</span>
+                <span class="s2">&quot;- channels no longer accept Msg objects.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="p">:</span>
+            <span class="c1"># we don&#39;t allow empty messages.</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">new_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">db_message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">new_message</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">sender</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">senderobj</span><span class="p">):</span>
+            <span class="n">new_message</span><span class="o">.</span><span class="n">senders</span> <span class="o">=</span> <span class="n">sender</span>
+        <span class="n">new_message</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
+        <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">receivers</span><span class="p">):</span>
+            <span class="n">new_message</span><span class="o">.</span><span class="n">receivers</span> <span class="o">=</span> <span class="n">receiver</span>
+        <span class="k">if</span> <span class="n">locks</span><span class="p">:</span>
+            <span class="n">new_message</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
+            <span class="n">new_message</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="n">tags</span><span class="p">)</span>
+
+        <span class="n">new_message</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">new_message</span></div></div>
 
 <span class="c1">#</span>
 <span class="c1"># Channel manager</span>
@@ -412,13 +463,16 @@
 <span class="sd">            exact (bool, optional): Require an exact (but not</span>
 <span class="sd">                case sensitive) match.</span>
 
+<span class="sd">        Returns:</span>
+<span class="sd">            Queryset: Iterable with 0, 1 or more matches.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dbref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbref</span><span class="p">(</span><span class="n">ostring</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dbref</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dbref</span><span class="p">)</span>
-            <span class="k">except</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
-                <span class="k">pass</span>
+            <span class="n">dbref_match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_dbref</span><span class="p">(</span><span class="n">dbref</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dbref_match</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">dbref_match</span>
+
         <span class="k">if</span> <span class="n">exact</span><span class="p">:</span>
             <span class="n">channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
                 <span class="n">Q</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="n">ostring</span><span class="p">)</span>
@@ -430,6 +484,56 @@
                 <span class="o">|</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_tagtype__iexact</span><span class="o">=</span><span class="s2">&quot;alias&quot;</span><span class="p">,</span> <span class="n">db_tags__db_key__icontains</span><span class="o">=</span><span class="n">ostring</span><span class="p">)</span>
             <span class="p">)</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">channels</span></div>
+
+<div class="viewcode-block" id="ChannelDBManager.create_channel"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.ChannelDBManager.create_channel">[docs]</a>    <span class="k">def</span> <span class="nf">create_channel</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create A communication Channel. A Channel serves as a central hub</span>
+<span class="sd">        for distributing Msgs to groups of people without specifying the</span>
+<span class="sd">        receivers explicitly. Instead accounts may &#39;connect&#39; to the channel</span>
+<span class="sd">        and follow the flow of messages. By default the channel allows</span>
+<span class="sd">        access to all old messages, but this can be turned off with the</span>
+<span class="sd">        keep_log switch.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): This must be unique.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            aliases (list of str): List of alternative (likely shorter) keynames.</span>
+<span class="sd">            desc (str): A description of the channel, for use in listings.</span>
+<span class="sd">            locks (str): Lockstring.</span>
+<span class="sd">            keep_log (bool): Log channel throughput.</span>
+<span class="sd">            typeclass (str or class): The typeclass of the Channel (not</span>
+<span class="sd">                often used).</span>
+<span class="sd">            tags (list): A list of tags or tuples `(tag, category)`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            channel (Channel): A newly created channel.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">typeclass</span> <span class="o">=</span> <span class="n">typeclass</span> <span class="k">if</span> <span class="n">typeclass</span> <span class="k">else</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHANNEL_TYPECLASS</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># a path is given. Load the actual typeclass</span>
+            <span class="n">typeclass</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">TYPECLASS_PATHS</span><span class="p">)</span>
+
+        <span class="c1"># create new instance</span>
+        <span class="n">new_channel</span> <span class="o">=</span> <span class="n">typeclass</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="c1"># store call signature for the signal</span>
+        <span class="n">new_channel</span><span class="o">.</span><span class="n">_createdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="n">locks</span><span class="p">,</span> <span class="n">keep_log</span><span class="o">=</span><span class="n">keep_log</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span>
+        <span class="p">)</span>
+
+        <span class="c1"># this will trigger the save signal which in turn calls the</span>
+        <span class="c1"># at_first_save hook on the typeclass, where the _createdict can be</span>
+        <span class="c1"># used.</span>
+        <span class="n">new_channel</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="n">signals</span><span class="o">.</span><span class="n">SIGNAL_CHANNEL_POST_CREATE</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">new_channel</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_channel</span></div>
 
     <span class="c1"># back-compatibility alias</span>
     <span class="n">channel_search</span> <span class="o">=</span> <span class="n">search_channel</span></div>

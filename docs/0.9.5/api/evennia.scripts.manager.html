@@ -58,7 +58,7 @@ and manipulating Scripts directly from the database.</p>
 lists of Typeclasses, whereas Django-general methods will return
 Querysets or database objects).</p>
 <p>dbref (converter)
-get_id  (or dbref_search)
+dbref_search
 get_dbref_range
 object_totals
 typeclass_search
@@ -139,6 +139,9 @@ on a timer.</p></li>
 <li><p><strong>typeclass</strong> (<em>class</em><em> or </em><em>str</em>) – Typeclass or path to typeclass.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Queryset</em> – An iterable with 0, 1 or more results.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -156,6 +159,9 @@ this object</p></li>
 on a timer.</p></li>
 <li><p><strong>typeclass</strong> (<em>class</em><em> or </em><em>str</em>) – Typeclass or path to typeclass.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Queryset</em> – An iterable with 0, 1 or more results.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -183,6 +189,51 @@ the original.</p></li>
 </p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.manager.ScriptDBManager.create_script">
+<code class="sig-name descname">create_script</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">account</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">interval</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">start_delay</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">repeats</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">autostart</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">report_to</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">desc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attributes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/manager.html#ScriptDBManager.create_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.manager.ScriptDBManager.create_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new script. All scripts are a combination of a database
+object that communicates with the database, and an typeclass that
+‘decorates’ the database object into being different types of
+scripts.  It’s behaviour is similar to the game objects except
+scripts has a time component and are more limited in scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>typeclass</strong> (<em>class</em><em> or </em><em>str</em>) – Class or python path to a typeclass.</p></li>
+<li><p><strong>key</strong> (<em>str</em>) – Name of the new object. If not set, a name of
+#dbref will be set.</p></li>
+<li><p><strong>obj</strong> (<em>Object</em>) – The entity on which this Script sits. If this
+is <strong>None</strong>, we are creating a “global” script.</p></li>
+<li><p><strong>account</strong> (<em>Account</em>) – The account on which this Script sits. It is
+exclusiv to <strong>obj</strong>.</p></li>
+<li><p><strong>locks</strong> (<em>str</em>) – one or more lockstrings, separated by semicolons.</p></li>
+<li><p><strong>interval</strong> (<em>int</em>) – The triggering interval for this Script, in
+seconds. If unset, the Script will not have a timing
+component.</p></li>
+<li><p><strong>start_delay</strong> (<em>bool</em>) – If <strong>True</strong>, will wait <strong>interval</strong> seconds
+before triggering the first time.</p></li>
+<li><p><strong>repeats</strong> (<em>int</em>) – The number of times to trigger before stopping.
+If unset, will repeat indefinitely.</p></li>
+<li><p><strong>persistent</strong> (<em>bool</em>) – If this Script survives a server shutdown
+or not (all Scripts will survive a reload).</p></li>
+<li><p><strong>autostart</strong> (<em>bool</em>) – If this Script will start immediately when
+created or if the <strong>start</strong> method must be called explicitly.</p></li>
+<li><p><strong>report_to</strong> (<em>Object</em>) – The object to return error messages to.</p></li>
+<li><p><strong>desc</strong> (<em>str</em>) – Optional description of script</p></li>
+<li><p><strong>tags</strong> (<em>list</em>) – List of tags or tuples (tag, category).</p></li>
+<li><p><strong>attributes</strong> (<em>list</em>) – List if tuples (key, value) or (key, value, category)
+(key, value, lockstring) or (key, value, lockstring, default_access).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>script (obj)</em> – An instance of the script created</p>
+</dd>
+</dl>
+<p>See evennia.scripts.manager for methods to manipulate existing
+scripts in the database.</p>
 </dd></dl>
 
 </dd></dl>

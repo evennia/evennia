@@ -191,7 +191,50 @@ otherwise also match also keys containing the <strong>ostring</strong>
 accounts of this typeclass.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Queryset</em> – A queryset (an iterable) with 0, 1 or more matches.</p>
+</dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.manager.AccountDBManager.create_account">
+<code class="sig-name descname">create_account</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">email</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">is_superuser</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">permissions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attributes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">report_to</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/manager.html#AccountDBManager.create_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.manager.AccountDBManager.create_account" title="Permalink to this definition">¶</a></dt>
+<dd><p>This creates a new account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The account’s name. This should be unique.</p></li>
+<li><p><strong>email</strong> (<em>str</em><em> or </em><em>None</em>) – Email on valid <a class="reference external" href="mailto:addr&#37;&#52;&#48;addr&#46;domain">addr<span>&#64;</span>addr<span>&#46;</span>domain</a> form. If
+the empty string, will be set to None.</p></li>
+<li><p><strong>password</strong> (<em>str</em>) – Password in cleartext.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>typeclass</strong> (<em>str</em>) – The typeclass to use for the account.</p></li>
+<li><p><strong>is_superuser</strong> (<em>bool</em>) – Wether or not this account is to be a superuser</p></li>
+<li><p><strong>locks</strong> (<em>str</em>) – Lockstring.</p></li>
+<li><p><strong>permission</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – List of permission strings.</p></li>
+<li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – List of Tags on form <strong>(key, category[, data])</strong></p></li>
+<li><p><strong>attributes</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – List of Attributes on form
+<strong>(key, value [, category, [,lockstring [, default_pass]]])</strong></p></li>
+<li><p><strong>report_to</strong> (<em>Object</em>) – An object with a msg() method to report
+errors to. If not given, errors will be logged.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>Account</em> – The newly created Account.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <strong>key</strong> already exists in database.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Usually only the server admin should need to be superuser, all
+other access levels can be handled with more fine-grained
+permissions or groups. A superuser bypasses all lock checking
+operations and is thus not suitable for play-testing the game.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -210,6 +253,9 @@ otherwise also match also keys containing the <strong>ostring</strong>
 <li><p><strong>typeclass</strong> (<em>str</em><em> or </em><em>Typeclass</em><em>, </em><em>optional</em>) – Limit the search only to
 accounts of this typeclass.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Queryset</em> – A queryset (an iterable) with 0, 1 or more matches.</p>
 </dd>
 </dl>
 </dd></dl>

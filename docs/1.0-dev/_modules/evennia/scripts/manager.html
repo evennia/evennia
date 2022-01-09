@@ -46,12 +46,18 @@
 <span class="sd">The custom manager for Scripts.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.managers</span> <span class="kn">import</span> <span class="n">TypedObjectManager</span><span class="p">,</span> <span class="n">TypeclassManager</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">dbid_to_obj</span>
+<span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">signals</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ScriptManager&quot;</span><span class="p">,</span> <span class="s2">&quot;ScriptDBManager&quot;</span><span class="p">)</span>
 <span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
+
+<span class="n">_ObjectDB</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_AccountDB</span> <span class="o">=</span> <span class="kc">None</span>
+
 
 <span class="n">VALIDATE_ITERATION</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -66,7 +72,7 @@
 <span class="sd">    Querysets or database objects).</span>
 
 <span class="sd">    dbref (converter)</span>
-<span class="sd">    get_id  (or dbref_search)</span>
+<span class="sd">    dbref_search</span>
 <span class="sd">    get_dbref_range</span>
 <span class="sd">    object_totals</span>
 <span class="sd">    typeclass_search</span>
@@ -125,7 +131,6 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
-            <span class="n">script</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">dbref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbref</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">dbref</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dbref</span><span class="p">)</span>
@@ -177,6 +182,9 @@
 <span class="sd">                on a timer.</span>
 <span class="sd">            typeclass (class or str): Typeclass or path to typeclass.</span>
 
+<span class="sd">        Returns:</span>
+<span class="sd">            Queryset: An iterable with 0, 1 or more results.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">ostring</span> <span class="o">=</span> <span class="n">ostring</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
@@ -185,10 +193,10 @@
         <span class="k">if</span> <span class="n">dbref</span><span class="p">:</span>
             <span class="c1"># this is a dbref, try to find the script directly</span>
             <span class="n">dbref_match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbref_search</span><span class="p">(</span><span class="n">dbref</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">dbref_match</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
-                <span class="p">(</span><span class="n">obj</span> <span class="ow">and</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">dbref_match</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">only_timed</span> <span class="ow">and</span> <span class="n">dbref_match</span><span class="o">.</span><span class="n">interval</span><span class="p">)</span>
-            <span class="p">):</span>
-                <span class="k">return</span> <span class="p">[</span><span class="n">dbref_match</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">dbref_match</span><span class="p">:</span>
+                <span class="n">dmatch</span> <span class="o">=</span> <span class="n">dbref_match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">obj</span> <span class="ow">and</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">dmatch</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">only_timed</span> <span class="ow">and</span> <span class="n">dmatch</span><span class="o">.</span><span class="n">interval</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">dbref_match</span>
 
         <span class="k">if</span> <span class="n">typeclass</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">typeclass</span><span class="p">):</span>
@@ -233,6 +241,129 @@
         <span class="n">new_script</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span>
             <span class="n">typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">new_key</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">new_obj</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="n">new_locks</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_script</span></div>
+
+<div class="viewcode-block" id="ScriptDBManager.create_script"><a class="viewcode-back" href="../../../api/evennia.scripts.manager.html#evennia.scripts.manager.ScriptDBManager.create_script">[docs]</a>    <span class="k">def</span> <span class="nf">create_script</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">start_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">repeats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">persistent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">report_to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new script. All scripts are a combination of a database</span>
+<span class="sd">        object that communicates with the database, and an typeclass that</span>
+<span class="sd">        &#39;decorates&#39; the database object into being different types of</span>
+<span class="sd">        scripts.  It&#39;s behaviour is similar to the game objects except</span>
+<span class="sd">        scripts has a time component and are more limited in scope.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            typeclass (class or str): Class or python path to a typeclass.</span>
+<span class="sd">            key (str): Name of the new object. If not set, a name of</span>
+<span class="sd">                #dbref will be set.</span>
+<span class="sd">            obj (Object): The entity on which this Script sits. If this</span>
+<span class="sd">                is `None`, we are creating a &quot;global&quot; script.</span>
+<span class="sd">            account (Account): The account on which this Script sits. It is</span>
+<span class="sd">                exclusiv to `obj`.</span>
+<span class="sd">            locks (str): one or more lockstrings, separated by semicolons.</span>
+<span class="sd">            interval (int): The triggering interval for this Script, in</span>
+<span class="sd">                seconds. If unset, the Script will not have a timing</span>
+<span class="sd">                component.</span>
+<span class="sd">            start_delay (bool): If `True`, will wait `interval` seconds</span>
+<span class="sd">                before triggering the first time.</span>
+<span class="sd">            repeats (int): The number of times to trigger before stopping.</span>
+<span class="sd">                If unset, will repeat indefinitely.</span>
+<span class="sd">            persistent (bool): If this Script survives a server shutdown</span>
+<span class="sd">                or not (all Scripts will survive a reload).</span>
+<span class="sd">            autostart (bool): If this Script will start immediately when</span>
+<span class="sd">                created or if the `start` method must be called explicitly.</span>
+<span class="sd">            report_to (Object): The object to return error messages to.</span>
+<span class="sd">            desc (str): Optional description of script</span>
+<span class="sd">            tags (list): List of tags or tuples (tag, category).</span>
+<span class="sd">            attributes (list): List if tuples (key, value) or (key, value, category)</span>
+<span class="sd">               (key, value, lockstring) or (key, value, lockstring, default_access).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            script (obj): An instance of the script created</span>
+
+<span class="sd">        See evennia.scripts.manager for methods to manipulate existing</span>
+<span class="sd">        scripts in the database.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">global</span> <span class="n">_ObjectDB</span><span class="p">,</span> <span class="n">_AccountDB</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_ObjectDB</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span> <span class="k">as</span> <span class="n">_ObjectDB</span>
+            <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span> <span class="k">as</span> <span class="n">_AccountDB</span>
+
+        <span class="n">typeclass</span> <span class="o">=</span> <span class="n">typeclass</span> <span class="k">if</span> <span class="n">typeclass</span> <span class="k">else</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_SCRIPT_TYPECLASS</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># a path is given. Load the actual typeclass</span>
+            <span class="n">typeclass</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">TYPECLASS_PATHS</span><span class="p">)</span>
+
+        <span class="c1"># validate input</span>
+        <span class="n">kwarg</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
+            <span class="n">kwarg</span><span class="p">[</span><span class="s2">&quot;db_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
+            <span class="n">kwarg</span><span class="p">[</span><span class="s2">&quot;db_account&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="n">_AccountDB</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="n">kwarg</span><span class="p">[</span><span class="s2">&quot;db_obj&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_ObjectDB</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">interval</span><span class="p">:</span>
+            <span class="n">kwarg</span><span class="p">[</span><span class="s2">&quot;db_interval&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">start_delay</span><span class="p">:</span>
+            <span class="n">kwarg</span><span class="p">[</span><span class="s2">&quot;db_start_delay&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_delay</span>
+        <span class="k">if</span> <span class="n">repeats</span><span class="p">:</span>
+            <span class="n">kwarg</span><span class="p">[</span><span class="s2">&quot;db_repeats&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">repeats</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">persistent</span><span class="p">:</span>
+            <span class="n">kwarg</span><span class="p">[</span><span class="s2">&quot;db_persistent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">persistent</span>
+        <span class="k">if</span> <span class="n">desc</span><span class="p">:</span>
+            <span class="n">kwarg</span><span class="p">[</span><span class="s2">&quot;db_desc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">desc</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="k">if</span> <span class="n">tags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span> <span class="k">if</span> <span class="n">attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="c1"># create new instance</span>
+        <span class="n">new_script</span> <span class="o">=</span> <span class="n">typeclass</span><span class="p">(</span><span class="o">**</span><span class="n">kwarg</span><span class="p">)</span>
+
+        <span class="c1"># store the call signature for the signal</span>
+        <span class="n">new_script</span><span class="o">.</span><span class="n">_createdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span>
+            <span class="n">account</span><span class="o">=</span><span class="n">account</span><span class="p">,</span>
+            <span class="n">locks</span><span class="o">=</span><span class="n">locks</span><span class="p">,</span>
+            <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>
+            <span class="n">start_delay</span><span class="o">=</span><span class="n">start_delay</span><span class="p">,</span>
+            <span class="n">repeats</span><span class="o">=</span><span class="n">repeats</span><span class="p">,</span>
+            <span class="n">persistent</span><span class="o">=</span><span class="n">persistent</span><span class="p">,</span>
+            <span class="n">autostart</span><span class="o">=</span><span class="n">autostart</span><span class="p">,</span>
+            <span class="n">report_to</span><span class="o">=</span><span class="n">report_to</span><span class="p">,</span>
+            <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span>
+            <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span>
+            <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># this will trigger the save signal which in turn calls the</span>
+        <span class="c1"># at_first_save hook on the typeclass, where the _createdict</span>
+        <span class="c1"># can be used.</span>
+        <span class="n">new_script</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_script</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="c1"># this happens in the case of having a repeating script with `repeats=1` and</span>
+            <span class="c1"># `start_delay=False` - the script will run once and immediately stop before</span>
+            <span class="c1"># save is over.</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">signals</span><span class="o">.</span><span class="n">SIGNAL_SCRIPT_POST_CREATE</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">new_script</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">new_script</span></div></div>
 
 

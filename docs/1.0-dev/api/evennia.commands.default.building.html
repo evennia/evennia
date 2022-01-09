@@ -532,7 +532,7 @@ You can specify the /force switch to bypass this confirmation.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdDestroy.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;delete', '&#64;del']</em><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;del', '&#64;delete']</em><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -573,7 +573,7 @@ You can specify the /force switch to bypass this confirmation.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdDestroy.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;delete &#64;del', 'category': 'building', 'key': '&#64;destroy', 'no_prefix': 'destroy delete del', 'tags': '', 'text': '\n    permanently delete objects\n\n    Usage:\n       destroy[/switches] [obj, obj2, obj3, [dbref-dbref], ...]\n\n    Switches:\n       override - The destroy command will usually avoid accidentally\n                  destroying account objects. This switch overrides this safety.\n       force - destroy without confirmation.\n    Examples:\n       destroy house, roof, door, 44-78\n       destroy 5-10, flower, 45\n       destroy/force north\n\n    Destroys one or many objects. If dbrefs are used, a range to delete can be\n    given, e.g. 4-10. Also the end points will be deleted. This command\n    displays a confirmation before destroying, to make sure of your choice.\n    You can specify the /force switch to bypass this confirmation.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;del &#64;delete', 'category': 'building', 'key': '&#64;destroy', 'no_prefix': 'destroy del delete', 'tags': '', 'text': '\n    permanently delete objects\n\n    Usage:\n       destroy[/switches] [obj, obj2, obj3, [dbref-dbref], ...]\n\n    Switches:\n       override - The destroy command will usually avoid accidentally\n                  destroying account objects. This switch overrides this safety.\n       force - destroy without confirmation.\n    Examples:\n       destroy house, roof, door, 44-78\n       destroy 5-10, flower, 45\n       destroy/force north\n\n    Destroys one or many objects. If dbrefs are used, a range to delete can be\n    given, e.g. 4-10. Also the end points will be deleted. This command\n    displays a confirmation before destroying, to make sure of your choice.\n    You can specify the /force switch to bypass this confirmation.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1087,10 +1087,17 @@ char: Setting an attribute on a character (global search)
 character: Alias for char, as above.</p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<p>set self/foo = “bar”
+set/delete self/foo
+set self/foo = $dbref(#53)</p>
 <p>Sets attributes on objects. The second example form above clears a
 previously set attribute while the third form inspects the current value of
 the attribute (if any). The last one (with the star) is a shortcut for
 operating on a player Account rather than an Object.</p>
+<p>If you want &lt;value&gt; to be an object, use $dbef(#dbref) or
+$search(key) to assign it. You need control or edit access to
+the object you are adding.</p>
 <p>The most common data to save with this command are strings and
 numbers. You can however also set Python primitives such as lists,
 dictionaries and tuples on objects (this might be important for
@@ -1220,7 +1227,7 @@ with older attrs that might have been named with <strong>[]</strong>’s.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdSetAttribute.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': '&#64;set', 'no_prefix': 'set ', 'tags': '', 'text': '\n    set attribute on an object or account\n\n    Usage:\n      set[/switch] &lt;obj&gt;/&lt;attr&gt;[:category] = &lt;value&gt;\n      set[/switch] &lt;obj&gt;/&lt;attr&gt;[:category] =                  # delete attribute\n      set[/switch] &lt;obj&gt;/&lt;attr&gt;[:category]                    # view attribute\n      set[/switch] *&lt;account&gt;/&lt;attr&gt;[:category] = &lt;value&gt;\n\n    Switch:\n        edit: Open the line editor (string values only)\n        script: If we\'re trying to set an attribute on a script\n        channel: If we\'re trying to set an attribute on a channel\n        account: If we\'re trying to set an attribute on an account\n        room: Setting an attribute on a room (global search)\n        exit: Setting an attribute on an exit (global search)\n        char: Setting an attribute on a character (global search)\n        character: Alias for char, as above.\n\n    Sets attributes on objects. The second example form above clears a\n    previously set attribute while the third form inspects the current value of\n    the attribute (if any). The last one (with the star) is a shortcut for\n    operating on a player Account rather than an Object.\n\n    The most common data to save with this command are strings and\n    numbers. You can however also set Python primitives such as lists,\n    dictionaries and tuples on objects (this might be important for\n    the functionality of certain custom objects).  This is indicated\n    by you starting your value with one of |c\'|n, |c&quot;|n, |c(|n, |c[|n\n    or |c{ |n.\n\n    Once you have stored a Python primitive as noted above, you can include\n    |c[&lt;key&gt;]|n in &lt;attr&gt; to reference nested values in e.g. a list or dict.\n\n    Remember that if you use Python primitives like this, you must\n    write proper Python syntax too - notably you must include quotes\n    around your strings or you will get an error.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': '&#64;set', 'no_prefix': 'set ', 'tags': '', 'text': '\n    set attribute on an object or account\n\n    Usage:\n      set[/switch] &lt;obj&gt;/&lt;attr&gt;[:category] = &lt;value&gt;\n      set[/switch] &lt;obj&gt;/&lt;attr&gt;[:category] =                  # delete attribute\n      set[/switch] &lt;obj&gt;/&lt;attr&gt;[:category]                    # view attribute\n      set[/switch] *&lt;account&gt;/&lt;attr&gt;[:category] = &lt;value&gt;\n\n    Switch:\n        edit: Open the line editor (string values only)\n        script: If we\'re trying to set an attribute on a script\n        channel: If we\'re trying to set an attribute on a channel\n        account: If we\'re trying to set an attribute on an account\n        room: Setting an attribute on a room (global search)\n        exit: Setting an attribute on an exit (global search)\n        char: Setting an attribute on a character (global search)\n        character: Alias for char, as above.\n\n    Example:\n        set self/foo = &quot;bar&quot;\n        set/delete self/foo\n        set self/foo = $dbref(#53)\n\n    Sets attributes on objects. The second example form above clears a\n    previously set attribute while the third form inspects the current value of\n    the attribute (if any). The last one (with the star) is a shortcut for\n    operating on a player Account rather than an Object.\n\n    If you want &lt;value&gt; to be an object, use $dbef(#dbref) or\n    $search(key) to assign it. You need control or edit access to\n    the object you are adding.\n\n    The most common data to save with this command are strings and\n    numbers. You can however also set Python primitives such as lists,\n    dictionaries and tuples on objects (this might be important for\n    the functionality of certain custom objects).  This is indicated\n    by you starting your value with one of |c\'|n, |c&quot;|n, |c(|n, |c[|n\n    or |c{ |n.\n\n    Once you have stored a Python primitive as noted above, you can include\n    |c[&lt;key&gt;]|n in &lt;attr&gt; to reference nested values in e.g. a list or dict.\n\n    Remember that if you use Python primitives like this, you must\n    write proper Python syntax too - notably you must include quotes\n    around your strings or you will get an error.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1278,7 +1285,7 @@ server settings.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdTypeclass.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;update', '&#64;typeclasses', '&#64;type', '&#64;parent', '&#64;swap']</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;typeclasses', '&#64;type', '&#64;swap', '&#64;update', '&#64;parent']</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1309,7 +1316,7 @@ server settings.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdTypeclass.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;update &#64;typeclasses &#64;type &#64;parent &#64;swap', 'category': 'building', 'key': '&#64;typeclass', 'no_prefix': 'typeclass update typeclasses type parent swap', 'tags': '', 'text': &quot;\n    set or change an object's typeclass\n\n    Usage:\n      typeclass[/switch] &lt;object&gt; [= typeclass.path]\n      typeclass/prototype &lt;object&gt; = prototype_key\n\n      typeclasses or typeclass/list/show [typeclass.path]\n      swap - this is a shorthand for using /force/reset flags.\n      update - this is a shorthand for using the /force/reload flag.\n\n    Switch:\n      show, examine - display the current typeclass of object (default) or, if\n            given a typeclass path, show the docstring of that typeclass.\n      update - *only* re-run at_object_creation on this object\n              meaning locks or other properties set later may remain.\n      reset - clean out *all* the attributes and properties on the\n              object - basically making this a new clean object. This will also\n              reset cmdsets!\n      force - change to the typeclass also if the object\n              already has a typeclass of the same name.\n      list - show available typeclasses. Only typeclasses in modules actually\n             imported or used from somewhere in the code will show up here\n             (those typeclasses are still available if you know the path)\n      prototype - clean and overwrite the object with the specified\n               prototype key - effectively making a whole new object.\n\n    Example:\n      type button = examples.red_button.RedButton\n      type/prototype button=a red button\n\n    If the typeclass_path is not given, the current object's typeclass is\n    assumed.\n\n    View or set an object's typeclass. If setting, the creation hooks of the\n    new typeclass will be run on the object. If you have clashing properties on\n    the old class, use /reset. By default you are protected from changing to a\n    typeclass of the same name as the one you already have - use /force to\n    override this protection.\n\n    The given typeclass must be identified by its location using python\n    dot-notation pointing to the correct module and class. If no typeclass is\n    given (or a wrong typeclass is given). Errors in the path or new typeclass\n    will lead to the old typeclass being kept. The location of the typeclass\n    module is searched from the default typeclass directory, as defined in the\n    server settings.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;typeclasses &#64;type &#64;swap &#64;update &#64;parent', 'category': 'building', 'key': '&#64;typeclass', 'no_prefix': 'typeclass typeclasses type swap update parent', 'tags': '', 'text': &quot;\n    set or change an object's typeclass\n\n    Usage:\n      typeclass[/switch] &lt;object&gt; [= typeclass.path]\n      typeclass/prototype &lt;object&gt; = prototype_key\n\n      typeclasses or typeclass/list/show [typeclass.path]\n      swap - this is a shorthand for using /force/reset flags.\n      update - this is a shorthand for using the /force/reload flag.\n\n    Switch:\n      show, examine - display the current typeclass of object (default) or, if\n            given a typeclass path, show the docstring of that typeclass.\n      update - *only* re-run at_object_creation on this object\n              meaning locks or other properties set later may remain.\n      reset - clean out *all* the attributes and properties on the\n              object - basically making this a new clean object. This will also\n              reset cmdsets!\n      force - change to the typeclass also if the object\n              already has a typeclass of the same name.\n      list - show available typeclasses. Only typeclasses in modules actually\n             imported or used from somewhere in the code will show up here\n             (those typeclasses are still available if you know the path)\n      prototype - clean and overwrite the object with the specified\n               prototype key - effectively making a whole new object.\n\n    Example:\n      type button = examples.red_button.RedButton\n      type/prototype button=a red button\n\n    If the typeclass_path is not given, the current object's typeclass is\n    assumed.\n\n    View or set an object's typeclass. If setting, the creation hooks of the\n    new typeclass will be run on the object. If you have clashing properties on\n    the old class, use /reset. By default you are protected from changing to a\n    typeclass of the same name as the one you already have - use /force to\n    override this protection.\n\n    The given typeclass must be identified by its location using python\n    dot-notation pointing to the correct module and class. If no typeclass is\n    given (or a wrong typeclass is given). Errors in the path or new typeclass\n    will lead to the old typeclass being kept. The location of the typeclass\n    module is searched from the default typeclass directory, as defined in the\n    server settings.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1448,7 +1455,9 @@ them by ‘;’, i.e:</p>
 examine [<a href="#id39"><span class="problematic" id="id40">*</span></a>&lt;account&gt;[/attrname]]</p>
 </dd>
 <dt>Switch:</dt><dd><p>account - examine an Account (same as adding <a href="#id41"><span class="problematic" id="id42">*</span></a>)
-object - examine an Object (useful when OOC)</p>
+object - examine an Object (useful when OOC)
+script - examine a Script
+channel - examine a Channel</p>
 </dd>
 </dl>
 <p>The examine command shows detailed game info about an
@@ -1462,7 +1471,7 @@ If object is not specified, the current location is examined.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdExamine.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;ex', '&#64;exam']</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;exam', '&#64;ex']</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1481,8 +1490,13 @@ If object is not specified, the current location is examined.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="evennia.commands.default.building.CmdExamine.account_mode">
-<code class="sig-name descname">account_mode</code><em class="property"> = False</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.account_mode" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.commands.default.building.CmdExamine.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ['account', 'object', 'script', 'channel']</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdExamine.object_type">
+<code class="sig-name descname">object_type</code><em class="property"> = 'object'</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.object_type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1664,6 +1678,36 @@ the message as ‘examine’ for eventual custom markup in the client.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt id="evennia.commands.default.building.CmdExamine.format_script_desc">
+<code class="sig-name descname">format_script_desc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdExamine.format_script_desc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.format_script_desc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdExamine.format_script_is_persistent">
+<code class="sig-name descname">format_script_is_persistent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdExamine.format_script_is_persistent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.format_script_is_persistent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdExamine.format_script_timer_data">
+<code class="sig-name descname">format_script_timer_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdExamine.format_script_timer_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.format_script_timer_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdExamine.format_channel_sub_totals">
+<code class="sig-name descname">format_channel_sub_totals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdExamine.format_channel_sub_totals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.format_channel_sub_totals" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdExamine.format_channel_account_subs">
+<code class="sig-name descname">format_channel_account_subs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdExamine.format_channel_account_subs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.format_channel_account_subs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdExamine.format_channel_object_subs">
+<code class="sig-name descname">format_channel_object_subs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdExamine.format_channel_object_subs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.format_channel_object_subs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="evennia.commands.default.building.CmdExamine.get_formatted_obj_data">
 <code class="sig-name descname">get_formatted_obj_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">current_cmdset</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdExamine.get_formatted_obj_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.get_formatted_obj_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calls all other <strong>format_*</strong> methods.</p>
@@ -1695,7 +1739,7 @@ the cases, see the module doc.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdExamine.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;ex &#64;exam', 'category': 'building', 'key': '&#64;examine', 'no_prefix': 'examine ex exam', 'tags': '', 'text': '\n    get detailed information about an object\n\n    Usage:\n      examine [&lt;object&gt;[/attrname]]\n      examine [*&lt;account&gt;[/attrname]]\n\n    Switch:\n      account - examine an Account (same as adding *)\n      object - examine an Object (useful when OOC)\n\n    The examine command shows detailed game info about an\n    object and optionally a specific attribute on it.\n    If object is not specified, the current location is examined.\n\n    Append a * before the search string to examine an account.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;exam &#64;ex', 'category': 'building', 'key': '&#64;examine', 'no_prefix': 'examine exam ex', 'tags': '', 'text': '\n    get detailed information about an object\n\n    Usage:\n      examine [&lt;object&gt;[/attrname]]\n      examine [*&lt;account&gt;[/attrname]]\n\n    Switch:\n      account - examine an Account (same as adding *)\n      object - examine an Object (useful when OOC)\n      script - examine a Script\n      channel - examine a Channel\n\n    The examine command shows detailed game info about an\n    object and optionally a specific attribute on it.\n    If object is not specified, the current location is examined.\n\n    Append a * before the search string to examine an account.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1729,7 +1773,7 @@ one is given.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdFind.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;search', '&#64;locate']</em><a class="headerlink" href="#evennia.commands.default.building.CmdFind.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;locate', '&#64;search']</em><a class="headerlink" href="#evennia.commands.default.building.CmdFind.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1760,7 +1804,7 @@ one is given.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdFind.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;search &#64;locate', 'category': 'building', 'key': '&#64;find', 'no_prefix': 'find search locate', 'tags': '', 'text': '\n    search the database for objects\n\n    Usage:\n      find[/switches] &lt;name or dbref or *account&gt; [= dbrefmin[-dbrefmax]]\n      locate - this is a shorthand for using the /loc switch.\n\n    Switches:\n      room       - only look for rooms (location=None)\n      exit       - only look for exits (destination!=None)\n      char       - only look for characters (BASE_CHARACTER_TYPECLASS)\n      exact      - only exact matches are returned.\n      loc        - display object location if exists and match has one result\n      startswith - search for names starting with the string, rather than containing\n\n    Searches the database for an object of a particular name or exact #dbref.\n    Use *accountname to search for an account. The switches allows for\n    limiting object matches to certain game entities. Dbrefmin and dbrefmax\n    limits matches to within the given dbrefs range, or above/below if only\n    one is given.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdFind.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;locate &#64;search', 'category': 'building', 'key': '&#64;find', 'no_prefix': 'find locate search', 'tags': '', 'text': '\n    search the database for objects\n\n    Usage:\n      find[/switches] &lt;name or dbref or *account&gt; [= dbrefmin[-dbrefmax]]\n      locate - this is a shorthand for using the /loc switch.\n\n    Switches:\n      room       - only look for rooms (location=None)\n      exit       - only look for exits (destination!=None)\n      char       - only look for characters (BASE_CHARACTER_TYPECLASS)\n      exact      - only exact matches are returned.\n      loc        - display object location if exists and match has one result\n      startswith - search for names starting with the string, rather than containing\n\n    Searches the database for an object of a particular name or exact #dbref.\n    Use *accountname to search for an account. The switches allows for\n    limiting object matches to certain game entities. Dbrefmin and dbrefmax\n    limits matches to within the given dbrefs range, or above/below if only\n    one is given.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdFind.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1878,7 +1922,8 @@ script scriptname              - examine named existing global script
 script myobj = foo.bar.Script  - create and assign script to object
 script/stop myobj = scriptname - stop script on object
 script/pause foo.Bar.Script    - pause global script
-script/delete myobj            - delete ALL scripts on object</p>
+script/delete myobj            - delete ALL scripts on object
+script/delete #dbref[-#dbref]  - delete script or range by dbref</p>
 <p>When given with an <strong>&lt;obj&gt;</strong> as left-hand-side, this creates and
 assigns a new script to that object. Without an <strong>&lt;obj&gt;</strong>, this
 manages and inspects global scripts</p>
@@ -1937,7 +1982,7 @@ objects.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.building.CmdScripts.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;script', 'category': 'system', 'key': '&#64;scripts', 'no_prefix': 'scripts script', 'tags': '', 'text': &quot;\n    List and manage all running scripts. Allows for creating new global\n    scripts.\n\n    Usage:\n      script[/switches] [script-#dbref, key, script.path or &lt;obj&gt;]\n      script[/start||stop] &lt;obj&gt; = &lt;script.path or script-key&gt;\n\n    Switches:\n      start - start/unpause an existing script's timer.\n      stop - stops an existing script's timer\n      pause - pause a script's timer\n      delete - deletes script. This will also stop the timer as needed\n\n    Examples:\n        script                         - list scripts\n        script myobj                   - list all scripts on object\n        script foo.bar.Script          - create a new global Script\n        script scriptname              - examine named existing global script\n        script myobj = foo.bar.Script  - create and assign script to object\n        script/stop myobj = scriptname - stop script on object\n        script/pause foo.Bar.Script    - pause global script\n        script/delete myobj            - delete ALL scripts on object\n\n    When given with an `&lt;obj&gt;` as left-hand-side, this creates and\n    assigns a new script to that object. Without an `&lt;obj&gt;`, this\n    manages and inspects global scripts\n\n    If no switches are given, this command just views all active\n    scripts. The argument can be either an object, at which point it\n    will be searched for all scripts defined on it, or a script name\n    or #dbref. For using the /stop switch, a unique script #dbref is\n    required since whole classes of scripts often have the same name.\n\n    Use the `script` build-level command for managing scripts attached to\n    objects.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;script', 'category': 'system', 'key': '&#64;scripts', 'no_prefix': 'scripts script', 'tags': '', 'text': &quot;\n    List and manage all running scripts. Allows for creating new global\n    scripts.\n\n    Usage:\n      script[/switches] [script-#dbref, key, script.path or &lt;obj&gt;]\n      script[/start||stop] &lt;obj&gt; = &lt;script.path or script-key&gt;\n\n    Switches:\n      start - start/unpause an existing script's timer.\n      stop - stops an existing script's timer\n      pause - pause a script's timer\n      delete - deletes script. This will also stop the timer as needed\n\n    Examples:\n        script                         - list scripts\n        script myobj                   - list all scripts on object\n        script foo.bar.Script          - create a new global Script\n        script scriptname              - examine named existing global script\n        script myobj = foo.bar.Script  - create and assign script to object\n        script/stop myobj = scriptname - stop script on object\n        script/pause foo.Bar.Script    - pause global script\n        script/delete myobj            - delete ALL scripts on object\n        script/delete #dbref[-#dbref]  - delete script or range by dbref\n\n    When given with an `&lt;obj&gt;` as left-hand-side, this creates and\n    assigns a new script to that object. Without an `&lt;obj&gt;`, this\n    manages and inspects global scripts\n\n    If no switches are given, this command just views all active\n    scripts. The argument can be either an object, at which point it\n    will be searched for all scripts defined on it, or a script name\n    or #dbref. For using the /stop switch, a unique script #dbref is\n    required since whole classes of scripts often have the same name.\n\n    Use the `script` build-level command for managing scripts attached to\n    objects.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdScripts.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

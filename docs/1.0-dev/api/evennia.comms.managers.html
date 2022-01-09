@@ -191,7 +191,7 @@ always gives only one match.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>Queryset</em> – Message matches.</p>
+<dd class="field-even"><p><em>Queryset</em> – Iterable with 0, 1 or more matches.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -216,9 +216,38 @@ always gives only one match.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>Queryset</em> – Message matches.</p>
+<dd class="field-even"><p><em>Queryset</em> – Iterable with 0, 1 or more matches.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.managers.MsgManager.create_message">
+<code class="sig-name descname">create_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">senderobj</span></em>, <em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">receivers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/managers.html#MsgManager.create_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.managers.MsgManager.create_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new communication Msg. Msgs represent a unit of
+database-persistent communication between entites.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>senderobj</strong> (<em>Object</em><em>, </em><em>Account</em><em>, </em><em>Script</em><em>, </em><em>str</em><em> or </em><em>list</em>) – The entity (or
+entities) sending the Msg. If a <strong>str</strong>, this is the id-string
+for an external sender type.</p></li>
+<li><p><strong>message</strong> (<em>str</em>) – Text with the message. Eventual headers, titles
+etc should all be included in this text string. Formatting
+will be retained.</p></li>
+<li><p><strong>receivers</strong> (<em>Object</em><em>, </em><em>Account</em><em>, </em><em>Script</em><em>, </em><em>str</em><em> or </em><em>list</em>) – An Account/Object to send
+to, or a list of them. If a string, it’s an identifier for an external
+receiver.</p></li>
+<li><p><strong>locks</strong> (<em>str</em>) – Lock definition string.</p></li>
+<li><p><strong>tags</strong> (<em>list</em>) – A list of tags or tuples <strong>(tag, category)</strong>.</p></li>
+<li><p><strong>header</strong> (<em>str</em>) – Mime-type or other optional information for the message</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The Comm system is created to be very open-ended, so it’s fully
+possible to let a message both go several receivers at the same time,
+it’s up to the command definitions to limit this as desired.</p>
 </dd></dl>
 
 </dd></dl>
@@ -287,6 +316,39 @@ Also searches its aliases.</p>
 case sensitive) match.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Queryset</em> – Iterable with 0, 1 or more matches.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.managers.ChannelDBManager.create_channel">
+<code class="sig-name descname">create_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">desc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keep_log</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/managers.html#ChannelDBManager.create_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.managers.ChannelDBManager.create_channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create A communication Channel. A Channel serves as a central hub
+for distributing Msgs to groups of people without specifying the
+receivers explicitly. Instead accounts may ‘connect’ to the channel
+and follow the flow of messages. By default the channel allows
+access to all old messages, but this can be turned off with the
+keep_log switch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – This must be unique.</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>aliases</strong> (<em>list of str</em>) – List of alternative (likely shorter) keynames.</p></li>
+<li><p><strong>desc</strong> (<em>str</em>) – A description of the channel, for use in listings.</p></li>
+<li><p><strong>locks</strong> (<em>str</em>) – Lockstring.</p></li>
+<li><p><strong>keep_log</strong> (<em>bool</em>) – Log channel throughput.</p></li>
+<li><p><strong>typeclass</strong> (<em>str</em><em> or </em><em>class</em>) – The typeclass of the Channel (not
+often used).</p></li>
+<li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – A list of tags or tuples <strong>(tag, category)</strong>.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>channel (Channel)</em> – A newly created channel.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -301,6 +363,9 @@ case sensitive) match.</p></li>
 <li><p><strong>exact</strong> (<em>bool</em><em>, </em><em>optional</em>) – Require an exact (but not
 case sensitive) match.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Queryset</em> – Iterable with 0, 1 or more matches.</p>
 </dd>
 </dl>
 </dd></dl>

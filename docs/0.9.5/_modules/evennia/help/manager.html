@@ -44,8 +44,11 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Custom manager for HelpEntry objects.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">IntegrityError</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.managers</span> <span class="kn">import</span> <span class="n">TypedObjectManager</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span>
+<span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">signals</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;HelpEntryManager&quot;</span><span class="p">,)</span>
 
@@ -186,12 +189,58 @@
 <span class="sd">            ostring (str): The help topic to look for.</span>
 <span class="sd">            category (str): Limit the search to a particular help topic</span>
 
+<span class="sd">        Returns:</span>
+<span class="sd">            Queryset: An iterable with 0, 1 or more matches.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ostring</span> <span class="o">=</span> <span class="n">ostring</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">help_category</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="n">ostring</span><span class="p">,</span> <span class="n">db_help_category__iexact</span><span class="o">=</span><span class="n">help_category</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="n">ostring</span><span class="p">)</span></div></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="n">ostring</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HelpEntryManager.create_help"><a class="viewcode-back" href="../../../api/evennia.help.manager.html#evennia.help.manager.HelpEntryManager.create_help">[docs]</a>    <span class="k">def</span> <span class="nf">create_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">entrytext</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;General&quot;</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a static help entry in the help database. Note that Command</span>
+<span class="sd">        help entries are dynamic and directly taken from the __doc__</span>
+<span class="sd">        entries of the command. The database-stored help entries are</span>
+<span class="sd">        intended for more general help on the game, more extensive info,</span>
+<span class="sd">        in-game setting information and so on.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): The name of the help entry.</span>
+<span class="sd">            entrytext (str): The body of te help entry</span>
+<span class="sd">            category (str, optional): The help category of the entry.</span>
+<span class="sd">            locks (str, optional): A lockstring to restrict access.</span>
+<span class="sd">            aliases (list of str, optional): List of alternative (likely shorter) keynames.</span>
+<span class="sd">            tags (lst, optional): List of tags or tuples `(tag, category)`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            help (HelpEntry): A newly created help entry.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">new_help</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
+            <span class="n">new_help</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="n">new_help</span><span class="o">.</span><span class="n">entrytext</span> <span class="o">=</span> <span class="n">entrytext</span>
+            <span class="n">new_help</span><span class="o">.</span><span class="n">help_category</span> <span class="o">=</span> <span class="n">category</span>
+            <span class="k">if</span> <span class="n">locks</span><span class="p">:</span>
+                <span class="n">new_help</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">aliases</span><span class="p">:</span>
+                <span class="n">new_help</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">aliases</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
+                <span class="n">new_help</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="n">tags</span><span class="p">)</span>
+            <span class="n">new_help</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">new_help</span>
+        <span class="k">except</span> <span class="n">IntegrityError</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Could not add help entry: key &#39;</span><span class="si">%s</span><span class="s2">&#39; already exists.&quot;</span> <span class="o">%</span> <span class="n">key</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">signals</span><span class="o">.</span><span class="n">SIGNAL_HELPENTRY_POST_CREATE</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">new_help</span><span class="p">)</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>

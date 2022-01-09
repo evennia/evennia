@@ -327,8 +327,6 @@
       </ul></li>
       <li><a href="api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.ServerSessionHandler.account_count">account_count() (evennia.server.sessionhandler.ServerSessionHandler method)</a>
 </li>
-      <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.account_mode">account_mode (evennia.commands.default.building.CmdExamine attribute)</a>
-</li>
       <li><a href="api/evennia.accounts.manager.html#evennia.accounts.manager.AccountDBManager.account_search">account_search() (evennia.accounts.manager.AccountDBManager method)</a>
 </li>
       <li><a href="api/evennia.accounts.models.html#evennia.accounts.models.AccountDB.account_subscription_set">account_subscription_set (evennia.accounts.models.AccountDB attribute)</a>
@@ -731,14 +729,14 @@
 </li>
       <li><a href="api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.AMPServerProtocol">AMPServerProtocol (class in evennia.server.portal.amp_server)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.announce_all">announce_all() (evennia.server.portal.portalsessionhandler.PortalSessionHandler method)</a>
 
       <ul>
         <li><a href="api/evennia.server.sessionhandler.html#evennia.server.sessionhandler.ServerSessionHandler.announce_all">(evennia.server.sessionhandler.ServerSessionHandler method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.announce_move_from">announce_move_from() (evennia.objects.objects.DefaultObject method)</a>
 </li>
       <li><a href="api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.announce_move_to">announce_move_to() (evennia.objects.objects.DefaultObject method)</a>
@@ -1749,14 +1747,14 @@
 </li>
       <li><a href="api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdLineInput">CmdLineInput (class in evennia.utils.eveditor)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdLink">CmdLink (class in evennia.commands.default.building)</a>
 </li>
       <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdListCmdSets">CmdListCmdSets (class in evennia.commands.default.building)</a>
 </li>
       <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdLock">CmdLock (class in evennia.commands.default.building)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/evennia.commands.default.general.html#evennia.commands.default.general.CmdLook">CmdLook (class in evennia.commands.default.general)</a>
 </li>
       <li><a href="api/evennia.utils.evmore.html#evennia.utils.evmore.CmdMore">CmdMore (class in evennia.utils.evmore)</a>
@@ -2053,8 +2051,12 @@
         <li><a href="api/evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.create">(evennia.scripts.scripts.DefaultScript class method)</a>
 </li>
       </ul></li>
-      <li><a href="api/evennia.utils.create.html#evennia.utils.create.create_account">create_account() (in module evennia.utils.create)</a>
+      <li><a href="api/evennia.accounts.manager.html#evennia.accounts.manager.AccountDBManager.create_account">create_account() (evennia.accounts.manager.AccountDBManager method)</a>
+
+      <ul>
+        <li><a href="api/evennia.utils.create.html#evennia.utils.create.create_account">(in module evennia.utils.create)</a>
 </li>
+      </ul></li>
       <li><a href="api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_accounts">create_accounts() (evennia.utils.test_resources.EvenniaTestMixin method)</a>
 </li>
       <li><a href="api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.create_attribute">create_attribute() (evennia.typeclasses.attributes.IAttributeBackend method)</a>
@@ -2062,6 +2064,8 @@
       <li><a href="api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.create_channel">create_channel() (evennia.commands.default.comms.CmdChannel method)</a>
 
       <ul>
+        <li><a href="api/evennia.comms.managers.html#evennia.comms.managers.ChannelDBManager.create_channel">(evennia.comms.managers.ChannelDBManager method)</a>
+</li>
         <li><a href="api/evennia.utils.create.html#evennia.utils.create.create_channel">(in module evennia.utils.create)</a>
 </li>
       </ul></li>
@@ -2079,14 +2083,24 @@
 </li>
       <li><a href="api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.create_game_directory">create_game_directory() (in module evennia.server.evennia_launcher)</a>
 </li>
+      <li><a href="api/evennia.help.manager.html#evennia.help.manager.HelpEntryManager.create_help">create_help() (evennia.help.manager.HelpEntryManager method)</a>
+</li>
       <li><a href="api/evennia.utils.create.html#evennia.utils.create.create_help_entry">create_help_entry() (in module evennia.utils.create)</a>
 </li>
       <li><a href="api/evennia.commands.cmdparser.html#evennia.commands.cmdparser.create_match">create_match() (in module evennia.commands.cmdparser)</a>
 </li>
-      <li><a href="api/evennia.utils.create.html#evennia.utils.create.create_message">create_message() (in module evennia.utils.create)</a>
+      <li><a href="api/evennia.comms.managers.html#evennia.comms.managers.MsgManager.create_message">create_message() (evennia.comms.managers.MsgManager method)</a>
+
+      <ul>
+        <li><a href="api/evennia.utils.create.html#evennia.utils.create.create_message">(in module evennia.utils.create)</a>
 </li>
-      <li><a href="api/evennia.utils.create.html#evennia.utils.create.create_object">create_object() (in module evennia.utils.create)</a>
+      </ul></li>
+      <li><a href="api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.create_object">create_object() (evennia.objects.manager.ObjectDBManager method)</a>
+
+      <ul>
+        <li><a href="api/evennia.utils.create.html#evennia.utils.create.create_object">(in module evennia.utils.create)</a>
 </li>
+      </ul></li>
       <li><a href="api/evennia.server.initial_setup.html#evennia.server.initial_setup.create_objects">create_objects() (in module evennia.server.initial_setup)</a>
 </li>
       <li><a href="api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_objs">create_objs() (evennia.utils.test_resources.EvenniaTestMixin method)</a>
@@ -2095,9 +2109,11 @@
 </li>
       <li><a href="api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_rooms">create_rooms() (evennia.utils.test_resources.EvenniaTestMixin method)</a>
 </li>
-      <li><a href="api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_script">create_script() (evennia.utils.test_resources.EvenniaTestMixin method)</a>
+      <li><a href="api/evennia.scripts.manager.html#evennia.scripts.manager.ScriptDBManager.create_script">create_script() (evennia.scripts.manager.ScriptDBManager method)</a>
 
       <ul>
+        <li><a href="api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_script">(evennia.utils.test_resources.EvenniaTestMixin method)</a>
+</li>
         <li><a href="api/evennia.utils.create.html#evennia.utils.create.create_script">(in module evennia.utils.create)</a>
 </li>
       </ul></li>
@@ -4045,6 +4061,12 @@
 </li>
       <li><a href="api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.format_available_protfuncs">format_available_protfuncs() (in module evennia.prototypes.prototypes)</a>
 </li>
+      <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_channel_account_subs">format_channel_account_subs() (evennia.commands.default.building.CmdExamine method)</a>
+</li>
+      <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_channel_object_subs">format_channel_object_subs() (evennia.commands.default.building.CmdExamine method)</a>
+</li>
+      <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_channel_sub_totals">format_channel_sub_totals() (evennia.commands.default.building.CmdExamine method)</a>
+</li>
       <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_chars">format_chars() (evennia.commands.default.building.CmdExamine method)</a>
 </li>
       <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_current_cmds">format_current_cmds() (evennia.commands.default.building.CmdExamine method)</a>
@@ -4082,6 +4104,12 @@
       <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_output">format_output() (evennia.commands.default.building.CmdExamine method)</a>
 </li>
       <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_permissions">format_permissions() (evennia.commands.default.building.CmdExamine method)</a>
+</li>
+      <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_script_desc">format_script_desc() (evennia.commands.default.building.CmdExamine method)</a>
+</li>
+      <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_script_is_persistent">format_script_is_persistent() (evennia.commands.default.building.CmdExamine method)</a>
+</li>
+      <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_script_timer_data">format_script_timer_data() (evennia.commands.default.building.CmdExamine method)</a>
 </li>
       <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_scripts">format_scripts() (evennia.commands.default.building.CmdExamine method)</a>
 </li>
@@ -6245,8 +6273,6 @@
 </li>
       <li><a href="api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.message_transform">message_transform() (evennia.comms.comms.DefaultChannel method)</a>
 </li>
-      <li><a href="api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.mock_sessions">mock_sessions() (evennia.utils.test_resources.EvenniaTestMixin method)</a>
-</li>
       <li><a href="api/evennia.utils.test_resources.html#evennia.utils.test_resources.mockdeferLater">mockdeferLater() (in module evennia.utils.test_resources)</a>
 </li>
       <li><a href="api/evennia.utils.test_resources.html#evennia.utils.test_resources.mockdelay">mockdelay() (in module evennia.utils.test_resources)</a>
@@ -6914,6 +6940,8 @@
 </li>
       <li><a href="api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.object_totals">object_totals() (evennia.typeclasses.managers.TypedObjectManager method)</a>
 </li>
+      <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.object_type">object_type (evennia.commands.default.building.CmdExamine attribute)</a>
+</li>
       <li><a href="api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTest.object_typeclass">object_typeclass (evennia.utils.test_resources.EvenniaTest attribute)</a>
 
       <ul>
@@ -7578,10 +7606,10 @@
 </li>
       <li><a href="api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.remove_bells">remove_bells() (evennia.utils.text2html.TextToHTMLparser method)</a>
 </li>
-      <li><a href="api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.remove_default">remove_default() (evennia.commands.cmdsethandler.CmdSetHandler method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.remove_default">remove_default() (evennia.commands.cmdsethandler.CmdSetHandler method)</a>
+</li>
       <li><a href="api/evennia.comms.models.html#evennia.comms.models.Msg.remove_receiver">remove_receiver() (evennia.comms.models.Msg method)</a>
 
       <ul>
@@ -7670,8 +7698,6 @@
         <li><a href="api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.restore">(evennia.scripts.tickerhandler.TickerHandler method)</a>
 </li>
       </ul></li>
-      <li><a href="api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.restore_backups">restore_backups() (evennia.utils.test_resources.EvenniaTestMixin method)</a>
-</li>
       <li><a href="api/evennia.commands.command.html#evennia.commands.command.Command.retain_instance">retain_instance (evennia.commands.command.Command attribute)</a>
 </li>
       <li><a href="api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.return_appearance">return_appearance() (evennia.objects.objects.DefaultObject method)</a>
@@ -7778,8 +7804,6 @@
         <li><a href="api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.BaseOption.save">(evennia.utils.optionclasses.BaseOption method)</a>
 </li>
       </ul></li>
-      <li><a href="api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.save_backups">save_backups() (evennia.utils.test_resources.EvenniaTestMixin method)</a>
-</li>
       <li><a href="api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor.save_buffer">save_buffer() (evennia.utils.eveditor.EvEditor method)</a>
 </li>
       <li><a href="api/evennia.commands.command.html#evennia.commands.command.Command.save_for_next">save_for_next (evennia.commands.command.Command attribute)</a>
@@ -8220,10 +8244,10 @@
         <li><a href="api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Timezone.serialize">(evennia.utils.optionclasses.Timezone method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.server_connect">server_connect() (evennia.server.portal.portalsessionhandler.PortalSessionHandler method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.server_disconnect">server_disconnect() (evennia.server.portal.portalsessionhandler.PortalSessionHandler method)</a>
 </li>
       <li><a href="api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.server_disconnect_all">server_disconnect_all() (evennia.server.portal.portalsessionhandler.PortalSessionHandler method)</a>
@@ -8627,6 +8651,8 @@
 </li>
         <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdDig.switch_options">(evennia.commands.default.building.CmdDig attribute)</a>
 </li>
+        <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.switch_options">(evennia.commands.default.building.CmdExamine attribute)</a>
+</li>
         <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdFind.switch_options">(evennia.commands.default.building.CmdFind attribute)</a>
 </li>
         <li><a href="api/evennia.commands.default.building.html#evennia.commands.default.building.CmdMvAttr.switch_options">(evennia.commands.default.building.CmdMvAttr attribute)</a>
@@ -8993,6 +9019,8 @@
       <li><a href="api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestGeneral.test_say">test_say() (evennia.commands.default.tests.TestGeneral method)</a>
 </li>
       <li><a href="api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_script">test_script() (evennia.commands.default.tests.TestBuilding method)</a>
+</li>
+      <li><a href="api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_script_multi_delete">test_script_multi_delete() (evennia.commands.default.tests.TestBuilding method)</a>
 </li>
       <li><a href="api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestSystem.test_scripts">test_scripts() (evennia.commands.default.tests.TestSystem method)</a>
 </li>

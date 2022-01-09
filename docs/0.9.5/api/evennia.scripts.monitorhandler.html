@@ -99,7 +99,7 @@ non-persistent tickers must be killed.</p>
 
 <dl class="py method">
 <dt id="evennia.scripts.monitorhandler.MonitorHandler.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">fieldname</span></em>, <em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="n">idstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">fieldname</span></em>, <em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="n">idstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add monitoring to a given field or Attribute. A field must
 be specified with the full db_* name or it will be assumed
 to be an Attribute (so <strong>db_key</strong>, not just <strong>key</strong>).</p>
@@ -115,6 +115,9 @@ where kwargs holds keys fieldname and obj.</p></li>
 of the same field and object.</p></li>
 <li><p><strong>persistent</strong> (<em>bool</em><em>, </em><em>optional</em>) – If False, the monitor will survive
 a server reload but not a cold restart. This is default.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – This is only used if <strong>fieldname</strong> refers to
+an Attribute (i.e. it does not start with <strong>db_</strong>). You must specify this
+if you want to target an Attribute with a category.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
@@ -131,7 +134,7 @@ all kwargs must be possible to pickle!</p></li>
 
 <dl class="py method">
 <dt id="evennia.scripts.monitorhandler.MonitorHandler.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">fieldname</span></em>, <em class="sig-param"><span class="n">idstring</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">fieldname</span></em>, <em class="sig-param"><span class="n">idstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove a monitor.</p>
 </dd></dl>
 

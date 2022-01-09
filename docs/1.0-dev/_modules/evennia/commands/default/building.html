@@ -65,6 +65,7 @@
     <span class="n">interactive</span><span class="p">,</span>
     <span class="n">list_to_string</span><span class="p">,</span>
     <span class="n">display_len</span><span class="p">,</span>
+    <span class="n">format_grid</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="kn">import</span> <span class="n">EvMore</span>
@@ -75,6 +76,7 @@
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
 
 <span class="n">_FUNCPARSER</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_ATTRFUNCPARSER</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="c1"># limit symbol import for API</span>
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
@@ -1636,10 +1638,19 @@
 <span class="sd">        char: Setting an attribute on a character (global search)</span>
 <span class="sd">        character: Alias for char, as above.</span>
 
+<span class="sd">    Example:</span>
+<span class="sd">        set self/foo = &quot;bar&quot;</span>
+<span class="sd">        set/delete self/foo</span>
+<span class="sd">        set self/foo = $dbref(#53)</span>
+
 <span class="sd">    Sets attributes on objects. The second example form above clears a</span>
 <span class="sd">    previously set attribute while the third form inspects the current value of</span>
 <span class="sd">    the attribute (if any). The last one (with the star) is a shortcut for</span>
 <span class="sd">    operating on a player Account rather than an Object.</span>
+
+<span class="sd">    If you want &lt;value&gt; to be an object, use $dbef(#dbref) or</span>
+<span class="sd">    $search(key) to assign it. You need control or edit access to</span>
+<span class="sd">    the object you are adding.</span>
 
 <span class="sd">    The most common data to save with this command are strings and</span>
 <span class="sd">    numbers. You can however also set Python primitives such as lists,</span>
@@ -1965,13 +1976,33 @@
                     <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rm_attr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">category</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># setting attribute(s). Make sure to convert to real Python type before saving.</span>
+            <span class="c1"># add support for $dbref() and $search() in set argument</span>
+            <span class="k">global</span> <span class="n">_ATTRFUNCPARSER</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_ATTRFUNCPARSER</span><span class="p">:</span>
+                <span class="n">_ATTRFUNCPARSER</span> <span class="o">=</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">FuncParser</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s2">&quot;dbref&quot;</span><span class="p">:</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">funcparser_callable_search</span><span class="p">,</span>
+                     <span class="s2">&quot;search&quot;</span><span class="p">:</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">funcparser_callable_search</span><span class="p">}</span>
+                <span class="p">)</span>
+
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">)):</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have permission to edit </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
                 <span class="k">return</span>
             <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_attr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
                     <span class="k">continue</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="n">_convert_from_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="c1"># from evennia import set_trace;set_trace()</span>
+                <span class="n">parsed_value</span> <span class="o">=</span> <span class="n">_ATTRFUNCPARSER</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">return_str</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">parsed_value</span><span class="p">,</span> <span class="s2">&quot;access&quot;</span><span class="p">):</span>
+                    <span class="c1"># if this is an object we must have the right to read it, if so,</span>
+                    <span class="c1"># we will not convert it to a string</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">parsed_value</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">)</span>
+                            <span class="ow">or</span> <span class="n">parsed_value</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">)):</span>
+                        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have permission to set &quot;</span>
+                                   <span class="sa">f</span><span class="s2">&quot;object with identifier &#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">parsed_value</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">_convert_from_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
                 <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_attr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="p">))</span>
         <span class="c1"># send feedback</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span></div></div>
@@ -2459,6 +2490,8 @@
 <span class="sd">    Switch:</span>
 <span class="sd">      account - examine an Account (same as adding *)</span>
 <span class="sd">      object - examine an Object (useful when OOC)</span>
+<span class="sd">      script - examine a Script</span>
+<span class="sd">      channel - examine a Channel</span>
 
 <span class="sd">    The examine command shows detailed game info about an</span>
 <span class="sd">    object and optionally a specific attribute on it.</span>
@@ -2473,8 +2506,10 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(examine) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(/\w+?(\s|$))|\s|$&quot;</span>
+    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;account&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;script&quot;</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">]</span>
 
-    <span class="n">account_mode</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">object_type</span> <span class="o">=</span> <span class="s2">&quot;object&quot;</span>
+
     <span class="n">detail_color</span> <span class="o">=</span> <span class="s2">&quot;|c&quot;</span>
     <span class="n">header_color</span> <span class="o">=</span> <span class="s2">&quot;|w&quot;</span>
     <span class="n">quell_color</span> <span class="o">=</span> <span class="s2">&quot;|r&quot;</span>
@@ -2499,7 +2534,7 @@
             <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="CmdExamine.format_typeclass"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_typeclass">[docs]</a>    <span class="k">def</span> <span class="nf">format_typeclass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;typeclass&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;typeclass_path&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">typename</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">typeclass_path</span><span class="si">}</span><span class="s2">)&quot;</span></div>
 
 <div class="viewcode-block" id="CmdExamine.format_sessions"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_sessions">[docs]</a>    <span class="k">def</span> <span class="nf">format_sessions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
@@ -2598,7 +2633,7 @@
             <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">stored_cmdsets</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_EMPTY_CMDSET&quot;</span><span class="p">:</span>
                     <span class="n">stored_cmdset_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_single_cmdset</span><span class="p">(</span><span class="n">cmdset</span><span class="p">))</span>
-            <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stored_cmdset_strings</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stored_cmdset_strings</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdExamine.format_merged_cmdsets"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_merged_cmdsets">[docs]</a>    <span class="k">def</span> <span class="nf">format_merged_cmdsets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">current_cmdset</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;cmdset&quot;</span><span class="p">):</span>
@@ -2632,7 +2667,7 @@
         <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">all_cmdsets</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_EMPTY_CMDSET&quot;</span><span class="p">:</span>
                 <span class="n">merged_cmdset_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_single_cmdset</span><span class="p">(</span><span class="n">cmdset</span><span class="p">))</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">   &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">merged_cmdset_strings</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">merged_cmdset_strings</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdExamine.format_current_cmds"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_current_cmds">[docs]</a>    <span class="k">def</span> <span class="nf">format_current_cmds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">current_cmdset</span><span class="p">):</span>
         <span class="n">current_commands</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">cmd</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">current_cmdset</span> <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;cmd&quot;</span><span class="p">)])</span>
@@ -2687,10 +2722,13 @@
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">header_color</span><span class="si">}{</span><span class="n">key</span><span class="si">}</span><span class="s2">|n=</span><span class="si">{</span><span class="n">value</span><span class="si">}{</span><span class="n">typ</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 <div class="viewcode-block" id="CmdExamine.format_attributes"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">format_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_single_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
                    <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_attributes</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="c1"># we don&#39;t want just an empty line</span>
+            <span class="k">return</span> <span class="n">output</span></div>
 
 <div class="viewcode-block" id="CmdExamine.format_nattributes"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_nattributes">[docs]</a>    <span class="k">def</span> <span class="nf">format_nattributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -2721,6 +2759,51 @@
                                <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">destination</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">things</span> <span class="k">if</span> <span class="n">things</span> <span class="k">else</span> <span class="kc">None</span></div>
 
+<div class="viewcode-block" id="CmdExamine.format_script_desc"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_script_desc">[docs]</a>    <span class="k">def</span> <span class="nf">format_script_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;db_desc&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_desc</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">crop</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db_desc</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CmdExamine.format_script_is_persistent"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_script_is_persistent">[docs]</a>    <span class="k">def</span> <span class="nf">format_script_is_persistent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;db_persistent&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;T&quot;</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_persistent</span> <span class="k">else</span> <span class="s2">&quot;F&quot;</span></div>
+
+<div class="viewcode-block" id="CmdExamine.format_script_timer_data"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_script_timer_data">[docs]</a>    <span class="k">def</span> <span class="nf">format_script_timer_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;db_interval&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_interval</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">start_delay</span> <span class="o">=</span> <span class="s2">&quot;T&quot;</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_start_delay</span> <span class="k">else</span> <span class="s2">&quot;F&quot;</span>
+            <span class="n">next_repeat</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">time_until_next_repeat</span><span class="p">()</span>
+            <span class="n">active</span> <span class="o">=</span> <span class="s2">&quot;|grunning|n&quot;</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_is_active</span> <span class="ow">and</span> <span class="n">next_repeat</span> <span class="k">else</span> <span class="s2">&quot;|rinactive|n&quot;</span>
+            <span class="n">interval</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_interval</span>
+            <span class="n">next_repeat</span> <span class="o">=</span> <span class="s2">&quot;N/A&quot;</span> <span class="k">if</span> <span class="n">next_repeat</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">next_repeat</span><span class="si">}</span><span class="s2">s&quot;</span>
+            <span class="n">repeats</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_repeats</span><span class="p">:</span>
+                <span class="n">remaining_repeats</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">remaining_repeats</span><span class="p">()</span>
+                <span class="n">remaining_repeats</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">remaining_repeats</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">remaining_repeats</span>
+                <span class="n">repeats</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; - </span><span class="si">{</span><span class="n">remaining_repeats</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">db_repeats</span><span class="si">}</span><span class="s2"> remain&quot;</span>
+            <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">active</span><span class="si">}</span><span class="s2"> - interval: </span><span class="si">{</span><span class="n">interval</span><span class="si">}</span><span class="s2">s &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;(next: </span><span class="si">{</span><span class="n">next_repeat</span><span class="si">}{</span><span class="n">repeats</span><span class="si">}</span><span class="s2">, start_delay: </span><span class="si">{</span><span class="n">start_delay</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CmdExamine.format_channel_sub_totals"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_channel_sub_totals">[docs]</a>    <span class="k">def</span> <span class="nf">format_channel_sub_totals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;db_account_subscriptions&quot;</span><span class="p">):</span>
+            <span class="n">account_subs</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_account_subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">object_subs</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_object_subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">online</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">online</span><span class="p">())</span>
+            <span class="n">ntotal</span> <span class="o">=</span> <span class="n">account_subs</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">+</span> <span class="n">object_subs</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ntotal</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">online</span><span class="si">}</span><span class="s2"> online)&quot;</span></div>
+
+<div class="viewcode-block" id="CmdExamine.format_channel_account_subs"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_channel_account_subs">[docs]</a>    <span class="k">def</span> <span class="nf">format_channel_account_subs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;db_account_subscriptions&quot;</span><span class="p">):</span>
+            <span class="n">account_subs</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_account_subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">account_subs</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">format_grid</span><span class="p">([</span><span class="n">sub</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">account_subs</span><span class="p">],</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">_DEFAULT_WIDTH</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="CmdExamine.format_channel_object_subs"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_channel_object_subs">[docs]</a>    <span class="k">def</span> <span class="nf">format_channel_object_subs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;db_object_subscriptions&quot;</span><span class="p">):</span>
+            <span class="n">object_subs</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_object_subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">object_subs</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">format_grid</span><span class="p">([</span><span class="n">sub</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">object_subs</span><span class="p">],</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">_DEFAULT_WIDTH</span><span class="p">))</span></div>
+
 <div class="viewcode-block" id="CmdExamine.get_formatted_obj_data"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.get_formatted_obj_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_formatted_obj_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">current_cmdset</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calls all other `format_*` methods.</span>
@@ -2748,6 +2831,10 @@
             <span class="n">objdata</span><span class="p">[</span><span class="s2">&quot;Merged Cmdset(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_merged_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">current_cmdset</span><span class="p">)</span>
             <span class="n">objdata</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Commands vailable to </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> (result of Merged Cmdset(s))&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">format_current_cmds</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">current_cmdset</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_type</span> <span class="o">==</span> <span class="s2">&quot;script&quot;</span><span class="p">:</span>
+            <span class="n">objdata</span><span class="p">[</span><span class="s2">&quot;Description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_script_desc</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">objdata</span><span class="p">[</span><span class="s2">&quot;Persistent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_script_is_persistent</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">objdata</span><span class="p">[</span><span class="s2">&quot;Script Repeat&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_script_timer_data</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="n">objdata</span><span class="p">[</span><span class="s2">&quot;Scripts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_scripts</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="n">objdata</span><span class="p">[</span><span class="s2">&quot;Tags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_tags</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="n">objdata</span><span class="p">[</span><span class="s2">&quot;Persistent Attributes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_attributes</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -2755,6 +2842,11 @@
         <span class="n">objdata</span><span class="p">[</span><span class="s2">&quot;Exits&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_exits</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="n">objdata</span><span class="p">[</span><span class="s2">&quot;Characters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_chars</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="n">objdata</span><span class="p">[</span><span class="s2">&quot;Content&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_things</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_type</span> <span class="o">==</span> <span class="s2">&quot;channel&quot;</span><span class="p">:</span>
+            <span class="n">objdata</span><span class="p">[</span><span class="s2">&quot;Subscription Totals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_channel_sub_totals</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">objdata</span><span class="p">[</span><span class="s2">&quot;Account Subscriptions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_channel_account_subs</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">objdata</span><span class="p">[</span><span class="s2">&quot;Object Subscriptions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_channel_object_subs</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">objdata</span></div>
 
 <div class="viewcode-block" id="CmdExamine.format_output"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_output">[docs]</a>    <span class="k">def</span> <span class="nf">format_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">current_cmdset</span><span class="p">):</span>
@@ -2779,6 +2871,46 @@
 
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sep</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">main_str</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">sep</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
+    <span class="k">def</span> <span class="nf">_search_by_object_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_name</span><span class="p">,</span> <span class="n">objtype</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Route to different search functions depending on the object type being</span>
+<span class="sd">        examined. This also handles error reporting for multimatches/no matches.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj_name (str): The search query.</span>
+<span class="sd">            objtype (str): One of &#39;object&#39;, &#39;account&#39;, &#39;script&#39; or &#39;channel&#39;.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            any: `None` if no match or multimatch, otherwise a single result.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">objtype</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">obj_name</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">objtype</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search_account</span><span class="p">(</span><span class="n">obj_name</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="c1"># this means we are calling examine from an account object</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+                    <span class="n">obj_name</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="n">search_object</span><span class="o">=</span><span class="s2">&quot;object&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">search</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;search_</span><span class="si">{</span><span class="n">objtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)(</span><span class="n">obj_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No </span><span class="si">{</span><span class="n">objtype</span><span class="si">}</span><span class="s2"> found with key </span><span class="si">{</span><span class="n">obj_name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Multiple </span><span class="si">{objtype}</span><span class="s2"> found with key </span><span class="si">{obj_name}</span><span class="s2">:</span><span class="se">\n</span><span class="si">{matches}</span><span class="s2">&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">obj_name</span><span class="o">=</span><span class="n">obj_name</span><span class="p">,</span>
+                    <span class="n">matches</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ob</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">(#</span><span class="si">{</span><span class="n">ob</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">ob</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">)</span>
+                <span class="p">))</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">obj</span>
+
 <div class="viewcode-block" id="CmdExamine.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
 
@@ -2793,42 +2925,32 @@
                 <span class="k">raise</span> <span class="n">InterruptCommand</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">objdef</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_objattr</span><span class="p">:</span>
+                <span class="c1"># note that we check the objtype for every repeat; this will always</span>
+                <span class="c1"># be the same result, but it makes for a cleaner code and multi-examine</span>
+                <span class="c1"># is not so common anyway.</span>
+
                 <span class="n">obj</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">obj_name</span> <span class="o">=</span> <span class="n">objdef</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>    <span class="c1"># name</span>
                 <span class="n">obj_attrs</span> <span class="o">=</span> <span class="n">objdef</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">]</span>  <span class="c1"># /attrs</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">account_mode</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;evennia.accounts.accounts.DefaultAccount&quot;</span><span class="p">)</span>
-                    <span class="ow">or</span> <span class="s2">&quot;account&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
-                    <span class="ow">or</span> <span class="n">obj_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
-                <span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_mode</span><span class="p">:</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search_account</span><span class="p">(</span><span class="n">obj_name</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">))</span>
-                    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                        <span class="c1"># this means we are calling examine from an account object</span>
-                        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
-                            <span class="n">obj_name</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="n">search_object</span><span class="o">=</span><span class="s2">&quot;object&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
-                        <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">obj_name</span><span class="p">)</span>
+                <span class="c1"># identify object type, in prio account - script - channel</span>
+                <span class="n">object_type</span> <span class="o">=</span> <span class="s2">&quot;object&quot;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;evennia.accounts.accounts.DefaultAccount&quot;</span><span class="p">)</span>
+                        <span class="ow">or</span> <span class="s2">&quot;account&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">or</span> <span class="n">obj_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)):</span>
+                    <span class="n">object_type</span> <span class="o">=</span> <span class="s2">&quot;account&quot;</span>
+                <span class="k">elif</span> <span class="s2">&quot;script&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+                    <span class="n">object_type</span> <span class="o">=</span> <span class="s2">&quot;script&quot;</span>
+                <span class="k">elif</span> <span class="s2">&quot;channel&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+                    <span class="n">object_type</span> <span class="o">=</span> <span class="s2">&quot;channel&quot;</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">object_type</span> <span class="o">=</span> <span class="n">object_type</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_by_object_type</span><span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">object_type</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">obj</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">examine_objs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">obj</span><span class="p">,</span> <span class="n">obj_attrs</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="CmdExamine.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Process command&quot;&quot;&quot;</span>
-        <span class="k">def</span> <span class="nf">get_cmdset_callback</span><span class="p">(</span><span class="n">current_cmdset</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            We make use of the cmdhandler.get_and_merge_cmdsets below. This</span>
-<span class="sd">            is an asynchronous function, returning a Twisted deferred.</span>
-<span class="sd">            So in order to properly use this we need use this callback;</span>
-<span class="sd">            it is called with the result of get_and_merge_cmdsets, whenever</span>
-<span class="sd">            that function finishes. Taking the resulting cmdset, we continue</span>
-<span class="sd">            to format and output the result.</span>
-<span class="sd">            &quot;&quot;&quot;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_output</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">current_cmdset</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-
         <span class="k">for</span> <span class="n">obj</span><span class="p">,</span> <span class="n">obj_attrs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">examine_objs</span><span class="p">:</span>
             <span class="c1"># these are parsed out in .parse already</span>
 
@@ -2856,31 +2978,42 @@
 
             <span class="c1"># examine the obj itself</span>
 
-            <span class="c1"># get the cmdset status</span>
-            <span class="n">session</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">count</span><span class="p">():</span>
-                <span class="n">mergemode</span> <span class="o">=</span> <span class="s2">&quot;session&quot;</span>
-                <span class="n">session</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_mode</span><span class="p">:</span>
-                <span class="n">mergemode</span> <span class="o">=</span> <span class="s2">&quot;account&quot;</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">mergemode</span> <span class="o">=</span> <span class="s2">&quot;object&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">):</span>
+                <span class="c1"># for objects and accounts we need to set up an asynchronous</span>
+                <span class="c1"># fetch of the cmdset and not proceed with the examine display</span>
+                <span class="c1"># until the fetch is complete</span>
+                <span class="n">session</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">count</span><span class="p">():</span>
+                    <span class="n">mergemode</span> <span class="o">=</span> <span class="s2">&quot;session&quot;</span>
+                    <span class="n">session</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_type</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
+                    <span class="n">mergemode</span> <span class="o">=</span> <span class="s2">&quot;account&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">mergemode</span> <span class="o">=</span> <span class="s2">&quot;object&quot;</span>
 
-            <span class="n">account</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">objct</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_mode</span><span class="p">:</span>
-                <span class="n">account</span> <span class="o">=</span> <span class="n">obj</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">account</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span>
-                <span class="n">objct</span> <span class="o">=</span> <span class="n">obj</span>
+                <span class="n">account</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">objct</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_type</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
+                    <span class="n">account</span> <span class="o">=</span> <span class="n">obj</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">account</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span>
+                    <span class="n">objct</span> <span class="o">=</span> <span class="n">obj</span>
 
-            <span class="c1"># this is usually handled when a command runs, but when we examine</span>
-            <span class="c1"># we may have leftover inherited cmdsets directly after a move etc.</span>
-            <span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-            <span class="c1"># using callback to print results whenever function returns.</span>
-            <span class="n">get_and_merge_cmdsets</span><span class="p">(</span>
-                <span class="n">obj</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">objct</span><span class="p">,</span> <span class="n">mergemode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_string</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="n">get_cmdset_callback</span><span class="p">)</span></div></div>
+                <span class="c1"># this is usually handled when a command runs, but when we examine</span>
+                <span class="c1"># we may have leftover inherited cmdsets directly after a move etc.</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+                <span class="c1"># using callback to print results whenever function returns.</span>
+
+                <span class="k">def</span> <span class="nf">_get_cmdset_callback</span><span class="p">(</span><span class="n">current_cmdset</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_output</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">current_cmdset</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+                <span class="n">get_and_merge_cmdsets</span><span class="p">(</span>
+                    <span class="n">obj</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">objct</span><span class="p">,</span> <span class="n">mergemode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_string</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="n">_get_cmdset_callback</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># for objects without cmdsets we can proceed to examine immediately</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_output</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span></div></div>
 
 
 <div class="viewcode-block" id="CmdFind"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdFind">[docs]</a><span class="k">class</span> <span class="nc">CmdFind</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -3173,6 +3306,7 @@
 <span class="sd">        script/stop myobj = scriptname - stop script on object</span>
 <span class="sd">        script/pause foo.Bar.Script    - pause global script</span>
 <span class="sd">        script/delete myobj            - delete ALL scripts on object</span>
+<span class="sd">        script/delete #dbref[-#dbref]  - delete script or range by dbref</span>
 
 <span class="sd">    When given with an `&lt;obj&gt;` as left-hand-side, this creates and</span>
 <span class="sd">    assigns a new script to that object. Without an `&lt;obj&gt;`, this</span>
@@ -3214,6 +3348,13 @@
         <span class="n">scripts</span> <span class="o">=</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_typeclass_path__iendswith</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">scripts</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">scripts</span>
+        <span class="k">if</span> <span class="s2">&quot;-&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="c1"># may be a dbref-range</span>
+            <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span> <span class="o">=</span> <span class="p">(</span><span class="n">dbref</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">val1</span> <span class="ow">and</span> <span class="n">val2</span><span class="p">:</span>
+                <span class="n">scripts</span> <span class="o">=</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">id__in</span><span class="o">=</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">val1</span><span class="p">,</span> <span class="n">val2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span>
+                <span class="k">if</span> <span class="n">scripts</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">scripts</span>
 
 <div class="viewcode-block" id="CmdScripts.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdScripts.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;implement method&quot;&quot;&quot;</span>

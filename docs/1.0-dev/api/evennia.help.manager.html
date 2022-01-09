@@ -175,6 +175,34 @@ up in one easily separated category.</p>
 <li><p><strong>category</strong> (<em>str</em>) – Limit the search to a particular help topic</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Queryset</em> – An iterable with 0, 1 or more matches.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.help.manager.HelpEntryManager.create_help">
+<code class="sig-name descname">create_help</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">entrytext</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">'General'</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.create_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.manager.HelpEntryManager.create_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a static help entry in the help database. Note that Command
+help entries are dynamic and directly taken from the __doc__
+entries of the command. The database-stored help entries are
+intended for more general help on the game, more extensive info,
+in-game setting information and so on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The name of the help entry.</p></li>
+<li><p><strong>entrytext</strong> (<em>str</em>) – The body of te help entry</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The help category of the entry.</p></li>
+<li><p><strong>locks</strong> (<em>str</em><em>, </em><em>optional</em>) – A lockstring to restrict access.</p></li>
+<li><p><strong>aliases</strong> (<em>list of str</em><em>, </em><em>optional</em>) – List of alternative (likely shorter) keynames.</p></li>
+<li><p><strong>tags</strong> (<em>lst</em><em>, </em><em>optional</em>) – List of tags or tuples <strong>(tag, category)</strong>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>help (HelpEntry)</em> – A newly created help entry.</p>
+</dd>
 </dl>
 </dd></dl>
 

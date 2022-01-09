@@ -508,10 +508,13 @@
 <span class="sd">            dbref (str or int): The id to search for.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            object (TypedObject): The matched object.</span>
+<span class="sd">            Queryset: Queryset with 0 or 1 match.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">dbref</span><span class="p">)</span></div>
+        <span class="n">dbref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbref</span><span class="p">(</span><span class="n">dbref</span><span class="p">,</span> <span class="n">reqhash</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dbref</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dbref</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">none</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TypedObjectManager.get_dbref_range"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.get_dbref_range">[docs]</a>    <span class="k">def</span> <span class="nf">get_dbref_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
