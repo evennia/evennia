@@ -424,7 +424,7 @@ class ChannelDBManager(TypedObjectManager):
         dbref = self.dbref(ostring)
         if dbref:
             try:
-                return self.get(id=dbref)
+                return [self.get(id=dbref)]
             except self.model.DoesNotExist:
                 pass
         if exact:

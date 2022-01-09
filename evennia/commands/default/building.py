@@ -21,6 +21,7 @@ from evennia.utils.utils import (
     interactive,
     list_to_string,
     display_len,
+    format_grid,
 )
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
@@ -2445,6 +2446,8 @@ class CmdExamine(ObjManipCommand):
     Switch:
       account - examine an Account (same as adding *)
       object - examine an Object (useful when OOC)
+      script - examine a Script
+      channel - examine a Channel
 
     The examine command shows detailed game info about an
     object and optionally a specific attribute on it.
@@ -2459,8 +2462,10 @@ class CmdExamine(ObjManipCommand):
     locks = "cmd:perm(examine) or perm(Builder)"
     help_category = "Building"
     arg_regex = r"(/\w+?(\s|$))|\s|$"
+    switch_options = ["account", "object", "script", "channel"]
 
-    account_mode = False
+    object_type = "object"
+
     detail_color = "|c"
     header_color = "|w"
     quell_color = "|r"
@@ -2485,7 +2490,7 @@ class CmdExamine(ObjManipCommand):
             return ", ".join(utils.make_iter(str(obj.aliases)))
 
     def format_typeclass(self, obj):
-        if hasattr(obj, "typeclass"):
+        if hasattr(obj, "typeclass_path"):
             return f"{obj.typename} ({obj.typeclass_path})"
 
     def format_sessions(self, obj):
@@ -2584,7 +2589,7 @@ class CmdExamine(ObjManipCommand):
             for cmdset in stored_cmdsets:
                 if cmdset.key != "_EMPTY_CMDSET":
                     stored_cmdset_strings.append(self.format_single_cmdset(cmdset))
-            return "\n  ".join(stored_cmdset_strings)
+            return "\n  " + "\n  ".join(stored_cmdset_strings)
 
     def format_merged_cmdsets(self, obj, current_cmdset):
         if not hasattr(obj, "cmdset"):
@@ -2618,7 +2623,7 @@ class CmdExamine(ObjManipCommand):
         for cmdset in all_cmdsets:
             if cmdset.key != "_EMPTY_CMDSET":
                 merged_cmdset_strings.append(self.format_single_cmdset(cmdset))
-        return "\n   ".join(merged_cmdset_strings)
+        return "\n  " + "\n  ".join(merged_cmdset_strings)
 
     def format_current_cmds(self, obj, current_cmdset):
         current_commands = sorted([cmd.key for cmd in current_cmdset if cmd.access(obj, "cmd")])
@@ -2673,10 +2678,13 @@ class CmdExamine(ObjManipCommand):
             return f"{self.header_color}{key}|n={value}{typ}"
 
     def format_attributes(self, obj):
-        return "\n  " + "\n  ".join(
+        output = "\n  " + "\n  ".join(
             sorted(self.format_single_attribute(attr)
                    for attr in obj.db_attributes.all())
         )
+        if output.strip():
+            # we don't want just an empty line
+            return output
 
     def format_nattributes(self, obj):
         try:
@@ -2707,6 +2715,51 @@ class CmdExamine(ObjManipCommand):
                                if not obj.account and not obj.destination)
             return things if things else None
 
+    def format_script_desc(self, obj):
+        if hasattr(obj, "db_desc") and obj.db_desc:
+            return crop(obj.db_desc, 20)
+
+    def format_script_is_persistent(self, obj):
+        if hasattr(obj, "db_persistent"):
+            return "T" if obj.db_persistent else "F"
+
+    def format_script_timer_data(self, obj):
+        if hasattr(obj, "db_interval") and obj.db_interval > 0:
+            start_delay = "T" if obj.db_start_delay else "F"
+            next_repeat = obj.time_until_next_repeat()
+            active = "|grunning|n" if obj.db_is_active and next_repeat else "|rinactive|n"
+            interval = obj.db_interval
+            next_repeat = "N/A" if next_repeat is None else f"{next_repeat}s"
+            repeats = ""
+            if obj.db_repeats:
+                remaining_repeats = obj.remaining_repeats()
+                remaining_repeats = 0 if remaining_repeats is None else remaining_repeats
+                repeats = f" - {remaining_repeats}/{obj.db_repeats} remain"
+            return (f"{active} - interval: {interval}s "
+                    f"(next: {next_repeat}{repeats}, start_delay: {start_delay})")
+
+    def format_channel_sub_totals(self, obj):
+        if hasattr(obj, "db_account_subscriptions"):
+            account_subs = obj.db_account_subscriptions.all()
+            object_subs = obj.db_object_subscriptions.all()
+            online = len(obj.subscriptions.online())
+            ntotal = account_subs.count() + object_subs.count()
+            return f"{ntotal} ({online} online)"
+
+    def format_channel_account_subs(self, obj):
+        if hasattr(obj, "db_account_subscriptions"):
+            account_subs = obj.db_account_subscriptions.all()
+            if account_subs:
+                return "\n  " + "\n  ".join(
+                    format_grid([sub.key for sub in account_subs], sep=' ', width=_DEFAULT_WIDTH))
+
+    def format_channel_object_subs(self, obj):
+        if hasattr(obj, "db_object_subscriptions"):
+            object_subs = obj.db_object_subscriptions.all()
+            if object_subs:
+                return "\n  " + "\n  ".join(
+                    format_grid([sub.key for sub in object_subs], sep=' ', width=_DEFAULT_WIDTH))
+
     def get_formatted_obj_data(self, obj, current_cmdset):
         """
         Calls all other `format_*` methods.
@@ -2734,6 +2787,10 @@ class CmdExamine(ObjManipCommand):
             objdata["Merged Cmdset(s)"] = self.format_merged_cmdsets(obj, current_cmdset)
             objdata[f"Commands vailable to {obj.key} (result of Merged Cmdset(s))"] = (
                 self.format_current_cmds(obj, current_cmdset))
+        if self.object_type == "script":
+            objdata["Description"] = self.format_script_desc(obj)
+            objdata["Persistent"] = self.format_script_is_persistent(obj)
+            objdata["Script Repeat"] = self.format_script_timer_data(obj)
         objdata["Scripts"] = self.format_scripts(obj)
         objdata["Tags"] = self.format_tags(obj)
         objdata["Persistent Attributes"] = self.format_attributes(obj)
@@ -2741,6 +2798,11 @@ class CmdExamine(ObjManipCommand):
         objdata["Exits"] = self.format_exits(obj)
         objdata["Characters"] = self.format_chars(obj)
         objdata["Content"] = self.format_things(obj)
+        if self.object_type == "channel":
+            objdata["Subscription Totals"] = self.format_channel_sub_totals(obj)
+            objdata["Account Subscriptions"] = self.format_channel_account_subs(obj)
+            objdata["Object Subscriptions"] = self.format_channel_object_subs(obj)
+
         return objdata
 
     def format_output(self, obj, current_cmdset):
@@ -2765,6 +2827,46 @@ class CmdExamine(ObjManipCommand):
 
         return f"{sep}\n{main_str}\n{sep}"
 
+    def _search_by_object_type(self, obj_name, objtype):
+        """
+        Route to different search functions depending on the object type being
+        examined. This also handles error reporting for multimatches/no matches.
+
+        Args:
+            obj_name (str): The search query.
+            objtype (str): One of 'object', 'account', 'script' or 'channel'.
+        Returns:
+            any: `None` if no match or multimatch, otherwise a single result.
+
+        """
+        obj = None
+
+        if objtype == "object":
+            obj = self.caller.search(obj_name)
+        elif objtype == "account":
+            try:
+                obj = self.caller.search_account(obj_name.lstrip("*"))
+            except AttributeError:
+                # this means we are calling examine from an account object
+                obj = self.caller.search(
+                    obj_name.lstrip("*"), search_object="object" in self.switches
+                )
+        else:
+            obj = getattr(search, f"search_{objtype}")(obj_name)
+            if not obj:
+                self.caller.msg(f"No {objtype} found with key {obj_name}.")
+                obj = None
+            elif len(obj) > 1:
+                err = "Multiple {objtype} found with key {obj_name}:\n{matches}"
+                self.caller.msg(err.format(
+                    obj_name=obj_name,
+                    matches=", ".join(f"{ob.key}(#{ob.id})" for ob in obj)
+                ))
+                obj = None
+            else:
+                obj = obj[0]
+        return obj
+
     def parse(self):
         super().parse()
 
@@ -2779,42 +2881,32 @@ class CmdExamine(ObjManipCommand):
                 raise InterruptCommand
         else:
             for objdef in self.lhs_objattr:
+                # note that we check the objtype for every repeat; this will always
+                # be the same result, but it makes for a cleaner code and multi-examine
+                # is not so common anyway.
+
                 obj = None
                 obj_name = objdef["name"]    # name
                 obj_attrs = objdef["attrs"]  # /attrs
 
-                self.account_mode = (
-                    utils.inherits_from(self.caller, "evennia.accounts.accounts.DefaultAccount")
-                    or "account" in self.switches
-                    or obj_name.startswith("*")
-                )
-                if self.account_mode:
-                    try:
-                        obj = self.caller.search_account(obj_name.lstrip("*"))
-                    except AttributeError:
-                        # this means we are calling examine from an account object
-                        obj = self.caller.search(
-                            obj_name.lstrip("*"), search_object="object" in self.switches
-                        )
-                else:
-                    obj = self.caller.search(obj_name)
+                # identify object type, in prio account - script - channel
+                object_type = "object"
+                if (utils.inherits_from(self.caller, "evennia.accounts.accounts.DefaultAccount")
+                        or "account" in self.switches or obj_name.startswith("*")):
+                    object_type = "account"
+                elif "script" in self.switches:
+                    object_type = "script"
+                elif "channel" in self.switches:
+                    object_type = "channel"
+
+                self.object_type = object_type
+                obj = self._search_by_object_type(obj_name, object_type)
 
                 if obj:
                     self.examine_objs.append((obj, obj_attrs))
 
     def func(self):
         """Process command"""
-        def get_cmdset_callback(current_cmdset):
-            """
-            We make use of the cmdhandler.get_and_merge_cmdsets below. This
-            is an asynchronous function, returning a Twisted deferred.
-            So in order to properly use this we need use this callback;
-            it is called with the result of get_and_merge_cmdsets, whenever
-            that function finishes. Taking the resulting cmdset, we continue
-            to format and output the result.
-            """
-            self.msg(self.format_output(obj, current_cmdset).strip())
-
         for obj, obj_attrs in self.examine_objs:
             # these are parsed out in .parse already
 
@@ -2842,31 +2934,42 @@ class CmdExamine(ObjManipCommand):
 
             # examine the obj itself
 
-            # get the cmdset status
-            session = None
-            if obj.sessions.count():
-                mergemode = "session"
-                session = obj.sessions.get()[0]
-            elif self.account_mode:
-                mergemode = "account"
-            else:
-                mergemode = "object"
+            if self.object_type in ("object", "account"):
+                # for objects and accounts we need to set up an asynchronous
+                # fetch of the cmdset and not proceed with the examine display
+                # until the fetch is complete
+                session = None
+                if obj.sessions.count():
+                    mergemode = "session"
+                    session = obj.sessions.get()[0]
+                elif self.object_type == "account":
+                    mergemode = "account"
+                else:
+                    mergemode = "object"
 
-            account = None
-            objct = None
-            if self.account_mode:
-                account = obj
-            else:
-                account = obj.account
-                objct = obj
+                account = None
+                objct = None
+                if self.object_type == "account":
+                    account = obj
+                else:
+                    account = obj.account
+                    objct = obj
 
-            # this is usually handled when a command runs, but when we examine
-            # we may have leftover inherited cmdsets directly after a move etc.
-            obj.cmdset.update()
-            # using callback to print results whenever function returns.
-            get_and_merge_cmdsets(
-                obj, session, account, objct, mergemode, self.raw_string
-            ).addCallback(get_cmdset_callback)
+                # this is usually handled when a command runs, but when we examine
+                # we may have leftover inherited cmdsets directly after a move etc.
+                obj.cmdset.update()
+                # using callback to print results whenever function returns.
+
+                def _get_cmdset_callback(current_cmdset):
+                    self.msg(self.format_output(obj, current_cmdset).strip())
+
+                get_and_merge_cmdsets(
+                    obj, session, account, objct, mergemode, self.raw_string
+                ).addCallback(_get_cmdset_callback)
+
+            else:
+                # for objects without cmdsets we can proceed to examine immediately
+                self.msg(self.format_output(obj, None).strip())
 
 
 class CmdFind(COMMAND_DEFAULT_CLASS):

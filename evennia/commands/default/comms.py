@@ -737,6 +737,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         """
         comtable = self.styled_table(
+            "id",
             "channel",
             "my aliases",
             "locks",
@@ -747,17 +748,24 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         for chan in subscribed:
 
             locks = "-"
+            chanid = "-"
             if chan.access(self.caller, "control"):
                 locks = chan.locks
+                chanid = chan.id
 
             my_aliases = ", ".join(self.get_channel_aliases(chan))
             comtable.add_row(
-                *("{}{}".format(
-                    chan.key,
-                    "({})".format(",".join(chan.aliases.all())) if chan.aliases.all() else ""),
+                *(
+                  chanid,
+                  "{key}{aliases}".format(
+                      key=chan.key,
+                      aliases=";"+ ";".join(chan.aliases.all()) if chan.aliases.all() else ""
+                  ),
                   my_aliases,
                   locks,
-                  chan.db.desc))
+                  chan.db.desc
+                )
+            )
         return comtable
 
     def display_all_channels(self, subscribed, available):

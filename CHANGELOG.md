@@ -138,6 +138,7 @@ Up requirements to Django 3.2+, Twisted 21+
   wrapper functions (consistent with `utils.search`). No change of api otherwise.
 - Add support for `$dbref()` and `$search` when assigning an Attribute value
   with the `set` command. This allows assigning real objects from in-game.
+- Add ability to examine `/script` and `/channel` entities  with `examine` command.
 
 
 ### Evennia 0.9.5 (2019-2020)
