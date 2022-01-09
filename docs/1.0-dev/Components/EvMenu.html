@@ -42,12 +42,121 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="evmenu">
 <h1>EvMenu<a class="headerlink" href="#evmenu" title="Permalink to this headline">¶</a></h1>
+<p>EvMenu is used for generate branching multi-choice menus. Each menu ‘node’ can
+accepts specific options as input or free-form input. Depending what the player
+chooses, they are forwarded to different nodes in the menu.</p>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> utility class is located in
-<a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/utils/evmenu.py">evennia/utils/evmenu.py</a>.
+<p>The <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> utility class is located in <a class="reference internal" href="../api/evennia.utils.evmenu.html#evennia-utils-evmenu"><span class="std std-ref">evennia/utils/evmenu.py</span></a>.
 It allows for easily adding interactive menus to the game; for example to implement Character
 creation, building commands or similar. Below is an example of offering NPC conversation choices:</p>
+<section id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<p>This section gives some examples of how menus work in-game. A menu is a state
+(it’s actually a custom cmdset) where menu-specific commands are made available
+to you. An EvMenu is usually started from inside a command, but could also
+just be put in a file and run with <code class="docutils literal notranslate"><span class="pre">py</span></code>.</p>
+<p>This is how the example menu will look in-game:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Is your answer yes or no?
+_________________________________________
+[Y]es! - Answer yes.
+[N]o! - Answer no.
+[A]bort - Answer neither, and abort.
+</pre></div>
+</div>
+<p>If you pick (for example) Y(es), you will see</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>You chose yes!
+
+Thanks for your answer. Goodbye!
+</pre></div>
+</div>
+<p>After which the menu will end (in this example at least - it could also continue
+on to other questions and choices or even repeat the same node over and over!)</p>
+<p>Here’s the full EvMenu code for this example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evmenu</span>
+
+<span class="k">def</span> <span class="nf">_handle_answer</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_input</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">answer</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;answer&quot;</span><span class="p">)</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You chose </span><span class="si">{</span><span class="n">answer</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;end&quot;</span>  <span class="c1"># name of next node</span>
+
+<span class="k">def</span> <span class="nf">node_question</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_input</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Is your answer yes or no?&quot;</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;[Y]es!&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">),</span>
+         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">Answer</span> <span class="n">yes</span><span class="o">.</span><span class="s2">&quot;,</span>
+         <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="n">_handle_answer</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;yes&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;[N]o!&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">),</span>
+         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Answer no.&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="n">_handle_answer</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;no&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;[A]bort&quot;</span><span class="p">,</span> <span class="s2">&quot;abort&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">),</span>
+         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Answer neither, and abort.&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
+
+<span class="k">def</span> <span class="nf">node_end</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_input</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">text</span> <span class="s2">&quot;Thanks for your answer. Goodbye!&quot;</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="kc">None</span>  <span class="c1"># empty options ends the menu</span>
+
+<span class="n">evmenu</span><span class="o">.</span><span class="n">EvMenu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">node_question</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="n">node_end</span><span class="p">})</span>
+
+</pre></div>
+</div>
+<p>Note the call to <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> at the end; this immediately creates the menu for the
+<code class="docutils literal notranslate"><span class="pre">caller</span></code>. It also assigns the two node-functions to menu node-names <code class="docutils literal notranslate"><span class="pre">start</span></code> and
+<code class="docutils literal notranslate"><span class="pre">end</span></code>, which is what the menu then uses to reference the nodes.</p>
+<p>Each node of the menu is a function that returns the text and a list of dicts
+describing the choices you can make on that node.</p>
+<p>Each option details what it should show (key/desc) as well as which node to go
+to (goto) next. The “goto” should be the name of the next node to go (if <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+the same node will be rerun again).</p>
+<p>Above, the <code class="docutils literal notranslate"><span class="pre">Abort</span></code> option gives the “end” node name just as a string whereas the
+yes/no options instead uses the callable <code class="docutils literal notranslate"><span class="pre">_handle_answer</span></code> but pass different
+arguments to it. <code class="docutils literal notranslate"><span class="pre">_handle_answer</span></code> then returns the name of the next node (this
+allows you to perform actions when making a choice before you move on to the
+next node the menu). Note that <code class="docutils literal notranslate"><span class="pre">_handle_answer</span></code> is <em>not</em> a node in the menu,
+it’s just a helper function.</p>
+<p>When choosing ‘yes’ (or ‘no’) what happens here is that <code class="docutils literal notranslate"><span class="pre">_handle_answer</span></code> gets
+called and echoes your choice before directing to the “end” node, which exits
+the menu (since it doesn’t return any options).</p>
+<p>You can also write menus using the <a class="reference internal" href="#evmenu-templating-language"><span class="std std-doc">EvMenu templating language</span></a>. This
+allows you to use a text string to generate simpler menus with less boiler
+plate. Let’s create exactly the same menu using the templating language:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evmenu</span>
+
+<span class="k">def</span> <span class="nf">_handle_answer</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_input</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">answer</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;answer&quot;</span><span class="p">)</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You chose </span><span class="si">{</span><span class="n">answer</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;end&quot;</span>  <span class="c1"># name of next node</span>
+
+<span class="n">menu_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">## node start</span>
+
+<span class="s2">Is your answer yes or no?</span>
+
+<span class="s2">## options</span>
+
+<span class="s2">[Y]es!;yes;y: Answer yes. -&gt; handle_answer(answer=yes)</span>
+<span class="s2">[N]o!;no;n: Answer no. -&gt; handle_answer(answer=no)</span>
+<span class="s2">[A]bort;abort;a: Answer neither, and abort. -&gt; end</span>
+
+<span class="s2">## node end</span>
+
+<span class="s2">Thanks for your answer. Goodbye!</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">evmenu</span><span class="o">.</span><span class="n">template2menu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menu_template</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;handle_answer&quot;</span><span class="p">:</span> <span class="n">_handle_answer</span><span class="p">})</span>
+
+</pre></div>
+</div>
+<p>As seen, the <code class="docutils literal notranslate"><span class="pre">_handle_answer</span></code> is the same, but the menu structure is
+described in the <code class="docutils literal notranslate"><span class="pre">menu_template</span></code> string. The <code class="docutils literal notranslate"><span class="pre">template2menu</span></code> helper
+uses the template-string and a mapping of callables (we must add
+<code class="docutils literal notranslate"><span class="pre">_handle_answer</span></code> here) to build a full EvMenu for us.</p>
+<p>Here’s another menu example, where we can choose how to interact with an NPC:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">The</span> <span class="n">guard</span> <span class="n">looks</span> <span class="n">at</span> <span class="n">you</span> <span class="n">suspiciously</span><span class="o">.</span>
 <span class="s2">&quot;No one is supposed to be in here ...&quot;</span>
 <span class="n">he</span> <span class="n">says</span><span class="p">,</span> <span class="n">a</span> <span class="n">hand</span> <span class="n">on</span> <span class="n">his</span> <span class="n">weapon</span><span class="o">.</span>
@@ -57,15 +166,49 @@ creation, building commands or similar. Below is an example of offering NPC conv
  <span class="mf">3.</span> <span class="n">Appeal</span> <span class="n">to</span> <span class="n">his</span> <span class="n">vanity</span> <span class="p">[</span><span class="n">Cha</span><span class="p">]</span>
  <span class="mf">4.</span> <span class="n">Try</span> <span class="n">to</span> <span class="n">knock</span> <span class="n">him</span> <span class="n">out</span> <span class="p">[</span><span class="n">Luck</span> <span class="o">+</span> <span class="n">Dex</span><span class="p">]</span>
  <span class="mf">5.</span> <span class="n">Try</span> <span class="n">to</span> <span class="n">run</span> <span class="n">away</span> <span class="p">[</span><span class="n">Dex</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="k">def</span> <span class="nf">_skill_check</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">skills</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;skills&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="n">gold</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gold&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># perform skill check here, decide if check passed or not</span>
+    <span class="c1"># then decide which node-name to return based on</span>
+    <span class="c1"># the result ...</span>
+
+    <span class="k">return</span> <span class="n">next_node_name</span>
+
+<span class="k">def</span> <span class="nf">node_guard</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;The guard looks at you suspiciously.</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="s1">&#39;&quot;No one is supposed to be in here ...&quot;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="s1">&#39;he says, a hand on his weapon.&#39;</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Try to bribe on [Cha + 10 gold]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_skill_check</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;skills&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Cha&quot;</span><span class="p">],</span> <span class="s2">&quot;gold&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">})},</span>
+        <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Convince him you work here [Int].&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_skill_check</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;skills&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Int&quot;</span><span class="p">]})},</span>
+        <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Appeal to his vanity [Cha]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_skill_check</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;skills&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Cha&quot;</span><span class="p">]})},</span>
+        <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Try to knock him out [Luck + Dex]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_skill_check</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;skills&quot;&quot; [&quot;</span><span class="n">Luck</span><span class="s2">&quot;, &quot;</span><span class="n">Dex</span><span class="s2">&quot;]})},</span>
+        <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Try to run away [Dex]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_skill_check</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;skills&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Dex&quot;</span><span class="p">]})}</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
+    <span class="p">)</span>
+
+<span class="c1"># EvMenu called below, with all the nodes ...</span>
 
 </pre></div>
 </div>
-<p>This is an example of a menu <em>node</em>. Think of a node as a point where the menu stops printing text
-and waits for user to give some input. By jumping to different nodes depending on the input, a menu
-is constructed.</p>
-<p>To create the menu, EvMenu uses normal Python functions, one per node. It will load all those
-functions/nodes either from a module or by being passed a dictionary mapping the node’s names to
-said functions, like <code class="docutils literal notranslate"><span class="pre">{&quot;nodename&quot;:</span> <span class="pre">&lt;function&gt;,</span> <span class="pre">...}</span></code></p>
+<p>Note that by skipping the <code class="docutils literal notranslate"><span class="pre">key</span></code> of the options, we instead get an
+(auto-generated) list of numbered options to choose from.</p>
+<p>Here the <code class="docutils literal notranslate"><span class="pre">_skill_check</span></code> helper will check (roll your stats, exactly what this
+means depends on your game) to decide if your approach succeeded. It may then
+choose to point you to nodes that continue the conversation or maybe dump you
+into combat!</p>
+</section>
 </section>
 <section id="launching-the-menu">
 <h2>Launching the menu<a class="headerlink" href="#launching-the-menu" title="Permalink to this headline">¶</a></h2>
@@ -426,8 +569,157 @@ needed. Here is an example:</p>
 </div>
 <p>See <code class="docutils literal notranslate"><span class="pre">evennia/utils/evmenu.py</span></code> for the details of their default implementations.</p>
 </section>
-<section id="examples">
-<h2>Examples:<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<section id="evmenu-templating-language">
+<h2>EvMenu templating language<a class="headerlink" href="#evmenu-templating-language" title="Permalink to this headline">¶</a></h2>
+<p>In <a class="reference external" href="http://evmenu.py">evmenu.py</a> are two helper functions <code class="docutils literal notranslate"><span class="pre">parse_menu_template</span></code> and <code class="docutils literal notranslate"><span class="pre">template2menu</span></code>
+that is used to parse a <em>menu template</em> string into an EvMenu:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evmenu.template2menu(caller, menu_template, goto_callables)
+</pre></div>
+</div>
+<p>One can also do it in two steps, by generate a menutree and using that to call
+EvMenu normally:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>menutree = evmenu.parse_menu_template(caller, menu_template, goto_callables)
+EvMenu(caller, menutree)
+</pre></div>
+</div>
+<p>With this latter solution, one could mix and match normally created menu nodes
+with those generated by the template engine.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">goto_callables</span></code> is a mapping <code class="docutils literal notranslate"><span class="pre">{&quot;funcname&quot;:</span> <span class="pre">callable,</span> <span class="pre">...}</span></code>, where each
+callable must be a module-global function on the form
+<code class="docutils literal notranslate"><span class="pre">funcname(caller,</span> <span class="pre">raw_string,</span> <span class="pre">**kwargs)</span></code> (like any goto-callable). The
+<code class="docutils literal notranslate"><span class="pre">menu_template</span></code> is a multi-line string on the following form:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">menu_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">## node node1</span>
+
+<span class="s2">Text for node</span>
+
+<span class="s2">## options</span>
+
+<span class="s2">key1: desc1 -&gt; node2</span>
+<span class="s2">key2: desc2 -&gt; node3</span>
+<span class="s2">key3: desc3 -&gt; node4</span>
+<span class="s2">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>Each menu node is defined by a <code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">node</span> <span class="pre">&lt;name&gt;</span></code> containing the text of the node,
+followed by <code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">options</span></code> Also <code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">NODE</span></code> and <code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">OPTIONS</span></code> work. No python code
+logics is allowed in the template, this code is not evaluated but parsed. More
+advanced dynamic usage requires a full node-function.</p>
+<p>Except for defining the node/options, <code class="docutils literal notranslate"><span class="pre">#</span></code> act as comments - everything following
+will be ignored by the template parser.</p>
+<section id="template-options">
+<h3>Template Options<a class="headerlink" href="#template-options" title="Permalink to this headline">¶</a></h3>
+<p>The option syntax is</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;key&gt;: [desc -&gt;] nodename or function-call
+</pre></div>
+</div>
+<p>The ‘desc’ part is optional, and if that is not given, the <code class="docutils literal notranslate"><span class="pre">-&gt;</span></code> can be skipped
+too:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>key: nodename
+</pre></div>
+</div>
+<p>The key can both be strings and numbers. Separate the aliases with <code class="docutils literal notranslate"><span class="pre">;</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>key: node1
+1: node2
+key;k: node3
+foobar;foo;bar;f;b: node4
+</pre></div>
+</div>
+<p>Starting the key with the special letter <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> indicates that what follows is a
+glob/regex matcher.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;: node1          - matches empty input
+&gt; foo*: node1     - everything starting with foo
+&gt; *foo: node3     - everything ending with foo
+&gt; [0-9]+?: node4  - regex (all numbers)
+&gt; *: node5        - catches everything else (put as last option)
+</pre></div>
+</div>
+<p>Here’s how to call a goto-function from an option:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>key: desc -&gt; myfunc(foo=bar)
+</pre></div>
+</div>
+<p>For this to work <code class="docutils literal notranslate"><span class="pre">template2menu</span></code> or <code class="docutils literal notranslate"><span class="pre">parse_menu_template</span></code> must be given a dict
+that includes <code class="docutils literal notranslate"><span class="pre">{&quot;myfunc&quot;:</span> <span class="pre">_actual_myfunc_callable}</span></code>. All callables to be
+available in the template must be mapped this way. Goto callables act like
+normal EvMenu goto-callables and should have a callsign of
+<code class="docutils literal notranslate"><span class="pre">_actual_myfunc_callable(caller,</span> <span class="pre">raw_string,</span> <span class="pre">**kwargs)</span></code> and return the next node
+(passing dynamic kwargs into the next node does not work with the template</p>
+<ul class="simple">
+<li><p>use the full EvMenu if you want advanced dynamic data passing).</p></li>
+</ul>
+<p>Only no or named keywords are allowed in these callables. So</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>myfunc()         # OK
+myfunc(foo=bar)  # OK
+myfunc(foo)      # error!
+</pre></div>
+</div>
+<p>This is because these properties are passed as <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> into the goto callable.</p>
+</section>
+<section id="templating-example">
+<h3>Templating example<a class="headerlink" href="#templating-example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evmenu</span>
+
+<span class="k">def</span> <span class="nf">_gamble</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You roll the dice ...&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;loose&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;win&quot;</span>
+
+<span class="k">def</span> <span class="nf">_try_again</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="kc">None</span>   <span class="c1"># reruns the same node</span>
+
+<span class="n">template_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">## node start</span>
+
+<span class="s2">Death patiently holds out a set of bone dice to you.</span>
+
+<span class="s2">&quot;ROLL&quot;</span>
+
+<span class="s2">he says.</span>
+
+<span class="s2">## options</span>
+
+<span class="s2">1. Roll the dice -&gt; gamble()</span>
+<span class="s2">2. Try to talk yourself out of rolling -&gt; ask_again()</span>
+
+<span class="s2">## node win</span>
+
+<span class="s2">The dice clatter over the stones.</span>
+
+<span class="s2">&quot;LOOKS LIKE YOU WIN THIS TIME&quot;</span>
+
+<span class="s2">says Death.</span>
+
+<span class="s2"># (this ends the menu since there are no options)</span>
+
+<span class="s2">## node loose</span>
+
+<span class="s2">The dice clatter over the stones.</span>
+
+<span class="s2">&quot;YOUR LUCK RAN OUT&quot;</span>
+
+<span class="s2">says Death.</span>
+
+<span class="s2">&quot;YOU ARE COMING WITH ME.&quot;</span>
+
+<span class="s2"># (this ends the menu, but what happens next - who knows!)</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">goto_callables</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;gamble&quot;</span><span class="p">:</span> <span class="n">_gamble</span><span class="p">,</span> <span class="s2">&quot;ask_again&quot;</span><span class="p">:</span> <span class="n">_ask_again</span><span class="p">}</span>
+<span class="n">evmenu</span><span class="o">.</span><span class="n">template2menu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">template_string</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id1">
+<h2>Examples:<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><strong><a class="reference internal" href="#example-simple-branching-menu"><span class="std std-doc">Simple branching menu</span></a></strong> - choose from options</p></li>
 <li><p><strong><a class="reference internal" href="#example-dynamic-goto"><span class="std std-doc">Dynamic goto</span></a></strong> - jumping to different nodes based on response</p></li>
@@ -973,7 +1265,10 @@ until the exit node.</p>
 <p><h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">EvMenu</a><ul>
-<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#launching-the-menu">Launching the menu</a></li>
 <li><a class="reference internal" href="#the-menu-nodes">The Menu nodes</a><ul>
 <li><a class="reference internal" href="#input-arguments-to-the-node">Input arguments to the node</a></li>
@@ -991,7 +1286,12 @@ until the exit node.</p>
 </li>
 <li><a class="reference internal" href="#temporary-storage">Temporary storage</a></li>
 <li><a class="reference internal" href="#customizing-menu-formatting">Customizing Menu formatting</a></li>
-<li><a class="reference internal" href="#examples">Examples:</a><ul>
+<li><a class="reference internal" href="#evmenu-templating-language">EvMenu templating language</a><ul>
+<li><a class="reference internal" href="#template-options">Template Options</a></li>
+<li><a class="reference internal" href="#templating-example">Templating example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id1">Examples:</a><ul>
 <li><a class="reference internal" href="#example-simple-branching-menu">Example: Simple branching menu</a></li>
 <li><a class="reference internal" href="#example-dynamic-goto">Example: Dynamic goto</a></li>
 <li><a class="reference internal" href="#example-set-caller-properties">Example: Set caller properties</a></li>
