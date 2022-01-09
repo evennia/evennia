@@ -464,10 +464,13 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             dbref (str or int): The id to search for.
 
         Returns:
-            object (TypedObject): The matched object.
+            Queryset: Queryset with 0 or 1 match.
 
         """
-        return self.get_id(dbref)
+        dbref = self.dbref(dbref, reqhash=False)
+        if dbref:
+            return self.filter(id=dbref)
+        return self.none()
 
     def get_dbref_range(self, min_dbref=None, max_dbref=None):
         """

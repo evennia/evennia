@@ -28,7 +28,7 @@ class ScriptDBManager(TypedObjectManager):
     Querysets or database objects).
 
     dbref (converter)
-    get_id  (or dbref_search)
+    dbref_search
     get_dbref_range
     object_totals
     typeclass_search
@@ -138,6 +138,9 @@ class ScriptDBManager(TypedObjectManager):
                 on a timer.
             typeclass (class or str): Typeclass or path to typeclass.
 
+        Returns:
+            Queryset: An iterable with 0, 1 or more results.
+
         """
 
         ostring = ostring.strip()
@@ -146,10 +149,10 @@ class ScriptDBManager(TypedObjectManager):
         if dbref:
             # this is a dbref, try to find the script directly
             dbref_match = self.dbref_search(dbref)
-            if dbref_match and not (
-                (obj and obj != dbref_match.obj) or (only_timed and dbref_match.interval)
-            ):
-                return [dbref_match]
+            if dbref_match:
+                dmatch = dbref_match[0]
+                if not (obj and obj != dmatch.obj) or (only_timed and dmatch.interval):
+                    return dbref_match
 
         if typeclass:
             if callable(typeclass):

@@ -146,6 +146,9 @@ class HelpEntryManager(TypedObjectManager):
             ostring (str): The help topic to look for.
             category (str): Limit the search to a particular help topic
 
+        Returns:
+            Queryset: An iterable with 0, 1 or more matches.
+
         """
         ostring = ostring.strip().lower()
         if help_category:

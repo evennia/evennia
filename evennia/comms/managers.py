@@ -237,7 +237,7 @@ class MsgManager(TypedObjectManager):
                     always gives only one match.
 
         Returns:
-            Queryset: Message matches.
+            Queryset: Iterable with 0, 1 or more matches.
 
         """
         # unique msg id
@@ -420,13 +420,16 @@ class ChannelDBManager(TypedObjectManager):
             exact (bool, optional): Require an exact (but not
                 case sensitive) match.
 
+        Returns:
+            Queryset: Iterable with 0, 1 or more matches.
+
         """
         dbref = self.dbref(ostring)
         if dbref:
-            try:
-                return [self.get(id=dbref)]
-            except self.model.DoesNotExist:
-                pass
+            dbref_match = self.search_dbref(dbref)
+            if dbref_match:
+                return dbref_match
+
         if exact:
             channels = self.filter(
                 Q(db_key__iexact=ostring)
