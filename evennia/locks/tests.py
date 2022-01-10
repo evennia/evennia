@@ -7,7 +7,7 @@ the stability and integrity of the codebase during updates.
 This module tests the lock functionality of Evennia.
 
 """
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 
 try:
     # this is a special optimized Django version, only available in current Django devel
@@ -24,7 +24,7 @@ from evennia.utils.create import create_object
 # ------------------------------------------------------------
 
 
-class TestLockCheck(EvenniaTest):
+class TestLockCheck(BaseEvenniaTest):
     def testrun(self):
         dbref = self.obj2.dbref
         self.obj1.locks.add(
@@ -42,7 +42,7 @@ class TestLockCheck(EvenniaTest):
         self.assertEqual(True, self.obj1.locks.check(self.obj2, "not_exist", default=True))
 
 
-class TestLockfuncs(EvenniaTest):
+class TestLockfuncs(BaseEvenniaTest):
     def setUp(self):
         super(TestLockfuncs, self).setUp()
         self.account2.permissions.add("Admin")
@@ -210,7 +210,7 @@ class TestLockfuncs(EvenniaTest):
         self.assertEqual(False, lockfuncs.serversetting(None, None, "TESTVAL", "123"))
 
 
-class TestPermissionCheck(EvenniaTest):
+class TestPermissionCheck(BaseEvenniaTest):
     """
     Test the PermissionHandler.check method
 

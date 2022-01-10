@@ -207,7 +207,7 @@ to use for creating the object. There you go - one red button.
 
 The RedButton is an example object intended to show off a few of Evennia's features. You will find
 that the [Typeclass](../../../Components/Typeclasses.md) and [Commands](../../../Components/Commands.md) controlling it are
-inside [evennia/contrib/tutorial_examples](../../../api/evennia.contrib.tutorial_examples.md)
+inside [evennia/contrib/tutorials/red_button](evennia.contrib.tutorials.red_button)
 
 If you wait for a while (make sure you dropped it!) the button will blink invitingly.
 

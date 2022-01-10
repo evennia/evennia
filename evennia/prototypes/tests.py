@@ -9,7 +9,7 @@ import uuid
 from time import time
 from anything import Something
 from django.test.utils import override_settings
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.utils.tests.test_evmenu import TestEvMenu
 from evennia.prototypes import spawner, prototypes as protlib
 from evennia.prototypes import menus as olc_menus
@@ -45,7 +45,7 @@ _PROTPARENTS = {
     },
 }
 
-class TestSpawner(EvenniaTest):
+class TestSpawner(BaseEvenniaTest):
     def setUp(self):
         super(TestSpawner, self).setUp()
         self.prot1 = {
@@ -86,7 +86,7 @@ class TestSpawner(EvenniaTest):
         )
 
 
-class TestUtils(EvenniaTest):
+class TestUtils(BaseEvenniaTest):
     def test_prototype_from_object(self):
         self.maxDiff = None
         self.obj1.attributes.add("test", "testval")
@@ -307,7 +307,7 @@ class TestUtils(EvenniaTest):
         )
 
 
-class TestProtLib(EvenniaTest):
+class TestProtLib(BaseEvenniaTest):
     def setUp(self):
         super(TestProtLib, self).setUp()
         self.obj1.attributes.add("testattr", "testval")
@@ -339,7 +339,7 @@ class TestProtLib(EvenniaTest):
         self.assertEqual(match, [self.prot])
 
 
-class TestProtFuncs(EvenniaTest):
+class TestProtFuncs(BaseEvenniaTest):
 
     @override_settings(PROT_FUNC_MODULES=["evennia.prototypes.protfuncs"])
     def test_protkey_protfunc(self):
@@ -355,7 +355,7 @@ class TestProtFuncs(EvenniaTest):
         )
 
 
-class TestPrototypeStorage(EvenniaTest):
+class TestPrototypeStorage(BaseEvenniaTest):
     def setUp(self):
         super(TestPrototypeStorage, self).setUp()
         self.maxDiff = None
@@ -437,7 +437,7 @@ class _MockMenu(object):
     pass
 
 
-class TestMenuModule(EvenniaTest):
+class TestMenuModule(BaseEvenniaTest):
 
     maxDiff = None
 
@@ -874,7 +874,7 @@ class TestOLCMenu(TestEvMenu):
     ]
 
 
-class PrototypeCrashTest(EvenniaTest):
+class PrototypeCrashTest(BaseEvenniaTest):
 
     # increase this to 1000 for optimization testing
     num_prototypes = 10
@@ -901,7 +901,7 @@ class PrototypeCrashTest(EvenniaTest):
             # print(f"Prototypes listed in {time()-start_time} seconds.")
 
 
-class Test2474(EvenniaTest):
+class Test2474(BaseEvenniaTest):
     """
     Test bug #2474 (https://github.com/evennia/evennia/issues/2474),
     where the prototype's attribute fails to take precedence over
@@ -939,3 +939,26 @@ class Test2474(EvenniaTest):
         sting = spawner.spawn(self.prototypes["WEAPON"], prototype_parents=self.prototypes)[0]
         self.assertEqual(sting.db.magic, False)
 
+
+class TestPartialTagAttributes(BaseEvenniaTest):
+    """
+    Make sure tags and attributes are homogenized if given as incomplete tuples.
+
+    See https://github.com/evennia/evennia/issues/2524.
+
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.prot = {
+            'prototype_key': 'rock',
+            'typeclass': 'evennia.objects.objects.DefaultObject',
+            'key': 'a rock',
+            'tags': [('quantity', 'groupable')],  # missing data field
+            'attrs': [('quantity', 1)],   # missing category and lock fields
+            'desc': 'A good way to get stoned.'
+        }
+
+    def test_partial_spawn(self):
+        obj = spawner.spawn(self.prot)
+        self.assertEqual(obj[0].key, self.prot['key'])

@@ -4,13 +4,13 @@ from django.test import Client, override_settings
 from django.urls import reverse
 from evennia.utils import class_from_module
 from evennia.utils.create import create_help_entry
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.help import filehelp
 
 _FILE_HELP_ENTRIES = None
 
 
-class EvenniaWebTest(EvenniaTest):
+class EvenniaWebTest(BaseEvenniaTest):
 
     # Use the same classes the views are expecting
     account_typeclass = settings.BASE_ACCOUNT_TYPECLASS

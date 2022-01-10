@@ -16,7 +16,7 @@ import json
 
 from mock import Mock, MagicMock
 from evennia.server.portal import irc
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 
 from twisted.conch.telnet import IAC, WILL, DONT, SB, SE, NAWS, DO
 from twisted.test import proto_helpers
@@ -281,7 +281,7 @@ class TestTelnet(TwistedTestCase):
         return d
 
 
-class TestWebSocket(EvenniaTest):
+class TestWebSocket(BaseEvenniaTest):
     def setUp(self):
         super().setUp()
         self.proto = WebSocketClient()

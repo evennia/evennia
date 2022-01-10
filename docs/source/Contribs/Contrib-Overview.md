@@ -1,335 +1,655 @@
-# Contrib modules
+# Contribs
 
-Contribs are found in [evennia/contrib/](evennia.contrib) and are optional game-specific code-snippets
-or even full systems you can use for your game. They are contributed by the Evennia community and
-released under the same license as Evennia itself. Each contrib has its own installation instructions.
-Bugs are reported to the Evennia [issue tracker](github:issue) as usual.
+_Contribs_ are optional code snippets and systems contributed by
+the Evennia community. They vary in size and complexity and
+may be more specific about game types and styles than 'core' Evennia.
+This page is auto-generated and summarizes all contribs currently included.
 
-## Character-related
+All contrib categories are imported from `evennia.contrib`, such as
 
-Contribs related to characters and character displays.
+    from evennia.contrib.base_systems import building_menu
 
-### CharGen
+Each contrib contains installation instructions for how to integrate it
+with your other code. If you want to tweak the code of a contrib, just
+copy its entire folder to your game directory and modify/use it from there.
 
-*Griatch 2011*
+> Hint: Additional (potentially un-maintained) code snippets from the community can be found
+in our discussion forum's [Community Contribs & Snippets](https://github.com/evennia/evennia/discussions/categories/community-contribs-snippets) category.
 
-A simple Character creator for OOC mode. Meant as a starting point for a more fleshed-out system.
+If you want to contribute yourself, see [here](../Contributing.md)!
 
-### Clothing
 
-*FlutterSprite 2017*
+## base_systems
 
-A layered clothing system with slots for different types of garments auto-showing in description.
+_This category contains systems that are not necessarily tied to a specific
+in-game mechanic but is useful for the game as a whole. Examples include
+login systems, new command syntaxes, and build helpers._
 
-### Health Bar
 
-*Tim Ashley Jenkins 2017*
+### Contrib: `awsstorage`
 
-Tool to create colorful bars/meters.
+_Contrib by The Right Honourable Reverend (trhr), 2020_
 
-### Multidescer
+This plugin migrates the Web-based portion of Evennia, namely images,
+javascript, and other items located inside staticfiles into Amazon AWS (S3)
+cloud hosting. Great for those serving media with the game.
 
-*Griatch 2016*
+[Read the documentation](./Contrib-AWSStorage.md) - [Browse the Code](evennia.contrib.base_systems.awsstorage)
 
-Advanced descriptions combined from many separate description components, inspired by MUSH.
 
----
 
-## Rooms, movement and grid
+### Contrib: `building_menu`
 
-Contribs modifying locations, movement or helping to creating rooms.
+_Contrib by vincent-lg, 2018_
 
-### XYZGrid
+Building menus are in-game menus, not unlike `EvMenu` though using a
+different approach. Building menus have been specifically designed to edit
+information as a builder. Creating a building menu in a command allows
+builders quick-editing of a given object, like a room. If you follow the
+steps to add the contrib, you will have access to an `edit` command
+that will edit any default object, offering to change its key and description.
 
-*Griatch 2021*
+[Read the documentation](./Contrib-Building-Menu.md) - [Browse the Code](evennia.contrib.base_systems.building_menu)
 
-Adds an XYZgrid to Evennia, with map-display and pathfinding. Created via map
-strings and maintained outside of the game via Evennia launch commands.
 
-- [XYZGrid documentation](./XYZGrid.md)
 
-### Extended Room
+### Contrib: `color_markups`
 
-*Griatch 2012*
+_Contrib by Griatch, 2017_
 
-An expanded Room typeclass with multiple descriptions for time and season as well as details.
+Additional color markup styles for Evennia (extending or replacing the default
+`|r`, `|234`). Adds support for MUSH-style (`%cr`, `%c123`) and/or legacy-Evennia 
+(`{r`, `{123`).
 
-### Map Builder
+[Read the documentation](./Contrib-Color-Markups.md) - [Browse the Code](evennia.contrib.base_systems.color_markups)
 
-*CloudKeeper 2016*
 
-Build a game area based on a 2D "graphical" unicode map. Supports asymmetric exits.
 
-- [Static in-game map](./Static-In-Game-Map.md)
+### Contrib: `custom_gametime`
 
-### Simple Door
+_Contrib by vlgeoff, 2017 - based on Griatch's core original_
 
-*Griatch 2014*
+This reimplements the `evennia.utils.gametime` module but with a _custom_
+calendar (unusual number of days per week/month/year etc) for your game world. 
+Like the original, it allows for scheduling events to happen at given
+in-game times, but now taking this custom calendar into account.
 
-Example of an exit that can be opened and closed from both sides.
+[Read the documentation](./Contrib-Custom-Gametime.md) - [Browse the Code](evennia.contrib.base_systems.custom_gametime)
 
-###  Slow exit
 
-*Griatch 2014*
 
-Custom Exit class that takes different time to pass depending on if you are walking/running etc.
+### Contrib: `email_login`
 
-### Wilderness
+_Contrib by Griatch, 2012_
 
-*titeuf87 2017*
+This is a variant of the login system that asks for an email-address
+instead of a username to login. Note that it does not verify the email, 
+it just uses it as the identifier rather than a username.
 
-Make infinitely large wilderness areas with dynamically created locations.
+[Read the documentation](./Contrib-Email-Login.md) - [Browse the Code](evennia.contrib.base_systems.email_login)
 
-- [Dynamic in-game map](./Dynamic-In-Game-Map.md)
 
-----
 
-## Roleplaying and rules
+### Contrib: `ingame_python`
 
-Contribs supporting roleplay and in-game roleplaying actions.
+_Contrib by Vincent Le Goff 2017_
 
-### Barter system
+This contrib adds the ability to script with Python in-game. It allows trusted
+staff/builders to dynamically add features and triggers to individual objects
+without needing to do it in external Python modules. Using custom Python in-game,
+specific rooms, exits, characters, objects etc can be made to behave differently from
+its "cousins". This is similar to how softcode works for MU or MudProgs for DIKU.
+Keep in mind, however, that allowing Python in-game comes with _severe_
+security concerns (you must trust your builders deeply), so read the warnings in
+this module carefully before continuing.
 
-*Griatch 2012*
+[Read the documentation](./Contrib-Ingame-Python.md) - [Browse the Code](evennia.contrib.base_systems.ingame_python)
 
-A safe and effective barter-system for any game. Allows safe trading of any goods (including coin).
 
-### Crafting
 
-*Griatch 2020*
+### Contrib: `menu_login`
 
-A full, extendable crafting system.
+_Contribution by Vincent-lg 2016. Reworked for modern EvMenu by Griatch, 2019._
 
-- [Crafting overview](./Crafting.md)
-- [Crafting API documentation](evennia.contrib.crafting.crafting)
-- [Example of a sword crafting tree](evennia.contrib.crafting.example_recipes)
+This changes the Evennia login to ask for the account name and password as a series
+of questions instead of requiring you to enter both at once. It uses Evennia's 
+menu system `EvMenu` under the hood.
 
-### Dice
+[Read the documentation](./Contrib-Menu-Login.md) - [Browse the Code](evennia.contrib.base_systems.menu_login)
 
-*Griatch 2012*
 
-A fully featured dice rolling system.
 
-### Mail
+### Contrib: `mux_comms_cmds`
 
-*grungies1138 2016*
+_Contribution by Griatch 2021_
 
-An in-game mail system for communication.
+In Evennia 1.0+, the old Channel commands (originally inspired by MUX) were
+replaced by the single `channel` command that performs all these functions.
+This contrib (extracted from Evennia 0.9.5) breaks out the functionality into 
+separate Commands more familiar to MU* users. This is just for show though, the 
+main `channel` command is still called under the hood.
 
-### Puzzles
+[Read the documentation](./Contrib-Mux-Comms-Cmds.md) - [Browse the Code](evennia.contrib.base_systems.mux_comms_cmds)
 
-*Hendher 2019*
 
-Combine objects to create new items, adventure-game style
 
-### RP System
+### Contrib: `unixcommand`
 
-*Griatch 2015*
+_Contribution by Vincent Le Geoff (vlgeoff), 2017_
 
-Full director-style emoting system replacing names with sdescs/recogs. Supports wearing masks.
+This module contains a command class with an alternate syntax parser implementing 
+Unix-style command syntax in-game. This means `--options`, positional arguments 
+and stuff like `-n 10`. It might not the best syntax for the average player
+but can be really useful for builders when they need to have a single command do
+many things with many options. It uses the `ArgumentParser` from Python's standard
+library under the hood.
 
-### RP Language
+[Read the documentation](./Contrib-Unixcommand.md) - [Browse the Code](evennia.contrib.base_systems.unixcommand)
 
-*Griatch 2015*
 
-Dynamic obfuscation of emotes when speaking unfamiliar languages. Also obfuscates whispers.
 
 
-### Traits
 
-*Whitenoise 2014, Griatch2021*
 
-Powerful on-object properties (very extended Attributes) for representing
-health, mana, skill-levels etc, with automatic min/max value, base, modifiers
-and named tiers for different values. Also include timed rate increase/decrease
-to have values change over a period of time.
+## full_systems
 
+_This category contains 'complete' game engines that can be used directly
+to start creating content without no further additions (unless you want to)._
 
-### Turnbattle
 
-*FlutterSprite 2017*
+### Contrib: `evscaperoom`
 
-A turn-based combat engine meant as a start to build from. Has attack/disengage and turn timeouts,
-and includes optional expansions for equipment and combat movement, magic and ranged combat.
+_Contribution by Griatch, 2019_
 
-----
+A full engine for creating multiplayer escape-rooms in Evennia. Allows players to 
+spawn and join puzzle rooms that track their state independently. Any number of players 
+can join to solve a room together. This is the engine created for 'EvscapeRoom', which won 
+the MUD Coders Guild "One Room" Game Jam in April-May, 2019. The contrib has no game 
+content but contains the utilities and base classes and an empty example room.
 
-## Building and server systems
+[Read the documentation](./Contrib-Evscaperoom.md) - [Browse the Code](evennia.contrib.full_systems.evscaperoom)
 
-### Building menu
 
-*vincent-lg 2018*
 
-An `@edit` command for modifying objects using a generated menu. Customizable for different games.
 
-### Field Fill
 
-*FlutterSprite 2018*
 
-A simple system for creating an EvMenu that presents a player with a highly customizable fillable form
+## game_systems
 
-### In-Game-Python
+_This category holds code implementing in-game gameplay systems like
+crafting, mail, combat and more. Each system is meant to be adopted
+piecemeal and adopted for your game. This does not include
+roleplaying-specific systems, those are found in the `rpg` folder._
 
-*Vincent Le Geoff 2017*
 
-Allow Builders to add Python-scripted events to their objects (OBS-not for untrusted users!)
+### Contrib: `barter`
 
-- [A voice-operated elevator using events](./A-voice-operated-elevator-using-events.md)
-- [Dialogues using events](./Dialogues-in-events.md)
+_Contribution by Griatch, 2012_
 
-### Menu-builder
+This implements a full barter system - a way for players to safely
+trade items between each other in code rather than simple `give/get`
+commands. This increases both safety (at no time will one player have 
+both goods and payment in-hand) and speed, since agreed goods will 
+be moved automatically). By just replacing one side with coin objects,
+(or a mix of coins and goods), this also works fine for regular money 
+transactions.
 
-A tool for building using an in-game menu instead of the normal build commands. Meant to
-be expanded for the needs of your game.
+[Read the documentation](./Contrib-Barter.md) - [Browse the Code](evennia.contrib.game_systems.barter)
 
-- [Building Menus](./Building-menus.md)
 
-### Security/Auditing
 
-*Johhny 2018*
+### Contrib: `clothing`
 
-Log server input/output for debug/security.
+_Contribution by Tim Ashley Jenkins, 2017_
 
-### Tree Select
+Provides a typeclass and commands for wearable clothing. These 
+look of these clothes are appended to the character's description when worn.
 
-*FlutterSprite 2017*
+[Read the documentation](./Contrib-Clothing.md) - [Browse the Code](evennia.contrib.game_systems.clothing)
 
-A simple system for creating a branching EvMenu with selection options sourced from a single
-multi-line string.
 
----
 
-## Snippets and config
+### Contrib: `cooldowns`
 
-Contribs meant to be used as part of other code, or as replacements for default settings.
+_Contribution by owllex, 2021_
 
-### Color-markups
+Cooldowns are used modelling rate-limited actions, like how often a
+character can perform a given action; until a certain time has passed their 
+command can not be used again. This contrib provides a simple cooldown 
+handler that can be attached to any typeclass. A cooldown is a lightweight persistent
+asynchronous timer that you can query to see if a certain time has yet passed.
 
-*Griatch, 2017*
+[Read the documentation](./Contrib-Cooldowns.md) - [Browse the Code](evennia.contrib.game_systems.cooldowns)
 
-Alternative in-game color markups.
 
-### Custom gametime
 
-*Griatch, vlgeoff 2017*
+### Contrib: `crafting`
 
-Implements Evennia's gametime module but for custom game world-specific calendars.
+_Contribution by Griatch 2020_
 
-### Logins
+This implements a full crafting system. The principle is that of a 'recipe',
+where you combine items (tagged as ingredients) create something new. The recipe can also
+require certain (non-consumed) tools. An example would be to use the 'bread recipe' to
+combine 'flour', 'water' and 'yeast' with an 'oven' to bake a 'loaf of bread'.
 
-#### Email login
+[Read the documentation](./Contrib-Crafting.md) - [Browse the Code](evennia.contrib.game_systems.crafting)
 
-*Griatch 2012*
 
-A variant of the standard login system that requires an email to login rather then just name+password.
 
-#### Menu login
+### Contrib: `gendersub`
 
-*Griatch 2011, 2019, Vincent-lg 2016*
+_Contribution by Griatch 2015_
 
-A login system using menus asking for name/password rather than giving them as one command.
+This is a simple gender-aware Character class for allowing users to
+insert custom markers in their text to indicate gender-aware
+messaging. It relies on a modified msg() and is meant as an
+inspiration and starting point to how to do stuff like this.
 
-### Random String Generator
+[Read the documentation](./Contrib-Gendersub.md) - [Browse the Code](evennia.contrib.game_systems.gendersub)
 
-*Vincent Le Goff 2017*
 
-Simple pseudo-random generator of strings with rules, avoiding repetitions.
 
-### UnixCommand
+### Contrib: `mail`
 
-*Vincent Le Geoff 2017*
+_Contribution by grungies1138 2016_
 
-Add commands with UNIX-style syntax.
+A simple Brandymail style mail system that uses the `Msg` class from Evennia
+Core. It has two Commands for either sending mails between Accounts (out of game)
+or between Characters (in-game). The two types of mails can be used together or 
+on their own.
 
-----
+[Read the documentation](./Contrib-Mail.md) - [Browse the Code](evennia.contrib.game_systems.mail)
 
-## Examples
 
-Contribs not meant to be used as-is, but just as examples to learn from.
 
-### GenderSub
+### Contrib: `multidescer`
 
-*Griatch 2015*
+_Contribution by Griatch 2016_
 
-Simple example (only) of storing gender on a character and access it in an emote with a custom marker.
+A "multidescer" is a concept from the MUSH world. It allows for
+creating, managing and switching between multiple character
+descriptions and is a way for quickly managing your look (such as when 
+changing clothes) in more free-form roleplaying systems. This will also 
+work well together with the `rpsystem` contrib.
 
-### Talking NPC
+[Read the documentation](./Contrib-Multidescer.md) - [Browse the Code](evennia.contrib.game_systems.multidescer)
 
-*Griatch 2011*
 
-A talking NPC object that offers a menu-driven conversation tree.
 
-### Tutorial examples
+### Contrib: `puzzles`
 
-*Griatch 2011, 2015*
+_Contribution by Henddher 2018_
 
-A folder of basic example objects, commands and scripts.
+Intended for adventure-game style combination puzzles, such as combining fruits
+and a blender to create a smoothie. Provides a typeclass and commands for objects 
+that can be combined (i.e. used together). Unlike the `crafting` contrib, each 
+puzzle is built from unique objects rather than using tags and a builder can create 
+the puzzle entirely from in-game.
 
-### The tutorial-world
+[Read the documentation](./Contrib-Puzzles.md) - [Browse the Code](evennia.contrib.game_systems.puzzles)
 
-*Griatch 2011, 2015*
 
-The Evennia single-player sole quest. Made to be analyzed to learn.
 
-- [The tutorial world introduction](../Howto/Starting/Part1/Tutorial-World-Introduction.md)
+### Contrib: `turnbattle`
 
-----
+_Contribution by Tim Ashley Jenkins, 2017_
 
-## Full game systems
+This is a framework for a simple turn-based combat system, similar
+to those used in D&D-style tabletop role playing games. It allows
+any character to start a fight in a room, at which point initiative
+is rolled and a turn order is established. Each participant in combat
+has a limited time to decide their action for that turn (30 seconds by
+default), and combat progresses through the turn order, looping through
+the participants until the fight ends.
 
-Full game-dir replacement systems.
+[Read the documentation](./Contrib-Turnbattle.md) - [Browse the Code](evennia.contrib.game_systems.turnbattle)
 
-### Ainneve
 
-*Evennia community 2015-?*
 
-This is a community attempt to make an Evennia 'example game' using good practices. It is also a good
-place to jump in if you want to help in another project rather than run it alone. Development of this
-has stalled a bit so we are looking for enthusiastic people to lead the charge.
 
-- [evennia/ainneve repository](https://github.com/evennia/ainneve)
-- [Original discussion thread](https://groups.google.com/g/evennia/c/48PMDirb7go/m/Z9EAuvXZn7UJ) (external link)
 
-### Arxcode
 
-*Tehom 2019*
+## grid
 
-Open source code release of the popular Evennia-based [Arx, after the reckoning](https://play.arxgame.org/).
-This is a fantasy game with a focus on roleplay and code-supported political intrigue. This code-release
-is maintained by Tehom in its own repository so bug reports should be directed there.
+_Systems related to the game world's topology and structure. This has
+contribs related to rooms, exits and map building._
 
-- [Arxcode repository on github](https://github.com/Arx-Game/arxcode)
-- [Arxcode issue tracker](https://github.com/Arx-Game/arxcode/issues)
-- [Arxcode installation help](./Arxcode-installing-help.md) - this may not always be fully up-to-date with
-  latest Evennia. Report your findings!
 
-### Evscaperoom
+### Contrib: `extended_room`
 
-*Griatch 2019*
+_Contribution - Griatch 2012, vincent-lg 2019_
 
-A full engine for making multiplayer 'escape-rooms' completely in code.
-This is based on the 2019 MUD Game jam winner *Evscaperoom*.
+This extends the normal `Room` typeclass to allow its description to change 
+with time-of-day and/or season. It also adds 'details' for the player to look at 
+in the room (without having to create a new in-game object for each). The room is 
+supported by new `look` and `desc` commands.
 
-- [contrib/evscaperoom](evennia.contrib.evscaperoom) - game engine to make your own escape rooms.
-- [https://demo.evennia.com](https://demo.evennia.com) - a full installation of the original game can
-  be played by entering the *evscaperoom* exit in the first Limbo room.
-- https://github.com/Griatch/evscaperoom - the original game's source code (warning for spoilers if you
-  want to solve the puzzles and mystery yourself).
+[Read the documentation](./Contrib-Extended-Room.md) - [Browse the Code](evennia.contrib.grid.extended_room)
+
+
+
+### Contrib: `mapbuilder`
+
+_Contribution by Cloud_Keeper 2016_
+
+Build a game map from the drawing of a 2D ASCII map.
+
+[Read the documentation](./Contrib-Mapbuilder.md) - [Browse the Code](evennia.contrib.grid.mapbuilder)
+
+
+
+### Contrib: `simpledoor`
+
+_Contribution by Griatch, 2016_
+
+A simple two-way exit that represents a door that can be opened and
+closed from both sides. Can easily be expanded to make it lockable, 
+destroyable etc. 
+
+[Read the documentation](./Contrib-Simpledoor.md) - [Browse the Code](evennia.contrib.grid.simpledoor)
+
+
+
+### Contrib: `slow_exit`
+
+_Contribution by Griatch 2014_
+
+An example of an Exit-type that delays its traversal. This simulates
+slow movement, common in many games. The contrib also
+contains two commands, `setspeed` and `stop` for changing the movement speed
+and abort an ongoing traversal, respectively.
+
+[Read the documentation](./Contrib-Slow-Exit.md) - [Browse the Code](evennia.contrib.grid.slow_exit)
+
+
+
+### Contrib: `wilderness`
+
+_Contribution by titeuf87, 2017_
+
+This contrib provides a wilderness map without actually creating a large number
+of rooms - as you move, you instead end up back in the same room but its description 
+changes. This means you can make huge areas with little database use as
+long as the rooms are relatively similar (name/desc changing).
+
+[Read the documentation](./Contrib-Wilderness.md) - [Browse the Code](evennia.contrib.grid.wilderness)
+
+
+
+### Contrib: `xyzgrid`
+
+_Contribution by Griatch 2021_
+
+Places Evennia's game world on an xy (z being different maps) coordinate grid.
+Grid is created and maintained externally by drawing and parsing 2D ASCII maps,
+including teleports, map transitions and special markers to aid pathfinding.
+Supports very fast shortest-route pathfinding on each map. Also includes a
+fast view function for seeing only a limited number of steps away from your
+current location (useful for displaying the grid as an in-game, updating map).
+
+[Read the documentation](./Contrib-XYZGrid.md) - [Browse the Code](evennia.contrib.grid.xyzgrid)
+
+
+
+
+
+
+## rpg
+
+_These are systems specifically related to roleplaying
+and rule implementation like character traits, dice rolling and emoting._
+
+
+### Contrib: `dice`
+
+_Contribution by Griatch, 2012_
+
+A dice roller for any number and side of dice. Adds in-game dice rolling 
+(`roll 2d10 + 1`) as well as conditionals (roll under/over/equal to a target) 
+and functions for rolling dice in code. Command also supports hidden or secret 
+rolls for use by a human game master.
+
+[Read the documentation](./Contrib-Dice.md) - [Browse the Code](evennia.contrib.rpg.dice)
+
+
+
+### Contrib: `health_bar`
+
+_Contribution by Tim Ashley Jenkins, 2017_
+
+The function provided in this module lets you easily display visual
+bars or meters as a colorful bar instead of just a number. A "health bar" 
+is merely the most obvious use for this, but the bar is highly customizable 
+and can be used for any sort of appropriate data besides player health.
+
+[Read the documentation](./Contrib-Health-Bar.md) - [Browse the Code](evennia.contrib.rpg.health_bar)
+
+
+
+### Contrib: `rpsystem`
+
+_Contribution by Griatch, 2015_
+
+A full roleplaying emote system. Short-descriptions and recognition (only
+know people by their looks until you assign a name to them). Room poses. Masks/disguises
+(hide your description). Speak directly in emote, with optional language obscuration
+(words get garbled if you don't know the language, you can also have different languages
+with different 'sounding' garbling). Whispers can be partly overheard from a distance. A 
+very powerful in-emote reference system, for referencing and differentiate targets 
+(including objects).
+
+[Read the documentation](./Contrib-RPSystem.md) - [Browse the Code](evennia.contrib.rpg.rpsystem)
+
+
+
+### Contrib: `traits`
+
+_Contribution by Griatch 2020, based on code by Whitenoise and Ainneve contribs, 2014_
+
+A `Trait` represents a modifiable property on (usually) a Character. They can
+be used to represent everything from attributes (str, agi etc) to skills
+(hunting 10, swords 14 etc) and dynamically changing things like HP, XP etc. 
+Traits differ from normal Attributes in that they track their changes and limit
+themselves to particular value-ranges. One can add/subtract from them easily and
+they can even change dynamically at a particular rate (like you being poisoned or
+healed).
+
+[Read the documentation](./Contrib-Traits.md) - [Browse the Code](evennia.contrib.rpg.traits)
+
+
+
+
+
+
+## tutorials
+
+_Helper resources specifically meant to teach a development concept or
+to exemplify an Evennia system. Any extra resources tied to documentation
+tutorials are found here. Also the home of the Tutorial World demo adventure._
+
+
+### Contrib: `batchprocessor`
+
+_Contibution by Griatch, 2012_
+
+Simple examples for the batch-processor. The batch processor is used for generating 
+in-game content from one or more static files. Files can be stored with version 
+control and then 'applied' to the game to create content.
+
+[Read the documentation](./Contrib-Batchprocessor.md) - [Browse the Code](evennia.contrib.tutorials.batchprocessor)
+
+
+
+### Contrib: `bodyfunctions`
+
+_Contribution by Griatch, 2012_
+
+Example script for testing. This adds a simple timer that has your
+character make small verbal observations at irregular intervals.
+
+[Read the documentation](./Contrib-Bodyfunctions.md) - [Browse the Code](evennia.contrib.tutorials.bodyfunctions)
+
+
+
+### Contrib: `mirror`
+
+_Contribution by Griatch, 2017_
+
+A simple mirror object to experiment with. It will respond to being looked at.
+
+[Read the documentation](./Contrib-Mirror.md) - [Browse the Code](evennia.contrib.tutorials.mirror)
+
+
+
+### Contrib: `red_button`
+
+_Contribution by Griatch, 2011_
+
+A red button that you can press to have an effect. This is a more advanced example 
+object with its own functionality and state tracking.
+
+[Read the documentation](./Contrib-Red-Button.md) - [Browse the Code](evennia.contrib.tutorials.red_button)
+
+
+
+### Contrib: `talking_npc`
+
+_Contribution by Griatch 2011. Updated by grungies1138, 2016_
+
+This is an example of a static NPC object capable of holding a simple menu-driven
+conversation. Suitable for example as a quest giver or merchant.
+
+[Read the documentation](./Contrib-Talking-Npc.md) - [Browse the Code](evennia.contrib.tutorials.talking_npc)
+
+
+
+### Contrib: `tutorial_world`
+
+_Contribution by Griatch 2011, 2015_
+
+A stand-alone tutorial area for an unmodified Evennia install.
+Think of it as a sort of single-player adventure rather than a
+full-fledged multi-player game world. The various rooms and objects
+are designed to show off features of Evennia, not to be a
+very challenging (nor long) gaming experience. As such it's of course
+only skimming the surface of what is possible. Taking this apart 
+is a great way to start learning the system.
+
+[Read the documentation](./Contrib-Tutorial-World.md) - [Browse the Code](evennia.contrib.tutorials.tutorial_world)
+
+
+
+
+
+
+## utils
+
+_Miscellaneous, optional tools for manipulating text, auditing connections
+and more._
+
+
+### Contrib: `auditing`
+
+_Contribution by Johnny, 2017_
+
+Utility that taps and intercepts all data sent to/from clients and the
+server and passes it to a callback of your choosing. This is intended for 
+quality assurance, post-incident investigations and debugging.
+
+[Read the documentation](./Contrib-Auditing.md) - [Browse the Code](evennia.contrib.utils.auditing)
+
+
+
+### Contrib: `fieldfill`
+
+_Contribution by Tim Ashley Jenkins, 2018_
+
+This module contains a function that generates an `EvMenu` for you - this
+menu presents the player with a form of fields that can be filled
+out in any order (e.g. for character generation or building). Each field's value can 
+be verified, with the function allowing easy checks for text and integer input, 
+minimum and maximum values / character lengths, or can even be verified by a custom 
+function. Once the form is submitted, the form's data is submitted as a dictionary 
+to any callable of your choice.
+
+[Read the documentation](./Contrib-Fieldfill.md) - [Browse the Code](evennia.contrib.utils.fieldfill)
+
+
+
+### Contrib: `random_string_generator`
+
+_Contribution by Vincent Le Goff (vlgeoff), 2017_
+
+This utility can be used to generate pseudo-random strings of information
+with specific criteria.  You could, for instance, use it to generate
+phone numbers, license plate numbers, validation codes, in-game security 
+passwords and so on. The strings generated will be stored and won't be repeated.
+
+[Read the documentation](./Contrib-Random-String-Generator.md) - [Browse the Code](evennia.contrib.utils.random_string_generator)
+
+
+
+### Contrib: `tree_select`
+
+_Contribution by Tim Ashley Jenkins, 2017_
+
+This utility allows you to create and initialize an entire branching EvMenu
+instance from a multi-line string passed to one function.
+
+[Read the documentation](./Contrib-Tree-Select.md) - [Browse the Code](evennia.contrib.utils.tree_select)
+
+
 
 
 
 
 ```{toctree}
-:hidden:
 
-./Crafting
-../api/evennia.contrib.crafting.crafting
-../api/evennia.contrib.crafting.example_recipes
-./A-voice-operated-elevator-using-events
-./Dialogues-in-events
-./Dynamic-In-Game-Map
-./Static-In-Game-Map
-../Howto/Starting/Part1/Tutorial-World-Introduction
-./Building-menus
-
+Contribs/Contrib-AWSStorage.md
+  Contribs/Contrib-Building-Menu.md
+  Contribs/Contrib-Color-Markups.md
+  Contribs/Contrib-Custom-Gametime.md
+  Contribs/Contrib-Email-Login.md
+  Contribs/Contrib-Ingame-Python.md
+  Contribs/Contrib-Menu-Login.md
+  Contribs/Contrib-Mux-Comms-Cmds.md
+  Contribs/Contrib-Unixcommand.md
+  Contribs/Contrib-Evscaperoom.md
+  Contribs/Contrib-Barter.md
+  Contribs/Contrib-Clothing.md
+  Contribs/Contrib-Cooldowns.md
+  Contribs/Contrib-Crafting.md
+  Contribs/Contrib-Gendersub.md
+  Contribs/Contrib-Mail.md
+  Contribs/Contrib-Multidescer.md
+  Contribs/Contrib-Puzzles.md
+  Contribs/Contrib-Turnbattle.md
+  Contribs/Contrib-Extended-Room.md
+  Contribs/Contrib-Mapbuilder.md
+  Contribs/Contrib-Simpledoor.md
+  Contribs/Contrib-Slow-Exit.md
+  Contribs/Contrib-Wilderness.md
+  Contribs/Contrib-XYZGrid.md
+  Contribs/Contrib-Dice.md
+  Contribs/Contrib-Health-Bar.md
+  Contribs/Contrib-RPSystem.md
+  Contribs/Contrib-Traits.md
+  Contribs/Contrib-Batchprocessor.md
+  Contribs/Contrib-Bodyfunctions.md
+  Contribs/Contrib-Mirror.md
+  Contribs/Contrib-Red-Button.md
+  Contribs/Contrib-Talking-Npc.md
+  Contribs/Contrib-Tutorial-World.md
+  Contribs/Contrib-Auditing.md
+  Contribs/Contrib-Fieldfill.md
+  Contribs/Contrib-Random-String-Generator.md
+  Contribs/Contrib-Tree-Select.md
 ```
+
+
+
+
+----
+
+<small>This document page is auto-generated. Manual changes
+will be overwritten.</small>

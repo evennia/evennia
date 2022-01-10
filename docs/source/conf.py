@@ -345,12 +345,12 @@ def setup(app):
 
     # build toctree file
     sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-    from docs.pylib import auto_link_remapper, update_default_cmd_index
+    from docs.pylib import auto_link_remapper, update_default_cmd_index, contrib_readmes2docs
 
     _no_autodoc = os.environ.get("NOAUTODOC")
     update_default_cmd_index.run_update(no_autodoc=_no_autodoc)
+    contrib_readmes2docs.readmes2docs()
     auto_link_remapper.auto_link_remapper(no_autodoc=_no_autodoc)
-    print("Updated source/toc.md file")
 
     # custom lunr-based search
     # from docs import search

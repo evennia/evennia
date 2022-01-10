@@ -9,7 +9,7 @@ import re
 from collections import defaultdict
 from sphinx.errors import DocumentError
 from pathlib import Path
-from os.path import abspath, dirname, join as pathjoin, sep, relpath
+from os.path import abspath, dirname, join as pathjoin, relpath
 
 _IGNORE_FILES = []
 _SOURCEDIR_NAME = "source"
@@ -267,6 +267,7 @@ def auto_link_remapper(no_autodoc=False):
 
         # we add a self-reference so the toc itself is also a part of a toctree
         fil.write("\n```\n\n```{toctree}\n  :hidden:\n\ntoc\n```")
+        print("  -- File toc.md updated.")
 
     print("  -- Auto-Remapper finished.")
 

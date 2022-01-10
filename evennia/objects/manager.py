@@ -7,6 +7,9 @@ from django.conf import settings
 from django.db.models.fields import exceptions
 from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
 from evennia.utils.utils import is_iter, make_iter, string_partial_matching
+from evennia.utils.utils import class_from_module, dbid_to_obj
+from evennia.server import signals
+
 
 __all__ = ("ObjectManager", "ObjectDBManager")
 _GA = object.__getattribute__
@@ -29,7 +32,7 @@ class ObjectDBManager(TypedObjectManager):
     Querysets or database objects).
 
     dbref (converter)
-    get_id (alias: dbref_search)
+    dbref_search
     get_dbref_range
     object_totals
     typeclass_search
@@ -159,8 +162,8 @@ class ObjectDBManager(TypedObjectManager):
             typeclasses (list, optional): Python pats to restrict matches with.
 
         Returns:
-            matches (query): Objects fullfilling both the `attribute_name` and
-            `attribute_value` criterions.
+            Queryset: Iterable with 0, 1 or more matches fullfilling both the `attribute_name` and
+                `attribute_value` criterions.
 
         Notes:
             This uses the Attribute's PickledField to transparently search the database by matching
@@ -219,6 +222,9 @@ class ObjectDBManager(TypedObjectManager):
             candidates (list, optional): List of objects to limit search to.
             typeclasses (list, optional): List of typeclass-path strings to restrict matches with
 
+        Returns:
+            Queryset: Iterable with 0, 1 or more matches.
+
         """
         if isinstance(property_name, str):
             if not property_name.startswith("db_"):
@@ -231,11 +237,10 @@ class ObjectDBManager(TypedObjectManager):
         )
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
         try:
-            return list(
-                self.filter(cand_restriction & type_restriction & Q(**querykwargs)).order_by("id")
-            )
+            return self.filter(
+                cand_restriction & type_restriction & Q(**querykwargs)).order_by("id")
         except exceptions.FieldError:
-            return []
+            return self.none()
         except ValueError:
             from evennia.utils import logger
 
@@ -243,7 +248,7 @@ class ObjectDBManager(TypedObjectManager):
                 "The property '%s' does not support search criteria of the type %s."
                 % (property_name, type(property_value))
             )
-            return []
+            return self.none()
 
     def get_contents(self, location, excludeobj=None):
         """
@@ -255,7 +260,8 @@ class ObjectDBManager(TypedObjectManager):
                 to exclude from the match.
 
         Returns:
-            contents (query): Matching contents, without excludeobj, if given.
+            Queryset: Iterable with 0, 1 or more matches.
+
         """
         exclude_restriction = (
             Q(pk__in=[_GA(obj, "id") for obj in make_iter(excludeobj)]) if excludeobj else Q()
@@ -273,17 +279,18 @@ class ObjectDBManager(TypedObjectManager):
             typeclasses (list): Only match objects with typeclasses having thess path strings.
 
         Returns:
-            matches (query): A list of matches of length 0, 1 or more.
+            Queryset: An iterable with 0, 1 or more matches.
+
         """
         if not isinstance(ostring, str):
             if hasattr(ostring, "key"):
                 ostring = ostring.key
             else:
-                return []
+                return self.none()
         if is_iter(candidates) and not len(candidates):
             # if candidates is an empty iterable there can be no matches
             # Exit early.
-            return []
+            return self.none()
 
         # build query objects
         candidates_id = [_GA(obj, "id") for obj in make_iter(candidates) if obj]
@@ -324,10 +331,12 @@ class ObjectDBManager(TypedObjectManager):
         # fuzzy matching
         key_strings = search_candidates.values_list("db_key", flat=True).order_by("id")
 
+        match_ids = []
         index_matches = string_partial_matching(key_strings, ostring, ret_index=True)
         if index_matches:
             # a match by key
-            return [obj for ind, obj in enumerate(search_candidates) if ind in index_matches]
+            match_ids = [obj.id for ind, obj in enumerate(search_candidates)
+                         if ind in index_matches]
         else:
             # match by alias rather than by key
             search_candidates = search_candidates.filter(
@@ -343,8 +352,10 @@ class ObjectDBManager(TypedObjectManager):
             index_matches = string_partial_matching(alias_strings, ostring, ret_index=True)
             if index_matches:
                 # it's possible to have multiple matches to the same Object, we must weed those out
-                return list({alias_candidates[ind] for ind in index_matches})
-            return []
+                match_ids = [alias_candidates[ind].id for ind in index_matches]
+        # TODO - not ideal to have to do a second lookup here, but we want to return a queryset
+        # rather than a list ... maybe the above queries can be improved.
+        return self.filter(id__in=match_ids)
 
     # main search methods and helper functions
 
@@ -419,7 +430,7 @@ class ObjectDBManager(TypedObjectManager):
                 )
 
         if not searchdata and searchdata != 0:
-            return []
+            return self.none()
 
         if typeclass:
             # typeclass may also be a list
@@ -447,10 +458,11 @@ class ObjectDBManager(TypedObjectManager):
             # Easiest case - dbref matching (always exact)
             dbref_match = self.dbref_search(dbref)
             if dbref_match:
-                if not candidates or dbref_match in candidates:
-                    return [dbref_match]
+                dmatch = dbref_match[0]
+                if not candidates or dmatch in candidates:
+                    return dbref_match
                 else:
-                    return []
+                    return self.none()
 
         # Search through all possibilities.
         match_number = None
@@ -475,15 +487,16 @@ class ObjectDBManager(TypedObjectManager):
             # this indicates trying to get a single match with a match-number
             # targeting some higher-number match (like 2-box when there is only
             # one box in the room). This leads to a no-match.
-            matches = []
+            matches = self.none()
         elif len(matches) > 1 and match_number is not None:
             # multiple matches, but a number was given to separate them
             if 0 <= match_number < len(matches):
-                # limit to one match
-                matches = [matches[match_number]]
+                # limit to one match (we still want a queryset back)
+                # TODO: Can we do this some other way and avoid a second lookup?
+                matches = self.filter(id=matches[match_number].id)
             else:
                 # a number was given outside of range. This means a no-match.
-                matches = []
+                matches = self.none()
 
         # return a list (possibly empty)
         return matches
@@ -594,6 +607,117 @@ class ObjectDBManager(TypedObjectManager):
 
         """
         self.filter(db_sessid__isnull=False).update(db_sessid=None)
+
+    def create_object(
+        self,
+        typeclass=None,
+        key=None,
+        location=None,
+        home=None,
+        permissions=None,
+        locks=None,
+        aliases=None,
+        tags=None,
+        destination=None,
+        report_to=None,
+        nohome=False,
+        attributes=None,
+        nattributes=None,
+    ):
+        """
+
+        Create a new in-game object.
+
+        Keyword Args:
+            typeclass (class or str): Class or python path to a typeclass.
+            key (str): Name of the new object. If not set, a name of
+                `#dbref` will be set.
+            location (Object or str): Obj or #dbref to use as the location of the new object.
+            home (Object or str): Obj or #dbref to use as the object's home location.
+            permissions (list): A list of permission strings or tuples (permstring, category).
+            locks (str): one or more lockstrings, separated by semicolons.
+            aliases (list): A list of alternative keys or tuples (aliasstring, category).
+            tags (list): List of tag keys or tuples (tagkey, category) or (tagkey, category, data).
+            destination (Object or str): Obj or #dbref to use as an Exit's target.
+            report_to (Object): The object to return error messages to.
+            nohome (bool): This allows the creation of objects without a
+                default home location; only used when creating the default
+                location itself or during unittests.
+            attributes (list): Tuples on the form (key, value) or (key, value, category),
+                (key, value, lockstring) or (key, value, lockstring, default_access).
+                to set as Attributes on the new object.
+            nattributes (list): Non-persistent tuples on the form (key, value). Note that
+                adding this rarely makes sense since this data will not survive a reload.
+
+        Returns:
+            object (Object): A newly created object of the given typeclass.
+
+        Raises:
+            ObjectDB.DoesNotExist: If trying to create an Object with
+                `location` or `home` that can't be found.
+
+        """
+        typeclass = typeclass if typeclass else settings.BASE_OBJECT_TYPECLASS
+
+        # convenience converters to avoid common usage mistake
+        permissions = make_iter(permissions) if permissions is not None else None
+        locks = make_iter(locks) if locks is not None else None
+        aliases = make_iter(aliases) if aliases is not None else None
+        tags = make_iter(tags) if tags is not None else None
+        attributes = make_iter(attributes) if attributes is not None else None
+
+        if isinstance(typeclass, str):
+            # a path is given. Load the actual typeclass
+            typeclass = class_from_module(typeclass, settings.TYPECLASS_PATHS)
+
+        # Setup input for the create command. We use ObjectDB as baseclass here
+        # to give us maximum freedom (the typeclasses will load
+        # correctly when each object is recovered).
+
+        location = dbid_to_obj(location, self.model)
+        destination = dbid_to_obj(destination, self.model)
+        home = dbid_to_obj(home, self.model)
+        if not home:
+            try:
+                home = dbid_to_obj(settings.DEFAULT_HOME, self.model) if not nohome else None
+            except self.model_ObjectDB.DoesNotExist:
+                raise self.model.DoesNotExist(
+                    "settings.DEFAULT_HOME (= '%s') does not exist, or the setting is malformed."
+                    % settings.DEFAULT_HOME
+                )
+
+        # create new instance
+        new_object = typeclass(
+            db_key=key,
+            db_location=location,
+            db_destination=destination,
+            db_home=home,
+            db_typeclass_path=typeclass.path,
+        )
+        # store the call signature for the signal
+        new_object._createdict = dict(
+            key=key,
+            location=location,
+            destination=destination,
+            home=home,
+            typeclass=typeclass.path,
+            permissions=permissions,
+            locks=locks,
+            aliases=aliases,
+            tags=tags,
+            report_to=report_to,
+            nohome=nohome,
+            attributes=attributes,
+            nattributes=nattributes,
+        )
+        # this will trigger the save signal which in turn calls the
+        # at_first_save hook on the typeclass, where the _createdict can be
+        # used.
+        new_object.save()
+
+        signals.SIGNAL_OBJECT_POST_CREATE.send(sender=new_object)
+
+        return new_object
 
 
 class ObjectManager(ObjectDBManager, TypeclassManager):

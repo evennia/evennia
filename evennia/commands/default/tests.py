@@ -23,7 +23,7 @@ from unittest.mock import patch, Mock, MagicMock
 
 from evennia import DefaultRoom, DefaultExit, ObjectDB
 from evennia.commands.default.cmdset_character import CharacterCmdSet
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTest
 from evennia.commands.default import (
     help as help_module,
     general,
@@ -40,7 +40,7 @@ from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.command import Command, InterruptCommand
 from evennia.commands import cmdparser
 from evennia.commands.cmdset import CmdSet
-from evennia.utils import ansi, utils, gametime
+from evennia.utils import ansi, utils, gametime, create
 from evennia.server.sessionhandler import SESSIONS
 from evennia import search_object
 from evennia import DefaultObject, DefaultCharacter
@@ -57,8 +57,11 @@ _RE_STRIP_EVMENU = re.compile(r"^\+|-+\+|\+-+|--+|\|(?:\s|$)", re.MULTILINE)
 # ------------------------------------------------------------
 
 @patch("evennia.server.portal.portal.LoopingCall", new=MagicMock())
-class CommandTest(EvenniaTest):
+class CommandTestMixin:
     """
+    Mixin to add to a test in order to provide the `.call` helper for
+    testing the execution and returns of a command.
+
     Tests a Command by running it and comparing what messages it sends with
     expected values. This tests without actually spinning up the cmdhandler
     for every test, which is more controlled.
@@ -68,7 +71,7 @@ class CommandTest(EvenniaTest):
 
         from commands.echo import CmdEcho
 
-        class MyCommandTest(CommandTest):
+        class MyCommandTest(EvenniaTest, CommandTestMixin):
 
             def test_echo(self):
                 '''
@@ -306,12 +309,36 @@ class CommandTest(EvenniaTest):
         return returned_msgs
 
 
+@patch("evennia.commands.account.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.admin.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.batchprocess.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.building.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.comms.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.general.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.help.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.syscommands.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.system.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.unloggedin.COMMAND_DEFAULT_CLASS", MuxCommand)
+class EvenniaCommandTest(BaseEvenniaTest, CommandTestMixin):
+    """
+    Commands only using the default settings.
+
+    """
+
+
+class CommandTest(EvenniaTest, CommandTestMixin):
+    """
+    Parent class to inherit from - makes tests use your own
+    classes and settings in mygame.
+
+    """
+
 # ------------------------------------------------------------
 # Individual module Tests
 # ------------------------------------------------------------
 
 
-class TestGeneral(CommandTest):
+class TestGeneral(EvenniaCommandTest):
     def test_look(self):
         rid = self.room1.id
         self.call(general.CmdLook(), "here", "Room(#{})\nroom_desc".format(rid))
@@ -407,7 +434,7 @@ class TestGeneral(CommandTest):
         self.call(general.CmdAccess(), "", "Permission Hierarchy (climbing):")
 
 
-class TestHelp(CommandTest):
+class TestHelp(EvenniaCommandTest):
 
     maxDiff = None
 
@@ -557,7 +584,7 @@ class TestHelp(CommandTest):
                   cmdset=TestCmdSet())
 
 
-class TestSystem(CommandTest):
+class TestSystem(EvenniaCommandTest):
     def test_py(self):
         # we are not testing CmdReload, CmdReset and CmdShutdown, CmdService or CmdTime
         # since the server is not running during these tests.
@@ -581,7 +608,7 @@ _TASK_HANDLER = None
 def func_test_cmd_tasks():
     return 'success'
 
-class TestCmdTasks(CommandTest):
+class TestCmdTasks(EvenniaCommandTest):
 
     def setUp(self):
         super().setUp()
@@ -741,7 +768,7 @@ class TestCmdTasks(CommandTest):
         self.call(system.CmdTasks(), f'/cancel', wanted_msg)
 
 
-class TestAdmin(CommandTest):
+class TestAdmin(EvenniaCommandTest):
     def test_emit(self):
         self.call(admin.CmdEmit(), "Char2 = Test", "Emitted to Char2:\nTest")
 
@@ -772,7 +799,7 @@ class TestAdmin(CommandTest):
         )
 
 
-class TestAccount(CommandTest):
+class TestAccount(EvenniaCommandTest):
     def test_ooc_look(self):
         if settings.MULTISESSION_MODE < 2:
             self.call(
@@ -896,7 +923,7 @@ class TestAccount(CommandTest):
         )
 
 
-class TestBuilding(CommandTest):
+class TestBuilding(EvenniaCommandTest):
     def test_create(self):
         name = settings.BASE_OBJECT_TYPECLASS.rsplit(".", 1)[1]
         self.call(
@@ -918,7 +945,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdExamine(), "*TestAccount", "Name/key: TestAccount")
 
         self.char1.db.test = "testval"
-        self.call(building.CmdExamine(), "self/test", "Persistent attribute(s):\n  test = testval")
+        self.call(building.CmdExamine(), "self/test", "Attribute Char/test [category=None]:\n\ntestval")
         self.call(building.CmdExamine(), "NotFound", "Could not find 'NotFound'.")
         self.call(building.CmdExamine(), "out", "Name/key: out")
 
@@ -927,7 +954,7 @@ class TestBuilding(CommandTest):
         self.call(
             building.CmdExamine(),
             "self/test2",
-            "Persistent attribute(s):\n  test2 = this is a \$random() value.",
+            "Attribute Char/test2 [category=None]:\n\nthis is a \$random() value."
         )
 
         self.room1.scripts.add(self.script.__class__)
@@ -965,15 +992,17 @@ class TestBuilding(CommandTest):
         self.call(
             building.CmdSetAttribute(),
             'Obj/test1="value1"',
-            "Created attribute Obj/test1 = 'value1'",
+            "Created attribute Obj/test1 [category:None] = value1",
         )
         self.call(
             building.CmdSetAttribute(),
             'Obj2/test2="value2"',
-            "Created attribute Obj2/test2 = 'value2'",
+            "Created attribute Obj2/test2 [category:None] = value2",
         )
-        self.call(building.CmdSetAttribute(), "Obj2/test2", "Attribute Obj2/test2 = value2")
-        self.call(building.CmdSetAttribute(), "Obj2/NotFound", "Obj2 has no attribute 'notfound'.")
+        self.call(building.CmdSetAttribute(),
+                  "Obj2/test2", "Attribute Obj2/test2 [category:None] = value2")
+        self.call(building.CmdSetAttribute(),
+                  "Obj2/NotFound", "Attribute Obj2/notfound [category:None] does not exist.")
 
         with patch("evennia.commands.default.building.EvEditor") as mock_ed:
             self.call(building.CmdSetAttribute(), "/edit Obj2/test3")
@@ -982,14 +1011,18 @@ class TestBuilding(CommandTest):
         self.call(
             building.CmdSetAttribute(),
             'Obj2/test3="value3"',
-            "Created attribute Obj2/test3 = 'value3'",
+            "Created attribute Obj2/test3 [category:None] = value3",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj2/test3 = ",
-            "Deleted attribute 'test3' (= True) from Obj2.",
+            "Deleted attribute Obj2/test3 [category:None].",
         )
-
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj2/test4:Foo = 'Bar'",
+            "Created attribute Obj2/test4 [category:Foo] = Bar",
+        )
         self.call(
             building.CmdCpAttr(),
             "/copy Obj2/test2 = Obj2/test3",
@@ -1008,123 +1041,162 @@ class TestBuilding(CommandTest):
     def test_nested_attribute_commands(self):
         # list - adding white space proves real parsing
         self.call(
-            building.CmdSetAttribute(), "Obj/test1=[1,2]", "Created attribute Obj/test1 = [1, 2]"
+            building.CmdSetAttribute(),
+            "Obj/test1=[1,2]", "Created attribute Obj/test1 [category:None] = [1, 2]"
         )
-        self.call(building.CmdSetAttribute(), "Obj/test1", "Attribute Obj/test1 = [1, 2]")
-        self.call(building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 1")
-        self.call(building.CmdSetAttribute(), "Obj/test1[1]", "Attribute Obj/test1[1] = 2")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test1",
+                  "Attribute Obj/test1 [category:None] = [1, 2]")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test1[0]",
+                  "Attribute Obj/test1[0] [category:None] = 1")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test1[1]",
+                  "Attribute Obj/test1[1] [category:None] = 2")
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[0] = 99",
-            "Modified attribute Obj/test1 = [99, 2]",
+            "Modified attribute Obj/test1 [category:None] = [99, 2]",
         )
-        self.call(building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 99")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test1[0]",
+            "Attribute Obj/test1[0] [category:None] = 99"
+        )
         # list delete
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[0] =",
-            "Deleted attribute 'test1[0]' (= nested) from Obj.",
+            "Deleted attribute Obj/test1[0] [category:None].",
         )
-        self.call(building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 2")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test1[0]",
+            "Attribute Obj/test1[0] [category:None] = 2"
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[1]",
-            "Obj has no attribute 'test1[1]'. (Nested lookups attempted)",
+            "Attribute Obj/test1[1] [category:None] does not exist. (Nested lookups attempted)",
         )
         # Delete non-existent
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[5] =",
-            "Obj has no attribute 'test1[5]'. (Nested lookups attempted)",
+            "No attribute Obj/test1[5] [category: None] was found to "
+            "delete. (Nested lookups attempted)"
         )
         # Append
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[+] = 42",
-            "Modified attribute Obj/test1 = [2, 42]",
+            "Modified attribute Obj/test1 [category:None] = [2, 42]",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[+0] = -1",
-            "Modified attribute Obj/test1 = [-1, 2, 42]",
+            "Modified attribute Obj/test1 [category:None] = [-1, 2, 42]",
         )
 
         # dict - removing white space proves real parsing
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2={ 'one': 1, 'two': 2 }",
-            "Created attribute Obj/test2 = {'one': 1, 'two': 2}",
+            "Created attribute Obj/test2 [category:None] = {'one': 1, 'two': 2}",
         )
         self.call(
-            building.CmdSetAttribute(), "Obj/test2", "Attribute Obj/test2 = {'one': 1, 'two': 2}"
+            building.CmdSetAttribute(),
+            "Obj/test2", "Attribute Obj/test2 [category:None] = {'one': 1, 'two': 2}"
         )
-        self.call(building.CmdSetAttribute(), "Obj/test2['one']", "Attribute Obj/test2['one'] = 1")
-        self.call(building.CmdSetAttribute(), "Obj/test2['one]", "Attribute Obj/test2['one] = 1")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test2['one']",
+            "Attribute Obj/test2['one'] [category:None] = 1"
+        )
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test2['one]",
+            "Attribute Obj/test2['one] [category:None] = 1"
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['one']=99",
-            "Modified attribute Obj/test2 = {'one': 99, 'two': 2}",
+            "Modified attribute Obj/test2 [category:None] = {'one': 99, 'two': 2}",
         )
-        self.call(building.CmdSetAttribute(), "Obj/test2['one']", "Attribute Obj/test2['one'] = 99")
-        self.call(building.CmdSetAttribute(), "Obj/test2['two']", "Attribute Obj/test2['two'] = 2")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test2['one']",
+            "Attribute Obj/test2['one'] [category:None] = 99"
+        )
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test2['two']",
+            "Attribute Obj/test2['two'] [category:None] = 2"
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[+'three']",
-            "Obj has no attribute 'test2[+'three']'. (Nested lookups attempted)",
+            "Attribute Obj/test2[+'three'] [category:None] does not exist. (Nested lookups attempted)"
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[+'three'] = 3",
-            "Modified attribute Obj/test2 = {'one': 99, 'two': 2, \"+'three'\": 3}",
+            "Modified attribute Obj/test2 [category:None] = {'one': 99, 'two': 2, \"+'three'\": 3}",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[+'three'] =",
-            "Deleted attribute 'test2[+'three']' (= nested) from Obj.",
+            "Deleted attribute Obj/test2[+'three'] [category:None]."
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['three']=3",
-            "Modified attribute Obj/test2 = {'one': 99, 'two': 2, 'three': 3}",
+            "Modified attribute Obj/test2 [category:None] = {'one': 99, 'two': 2, 'three': 3}",
         )
         # Dict delete
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['two'] =",
-            "Deleted attribute 'test2['two']' (= nested) from Obj.",
+            "Deleted attribute Obj/test2['two'] [category:None].",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['two']",
-            "Obj has no attribute 'test2['two']'. (Nested lookups attempted)",
+            "Attribute Obj/test2['two'] [category:None] does not exist. (Nested lookups attempted)"
         )
         self.call(
-            building.CmdSetAttribute(), "Obj/test2", "Attribute Obj/test2 = {'one': 99, 'three': 3}"
+            building.CmdSetAttribute(),
+            "Obj/test2",
+            "Attribute Obj/test2 [category:None] = {'one': 99, 'three': 3}"
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[0]",
-            "Obj has no attribute 'test2[0]'. (Nested lookups attempted)",
+            "Attribute Obj/test2[0] [category:None] does not exist. (Nested lookups attempted)"
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['five'] =",
-            "Obj has no attribute 'test2['five']'. (Nested lookups attempted)",
+            "No attribute Obj/test2['five'] [category: None] "
+            "was found to delete. (Nested lookups attempted)"
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[+]=42",
-            "Modified attribute Obj/test2 = {'one': 99, 'three': 3, '+': 42}",
+            "Modified attribute Obj/test2 [category:None] = {'one': 99, 'three': 3, '+': 42}",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[+1]=33",
-            "Modified attribute Obj/test2 = {'one': 99, 'three': 3, '+': 42, '+1': 33}",
+            "Modified attribute Obj/test2 [category:None] = "
+            "{'one': 99, 'three': 3, '+': 42, '+1': 33}",
         )
 
         # tuple
         self.call(
-            building.CmdSetAttribute(), "Obj/tup = (1,2)", "Created attribute Obj/tup = (1, 2)"
+            building.CmdSetAttribute(),
+            "Obj/tup = (1,2)",
+            "Created attribute Obj/tup [category:None] = (1, 2)"
         )
         self.call(
             building.CmdSetAttribute(),
@@ -1145,54 +1217,85 @@ class TestBuilding(CommandTest):
             building.CmdSetAttribute(),
             # Special case for tuple, could have a better message
             "Obj/tup[1] = ",
-            "Obj has no attribute 'tup[1]'. (Nested lookups attempted)",
+            "No attribute Obj/tup[1] [category: None] "
+            "was found to delete. (Nested lookups attempted)"
         )
 
         # Deaper nesting
         self.call(
             building.CmdSetAttribute(),
             "Obj/test3=[{'one': 1}]",
-            "Created attribute Obj/test3 = [{'one': 1}]",
+            "Created attribute Obj/test3 [category:None] = [{'one': 1}]",
         )
         self.call(
-            building.CmdSetAttribute(), "Obj/test3[0]['one']", "Attribute Obj/test3[0]['one'] = 1"
+            building.CmdSetAttribute(),
+            "Obj/test3[0]['one']",
+            "Attribute Obj/test3[0]['one'] [category:None] = 1"
         )
-        self.call(building.CmdSetAttribute(), "Obj/test3[0]", "Attribute Obj/test3[0] = {'one': 1}")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test3[0]",
+            "Attribute Obj/test3[0] [category:None] = {'one': 1}"
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test3[0]['one'] =",
-            "Deleted attribute 'test3[0]['one']' (= nested) from Obj.",
+            "Deleted attribute Obj/test3[0]['one'] [category:None]."
         )
-        self.call(building.CmdSetAttribute(), "Obj/test3[0]", "Attribute Obj/test3[0] = {}")
-        self.call(building.CmdSetAttribute(), "Obj/test3", "Attribute Obj/test3 = [{}]")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test3[0]",
+            "Attribute Obj/test3[0] [category:None] = {}")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test3",
+            "Attribute Obj/test3 [category:None] = [{}]"
+        )
 
         # Naughty keys
         self.call(
             building.CmdSetAttribute(),
             "Obj/test4[0]='foo'",
-            "Created attribute Obj/test4[0] = 'foo'",
+            "Created attribute Obj/test4[0] [category:None] = foo",
         )
-        self.call(building.CmdSetAttribute(), "Obj/test4[0]", "Attribute Obj/test4[0] = foo")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test4[0]",
+            "Attribute Obj/test4[0] [category:None] = foo")
         self.call(
             building.CmdSetAttribute(),
             "Obj/test4=[{'one': 1}]",
-            "Created attribute Obj/test4 = [{'one': 1}]",
+            "Created attribute Obj/test4 [category:None] = [{'one': 1}]",
         )
-        self.call(
-            building.CmdSetAttribute(), "Obj/test4[0]['one']", "Attribute Obj/test4[0]['one'] = 1"
-        )
-        # Prefer nested items
-        self.call(building.CmdSetAttribute(), "Obj/test4[0]", "Attribute Obj/test4[0] = {'one': 1}")
-        self.call(
-            building.CmdSetAttribute(), "Obj/test4[0]['one']", "Attribute Obj/test4[0]['one'] = 1"
-        )
-        # Restored access
-        self.call(building.CmdWipe(), "Obj/test4", "Wiped attributes test4 on Obj.")
-        self.call(building.CmdSetAttribute(), "Obj/test4[0]", "Attribute Obj/test4[0] = foo")
         self.call(
             building.CmdSetAttribute(),
             "Obj/test4[0]['one']",
-            "Obj has no attribute 'test4[0]['one']'.",
+            "Attribute Obj/test4[0]['one'] [category:None] = 1"
+        )
+        # Prefer nested items
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test4[0]",
+            "Attribute Obj/test4[0] [category:None] = {'one': 1}"
+        )
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test4[0]['one']",
+            "Attribute Obj/test4[0]['one'] [category:None] = 1"
+        )
+        # Restored access
+        self.call(
+            building.CmdWipe(),
+            "Obj/test4",
+            "Wiped attributes test4 on Obj.")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test4[0]",
+            "Attribute Obj/test4[0] [category:None] = foo")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test4[0]['one']",
+            "Attribute Obj/test4[0]['one'] [category:None] does not exist. (Nested lookups attempted)"
         )
 
     def test_split_nested_attr(self):
@@ -1576,8 +1679,8 @@ class TestBuilding(CommandTest):
         self.call(building.CmdScripts(), "Obj", "No scripts defined on Obj")
         self.call(
             building.CmdScripts(),
-            "Obj = scripts.Script",
-            "Script scripts.Script successfully added"
+            "Obj = scripts.scripts.DefaultScript",
+            "Script scripts.scripts.DefaultScript successfully added"
         )
         self.call(
             building.CmdScripts(),
@@ -1597,25 +1700,25 @@ class TestBuilding(CommandTest):
         self.call(building.CmdScripts(), "/stop Obj", "Script on Obj Stopped - ")
 
         self.call(
-            building.CmdScripts(), "Obj = scripts.Script",
-            "Script scripts.Script successfully added",
+            building.CmdScripts(), "Obj = scripts.scripts.DefaultScript",
+            "Script scripts.scripts.DefaultScript successfully added",
             inputs=["Y"]
         )
         self.call(
             building.CmdScripts(),
-            "/start Obj = scripts.Script",
+            "/start Obj = scripts.scripts.DefaultScript",
             "Script on Obj Started ",
             inputs=["Y"]
         )
         self.call(
             building.CmdScripts(),
-            "/stop Obj = scripts.Script",
+            "/stop Obj = scripts.scripts.DefaultScript",
             "Script on Obj Stopped ",
             inputs=["Y"]
         )
         self.call(
             building.CmdScripts(),
-            "/delete Obj = scripts.Script",
+            "/delete Obj = scripts.scripts.DefaultScript",
             "Script on Obj Deleted ",
             inputs=["Y"]
         )
@@ -1625,6 +1728,23 @@ class TestBuilding(CommandTest):
             "Global Script Deleted -"
         )
 
+    def test_script_multi_delete(self):
+
+        script1 = create.create_script()
+        script2 = create.create_script()
+        script3 = create.create_script()
+
+        self.call(
+            building.CmdScripts(),
+            "/delete #{}-#{}".format(script1.id, script3.id),
+            "Global Script Deleted - #2 (evennia.scripts.scripts.DefaultScript)|"
+            "Global Script Deleted - #3 (evennia.scripts.scripts.DefaultScript)|"
+            "Global Script Deleted - #4 (evennia.scripts.scripts.DefaultScript)",
+            inputs=["y"]
+        )
+        self.assertFalse(script1.pk)
+        self.assertFalse(script2.pk)
+        self.assertFalse(script3.pk)
 
     def test_teleport(self):
         oid = self.obj1.id
@@ -1864,20 +1984,24 @@ class TestBuilding(CommandTest):
         )
 
 
+import evennia.commands.default.comms as cmd_comms  # noqa
 from evennia.utils.create import create_channel  # noqa
+from evennia.comms.comms import DefaultChannel  # noqa
 
-class TestCommsChannel(CommandTest):
+
+@patch("evennia.commands.default.comms.CHANNEL_DEFAULT_TYPECLASS", DefaultChannel)
+class TestCommsChannel(EvenniaCommandTest):
     """
     Test the central `channel` command.
 
     """
     def setUp(self):
-        super(CommandTest, self).setUp()
+        super().setUp()
         self.channel = create_channel(
             key="testchannel",
             desc="A test channel")
         self.channel.connect(self.char1)
-        self.cmdchannel = comms.CmdChannel
+        self.cmdchannel = cmd_comms.CmdChannel
         self.cmdchannel.account_caller = False
 
     def tearDown(self):
@@ -1945,6 +2069,7 @@ class TestCommsChannel(CommandTest):
 
     def test_channel__alias__unalias(self):
         """Add and then remove a channel alias"""
+
         # add alias
         self.call(
             self.cmdchannel(),
@@ -2085,16 +2210,37 @@ class TestCommsChannel(CommandTest):
         )
 
 
-class TestBatchProcess(CommandTest):
+from evennia.commands.default import comms  # noqa
 
-    @patch("evennia.contrib.tutorial_examples.red_button.repeat")
-    @patch("evennia.contrib.tutorial_examples.red_button.delay")
-    def test_batch_commands(self, mock_delay, mock_repeat):
+
+class TestComms(EvenniaCommandTest):
+
+    def test_page(self):
+        self.call(
+            comms.CmdPage(),
+            "TestAccount2 = Test",
+            "TestAccount2 is offline. They will see your message if they list their pages later."
+            "|You paged TestAccount2 with: 'Test'.",
+            receiver=self.account,
+        )
+
+
+class TestBatchProcess(EvenniaCommandTest):
+    """
+    Test the batch processor.
+
+    """
+    # there is some sort of issue with the mock; it needs to loaded once to work
+    from evennia.contrib.tutorials.red_button import red_button  # noqa
+
+    @patch("evennia.contrib.tutorials.red_button.red_button.repeat")
+    @patch("evennia.contrib.tutorials.red_button.red_button.delay")
+    def test_batch_commands(self, mock_tutorials, mock_repeat):
         # cannot test batchcode here, it must run inside the server process
         self.call(
             batchprocess.CmdBatchCommands(),
-            "example_batch_cmds",
-            "Running Batch-command processor - Automatic mode for example_batch_cmds",
+            "batchprocessor.example_batch_cmds",
+            "Running Batch-command processor - Automatic mode for batchprocessor.example_batch_cmds",
         )
         # we make sure to delete the button again here to stop the running reactor
         confirm = building.CmdDestroy.confirm
@@ -2115,13 +2261,13 @@ class CmdInterrupt(Command):
         self.msg("in func")
 
 
-class TestInterruptCommand(CommandTest):
+class TestInterruptCommand(EvenniaCommandTest):
     def test_interrupt_command(self):
         ret = self.call(CmdInterrupt(), "")
         self.assertEqual(ret, "")
 
 
-class TestUnconnectedCommand(CommandTest):
+class TestUnconnectedCommand(EvenniaCommandTest):
     def test_info_command(self):
         # instead of using SERVER_START_TIME (0), we use 86400 because Windows won't let us use anything lower
         gametime.SERVER_START_TIME = 86400
@@ -2141,7 +2287,7 @@ class TestUnconnectedCommand(CommandTest):
 # Test syscommands
 
 
-class TestSystemCommands(CommandTest):
+class TestSystemCommands(EvenniaCommandTest):
     def test_simple_defaults(self):
         self.call(syscommands.SystemNoInput(), "")
         self.call(syscommands.SystemNoMatch(), "Huh?")

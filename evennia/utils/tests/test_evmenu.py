@@ -20,7 +20,7 @@ To help debug the menu, turn on `debug_output`, which will print the traversal p
 import copy
 from anything import Anything
 from django.test import TestCase
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.utils import evmenu
 from evennia.utils import ansi
 from mock import MagicMock
@@ -274,7 +274,7 @@ def _callnode2(caller, raw_string, **kwargs):
     return "node2"
 
 
-class TestMenuTemplateParse(EvenniaTest):
+class TestMenuTemplateParse(BaseEvenniaTest):
     """Test menu templating helpers"""
 
     def setUp(self):

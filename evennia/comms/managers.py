@@ -5,10 +5,12 @@ Comm system components.
 """
 
 
+from django.conf import settings
 from django.db.models import Q
 from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
+from evennia.server import signals
 from evennia.utils import logger
-from evennia.utils.utils import dbref
+from evennia.utils.utils import dbref, make_iter, class_from_module
 
 _GA = object.__getattribute__
 _AccountDB = None
@@ -235,7 +237,7 @@ class MsgManager(TypedObjectManager):
                     always gives only one match.
 
         Returns:
-            Queryset: Message matches.
+            Queryset: Iterable with 0, 1 or more matches.
 
         """
         # unique msg id
@@ -287,6 +289,55 @@ class MsgManager(TypedObjectManager):
     # back-compatibility alias
     message_search = search_message
 
+    def create_message(self, senderobj, message, receivers=None, locks=None, tags=None,
+                       header=None, **kwargs):
+        """
+        Create a new communication Msg. Msgs represent a unit of
+        database-persistent communication between entites.
+
+        Args:
+            senderobj (Object, Account, Script, str or list): The entity (or
+                entities) sending the Msg. If a `str`, this is the id-string
+                for an external sender type.
+            message (str): Text with the message. Eventual headers, titles
+                etc should all be included in this text string. Formatting
+                will be retained.
+            receivers (Object, Account, Script, str or list): An Account/Object to send
+                to, or a list of them. If a string, it's an identifier for an external
+                receiver.
+            locks (str): Lock definition string.
+            tags (list): A list of tags or tuples `(tag, category)`.
+            header (str): Mime-type or other optional information for the message
+
+        Notes:
+            The Comm system is created to be very open-ended, so it's fully
+            possible to let a message both go several receivers at the same time,
+            it's up to the command definitions to limit this as desired.
+
+        """
+        if 'channels' in kwargs:
+            raise DeprecationWarning(
+                "create_message() does not accept 'channel' kwarg anymore "
+                "- channels no longer accept Msg objects."
+            )
+
+        if not message:
+            # we don't allow empty messages.
+            return None
+        new_message = self.model(db_message=message)
+        new_message.save()
+        for sender in make_iter(senderobj):
+            new_message.senders = sender
+        new_message.header = header
+        for receiver in make_iter(receivers):
+            new_message.receivers = receiver
+        if locks:
+            new_message.locks.add(locks)
+        if tags:
+            new_message.tags.batch_add(*tags)
+
+        new_message.save()
+        return new_message
 
 #
 # Channel manager
@@ -369,13 +420,16 @@ class ChannelDBManager(TypedObjectManager):
             exact (bool, optional): Require an exact (but not
                 case sensitive) match.
 
+        Returns:
+            Queryset: Iterable with 0, 1 or more matches.
+
         """
         dbref = self.dbref(ostring)
         if dbref:
-            try:
-                return self.get(id=dbref)
-            except self.model.DoesNotExist:
-                pass
+            dbref_match = self.search_dbref(dbref)
+            if dbref_match:
+                return dbref_match
+
         if exact:
             channels = self.filter(
                 Q(db_key__iexact=ostring)
@@ -387,6 +441,56 @@ class ChannelDBManager(TypedObjectManager):
                 | Q(db_tags__db_tagtype__iexact="alias", db_tags__db_key__icontains=ostring)
             ).distinct()
         return channels
+
+    def create_channel(
+        self, key, aliases=None, desc=None, locks=None, keep_log=True, typeclass=None, tags=None
+    ):
+        """
+        Create A communication Channel. A Channel serves as a central hub
+        for distributing Msgs to groups of people without specifying the
+        receivers explicitly. Instead accounts may 'connect' to the channel
+        and follow the flow of messages. By default the channel allows
+        access to all old messages, but this can be turned off with the
+        keep_log switch.
+
+        Args:
+            key (str): This must be unique.
+
+        Keyword Args:
+            aliases (list of str): List of alternative (likely shorter) keynames.
+            desc (str): A description of the channel, for use in listings.
+            locks (str): Lockstring.
+            keep_log (bool): Log channel throughput.
+            typeclass (str or class): The typeclass of the Channel (not
+                often used).
+            tags (list): A list of tags or tuples `(tag, category)`.
+
+        Returns:
+            channel (Channel): A newly created channel.
+
+        """
+        typeclass = typeclass if typeclass else settings.BASE_CHANNEL_TYPECLASS
+
+        if isinstance(typeclass, str):
+            # a path is given. Load the actual typeclass
+            typeclass = class_from_module(typeclass, settings.TYPECLASS_PATHS)
+
+        # create new instance
+        new_channel = typeclass(db_key=key)
+
+        # store call signature for the signal
+        new_channel._createdict = dict(
+            key=key, aliases=aliases, desc=desc, locks=locks, keep_log=keep_log, tags=tags
+        )
+
+        # this will trigger the save signal which in turn calls the
+        # at_first_save hook on the typeclass, where the _createdict can be
+        # used.
+        new_channel.save()
+
+        signals.SIGNAL_CHANNEL_POST_CREATE.send(sender=new_channel)
+
+        return new_channel
 
     # back-compatibility alias
     channel_search = search_channel

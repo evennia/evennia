@@ -139,11 +139,11 @@ def homogenize_prototype(prototype, custom_keys=None):
                         nattr = len(attr)
                         if nattr == 1:
                             # we assume a None-value
-                            homogenized_attrs.append(attr[0], None, None, "")
+                            homogenized_attrs.append((attr[0], None, None, ""))
                         elif nattr == 2:
-                            homogenized_attrs.append(attr[0], attr[1], None, "")
+                            homogenized_attrs.append((attr[0], attr[1], None, ""))
                         elif nattr == 3:
-                            homogenized_attrs.append(attr[0], attr[1], attr[2], "")
+                            homogenized_attrs.append((attr[0], attr[1], attr[2], ""))
                         else:
                             homogenized_attrs.append(attr[:4])
 

@@ -19,7 +19,7 @@ This is the manual of [Evennia](https://www.evennia.com), the open source Python
 - [Evennia Introduction](./Evennia-Introduction.md)
 - [Install & Setup Quickstart](Setup/Setup-Quickstart.md)
 - [Starting tutorial](Howto/Starting/Part1/Starting-Part1.md)
-- [How to get (and give) help](./How-To-Get-And-Give-Help.md)
+- [How to contribute and get help](./Contributing.md)
 
 ## Main sections
 
@@ -46,7 +46,7 @@ Want to help improve the docs? See the page on [Contributing to the docs](./Cont
 Evennia-Introduction
 Setup/Setup-Quickstart.md
 Howto/Starting/Part1/Starting-Part1.md
-How-To-Get-And-Give-Help.md
+Contributing.md
 Setup/Setup-Overview.md
 Howto/Howto-Overview.md
 Components/Components-Overview.md

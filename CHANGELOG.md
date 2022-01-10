@@ -124,9 +124,25 @@ Up requirements to Django 3.2+, Twisted 21+
   by another command (like `open` and `@open`. If no duplicate, @ is optional.
 - Move legacy channel-management commands (`ccreate`, `addcom` etc) to a contrib
   since their work is now fully handled by the single `channel` command.
+- Expand `examine` command's code to much more extensible and modular. Show
+  attribute categories and value types (when not strings).
+- `AttributeHandler.remove(key, return_exception=False, category=None, ...)` changed
+  to `.remove(key, category=None, return_exception=False, ...)` for consistency.
+- New `command cooldown` contrib for making it easier to manage commands using
+  dynamic cooldowns between uses (owllex)
+- Restructured `contrib/` folder, placing all contribs as separate packages under
+  subfolders. All imports will need to be updated.
+- Made `MonitorHandler.add/remove` support `category` for monitoring Attributes
+  with a category (before only key was used, ignoring category entirely).
+- Move `create_*` functions into db managers, leaving `utils.create` only being
+  wrapper functions (consistent with `utils.search`). No change of api otherwise.
+- Add support for `$dbref()` and `$search` when assigning an Attribute value
+  with the `set` command. This allows assigning real objects from in-game.
+- Add ability to examine `/script` and `/channel` entities  with `examine` command.
+- Homogenize manager search methods to return querysets and not lists.
+
 
 ### Evennia 0.9.5 (2019-2020)
-
 
 Released 2020-11-14.
 A transitional release, including new doc system.
@@ -214,6 +230,7 @@ without arguments starts a full interactive Python console.
 - Add `PermissionHandler.check` method for straight string perm-checks without needing lockstrings.
 - Add `evennia.utils.utils.strip_unsafe_input` for removing html/newlines/tags from user input. The
   `INPUT_CLEANUP_BYPASS_PERMISSIONS` is a list of perms that bypass this safety stripping.
+- Make default `set` and `examine` commands aware of Attribute categories.
 
 
 ## Evennia 0.9 (2018-2019)

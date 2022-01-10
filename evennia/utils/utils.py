@@ -359,14 +359,14 @@ def columnize(string, columns=2, spacing=4, align="l", width=None):
     return "\n".join(rows)
 
 
-def iter_to_str(initer, endsep="and", addquote=False):
+def iter_to_str(iterable, endsep=", and", addquote=False):
     """
     This pretty-formats an iterable list as string output, adding an optional
     alternative separator to the second to last entry.  If `addquote`
     is `True`, the outgoing strings will be surrounded by quotes.
 
     Args:
-        initer (any): Usually an iterable to print. Each element must be possible to
+        iterable (any): Usually an iterable to print. Each element must be possible to
             present with a string. Note that if this is a generator, it will be
             consumed by this operation.
         endsep (str, optional): If set, the last item separator will
@@ -377,35 +377,48 @@ def iter_to_str(initer, endsep="and", addquote=False):
     Returns:
         str: The list represented as a string.
 
+    Notes:
+        Default is to use 'Oxford comma', like 1, 2, 3, and 4. To remove, give
+        `endsep` as just `and`.
+
     Examples:
 
         ```python
         >>> list_to_string([1,2,3], endsep='')
         '1, 2, 3'
         >>> list_to_string([1,2,3], ensdep='and')
-        '1, 2, and 3'
-        >>> list_to_string([1,2,3], endsep='and', addquote=True)
+        '1, 2 and 3'
+        >>> list_to_string([1,2,3], endsep=', and', addquote=True)
         '"1", "2", and "3"'
         ```
 
     """
-    if endsep:
-        endsep = " " + endsep
-    if not initer:
+    if not iterable:
         return ""
-    initer = tuple(str(val) for val in make_iter(initer))
+    iterable = list(make_iter(iterable))
+    len_iter = len(iterable)
+
     if addquote:
-        if len(initer) == 1:
-            return '"%s"' % initer[0]
-        elif len(initer) == 2:
-            return '"%s"' % ('"%s "' % endsep).join(str(v) for v in initer)
-        return ", ".join('"%s"' % v for v in initer[:-1]) + ",%s %s" % (endsep, '"%s"' % initer[-1])
+        iterable = tuple(f'"{val}"' for val in iterable)
     else:
-        if len(initer) == 1:
-            return str(initer[0])
-        elif len(initer) == 2:
-            return ("%s " % endsep).join(str(v) for v in initer)
-        return ", ".join(str(v) for v in initer[:-1]) + ",%s %s" % (endsep, initer[-1])
+        iterable = tuple(str(val) for val in iterable)
+
+    if endsep.startswith(","):
+        # oxford comma alternative
+        endsep = endsep[1:] if len_iter < 3 else endsep
+    elif endsep:
+        # normal space-separated end separator
+        endsep = " " + str(endsep).strip()
+    else:
+        # no separator given - use comma
+        endsep = ','
+
+    if len_iter == 1:
+        return str(iterable[0])
+    elif len_iter == 2:
+        return f"{endsep} ".join(str(v) for v in iterable)
+    else:
+        return ", ".join(str(v) for v in iterable[:-1]) + f"{endsep} {iterable[-1]}"
 
 
 # legacy aliases

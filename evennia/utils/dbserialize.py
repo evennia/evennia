@@ -19,8 +19,8 @@ be out of sync with the database.
 
 """
 from functools import update_wrapper
-from collections import defaultdict, MutableSequence, MutableSet, MutableMapping
-from collections import OrderedDict, deque
+from collections import deque, OrderedDict, defaultdict
+from collections.abc import MutableSequence, MutableSet, MutableMapping
 
 try:
     from pickle import dumps, loads
@@ -391,6 +391,10 @@ class _SaverDeque(_SaverMutable):
     @_save
     def rotate(self, *args):
         self._data.rotate(*args)
+        
+    @_save
+    def remove(self, *args):
+        self._data.remove(*args)
 
 
 _DESERIALIZE_MAPPING = {

@@ -242,7 +242,7 @@ def schedule(
             to store in Attributes on the generated scheduling Script.
 
     Returns:
-        script (Script): The created Script handling the sceduling.
+        Script: The created Script handling the scheduling.
 
     Examples:
         ::

@@ -1,12 +1,138 @@
 # EvMenu
 
+EvMenu is used for generate branching multi-choice menus. Each menu 'node' can
+accepts specific options as input or free-form input. Depending what the player
+chooses, they are forwarded to different nodes in the menu.
 
 ## Introduction
 
-The `EvMenu` utility class is located in
-[evennia/utils/evmenu.py](https://github.com/evennia/evennia/blob/master/evennia/utils/evmenu.py).
+The `EvMenu` utility class is located in [evennia/utils/evmenu.py](evennia.utils.evmenu).
 It allows for easily adding interactive menus to the game; for example to implement Character
 creation, building commands or similar. Below is an example of offering NPC conversation choices:
+
+### Examples
+
+This section gives some examples of how menus work in-game. A menu is a state
+(it's actually a custom cmdset) where menu-specific commands are made available
+to you. An EvMenu is usually started from inside a command, but could also
+just be put in a file and run with `py`.
+
+This is how the example menu will look in-game:
+
+```
+Is your answer yes or no?
+_________________________________________
+[Y]es! - Answer yes.
+[N]o! - Answer no.
+[A]bort - Answer neither, and abort.
+```
+
+If you pick (for example) Y(es), you will see
+
+```
+You chose yes!
+
+Thanks for your answer. Goodbye!
+```
+
+After which the menu will end (in this example at least - it could also continue
+on to other questions and choices or even repeat the same node over and over!)
+
+Here's the full EvMenu code for this example:
+
+```python
+from evennia.utils import evmenu
+
+def _handle_answer(caller, raw_input, **kwargs):
+    answer = kwargs.get("answer")
+    caller.msg(f"You chose {answer}!")
+    return "end"  # name of next node
+
+def node_question(caller, raw_input, **kwargs):
+    text = "Is your answer yes or no?"
+    options = (
+        {"key": ("[Y]es!", "yes", "y"),
+         "desc": Answer yes.",
+         "goto": _handle_answer, {"answer": "yes"}},
+        {"key": ("[N]o!", "no", "n"),
+         "desc": "Answer no.",
+         "goto": _handle_answer, {"answer": "no"}},
+        {"key": ("[A]bort", "abort", "a"),
+         "desc": "Answer neither, and abort.",
+         "goto": "end"}
+    )
+    return text, options
+
+def node_end(caller, raw_input, **kwargs):
+    text "Thanks for your answer. Goodbye!"
+    return text, None  # empty options ends the menu
+
+evmenu.EvMenu(caller, {"start": node_question, "end": node_end})
+
+```
+
+Note the call to `EvMenu` at the end; this immediately creates the menu for the
+`caller`. It also assigns the two node-functions to menu node-names `start` and
+`end`, which is what the menu then uses to reference the nodes.
+
+Each node of the menu is a function that returns the text and a list of dicts
+describing the choices you can make on that node.
+
+Each option details what it should show (key/desc) as well as which node to go
+to (goto) next. The "goto" should be the name of the next node to go (if `None`,
+the same node will be rerun again).
+
+Above, the `Abort` option gives the "end" node name just as a string whereas the
+yes/no options instead uses the callable `_handle_answer` but pass different
+arguments to it. `_handle_answer` then returns the name of the next node (this
+allows you to perform actions when making a choice before you move on to the
+next node the menu). Note that `_handle_answer` is _not_ a node in the menu,
+it's just a helper function.
+
+When choosing 'yes' (or 'no') what happens here is that `_handle_answer` gets
+called and echoes your choice before directing to the "end" node, which exits
+the menu (since it doesn't return any options).
+
+You can also write menus using the [EvMenu templating language](#evmenu-templating-language). This
+allows you to use a text string to generate simpler menus with less boiler
+plate. Let's create exactly the same menu using the templating language:
+
+```python
+from evennia.utils import evmenu
+
+def _handle_answer(caller, raw_input, **kwargs):
+    answer = kwargs.get("answer")
+    caller.msg(f"You chose {answer}!")
+    return "end"  # name of next node
+
+menu_template = """
+
+## node start
+
+Is your answer yes or no?
+
+## options
+
+[Y]es!;yes;y: Answer yes. -> handle_answer(answer=yes)
+[N]o!;no;n: Answer no. -> handle_answer(answer=no)
+[A]bort;abort;a: Answer neither, and abort. -> end
+
+## node end
+
+Thanks for your answer. Goodbye!
+
+"""
+
+evmenu.template2menu(caller, menu_template, {"handle_answer": _handle_answer})
+
+```
+
+As seen, the `_handle_answer` is the same, but the menu structure is
+described in the `menu_template` string. The `template2menu` helper
+uses the template-string and a mapping of callables (we must add
+`_handle_answer` here) to build a full EvMenu for us.
+
+Here's another menu example, where we can choose how to interact with an NPC:
 
 ```
 The guard looks at you suspiciously.
@@ -18,16 +144,50 @@ _______________________________________________
  3. Appeal to his vanity [Cha]
  4. Try to knock him out [Luck + Dex]
  5. Try to run away [Dex]
+```
+
+```python
+
+def _skill_check(caller, raw_string, **kwargs):
+    skills = kwargs.get("skills", [])
+    gold = kwargs.get("gold", 0)
+
+    # perform skill check here, decide if check passed or not
+    # then decide which node-name to return based on
+    # the result ...
+
+    return next_node_name
+
+def node_guard(caller, raw_string, **kwarg):
+    text = (
+        'The guard looks at you suspiciously.\n'
+        '"No one is supposed to be in here ..."\n'
+        'he says, a hand on his weapon.'
+    options = (
+        {"desc": "Try to bribe on [Cha + 10 gold]",
+         "goto": (_skill_check, {"skills": ["Cha"], "gold": 10})},
+        {"desc": "Convince him you work here [Int].",
+         "goto": (_skill_check, {"skills": ["Int"]})},
+        {"desc": "Appeal to his vanity [Cha]",
+         "goto": (_skill_check, {"skills": ["Cha"]})},
+        {"desc": "Try to knock him out [Luck + Dex]",
+         "goto": (_skill_check, {"skills"" ["Luck", "Dex"]})},
+        {"desc": "Try to run away [Dex]",
+         "goto": (_skill_check, {"skills": ["Dex"]})}
+    return text, options
+    )
+
+# EvMenu called below, with all the nodes ...
 
 ```
 
-This is an example of a menu *node*. Think of a node as a point where the menu stops printing text
-and waits for user to give some input. By jumping to different nodes depending on the input, a menu
-is constructed.
+Note that by skipping the `key` of the options, we instead get an
+(auto-generated) list of numbered options to choose from.
 
-To create the menu, EvMenu uses normal Python functions, one per node. It will load all those
-functions/nodes either from a module or by being passed a dictionary mapping the node's names to
-said functions, like `{"nodename": <function>, ...}`
+Here the `_skill_check` helper will check (roll your stats, exactly what this
+means depends on your game) to decide if your approach succeeded. It may then
+choose to point you to nodes that continue the conversation or maybe dump you
+into combat!
 
 
 ## Launching the menu
@@ -425,6 +585,157 @@ class MyEvMenu(EvMenu):
 ```
 See `evennia/utils/evmenu.py` for the details of their default implementations.
 
+## EvMenu templating language
+
+In evmenu.py are two helper functions `parse_menu_template` and `template2menu`
+that is used to parse a _menu template_ string into an EvMenu:
+
+    evmenu.template2menu(caller, menu_template, goto_callables)
+
+One can also do it in two steps, by generate a menutree and using that to call
+EvMenu normally:
+
+    menutree = evmenu.parse_menu_template(caller, menu_template, goto_callables)
+    EvMenu(caller, menutree)
+
+With this latter solution, one could mix and match normally created menu nodes
+with those generated by the template engine.
+
+The `goto_callables` is a mapping `{"funcname": callable, ...}`, where each
+callable must be a module-global function on the form
+`funcname(caller, raw_string, **kwargs)` (like any goto-callable). The
+`menu_template` is a multi-line string on the following form:
+
+```python
+menu_template = """
+
+## node node1
+
+Text for node
+
+## options
+
+key1: desc1 -> node2
+key2: desc2 -> node3
+key3: desc3 -> node4
+"""
+```
+
+Each menu node is defined by a `## node <name>` containing the text of the node,
+followed by `## options` Also `## NODE` and `## OPTIONS` work. No python code
+logics is allowed in the template, this code is not evaluated but parsed. More
+advanced dynamic usage requires a full node-function.
+
+Except for defining the node/options, `#` act as comments - everything following
+will be ignored by the template parser.
+
+### Template Options
+
+The option syntax is
+
+    <key>: [desc ->] nodename or function-call
+
+The 'desc' part is optional, and if that is not given, the `->` can be skipped
+too:
+
+    key: nodename
+
+The key can both be strings and numbers. Separate the aliases with `;`.
+
+    key: node1
+    1: node2
+    key;k: node3
+    foobar;foo;bar;f;b: node4
+
+Starting the key with the special letter `>` indicates that what follows is a
+glob/regex matcher.
+
+    >: node1          - matches empty input
+    > foo*: node1     - everything starting with foo
+    > *foo: node3     - everything ending with foo
+    > [0-9]+?: node4  - regex (all numbers)
+    > *: node5        - catches everything else (put as last option)
+
+Here's how to call a goto-function from an option:
+
+    key: desc -> myfunc(foo=bar)
+
+For this to work `template2menu` or `parse_menu_template` must be given a dict
+that includes `{"myfunc": _actual_myfunc_callable}`. All callables to be
+available in the template must be mapped this way. Goto callables act like
+normal EvMenu goto-callables and should have a callsign of
+`_actual_myfunc_callable(caller, raw_string, **kwargs)` and return the next node
+(passing dynamic kwargs into the next node does not work with the template
+- use the full EvMenu if you want advanced dynamic data passing).
+
+Only no or named keywords are allowed in these callables. So
+
+    myfunc()         # OK
+    myfunc(foo=bar)  # OK
+    myfunc(foo)      # error!
+
+This is because these properties are passed as `**kwargs` into the goto callable.
+
+### Templating example
+
+```python
+from random import random
+from evennia.utils import evmenu
+
+def _gamble(caller, raw_string, **kwargs):
+
+    caller.msg("You roll the dice ...")
+    if random() < 0.5:
+        return "loose"
+    else:
+        return "win"
+
+def _try_again(caller, raw_string, **kwargs):
+    return None   # reruns the same node
+
+template_string = """
+
+## node start
+
+Death patiently holds out a set of bone dice to you.
+
+"ROLL"
+
+he says.
+
+## options
+
+1. Roll the dice -> gamble()
+2. Try to talk yourself out of rolling -> ask_again()
+
+## node win
+
+The dice clatter over the stones.
+
+"LOOKS LIKE YOU WIN THIS TIME"
+
+says Death.
+
+# (this ends the menu since there are no options)
+
+## node loose
+
+The dice clatter over the stones.
+
+"YOUR LUCK RAN OUT"
+
+says Death.
+
+"YOU ARE COMING WITH ME."
+
+# (this ends the menu, but what happens next - who knows!)
+
+"""
+
+goto_callables = {"gamble": _gamble, "ask_again": _ask_again}
+evmenu.template2menu(caller, template_string, goto_callables)
+
+```
 
 ## Examples:
 

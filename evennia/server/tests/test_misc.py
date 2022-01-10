@@ -8,7 +8,7 @@ import unittest
 from django.test import TestCase
 
 from evennia.server.validators import EvenniaPasswordValidator
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 
 from django.test.runner import DiscoverRunner
 
@@ -70,7 +70,7 @@ class TestDeprecations(TestCase):
         )
 
 
-class ValidatorTest(EvenniaTest):
+class ValidatorTest(BaseEvenniaTest):
     def test_validator(self):
         # Validator returns None on success and ValidationError on failure.
         validator = EvenniaPasswordValidator()
@@ -84,7 +84,7 @@ class ValidatorTest(EvenniaTest):
         self.assertRaises(ValidationError, validator.validate, "(#)[#]<>", user=self.account)
 
 
-class ThrottleTest(EvenniaTest):
+class ThrottleTest(BaseEvenniaTest):
     """
     Class for testing the connection/IP throttle.
     """
