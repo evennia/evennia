@@ -38,7 +38,7 @@ class Component:
         """ This is called whenever a component is loaded (ex: Server Restart) """
         return cls(host)
 
-    def on_added(self, host):
+    def at_added(self, host):
         if self.host:
             if self.host == host:
                 return
@@ -47,7 +47,7 @@ class Component:
 
         self.host = host
 
-    def on_removed(self, host):
+    def at_removed(self, host):
         if host != self.host:
             raise ComponentRegisterError("Component attempted to remove from the wrong host.")
         self.host = None

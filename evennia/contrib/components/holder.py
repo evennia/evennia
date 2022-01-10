@@ -55,7 +55,7 @@ class ComponentHandler:
     def add(self, component):
         self._set_component(component)
         self.db_names.append(component.name)
-        component.on_added(self.host)
+        component.at_added(self.host)
 
     def add_default(self, name):
         component = components.get_component_class(name)
@@ -65,12 +65,12 @@ class ComponentHandler:
         new_component = component.default_create(self.host)
         self._set_component(new_component)
         self.db_names.append(name)
-        new_component.on_added(self.host)
+        new_component.at_added(self.host)
 
     def remove(self, component):
         component_name = component.name
         if component_name in self._loaded_components:
-            component.on_removed(self.host)
+            component.at_removed(self.host)
             self.db_names.remove(component_name)
             del self._loaded_components[component_name]
         else:
@@ -83,7 +83,7 @@ class ComponentHandler:
             message = f"Cannot remove {name} from {self.host.name} as it is not registered."
             raise ComponentIsNotRegistered(message)
 
-        instance.on_removed(self.host)
+        instance.at_removed(self.host)
         self.db_names.remove(name)
         del self._loaded_components[name]
 
