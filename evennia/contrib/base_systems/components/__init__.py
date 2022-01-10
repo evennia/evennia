@@ -8,9 +8,9 @@ This helps writing isolated code and reusing it over multiple objects.
 See the docs for more information.
 """
 
-from evennia.contrib.components.component import Component
-from evennia.contrib.components.dbfield import DBField, NDBField
-from evennia.contrib.components.holder import ComponentHolderMixin, ComponentProperty
+from evennia.contrib.base_systems.components.component import Component
+from evennia.contrib.base_systems.components.dbfield import DBField, NDBField
+from evennia.contrib.base_systems.components.holder import ComponentHolderMixin, ComponentProperty
 
 
 def get_component_class(component_name):

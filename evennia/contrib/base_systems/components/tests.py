@@ -1,5 +1,5 @@
-from evennia.contrib.components import Component, DBField
-from evennia.contrib.components.holder import ComponentProperty, ComponentHolderMixin
+from evennia.contrib.base_systems.components import Component, DBField
+from evennia.contrib.base_systems.components.holder import ComponentProperty, ComponentHolderMixin
 from evennia.objects.objects import DefaultCharacter
 from evennia.utils.test_resources import EvenniaTest
 

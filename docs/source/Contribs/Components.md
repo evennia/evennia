@@ -47,7 +47,7 @@ Components are also accessible directly from the typeclass if defined via Compon
 To enable component support for a typeclass,
 import and inherit the ComponentHolderMixin, similar to this
 ```
-from evennia.contrib.components import ComponentHolderMixin
+from evennia.contrib.base_systems.components import ComponentHolderMixin
 class Character(ComponentHolderMixin, DefaultCharacter):
 # ...
 ```
@@ -69,7 +69,7 @@ They use AttributeProperty under the hood.
 
 Example:
 ```
-from evennia.contrib.components import Component, DBField
+from evennia.contrib.base_systems.components import Component, DBField
 
 class Health(Component):
     health = DBField(default=1)
@@ -84,7 +84,7 @@ These are components that will always be present in a typeclass.
 You can also pass kwargs to override the default values
 Example
 ```
-from evennia.contrib.components import ComponentHolderMixin
+from evennia.contrib.base_systems.components import ComponentHolderMixin
 class Character(ComponentHolderMixin, DefaultCharacter):
     health = ComponentProperty("health", hp=10, max_hp=50)
 ```

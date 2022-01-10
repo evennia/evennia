@@ -4,7 +4,7 @@ Components - ChrisLR 2021
 This file defines classes allowing a typeclass to use components.
 """
 
-from evennia.contrib import components
+from evennia.contrib.base_systems import components
 
 
 class ComponentProperty:
