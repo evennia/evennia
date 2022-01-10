@@ -1,8 +1,28 @@
+"""
+Components - ChrisLR 2021
+
+This file defines classes allowing a typeclass to use components.
+"""
+
 from evennia.contrib import components
 
 
 class ComponentProperty:
+    """
+    This allows you to register a component on a typeclass.
+    Components registered with this property are automatically added
+    to any instance of this typeclass.
+
+    Defaults can be overridden for this typeclass by passing kwargs
+    """
     def __init__(self, component_name, **kwargs):
+        """
+        Initializes the descriptor
+
+        Args:
+            component_name (str): The name of the component
+            **kwargs (any): Key=Values overriding default values of the component
+        """
         self.component_name = component_name
         self.values = kwargs
 
@@ -23,6 +43,11 @@ class ComponentProperty:
 
 
 class ComponentHandler:
+    """
+    This is the handler that will be added to any typeclass that inherits from ComponentHolder.
+    It lets you add or remove components and will load components as needed.
+    It stores the list of registered components on the host .db with component_names as key.
+    """
     def __init__(self, host):
         self.host = host
         self._loaded_components = {}
