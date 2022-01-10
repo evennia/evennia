@@ -38,36 +38,22 @@ class TestComponents(EvenniaTest):
         assert isinstance(self.char1.test_a, ComponentTestA)
         assert isinstance(self.char1.test_b, ComponentTestB)
 
-    def test_character_assigns_default_value_without_template(self):
+    def test_character_assigns_default_value(self):
         assert self.char1.test_a.my_int == 1
         assert self.char1.test_a.my_list == []
 
-    def test_character_assigns_provided_values_with_template(self):
+    def test_character_assigns_default_provided_values(self):
         assert self.char1.test_b.my_int == 3
         assert self.char1.test_b.my_list == [1, 2, 3]
 
     def test_character_can_register_runtime_component(self):
-        rct = RuntimeComponentTestC.as_template()
+        rct = RuntimeComponentTestC.create(self.char1)
         self.char1.components.add(rct)
         test_c = self.char1.components.get('test_c')
 
         assert test_c
         assert test_c.my_int == 6
         assert test_c.my_dict == {}
-
-    def test_component_template_is_standalone(self):
-        rct = RuntimeComponentTestC.as_template(my_int=10)
-
-        assert rct.my_int == 10
-
-    def test_component_duplicates_correctly(self):
-        rct = RuntimeComponentTestC.as_template(my_int=10)
-        new_rct = rct.duplicate(self.char1)
-        self.char1.components.add(new_rct)
-        test_c = self.char1.components.get('test_c')
-
-        assert test_c.my_int == 10
-        assert new_rct is not rct
 
     def test_handler_can_add_default_component(self):
         self.char1.components.add_default("test_c")

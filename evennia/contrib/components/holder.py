@@ -117,6 +117,7 @@ class ComponentHolderMixin(object):
             component = component_class.create(self, **values)
             component_names.append(component_name)
             self.components._loaded_components[component_name] = component
+
         self.db.component_names = component_names
 
     @property
