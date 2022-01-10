@@ -31,7 +31,7 @@ By default the CooldownHandler will use the `cooldowns` property, but you can
 customize this if desired by passing a different value for the db_attribute
 parameter.
 
-    from evennia.game_systems.contrib.cooldowns import Cooldownhandler
+    from evennia.contrib.game_systems.cooldowns import Cooldownhandler
     from evennia.utils.utils import lazy_property
 
     @lazy_property
