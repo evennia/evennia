@@ -9,23 +9,37 @@ This contrib allows you to develop your mud with more composition and less inher
 Why would you want to do this?
 It allows you to keep your code clean and focused to one feature at a time.
 
-For example, a 'health' component which contains the current and max health
-but also the damage/heals method and various logic about dying.
-Then all you have to do is give this component to any object that can be damaged.
-After that you could filter any targets for the presence of the .health component
+For example, you want to add Health to most of your objects, but not all.
+If you were to do this via inheritance, adding it to the base typeclass,
+you would very quickly end up with a very long and cluttered file, having to sift through
+every unrelated methods to get to that particular feature.
+What if one typeclass does not inherit from your base one and requires health?
+Would you copy paste it, adding further spaghetti or add in a new base typeclass and restructure the whole tree?
 
-if not target.health:
+You could also create a mixin to avoid some of these issues while retaining a small readable file.
+It works well at first when you have just a few of them but the more you add the more unpredictable they become,
+requiring great care when naming methods, calling supers and ordering well in the init.
+
+In both scenarios, you will have to continuously filter out objects that do not possess this feature,
+probably using a variation of getattr, hasattr, or even tags.
+
+The components on the other hand allow you to create a self contained feature that can be added to any object
+or typeclass, containing every thing the feature requires and serving as an interface to interact with.
+In this case, you would add in the current, max health as DBFields and damage/heal as regular methods.
+
+This component could then be added as ComponentProperty to any typeclass, providing the feature or simply added
+to the object at runtime, giving you a one-off destructible object.
+
+Then at any point where you want to try to damage something you can check for the feature like
+
+target_health = target.cmp.health
+if not target_health:
     return "You cannot attack this!"
 else:
-    damage = roll_damage()
-    target.damage(damage)
+    damage_value = roll_damage()
+    target_health.damage(damage_value)
 
-
-It also works similarly to attributes for components which are not declared
-at compile time, you can use something like
-
-if health := target.components.get('health'):
-    health.heal(10)
+Components are also accessible directly from the typeclass if defined via ComponentProperty.
 
 
 # How to install
@@ -35,6 +49,7 @@ import and inherit the ComponentHolderMixin, similar to this
 ```
 from evennia.contrib.components import ComponentHolderMixin
 class Character(ComponentHolderMixin, DefaultCharacter):
+# ...
 ```
 
 Components need to inherit the Component class directly and require a name
@@ -46,7 +61,12 @@ class Health(Component):
     name = "health"
 ```
 
-Components may define DBFields or NDBFields at the class level
+Components may define DBFields or NDBFields at the class level.
+DBField will store its values in the host's DB with a prefixed key.
+NDBField will store its values in the host's NDB and will not persist.
+The key used will be component_name__field_name.
+They use AttributeProperty under the hood.
+
 Example:
 ```
 from evennia.contrib.components import Component, DBField
@@ -55,7 +75,7 @@ class Health(Component):
     health = DBField(default=1)
 ```
 
-Note that default is optional
+Note that default is optional and will default to None
 
 
 Each typeclass using the ComponentHolderMixin can declare its components
@@ -93,12 +113,6 @@ I recommend placing the components package inside the typeclass package.
 
 
 # Technical Stuff you should know about
-
-There is both an DBField and a NDBField for components.
-They wrap to use the .db and .ndb of typeclasses.
-This means that DBField will store its value in the database
-but NDBField will only store it in memory.
-They use AttributeProperty under the hood.
 
 You can make Components stand-alone as a template.
 To do this, call the component's as_template() method and pass it
