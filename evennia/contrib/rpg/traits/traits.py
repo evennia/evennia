@@ -1151,7 +1151,7 @@ class StaticTrait(Trait):
 
     trait_type = "static"
 
-    default_keys = {"base": 0, "mod": 0}
+    default_keys = {"base": 0, "mod": 0, "mult": 1.0}
 
     def __str__(self):
         status = "{value:11}".format(value=self.value)
@@ -1180,9 +1180,19 @@ class StaticTrait(Trait):
             self._data["mod"] = amount
 
     @property
+    def mult(self):
+        """The trait's multiplier."""
+        return self._data["mult"]
+    
+    @mult.setter
+    def mult(self, amount):
+        if type(amount) in (int, float):
+            self._data["mult"] = amount
+
+    @property
     def value(self):
-        "The value of the Trait"
-        return self.base + self.mod
+        "The value of the Trait."
+        return (self.base + self.mod) * self.mult
 
 
 class CounterTrait(Trait):
@@ -1225,6 +1235,7 @@ class CounterTrait(Trait):
     default_keys = {
         "base": 0,
         "mod": 0,
+        "mult": 1.0,
         "min": None,
         "max": None,
         "descs": None,
@@ -1354,6 +1365,15 @@ class CounterTrait(Trait):
             self._data["mod"] = value
 
     @property
+    def mult(self):
+        return self._data["mult"]
+    
+    @mult.setter
+    def mult(self, amount):
+        if type(amount) in (int, float):
+            self._data["mult"] = amount
+
+    @property
     def min(self):
         return self._data["min"]
 
@@ -1398,8 +1418,8 @@ class CounterTrait(Trait):
 
     @property
     def value(self):
-        "The value of the Trait (current + mod)"
-        return self._enforce_boundaries(self.current + self.mod)
+        "The value of the Trait. (current + mod) * mult"
+        return self._enforce_boundaries( (self.current + self.mod) * self.mult)
 
     @property
     def ratetarget(self):
@@ -1494,6 +1514,7 @@ class GaugeTrait(CounterTrait):
     default_keys = {
         "base": 0,
         "mod": 0,
+        "mult": 1.0,
         "min": 0,
         "descs": None,
         "rate": 0,
@@ -1560,6 +1581,15 @@ class GaugeTrait(CounterTrait):
             if value + self.base < self.min:
                 value = self.min - self.base
             self._data["mod"] = value
+    
+    @property
+    def mult(self):
+        return self._data["mult"]
+    
+    @mult.setter
+    def mult(self, amount):
+        if type(amount) in (int, float):
+            self._data["mult"] = amount
 
     @property
     def min(self):
@@ -1576,8 +1606,8 @@ class GaugeTrait(CounterTrait):
 
     @property
     def max(self):
-        "The max is always base + mod."
-        return self.base + self.mod
+        "The max is always (base + mod) * mult."
+        return (self.base + self.mod) * self.mult
 
     @max.setter
     def max(self, value):
