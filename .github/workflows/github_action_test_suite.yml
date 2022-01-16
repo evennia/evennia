@@ -108,34 +108,32 @@ jobs:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
         coverage-reports: ./testing_mygame/coverage.xml
 
-  docker:
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      -
-        name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Build and push for master
-        if: github.ref == 'refs/heads/master'
-        id: docker_build_master
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: evennia/evennia:latest
-      -
-        name: Build and push for develop
-        if: github.ref == 'refs/heads/develop'
-        id: docker_build_develop
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: evennia/evennia:develop
+    # docker setup and push
+    -
+      name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    -
+      name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    -
+      name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    -
+      name: Build and push for master
+      if: github.ref == 'refs/heads/master'
+      id: docker_build_master
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: evennia/evennia:latest
+    -
+      name: Build and push for develop
+      if: github.ref == 'refs/heads/develop'
+      id: docker_build_develop
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: evennia/evennia:develop
