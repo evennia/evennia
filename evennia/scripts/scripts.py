@@ -158,8 +158,15 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         # TODO - restart anew ?
         return ret
 
-    def _start_task(self, interval=None, start_delay=None, repeats=None, force_restart=False,
-                    auto_unpause=False, **kwargs):
+    def _start_task(
+        self,
+        interval=None,
+        start_delay=None,
+        repeats=None,
+        force_restart=False,
+        auto_unpause=False,
+        **kwargs,
+    ):
         """
         Start/Unpause task runner, optionally with new values. If given, this will
         update the Script's fields.
@@ -228,9 +235,12 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
             # we should have a fresh task after this point
             self.ndb._task = ExtendedLoopingCall(self._step_task)
 
-        self._unpause_task(interval=interval, start_delay=start_delay,
-                           auto_unpause=auto_unpause,
-                           old_interval=old_interval)
+        self._unpause_task(
+            interval=interval,
+            start_delay=start_delay,
+            auto_unpause=auto_unpause,
+            old_interval=old_interval,
+        )
 
         if not self.ndb._task.running:
             # if not unpausing started it, start script anew with the new values
@@ -259,8 +269,9 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
 
             self.at_pause(auto_pause=auto_pause, **kwargs)
 
-    def _unpause_task(self, interval=None, start_delay=None, auto_unpause=False,
-                      old_interval=0, **kwargs):
+    def _unpause_task(
+        self, interval=None, start_delay=None, auto_unpause=False, old_interval=0, **kwargs
+    ):
         """
         Unpause task from paused status. This is used for auto-paused tasks, such
         as tasks paused on a server reload.
@@ -294,9 +305,9 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
             self.ndb._task.start(
                 self.db_interval, now=False, start_delay=start_delay, count_start=callcount
             )
-            del self.db._paused_time
-            del self.db._paused_callcount
-            del self.db._manually_paused
+            self.db._paused_time = None
+            self.db._paused_callcount = None
+            self.db._manually_paused = None
 
             self.at_start(**kwargs)
 
@@ -312,9 +323,9 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         self.db_is_active = False
 
         # make sure this is not confused as a paused script
-        del self.db._paused_time
-        del self.db._paused_callcount
-        del self.db._manually_paused
+        self.db._paused_time = None
+        self.db._paused_callcount = None
+        self.db._manually_paused = None
 
         self.save(update_fields=["db_is_active"])
         self.at_stop(**kwargs)
@@ -327,7 +338,9 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         cname = self.__class__.__name__
         estring = _(
             "Script {key}(#{dbid}) of type '{name}': at_repeat() error '{err}'.".format(
-                key=self.key, dbid=self.dbid, name=cname, err=e.getErrorMessage()))
+                key=self.key, dbid=self.dbid, name=cname, err=e.getErrorMessage()
+            )
+        )
         try:
             self.db_obj.msg(estring)
         except Exception:
@@ -504,7 +517,6 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
 
     def at_stop(self, **kwargs):
         pass
-
 
     def start(self, interval=None, start_delay=None, repeats=None, **kwargs):
         """
