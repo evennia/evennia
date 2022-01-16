@@ -122,7 +122,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     -
       name: Build and push for master
-      if: github.ref == 'refs/heads/master'
+      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 && github.ref == 'refs/heads/master'
       id: docker_build_master
       uses: docker/build-push-action@v2
       with:
@@ -130,7 +130,7 @@ jobs:
         tags: evennia/evennia:latest
     -
       name: Build and push for develop
-      if: github.ref == 'refs/heads/develop'
+      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 && github.ref == 'refs/heads/develop'}}
       id: docker_build_develop
       uses: docker/build-push-action@v2
       with:
