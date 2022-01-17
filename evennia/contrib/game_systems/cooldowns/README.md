@@ -2,7 +2,7 @@
 
 Contribution by owllex, 2021
 
-Cooldowns are used modelling rate-limited actions, like how often a
+Cooldowns are used to model rate-limited actions, like how often a
 character can perform a given action; until a certain time has passed their 
 command can not be used again. This contrib provides a simple cooldown 
 handler that can be attached to any typeclass. A cooldown is a lightweight persistent
@@ -30,7 +30,7 @@ customize this if desired by passing a different value for the `db_attribute`
 parameter.
 
 ```python
-from evennia.game_systems.contrib.cooldowns import Cooldownhandler
+from evennia.contrib.game_systems.cooldowns import Cooldownhandler
 from evennia.utils.utils import lazy_property
 
 @lazy_property

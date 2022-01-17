@@ -14,7 +14,7 @@ objects already existing in the database.
 
 """
 
-from django.db.utils import OperationalError
+from django.db.utils import OperationalError, ProgrammingError
 from django.contrib.contenttypes.models import ContentType
 
 # limit symbol import from API
@@ -38,7 +38,7 @@ try:
     ChannelDB = ContentType.objects.get(app_label="comms", model="channeldb").model_class()
     HelpEntry = ContentType.objects.get(app_label="help", model="helpentry").model_class()
     Tag = ContentType.objects.get(app_label="typeclasses", model="tag").model_class()
-except OperationalError:
+except (OperationalError, ProgrammingError):
     # this is a fallback used during tests/doc building
     print("Couldn't initialize create managers - db not set up.")
     from evennia.objects.models import ObjectDB
