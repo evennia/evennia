@@ -31,7 +31,6 @@ from evennia.utils.funcparser import FuncParser
 from evennia.utils import dbserialize
 from evennia.utils.evtable import EvTable
 
-
 _MODULE_PROTOTYPE_MODULES = {}
 _MODULE_PROTOTYPES = {}
 _PROTOTYPE_META_NAMES = (
@@ -516,6 +515,10 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
         be found as a match.
 
     """
+    # This will load the prototypes the first time they are searched
+    if not _MODULE_PROTOTYPE_MODULES:
+        load_module_prototypes()
+
     # prototype keys are always in lowecase
     if key:
       key = key.lower()
