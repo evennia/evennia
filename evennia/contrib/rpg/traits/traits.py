@@ -45,7 +45,7 @@ class Character(DefaultCharacter):
 
     def at_object_creation(self):
         # (or wherever you want)
-        self.traits.add("str", "Strength", trait_type="static", base=10, mod=2)
+        self.traits.add("str", "Strength", trait_type="static", base=10, mod=2, mult=2.0)
         self.traits.add("hp", "Health", trait_type="gauge", min=0, max=100)
         self.traits.add("hunting", "Hunting Skill", trait_type="counter",
                         base=10, mod=1, min=0, max=100)
@@ -74,9 +74,9 @@ from evennia.contrib.rpg.traits import TraitProperty
 
 class Object(DefaultObject):
     ...
-    strength = TraitProperty("Strength", trait_type="static", base=10, mod=2)
+    strength = TraitProperty("Strength", trait_type="static", base=10, mod=2, mult=1.5)
     health = TraitProperty("Health", trait_type="gauge", min=0, base=100, mod=2)
-    hunting = TraitProperty("Hunting Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
+    hunting = TraitProperty("Hunting Skill", trait_type="counter", base=10, mod=1, mult=2.0, min=0, max=100)
 
 ```
 
@@ -102,14 +102,14 @@ each other depends on the trait type.
 
 ```python
 > obj.traits.strength.value
-12                                  # base + mod
+18                                  # (base + mod) * mult
 
-> obj.traits.strength.base += 5
+> obj.traits.strength.base += 6
 obj.traits.strength.value
-17
+27
 
 > obj.traits.hp.value
-102                                 # base + mod
+102                                 # (base + mod) * mult
 
 > obj.traits.hp.base -= 200
 > obj.traits.hp.value
@@ -131,11 +131,11 @@ obj.traits.strength.value
 # with TraitProperties:
 
 > obj.hunting.value
-12
+22
 
 > obj.strength.value += 5
 > obj.strength.value
-17
+32
 
 ```
 
@@ -171,25 +171,26 @@ if trait1 > trait2:
 ```
 ## Static trait
 
-`value = base + mod`
+`value = (base + mod) * mult`
 
-The static trait has a `base` value and an optional `mod`-ifier. A typical use
+The static trait has a `base` value and an optional `mod`-ifier and 'mult'-iplier. A typical use
 of a static trait would be a Strength stat or Skill value. That is, something
 that varies slowly or not at all, and which may be modified in-place.
 
 ```python
 > obj.traits.add("str", "Strength", trait_type="static", base=10, mod=2)
 > obj.traits.mytrait.value
-
 12   # base + mod
+
 > obj.traits.mytrait.base += 2
 > obj.traits.mytrait.mod += 1
 > obj.traits.mytrait.value
 15
 
 > obj.traits.mytrait.mod = 0
+> obj.traits.mytrait.mult = 2.0
 > obj.traits.mytrait.value
-12
+20
 
 ```
 
@@ -201,16 +202,17 @@ that varies slowly or not at all, and which may be modified in-place.
                                   current    value
                                              = current
                                              + mod
+                                             * mult
 
 A counter describes a value that can move from a base. The `.current` property
 is the thing usually modified. It starts at the `.base`. One can also add a
-modifier, which will both be added to the base and to current (forming
-`.value`).  The min/max of the range are optional, a boundary set to None will
-remove it. A suggested use for a Counter Trait would be to track skill values.
+modifier, which is added to both the base and to current. '.value' is then formed 
+by multiplying by the multiplier. The min/max of the range are optional, a boundary 
+set to None will remove it. A suggested use for a Counter Trait would be to track skill values.
 
 ```python
 > obj.traits.add("hunting", "Hunting Skill", trait_type="counter",
-                   base=10, mod=1, min=0, max=100)
+                   base=10, mod=1, mult=1.0, min=0, max=100)
 > obj.traits.hunting.value
 11  # current starts at base + mod
 
@@ -222,7 +224,10 @@ remove it. A suggested use for a Counter Trait would be to track skill values.
 > del obj.traits.hunting.current
 > obj.traits.hunting.value
 11
+
 > obj.traits.hunting.max = None  # removing upper bound
+> obj.traits.hunting.mult = 100.0
+1100
 
 # for TraitProperties, pass the args/kwargs of traits.add() to the
 # TraitProperty constructor instead.
@@ -1142,10 +1147,10 @@ class Trait:
 
 class StaticTrait(Trait):
     """
-    Static Trait. This is a single value with a modifier,
-    with no concept of a 'current' value or min/max etc.
+    Static Trait. This is a single value with a modifier, 
+    multiplier, and no concept of a 'current' value or min/max etc.
 
-    value = base + mod
+    value = (base + mod) * mult
 
     """
 
@@ -1155,7 +1160,7 @@ class StaticTrait(Trait):
 
     def __str__(self):
         status = "{value:11}".format(value=self.value)
-        return "{name:12} {status} ({mod:+3})".format(name=self.name, status=status, mod=self.mod)
+        return "{name:12} {status} ({mod:+3}) (* {mult:.2f})".format(name=self.name, status=status, mod=self.mod, mult=self.mult)
 
     # Helpers
     @property
@@ -1207,8 +1212,9 @@ class CounterTrait(Trait):
                                     current   value
                                               = current
                                               + mod
+                                              * mult
 
-    - value = current + mod, starts at base + mod
+    - value = (current + mod) * mult, starts at base + mod
     - if min or max is None, there is no upper/lower bound (default)
     - if max is set to "base", max will be equal ot base+mod
     - descs are used to optionally describe each value interval.
@@ -1311,16 +1317,16 @@ class CounterTrait(Trait):
             now = time()
             tdiff = now - self._data["last_update"]
             current += rate * tdiff
-            value = current + self.mod
+            value = (current + self.mod) * self.mult
 
             # we must make sure so we don't overstep our bounds
             # even if .mod is included
 
             if self._passed_ratetarget(value):
-                current = self._data["ratetarget"] - self.mod
+                current = (self._data["ratetarget"] - self.mod) / self.mult
                 self._stop_timer()
             elif not self._within_boundaries(value):
-                current = self._enforce_boundaries(value) - self.mod
+                current = (self._enforce_boundaries(value) - self.mod) / self.mult
                 self._stop_timer()
             else:
                 self._data["last_update"] = now
@@ -1342,10 +1348,10 @@ class CounterTrait(Trait):
         if value is None:
             self._data["base"] = self.default_keys["base"]
         if type(value) in (int, float):
-            if self.min is not None and value + self.mod < self.min:
-                value = self.min - self.mod
-            if self.max is not None and value + self.mod > self.max:
-                value = self.max - self.mod
+            if self.min is not None and (value + self.mod) * self.mult < self.min:
+                value = (self.min - self.mod) / self.mult
+            if self.max is not None and (value + self.mod) * self.mult > self.max:
+                value = (self.max - self.mod) / self.mult
             self._data["base"] = value
 
     @property
@@ -1358,10 +1364,10 @@ class CounterTrait(Trait):
             # unsetting the boundary to default
             self._data["mod"] = self.default_keys["mod"]
         elif type(value) in (int, float):
-            if self.min is not None and value + self.base < self.min:
-                value = self.min - self.base
-            if self.max is not None and value + self.base > self.max:
-                value = self.max - self.base
+            if self.min is not None and (value + self.base) * self.mult < self.min:
+                value = (self.min - self.base) / self.mult
+            if self.max is not None and (value + self.base) * self.mult > self.max:
+                value = (self.max - self.base) / self.mult
             self._data["mod"] = value
 
     @property
@@ -1385,7 +1391,7 @@ class CounterTrait(Trait):
         elif type(value) in (int, float):
             if self.max is not None:
                 value = min(self.max, value)
-            self._data["min"] = min(value, self.base + self.mod)
+            self._data["min"] = min(value, (self.base + self.mod) * self.mult)
 
     @property
     def max(self):
@@ -1399,7 +1405,7 @@ class CounterTrait(Trait):
         elif type(value) in (int, float):
             if self.min is not None:
                 value = max(self.min, value)
-            self._data["max"] = max(value, self.base + self.mod)
+            self._data["max"] = max(value, (self.base + self.mod) * self.mult)
 
     @property
     def current(self):
@@ -1482,15 +1488,15 @@ class GaugeTrait(CounterTrait):
     """
     Gauge Trait.
 
-    This emulates a gauge-meter that empties from a base+mod value.
+    This emulates a gauge-meter that empties from a (base+mod) * mult value.
 
-    min/0                                            max=base+mod
+    min/0                                       max=(base+mod)*mult
      |-----------------------X---------------------------|
                            value
                           = current
 
     - min defaults to 0
-    - max value is always base + mad
+    - max value is always (base + mod) * mult
     - .max is an alias of .base
     - value = current and varies from min to max.
     - descs is a mapping {upper_bound_inclusive: desc}. These
@@ -1552,11 +1558,11 @@ class GaugeTrait(CounterTrait):
         """Ensures that incoming value falls within trait's range."""
         if self.min is not None and value <= self.min:
             return self.min
-        return min(self.mod + self.base, value)
+        return min((self.mod + self.base) * self.mult, value)
 
     def __str__(self):
         status = "{value:4} / {base:4}".format(value=self.value, base=self.base)
-        return "{name:12} {status} ({mod:+3})".format(name=self.name, status=status, mod=self.mod)
+        return "{name:12} {status} ({mod:+3}) (* {mult:.2f})".format(name=self.name, status=status, mod=self.mod, mult=self.mult)
 
     @property
     def base(self):
@@ -1564,10 +1570,10 @@ class GaugeTrait(CounterTrait):
 
     @base.setter
     def base(self, value):
-        """Limit so base+mod can never go below min."""
+        """Limit so (base+mod)*mult can never go below min."""
         if type(value) in (int, float):
-            if value + self.mod < self.min:
-                value = self.min - self.mod
+            if (value + self.mod) * self.mult < self.min:
+                value = (self.min - self.mod) / self.mult
             self._data["base"] = value
 
     @property
@@ -1576,10 +1582,10 @@ class GaugeTrait(CounterTrait):
 
     @mod.setter
     def mod(self, value):
-        """Limit so base+mod can never go below min."""
+        """Limit so (base+mod)*mult can never go below min."""
         if type(value) in (int, float):
-            if value + self.base < self.min:
-                value = self.min - self.base
+            if (value + self.base) * self.mult < self.min:
+                value = (self.min - self.base) / self.mult
             self._data["mod"] = value
     
     @property
@@ -1598,11 +1604,11 @@ class GaugeTrait(CounterTrait):
 
     @min.setter
     def min(self, value):
-        """Limit so min can never be greater than base+mod."""
+        """Limit so min can never be greater than (base+mod)*mult."""
         if value is None:
             self._data["min"] = self.default_keys["min"]
         elif type(value) in (int, float):
-            self._data["min"] = min(value, self.base + self.mod)
+            self._data["min"] = min(value,  (self.base + self.mod) * self.mult)
 
     @property
     def max(self):
@@ -1625,7 +1631,7 @@ class GaugeTrait(CounterTrait):
     def current(self):
         """The `current` value of the gauge."""
         return self._update_current(
-            self._enforce_boundaries(self._data.get("current", self.base + self.mod))
+            self._enforce_boundaries(self._data.get("current",  (self.base + self.mod) * self.mult))
         )
 
     @current.setter
@@ -1636,7 +1642,7 @@ class GaugeTrait(CounterTrait):
     @current.deleter
     def current(self):
         "Resets current back to 'full'"
-        self._data["current"] = self.base + self.mod
+        self._data["current"] =  (self.base + self.mod) * self.mult
 
     @property
     def value(self):
