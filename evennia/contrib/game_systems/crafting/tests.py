@@ -654,7 +654,7 @@ class TestCraftSword(BaseEvenniaTestCase):
 
 @mock.patch("evennia.contrib.game_systems.crafting.crafting._load_recipes", new=mock.MagicMock())
 @mock.patch("evennia.contrib.game_systems.crafting.crafting._RECIPE_CLASSES", new={"testrecipe": _MockRecipe})
-@override_settings(CRAFT_RECIPE_MODULES=[], DEFAULT_HOME="#999999")
+@override_settings(CRAFT_RECIPE_MODULES=[])
 class TestCraftCommand(EvenniaCommandTest):
     """Test the crafting command"""
 
