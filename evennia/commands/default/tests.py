@@ -1405,6 +1405,7 @@ class TestBuilding(EvenniaCommandTest):
             "Could not find 'Obj'.| (Objects to destroy "
             "must either be local or specified with a unique #dbref.)",
         )
+        settings.DEFAULT_HOME = f"#{self.room1.dbid}"
         self.call(
             building.CmdDestroy(), settings.DEFAULT_HOME, "You are trying to delete"
         )  # DEFAULT_HOME should not be deleted
