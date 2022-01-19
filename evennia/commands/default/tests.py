@@ -1738,9 +1738,9 @@ class TestBuilding(EvenniaCommandTest):
         self.call(
             building.CmdScripts(),
             "/delete #{}-#{}".format(script1.id, script3.id),
-            "Global Script Deleted - #2 (evennia.scripts.scripts.DefaultScript)|"
-            "Global Script Deleted - #3 (evennia.scripts.scripts.DefaultScript)|"
-            "Global Script Deleted - #4 (evennia.scripts.scripts.DefaultScript)",
+            f"Global Script Deleted - #{script1.id} (evennia.scripts.scripts.DefaultScript)|"
+            f"Global Script Deleted - #{script2.id} (evennia.scripts.scripts.DefaultScript)|"
+            f"Global Script Deleted - #{script3.id} (evennia.scripts.scripts.DefaultScript)",
             inputs=["y"]
         )
         self.assertFalse(script1.pk)
