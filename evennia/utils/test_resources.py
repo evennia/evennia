@@ -153,11 +153,10 @@ class EvenniaTestMixin:
             self.account2.delete()
 
     # Set up fake prototype module for allowing tests to use named prototypes.
-    @override_settings(PROTOTYPE_MODULES=["evennia.utils.tests.data.prototypes_example"])
+    @override_settings(PROTOTYPE_MODULES=["evennia.utils.tests.data.prototypes_example"], DEFAULT_HOME="#1")
     def create_rooms(self):
         self.room1 = create.create_object(self.room_typeclass, key="Room", nohome=True)
         self.room1.db.desc = "room_desc"
-        settings.DEFAULT_HOME = "#%i" % self.room1.id  # we must have a default home
 
         self.room2 = create.create_object(self.room_typeclass, key="Room2")
         self.exit = create.create_object(
