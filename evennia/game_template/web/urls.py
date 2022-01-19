@@ -23,7 +23,10 @@ urlpatterns = [
     # webclient
     path("webclient/", include("web.webclient.urls")),
     # web admin
-    path("admin/", include("web.admin.urls"))
+    path("admin/", include("web.admin.urls")),
+
+    # add any extra urls here:
+    # path("mypath/", include("path.to.my.urls.file")),
 ]
 
 # 'urlpatterns' must be named such for Django to find it.
