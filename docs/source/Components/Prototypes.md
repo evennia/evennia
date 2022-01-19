@@ -47,18 +47,18 @@ The dictionary defines all possible database-properties of an Object. It has a f
 keys. When preparing to store the prototype in the database (or when using the OLC), some
 of these keys are mandatory. When just passing a one-time prototype-dict to the spawner the system
 is
-more lenient and will use defaults for keys not explicitly provided. 
+more lenient and will use defaults for keys not explicitly provided.
 
-In dictionary form, a prototype can look something like this: 
+In dictionary form, a prototype can look something like this:
 
 ```python
-{ 
+{
    "prototype_key": "house"
    "key": "Large house"
    "typeclass": "typeclasses.rooms.house.House"
  }
 ```
-If you wanted to load it into the spawner in-game you could just put all on one line: 
+If you wanted to load it into the spawner in-game you could just put all on one line:
 
     @spawn {"prototype_key="house", "key": "Large house", ...}
 
@@ -74,21 +74,20 @@ before running.
 
 All keys starting with `prototype_` are for book keeping.
 
- - `prototype_key` - the 'name' of the prototype. While this can sometimes be skipped (such as when
-    defining a prototype in a module or feeding a prototype-dict manually to the spawner function),
-it's good
-    practice to try to include this. It is used for book-keeping and storing of the prototype so you
-    can find it later.
+ - `prototype_key` - the 'name' of the prototype, used for referencing the prototype
+    when spawning and inheritance. If defining a prototype in a module and this
+    not set, it will be auto-set to the name of the prototype's variable in the module.
  - `prototype_parent` - If given, this should be the `prototype_key` of another prototype stored in
     the system or available in a module. This makes this prototype *inherit* the keys from the
     parent and only override what is needed. Give a tuple `(parent1, parent2, ...)` for multiple
-    left-right inheritance. If this is not given, a `typeclass` should usually be defined (below). 
+    left-right inheritance. If this is not given, a `typeclass` should usually be defined (below).
  - `prototype_desc` - this is optional and used when listing the prototype in in-game listings.
  - `protototype_tags` - this is optional and allows for tagging the prototype in order to find it
    easier later.
  - `prototype_locks` - two lock types are supported: `edit` and `spawn`. The first lock restricts
    the copying and editing of the prototype when loaded through the OLC. The second determines who
    may use the prototype to create new objects.
+
 
 The remaining keys determine actual aspects of the objects to spawn from this prototype:
 
@@ -111,15 +110,28 @@ exist.
  - `attrs` - list of [Attributes](./Attributes.md). These are given as tuples `(attrname, value,
 category, lockstring)`
  - Any other keywords are interpreted as non-category [Attributes](./Attributes.md) and their values.
-This is
-   convenient for simple Attributes - use `attrs` for full control of Attributes.
+This is convenient for simple Attributes - use `attrs` for full control of Attributes.
 
-Deprecated as of Evennia 0.8:
+#### More on prototype inheritance
 
- - `ndb_<name>` - sets the value of a non-persistent attribute (`"ndb_"` is stripped from the name).
-   This is simply not useful in a prototype and is deprecated.
- - `exec` - This accepts a code snippet or a list of code snippets to run. This should not be used -
-   use callables or [$protfuncs](./Prototypes.md#protfuncs) instead (see below).
+- A prototype can inherit by defining a `prototype_parent` pointing to the name
+  (`prototype_key` of another prototype). If a list of `prototype_keys`, this
+  will be stepped through from left to right, giving priority to the first in
+  the list over those appearing later. That is, if your inheritance is
+  `prototype_parent = ('A', 'B,' 'C')`, and all parents contain colliding keys,
+  then the one from `A` will apply.
+- The prototype keys that start with `prototype_*` are all unique to each
+  prototype. They are _never_ inherited from parent to child.
+- The prototype fields `'attr': [(key, value, category, lockstring),...]`
+  and `'tags': [(key, category, data), ...]` are inherited in a _complementary_
+  fashion. That means that only colliding key+category matches will be replaced, not the entire list.
+  Remember that the category `None` is also considered a valid category!
+- Adding an Attribute as a simple `key:value` will under the hood be translated
+  into an Attribute tuple `(key, value, None, '')` and may replace an Attribute
+  in the parent if it the same key  and a `None` category.
+- All other keys (`permissions`, `destination`, `aliases` etc) are completely
+  _replaced_ by the child's value if given. For the parent's value to be
+  retained, the child must not define these keys at all.
 
 ### Prototype values
 
@@ -160,10 +172,10 @@ that you embed in strings and that has a `$` in front, like
                        "He has $randint(2,5) skulls in a chain around his neck."}
 ```
 At execution time, the place of the protfunc will be replaced with the result of that protfunc being
-called (this is always a string). A protfunc is a [FuncParser function](./FuncParser.md) run 
+called (this is always a string). A protfunc is a [FuncParser function](./FuncParser.md) run
 every time the prototype is used to spawn a new object.
 
-Here is how a protfunc is defined (same as an inlinefunc). 
+Here is how a protfunc is defined (same as an inlinefunc).
 
 ```python
 # this is a silly example, you can just color the text red with |r directly!
@@ -198,17 +210,17 @@ with `_`.
 The default protfuncs available out of the box are defined in `evennia/prototypes/profuncs.py`. To
 override the ones available, just add the same-named function in your own protfunc module.
 
-| Protfunc | Description | 
+| Protfunc | Description |
 
 | `$random()` | Returns random value in range [0, 1) |
 | `$randint(start, end)` | Returns random value in range [start, end] |
 | `$left_justify(<text>)` | Left-justify text |
 | `$right_justify(<text>)` | Right-justify text to screen width |
 | `$center_justify(<text>)` | Center-justify text to screen width |
-| `$full_justify(<text>)` | Spread text across screen width by adding spaces | 
+| `$full_justify(<text>)` | Spread text across screen width by adding spaces |
 | `$protkey(<name>)` | Returns value of another key in this prototype (self-reference) |
 | `$add(<value1>, <value2>)` | Returns value1 + value2. Can also be lists, dicts etc |
-| `$sub(<value1>, <value2>)` | Returns value1 - value2 | 
+| `$sub(<value1>, <value2>)` | Returns value1 - value2 |
 | `$mult(<value1>, <value2>)` | Returns value1 * value2 |
 | `$div(<value1>, <value2>)` | Returns value2 / value1 |
 | `$toint(<value>)` | Returns value converted to integer (or value if not possible) |
@@ -256,7 +268,7 @@ PROTOTYPE_MODULES = += ["world.myownprototypes", "combat.prototypes"]
 
 ```
 
-Here is an example of a prototype defined in a module: 
+Here is an example of a prototype defined in a module:
 
     ```python
     # in a module Evennia looks at for prototypes,

@@ -49,7 +49,6 @@ _PROTOTYPE_RESERVED_KEYS = _PROTOTYPE_META_NAMES + (
     "destination",
     "permissions",
     "locks",
-    "exec",
     "tags",
     "attrs",
 )
