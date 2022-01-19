@@ -40,7 +40,7 @@ try:
     Tag = ContentType.objects.get(app_label="typeclasses", model="tag").model_class()
 except (OperationalError, ProgrammingError):
     # this is a fallback used during tests/doc building
-    print("Couldn't initialize create managers - db not set up.")
+    print("Database not available yet - using temporary fallback for create managers.")
     from evennia.objects.models import ObjectDB
     from evennia.accounts.models import AccountDB
     from evennia.scripts.models import ScriptDB
