@@ -213,7 +213,7 @@ look of these clothes are appended to the character's description when worn.
 
 _Contribution by owllex, 2021_
 
-Cooldowns are used modelling rate-limited actions, like how often a
+Cooldowns are used to model rate-limited actions, like how often a
 character can perform a given action; until a certain time has passed their 
 command can not be used again. This contrib provides a simple cooldown 
 handler that can be attached to any typeclass. A cooldown is a lightweight persistent

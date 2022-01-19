@@ -241,15 +241,15 @@ def _get_prototype(inprot, protparents, uninherited=None, _workprot=None):
 
             # attrs, tags have internal structure that should be inherited separately
             new_prot["attrs"] = _inherit_attrs(
-                _workprot.get("attrs", {}), new_prot.get("attrs", {})
+                _workprot.get("attrs", {}), new_prot.get("attrs", [])
             )
-            new_prot["tags"] = _inherit_tags(_workprot.get("tags", {}), new_prot.get("tags", {}))
+            new_prot["tags"] = _inherit_tags(_workprot.get("tags", []), new_prot.get("tags", []))
 
             _workprot.update(new_prot)
     # the inprot represents a higher level (a child prot), which should override parents
 
-    inprot["attrs"] = _inherit_attrs(_workprot.get("attrs", {}), inprot.get("attrs", {}))
-    inprot["tags"] = _inherit_tags(_workprot.get("tags", {}), inprot.get("tags", {}))
+    inprot["attrs"] = _inherit_attrs(_workprot.get("attrs", []), inprot.get("attrs", []))
+    inprot["tags"] = _inherit_tags(_workprot.get("tags", []), inprot.get("tags", []))
     _workprot.update(inprot)
     if uninherited:
         # put back the parts that should not be inherited
