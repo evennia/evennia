@@ -43,7 +43,7 @@
   <section class="tex2jax_ignore mathjax_ignore" id="cooldowns">
 <h1>Cooldowns<a class="headerlink" href="#cooldowns" title="Permalink to this headline">¶</a></h1>
 <p>Contribution by owllex, 2021</p>
-<p>Cooldowns are used modelling rate-limited actions, like how often a
+<p>Cooldowns are used to model rate-limited actions, like how often a
 character can perform a given action; until a certain time has passed their
 command can not be used again. This contrib provides a simple cooldown
 handler that can be attached to any typeclass. A cooldown is a lightweight persistent
@@ -65,7 +65,7 @@ object, or just put it on your <code class="docutils literal notranslate"><span 
 <p>By default the CooldownHandler will use the <code class="docutils literal notranslate"><span class="pre">cooldowns</span></code> property, but you can
 customize this if desired by passing a different value for the <code class="docutils literal notranslate"><span class="pre">db_attribute</span></code>
 parameter.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.game_systems.contrib.cooldowns</span> <span class="kn">import</span> <span class="n">Cooldownhandler</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.game_systems.cooldowns</span> <span class="kn">import</span> <span class="n">Cooldownhandler</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
 
 <span class="nd">@lazy_property</span>

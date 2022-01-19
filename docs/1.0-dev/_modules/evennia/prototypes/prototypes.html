@@ -75,7 +75,6 @@
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">dbserialize</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span>
 
-
 <span class="n">_MODULE_PROTOTYPE_MODULES</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="n">_MODULE_PROTOTYPES</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="n">_PROTOTYPE_META_NAMES</span> <span class="o">=</span> <span class="p">(</span>
@@ -94,7 +93,6 @@
     <span class="s2">&quot;destination&quot;</span><span class="p">,</span>
     <span class="s2">&quot;permissions&quot;</span><span class="p">,</span>
     <span class="s2">&quot;locks&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;exec&quot;</span><span class="p">,</span>
     <span class="s2">&quot;tags&quot;</span><span class="p">,</span>
     <span class="s2">&quot;attrs&quot;</span><span class="p">,</span>
 <span class="p">)</span>
@@ -560,6 +558,10 @@
 <span class="sd">        be found as a match.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># This will load the prototypes the first time they are searched</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_MODULE_PROTOTYPE_MODULES</span><span class="p">:</span>
+        <span class="n">load_module_prototypes</span><span class="p">()</span>
+
     <span class="c1"># prototype keys are always in lowecase</span>
     <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
       <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>

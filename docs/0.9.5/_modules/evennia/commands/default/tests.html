@@ -1448,6 +1448,7 @@
             <span class="s2">&quot;Could not find &#39;Obj&#39;.| (Objects to destroy &quot;</span>
             <span class="s2">&quot;must either be local or specified with a unique #dbref.)&quot;</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">dbid</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdDestroy</span><span class="p">(),</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="p">,</span> <span class="s2">&quot;You are trying to delete&quot;</span>
         <span class="p">)</span>  <span class="c1"># DEFAULT_HOME should not be deleted</span>
@@ -1780,9 +1781,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
             <span class="s2">&quot;/delete #</span><span class="si">{}</span><span class="s2">-#</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">script1</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">script3</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
-            <span class="s2">&quot;Global Script Deleted - #2 (evennia.scripts.scripts.DefaultScript)|&quot;</span>
-            <span class="s2">&quot;Global Script Deleted - #3 (evennia.scripts.scripts.DefaultScript)|&quot;</span>
-            <span class="s2">&quot;Global Script Deleted - #4 (evennia.scripts.scripts.DefaultScript)&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - #</span><span class="si">{</span><span class="n">script1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (evennia.scripts.scripts.DefaultScript)|&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - #</span><span class="si">{</span><span class="n">script2</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (evennia.scripts.scripts.DefaultScript)|&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - #</span><span class="si">{</span><span class="n">script3</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (evennia.scripts.scripts.DefaultScript)&quot;</span><span class="p">,</span>
             <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">script1</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
