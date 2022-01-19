@@ -3,7 +3,7 @@
 
 **Before doing this tutorial you will probably want to read the intro in [Basic Web tutorial](Web-
 Tutorial).**  Reading the three first parts of the [Django
-tutorial](https://docs.djangoproject.com/en/1.9/intro/tutorial01/) might help as well.
+tutorial](https://docs.djangoproject.com/en/4.0/intro/tutorial01/) might help as well.
 
 This tutorial will show you how to access the help system through your website.  Both help commands
 and regular help entries will be visible, depending on the logged-in user or an anonymous character.
@@ -78,7 +78,7 @@ A *view* in Django is a simple Python function placed in the "views.py" file in 
 handle the behavior that is triggered when a user asks for this information by entering a *URL* (the
 connection between *views* and *URLs* will be discussed later).
 
-So let's create our view.  You can open the "web/help_system/view.py" file and paste the following
+So let's create our view.  You can open the "web/help_system/views.py" file and paste the following
 lines:
 
 ```python
@@ -136,27 +136,45 @@ web page.  This block is bigger, so we define it on several lines.
 Last step to add our page: we need to add a *URL* leading to it... otherwise users won't be able to
 access it.  The URLs of our apps are stored in the app's directory "urls.py" file.
 
-Open the "web/help_system/urls.py" file (you might have to create it) and write in it:
+Open the `web/help_system/urls.py` file (you might have to create it) and make it look like this.
 
 ```python
 # URL patterns for the help_system app
 
-from django.conf.urls import url
-from web.help_system.views import index
+from django.urls import path
+from .views import index
 
 urlpatterns = [
-    url(r'^$', index, name="index")
+    path('', index)
 ]
 ```
 
-We also need to add our app as a namespace holder for URLS.  Edit the file "web/urls.py".  In it you
-will find the `custom_patterns` variable.  Replace it with:
+The `urlpatterns` variable is what Django/Evennia looks for to figure out how to
+direct a user entering an URL in their browser to the view-code you have
+written.
+
+Last we need to tie this into the main namespace for your game.  Edit the file
+`mygame/web/urls.py`.  In it you will find the `urlpatterns` list again.
+Add a new `path` to the end of the list.
 
 ```python
-custom_patterns = [
-    url(r'^help/', include('web.help_system.urls',
-            namespace='help_system', app_name='help_system')),
+# mygame/web/urls.py
+# [...]
+
+# add patterns
+urlpatterns = [
+    # website
+    path("", include("web.website.urls")),
+    # webclient
+    path("webclient/", include("web.webclient.urls")),
+    # web admin
+    path("admin/", include("web.admin.urls")),
+
+    # my help system
+    path('help/', include('web.help_system.urls'))   # <--- NEW
 ]
+
+# [...]
 ```
 
 When a user will ask for a specific *URL* on your site, Django will:

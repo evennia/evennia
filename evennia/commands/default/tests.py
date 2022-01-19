@@ -1405,6 +1405,7 @@ class TestBuilding(EvenniaCommandTest):
             "Could not find 'Obj'.| (Objects to destroy "
             "must either be local or specified with a unique #dbref.)",
         )
+        settings.DEFAULT_HOME = f"#{self.room1.dbid}"
         self.call(
             building.CmdDestroy(), settings.DEFAULT_HOME, "You are trying to delete"
         )  # DEFAULT_HOME should not be deleted
@@ -1737,9 +1738,9 @@ class TestBuilding(EvenniaCommandTest):
         self.call(
             building.CmdScripts(),
             "/delete #{}-#{}".format(script1.id, script3.id),
-            "Global Script Deleted - #2 (evennia.scripts.scripts.DefaultScript)|"
-            "Global Script Deleted - #3 (evennia.scripts.scripts.DefaultScript)|"
-            "Global Script Deleted - #4 (evennia.scripts.scripts.DefaultScript)",
+            f"Global Script Deleted - #{script1.id} (evennia.scripts.scripts.DefaultScript)|"
+            f"Global Script Deleted - #{script2.id} (evennia.scripts.scripts.DefaultScript)|"
+            f"Global Script Deleted - #{script3.id} (evennia.scripts.scripts.DefaultScript)",
             inputs=["y"]
         )
         self.assertFalse(script1.pk)
