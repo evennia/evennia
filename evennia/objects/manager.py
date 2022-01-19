@@ -676,15 +676,19 @@ class ObjectDBManager(TypedObjectManager):
 
         location = dbid_to_obj(location, self.model)
         destination = dbid_to_obj(destination, self.model)
-        home = dbid_to_obj(home, self.model)
-        if not home:
+        if home:
+            home = dbid_to_obj(home, self.model)
+
+        if not nohome and not home:
             try:
-                home = dbid_to_obj(settings.DEFAULT_HOME, self.model) if not nohome else None
-            except self.model_ObjectDB.DoesNotExist:
+                home = dbid_to_obj(settings.DEFAULT_HOME, self.model)
+            except self.model.DoesNotExist:
                 raise self.model.DoesNotExist(
                     "settings.DEFAULT_HOME (= '%s') does not exist, or the setting is malformed."
                     % settings.DEFAULT_HOME
                 )
+        elif nohome and not home:
+            home = None
 
         # create new instance
         new_object = typeclass(
