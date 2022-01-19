@@ -43,7 +43,7 @@
   <section class="tex2jax_ignore mathjax_ignore" id="help-system-tutorial">
 <h1>Help System Tutorial<a class="headerlink" href="#help-system-tutorial" title="Permalink to this headline">¶</a></h1>
 <p><strong>Before doing this tutorial you will probably want to read the intro in [Basic Web tutorial](Web-
-Tutorial).</strong>  Reading the three first parts of the <a class="reference external" href="https://docs.djangoproject.com/en/1.9/intro/tutorial01/">Django
+Tutorial).</strong>  Reading the three first parts of the <a class="reference external" href="https://docs.djangoproject.com/en/4.0/intro/tutorial01/">Django
 tutorial</a> might help as well.</p>
 <p>This tutorial will show you how to access the help system through your website.  Both help commands
 and regular help entries will be visible, depending on the logged-in user or an anonymous character.</p>
@@ -114,7 +114,7 @@ with your website.  Building on templates is so much more convenient.</p>
 <p>A <em>view</em> in Django is a simple Python function placed in the “<a class="reference external" href="http://views.py">views.py</a>” file in your app.  It will
 handle the behavior that is triggered when a user asks for this information by entering a <em>URL</em> (the
 connection between <em>views</em> and <em>URLs</em> will be discussed later).</p>
-<p>So let’s create our view.  You can open the “web/help_system/view.py” file and paste the following
+<p>So let’s create our view.  You can open the “web/help_system/views.py” file and paste the following
 lines:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
 
@@ -168,23 +168,40 @@ web page.  This block is bigger, so we define it on several lines.</p></li>
 <h3>Create a new URL<a class="headerlink" href="#create-a-new-url" title="Permalink to this headline">¶</a></h3>
 <p>Last step to add our page: we need to add a <em>URL</em> leading to it… otherwise users won’t be able to
 access it.  The URLs of our apps are stored in the app’s directory “<a class="reference external" href="http://urls.py">urls.py</a>” file.</p>
-<p>Open the “web/help_system/urls.py” file (you might have to create it) and write in it:</p>
+<p>Open the <code class="docutils literal notranslate"><span class="pre">web/help_system/urls.py</span></code> file (you might have to create it) and make it look like this.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># URL patterns for the help_system app</span>
 
-<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
-<span class="kn">from</span> <span class="nn">web.help_system.views</span> <span class="kn">import</span> <span class="n">index</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="kn">from</span> <span class="nn">.views</span> <span class="kn">import</span> <span class="n">index</span>
 
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^$&#39;</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">)</span>
+    <span class="n">path</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
 <span class="p">]</span>
 </pre></div>
 </div>
-<p>We also need to add our app as a namespace holder for URLS.  Edit the file “web/urls.py”.  In it you
-will find the <code class="docutils literal notranslate"><span class="pre">custom_patterns</span></code> variable.  Replace it with:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">custom_patterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^help/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">&#39;web.help_system.urls&#39;</span><span class="p">,</span>
-            <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;help_system&#39;</span><span class="p">,</span> <span class="n">app_name</span><span class="o">=</span><span class="s1">&#39;help_system&#39;</span><span class="p">)),</span>
+<p>The <code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code> variable is what Django/Evennia looks for to figure out how to
+direct a user entering an URL in their browser to the view-code you have
+written.</p>
+<p>Last we need to tie this into the main namespace for your game.  Edit the file
+<code class="docutils literal notranslate"><span class="pre">mygame/web/urls.py</span></code>.  In it you will find the <code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code> list again.
+Add a new <code class="docutils literal notranslate"><span class="pre">path</span></code> to the end of the list.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/web/urls.py</span>
+<span class="c1"># [...]</span>
+
+<span class="c1"># add patterns</span>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># website</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">&quot;web.website.urls&quot;</span><span class="p">)),</span>
+    <span class="c1"># webclient</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;webclient/&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">&quot;web.webclient.urls&quot;</span><span class="p">)),</span>
+    <span class="c1"># web admin</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;admin/&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">&quot;web.admin.urls&quot;</span><span class="p">)),</span>
+
+    <span class="c1"># my help system</span>
+    <span class="n">path</span><span class="p">(</span><span class="s1">&#39;help/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">&#39;web.help_system.urls&#39;</span><span class="p">))</span>   <span class="c1"># &lt;--- NEW</span>
 <span class="p">]</span>
+
+<span class="c1"># [...]</span>
 </pre></div>
 </div>
 <p>When a user will ask for a specific <em>URL</em> on your site, Django will:</p>
