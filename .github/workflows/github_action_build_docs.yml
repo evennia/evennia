@@ -31,6 +31,7 @@ jobs:
       - name: Install doc-building dependencies
         run: |
           python -m pip install --upgrade pip
+          pip install -r requirements.txt
           cd docs/
           make install
 
@@ -39,15 +40,6 @@ jobs:
         run: |
           cd docs/
           make quickstrict
-
-      # full game dir needed for mv-local
-      # - name: Set up evennia game dir
-      #   run: |
-      #     pip install -e .
-      #     cd ..
-      #     evennia --init gamedir
-      #     cd gamedir
-      #     evennia migrate
 
       - name: Deploy docs (only from master/develop branch)
         if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'}}
