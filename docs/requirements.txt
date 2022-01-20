@@ -4,7 +4,6 @@ sphinx==3.2.1
 sphinx-multiversion==0.2.4
 myst-parser==0.15.2
 myst-parser[linkify]==0.15.2
-simpleeval==0.9.11
 
 # recommonmark custom branch with evennia-specific fixes
 # git+https://github.com/evennia/recommonmark.git@evennia-mods#egg=recommonmark
