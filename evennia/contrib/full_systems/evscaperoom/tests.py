@@ -5,7 +5,7 @@ Unit tests for the Evscaperoom
 import inspect
 import pkgutil
 from os import path
-from evennia.commands.default.tests import EvenniaCommandTest
+from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia import InterruptCommand
 from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.utils import mod_import
@@ -15,7 +15,7 @@ from . import objects
 from . import utils
 
 
-class TestEvscaperoomCommands(EvenniaCommandTest):
+class TestEvscaperoomCommands(BaseEvenniaCommandTest):
     def setUp(self):
         super().setUp()
         self.room1 = utils.create_evscaperoom_object("evscaperoom.room.EvscapeRoom", key="Testroom")

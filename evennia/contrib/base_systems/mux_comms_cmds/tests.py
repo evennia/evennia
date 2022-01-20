@@ -3,11 +3,11 @@ Legacy Mux comms tests (extracted from 0.9.5)
 
 """
 
-from evennia.commands.default.tests import EvenniaCommandTest
+from evennia.commands.default.tests import BaseEvenniaCommandTest
 from . import mux_comms_cmds as comms
 
 
-class TestLegacyMuxComms(EvenniaCommandTest):
+class TestLegacyMuxComms(BaseEvenniaCommandTest):
     """
     Test the legacy comms contrib.
     """

@@ -4,10 +4,10 @@ Test eveditor
 """
 
 from evennia.utils import eveditor
-from evennia.commands.default.tests import EvenniaCommandTest
+from evennia.commands.default.tests import BaseEvenniaCommandTest
 
 
-class TestEvEditor(EvenniaCommandTest):
+class TestEvEditor(BaseEvenniaCommandTest):
     def test_eveditor_view_cmd(self):
         eveditor.EvEditor(self.char1)
         self.call(

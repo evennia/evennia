@@ -6,7 +6,7 @@ Unit tests for the crafting system contrib.
 from unittest import mock
 from django.test import override_settings
 from django.core.exceptions import ObjectDoesNotExist
-from evennia.commands.default.tests import EvenniaCommandTest
+from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.test_resources import BaseEvenniaTestCase
 from evennia.utils.create import create_object
 from . import crafting, example_recipes
@@ -655,7 +655,7 @@ class TestCraftSword(BaseEvenniaTestCase):
 @mock.patch("evennia.contrib.game_systems.crafting.crafting._load_recipes", new=mock.MagicMock())
 @mock.patch("evennia.contrib.game_systems.crafting.crafting._RECIPE_CLASSES", new={"testrecipe": _MockRecipe})
 @override_settings(CRAFT_RECIPE_MODULES=[])
-class TestCraftCommand(EvenniaCommandTest):
+class TestCraftCommand(BaseEvenniaCommandTest):
     """Test the crafting command"""
 
     def setUp(self):

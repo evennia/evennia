@@ -1,12 +1,34 @@
 """
 Various helper resources for writing unittests.
 
+Classes for testing Evennia core:
+
+- `BaseEvenniaTestCase` - no default objects, only enforced default settings
+- `BaseEvenniaTest` - all default objects, enforced default settings
+- `BaseEvenniaCommandTest` - for testing Commands, enforced default settings
+
+Classes for testing game folder content:
+
+- `EvenniaTestCase` - no default objects, using gamedir settings (identical to
+   standard Python TestCase)
+- `EvenniaTest` - all default objects, using gamedir settings
+- `EvenniaCommandTest` - for testing game folder commands, using gamedir settings
+
+Other:
+
+- `EvenniaTestMixin` - A class mixin for creating the test environment objects, for
+  making custom tests.
+- `EvenniaCommandMixin` - A class mixin that adds support for command testing with the .call()
+  helper. Used by the command-test classes, but can be used for making a customt test class.
+
 """
 import sys
+import re
+import types
 from twisted.internet.defer import Deferred
 from django.conf import settings
 from django.test import TestCase, override_settings
-from mock import Mock, patch
+from mock import Mock, patch, MagicMock
 from evennia.objects.objects import DefaultObject, DefaultCharacter, DefaultRoom, DefaultExit
 from evennia.accounts.accounts import DefaultAccount
 from evennia.scripts.scripts import DefaultScript
@@ -14,8 +36,14 @@ from evennia.server.serversession import ServerSession
 from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import create
 from evennia.utils.idmapper.models import flush_cache
-from evennia.utils.utils import all_from_module
+from evennia.utils.utils import all_from_module, to_str
+from evennia.utils import ansi
 from evennia import settings_default
+from evennia.commands.default.muxcommand import MuxCommand
+from evennia.commands.command import InterruptCommand
+
+
+_RE_STRIP_EVMENU = re.compile(r"^\+|-+\+|\+-+|--+|\|(?:\s|$)", re.MULTILINE)
 
 
 # set up a 'pristine' setting, unaffected by any changes in mygame
@@ -242,13 +270,274 @@ class EvenniaTestMixin:
         super().tearDown()
 
 
+@patch("evennia.server.portal.portal.LoopingCall", new=MagicMock())
+class EvenniaCommandTestMixin:
+    """
+    Mixin to add to a test in order to provide the `.call` helper for
+    testing the execution and returns of a command.
+
+    Tests a Command by running it and comparing what messages it sends with
+    expected values. This tests without actually spinning up the cmdhandler
+    for every test, which is more controlled.
+
+    Example:
+    ::
+
+        from commands.echo import CmdEcho
+
+        class MyCommandTest(EvenniaTest, CommandTestMixin):
+
+            def test_echo(self):
+                '''
+                Test that the echo command really returns
+                what you pass into it.
+                '''
+                self.call(MyCommand(), "hello world!",
+                          "You hear your echo: 'Hello world!'")
+
+    """
+
+    # formatting for .call's error message
+    _ERROR_FORMAT = """
+=========================== Wanted message ===================================
+{expected_msg}
+=========================== Returned message =================================
+{returned_msg}
+==============================================================================
+""".rstrip()
+
+    def call(
+        self,
+        cmdobj,
+        input_args,
+        msg=None,
+        cmdset=None,
+        noansi=True,
+        caller=None,
+        receiver=None,
+        cmdstring=None,
+        obj=None,
+        inputs=None,
+        raw_string=None,
+    ):
+        """
+        Test a command by assigning all the needed properties to a cmdobj and
+        running the sequence. The resulting `.msg` calls will be mocked and
+        the text= calls to them compared to a expected output.
+
+        Args:
+            cmdobj (Command): The command object to use.
+            input_args (str): This should be the full input the Command should
+                see, such as 'look here'. This will become `.args` for the Command
+                instance to parse.
+            msg (str or dict, optional): This is the expected return value(s)
+                returned through `caller.msg(text=...)` calls in the command. If a string, the
+                receiver is controlled with the `receiver` kwarg (defaults to `caller`).
+                If this is a `dict`, it is a mapping
+                `{receiver1: "expected1", receiver2: "expected2",...}` and `receiver` is
+                ignored. The message(s) are compared with the actual messages returned
+                to the receiver(s) as the Command runs. Each check uses `.startswith`,
+                so you can choose to only include the first part of the
+                returned message if that's enough to verify a correct result. EvMenu
+                decorations (like borders) are stripped and should not be included. This
+                should also not include color tags unless `noansi=False`.
+                If the command returns texts in multiple separate `.msg`-
+                calls to a receiver, separate these with `|` if `noansi=True`
+                (default) and `||` if `noansi=False`. If no `msg` is given (`None`),
+                then no automatic comparison will be done.
+            cmdset (str, optional): If given, make `.cmdset` available on the Command
+                instance as it runs. While `.cmdset` is normally available on the
+                Command instance by default, this is usually only used by
+                commands that explicitly operates/displays cmdsets, like
+                `examine`.
+            noansi (str, optional): By default the color tags of the `msg` is
+                ignored, this makes them significant. If unset, `msg` must contain
+                the same color tags as the actual return message.
+            caller (Object or Account, optional): By default `self.char1` is used as the
+                command-caller (the `.caller` property on the Command). This allows to
+                execute with another caller, most commonly an Account.
+            receiver (Object or Account, optional): This is the object to receive the
+                return messages we want to test. By default this is the same as `caller`
+                (which in turn defaults to is `self.char1`). Note that if `msg` is
+                a `dict`, this is ignored since the receiver is already specified there.
+            cmdstring (str, optional): Normally this is the Command's `key`.
+                This allows for tweaking the `.cmdname` property of the
+                Command`.  This isb used for commands with multiple aliases,
+                where the command explicitly checs which alias was used to
+                determine its functionality.
+            obj (str, optional): This sets the `.obj` property of the Command - the
+                object on which the Command 'sits'. By default this is the same as `caller`.
+                This can be used for testing on-object Command interactions.
+            inputs (list, optional): A list of strings to pass to functions that pause to
+                take input from the user (normally using `@interactive` and
+                `ret = yield(question)` or `evmenu.get_input`). Each  element of the
+                list will be passed into the command as if the user wrote that at the prompt.
+            raw_string (str, optional): Normally the `.raw_string` property  is set as
+                a combination of your `key/cmdname` and `input_args`. This allows
+                direct control of what this is, for example for testing edge cases
+                or malformed inputs.
+
+        Returns:
+            str or dict: The message sent to `receiver`, or a dict of
+                `{receiver: "msg", ...}` if multiple are given. This is usually
+                only used with `msg=None` to do the validation externally.
+
+        Raises:
+            AssertionError: If the returns of `.msg` calls (tested with `.startswith`) does not
+                match `expected_input`.
+
+        Notes:
+            As part of the tests, all methods of the Command will be called in
+            the proper order:
+
+            - cmdobj.at_pre_cmd()
+            - cmdobj.parse()
+            - cmdobj.func()
+            - cmdobj.at_post_cmd()
+
+        """
+        # The `self.char1` is created in the `EvenniaTest` base along with
+        # other helper objects like self.room and self.obj
+        caller = caller if caller else self.char1
+        cmdobj.caller = caller
+        cmdobj.cmdname = cmdstring if cmdstring else cmdobj.key
+        cmdobj.raw_cmdname = cmdobj.cmdname
+        cmdobj.cmdstring = cmdobj.cmdname  # deprecated
+        cmdobj.args = input_args
+        cmdobj.cmdset = cmdset
+        cmdobj.session = SESSIONS.session_from_sessid(1)
+        cmdobj.account = self.account
+        cmdobj.raw_string = raw_string if raw_string is not None else cmdobj.key + " " + input_args
+        cmdobj.obj = obj or (caller if caller else self.char1)
+        inputs = inputs or []
+
+        # set up receivers
+        receiver_mapping = {}
+        if isinstance(msg, dict):
+            # a mapping {receiver: msg, ...}
+            receiver_mapping = {recv: str(msg).strip() if msg else None
+                                for recv, msg in msg.items()}
+        else:
+            # a single expected string and thus a single receiver (defaults to caller)
+            receiver = receiver if receiver else caller
+            receiver_mapping[receiver] = str(msg).strip() if msg is not None else None
+
+        unmocked_msg_methods = {}
+        for receiver in receiver_mapping:
+            # save the old .msg method so we can get it back
+            # cleanly  after the test
+            unmocked_msg_methods[receiver] = receiver.msg
+            # replace normal `.msg` with a mock
+            receiver.msg = Mock()
+
+        # Run the methods of the Command. This mimics what happens in the
+        # cmdhandler. This will have the mocked .msg be called as part of the
+        # execution. Mocks remembers what was sent to them so we will be able
+        # to retrieve what was sent later.
+        try:
+            if cmdobj.at_pre_cmd():
+                return
+            cmdobj.parse()
+            ret = cmdobj.func()
+
+            # handle func's with yield in them (making them generators)
+            if isinstance(ret, types.GeneratorType):
+                while True:
+                    try:
+                        inp = inputs.pop() if inputs else None
+                        if inp:
+                            try:
+                                # this mimics a user's reply to a prompt
+                                ret.send(inp)
+                            except TypeError:
+                                next(ret)
+                                ret = ret.send(inp)
+                        else:
+                            # non-input yield, like yield(10). We don't pause
+                            # but fire it immediately.
+                            next(ret)
+                    except StopIteration:
+                        break
+
+            cmdobj.at_post_cmd()
+        except StopIteration:
+            pass
+        except InterruptCommand:
+            pass
+
+        for inp in inputs:
+            # if there are any inputs left, we may have a non-generator
+            # input to handle (get_input/ask_yes_no that uses a separate
+            # cmdset rather than a yield
+            caller.execute_cmd(inp)
+
+        # At this point the mocked .msg methods on each receiver will have
+        # stored all calls made to them (that's a basic function of the Mock
+        # class). We will not extract them and compare to what we expected to
+        # go to each receiver.
+
+        returned_msgs = {}
+        for receiver, expected_msg in receiver_mapping.items():
+            # get the stored messages from the Mock with Mock.mock_calls.
+            stored_msg = [
+                args[0] if args and args[0] else kwargs.get("text", to_str(kwargs))
+                for name, args, kwargs in receiver.msg.mock_calls
+            ]
+            # we can return this now, we are done using the mock
+            receiver.msg = unmocked_msg_methods[receiver]
+
+            # Get the first element of a tuple if msg received a tuple instead of a string
+            stored_msg = [str(smsg[0])
+                          if isinstance(smsg, tuple) else str(smsg) for smsg in stored_msg]
+            if expected_msg is None:
+                # no expected_msg; just build the returned_msgs dict
+
+                returned_msg = "\n".join(str(msg) for msg in stored_msg)
+                returned_msgs[receiver] = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
+            else:
+                # compare messages to expected
+
+                # set our separator for returned messages based on parsing ansi or not
+                msg_sep = "|" if noansi else "||"
+
+                # We remove Evmenu decorations since that just makes it harder
+                # to write the comparison string. We also strip ansi before this
+                # comparison since otherwise it would mess with the regex.
+                returned_msg = msg_sep.join(
+                    _RE_STRIP_EVMENU.sub(
+                        "", ansi.parse_ansi(mess, strip_ansi=noansi))
+                    for mess in stored_msg).strip()
+
+                # this is the actual test
+                if expected_msg == "" and returned_msg or not returned_msg.startswith(expected_msg):
+                    # failed the test
+                    raise AssertionError(
+                        self._ERROR_FORMAT.format(
+                            expected_msg=expected_msg, returned_msg=returned_msg)
+                    )
+                # passed!
+                returned_msgs[receiver] = returned_msg
+
+        if len(returned_msgs) == 1:
+            return list(returned_msgs.values())[0]
+        return returned_msgs
+
+
+# Base testing classes
+
 @override_settings(**DEFAULT_SETTINGS)
 class BaseEvenniaTestCase(TestCase):
     """
-    Base test (with no default objects) but with
-    enforced default settings.
+    Base test (with no default objects) but with enforced default settings.
 
     """
+
+class EvenniaTestCase(TestCase):
+    """
+    For use with gamedir settings; Just like the normal test case, only for naming consistency.
+
+    """
+    pass
 
 
 @override_settings(**DEFAULT_SETTINGS)
@@ -257,7 +546,6 @@ class BaseEvenniaTest(EvenniaTestMixin, TestCase):
     This class parent has all default objects and uses only default settings.
 
     """
-
 
 class EvenniaTest(EvenniaTestMixin, TestCase):
     """
@@ -273,3 +561,28 @@ class EvenniaTest(EvenniaTestMixin, TestCase):
     exit_typeclass = settings.BASE_EXIT_TYPECLASS
     room_typeclass = settings.BASE_ROOM_TYPECLASS
     script_typeclass = settings.BASE_SCRIPT_TYPECLASS
+
+
+@patch("evennia.commands.account.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.admin.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.batchprocess.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.building.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.comms.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.general.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.help.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.syscommands.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.system.COMMAND_DEFAULT_CLASS", MuxCommand)
+@patch("evennia.commands.unloggedin.COMMAND_DEFAULT_CLASS", MuxCommand)
+class BaseEvenniaCommandTest(BaseEvenniaTest, EvenniaCommandTestMixin):
+    """
+    Commands only using the default settings.
+
+    """
+
+
+class EvenniaCommandTest(EvenniaTest, EvenniaCommandTestMixin):
+    """
+    Parent class to inherit from - makes tests use your own
+    classes and settings in mygame.
+
+    """
