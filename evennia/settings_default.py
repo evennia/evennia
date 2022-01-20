@@ -1149,6 +1149,10 @@ SESSION_SYNC_ATTRS = (
 AMP_SERVER_PROTOCOL_CLASS = "evennia.server.portal.amp_server.AMPServerProtocol"
 AMP_CLIENT_PROTOCOL_CLASS = "evennia.server.amp_client.AMPServerClientProtocol"
 
+# don't change this manually, it can be checked from code to know if
+# being run from a unit test (set by the evennia.utils.test_resources.BaseEvenniaTest
+# and BaseEvenniaTestCase unit testing parents)
+_TEST_ENVIRONMENT = False
 
 ######################################################################
 # Django extensions

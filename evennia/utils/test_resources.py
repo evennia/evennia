@@ -58,6 +58,8 @@ DEFAULT_SETTING_RESETS = dict(
     FUNCPARSER_PROTOTYPE_PARSING_MODULES=["evennia.prototypes.protfuncs",
                                           "evennia.game_template.server.conf.prototypefuncs"],
     BASE_GUEST_TYPECLASS="evennia.accounts.accounts.DefaultGuest",
+    # a special flag; test with settings._TEST_ENVIRONMENT to see if code runs in a test
+    _TEST_ENVIRONMENT=True,
 )
 
 DEFAULT_SETTINGS = {
@@ -153,7 +155,8 @@ class EvenniaTestMixin:
             self.account2.delete()
 
     # Set up fake prototype module for allowing tests to use named prototypes.
-    @override_settings(PROTOTYPE_MODULES=["evennia.utils.tests.data.prototypes_example"], DEFAULT_HOME="#1")
+    @override_settings(PROTOTYPE_MODULES=["evennia.utils.tests.data.prototypes_example"],
+                       DEFAULT_HOME="#1")
     def create_rooms(self):
         self.room1 = create.create_object(self.room_typeclass, key="Room", nohome=True)
         self.room1.db.desc = "room_desc"

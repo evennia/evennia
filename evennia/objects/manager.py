@@ -676,19 +676,25 @@ class ObjectDBManager(TypedObjectManager):
 
         location = dbid_to_obj(location, self.model)
         destination = dbid_to_obj(destination, self.model)
-        if home:
-            home = dbid_to_obj(home, self.model)
 
-        if not nohome and not home:
-            try:
-                home = dbid_to_obj(settings.DEFAULT_HOME, self.model)
-            except self.model.DoesNotExist:
+        if home:
+            home_obj_or_dbref = home
+        elif nohome:
+            home_obj_or_dbref = None
+        else:
+            home_obj_or_dbref = settings.DEFAULT_HOME
+
+        try:
+            home = dbid_to_obj(home_obj_or_dbref, self.model)
+        except self.model.DoesNotExist:
+            if settings._TEST_ENVIRONMENT:
+                # this happens for databases where the #1 location is flushed during tests
+                home = None
+            else:
                 raise self.model.DoesNotExist(
-                    "settings.DEFAULT_HOME (= '%s') does not exist, or the setting is malformed."
-                    % settings.DEFAULT_HOME
+                    f"settings.DEFAULT_HOME (= '{settings.DEFAULT_HOME}') does not exist, "
+                    "or the setting is malformed."
                 )
-        elif nohome and not home:
-            home = None
 
         # create new instance
         new_object = typeclass(
