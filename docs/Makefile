@@ -117,7 +117,7 @@ quick:
 	@echo "Documentation built (single version, no autodocs)."
 	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
 
-# abort on warnings too
+# abort on warnings too (not working atm)
 quickstrict:
 	SPHINXOPTS=-W make quick
 
