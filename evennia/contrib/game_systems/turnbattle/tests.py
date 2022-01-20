@@ -4,14 +4,14 @@ Turnbattle tests.
 """
 
 from mock import patch, MagicMock
-from evennia.commands.default.tests import EvenniaCommandTest
+from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.create import create_object
 from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.objects.objects import DefaultRoom
 from . import tb_basic, tb_equip, tb_range, tb_items, tb_magic
 
 
-class TestTurnBattleBasicCmd(EvenniaCommandTest):
+class TestTurnBattleBasicCmd(BaseEvenniaCommandTest):
 
     # Test basic combat commands
     def test_turnbattlecmd(self):
@@ -22,7 +22,7 @@ class TestTurnBattleBasicCmd(EvenniaCommandTest):
         self.call(tb_basic.CmdRest(), "", "Char rests to recover HP.")
 
 
-class TestTurnBattleEquipCmd(EvenniaCommandTest):
+class TestTurnBattleEquipCmd(BaseEvenniaCommandTest):
     def setUp(self):
         super(TestTurnBattleEquipCmd, self).setUp()
         self.testweapon = create_object(tb_equip.TBEWeapon, key="test weapon")
@@ -45,7 +45,7 @@ class TestTurnBattleEquipCmd(EvenniaCommandTest):
         self.call(tb_equip.CmdRest(), "", "Char rests to recover HP.")
 
 
-class TestTurnBattleRangeCmd(EvenniaCommandTest):
+class TestTurnBattleRangeCmd(BaseEvenniaCommandTest):
     # Test range commands
     def test_turnbattlerangecmd(self):
         # Start with range module specific commands.
@@ -61,7 +61,7 @@ class TestTurnBattleRangeCmd(EvenniaCommandTest):
         self.call(tb_range.CmdRest(), "", "Char rests to recover HP.")
 
 
-class TestTurnBattleItemsCmd(EvenniaCommandTest):
+class TestTurnBattleItemsCmd(BaseEvenniaCommandTest):
     def setUp(self):
         super(TestTurnBattleItemsCmd, self).setUp()
         self.testitem = create_object(key="test item")
@@ -78,7 +78,7 @@ class TestTurnBattleItemsCmd(EvenniaCommandTest):
         self.call(tb_items.CmdRest(), "", "Char rests to recover HP.")
 
 
-class TestTurnBattleMagicCmd(EvenniaCommandTest):
+class TestTurnBattleMagicCmd(BaseEvenniaCommandTest):
 
     # Test magic commands
     def test_turnbattlemagiccmd(self):
