@@ -36,10 +36,10 @@ jobs:
           make install
 
       # fail early here, run quickstrict with aborts also on warnings
-      - name: Quick-test docs (no autodocs)
-        run: |
-          cd docs/
-          make quickstrict
+      # - name: Quick-test docs (no autodocs)
+      #   run: |
+      #     cd docs/
+      #     make quickstrict
 
       - name: Deploy docs (only from master/develop branch)
         if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'}}
@@ -48,4 +48,4 @@ jobs:
           git config --global user.name "Doc builder mechanism"
           cd docs
           make mv-local
-          echo "Would deploy here!"
+          make deploy

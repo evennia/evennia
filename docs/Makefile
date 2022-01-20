@@ -110,8 +110,9 @@ pdf:
 	@echo "To see result, open evennia/docs/build/latex/evennia.pdf in a PDF reader."
 
 quick:
+	make _check-env
 	make _quick_autodoc-index
-	make _quick-html-build $(FILES)
+	make _html-build
 	@echo ""
 	@echo "Documentation built (single version, no autodocs)."
 	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
