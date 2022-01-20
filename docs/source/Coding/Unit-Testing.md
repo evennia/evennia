@@ -156,7 +156,7 @@ These all use whatever setting you pass to them and works well for testing code 
     connecting to the game. It is used by `.account1` and has a sessid of 1.
 - `EvenniaCommandTest` - has the same environment like `EvenniaTest` but also adds a special
    [.call()](evennia.utils.test_resources.EvenniaCommandTestMixin.call) method specifically for 
-   testing Evennia [Commands](Commands.md). It allows you to compare what the command _actually_ 
+   testing Evennia [Commands](../Components/Commands.md). It allows you to compare what the command _actually_ 
    returns to the player with what you expect. Read the `call` api doc for more info.
 - `EvenniaTestCase` - This is identical to the regular Python `TestCase` class, it's
   just there for naming symmetry with `BaseEvenniaTestCase` below.
