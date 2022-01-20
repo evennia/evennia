@@ -47,11 +47,11 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">EvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">multidescer</span>
 
 
-<div class="viewcode-block" id="TestMultidescer"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.multidescer.tests.html#evennia.contrib.game_systems.multidescer.tests.TestMultidescer">[docs]</a><span class="k">class</span> <span class="nc">TestMultidescer</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestMultidescer"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.multidescer.tests.html#evennia.contrib.game_systems.multidescer.tests.TestMultidescer">[docs]</a><span class="k">class</span> <span class="nc">TestMultidescer</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestMultidescer.test_cmdmultidesc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.multidescer.tests.html#evennia.contrib.game_systems.multidescer.tests.TestMultidescer.test_cmdmultidesc">[docs]</a>    <span class="k">def</span> <span class="nf">test_cmdmultidesc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">multidescer</span><span class="o">.</span><span class="n">CmdMultiDesc</span><span class="p">(),</span> <span class="s2">&quot;/list&quot;</span><span class="p">,</span> <span class="s2">&quot;Stored descs:</span><span class="se">\n</span><span class="s2">caller:&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>

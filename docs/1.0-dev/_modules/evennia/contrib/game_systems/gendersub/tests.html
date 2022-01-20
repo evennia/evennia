@@ -48,13 +48,13 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">EvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
 <span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">patch</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">gendersub</span>
 
 
-<div class="viewcode-block" id="TestGenderSub"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.gendersub.tests.html#evennia.contrib.game_systems.gendersub.tests.TestGenderSub">[docs]</a><span class="k">class</span> <span class="nc">TestGenderSub</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestGenderSub"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.gendersub.tests.html#evennia.contrib.game_systems.gendersub.tests.TestGenderSub">[docs]</a><span class="k">class</span> <span class="nc">TestGenderSub</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestGenderSub.test_setgender"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.gendersub.tests.html#evennia.contrib.game_systems.gendersub.tests.TestGenderSub.test_setgender">[docs]</a>    <span class="k">def</span> <span class="nf">test_setgender</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">gendersub</span><span class="o">.</span><span class="n">SetGender</span><span class="p">(),</span> <span class="s2">&quot;male&quot;</span><span class="p">,</span> <span class="s2">&quot;Your gender was set to male.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">gendersub</span><span class="o">.</span><span class="n">SetGender</span><span class="p">(),</span> <span class="s2">&quot;ambiguous&quot;</span><span class="p">,</span> <span class="s2">&quot;Your gender was set to ambiguous.&quot;</span><span class="p">)</span>

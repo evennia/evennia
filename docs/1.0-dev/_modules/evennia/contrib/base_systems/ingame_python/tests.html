@@ -51,7 +51,7 @@
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">EvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">ExitCommand</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">create_script</span>
@@ -290,7 +290,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="p">{})</span></div></div>
 
 
-<div class="viewcode-block" id="TestCmdCallback"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.tests.html#evennia.contrib.base_systems.ingame_python.tests.TestCmdCallback">[docs]</a><span class="k">class</span> <span class="nc">TestCmdCallback</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCmdCallback"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.tests.html#evennia.contrib.base_systems.ingame_python.tests.TestCmdCallback">[docs]</a><span class="k">class</span> <span class="nc">TestCmdCallback</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;Test the @callback command.&quot;&quot;&quot;</span>
 
@@ -469,7 +469,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="n">valid</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestDefaultCallbacks"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.tests.html#evennia.contrib.base_systems.ingame_python.tests.TestDefaultCallbacks">[docs]</a><span class="k">class</span> <span class="nc">TestDefaultCallbacks</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDefaultCallbacks"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.tests.html#evennia.contrib.base_systems.ingame_python.tests.TestDefaultCallbacks">[docs]</a><span class="k">class</span> <span class="nc">TestDefaultCallbacks</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;Test the default callbacks.&quot;&quot;&quot;</span>
 

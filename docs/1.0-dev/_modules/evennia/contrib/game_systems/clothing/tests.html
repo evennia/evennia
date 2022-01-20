@@ -47,14 +47,14 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">EvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultRoom</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">clothing</span>
 
 
-<div class="viewcode-block" id="TestClothingCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingCmd">[docs]</a><span class="k">class</span> <span class="nc">TestClothingCmd</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestClothingCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingCmd">[docs]</a><span class="k">class</span> <span class="nc">TestClothingCmd</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestClothingCmd.test_clothingcommands"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.clothing.tests.html#evennia.contrib.game_systems.clothing.tests.TestClothingCmd.test_clothingcommands">[docs]</a>    <span class="k">def</span> <span class="nf">test_clothingcommands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">wearer</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">ClothedCharacter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Wearer&quot;</span><span class="p">)</span>
         <span class="n">friend</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">clothing</span><span class="o">.</span><span class="n">ClothedCharacter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Friend&quot;</span><span class="p">)</span>

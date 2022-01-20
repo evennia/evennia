@@ -45,12 +45,34 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Various helper resources for writing unittests.</span>
 
+<span class="sd">Classes for testing Evennia core:</span>
+
+<span class="sd">- `BaseEvenniaTestCase` - no default objects, only enforced default settings</span>
+<span class="sd">- `BaseEvenniaTest` - all default objects, enforced default settings</span>
+<span class="sd">- `BaseEvenniaCommandTest` - for testing Commands, enforced default settings</span>
+
+<span class="sd">Classes for testing game folder content:</span>
+
+<span class="sd">- `EvenniaTestCase` - no default objects, using gamedir settings (identical to</span>
+<span class="sd">   standard Python TestCase)</span>
+<span class="sd">- `EvenniaTest` - all default objects, using gamedir settings</span>
+<span class="sd">- `EvenniaCommandTest` - for testing game folder commands, using gamedir settings</span>
+
+<span class="sd">Other:</span>
+
+<span class="sd">- `EvenniaTestMixin` - A class mixin for creating the test environment objects, for</span>
+<span class="sd">  making custom tests.</span>
+<span class="sd">- `EvenniaCommandMixin` - A class mixin that adds support for command testing with the .call()</span>
+<span class="sd">  helper. Used by the command-test classes, but can be used for making a customt test class.</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">types</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">Deferred</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">override_settings</span>
-<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">MagicMock</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">DefaultExit</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultAccount</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
@@ -58,8 +80,14 @@
 <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="kn">import</span> <span class="n">flush_cache</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">all_from_module</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">all_from_module</span><span class="p">,</span> <span class="n">to_str</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">settings_default</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default.muxcommand</span> <span class="kn">import</span> <span class="n">MuxCommand</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">InterruptCommand</span>
+
+
+<span class="n">_RE_STRIP_EVMENU</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\+|-+\+|\+-+|--+|\|(?:\s|$)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
 
 
 <span class="c1"># set up a &#39;pristine&#39; setting, unaffected by any changes in mygame</span>
@@ -102,6 +130,8 @@
     <span class="n">FUNCPARSER_PROTOTYPE_PARSING_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.prototypes.protfuncs&quot;</span><span class="p">,</span>
                                           <span class="s2">&quot;evennia.game_template.server.conf.prototypefuncs&quot;</span><span class="p">],</span>
     <span class="n">BASE_GUEST_TYPECLASS</span><span class="o">=</span><span class="s2">&quot;evennia.accounts.accounts.DefaultGuest&quot;</span><span class="p">,</span>
+    <span class="c1"># a special flag; test with settings._TEST_ENVIRONMENT to see if code runs in a test</span>
+    <span class="n">_TEST_ENVIRONMENT</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">DEFAULT_SETTINGS</span> <span class="o">=</span> <span class="p">{</span>
@@ -197,7 +227,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">account2</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
     <span class="c1"># Set up fake prototype module for allowing tests to use named prototypes.</span>
-<div class="viewcode-block" id="EvenniaTestMixin.create_rooms"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_rooms">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">PROTOTYPE_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.utils.tests.data.prototypes_example&quot;</span><span class="p">],</span> <span class="n">DEFAULT_HOME</span><span class="o">=</span><span class="s2">&quot;#1&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="EvenniaTestMixin.create_rooms"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_rooms">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">PROTOTYPE_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.utils.tests.data.prototypes_example&quot;</span><span class="p">],</span>
+                       <span class="n">DEFAULT_HOME</span><span class="o">=</span><span class="s2">&quot;#1&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">create_rooms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room_typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Room&quot;</span><span class="p">,</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;room_desc&quot;</span>
@@ -283,13 +314,274 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span></div></div>
 
 
+<div class="viewcode-block" id="EvenniaCommandTestMixin"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaCommandTestMixin">[docs]</a><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.portal.portal.LoopingCall&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">())</span>
+<span class="k">class</span> <span class="nc">EvenniaCommandTestMixin</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mixin to add to a test in order to provide the `.call` helper for</span>
+<span class="sd">    testing the execution and returns of a command.</span>
+
+<span class="sd">    Tests a Command by running it and comparing what messages it sends with</span>
+<span class="sd">    expected values. This tests without actually spinning up the cmdhandler</span>
+<span class="sd">    for every test, which is more controlled.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">    ::</span>
+
+<span class="sd">        from commands.echo import CmdEcho</span>
+
+<span class="sd">        class MyCommandTest(EvenniaTest, CommandTestMixin):</span>
+
+<span class="sd">            def test_echo(self):</span>
+<span class="sd">                &#39;&#39;&#39;</span>
+<span class="sd">                Test that the echo command really returns</span>
+<span class="sd">                what you pass into it.</span>
+<span class="sd">                &#39;&#39;&#39;</span>
+<span class="sd">                self.call(MyCommand(), &quot;hello world!&quot;,</span>
+<span class="sd">                          &quot;You hear your echo: &#39;Hello world!&#39;&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># formatting for .call&#39;s error message</span>
+    <span class="n">_ERROR_FORMAT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">=========================== Wanted message ===================================</span>
+<span class="si">{expected_msg}</span><span class="s2"></span>
+<span class="s2">=========================== Returned message =================================</span>
+<span class="si">{returned_msg}</span><span class="s2"></span>
+<span class="s2">==============================================================================</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+
+<div class="viewcode-block" id="EvenniaCommandTestMixin.call"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaCommandTestMixin.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cmdobj</span><span class="p">,</span>
+        <span class="n">input_args</span><span class="p">,</span>
+        <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">cmdset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">noansi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">cmdstring</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">raw_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test a command by assigning all the needed properties to a cmdobj and</span>
+<span class="sd">        running the sequence. The resulting `.msg` calls will be mocked and</span>
+<span class="sd">        the text= calls to them compared to a expected output.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmdobj (Command): The command object to use.</span>
+<span class="sd">            input_args (str): This should be the full input the Command should</span>
+<span class="sd">                see, such as &#39;look here&#39;. This will become `.args` for the Command</span>
+<span class="sd">                instance to parse.</span>
+<span class="sd">            msg (str or dict, optional): This is the expected return value(s)</span>
+<span class="sd">                returned through `caller.msg(text=...)` calls in the command. If a string, the</span>
+<span class="sd">                receiver is controlled with the `receiver` kwarg (defaults to `caller`).</span>
+<span class="sd">                If this is a `dict`, it is a mapping</span>
+<span class="sd">                `{receiver1: &quot;expected1&quot;, receiver2: &quot;expected2&quot;,...}` and `receiver` is</span>
+<span class="sd">                ignored. The message(s) are compared with the actual messages returned</span>
+<span class="sd">                to the receiver(s) as the Command runs. Each check uses `.startswith`,</span>
+<span class="sd">                so you can choose to only include the first part of the</span>
+<span class="sd">                returned message if that&#39;s enough to verify a correct result. EvMenu</span>
+<span class="sd">                decorations (like borders) are stripped and should not be included. This</span>
+<span class="sd">                should also not include color tags unless `noansi=False`.</span>
+<span class="sd">                If the command returns texts in multiple separate `.msg`-</span>
+<span class="sd">                calls to a receiver, separate these with `|` if `noansi=True`</span>
+<span class="sd">                (default) and `||` if `noansi=False`. If no `msg` is given (`None`),</span>
+<span class="sd">                then no automatic comparison will be done.</span>
+<span class="sd">            cmdset (str, optional): If given, make `.cmdset` available on the Command</span>
+<span class="sd">                instance as it runs. While `.cmdset` is normally available on the</span>
+<span class="sd">                Command instance by default, this is usually only used by</span>
+<span class="sd">                commands that explicitly operates/displays cmdsets, like</span>
+<span class="sd">                `examine`.</span>
+<span class="sd">            noansi (str, optional): By default the color tags of the `msg` is</span>
+<span class="sd">                ignored, this makes them significant. If unset, `msg` must contain</span>
+<span class="sd">                the same color tags as the actual return message.</span>
+<span class="sd">            caller (Object or Account, optional): By default `self.char1` is used as the</span>
+<span class="sd">                command-caller (the `.caller` property on the Command). This allows to</span>
+<span class="sd">                execute with another caller, most commonly an Account.</span>
+<span class="sd">            receiver (Object or Account, optional): This is the object to receive the</span>
+<span class="sd">                return messages we want to test. By default this is the same as `caller`</span>
+<span class="sd">                (which in turn defaults to is `self.char1`). Note that if `msg` is</span>
+<span class="sd">                a `dict`, this is ignored since the receiver is already specified there.</span>
+<span class="sd">            cmdstring (str, optional): Normally this is the Command&#39;s `key`.</span>
+<span class="sd">                This allows for tweaking the `.cmdname` property of the</span>
+<span class="sd">                Command`.  This isb used for commands with multiple aliases,</span>
+<span class="sd">                where the command explicitly checs which alias was used to</span>
+<span class="sd">                determine its functionality.</span>
+<span class="sd">            obj (str, optional): This sets the `.obj` property of the Command - the</span>
+<span class="sd">                object on which the Command &#39;sits&#39;. By default this is the same as `caller`.</span>
+<span class="sd">                This can be used for testing on-object Command interactions.</span>
+<span class="sd">            inputs (list, optional): A list of strings to pass to functions that pause to</span>
+<span class="sd">                take input from the user (normally using `@interactive` and</span>
+<span class="sd">                `ret = yield(question)` or `evmenu.get_input`). Each  element of the</span>
+<span class="sd">                list will be passed into the command as if the user wrote that at the prompt.</span>
+<span class="sd">            raw_string (str, optional): Normally the `.raw_string` property  is set as</span>
+<span class="sd">                a combination of your `key/cmdname` and `input_args`. This allows</span>
+<span class="sd">                direct control of what this is, for example for testing edge cases</span>
+<span class="sd">                or malformed inputs.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str or dict: The message sent to `receiver`, or a dict of</span>
+<span class="sd">                `{receiver: &quot;msg&quot;, ...}` if multiple are given. This is usually</span>
+<span class="sd">                only used with `msg=None` to do the validation externally.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AssertionError: If the returns of `.msg` calls (tested with `.startswith`) does not</span>
+<span class="sd">                match `expected_input`.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            As part of the tests, all methods of the Command will be called in</span>
+<span class="sd">            the proper order:</span>
+
+<span class="sd">            - cmdobj.at_pre_cmd()</span>
+<span class="sd">            - cmdobj.parse()</span>
+<span class="sd">            - cmdobj.func()</span>
+<span class="sd">            - cmdobj.at_post_cmd()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The `self.char1` is created in the `EvenniaTest` base along with</span>
+        <span class="c1"># other helper objects like self.room and self.obj</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="n">caller</span> <span class="k">if</span> <span class="n">caller</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span>
+        <span class="n">cmdobj</span><span class="o">.</span><span class="n">caller</span> <span class="o">=</span> <span class="n">caller</span>
+        <span class="n">cmdobj</span><span class="o">.</span><span class="n">cmdname</span> <span class="o">=</span> <span class="n">cmdstring</span> <span class="k">if</span> <span class="n">cmdstring</span> <span class="k">else</span> <span class="n">cmdobj</span><span class="o">.</span><span class="n">key</span>
+        <span class="n">cmdobj</span><span class="o">.</span><span class="n">raw_cmdname</span> <span class="o">=</span> <span class="n">cmdobj</span><span class="o">.</span><span class="n">cmdname</span>
+        <span class="n">cmdobj</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">=</span> <span class="n">cmdobj</span><span class="o">.</span><span class="n">cmdname</span>  <span class="c1"># deprecated</span>
+        <span class="n">cmdobj</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">input_args</span>
+        <span class="n">cmdobj</span><span class="o">.</span><span class="n">cmdset</span> <span class="o">=</span> <span class="n">cmdset</span>
+        <span class="n">cmdobj</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">SESSIONS</span><span class="o">.</span><span class="n">session_from_sessid</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">cmdobj</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span>
+        <span class="n">cmdobj</span><span class="o">.</span><span class="n">raw_string</span> <span class="o">=</span> <span class="n">raw_string</span> <span class="k">if</span> <span class="n">raw_string</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cmdobj</span><span class="o">.</span><span class="n">key</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">input_args</span>
+        <span class="n">cmdobj</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span> <span class="ow">or</span> <span class="p">(</span><span class="n">caller</span> <span class="k">if</span> <span class="n">caller</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span> <span class="ow">or</span> <span class="p">[]</span>
+
+        <span class="c1"># set up receivers</span>
+        <span class="n">receiver_mapping</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="c1"># a mapping {receiver: msg, ...}</span>
+            <span class="n">receiver_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">recv</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">msg</span> <span class="k">else</span> <span class="kc">None</span>
+                                <span class="k">for</span> <span class="n">recv</span><span class="p">,</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">msg</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># a single expected string and thus a single receiver (defaults to caller)</span>
+            <span class="n">receiver</span> <span class="o">=</span> <span class="n">receiver</span> <span class="k">if</span> <span class="n">receiver</span> <span class="k">else</span> <span class="n">caller</span>
+            <span class="n">receiver_mapping</span><span class="p">[</span><span class="n">receiver</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">msg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="n">unmocked_msg_methods</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">receiver_mapping</span><span class="p">:</span>
+            <span class="c1"># save the old .msg method so we can get it back</span>
+            <span class="c1"># cleanly  after the test</span>
+            <span class="n">unmocked_msg_methods</span><span class="p">[</span><span class="n">receiver</span><span class="p">]</span> <span class="o">=</span> <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span>
+            <span class="c1"># replace normal `.msg` with a mock</span>
+            <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+
+        <span class="c1"># Run the methods of the Command. This mimics what happens in the</span>
+        <span class="c1"># cmdhandler. This will have the mocked .msg be called as part of the</span>
+        <span class="c1"># execution. Mocks remembers what was sent to them so we will be able</span>
+        <span class="c1"># to retrieve what was sent later.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cmdobj</span><span class="o">.</span><span class="n">at_pre_cmd</span><span class="p">():</span>
+                <span class="k">return</span>
+            <span class="n">cmdobj</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">cmdobj</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
+
+            <span class="c1"># handle func&#39;s with yield in them (making them generators)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">GeneratorType</span><span class="p">):</span>
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">inp</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span> <span class="k">if</span> <span class="n">inputs</span> <span class="k">else</span> <span class="kc">None</span>
+                        <span class="k">if</span> <span class="n">inp</span><span class="p">:</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="c1"># this mimics a user&#39;s reply to a prompt</span>
+                                <span class="n">ret</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+                            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                                <span class="nb">next</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+                                <span class="n">ret</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1"># non-input yield, like yield(10). We don&#39;t pause</span>
+                            <span class="c1"># but fire it immediately.</span>
+                            <span class="nb">next</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                        <span class="k">break</span>
+
+            <span class="n">cmdobj</span><span class="o">.</span><span class="n">at_post_cmd</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">except</span> <span class="n">InterruptCommand</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">:</span>
+            <span class="c1"># if there are any inputs left, we may have a non-generator</span>
+            <span class="c1"># input to handle (get_input/ask_yes_no that uses a separate</span>
+            <span class="c1"># cmdset rather than a yield</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+
+        <span class="c1"># At this point the mocked .msg methods on each receiver will have</span>
+        <span class="c1"># stored all calls made to them (that&#39;s a basic function of the Mock</span>
+        <span class="c1"># class). We will not extract them and compare to what we expected to</span>
+        <span class="c1"># go to each receiver.</span>
+
+        <span class="n">returned_msgs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">receiver</span><span class="p">,</span> <span class="n">expected_msg</span> <span class="ow">in</span> <span class="n">receiver_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># get the stored messages from the Mock with Mock.mock_calls.</span>
+            <span class="n">stored_msg</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">to_str</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">mock_calls</span>
+            <span class="p">]</span>
+            <span class="c1"># we can return this now, we are done using the mock</span>
+            <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">unmocked_msg_methods</span><span class="p">[</span><span class="n">receiver</span><span class="p">]</span>
+
+            <span class="c1"># Get the first element of a tuple if msg received a tuple instead of a string</span>
+            <span class="n">stored_msg</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">smsg</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                          <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">smsg</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">smsg</span><span class="p">)</span> <span class="k">for</span> <span class="n">smsg</span> <span class="ow">in</span> <span class="n">stored_msg</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">expected_msg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># no expected_msg; just build the returned_msgs dict</span>
+
+                <span class="n">returned_msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">stored_msg</span><span class="p">)</span>
+                <span class="n">returned_msgs</span><span class="p">[</span><span class="n">receiver</span><span class="p">]</span> <span class="o">=</span> <span class="n">ansi</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">returned_msg</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">noansi</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># compare messages to expected</span>
+
+                <span class="c1"># set our separator for returned messages based on parsing ansi or not</span>
+                <span class="n">msg_sep</span> <span class="o">=</span> <span class="s2">&quot;|&quot;</span> <span class="k">if</span> <span class="n">noansi</span> <span class="k">else</span> <span class="s2">&quot;||&quot;</span>
+
+                <span class="c1"># We remove Evmenu decorations since that just makes it harder</span>
+                <span class="c1"># to write the comparison string. We also strip ansi before this</span>
+                <span class="c1"># comparison since otherwise it would mess with the regex.</span>
+                <span class="n">returned_msg</span> <span class="o">=</span> <span class="n">msg_sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">_RE_STRIP_EVMENU</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+                        <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ansi</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">mess</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">noansi</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">mess</span> <span class="ow">in</span> <span class="n">stored_msg</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+                <span class="c1"># this is the actual test</span>
+                <span class="k">if</span> <span class="n">expected_msg</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">returned_msg</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">returned_msg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">expected_msg</span><span class="p">):</span>
+                    <span class="c1"># failed the test</span>
+                    <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_ERROR_FORMAT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">expected_msg</span><span class="o">=</span><span class="n">expected_msg</span><span class="p">,</span> <span class="n">returned_msg</span><span class="o">=</span><span class="n">returned_msg</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="c1"># passed!</span>
+                <span class="n">returned_msgs</span><span class="p">[</span><span class="n">receiver</span><span class="p">]</span> <span class="o">=</span> <span class="n">returned_msg</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">returned_msgs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">returned_msgs</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">returned_msgs</span></div></div>
+
+
+<span class="c1"># Base testing classes</span>
+
 <div class="viewcode-block" id="BaseEvenniaTestCase"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTestCase">[docs]</a><span class="nd">@override_settings</span><span class="p">(</span><span class="o">**</span><span class="n">DEFAULT_SETTINGS</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">BaseEvenniaTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Base test (with no default objects) but with</span>
-<span class="sd">    enforced default settings.</span>
+<span class="sd">    Base test (with no default objects) but with enforced default settings.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="EvenniaTestCase"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestCase">[docs]</a><span class="k">class</span> <span class="nc">EvenniaTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For use with gamedir settings; Just like the normal test case, only for naming consistency.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="BaseEvenniaTest"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTest">[docs]</a><span class="nd">@override_settings</span><span class="p">(</span><span class="o">**</span><span class="n">DEFAULT_SETTINGS</span><span class="p">)</span>
@@ -298,7 +590,6 @@
 <span class="sd">    This class parent has all default objects and uses only default settings.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span></div>
-
 
 <div class="viewcode-block" id="EvenniaTest"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTest">[docs]</a><span class="k">class</span> <span class="nc">EvenniaTest</span><span class="p">(</span><span class="n">EvenniaTestMixin</span><span class="p">,</span> <span class="n">TestCase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -314,6 +605,31 @@
     <span class="n">exit_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_EXIT_TYPECLASS</span>
     <span class="n">room_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_ROOM_TYPECLASS</span>
     <span class="n">script_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_SCRIPT_TYPECLASS</span></div>
+
+
+<div class="viewcode-block" id="BaseEvenniaCommandTest"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaCommandTest">[docs]</a><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.account.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.admin.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.batchprocess.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.building.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.comms.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.general.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.help.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.syscommands.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.system.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.unloggedin.COMMAND_DEFAULT_CLASS&quot;</span><span class="p">,</span> <span class="n">MuxCommand</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">BaseEvenniaCommandTest</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTestMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Commands only using the default settings.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="EvenniaCommandTest"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaCommandTest">[docs]</a><span class="k">class</span> <span class="nc">EvenniaCommandTest</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTestMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parent class to inherit from - makes tests use your own</span>
+<span class="sd">    classes and settings in mygame.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
 </pre></div>
 
             <div class="clearer"></div>

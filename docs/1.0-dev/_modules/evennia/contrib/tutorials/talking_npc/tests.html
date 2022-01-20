@@ -46,12 +46,12 @@
 <span class="sd">Tutorial - talking NPC tests.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">EvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">talking_npc</span>
 
 
-<div class="viewcode-block" id="TestTalkingNPC"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.talking_npc.tests.html#evennia.contrib.tutorials.talking_npc.tests.TestTalkingNPC">[docs]</a><span class="k">class</span> <span class="nc">TestTalkingNPC</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTalkingNPC"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.talking_npc.tests.html#evennia.contrib.tutorials.talking_npc.tests.TestTalkingNPC">[docs]</a><span class="k">class</span> <span class="nc">TestTalkingNPC</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestTalkingNPC.test_talkingnpc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.talking_npc.tests.html#evennia.contrib.tutorials.talking_npc.tests.TestTalkingNPC.test_talkingnpc">[docs]</a>    <span class="k">def</span> <span class="nf">test_talkingnpc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">npc</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">talking_npc</span><span class="o">.</span><span class="n">TalkingNPC</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;npctalker&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">talking_npc</span><span class="o">.</span><span class="n">CmdTalk</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;(You walk up and talk to Char.)&quot;</span><span class="p">)</span>

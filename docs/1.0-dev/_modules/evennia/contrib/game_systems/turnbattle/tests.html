@@ -48,14 +48,14 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">patch</span><span class="p">,</span> <span class="n">MagicMock</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">EvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultRoom</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">tb_basic</span><span class="p">,</span> <span class="n">tb_equip</span><span class="p">,</span> <span class="n">tb_range</span><span class="p">,</span> <span class="n">tb_items</span><span class="p">,</span> <span class="n">tb_magic</span>
 
 
-<div class="viewcode-block" id="TestTurnBattleBasicCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleBasicCmd">[docs]</a><span class="k">class</span> <span class="nc">TestTurnBattleBasicCmd</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTurnBattleBasicCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleBasicCmd">[docs]</a><span class="k">class</span> <span class="nc">TestTurnBattleBasicCmd</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
 
     <span class="c1"># Test basic combat commands</span>
 <div class="viewcode-block" id="TestTurnBattleBasicCmd.test_turnbattlecmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleBasicCmd.test_turnbattlecmd">[docs]</a>    <span class="k">def</span> <span class="nf">test_turnbattlecmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -66,7 +66,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">tb_basic</span><span class="o">.</span><span class="n">CmdRest</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Char rests to recover HP.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestTurnBattleEquipCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleEquipCmd">[docs]</a><span class="k">class</span> <span class="nc">TestTurnBattleEquipCmd</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTurnBattleEquipCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleEquipCmd">[docs]</a><span class="k">class</span> <span class="nc">TestTurnBattleEquipCmd</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestTurnBattleEquipCmd.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleEquipCmd.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TestTurnBattleEquipCmd</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">testweapon</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">tb_equip</span><span class="o">.</span><span class="n">TBEWeapon</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;test weapon&quot;</span><span class="p">)</span>
@@ -89,7 +89,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">tb_equip</span><span class="o">.</span><span class="n">CmdRest</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Char rests to recover HP.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestTurnBattleRangeCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleRangeCmd">[docs]</a><span class="k">class</span> <span class="nc">TestTurnBattleRangeCmd</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTurnBattleRangeCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleRangeCmd">[docs]</a><span class="k">class</span> <span class="nc">TestTurnBattleRangeCmd</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
     <span class="c1"># Test range commands</span>
 <div class="viewcode-block" id="TestTurnBattleRangeCmd.test_turnbattlerangecmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleRangeCmd.test_turnbattlerangecmd">[docs]</a>    <span class="k">def</span> <span class="nf">test_turnbattlerangecmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Start with range module specific commands.</span>
@@ -105,7 +105,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">tb_range</span><span class="o">.</span><span class="n">CmdRest</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Char rests to recover HP.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestTurnBattleItemsCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleItemsCmd">[docs]</a><span class="k">class</span> <span class="nc">TestTurnBattleItemsCmd</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTurnBattleItemsCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleItemsCmd">[docs]</a><span class="k">class</span> <span class="nc">TestTurnBattleItemsCmd</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestTurnBattleItemsCmd.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleItemsCmd.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TestTurnBattleItemsCmd</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">testitem</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;test item&quot;</span><span class="p">)</span>
@@ -122,7 +122,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">tb_items</span><span class="o">.</span><span class="n">CmdRest</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Char rests to recover HP.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestTurnBattleMagicCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleMagicCmd">[docs]</a><span class="k">class</span> <span class="nc">TestTurnBattleMagicCmd</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTurnBattleMagicCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleMagicCmd">[docs]</a><span class="k">class</span> <span class="nc">TestTurnBattleMagicCmd</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
 
     <span class="c1"># Test magic commands</span>
 <div class="viewcode-block" id="TestTurnBattleMagicCmd.test_turnbattlemagiccmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleMagicCmd.test_turnbattlemagiccmd">[docs]</a>    <span class="k">def</span> <span class="nf">test_turnbattlemagiccmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

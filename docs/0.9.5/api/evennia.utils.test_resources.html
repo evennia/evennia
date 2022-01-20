@@ -42,6 +42,29 @@
   <section id="module-evennia.utils.test_resources">
 <span id="evennia-utils-test-resources"></span><h1>evennia.utils.test_resources<a class="headerlink" href="#module-evennia.utils.test_resources" title="Permalink to this headline">¶</a></h1>
 <p>Various helper resources for writing unittests.</p>
+<p>Classes for testing Evennia core:</p>
+<ul class="simple">
+<li><p><strong>BaseEvenniaTestCase</strong> - no default objects, only enforced default settings</p></li>
+<li><p><strong>BaseEvenniaTest</strong> - all default objects, enforced default settings</p></li>
+<li><p><strong>BaseEvenniaCommandTest</strong> - for testing Commands, enforced default settings</p></li>
+</ul>
+<p>Classes for testing game folder content:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>EvenniaTestCase</strong> - no default objects, using gamedir settings (identical to</dt><dd><p>standard Python TestCase)</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>EvenniaTest</strong> - all default objects, using gamedir settings</p></li>
+<li><p><strong>EvenniaCommandTest</strong> - for testing game folder commands, using gamedir settings</p></li>
+</ul>
+<p>Other:</p>
+<ul class="simple">
+<li><p><strong>EvenniaTestMixin</strong> - A class mixin for creating the test environment objects, for
+making custom tests.</p></li>
+<li><p><strong>EvenniaCommandMixin</strong> - A class mixin that adds support for command testing with the .call()
+helper. Used by the command-test classes, but can be used for making a customt test class.</p></li>
+</ul>
 <dl class="py function">
 <dt id="evennia.utils.test_resources.mockdelay">
 <code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">mockdelay</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timedelay</span></em>, <em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#mockdelay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.mockdelay" title="Permalink to this definition">¶</a></dt>
@@ -172,11 +195,128 @@ loaded once).</p>
 </dd></dl>
 
 <dl class="py class">
+<dt id="evennia.utils.test_resources.EvenniaCommandTestMixin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">EvenniaCommandTestMixin</code><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaCommandTestMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaCommandTestMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Mixin to add to a test in order to provide the <strong>.call</strong> helper for
+testing the execution and returns of a command.</p>
+<p>Tests a Command by running it and comparing what messages it sends with
+expected values. This tests without actually spinning up the cmdhandler
+for every test, which is more controlled.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">commands.echo</span> <span class="kn">import</span> <span class="n">CmdEcho</span>
+
+<span class="k">class</span> <span class="nc">MyCommandTest</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">,</span> <span class="n">CommandTestMixin</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_echo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Test that the echo command really returns</span>
+<span class="sd">        what you pass into it.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">MyCommand</span><span class="p">(),</span> <span class="s2">&quot;hello world!&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;You hear your echo: &#39;Hello world!&#39;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaCommandTestMixin.call">
+<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdobj</span></em>, <em class="sig-param"><span class="n">input_args</span></em>, <em class="sig-param"><span class="n">msg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cmdset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">noansi</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receiver</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cmdstring</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">raw_string</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaCommandTestMixin.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaCommandTestMixin.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test a command by assigning all the needed properties to a cmdobj and
+running the sequence. The resulting <strong>.msg</strong> calls will be mocked and
+the text= calls to them compared to a expected output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmdobj</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a>) – The command object to use.</p></li>
+<li><p><strong>input_args</strong> (<em>str</em>) – This should be the full input the Command should
+see, such as ‘look here’. This will become <strong>.args</strong> for the Command
+instance to parse.</p></li>
+<li><p><strong>msg</strong> (<em>str</em><em> or </em><em>dict</em><em>, </em><em>optional</em>) – This is the expected return value(s)
+returned through <strong>caller.msg(text=…)</strong> calls in the command. If a string, the
+receiver is controlled with the <strong>receiver</strong> kwarg (defaults to <strong>caller</strong>).
+If this is a <strong>dict</strong>, it is a mapping
+<strong>{receiver1: “expected1”, receiver2: “expected2”,…}</strong> and <strong>receiver</strong> is
+ignored. The message(s) are compared with the actual messages returned
+to the receiver(s) as the Command runs. Each check uses <strong>.startswith</strong>,
+so you can choose to only include the first part of the
+returned message if that’s enough to verify a correct result. EvMenu
+decorations (like borders) are stripped and should not be included. This
+should also not include color tags unless <strong>noansi=False</strong>.
+If the command returns texts in multiple separate <strong>.msg</strong>-
+calls to a receiver, separate these with <strong>|</strong> if <strong>noansi=True</strong>
+(default) and <strong>||</strong> if <strong>noansi=False</strong>. If no <strong>msg</strong> is given (<strong>None</strong>),
+then no automatic comparison will be done.</p></li>
+<li><p><strong>cmdset</strong> (<em>str</em><em>, </em><em>optional</em>) – If given, make <strong>.cmdset</strong> available on the Command
+instance as it runs. While <strong>.cmdset</strong> is normally available on the
+Command instance by default, this is usually only used by
+commands that explicitly operates/displays cmdsets, like
+<strong>examine</strong>.</p></li>
+<li><p><strong>noansi</strong> (<em>str</em><em>, </em><em>optional</em>) – By default the color tags of the <strong>msg</strong> is
+ignored, this makes them significant. If unset, <strong>msg</strong> must contain
+the same color tags as the actual return message.</p></li>
+<li><p><strong>caller</strong> (<em>Object</em><em> or </em><em>Account</em><em>, </em><em>optional</em>) – By default <strong>self.char1</strong> is used as the
+command-caller (the <strong>.caller</strong> property on the Command). This allows to
+execute with another caller, most commonly an Account.</p></li>
+<li><p><strong>receiver</strong> (<em>Object</em><em> or </em><em>Account</em><em>, </em><em>optional</em>) – This is the object to receive the
+return messages we want to test. By default this is the same as <strong>caller</strong>
+(which in turn defaults to is <strong>self.char1</strong>). Note that if <strong>msg</strong> is
+a <strong>dict</strong>, this is ignored since the receiver is already specified there.</p></li>
+<li><p><strong>cmdstring</strong> (<em>str</em><em>, </em><em>optional</em>) – Normally this is the Command’s <strong>key</strong>.
+This allows for tweaking the <strong>.cmdname</strong> property of the
+Command**.  This isb used for commands with multiple aliases,
+where the command explicitly checs which alias was used to
+determine its functionality.</p></li>
+<li><p><strong>obj</strong> (<em>str</em><em>, </em><em>optional</em>) – This sets the <strong>.obj</strong> property of the Command - the
+object on which the Command ‘sits’. By default this is the same as <strong>caller</strong>.
+This can be used for testing on-object Command interactions.</p></li>
+<li><p><strong>inputs</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of strings to pass to functions that pause to
+take input from the user (normally using <strong>&#64;interactive</strong> and
+<strong>ret = yield(question)</strong> or <strong>evmenu.get_input</strong>). Each  element of the
+list will be passed into the command as if the user wrote that at the prompt.</p></li>
+<li><p><strong>raw_string</strong> (<em>str</em><em>, </em><em>optional</em>) – Normally the <strong>.raw_string</strong> property  is set as
+a combination of your <strong>key/cmdname</strong> and <strong>input_args</strong>. This allows
+direct control of what this is, for example for testing edge cases
+or malformed inputs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>str or dict</em> –</p>
+<dl class="simple">
+<dt>The message sent to <strong>receiver</strong>, or a dict of</dt><dd><p><strong>{receiver: “msg”, …}</strong> if multiple are given. This is usually
+only used with <strong>msg=None</strong> to do the validation externally.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>AssertionError</strong> – If the returns of <strong>.msg</strong> calls (tested with <strong>.startswith</strong>) does not
+match <strong>expected_input</strong>.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>As part of the tests, all methods of the Command will be called in
+the proper order:</p>
+<ul class="simple">
+<li><p>cmdobj.at_pre_cmd()</p></li>
+<li><p>cmdobj.parse()</p></li>
+<li><p>cmdobj.func()</p></li>
+<li><p>cmdobj.at_post_cmd()</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="evennia.utils.test_resources.BaseEvenniaTestCase">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">BaseEvenniaTestCase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#BaseEvenniaTestCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.BaseEvenniaTestCase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
-<p>Base test (with no default objects) but with
-enforced default settings.</p>
+<p>Base test (with no default objects) but with enforced default settings.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.test_resources.EvenniaTestCase">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">EvenniaTestCase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>For use with gamedir settings; Just like the normal test case, only for naming consistency.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -223,6 +363,21 @@ and settings from your game folder.</p>
 <code class="sig-name descname">script_typeclass</code><em class="property"> = 'typeclasses.scripts.Script'</em><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.script_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.test_resources.BaseEvenniaCommandTest">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">BaseEvenniaCommandTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#BaseEvenniaCommandTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.BaseEvenniaCommandTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.test_resources.BaseEvenniaTest" title="evennia.utils.test_resources.BaseEvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.BaseEvenniaTest</span></code></a>, <a class="reference internal" href="#evennia.utils.test_resources.EvenniaCommandTestMixin" title="evennia.utils.test_resources.EvenniaCommandTestMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaCommandTestMixin</span></code></a></p>
+<p>Commands only using the default settings.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.test_resources.EvenniaCommandTest">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">EvenniaCommandTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaCommandTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaCommandTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.test_resources.EvenniaTest" title="evennia.utils.test_resources.EvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTest</span></code></a>, <a class="reference internal" href="#evennia.utils.test_resources.EvenniaCommandTestMixin" title="evennia.utils.test_resources.EvenniaCommandTestMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaCommandTestMixin</span></code></a></p>
+<p>Parent class to inherit from - makes tests use your own
+classes and settings in mygame.</p>
 </dd></dl>
 
 </section>

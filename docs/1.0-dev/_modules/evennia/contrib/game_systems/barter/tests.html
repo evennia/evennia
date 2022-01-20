@@ -47,12 +47,12 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">Mock</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">EvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">barter</span>
 
 
-<div class="viewcode-block" id="TestBarter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.barter.tests.html#evennia.contrib.game_systems.barter.tests.TestBarter">[docs]</a><span class="k">class</span> <span class="nc">TestBarter</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBarter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.barter.tests.html#evennia.contrib.game_systems.barter.tests.TestBarter">[docs]</a><span class="k">class</span> <span class="nc">TestBarter</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestBarter.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.barter.tests.html#evennia.contrib.game_systems.barter.tests.TestBarter.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tradeitem1</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;TradeItem1&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>

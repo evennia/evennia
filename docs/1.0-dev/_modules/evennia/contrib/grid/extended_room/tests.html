@@ -50,7 +50,7 @@
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">patch</span><span class="p">,</span> <span class="n">Mock</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">EvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultRoom</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">extended_room</span>
 
@@ -68,7 +68,7 @@
 <div class="viewcode-block" id="TestExtendedRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom">[docs]</a><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.grid.extended_room.extended_room.datetime.datetime&quot;</span><span class="p">,</span> <span class="n">ForceUTCDatetime</span><span class="p">)</span>
 <span class="c1"># mock gametime to return April 9, 2064, at 21:06 (spring evening)</span>
 <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.utils.gametime.gametime&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">2975000766</span><span class="p">))</span>
-<span class="k">class</span> <span class="nc">TestExtendedRoom</span><span class="p">(</span><span class="n">EvenniaCommandTest</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">TestExtendedRoom</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
     <span class="n">room_typeclass</span> <span class="o">=</span> <span class="n">extended_room</span><span class="o">.</span><span class="n">ExtendedRoom</span>
     <span class="n">DETAIL_DESC</span> <span class="o">=</span> <span class="s2">&quot;A test detail.&quot;</span>
     <span class="n">SPRING_DESC</span> <span class="o">=</span> <span class="s2">&quot;A spring description.&quot;</span>
