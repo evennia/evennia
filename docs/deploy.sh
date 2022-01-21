@@ -11,6 +11,7 @@ if [ -n "$(git status --untracked-files=no --porcelain)" ]; then
 fi
 
 # get the deployment branch
+git fetch
 git checkout gh-pages
 # at this point we should be inside the docs/ folder of the gh-pages branch,
 # with the build/ directory available since this is not in git
