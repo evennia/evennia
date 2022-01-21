@@ -1,7 +1,7 @@
 
 ```{warning}
 
-  This is the **WIP** documentation for the
+  This is the **WIP** documentation of the
   development branch of Evennia (v1.0-dev). The text is based on the
   original Evennia `wiki <https://github.com.evennia/evennia/wiki>`_
   but it's being refactored heavily. There are known conversion issues
