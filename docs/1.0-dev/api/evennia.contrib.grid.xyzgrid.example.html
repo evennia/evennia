@@ -40,56 +40,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="module-evennia.contrib.grid.xyzgrid.example">
-<span id="evennia-contrib-grid-xyzgrid-example"></span><h1>evennia.contrib.grid.xyzgrid.example<a class="headerlink" href="#module-evennia.contrib.grid.xyzgrid.example" title="Permalink to this headline">¶</a></h1>
-<p>Example xymaps to use with the XYZgrid contrib. Build outside of the game using
-the <strong>evennia xyzgrid</strong> launcher command.</p>
-<p>First add the launcher extension in your mygame/server/conf/settings.py:</p>
-<blockquote>
-<div><p>EXTRA_LAUNCHER_COMMANDS[‘xyzgrid’] = ‘evennia.contrib.grid.xyzgrid.launchcmd.xyzcommand’</p>
-</div></blockquote>
-<p>Then</p>
-<blockquote>
-<div><p>evennia xyzgrid init
-evennia xyzgrid add evennia.contrib.grid.xyzgrid.map_example
-evennia xyzgrid build</p>
-</div></blockquote>
-<dl class="py class">
-<dt id="evennia.contrib.grid.xyzgrid.example.TransitionToCave">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.xyzgrid.example.</code><code class="sig-name descname">TransitionToCave</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">node_index</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/example.html#TransitionToCave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.example.TransitionToCave" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.TransitionMapNode" title="evennia.contrib.grid.xyzgrid.xymap_legend.TransitionMapNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.grid.xyzgrid.xymap_legend.TransitionMapNode</span></code></a></p>
-<p>A transition from ‘the large tree’ to ‘the small cave’ map. This node is never spawned
-into a room but only acts as a target for finding the exit’s destination.</p>
-<dl class="py attribute">
-<dt id="evennia.contrib.grid.xyzgrid.example.TransitionToCave.symbol">
-<code class="sig-name descname">symbol</code><em class="property"> = 'T'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.example.TransitionToCave.symbol" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.grid.xyzgrid.example.TransitionToCave.target_map_xyz">
-<code class="sig-name descname">target_map_xyz</code><em class="property"> = (1, 0, 'the small cave')</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.example.TransitionToCave.target_map_xyz" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="evennia.contrib.grid.xyzgrid.example.TransitionToLargeTree">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.xyzgrid.example.</code><code class="sig-name descname">TransitionToLargeTree</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">node_index</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">symbol</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xymap</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/example.html#TransitionToLargeTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.example.TransitionToLargeTree" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.TransitionMapNode" title="evennia.contrib.grid.xyzgrid.xymap_legend.TransitionMapNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.grid.xyzgrid.xymap_legend.TransitionMapNode</span></code></a></p>
-<p>A transition from ‘the small cave’ to ‘the large tree’ map. This node is never spawned
-into a room by only acts as a target for finding the exit’s destination.</p>
-<dl class="py attribute">
-<dt id="evennia.contrib.grid.xyzgrid.example.TransitionToLargeTree.symbol">
-<code class="sig-name descname">symbol</code><em class="property"> = 'T'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.example.TransitionToLargeTree.symbol" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.grid.xyzgrid.example.TransitionToLargeTree.target_map_xyz">
-<code class="sig-name descname">target_map_xyz</code><em class="property"> = (3, 0, 'the large tree')</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.example.TransitionToLargeTree.target_map_xyz" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+  <section id="evennia-contrib-grid-xyzgrid-example">
+<h1>evennia.contrib.grid.xyzgrid.example<a class="headerlink" href="#evennia-contrib-grid-xyzgrid-example" title="Permalink to this headline">¶</a></h1>
 </section>
 
 
@@ -132,7 +84,6 @@ into a room by only acts as a target for finding the exit’s destination.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.grid.xyzgrid.example.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>
