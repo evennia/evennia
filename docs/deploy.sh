@@ -29,10 +29,9 @@ git add .
 
 git commit -a -m "Updated HTML docs"
 
-# echo "Skipping deployment"
 git push origin gh-pages
 
 # get back to previous branch 
-# git checkout -
+git checkout -
 
 echo "Deployed to https://evennia.github.io/evennia/"
