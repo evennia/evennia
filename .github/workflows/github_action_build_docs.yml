@@ -21,25 +21,33 @@ jobs:
         python-version: [3.7]
 
     steps:
+      - uses: actions/checkout@v2
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: actions/checkout@v2
-        if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'}}
-        with: 
-          fetch-depth: 0
+      - name: Install doc-building dependencies
         run: |
-          git config --global user.email "docbuilder@evennia.com"
-          git config --global user.name "Evennia docbuilder action"
           python -m pip install --upgrade pip
+          cd docs/
+          make install
+
+      # full game dir needed for mv-local
+      - name: Set up evennia game dir
+        run: |
           pip install -e .
           pip install -r requirements_extra.txt
           cd ..
           evennia --init gamedir
           cd gamedir
           evennia migrate
-          cd ../evennia/docs/
-          make install
+
+      - name: Build and deploy docs (only from master/develop branch)
+        if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'}}
+        run: |
+          git config --global user.email "docbuilder@evennia.com"
+          git config --global user.name "Evennia docbuilder action"
+          cd docs
           make release
