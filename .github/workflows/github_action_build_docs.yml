@@ -49,13 +49,13 @@ jobs:
           evennia --init gamedir
           cd gamedir
           evennia migrate
+          git fetch origin develop
+          git fetch origin v0.9.5:v0.9.5
+          git config --global user.email "docbuilder@evennia.com"
+          git config --global user.name "Evennia docbuilder action"
 
       - name: Build and deploy docs (only from master/develop branch)
         if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'}}
         run: |
-          git fetch origin develop
-          git fetch origin v0.9.5
-          git config --global user.email "docbuilder@evennia.com"
-          git config --global user.name "Evennia docbuilder action"
           cd docs
           make release
