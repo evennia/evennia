@@ -50,7 +50,7 @@ jobs:
       - name: Build and deploy docs (only from master/develop branch)
         if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'}}
         run: |
-          git checkout origin v0.9.5
+          git checkout v0.9.5
           git checkout develop
           git config --global user.email "docbuilder@evennia.com"
           git config --global user.name "Evennia docbuilder action"
