@@ -32,7 +32,12 @@ git commit -a -m "Updated HTML docs"
 # echo "Skipping deployment"
 git push origin gh-pages
 
-# get back to previous branch 
-git checkout -
+if [[ -z ${CI} ]]; then 
+    # skip getting back in CI build
+    echo "In CI build"
+else
+    # get back to previous branch 
+    git checkout -
+fi
 
 echo "Deployed to https://evennia.github.io/evennia/"
