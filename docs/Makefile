@@ -157,6 +157,7 @@ deploy:
 	@echo "Documentation deployed."
 
 # build and prepare the docs for release
+#
 release:
 	make mv-local
 	make deploy
