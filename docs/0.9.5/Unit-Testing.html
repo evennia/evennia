@@ -1,0 +1,536 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Unit Testing &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Unit Testing</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="unit-testing">
+<h1>Unit Testing<a class="headerlink" href="#unit-testing" title="Permalink to this headline">¶</a></h1>
+<p><em>Unit testing</em> means testing components of a program in isolation from each other to make sure every
+part works on its own before using it with others. Extensive testing helps avoid new updates causing
+unexpected side effects as well as alleviates general code rot (a more comprehensive wikipedia
+article on unit testing can be found <a class="reference external" href="http://en.wikipedia.org/wiki/Unit_test">here</a>).</p>
+<p>A typical unit test set calls some function or method with a given input, looks at the result and
+makes sure that this result looks as expected. Rather than having lots of stand-alone test programs,
+Evennia makes use of a central <em>test runner</em>. This is a program that gathers all available tests all
+over the Evennia source code (called <em>test suites</em>) and runs them all in one go. Errors and
+tracebacks are reported.</p>
+<p>By default Evennia only tests itself. But you can also add your own tests to your game code and have
+Evennia run those for you.</p>
+<section id="running-the-evennia-test-suite">
+<h2>Running the Evennia test suite<a class="headerlink" href="#running-the-evennia-test-suite" title="Permalink to this headline">¶</a></h2>
+<p>To run the full Evennia test suite, go to your game folder and issue the command</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test evennia
+</pre></div>
+</div>
+<p>This will run all the evennia tests using the default settings. You could also run only a subset of
+all tests by specifying a subpackage of the library:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test evennia.commands.default
+</pre></div>
+</div>
+<p>A temporary database will be instantiated to manage the tests. If everything works out you will see
+how many tests were run and how long it took. If something went wrong you will get error messages.
+If you contribute to Evennia, this is a useful sanity check to see you haven’t introduced an
+unexpected bug.</p>
+</section>
+<section id="running-tests-with-custom-settings-file">
+<h2>Running tests with custom settings file<a class="headerlink" href="#running-tests-with-custom-settings-file" title="Permalink to this headline">¶</a></h2>
+<p>If you have implemented your own tests for your game (see below) you can run them from your game dir
+with</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test .
+</pre></div>
+</div>
+<p>The period (<code class="docutils literal notranslate"><span class="pre">.</span></code>) means to run all tests found in the current directory and all subdirectories. You
+could also specify, say, <code class="docutils literal notranslate"><span class="pre">typeclasses</span></code> or <code class="docutils literal notranslate"><span class="pre">world</span></code> if you wanted to just run tests in those subdirs.</p>
+<p>Those tests will all be run using the default settings. To run the tests with your own settings file
+you must use the <code class="docutils literal notranslate"><span class="pre">--settings</span></code> option:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test --settings settings.py .
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--settings</span></code> option of Evennia takes a file name in the <code class="docutils literal notranslate"><span class="pre">mygame/server/conf</span></code> folder. It is
+normally used to swap settings files for testing and development. In combination with <code class="docutils literal notranslate"><span class="pre">test</span></code>, it
+forces Evennia to use this settings file over the default one.</p>
+</section>
+<section id="writing-new-tests">
+<h2>Writing new tests<a class="headerlink" href="#writing-new-tests" title="Permalink to this headline">¶</a></h2>
+<p>Evennia’s test suite makes use of Django unit test system, which in turn relies on Python’s
+<em>unittest</em> module.</p>
+<blockquote>
+<div><p>If you want to help out writing unittests for Evennia, take a look at Evennia’s <a class="reference external" href="https://coveralls.io/github/evennia/evennia">coveralls.io page</a>. There you see which modules have any form of
+test coverage and which does not.</p>
+</div></blockquote>
+<p>To make the test runner find the tests, they must be put in a module named <code class="docutils literal notranslate"><span class="pre">test*.py</span></code> (so <code class="docutils literal notranslate"><span class="pre">test.py</span></code>,
+<code class="docutils literal notranslate"><span class="pre">tests.py</span></code> etc). Such a test module will be found wherever it is in the package. It can be a good
+idea to look at some of Evennia’s <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> modules to see how they look.</p>
+<p>Inside a testing file, a <code class="docutils literal notranslate"><span class="pre">unittest.TestCase</span></code> class is used to test a single aspect or component in
+various ways. Each test case contains one or more <em>test methods</em> - these define the actual tests to
+run. You can name the test methods anything you want as long as  the name starts with “<code class="docutils literal notranslate"><span class="pre">test_</span></code>”.
+Your <code class="docutils literal notranslate"><span class="pre">TestCase</span></code> class can also have a method <code class="docutils literal notranslate"><span class="pre">setUp(self):</span></code>. This is run before each test, setting
+up and storing whatever preparations the test methods need. Conversely, a <code class="docutils literal notranslate"><span class="pre">tearDown(self):</span></code> method
+can optionally do cleanup after each test.</p>
+<p>To test the results, you use special methods of the <code class="docutils literal notranslate"><span class="pre">TestCase</span></code> class.  Many of those start with
+“<code class="docutils literal notranslate"><span class="pre">assert</span></code>”, such as <code class="docutils literal notranslate"><span class="pre">assertEqual</span></code> or <code class="docutils literal notranslate"><span class="pre">assertTrue</span></code>.</p>
+<p>Example of a <code class="docutils literal notranslate"><span class="pre">TestCase</span></code> class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">unittest</span>
+
+    <span class="c1"># the function we want to test</span>
+    <span class="kn">from</span> <span class="nn">mypath</span> <span class="kn">import</span> <span class="n">myfunc</span>
+
+    <span class="k">class</span> <span class="nc">TestObj</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+       <span class="s2">&quot;This tests a function myfunc.&quot;</span>
+
+       <span class="k">def</span> <span class="nf">test_return_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+           <span class="s2">&quot;test method. Makes sure return value is as expected.&quot;</span>
+           <span class="n">expected_return</span> <span class="o">=</span> <span class="s2">&quot;This is me being nice.&quot;</span>
+           <span class="n">actual_return</span> <span class="o">=</span> <span class="n">myfunc</span><span class="p">()</span>
+           <span class="c1"># test</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_return</span><span class="p">,</span> <span class="n">actual_return</span><span class="p">)</span>
+       <span class="k">def</span> <span class="nf">test_alternative_call</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+           <span class="s2">&quot;test method. Calls with a keyword argument.&quot;</span>
+           <span class="n">expected_return</span> <span class="o">=</span> <span class="s2">&quot;This is me being baaaad.&quot;</span>
+           <span class="n">actual_return</span> <span class="o">=</span> <span class="n">myfunc</span><span class="p">(</span><span class="n">bad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+           <span class="c1"># test</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_return</span><span class="p">,</span> <span class="n">actual_return</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You might also want to read the <a class="reference external" href="http://docs.python.org/library/unittest.html">documentation for the unittest module</a>.</p>
+<section id="using-the-evenniatest-class">
+<h3>Using the EvenniaTest class<a class="headerlink" href="#using-the-evenniatest-class" title="Permalink to this headline">¶</a></h3>
+<p>Evennia offers a custom TestCase, the <code class="docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTest</span></code> class. This class
+initiates a range of useful properties on themselves for testing Evennia systems. Examples are
+<code class="docutils literal notranslate"><span class="pre">.account</span></code> and <code class="docutils literal notranslate"><span class="pre">.session</span></code> representing a mock connected Account and its Session and <code class="docutils literal notranslate"><span class="pre">.char1</span></code> and
+<code class="docutils literal notranslate"><span class="pre">.char2</span></code> representing Characters complete with a location in the test database. These are all useful
+when testing Evennia system requiring any of the default Evennia typeclasses as inputs. See the full
+definition of the <code class="docutils literal notranslate"><span class="pre">EvenniaTest</span></code> class in <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/utils/test_resources.py">evennia/utils/test_resources.py</a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in a test module</span>
+
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
+
+<span class="k">class</span> <span class="nc">TestObject</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test_object_search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># char1 and char2 are both created in room1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">key</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">key</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+        <span class="c1"># ...</span>
+</pre></div>
+</div>
+</section>
+<section id="testing-in-game-commands">
+<h3>Testing in-game Commands<a class="headerlink" href="#testing-in-game-commands" title="Permalink to this headline">¶</a></h3>
+<p>In-game Commands are a special case. Tests for the default commands are put in
+<code class="docutils literal notranslate"><span class="pre">evennia/commands/default/tests.py</span></code>. This uses a custom <code class="docutils literal notranslate"><span class="pre">CommandTest</span></code> class that inherits from
+<code class="docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTest</span></code> described above. <code class="docutils literal notranslate"><span class="pre">CommandTest</span></code> supplies extra convenience
+functions for executing commands and check that their return values (calls of <code class="docutils literal notranslate"><span class="pre">msg()</span></code> returns
+expected values. It uses Characters and Sessions generated on the <code class="docutils literal notranslate"><span class="pre">EvenniaTest</span></code> class to call each
+class).</p>
+<p>Each command tested should have its own <code class="docutils literal notranslate"><span class="pre">TestCase</span></code> class. Inherit this class from the <code class="docutils literal notranslate"><span class="pre">CommandTest</span></code>
+class in the same module to get access to the command-specific utilities mentioned.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">CommandTest</span>
+    <span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">general</span>
+    <span class="k">class</span> <span class="nc">TestSet</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+        <span class="s2">&quot;tests the look command by simple call, using Char2 as a target&quot;</span>
+        <span class="k">def</span> <span class="nf">test_mycmd_char</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">(),</span> <span class="s2">&quot;Char2&quot;</span><span class="p">,</span> <span class="s2">&quot;Char2(#7)&quot;</span><span class="p">)</span>
+        <span class="s2">&quot;tests the look command by simple call, with target as room&quot;</span>
+        <span class="k">def</span> <span class="nf">test_mycmd_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">(),</span> <span class="s2">&quot;Room&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;Room(#1)</span><span class="se">\n</span><span class="s2">room_desc</span><span class="se">\n</span><span class="s2">Exits: out(#3)</span><span class="se">\n</span><span class="s2">&quot;</span>
+                      <span class="s2">&quot;You see: Obj(#4), Obj2(#5), Char2(#7)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="unit-testing-contribs-with-custom-models">
+<h3>Unit testing contribs with custom models<a class="headerlink" href="#unit-testing-contribs-with-custom-models" title="Permalink to this headline">¶</a></h3>
+<p>A special case is if you were to create a contribution to go to the <code class="docutils literal notranslate"><span class="pre">evennia/contrib</span></code> folder that
+uses its <a class="reference internal" href="New-Models.html"><span class="doc std std-doc">own database models</span></a>. The problem with this is that Evennia (and Django) will
+only recognize models in <code class="docutils literal notranslate"><span class="pre">settings.INSTALLED_APPS</span></code>. If a user wants to use your contrib, they will
+be required to add your models to their settings file. But since contribs are optional you cannot
+add the model to Evennia’s central <code class="docutils literal notranslate"><span class="pre">settings_default.py</span></code> file - this would always create your
+optional models regardless of if the user wants them. But at the same time a contribution is a part
+of the Evennia distribution and its unit tests should be run with all other Evennia tests using
+<code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">test</span> <span class="pre">evennia</span></code>.</p>
+<p>The way to do this is to only temporarily add your models to the <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code> directory when the
+test runs. here is an example of how to do it.</p>
+<blockquote>
+<div><p>Note that this solution, derived from this <a class="reference external" href="http://stackoverflow.com/questions/502916/django-how-to-create-a-model-dynamically-just-for-testing#503435">stackexchange answer</a> is currently untested! Please report your findings.</p>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># a file contrib/mycontrib/tests.py</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">import</span> <span class="nn">django</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
+
+<span class="n">OLD_DEFAULT_SETTINGS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">INSTALLED_APPS</span>
+<span class="n">DEFAULT_SETTINGS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">INSTALLED_APPS</span><span class="o">=</span><span class="p">(</span>
+        <span class="s1">&#39;contrib.mycontrib.tests&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="n">DATABASES</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;ENGINE&quot;</span><span class="p">:</span> <span class="s2">&quot;django.db.backends.sqlite3&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+    <span class="n">SILENCED_SYSTEM_CHECKS</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;1_7.W001&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">TestMyModel</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">configured</span><span class="p">:</span>
+           <span class="n">settings</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="o">**</span><span class="n">DEFAULT_SETTINGS</span><span class="p">)</span>
+        <span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+
+        <span class="kn">from</span> <span class="nn">django.core.management</span> <span class="kn">import</span> <span class="n">call_command</span>
+        <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">loading</span>
+        <span class="n">loading</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">call_command</span><span class="p">(</span><span class="s1">&#39;syncdb&#39;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="o">**</span><span class="n">OLD_DEFAULT_SETTINGS</span><span class="p">)</span>
+        <span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+
+        <span class="kn">from</span> <span class="nn">django.core.management</span> <span class="kn">import</span> <span class="n">call_command</span>
+        <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">loading</span>
+        <span class="n">loading</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">call_command</span><span class="p">(</span><span class="s1">&#39;syncdb&#39;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># test cases below ...</span>
+
+    <span class="k">def</span> <span class="nf">test_case</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># test case here</span>
+</pre></div>
+</div>
+</section>
+<section id="a-note-on-adding-new-tests">
+<h3>A note on adding new tests<a class="headerlink" href="#a-note-on-adding-new-tests" title="Permalink to this headline">¶</a></h3>
+<p>Having an extensive tests suite is very important for avoiding code degradation as Evennia is
+developed. Only a small fraction of the Evennia codebase is covered by test suites at this point.
+Writing new tests is not hard, it’s more a matter of finding the time to do so. So adding new tests
+is really an area where everyone can contribute, also with only limited Python skills.</p>
+</section>
+<section id="a-note-on-making-the-test-runner-faster">
+<h3>A note on making the test runner faster<a class="headerlink" href="#a-note-on-making-the-test-runner-faster" title="Permalink to this headline">¶</a></h3>
+<p>If you have custom models with a large number of migrations, creating the test database can take a
+very long time. If you don’t require migrations to run for your tests, you can disable them with the
+django-test-without-migrations package. To install it, simply:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install django-test-without-migrations
+</pre></div>
+</div>
+<p>Then add it to your <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code> in your <code class="docutils literal notranslate"><span class="pre">server.conf.settings.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="c1"># ...</span>
+    <span class="s1">&#39;test_without_migrations&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>After doing so, you can then run tests without migrations by adding the <code class="docutils literal notranslate"><span class="pre">--nomigrations</span></code> argument:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">test</span> <span class="o">--</span><span class="n">settings</span> <span class="n">settings</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">nomigrations</span> <span class="o">.</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="testing-for-game-development-mini-tutorial">
+<h2>Testing for Game development (mini-tutorial)<a class="headerlink" href="#testing-for-game-development-mini-tutorial" title="Permalink to this headline">¶</a></h2>
+<p>Unit testing can be of paramount importance to game developers. When starting with a new game, it is
+recommended to look into unit testing as soon as possible; an already huge game is much harder to
+write tests for.  The benefits of testing a game aren’t different from the ones regarding library
+testing.  For example it is easy to introduce bugs that affect previously working code. Testing is
+there to ensure your project behaves the way it should and continue to do so.</p>
+<p>If you have never used unit testing (with Python or another language), you might want to check the
+<a class="reference external" href="https://docs.python.org/2/library/unittest.html">official Python documentation about unit testing</a>,
+particularly the first section dedicated to a basic example.</p>
+<section id="basic-testing-using-evennia">
+<h3>Basic testing using Evennia<a class="headerlink" href="#basic-testing-using-evennia" title="Permalink to this headline">¶</a></h3>
+<p>Evennia’s test runner can be used to launch tests in your game directory (let’s call it ‘mygame’).
+Evennia’s test runner does a few useful things beyond the normal Python unittest module:</p>
+<ul class="simple">
+<li><p>It creates and sets up an empty database, with some useful objects (accounts, characters and
+rooms, among others).</p></li>
+<li><p>It provides simple ways to test commands, which can be somewhat tricky at times, if not tested
+properly.</p></li>
+</ul>
+<p>Therefore, you should use the command-line to execute the test runner, while specifying your own
+game directories (not the one containing evennia).  Go to your game directory (referred as ‘mygame’
+in this section) and execute the test runner:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test --settings settings.py commands
+</pre></div>
+</div>
+<p>This command will execute Evennia’s test runner using your own settings file. It will set up a dummy
+database of your choice and look into the ‘commands’ package defined in your game directory
+(<code class="docutils literal notranslate"><span class="pre">mygame/commands</span></code> in this example) to find tests. The test module’s name should begin with ‘test’
+and contain one or more <code class="docutils literal notranslate"><span class="pre">TestCase</span></code>.  A full example can be found below.</p>
+</section>
+<section id="a-simple-example">
+<h3>A simple example<a class="headerlink" href="#a-simple-example" title="Permalink to this headline">¶</a></h3>
+<p>In your game directory, go to <code class="docutils literal notranslate"><span class="pre">commands</span></code> and create a new file <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> inside (it could be named
+anything starting with <code class="docutils literal notranslate"><span class="pre">test</span></code>). We will start by making a test that has nothing to do with Commands,
+just to show how unit testing works:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/commands/tests.py</span>
+
+    <span class="kn">import</span> <span class="nn">unittest</span>
+
+    <span class="k">class</span> <span class="nc">TestString</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;Unittest for strings (just a basic example).&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">test_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Test the upper() str method.&quot;&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="s1">&#39;FOO&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This example, inspired from the Python documentation, is used to test the ‘upper()’ method of the
+‘str’ class.  Not very useful, but it should give you a basic idea of how tests are used.</p>
+<p>Let’s execute that test to see if it works.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; evennia test --settings settings.py commands
+
+TESTING: Using specified settings file &#39;server.conf.settings&#39;.
+
+(Obs: Evennia&#39;s full test suite may not pass if the settings are very
+different from the default. Use &#39;test .&#39; as arguments to run only tests
+on the game dir.)
+
+Creating test database for alias &#39;default&#39;...
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+OK
+Destroying test database for alias &#39;default&#39;...
+</pre></div>
+</div>
+<p>We specified the <code class="docutils literal notranslate"><span class="pre">commands</span></code> package to the evennia test command since that’s where we put our test
+file. In this case we could just as well just said <code class="docutils literal notranslate"><span class="pre">.</span></code> to search all of <code class="docutils literal notranslate"><span class="pre">mygame</span></code> for testing files.
+If we have a lot of tests it may be useful to test only a single set at a time though. We get an
+information text telling us we are using our custom settings file (instead of Evennia’s default
+file) and then the test runs. The test passes! Change the “FOO” string to something else in the test
+to see how it looks when it fails.</p>
+</section>
+<section id="testing-commands">
+<h3>Testing commands<a class="headerlink" href="#testing-commands" title="Permalink to this headline">¶</a></h3>
+<p>This section will test the proper execution of the ‘abilities’ command, as described in the
+<a class="reference internal" href="First-Steps-Coding.html"><span class="doc std std-doc">First Steps Coding</span></a> page.  Follow this tutorial to create the ‘abilities’ command, we
+will need it to test it.</p>
+<p>Testing commands in Evennia is a bit more complex than the simple testing example we have seen.
+Luckily, Evennia supplies a special test class to do just that … we just need to inherit from it
+and use it properly. This class is called ‘CommandTest’ and is defined in the
+‘evennia.commands.default.tests’ package.  To create a test for our ‘abilities’ command, we just
+need to create a class that inherits from ‘CommandTest’ and add methods.</p>
+<p>We could create a new test file for this but for now we just append to the <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> file we
+already have in <code class="docutils literal notranslate"><span class="pre">commands</span></code> from before.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># bottom of mygame/commands/tests.py</span>
+
+    <span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">CommandTest</span>
+
+    <span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">CmdAbilities</span>
+    <span class="kn">from</span> <span class="nn">typeclasses.characters</span> <span class="kn">import</span> <span class="n">Character</span>
+
+    <span class="k">class</span> <span class="nc">TestAbilities</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+
+        <span class="n">character_typeclass</span> <span class="o">=</span> <span class="n">Character</span>
+
+        <span class="k">def</span> <span class="nf">test_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdAbilities</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;STR: 5, AGI: 4, MAG: 2&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Line 1-4:  we do some importing.  ‘CommandTest’ is going to be our base class for our test, so we
+need it.  We also import our command (‘CmdAbilities’ in this case).  Finally we import the
+‘Character’ typeclass.  We need it, since ‘CommandTest’ doesn’t use ‘Character’, but
+‘DefaultCharacter’, which means the character calling the command won’t have the abilities we have
+written in the ‘Character’ typeclass.</p></li>
+<li><p>Line 6-8:  that’s the body of our test.  Here, a single command is tested in an entire class.
+Default commands are usually grouped by category in a single class.  There is no rule, as long as
+you know where you put your tests.  Note that we set the ‘character_typeclass’ class attribute to
+Character.  As explained above, if you didn’t do that, the system would create a ‘DefaultCharacter’
+object, not a ‘Character’.  You can try to remove line 4 and 8 to see what happens when running the
+test.</p></li>
+<li><p>Line 10-11:  our unique testing method.  Note its name:  it should begin by ‘test_’.  Apart from
+that, the method is quite simple:  it’s an instance method (so it takes the ‘self’ argument) but no
+other arguments are needed.  Line 11 uses the ‘call’ method, which is defined in ‘CommandTest’.
+It’s a useful method that compares a command against an expected result.  It would be like comparing
+two strings with ‘assertEqual’, but the ‘call’ method does more things, including testing the
+command in a realistic way (calling its hooks in the right order, so you don’t have to worry about
+that).</p></li>
+</ul>
+<p>Line 11 can be understood as:  test the ‘abilities’ command (first parameter), with no argument
+(second parameter), and check that the character using it receives his/her abilities (third
+parameter).</p>
+<p>Let’s run our new test:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; evennia test --settings settings.py commands
+[...]
+Creating test database for alias &#39;default&#39;...
+..
+----------------------------------------------------------------------
+Ran 2 tests in 0.156s
+
+OK
+Destroying test database for alias &#39;default&#39;...
+</pre></div>
+</div>
+<p>Two tests were executed, since we have kept ‘TestString’ from last time.  In case of failure, you
+will get much more information to help you fix the bug.</p>
+</section>
+<section id="testing-dynamic-output">
+<h3>Testing Dynamic Output<a class="headerlink" href="#testing-dynamic-output" title="Permalink to this headline">¶</a></h3>
+<p>Having read the unit test tutorial on <a class="reference internal" href="#testing-commands"><span class="std std-doc">Testing commands</span></a> we can see
+the code expects static unchanging numbers. While very good for learning it is unlikely a project
+will have nothing but static output to test. Here we are going to learn how to test against dynamic
+output.<br></p>
+<p>This tutorial assumes you have a basic understanding of what regular expressions are. If you do not
+I recommend reading the <code class="docutils literal notranslate"><span class="pre">Introduction</span></code> and <code class="docutils literal notranslate"><span class="pre">Simple</span> <span class="pre">Pattern</span></code> sections at
+<a class="reference external" href="https://docs.python.org/3/howto/regex.html">Python regular expressions tutorial</a>. If you do plan on making a complete Evennia
+project learning regular expressions will save a great deal of time.<br></p>
+<p>Append the code below to your <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> file.<br></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># bottom of mygame/commands/tests.py</span>
+
+    <span class="k">class</span> <span class="nc">TestDynamicAbilities</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+
+        <span class="n">character_typeclass</span> <span class="o">=</span> <span class="n">Character</span>
+
+        <span class="k">def</span> <span class="nf">test_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">cmd_abil_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdAbilities</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_abil_result</span><span class="p">,</span> <span class="s2">&quot;STR: \d+, AGI: \d+, MAG: \d+&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Noticed that we removed the test string from <code class="docutils literal notranslate"><span class="pre">self.call</span></code>. That method always returns the string it
+found from the commands output. If we remove the string to test against, all <code class="docutils literal notranslate"><span class="pre">self.call</span></code> will do is
+return the screen output from the command object passed to it.<br></p>
+<p>We are instead using the next line to test our command’s output.
+<a class="reference external" href="https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertRegex">assertRegex</a> is a
+method of <code class="docutils literal notranslate"><span class="pre">unittest.TestCase</span></code> this is inherited to <code class="docutils literal notranslate"><span class="pre">TestDynamicAbilities</span></code> from <code class="docutils literal notranslate"><span class="pre">CommandTest</span></code> who
+inherited it from <code class="docutils literal notranslate"><span class="pre">EvenniaTest</span></code>.<br></p>
+<p>What we are doing is testing the result of the <code class="docutils literal notranslate"><span class="pre">CmdAbilities</span></code> method or command against a regular
+expression pattern. In this case, <code class="docutils literal notranslate"><span class="pre">&quot;STR:</span> <span class="pre">\d+,</span> <span class="pre">AGI:</span> <span class="pre">\d+,</span> <span class="pre">MAG:</span> <span class="pre">\d+&quot;</span></code>. <code class="docutils literal notranslate"><span class="pre">\d</span></code> in regular expressions or
+regex are digits (numbers), the <code class="docutils literal notranslate"><span class="pre">+</span></code> is to state we want 1 or more of that pattern. Together <code class="docutils literal notranslate"><span class="pre">\d+</span></code> is
+telling <a class="reference external" href="https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertRegex">assertRegex</a>
+that in that position of the string we expect 1 or more digits (numbers) to appear in the
+string.<br></p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Unit Testing</a><ul>
+<li><a class="reference internal" href="#running-the-evennia-test-suite">Running the Evennia test suite</a></li>
+<li><a class="reference internal" href="#running-tests-with-custom-settings-file">Running tests with custom settings file</a></li>
+<li><a class="reference internal" href="#writing-new-tests">Writing new tests</a><ul>
+<li><a class="reference internal" href="#using-the-evenniatest-class">Using the EvenniaTest class</a></li>
+<li><a class="reference internal" href="#testing-in-game-commands">Testing in-game Commands</a></li>
+<li><a class="reference internal" href="#unit-testing-contribs-with-custom-models">Unit testing contribs with custom models</a></li>
+<li><a class="reference internal" href="#a-note-on-adding-new-tests">A note on adding new tests</a></li>
+<li><a class="reference internal" href="#a-note-on-making-the-test-runner-faster">A note on making the test runner faster</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#testing-for-game-development-mini-tutorial">Testing for Game development (mini-tutorial)</a><ul>
+<li><a class="reference internal" href="#basic-testing-using-evennia">Basic testing using Evennia</a></li>
+<li><a class="reference internal" href="#a-simple-example">A simple example</a></li>
+<li><a class="reference internal" href="#testing-commands">Testing commands</a></li>
+<li><a class="reference internal" href="#testing-dynamic-output">Testing Dynamic Output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Unit-Testing.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Unit-Testing.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Unit Testing</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

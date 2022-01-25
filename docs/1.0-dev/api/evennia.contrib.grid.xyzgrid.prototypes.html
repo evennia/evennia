@@ -40,8 +40,21 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-contrib-grid-xyzgrid-prototypes">
-<h1>evennia.contrib.grid.xyzgrid.prototypes<a class="headerlink" href="#evennia-contrib-grid-xyzgrid-prototypes" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.contrib.grid.xyzgrid.prototypes">
+<span id="evennia-contrib-grid-xyzgrid-prototypes"></span><h1>evennia.contrib.grid.xyzgrid.prototypes<a class="headerlink" href="#module-evennia.contrib.grid.xyzgrid.prototypes" title="Permalink to this headline">¶</a></h1>
+<p>Default prototypes for building the XYZ-grid into actual game-rooms.</p>
+<p>Add this to mygame/conf/settings/settings.py:</p>
+<blockquote>
+<div><p>PROTOTYPE_MODULES += [‘evennia.contrib.grid.xyzgrid.prototypes’]</p>
+</div></blockquote>
+<p>The prototypes can then be used in mapping prototypes as</p>
+<blockquote>
+<div><p>{‘prototype_parent’: ‘xyz_room’, …}</p>
+</div></blockquote>
+<p>and/or</p>
+<blockquote>
+<div><p>{‘prototype_parent’: ‘xyz_exit’, …}</p>
+</div></blockquote>
 </section>
 
 
@@ -84,6 +97,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.grid.xyzgrid.prototypes.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

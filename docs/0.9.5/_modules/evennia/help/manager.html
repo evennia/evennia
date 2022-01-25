@@ -1,0 +1,305 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.help.manager &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.help.manager</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.help.manager</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Custom manager for HelpEntry objects.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">IntegrityError</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.managers</span> <span class="kn">import</span> <span class="n">TypedObjectManager</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span>
+<span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">signals</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;HelpEntryManager&quot;</span><span class="p">,)</span>
+
+
+<div class="viewcode-block" id="HelpEntryManager"><a class="viewcode-back" href="../../../api/evennia.help.manager.html#evennia.help.manager.HelpEntryManager">[docs]</a><span class="k">class</span> <span class="nc">HelpEntryManager</span><span class="p">(</span><span class="n">TypedObjectManager</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This HelpEntryManager implements methods for searching</span>
+<span class="sd">    and manipulating HelpEntries directly from the database.</span>
+
+<span class="sd">    These methods will all return database objects</span>
+<span class="sd">    (or QuerySets) directly.</span>
+
+<span class="sd">    Evennia-specific:</span>
+<span class="sd">    find_topicmatch</span>
+<span class="sd">    find_apropos</span>
+<span class="sd">    find_topicsuggestions</span>
+<span class="sd">    find_topics_with_category</span>
+<span class="sd">    all_to_category</span>
+<span class="sd">    search_help (equivalent to evennia.search_helpentry)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="HelpEntryManager.find_topicmatch"><a class="viewcode-back" href="../../../api/evennia.help.manager.html#evennia.help.manager.HelpEntryManager.find_topicmatch">[docs]</a>    <span class="k">def</span> <span class="nf">find_topicmatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topicstr</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Searches for matching topics or aliases based on player&#39;s</span>
+<span class="sd">        input.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            topcistr (str): Help topic to search for.</span>
+<span class="sd">            exact (bool, optional): Require exact match</span>
+<span class="sd">                (non-case-sensitive).  If `False` (default), match</span>
+<span class="sd">                sub-parts of the string.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            matches (HelpEntries): Query results.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dbref</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">dbref</span><span class="p">(</span><span class="n">topicstr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dbref</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dbref</span><span class="p">)</span>
+        <span class="n">topics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="n">topicstr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">topics</span><span class="p">:</span>
+            <span class="n">topics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_by_alias</span><span class="p">(</span><span class="n">topicstr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">topics</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">exact</span><span class="p">:</span>
+            <span class="n">topics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__istartswith</span><span class="o">=</span><span class="n">topicstr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">topics</span><span class="p">:</span>
+                <span class="n">topics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__icontains</span><span class="o">=</span><span class="n">topicstr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">topics</span></div>
+
+<div class="viewcode-block" id="HelpEntryManager.find_apropos"><a class="viewcode-back" href="../../../api/evennia.help.manager.html#evennia.help.manager.HelpEntryManager.find_apropos">[docs]</a>    <span class="k">def</span> <span class="nf">find_apropos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topicstr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Do a very loose search, returning all help entries containing</span>
+<span class="sd">        the search criterion in their titles.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            topicstr (str): Search criterion.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            matches (HelpEntries): Query results.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__icontains</span><span class="o">=</span><span class="n">topicstr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HelpEntryManager.find_topicsuggestions"><a class="viewcode-back" href="../../../api/evennia.help.manager.html#evennia.help.manager.HelpEntryManager.find_topicsuggestions">[docs]</a>    <span class="k">def</span> <span class="nf">find_topicsuggestions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topicstr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Do a fuzzy match, preferably within the category of the</span>
+<span class="sd">        current topic.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            topicstr (str): Search criterion.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            matches (Helpentries): Query results.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__icontains</span><span class="o">=</span><span class="n">topicstr</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="n">topicstr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HelpEntryManager.find_topics_with_category"><a class="viewcode-back" href="../../../api/evennia.help.manager.html#evennia.help.manager.HelpEntryManager.find_topics_with_category">[docs]</a>    <span class="k">def</span> <span class="nf">find_topics_with_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">help_category</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Search topics having a particular category.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            help_category (str): Category query criterion.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            matches (HelpEntries): Query results.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_help_category__iexact</span><span class="o">=</span><span class="n">help_category</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HelpEntryManager.get_all_topics"><a class="viewcode-back" href="../../../api/evennia.help.manager.html#evennia.help.manager.HelpEntryManager.get_all_topics">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_topics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all topics.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            all (HelpEntries): All topics.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="HelpEntryManager.get_all_categories"><a class="viewcode-back" href="../../../api/evennia.help.manager.html#evennia.help.manager.HelpEntryManager.get_all_categories">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return all defined category names with at least one topic in</span>
+<span class="sd">        them.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            matches (list): Unique list of category names across all</span>
+<span class="sd">                topics.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">topic</span><span class="o">.</span><span class="n">help_category</span> <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="HelpEntryManager.all_to_category"><a class="viewcode-back" href="../../../api/evennia.help.manager.html#evennia.help.manager.HelpEntryManager.all_to_category">[docs]</a>    <span class="k">def</span> <span class="nf">all_to_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_category</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shifts all help entries in database to default_category.  This</span>
+<span class="sd">        action cannot be reverted. It is used primarily by the engine</span>
+<span class="sd">        when importing a default help database, making sure this ends</span>
+<span class="sd">        up in one easily separated category.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            default_category (str): Category to move entries to.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">topics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">topics</span><span class="p">:</span>
+            <span class="n">topic</span><span class="o">.</span><span class="n">help_category</span> <span class="o">=</span> <span class="n">default_category</span>
+            <span class="n">topic</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Help database moved to category </span><span class="si">{default_category}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">default_category</span><span class="o">=</span><span class="n">default_category</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HelpEntryManager.search_help"><a class="viewcode-back" href="../../../api/evennia.help.manager.html#evennia.help.manager.HelpEntryManager.search_help">[docs]</a>    <span class="k">def</span> <span class="nf">search_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">help_category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve a search entry object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ostring (str): The help topic to look for.</span>
+<span class="sd">            category (str): Limit the search to a particular help topic</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Queryset: An iterable with 0, 1 or more matches.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ostring</span> <span class="o">=</span> <span class="n">ostring</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">help_category</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="n">ostring</span><span class="p">,</span> <span class="n">db_help_category__iexact</span><span class="o">=</span><span class="n">help_category</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="n">ostring</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HelpEntryManager.create_help"><a class="viewcode-back" href="../../../api/evennia.help.manager.html#evennia.help.manager.HelpEntryManager.create_help">[docs]</a>    <span class="k">def</span> <span class="nf">create_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">entrytext</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;General&quot;</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a static help entry in the help database. Note that Command</span>
+<span class="sd">        help entries are dynamic and directly taken from the __doc__</span>
+<span class="sd">        entries of the command. The database-stored help entries are</span>
+<span class="sd">        intended for more general help on the game, more extensive info,</span>
+<span class="sd">        in-game setting information and so on.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): The name of the help entry.</span>
+<span class="sd">            entrytext (str): The body of te help entry</span>
+<span class="sd">            category (str, optional): The help category of the entry.</span>
+<span class="sd">            locks (str, optional): A lockstring to restrict access.</span>
+<span class="sd">            aliases (list of str, optional): List of alternative (likely shorter) keynames.</span>
+<span class="sd">            tags (lst, optional): List of tags or tuples `(tag, category)`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            help (HelpEntry): A newly created help entry.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">new_help</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
+            <span class="n">new_help</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="n">new_help</span><span class="o">.</span><span class="n">entrytext</span> <span class="o">=</span> <span class="n">entrytext</span>
+            <span class="n">new_help</span><span class="o">.</span><span class="n">help_category</span> <span class="o">=</span> <span class="n">category</span>
+            <span class="k">if</span> <span class="n">locks</span><span class="p">:</span>
+                <span class="n">new_help</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">aliases</span><span class="p">:</span>
+                <span class="n">new_help</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">aliases</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
+                <span class="n">new_help</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="n">tags</span><span class="p">)</span>
+            <span class="n">new_help</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">new_help</span>
+        <span class="k">except</span> <span class="n">IntegrityError</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Could not add help entry: key &#39;</span><span class="si">%s</span><span class="s2">&#39; already exists.&quot;</span> <span class="o">%</span> <span class="n">key</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">signals</span><span class="o">.</span><span class="n">SIGNAL_HELPENTRY_POST_CREATE</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">new_help</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="manager.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.help.manager</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

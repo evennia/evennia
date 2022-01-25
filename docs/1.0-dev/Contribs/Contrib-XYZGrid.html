@@ -457,9 +457,9 @@ on the map to Python code.</p>
 <p>The legend is optional, and any symbol not explicitly given in your legend will
 fall back to its value in the default legend <a class="reference internal" href="#default-legend"><span class="std std-doc">outlined below</span></a>.</p>
 <ul class="simple">
-<li><p><span class="xref myst">MapNode</span>
+<li><p><a class="reference internal" href="../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode" title="evennia.contrib.grid.xyzgrid.xymap_legend.MapNode"><span class="xref myst py py-class">MapNode</span></a>
 is the base class for all nodes.</p></li>
-<li><p><span class="xref myst">MapLink</span>
+<li><p><a class="reference internal" href="../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink" title="evennia.contrib.grid.xyzgrid.xymap_legend.MapLink"><span class="xref myst py py-class">MapLink</span></a>
 is the base class for all links.</p></li>
 </ul>
 <p>As the <em>Map String</em> is parsed, each found symbol is looked up in the legend and
@@ -470,7 +470,7 @@ initialized into the corresponding MapNode/Link instance.</p>
 with a full set of map elements that use these properties in various ways
 (described in the next section).</p>
 <p>Some useful properties of the
-<span class="xref myst">MapNode</span>
+<a class="reference internal" href="../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode" title="evennia.contrib.grid.xyzgrid.xymap_legend.MapNode"><span class="xref myst py py-class">MapNode</span></a>
 class (see class doc for hook methods):</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">symbol</span></code> (str) - The character to parse from the map into this node. By default this
@@ -498,7 +498,7 @@ given, nothing will be spawned for this coordinate (a ‘virtual’ node can be
 useful for various reasons, mostly map-transitions).</p></li>
 </ul>
 <p>Some useful properties of the
-<span class="xref myst">MapLink</span>
+<a class="reference internal" href="../api/evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink" title="evennia.contrib.grid.xyzgrid.xymap_legend.MapLink"><span class="xref myst py py-class">MapLink</span></a>
 class (see class doc for hook methods):</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">symbol</span></code> (str) - The character to parse from the map into this node. This must
@@ -1308,7 +1308,7 @@ know how to call find the pathfinder though:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">xymap.get_shortest_path(start_xy,</span> <span class="pre">end_xy)</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">xymap.get_visual_range(xy,</span> <span class="pre">dist=2,</span> <span class="pre">**kwargs)</span></code></p></li>
 </ul>
-<p>See the <a class="reference internal" href="../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.xymap" title="evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.xymap"><span class="xref myst py py-meth">XYMap</span></a> documentation for
+<p>See the <a class="reference internal" href="../api/evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.PathData.xymap" title="evennia.contrib.grid.xyzgrid.commands.PathData.xymap"><span class="xref myst py py-attr">XYMap</span></a> documentation for
 details.</p>
 </section>
 <section id="xyzroom-and-xyzexit">
@@ -1556,6 +1556,7 @@ file will be overwritten, so edit that file rather than this one.</small></p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Contrib-XYZGrid.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

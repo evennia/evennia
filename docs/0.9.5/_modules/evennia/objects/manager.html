@@ -1,0 +1,839 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.objects.manager &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.objects.manager</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.objects.manager</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Custom manager for Objects.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db.models.fields</span> <span class="kn">import</span> <span class="n">exceptions</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.managers</span> <span class="kn">import</span> <span class="n">TypedObjectManager</span><span class="p">,</span> <span class="n">TypeclassManager</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">string_partial_matching</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">dbid_to_obj</span>
+<span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">signals</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ObjectManager&quot;</span><span class="p">,</span> <span class="s2">&quot;ObjectDBManager&quot;</span><span class="p">)</span>
+<span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
+
+<span class="c1"># delayed import</span>
+<span class="n">_ATTR</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">_MULTIMATCH_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_MULTIMATCH_REGEX</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">U</span><span class="p">)</span>
+
+<span class="c1"># Try to use a custom way to parse id-tagged multimatches.</span>
+
+
+<div class="viewcode-block" id="ObjectDBManager"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager">[docs]</a><span class="k">class</span> <span class="nc">ObjectDBManager</span><span class="p">(</span><span class="n">TypedObjectManager</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This ObjectManager implements methods for searching</span>
+<span class="sd">    and manipulating Objects directly from the database.</span>
+
+<span class="sd">    Evennia-specific search methods (will return Typeclasses or</span>
+<span class="sd">    lists of Typeclasses, whereas Django-general methods will return</span>
+<span class="sd">    Querysets or database objects).</span>
+
+<span class="sd">    dbref (converter)</span>
+<span class="sd">    dbref_search</span>
+<span class="sd">    get_dbref_range</span>
+<span class="sd">    object_totals</span>
+<span class="sd">    typeclass_search</span>
+<span class="sd">    get_object_with_account</span>
+<span class="sd">    get_objs_with_key_and_typeclass</span>
+<span class="sd">    get_objs_with_attr</span>
+<span class="sd">    get_objs_with_attr_match</span>
+<span class="sd">    get_objs_with_db_property</span>
+<span class="sd">    get_objs_with_db_property_match</span>
+<span class="sd">    get_objs_with_key_or_alias</span>
+<span class="sd">    get_contents</span>
+<span class="sd">    object_search (interface to many of the above methods,</span>
+<span class="sd">                   equivalent to evennia.search_object)</span>
+<span class="sd">    copy_object</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># ObjectManager Get methods</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># account related</span>
+
+<div class="viewcode-block" id="ObjectDBManager.get_object_with_account"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_object_with_account">[docs]</a>    <span class="k">def</span> <span class="nf">get_object_with_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Search for an object based on its account&#39;s name or dbref.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ostring (str or int): Search criterion or dbref. Searching</span>
+<span class="sd">                for an account is sometimes initiated by appending an `*` to</span>
+<span class="sd">                the beginning of the search criterion (e.g. in</span>
+<span class="sd">                local_and_global_search). This is stripped here.</span>
+<span class="sd">            exact (bool, optional): Require an exact account match.</span>
+<span class="sd">            candidates (list, optional): Only search among this list of possible</span>
+<span class="sd">                object candidates.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            match (query): Matching query.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ostring</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ostring</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+        <span class="c1"># simplest case - search by dbref</span>
+        <span class="n">dbref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbref</span><span class="p">(</span><span class="n">ostring</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dbref</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_account__id</span><span class="o">=</span><span class="n">dbref</span><span class="p">)</span>
+            <span class="k">except</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="c1"># not a dbref. Search by name.</span>
+        <span class="n">cand_restriction</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">candidates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">Q</span><span class="p">(</span><span class="n">pk__in</span><span class="o">=</span><span class="p">[</span><span class="n">_GA</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="k">if</span> <span class="n">obj</span><span class="p">])</span>
+            <span class="ow">or</span> <span class="n">Q</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">exact</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">cand_restriction</span> <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_account__username__iexact</span><span class="o">=</span><span class="n">ostring</span><span class="p">))</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span>
+                <span class="s2">&quot;id&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># fuzzy matching</span>
+            <span class="n">obj_cands</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_related</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">cand_restriction</span> <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_account__username__istartswith</span><span class="o">=</span><span class="n">ostring</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">acct_cands</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">account</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_cands</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">obj_cands</span><span class="p">:</span>
+                <span class="n">index_matches</span> <span class="o">=</span> <span class="n">string_partial_matching</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">acct</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">acct</span> <span class="ow">in</span> <span class="n">acct_cands</span><span class="p">],</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">ret_index</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="n">acct_cands</span> <span class="o">=</span> <span class="p">[</span><span class="n">acct_cands</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index_matches</span><span class="p">]</span>
+                <span class="k">return</span> <span class="n">obj_cands</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_account__id__in</span><span class="o">=</span><span class="n">acct_cands</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ObjectDBManager.get_objs_with_key_and_typeclass"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_key_and_typeclass">[docs]</a>    <span class="k">def</span> <span class="nf">get_objs_with_key_and_typeclass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oname</span><span class="p">,</span> <span class="n">otypeclass_path</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns objects based on simultaneous key and typeclass match.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            oname (str): Object key to search for</span>
+<span class="sd">            otypeclass_path (str): Full Python path to tyepclass to search for</span>
+<span class="sd">            candidates (list, optional): Only match among the given list of candidates.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            matches (query): The matching objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cand_restriction</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">candidates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">Q</span><span class="p">(</span><span class="n">pk__in</span><span class="o">=</span><span class="p">[</span><span class="n">_GA</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="k">if</span> <span class="n">obj</span><span class="p">])</span>
+            <span class="ow">or</span> <span class="n">Q</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">cand_restriction</span> <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="n">oname</span><span class="p">,</span> <span class="n">db_typeclass_path__exact</span><span class="o">=</span><span class="n">otypeclass_path</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span></div>
+
+    <span class="c1"># attr/property related</span>
+
+<div class="viewcode-block" id="ObjectDBManager.get_objs_with_attr"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_attr">[docs]</a>    <span class="k">def</span> <span class="nf">get_objs_with_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get objects based on having a certain Attribute defined.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attribute_name (str): Attribute name to search for.</span>
+<span class="sd">            candidates (list, optional): Only match among the given list of object</span>
+<span class="sd">                candidates.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            matches (query):  All objects having the given attribute_name defined at all.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cand_restriction</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">candidates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">Q</span><span class="p">(</span><span class="n">id__in</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">])</span> <span class="ow">or</span> <span class="n">Q</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">cand_restriction</span> <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="n">attribute_name</span><span class="p">))</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span>
+            <span class="s2">&quot;id&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ObjectDBManager.get_objs_with_attr_value"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_attr_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_objs_with_attr_value</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">,</span> <span class="n">attribute_value</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">typeclasses</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all objects having the given attrname set to the given value.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attribute_name (str): Attribute key to search for.</span>
+<span class="sd">            attribute_value (any):  Attribute value to search for. This can also be database</span>
+<span class="sd">                objects.</span>
+<span class="sd">            candidates (list, optional): Candidate objects to limit search to.</span>
+<span class="sd">            typeclasses (list, optional): Python pats to restrict matches with.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Queryset: Iterable with 0, 1 or more matches fullfilling both the `attribute_name` and</span>
+<span class="sd">                `attribute_value` criterions.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This uses the Attribute&#39;s PickledField to transparently search the database by matching</span>
+<span class="sd">            the internal representation. This is reasonably effective but since Attribute values</span>
+<span class="sd">            cannot be indexed, searching by Attribute key is to be preferred whenever possible.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cand_restriction</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">candidates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">Q</span><span class="p">(</span><span class="n">pk__in</span><span class="o">=</span><span class="p">[</span><span class="n">_GA</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="k">if</span> <span class="n">obj</span><span class="p">])</span>
+            <span class="ow">or</span> <span class="n">Q</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">type_restriction</span> <span class="o">=</span> <span class="n">typeclasses</span> <span class="ow">and</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_typeclass_path__in</span><span class="o">=</span><span class="n">make_iter</span><span class="p">(</span><span class="n">typeclasses</span><span class="p">))</span> <span class="ow">or</span> <span class="n">Q</span><span class="p">()</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">cand_restriction</span>
+            <span class="o">&amp;</span> <span class="n">type_restriction</span>
+            <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="n">attribute_name</span><span class="p">)</span>
+            <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_value</span><span class="o">=</span><span class="n">attribute_value</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">results</span></div>
+
+<div class="viewcode-block" id="ObjectDBManager.get_objs_with_db_property"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_db_property">[docs]</a>    <span class="k">def</span> <span class="nf">get_objs_with_db_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all objects having a given db field property.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            property_name (str): The name of the field to match for.</span>
+<span class="sd">            candidates (list, optional): Only search among th egiven candidates.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            matches (list): The found matches.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">property_name</span> <span class="o">=</span> <span class="s2">&quot;db_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">property_name</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;db_&quot;</span><span class="p">)</span>
+        <span class="n">cand_restriction</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">candidates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">Q</span><span class="p">(</span><span class="n">pk__in</span><span class="o">=</span><span class="p">[</span><span class="n">_GA</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="k">if</span> <span class="n">obj</span><span class="p">])</span>
+            <span class="ow">or</span> <span class="n">Q</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">querykwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">property_name</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">cand_restriction</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">Q</span><span class="p">(</span><span class="o">**</span><span class="n">querykwargs</span><span class="p">))</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">FieldError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="ObjectDBManager.get_objs_with_db_property_value"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_db_property_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_objs_with_db_property_value</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">,</span> <span class="n">property_value</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">typeclasses</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get objects with a specific field name and value.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            property_name (str): Field name to search for.</span>
+<span class="sd">            property_value (any): Value required for field with `property_name` to have.</span>
+<span class="sd">            candidates (list, optional): List of objects to limit search to.</span>
+<span class="sd">            typeclasses (list, optional): List of typeclass-path strings to restrict matches with</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Queryset: Iterable with 0, 1 or more matches.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">property_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">property_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;db_&quot;</span><span class="p">):</span>
+                <span class="n">property_name</span> <span class="o">=</span> <span class="s2">&quot;db_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">property_name</span>
+        <span class="n">querykwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">property_name</span><span class="p">:</span> <span class="n">property_value</span><span class="p">}</span>
+        <span class="n">cand_restriction</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">candidates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">Q</span><span class="p">(</span><span class="n">pk__in</span><span class="o">=</span><span class="p">[</span><span class="n">_GA</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="k">if</span> <span class="n">obj</span><span class="p">])</span>
+            <span class="ow">or</span> <span class="n">Q</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">type_restriction</span> <span class="o">=</span> <span class="n">typeclasses</span> <span class="ow">and</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_typeclass_path__in</span><span class="o">=</span><span class="n">make_iter</span><span class="p">(</span><span class="n">typeclasses</span><span class="p">))</span> <span class="ow">or</span> <span class="n">Q</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">cand_restriction</span> <span class="o">&amp;</span> <span class="n">type_restriction</span> <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="o">**</span><span class="n">querykwargs</span><span class="p">))</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">FieldError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span>
+                <span class="s2">&quot;The property &#39;</span><span class="si">%s</span><span class="s2">&#39; does not support search criteria of the type </span><span class="si">%s</span><span class="s2">.&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="n">property_name</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">property_value</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">none</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ObjectDBManager.get_contents"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_contents">[docs]</a>    <span class="k">def</span> <span class="nf">get_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">excludeobj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all objects that has a location set to this one.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            location (Object): Where to get contents from.</span>
+<span class="sd">            excludeobj (Object or list, optional): One or more objects</span>
+<span class="sd">                to exclude from the match.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Queryset: Iterable with 0, 1 or more matches.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">exclude_restriction</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">Q</span><span class="p">(</span><span class="n">pk__in</span><span class="o">=</span><span class="p">[</span><span class="n">_GA</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">excludeobj</span><span class="p">)])</span> <span class="k">if</span> <span class="n">excludeobj</span> <span class="k">else</span> <span class="n">Q</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_location</span><span class="o">=</span><span class="n">location</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">exclude_restriction</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ObjectDBManager.get_objs_with_key_or_alias"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_key_or_alias">[docs]</a>    <span class="k">def</span> <span class="nf">get_objs_with_key_or_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">typeclasses</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            ostring (str): A search criterion.</span>
+<span class="sd">            exact (bool, optional): Require exact match of ostring</span>
+<span class="sd">                (still case-insensitive). If `False`, will do fuzzy matching</span>
+<span class="sd">                using `evennia.utils.utils.string_partial_matching` algorithm.</span>
+<span class="sd">            candidates (list): Only match among these candidates.</span>
+<span class="sd">            typeclasses (list): Only match objects with typeclasses having thess path strings.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Queryset: An iterable with 0, 1 or more matches.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ostring</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ostring</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">):</span>
+                <span class="n">ostring</span> <span class="o">=</span> <span class="n">ostring</span><span class="o">.</span><span class="n">key</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">):</span>
+            <span class="c1"># if candidates is an empty iterable there can be no matches</span>
+            <span class="c1"># Exit early.</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
+
+        <span class="c1"># build query objects</span>
+        <span class="n">candidates_id</span> <span class="o">=</span> <span class="p">[</span><span class="n">_GA</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="k">if</span> <span class="n">obj</span><span class="p">]</span>
+        <span class="n">cand_restriction</span> <span class="o">=</span> <span class="n">candidates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">Q</span><span class="p">(</span><span class="n">pk__in</span><span class="o">=</span><span class="n">candidates_id</span><span class="p">)</span> <span class="ow">or</span> <span class="n">Q</span><span class="p">()</span>
+        <span class="n">type_restriction</span> <span class="o">=</span> <span class="n">typeclasses</span> <span class="ow">and</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_typeclass_path__in</span><span class="o">=</span><span class="n">make_iter</span><span class="p">(</span><span class="n">typeclasses</span><span class="p">))</span> <span class="ow">or</span> <span class="n">Q</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">exact</span><span class="p">:</span>
+            <span class="c1"># exact match - do direct search</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                        <span class="n">cand_restriction</span>
+                        <span class="o">&amp;</span> <span class="n">type_restriction</span>
+                        <span class="o">&amp;</span> <span class="p">(</span>
+                            <span class="n">Q</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="n">ostring</span><span class="p">)</span>
+                            <span class="o">|</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key__iexact</span><span class="o">=</span><span class="n">ostring</span><span class="p">)</span>
+                            <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_tagtype__iexact</span><span class="o">=</span><span class="s2">&quot;alias&quot;</span><span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">candidates</span><span class="p">:</span>
+            <span class="c1"># fuzzy with candidates</span>
+            <span class="n">search_candidates</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">cand_restriction</span> <span class="o">&amp;</span> <span class="n">type_restriction</span><span class="p">)</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># fuzzy without supplied candidates - we select our own candidates</span>
+            <span class="n">search_candidates</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                    <span class="n">type_restriction</span>
+                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">Q</span><span class="p">(</span><span class="n">db_key__istartswith</span><span class="o">=</span><span class="n">ostring</span><span class="p">)</span> <span class="o">|</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key__istartswith</span><span class="o">=</span><span class="n">ostring</span><span class="p">))</span>
+                <span class="p">)</span>
+                <span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="c1"># fuzzy matching</span>
+        <span class="n">key_strings</span> <span class="o">=</span> <span class="n">search_candidates</span><span class="o">.</span><span class="n">values_list</span><span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+
+        <span class="n">match_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">index_matches</span> <span class="o">=</span> <span class="n">string_partial_matching</span><span class="p">(</span><span class="n">key_strings</span><span class="p">,</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">ret_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">index_matches</span><span class="p">:</span>
+            <span class="c1"># a match by key</span>
+            <span class="n">match_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">search_candidates</span><span class="p">)</span>
+                         <span class="k">if</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">index_matches</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># match by alias rather than by key</span>
+            <span class="n">search_candidates</span> <span class="o">=</span> <span class="n">search_candidates</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">db_tags__db_tagtype__iexact</span><span class="o">=</span><span class="s2">&quot;alias&quot;</span><span class="p">,</span> <span class="n">db_tags__db_key__icontains</span><span class="o">=</span><span class="n">ostring</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
+            <span class="n">alias_strings</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">alias_candidates</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c1"># TODO create the alias_strings and alias_candidates lists more efficiently?</span>
+            <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">search_candidates</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">candidate</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                    <span class="n">alias_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span>
+                    <span class="n">alias_candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+            <span class="n">index_matches</span> <span class="o">=</span> <span class="n">string_partial_matching</span><span class="p">(</span><span class="n">alias_strings</span><span class="p">,</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">ret_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">index_matches</span><span class="p">:</span>
+                <span class="c1"># it&#39;s possible to have multiple matches to the same Object, we must weed those out</span>
+                <span class="n">match_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">alias_candidates</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">index_matches</span><span class="p">]</span>
+        <span class="c1"># TODO - not ideal to have to do a second lookup here, but we want to return a queryset</span>
+        <span class="c1"># rather than a list ... maybe the above queries can be improved.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">id__in</span><span class="o">=</span><span class="n">match_ids</span><span class="p">)</span></div>
+
+    <span class="c1"># main search methods and helper functions</span>
+
+<div class="viewcode-block" id="ObjectDBManager.search_object"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.search_object">[docs]</a>    <span class="k">def</span> <span class="nf">search_object</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">searchdata</span><span class="p">,</span>
+        <span class="n">attribute_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">use_dbref</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Search as an object globally or in a list of candidates and</span>
+<span class="sd">        return results. The result is always an Object. Always returns</span>
+<span class="sd">        a list.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            searchdata (str or Object): The entity to match for. This is</span>
+<span class="sd">                usually a key string but may also be an object itself.</span>
+<span class="sd">                By default (if no `attribute_name` is set), this will</span>
+<span class="sd">                search `object.key` and `object.aliases` in order.</span>
+<span class="sd">                Can also be on the form #dbref, which will (if</span>
+<span class="sd">                `exact=True`) be matched against primary key.</span>
+<span class="sd">            attribute_name (str): Use this named Attribute to</span>
+<span class="sd">                match searchdata against, instead of the defaults. If</span>
+<span class="sd">                this is the name of a database field (with or without</span>
+<span class="sd">                the `db_` prefix), that will be matched too.</span>
+<span class="sd">            typeclass (str or TypeClass): restrict matches to objects</span>
+<span class="sd">                having this typeclass. This will help speed up global</span>
+<span class="sd">                searches.</span>
+<span class="sd">            candidates (list): If supplied, search will</span>
+<span class="sd">                only be performed among the candidates in this list. A</span>
+<span class="sd">                common list of candidates is the contents of the</span>
+<span class="sd">                current location searched.</span>
+<span class="sd">            exact (bool): Match names/aliases exactly or partially.</span>
+<span class="sd">                Partial matching matches the beginning of words in the</span>
+<span class="sd">                names/aliases, using a matching routine to separate</span>
+<span class="sd">                multiple matches in names with multiple components (so</span>
+<span class="sd">                &quot;bi sw&quot; will match &quot;Big sword&quot;). Since this is more</span>
+<span class="sd">                expensive than exact matching, it is recommended to be</span>
+<span class="sd">                used together with the `candidates` keyword to limit the</span>
+<span class="sd">                number of possibilities. This value has no meaning if</span>
+<span class="sd">                searching for attributes/properties.</span>
+<span class="sd">            use_dbref (bool): If False, bypass direct lookup of a string</span>
+<span class="sd">                on the form #dbref and treat it like any string.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            matches (list): Matching objects</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">_searcher</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Helper method for searching objects. `typeclass` is only used</span>
+<span class="sd">            for global searching (no candidates)</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">attribute_name</span><span class="p">:</span>
+                <span class="c1"># attribute/property search (always exact).</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_objs_with_db_property_value</span><span class="p">(</span>
+                    <span class="n">attribute_name</span><span class="p">,</span> <span class="n">searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span><span class="p">,</span> <span class="n">typeclasses</span><span class="o">=</span><span class="n">typeclass</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">matches</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">matches</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_objs_with_attr_value</span><span class="p">(</span>
+                    <span class="n">attribute_name</span><span class="p">,</span> <span class="n">searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span><span class="p">,</span> <span class="n">typeclasses</span><span class="o">=</span><span class="n">typeclass</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># normal key/alias search</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_objs_with_key_or_alias</span><span class="p">(</span>
+                    <span class="n">searchdata</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span><span class="p">,</span> <span class="n">typeclasses</span><span class="o">=</span><span class="n">typeclass</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">searchdata</span> <span class="ow">and</span> <span class="n">searchdata</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">typeclass</span><span class="p">:</span>
+            <span class="c1"># typeclass may also be a list</span>
+            <span class="n">typeclasses</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">typeclass</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">typeclass</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">typeclasses</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">typeclass</span><span class="p">):</span>
+                    <span class="n">typeclasses</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">typeclass</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">typeclasses</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">typeclass</span>
+            <span class="n">typeclass</span> <span class="o">=</span> <span class="n">typeclasses</span>
+
+        <span class="k">if</span> <span class="n">candidates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">candidates</span><span class="p">:</span>
+                <span class="c1"># candidates is the empty list. This should mean no matches can ever be acquired.</span>
+                <span class="k">return</span> <span class="p">[]</span>
+            <span class="c1"># Convenience check to make sure candidates are really dbobjs</span>
+            <span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span><span class="n">cand</span> <span class="k">for</span> <span class="n">cand</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="k">if</span> <span class="n">cand</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">typeclass</span><span class="p">:</span>
+                <span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">cand</span> <span class="k">for</span> <span class="n">cand</span> <span class="ow">in</span> <span class="n">candidates</span> <span class="k">if</span> <span class="n">_GA</span><span class="p">(</span><span class="n">cand</span><span class="p">,</span> <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">typeclass</span>
+                <span class="p">]</span>
+
+        <span class="n">dbref</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">attribute_name</span> <span class="ow">and</span> <span class="n">exact</span> <span class="ow">and</span> <span class="n">use_dbref</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbref</span><span class="p">(</span><span class="n">searchdata</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dbref</span><span class="p">:</span>
+            <span class="c1"># Easiest case - dbref matching (always exact)</span>
+            <span class="n">dbref_match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbref_search</span><span class="p">(</span><span class="n">dbref</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dbref_match</span><span class="p">:</span>
+                <span class="n">dmatch</span> <span class="o">=</span> <span class="n">dbref_match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">candidates</span> <span class="ow">or</span> <span class="n">dmatch</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">dbref_match</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
+
+        <span class="c1"># Search through all possibilities.</span>
+        <span class="n">match_number</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># always run first check exact - we don&#39;t want partial matches</span>
+        <span class="c1"># if on the form of 1-keyword etc.</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="n">_searcher</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span><span class="p">:</span>
+            <span class="c1"># no matches found - check if we are dealing with N-keyword</span>
+            <span class="c1"># query - if so, strip it.</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">_MULTIMATCH_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">searchdata</span><span class="p">))</span>
+            <span class="n">match_number</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="c1"># strips the number</span>
+                <span class="n">match_number</span><span class="p">,</span> <span class="n">searchdata</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">),</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+                <span class="n">match_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match_number</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">match_number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">exact</span><span class="p">:</span>
+                <span class="c1"># run search again, with the exactness set by call</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="n">_searcher</span><span class="p">(</span><span class="n">searchdata</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">)</span>
+
+        <span class="c1"># deal with result</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">match_number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">match_number</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># this indicates trying to get a single match with a match-number</span>
+            <span class="c1"># targeting some higher-number match (like 2-box when there is only</span>
+            <span class="c1"># one box in the room). This leads to a no-match.</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">match_number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># multiple matches, but a number was given to separate them</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">match_number</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">):</span>
+                <span class="c1"># limit to one match (we still want a queryset back)</span>
+                <span class="c1"># TODO: Can we do this some other way and avoid a second lookup?</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">matches</span><span class="p">[</span><span class="n">match_number</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># a number was given outside of range. This means a no-match.</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
+
+        <span class="c1"># return a list (possibly empty)</span>
+        <span class="k">return</span> <span class="n">matches</span></div>
+
+    <span class="c1"># alias for backwards compatibility</span>
+    <span class="n">object_search</span> <span class="o">=</span> <span class="n">search_object</span>
+    <span class="n">search</span> <span class="o">=</span> <span class="n">search_object</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># ObjectManager Copy method</span>
+
+<div class="viewcode-block" id="ObjectDBManager.copy_object"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.copy_object">[docs]</a>    <span class="k">def</span> <span class="nf">copy_object</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">original_object</span><span class="p">,</span>
+        <span class="n">new_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">new_location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">new_home</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">new_permissions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">new_locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">new_aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">new_destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create and return a new object as a copy of the original object. All</span>
+<span class="sd">        will be identical to the original except for the arguments given</span>
+<span class="sd">        specifically to this method. Object contents will not be copied.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            original_object (Object): The object to make a copy from.</span>
+<span class="sd">            new_key (str, optional): Name of the copy, if different</span>
+<span class="sd">                from the original.</span>
+<span class="sd">            new_location (Object, optional): Alternate location.</span>
+<span class="sd">            new_home (Object, optional): Change the home location</span>
+<span class="sd">            new_aliases (list, optional): Give alternate object</span>
+<span class="sd">                aliases as a list of strings.</span>
+<span class="sd">            new_destination (Object, optional): Used only by exits.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            copy (Object or None): The copy of `original_object`,</span>
+<span class="sd">                optionally modified as per the ingoing keyword</span>
+<span class="sd">                arguments.  `None` if an error was encountered.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># get all the object&#39;s stats</span>
+        <span class="n">typeclass_path</span> <span class="o">=</span> <span class="n">original_object</span><span class="o">.</span><span class="n">typeclass_path</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_key</span><span class="p">:</span>
+            <span class="n">new_key</span> <span class="o">=</span> <span class="n">original_object</span><span class="o">.</span><span class="n">key</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_location</span><span class="p">:</span>
+            <span class="n">new_location</span> <span class="o">=</span> <span class="n">original_object</span><span class="o">.</span><span class="n">location</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_home</span><span class="p">:</span>
+            <span class="n">new_home</span> <span class="o">=</span> <span class="n">original_object</span><span class="o">.</span><span class="n">home</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_aliases</span><span class="p">:</span>
+            <span class="n">new_aliases</span> <span class="o">=</span> <span class="n">original_object</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_locks</span><span class="p">:</span>
+            <span class="n">new_locks</span> <span class="o">=</span> <span class="n">original_object</span><span class="o">.</span><span class="n">db_lock_storage</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_permissions</span><span class="p">:</span>
+            <span class="n">new_permissions</span> <span class="o">=</span> <span class="n">original_object</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_destination</span><span class="p">:</span>
+            <span class="n">new_destination</span> <span class="o">=</span> <span class="n">original_object</span><span class="o">.</span><span class="n">destination</span>
+
+        <span class="c1"># create new object</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
+        <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
+
+        <span class="n">new_object</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
+            <span class="n">typeclass_path</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">new_key</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">=</span><span class="n">new_location</span><span class="p">,</span>
+            <span class="n">home</span><span class="o">=</span><span class="n">new_home</span><span class="p">,</span>
+            <span class="n">permissions</span><span class="o">=</span><span class="n">new_permissions</span><span class="p">,</span>
+            <span class="n">locks</span><span class="o">=</span><span class="n">new_locks</span><span class="p">,</span>
+            <span class="n">aliases</span><span class="o">=</span><span class="n">new_aliases</span><span class="p">,</span>
+            <span class="n">destination</span><span class="o">=</span><span class="n">new_destination</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_object</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># copy over all attributes from old to new.</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">category</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">lock_storage</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">original_object</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">new_object</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="n">attrs</span><span class="p">)</span>
+
+        <span class="c1"># copy over all cmdsets, if any</span>
+        <span class="k">for</span> <span class="n">icmdset</span><span class="p">,</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">original_object</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">all</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">icmdset</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">new_object</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_object</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
+
+        <span class="c1"># copy over all scripts, if any</span>
+        <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">original_object</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">copy_script</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="n">new_obj</span><span class="o">=</span><span class="n">new_object</span><span class="p">)</span>
+
+        <span class="c1"># copy over all tags, if any</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">db_key</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">db_category</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">db_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">original_object</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">return_objs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">new_object</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="n">tags</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_object</span></div>
+
+<div class="viewcode-block" id="ObjectDBManager.clear_all_sessids"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.clear_all_sessids">[docs]</a>    <span class="k">def</span> <span class="nf">clear_all_sessids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clear the db_sessid field of all objects having also the</span>
+<span class="sd">        db_account field set.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_sessid__isnull</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">db_sessid</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ObjectDBManager.create_object"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.create_object">[docs]</a>    <span class="k">def</span> <span class="nf">create_object</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">home</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">permissions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">report_to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">nohome</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">nattributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Create a new in-game object.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            typeclass (class or str): Class or python path to a typeclass.</span>
+<span class="sd">            key (str): Name of the new object. If not set, a name of</span>
+<span class="sd">                `#dbref` will be set.</span>
+<span class="sd">            location (Object or str): Obj or #dbref to use as the location of the new object.</span>
+<span class="sd">            home (Object or str): Obj or #dbref to use as the object&#39;s home location.</span>
+<span class="sd">            permissions (list): A list of permission strings or tuples (permstring, category).</span>
+<span class="sd">            locks (str): one or more lockstrings, separated by semicolons.</span>
+<span class="sd">            aliases (list): A list of alternative keys or tuples (aliasstring, category).</span>
+<span class="sd">            tags (list): List of tag keys or tuples (tagkey, category) or (tagkey, category, data).</span>
+<span class="sd">            destination (Object or str): Obj or #dbref to use as an Exit&#39;s target.</span>
+<span class="sd">            report_to (Object): The object to return error messages to.</span>
+<span class="sd">            nohome (bool): This allows the creation of objects without a</span>
+<span class="sd">                default home location; only used when creating the default</span>
+<span class="sd">                location itself or during unittests.</span>
+<span class="sd">            attributes (list): Tuples on the form (key, value) or (key, value, category),</span>
+<span class="sd">                (key, value, lockstring) or (key, value, lockstring, default_access).</span>
+<span class="sd">                to set as Attributes on the new object.</span>
+<span class="sd">            nattributes (list): Non-persistent tuples on the form (key, value). Note that</span>
+<span class="sd">                adding this rarely makes sense since this data will not survive a reload.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object (Object): A newly created object of the given typeclass.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ObjectDB.DoesNotExist: If trying to create an Object with</span>
+<span class="sd">                `location` or `home` that can&#39;t be found.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">typeclass</span> <span class="o">=</span> <span class="n">typeclass</span> <span class="k">if</span> <span class="n">typeclass</span> <span class="k">else</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span>
+
+        <span class="c1"># convenience converters to avoid common usage mistake</span>
+        <span class="n">permissions</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">permissions</span><span class="p">)</span> <span class="k">if</span> <span class="n">permissions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">locks</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span> <span class="k">if</span> <span class="n">locks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">aliases</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">aliases</span><span class="p">)</span> <span class="k">if</span> <span class="n">aliases</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="k">if</span> <span class="n">tags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span> <span class="k">if</span> <span class="n">attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># a path is given. Load the actual typeclass</span>
+            <span class="n">typeclass</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">TYPECLASS_PATHS</span><span class="p">)</span>
+
+        <span class="c1"># Setup input for the create command. We use ObjectDB as baseclass here</span>
+        <span class="c1"># to give us maximum freedom (the typeclasses will load</span>
+        <span class="c1"># correctly when each object is recovered).</span>
+
+        <span class="n">location</span> <span class="o">=</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">destination</span> <span class="o">=</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">home</span><span class="p">:</span>
+            <span class="n">home_obj_or_dbref</span> <span class="o">=</span> <span class="n">home</span>
+        <span class="k">elif</span> <span class="n">nohome</span><span class="p">:</span>
+            <span class="n">home_obj_or_dbref</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">home_obj_or_dbref</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">home</span> <span class="o">=</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">home_obj_or_dbref</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+        <span class="k">except</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">_TEST_ENVIRONMENT</span><span class="p">:</span>
+                <span class="c1"># this happens for databases where the #1 location is flushed during tests</span>
+                <span class="n">home</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;settings.DEFAULT_HOME (= &#39;</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="si">}</span><span class="s2">&#39;) does not exist, &quot;</span>
+                    <span class="s2">&quot;or the setting is malformed.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="c1"># create new instance</span>
+        <span class="n">new_object</span> <span class="o">=</span> <span class="n">typeclass</span><span class="p">(</span>
+            <span class="n">db_key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">db_location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
+            <span class="n">db_destination</span><span class="o">=</span><span class="n">destination</span><span class="p">,</span>
+            <span class="n">db_home</span><span class="o">=</span><span class="n">home</span><span class="p">,</span>
+            <span class="n">db_typeclass_path</span><span class="o">=</span><span class="n">typeclass</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># store the call signature for the signal</span>
+        <span class="n">new_object</span><span class="o">.</span><span class="n">_createdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
+            <span class="n">destination</span><span class="o">=</span><span class="n">destination</span><span class="p">,</span>
+            <span class="n">home</span><span class="o">=</span><span class="n">home</span><span class="p">,</span>
+            <span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+            <span class="n">permissions</span><span class="o">=</span><span class="n">permissions</span><span class="p">,</span>
+            <span class="n">locks</span><span class="o">=</span><span class="n">locks</span><span class="p">,</span>
+            <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span>
+            <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span>
+            <span class="n">report_to</span><span class="o">=</span><span class="n">report_to</span><span class="p">,</span>
+            <span class="n">nohome</span><span class="o">=</span><span class="n">nohome</span><span class="p">,</span>
+            <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">,</span>
+            <span class="n">nattributes</span><span class="o">=</span><span class="n">nattributes</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># this will trigger the save signal which in turn calls the</span>
+        <span class="c1"># at_first_save hook on the typeclass, where the _createdict can be</span>
+        <span class="c1"># used.</span>
+        <span class="n">new_object</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="n">signals</span><span class="o">.</span><span class="n">SIGNAL_OBJECT_POST_CREATE</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">new_object</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_object</span></div></div>
+
+
+<div class="viewcode-block" id="ObjectManager"><a class="viewcode-back" href="../../../api/evennia.objects.manager.html#evennia.objects.manager.ObjectManager">[docs]</a><span class="k">class</span> <span class="nc">ObjectManager</span><span class="p">(</span><span class="n">ObjectDBManager</span><span class="p">,</span> <span class="n">TypeclassManager</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="manager.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.objects.manager</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

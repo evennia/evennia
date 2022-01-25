@@ -123,16 +123,16 @@ have to since the resulting command, and your password, will be logged in the sh
 </div>
 <p>This will open a console to the postgres service using the psql client.</p>
 <p>On the psql command line:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="n">evennia</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">&#39;somepassword&#39;</span><span class="p">;</span><span class="w"></span>
-<span class="k">CREATE</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">evennia</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">USER</span> <span class="n">evennia</span> <span class="k">WITH</span> <span class="n">PASSWORD</span> <span class="s1">&#39;somepassword&#39;</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">evennia</span><span class="p">;</span>
 
 <span class="c1">-- Postgres-specific optimizations</span>
 <span class="c1">-- https://docs.djangoproject.com/en/dev/ref/databases/#optimizing-postgresql-s-configuration</span>
-<span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">evennia</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">client_encoding</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="s1">&#39;utf8&#39;</span><span class="p">;</span><span class="w"></span>
-<span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">evennia</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">default_transaction_isolation</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="s1">&#39;read committed&#39;</span><span class="p">;</span><span class="w"></span>
-<span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">evennia</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">timezone</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="s1">&#39;UTC&#39;</span><span class="p">;</span><span class="w"></span>
+<span class="k">ALTER</span> <span class="k">ROLE</span> <span class="n">evennia</span> <span class="k">SET</span> <span class="n">client_encoding</span> <span class="k">TO</span> <span class="s1">&#39;utf8&#39;</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="k">ROLE</span> <span class="n">evennia</span> <span class="k">SET</span> <span class="n">default_transaction_isolation</span> <span class="k">TO</span> <span class="s1">&#39;read committed&#39;</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="k">ROLE</span> <span class="n">evennia</span> <span class="k">SET</span> <span class="n">timezone</span> <span class="k">TO</span> <span class="s1">&#39;UTC&#39;</span><span class="p">;</span>
 
-<span class="k">GRANT</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">evennia</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">evennia</span><span class="p">;</span><span class="w"></span>
+<span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">PRIVILEGES</span> <span class="k">ON</span> <span class="k">DATABASE</span> <span class="n">evennia</span> <span class="k">TO</span> <span class="n">evennia</span><span class="p">;</span>
 <span class="c1">-- Other useful commands:</span>
 <span class="c1">--  \l       (list all databases and permissions)</span>
 <span class="c1">--  \q       (exit)</span>
@@ -275,12 +275,12 @@ recommends the  <code class="docutils literal notranslate"><span class="pre">mys
 <p>You should get to enter your database root password (set this up when you installed the database
 server).</p>
 <p>Inside the database client interface:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="s1">&#39;evennia&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span><span class="w"> </span><span class="n">IDENTIFIED</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="s1">&#39;somepassword&#39;</span><span class="p">;</span><span class="w"></span>
-<span class="k">CREATE</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">evennia</span><span class="p">;</span><span class="w"></span>
-<span class="k">ALTER</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="o">`</span><span class="n">evennia</span><span class="o">`</span><span class="w"> </span><span class="nb">CHARACTER</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">utf8</span><span class="p">;</span><span class="w"> </span><span class="c1">-- note that it&#39;s `evennia` with back-ticks, not</span>
-<span class="n">quotes</span><span class="o">!</span><span class="w"></span>
-<span class="k">GRANT</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">evennia</span><span class="p">.</span><span class="o">*</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="s1">&#39;evennia&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span><span class="p">;</span><span class="w"></span>
-<span class="n">FLUSH</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">USER</span> <span class="s1">&#39;evennia&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">&#39;somepassword&#39;</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">evennia</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="k">DATABASE</span> <span class="o">`</span><span class="n">evennia</span><span class="o">`</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="n">utf8</span><span class="p">;</span> <span class="c1">-- note that it&#39;s `evennia` with back-ticks, not</span>
+<span class="n">quotes</span><span class="o">!</span>
+<span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">PRIVILEGES</span> <span class="k">ON</span> <span class="n">evennia</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">&#39;evennia&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span><span class="p">;</span>
+<span class="n">FLUSH</span> <span class="k">PRIVILEGES</span><span class="p">;</span>
 <span class="c1">-- use &#39;exit&#39; to quit client</span>
 </pre></div>
 </div>
@@ -408,6 +408,7 @@ others. If you try other databases out, consider expanding this page with instru
 <h3>Versions</h3>
 <ul>
   <li><a href="Choosing-An-SQL-Server.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

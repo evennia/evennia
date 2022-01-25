@@ -1,0 +1,353 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Add a wiki on your website &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Add a wiki on your website</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="add-a-wiki-on-your-website">
+<h1>Add a wiki on your website<a class="headerlink" href="#add-a-wiki-on-your-website" title="Permalink to this headline">¶</a></h1>
+<p><strong>Before doing this tutorial you will probably want to read the intro in
+<a class="reference internal" href="Web-Tutorial.html"><span class="doc std std-doc">Basic Web tutorial</span></a>.</strong>  Reading the three first parts of the
+<a class="reference external" href="https://docs.djangoproject.com/en/1.9/intro/tutorial01/">Django tutorial</a> might help as well.</p>
+<p>This tutorial will provide a step-by-step process to installing a wiki on your website.
+Fortunately, you don’t have to create the features manually, since it has been done by others, and
+we can integrate their work quite easily with Django.  I have decided to focus on
+the <a class="reference external" href="http://django-wiki.readthedocs.io/">Django-wiki</a>.</p>
+<blockquote>
+<div><p>Note: this article has been updated for Evennia 0.9.  If you’re not yet using this version, be
+careful, as the django wiki doesn’t support Python 2 anymore.  (Remove this note when enough time
+has passed.)</p>
+</div></blockquote>
+<p>The <a class="reference external" href="http://django-wiki.readthedocs.io/">Django-wiki</a> offers a lot of features associated with
+wikis, is
+actively maintained (at this time, anyway), and isn’t too difficult to install in Evennia.  You can
+see a <a class="reference external" href="https://demo.django.wiki">demonstration of Django-wiki here</a>.</p>
+<section id="basic-installation">
+<h2>Basic installation<a class="headerlink" href="#basic-installation" title="Permalink to this headline">¶</a></h2>
+<p>You should begin by shutting down the Evennia server if it is running.  We will run migrations and
+alter the virtual environment just a bit.  Open a terminal and activate your Python environment, the
+one you use to run the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command.</p>
+<ul>
+<li><p>On Linux:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="n">evenv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
+</pre></div>
+</div>
+</li>
+<li><p>Or Windows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evenv</span>\<span class="nb">bin</span>\<span class="n">activate</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<section id="installing-with-pip">
+<h3>Installing with pip<a class="headerlink" href="#installing-with-pip" title="Permalink to this headline">¶</a></h3>
+<p>Install the wiki using pip:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install wiki
+</pre></div>
+</div>
+<blockquote>
+<div><p>Note: this will install the last version of Django wiki. Version &gt;0.4 doesn’t support Python 2, so
+install wiki 0.3 if you haven’t updated to Python 3 yet.</p>
+</div></blockquote>
+<p>It might take some time, the Django-wiki having some dependencies.</p>
+</section>
+<section id="adding-the-wiki-in-the-settings">
+<h3>Adding the wiki in the settings<a class="headerlink" href="#adding-the-wiki-in-the-settings" title="Permalink to this headline">¶</a></h3>
+<p>You will need to add a few settings to have the wiki app on your website.  Open your
+<code class="docutils literal notranslate"><span class="pre">server/conf/settings.py</span></code> file and add the following at the bottom (but before importing
+<code class="docutils literal notranslate"><span class="pre">secret_settings</span></code>).  Here’s what you’ll find in my own setting file (add the whole Django-wiki
+section):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Evennia settings file.</span>
+
+<span class="sd">...</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Use the defaults from Evennia unless explicitly overridden</span>
+<span class="kn">from</span> <span class="nn">evennia.settings_default</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Evennia base server config</span>
+<span class="c1">######################################################################</span>
+
+<span class="c1"># This is the name of your game. Make it catchy!</span>
+<span class="n">SERVERNAME</span> <span class="o">=</span> <span class="s2">&quot;demowiki&quot;</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Django-wiki settings</span>
+<span class="c1">######################################################################</span>
+<span class="n">INSTALLED_APPS</span> <span class="o">+=</span> <span class="p">(</span>
+    <span class="s1">&#39;django.contrib.humanize.apps.HumanizeConfig&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django_nyt.apps.DjangoNytConfig&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;mptt&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sorl.thumbnail&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;wiki.apps.WikiConfig&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;wiki.plugins.attachments.apps.AttachmentsConfig&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;wiki.plugins.notifications.apps.NotificationsConfig&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;wiki.plugins.images.apps.ImagesConfig&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;wiki.plugins.macros.apps.MacrosConfig&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Disable wiki handling of login/signup</span>
+<span class="n">WIKI_ACCOUNT_HANDLING</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">WIKI_ACCOUNT_SIGNUP_ALLOWED</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Settings given in secret_settings.py override those in this file.</span>
+<span class="c1">######################################################################</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">server.conf.secret_settings</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;secret_settings.py file not found or failed to import.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="adding-the-new-urls">
+<h3>Adding the new URLs<a class="headerlink" href="#adding-the-new-urls" title="Permalink to this headline">¶</a></h3>
+<p>Next we need to add two URLs in our <code class="docutils literal notranslate"><span class="pre">web/urls.py</span></code> file.  Open it and compare the following output:
+you will need to add two URLs in <code class="docutils literal notranslate"><span class="pre">custom_patterns</span></code> and add one import line:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span><span class="p">,</span> <span class="n">include</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span> <span class="c1"># NEW!</span>
+
+<span class="c1"># default evenni        a patterns</span>
+<span class="kn">from</span> <span class="nn">evennia.web.urls</span> <span class="kn">import</span> <span class="n">urlpatterns</span>
+
+<span class="c1"># eventual custom patterns</span>
+<span class="n">custom_patterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># url(r&#39;/desired/url/&#39;, view, name=&#39;example&#39;),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s1">&#39;notifications/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">&#39;django_nyt.urls&#39;</span><span class="p">)),</span> <span class="c1"># NEW!</span>
+    <span class="n">url</span><span class="p">(</span><span class="s1">&#39;wiki/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">&#39;wiki.urls&#39;</span><span class="p">)),</span> <span class="c1"># NEW!</span>
+<span class="p">]</span>
+
+<span class="c1"># this is required by Django.</span>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">custom_patterns</span> <span class="o">+</span> <span class="n">urlpatterns</span>
+</pre></div>
+</div>
+<p>You will probably need to copy line 2, 10, and 11.  Be sure to place them correctly, as shown in
+the example above.</p>
+</section>
+<section id="running-migrations">
+<h3>Running migrations<a class="headerlink" href="#running-migrations" title="Permalink to this headline">¶</a></h3>
+<p>It’s time to run the new migrations.  The wiki app adds a few tables in our database.  We’ll need to
+run:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia migrate
+</pre></div>
+</div>
+<p>And that’s it, you can start the server.  If you go to <a class="reference external" href="http://localhost:4001/wiki">http://localhost:4001/wiki</a> , you should see
+the wiki.  Use your account’s username and password to connect to it.  That’s how simple it is.</p>
+</section>
+</section>
+<section id="customizing-privileges">
+<h2>Customizing privileges<a class="headerlink" href="#customizing-privileges" title="Permalink to this headline">¶</a></h2>
+<p>A wiki can be a great collaborative tool, but who can see it?  Who can modify it?  Django-wiki comes
+with a privilege system centered around four values per wiki page.  The owner of an article can
+always read and write in it (which is somewhat logical).  The group of the article defines who can
+read and who can write, if the user seeing the page belongs to this group.  The topic of groups in
+wiki pages will not be discussed here.  A last setting determines which other user (that is, these
+who aren’t in the groups, and aren’t the article’s owner) can read and write.  Each article has
+these four settings (group read, group write, other read, other write).  Depending on your purpose,
+it might not be a good default choice, particularly if you have to remind every builder to keep the
+pages private.  Fortunately, Django-wiki gives us additional settings to customize who can read, and
+who can write, a specific article.</p>
+<p>These settings must be placed, as usual, in your <code class="docutils literal notranslate"><span class="pre">server/conf/settings.py</span></code> file.  They take a
+function as argument, said function (or callback) will be called with the article and the user.
+Remember, a Django user, for us, is an account.  So we could check lockstrings on them if needed.
+Here is a default setting to restrict the wiki: only builders can write in it, but anyone (including
+non-logged in users) can read it.  The superuser has some additional privileges.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># In server/conf/settings.py</span>
+<span class="c1"># ...</span>
+
+<span class="k">def</span> <span class="nf">is_superuser</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return True if user is a superuser, False otherwise.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span><span class="p">()</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">is_superuser</span>
+
+<span class="k">def</span> <span class="nf">is_builder</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return True if user is a builder, False otherwise.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span><span class="p">()</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="s2">&quot;perm(Builders)&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">is_anyone</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return True even if the user is anonymous.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+<span class="c1"># Who can create new groups and users from the wiki?</span>
+<span class="n">WIKI_CAN_ADMIN</span> <span class="o">=</span> <span class="n">is_superuser</span>
+<span class="c1"># Who can change owner and group membership?</span>
+<span class="n">WIKI_CAN_ASSIGN</span> <span class="o">=</span> <span class="n">is_superuser</span>
+<span class="c1"># Who can change group membership?</span>
+<span class="n">WIKI_CAN_ASSIGN_OWNER</span> <span class="o">=</span> <span class="n">is_superuser</span>
+<span class="c1"># Who can change read/write access to groups or others?</span>
+<span class="n">WIKI_CAN_CHANGE_PERMISSIONS</span> <span class="o">=</span> <span class="n">is_superuser</span>
+<span class="c1"># Who can soft-delete an article?</span>
+<span class="n">WIKI_CAN_DELETE</span> <span class="o">=</span> <span class="n">is_builder</span>
+<span class="c1"># Who can lock an article and permanently delete it?</span>
+<span class="n">WIKI_CAN_MODERATE</span> <span class="o">=</span> <span class="n">is_superuser</span>
+<span class="c1"># Who can edit articles?</span>
+<span class="n">WIKI_CAN_WRITE</span> <span class="o">=</span> <span class="n">is_builder</span>
+<span class="c1"># Who can read articles?</span>
+<span class="n">WIKI_CAN_READ</span> <span class="o">=</span> <span class="n">is_anyone</span>
+</pre></div>
+</div>
+<p>Here, we have created three functions: one to return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the user is the superuser, one to
+return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the user is a builder, one to return <code class="docutils literal notranslate"><span class="pre">True</span></code> no matter what (this includes if the
+user is anonymous, E.G. if it’s not logged-in).  We then change settings to allow either the
+superuser or
+each builder to moderate, read, write, delete, and more.  You can, of course, add more functions,
+adapting them to your need.  This is just a demonstration.</p>
+<p>Providing the <code class="docutils literal notranslate"><span class="pre">WIKI_CAN*...</span></code> settings will bypass the original permission system.  The superuser
+could change permissions of an article, but still, only builders would be able to write it.  If you
+need something more custom, you will have to expand on the functions you use.</p>
+<section id="managing-wiki-pages-from-evennia">
+<h3>Managing wiki pages from Evennia<a class="headerlink" href="#managing-wiki-pages-from-evennia" title="Permalink to this headline">¶</a></h3>
+<p>Unfortunately, Django wiki doesn’t provide a clear and clean entry point to read and write articles
+from Evennia and it doesn’t seem to be a very high priority.  If you really need to keep Django wiki
+and to create and manage wiki pages from your code, you can do so, but this article won’t elaborate,
+as this is somewhat more technical.</p>
+<p>However, it is a good opportunity to present a small project that has been created more recently:
+<a class="reference external" href="https://github.com/vincent-lg/evennia-wiki">evennia-wiki</a> has been created to provide a simple
+wiki, more tailored to Evennia and easier to connect.  It doesn’t, as yet, provide as many options
+as does Django wiki, but it’s perfectly usable:</p>
+<ul class="simple">
+<li><p>Pages have an inherent and much-easier to understand hierarchy based on URLs.</p></li>
+<li><p>Article permissions are connected to Evennia groups and are much easier to accommodate specific
+requirements.</p></li>
+<li><p>Articles can easily be created, read or updated from the Evennia code itself.</p></li>
+<li><p>Markdown is fully-supported with a default integration to Bootstrap to look good on an Evennia
+website. Tables and table of contents are supported as well as wiki links.</p></li>
+<li><p>The process to override wiki templates makes full use of the <code class="docutils literal notranslate"><span class="pre">template_overrides</span></code> directory.</p></li>
+</ul>
+<p>However evennia-wiki doesn’t yet support:</p>
+<ul class="simple">
+<li><p>Images in markdown and the uploading schema.  If images are important to you, please consider
+contributing to this new project.</p></li>
+<li><p>Modifying permissions on a per page/setting basis.</p></li>
+<li><p>Moving pages to new locations.</p></li>
+<li><p>Viewing page history.</p></li>
+</ul>
+<p>Considering the list of features in Django wiki, obviously other things could be added to the list.
+However, these features may be the most important and useful.  Additional ones might not be that
+necessary.  If you’re interested in supporting this little project, you are more than welcome to
+<a class="reference external" href="https://github.com/vincent-lg/evennia-wiki">contribute to it</a>.  Thanks!</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Add a wiki on your website</a><ul>
+<li><a class="reference internal" href="#basic-installation">Basic installation</a><ul>
+<li><a class="reference internal" href="#installing-with-pip">Installing with pip</a></li>
+<li><a class="reference internal" href="#adding-the-wiki-in-the-settings">Adding the wiki in the settings</a></li>
+<li><a class="reference internal" href="#adding-the-new-urls">Adding the new URLs</a></li>
+<li><a class="reference internal" href="#running-migrations">Running migrations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#customizing-privileges">Customizing privileges</a><ul>
+<li><a class="reference internal" href="#managing-wiki-pages-from-evennia">Managing wiki pages from Evennia</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Add-a-wiki-on-your-website.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Add-a-wiki-on-your-website.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Add a wiki on your website</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

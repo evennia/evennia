@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>HAProxy Config (Optional) &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">HAProxy Config (Optional)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="haproxy-config-optional">
+<h1>HAProxy Config (Optional)<a class="headerlink" href="#haproxy-config-optional" title="Permalink to this headline">¶</a></h1>
+<section id="making-evennia-https-and-secure-websockets-play-nicely-together">
+<h2>Making Evennia, HTTPS and Secure Websockets play nicely together<a class="headerlink" href="#making-evennia-https-and-secure-websockets-play-nicely-together" title="Permalink to this headline">¶</a></h2>
+<p>This we can do by installing a <em>proxy</em> between Evennia and the outgoing ports of your server.
+Essentially,
+Evennia will think it’s only running locally (on localhost, IP 127.0.0.1) - the proxy will
+transparently
+map that to the “real” outgoing ports and handle HTTPS/WSS for us.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Evennia</span> <span class="o">&lt;-&gt;</span> <span class="p">(</span><span class="n">inside</span><span class="o">-</span><span class="n">visible</span> <span class="n">IP</span><span class="o">/</span><span class="n">ports</span><span class="p">)</span> <span class="o">&lt;-&gt;</span> <span class="n">Proxy</span> <span class="o">&lt;-&gt;</span> <span class="p">(</span><span class="n">outside</span><span class="o">-</span><span class="n">visible</span> <span class="n">IP</span><span class="o">/</span><span class="n">ports</span><span class="p">)</span> <span class="o">&lt;-&gt;</span> <span class="n">Internet</span>
+</pre></div>
+</div>
+<p>Here we will use <a class="reference external" href="https://www.haproxy.org/">HAProxy</a>, an open-source proxy that is easy to set up
+and use. We will
+also be using <a class="reference external" href="https://letsencrypt.org/getting-started/">LetsEncrypt</a>, especially the excellent
+helper-program <a class="reference external" href="https://certbot.eff.org/instructions">Certbot</a> which pretty much automates the whole
+certificate setup process for us.</p>
+<p>Before starting you also need the following:</p>
+<ul class="simple">
+<li><p>(optional) The host name of your game (like <code class="docutils literal notranslate"><span class="pre">myawesomegame.com</span></code>). This is something you must
+previously have purchased from a <em>domain registrar</em> and set up with DNS to point to the IP of your
+server.</p></li>
+<li><p>If you don’t have a domain name or haven’t set it up yet, you must at least know the IP of your
+server. Find this with <code class="docutils literal notranslate"><span class="pre">ifconfig</span></code> or similar from inside the server. If you use a hosting service
+like DigitalOcean you can also find the droplet’s IP address in the control panel.</p></li>
+<li><p>You must open port 80 in your firewall. This is used by Certbot below to auto-renew certificates.
+So you can’t really run another webserver alongside this setup without tweaking.</p></li>
+<li><p>You must open port 443 (HTTPS) in your firewall.</p></li>
+<li><p>You must open port 4002 (the default Websocket port) in your firewall.</p></li>
+</ul>
+</section>
+<section id="getting-certificates">
+<h2>Getting certificates<a class="headerlink" href="#getting-certificates" title="Permalink to this headline">¶</a></h2>
+<p>Certificates guarantee that you are you. Easiest is to get this with
+<a class="reference external" href="https://letsencrypt.org/getting-started/">Letsencrypt</a> and the
+<a class="reference external" href="https://certbot.eff.org/instructions">Certbot</a> program. Certbot has a lot of install instructions
+for various operating systems. Here’s for Debian/Ubuntu:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">certbot</span>
+</pre></div>
+</div>
+<p>Make sure to stop Evennia and that no port-80 using service is running, then</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">certbot</span> <span class="n">certonly</span> <span class="o">--</span><span class="n">standalone</span>
+</pre></div>
+</div>
+<p>You will get some questions you need to answer, such as an email to send certificate errors to and
+the host name (or IP, supposedly) to use with this certificate. After this, the certificates will
+end up in <code class="docutils literal notranslate"><span class="pre">/etc/letsencrypt/live/&lt;your-host-or-ip&gt;/*pem</span></code> (example from Ubuntu). The critical files
+for our purposes are <code class="docutils literal notranslate"><span class="pre">fullchain.pem</span></code> and <code class="docutils literal notranslate"><span class="pre">privkey.pem</span></code>.</p>
+<p>Certbot sets up a cron-job/systemd job to regularly renew the certificate. To check this works, try</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">certbot</span> <span class="n">renew</span> <span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span>
+</pre></div>
+</div>
+<p>The certificate is only valid for 3 months at a time, so make sure this test works (it requires port
+80 to be open). Look up Certbot’s page for more help.</p>
+<p>We are not quite done. HAProxy expects these two files to be <em>one</em> file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">cp</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">letsencrypt</span><span class="o">/</span><span class="n">live</span><span class="o">/&lt;</span><span class="n">your</span><span class="o">-</span><span class="n">host</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">ip</span><span class="o">&gt;/</span><span class="n">privkey</span><span class="o">.</span><span class="n">pem</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">letsencrypt</span><span class="o">/</span><span class="n">live</span><span class="o">/&lt;</span><span class="n">your</span><span class="o">-</span><span class="n">host</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span>
+<span class="n">ip</span><span class="o">&gt;/&lt;</span><span class="n">yourhostname</span><span class="o">&gt;.</span><span class="n">pem</span>
+<span class="n">sudo</span> <span class="n">bash</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;cat /etc/letsencrypt/live/&lt;your-host-or-ip&gt;/fullchain.pem &gt;&gt;</span>
+<span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">letsencrypt</span><span class="o">/</span><span class="n">live</span><span class="o">/&lt;</span><span class="n">your</span><span class="o">-</span><span class="n">host</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">ip</span><span class="o">&gt;/&lt;</span><span class="n">yourhostname</span><span class="o">&gt;.</span><span class="n">pem</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>This will create a new <code class="docutils literal notranslate"><span class="pre">.pem</span></code> file by concatenating the two files together. The <code class="docutils literal notranslate"><span class="pre">yourhostname.pem</span></code>
+file (or whatever you named it) is what we will use when the the HAProxy config file (below) asks
+for “your-certificate.pem”.</p>
+</section>
+<section id="installing-and-configuring-haproxy">
+<h2>Installing and configuring HAProxy<a class="headerlink" href="#installing-and-configuring-haproxy" title="Permalink to this headline">¶</a></h2>
+<p>Installing HaProxy is usually as simple as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Debian derivatives (Ubuntu, Mint etc)</span>
+<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">haproxy</span>
+
+<span class="c1"># Redhat derivatives (dnf instead of yum for very recent Fedora distros)</span>
+<span class="n">sudo</span> <span class="n">yum</span> <span class="n">install</span> <span class="n">haproxy</span>
+
+</pre></div>
+</div>
+<p>Configuration of HAProxy is done in a single file. Put this wherever you like, for example in
+your game dir; name it something like haproxy.conf.</p>
+<p>Here is an example tested on Centos7 and Ubuntu. Make sure to change the file to put in your own
+values.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># base stuff to set up haproxy</span>
+<span class="k">global</span>
+    <span class="n">log</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">log</span> <span class="n">local0</span>
+    <span class="n">chroot</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">haproxy</span>
+    <span class="n">maxconn</span>  <span class="mi">4000</span>
+    <span class="n">user</span>  <span class="n">haproxy</span>
+    <span class="n">tune</span><span class="o">.</span><span class="n">ssl</span><span class="o">.</span><span class="n">default</span><span class="o">-</span><span class="n">dh</span><span class="o">-</span><span class="n">param</span> <span class="mi">2048</span>
+    <span class="c1">## uncomment this when everything works</span>
+    <span class="c1"># daemon</span>
+<span class="n">defaults</span>
+    <span class="n">mode</span> <span class="n">http</span>
+    <span class="n">option</span> <span class="n">forwardfor</span>
+
+<span class="c1"># Evennia Specifics</span>
+<span class="n">listen</span> <span class="n">evennia</span><span class="o">-</span><span class="n">https</span><span class="o">-</span><span class="n">website</span>
+    <span class="n">bind</span> <span class="o">&lt;</span><span class="n">ip</span><span class="o">-</span><span class="n">address</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">hostname</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">public</span><span class="o">-</span><span class="n">SSL</span><span class="o">-</span><span class="n">port</span><span class="o">--</span><span class="n">probably</span><span class="o">-</span><span class="mi">443</span><span class="o">&gt;</span> <span class="n">ssl</span> <span class="n">no</span><span class="o">-</span><span class="n">sslv3</span> <span class="n">no</span><span class="o">-</span><span class="n">tlsv10</span> <span class="n">crt</span>
+<span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">letsencrypt</span><span class="o">/</span><span class="n">live</span><span class="o">/&lt;</span><span class="n">your</span><span class="o">-</span><span class="n">host</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">ip</span><span class="o">&gt;/&lt;</span><span class="n">yourhostname</span><span class="o">&gt;.</span><span class="n">pem</span>
+    <span class="n">server</span> <span class="n">localhost</span> <span class="mf">127.0.0.1</span><span class="p">:</span><span class="o">&lt;</span><span class="n">evennia</span><span class="o">-</span><span class="n">web</span><span class="o">-</span><span class="n">port</span><span class="o">-</span><span class="n">probably</span><span class="o">-</span><span class="mi">4001</span><span class="o">&gt;</span>
+    <span class="n">timeout</span> <span class="n">client</span> <span class="mi">10</span><span class="n">m</span>
+    <span class="n">timeout</span> <span class="n">server</span> <span class="mi">10</span><span class="n">m</span>
+    <span class="n">timeout</span> <span class="n">connect</span> <span class="mi">5</span><span class="n">m</span>
+
+<span class="n">listen</span> <span class="n">evennia</span><span class="o">-</span><span class="n">secure</span><span class="o">-</span><span class="n">websocket</span>
+    <span class="n">bind</span> <span class="o">&lt;</span><span class="n">ip</span><span class="o">-</span><span class="n">address</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">hostname</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">wss</span><span class="o">-</span><span class="n">port</span><span class="o">--</span><span class="n">probably</span><span class="o">-</span><span class="mi">4002</span><span class="o">&gt;</span> <span class="n">ssl</span> <span class="n">no</span><span class="o">-</span><span class="n">sslv3</span> <span class="n">no</span><span class="o">-</span><span class="n">tlsv10</span> <span class="n">crt</span>
+<span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">letsencrypt</span><span class="o">/</span><span class="n">live</span><span class="o">/&lt;</span><span class="n">your</span><span class="o">-</span><span class="n">host</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">ip</span><span class="o">&gt;/&lt;</span><span class="n">yourhostname</span><span class="o">&gt;.</span><span class="n">pem</span>
+    <span class="n">server</span> <span class="n">localhost</span> <span class="mf">127.0.0.1</span><span class="p">:</span><span class="o">&lt;</span><span class="n">WEBSOCKET_CLIENT_PORT</span><span class="o">-</span><span class="n">probably</span><span class="o">-</span><span class="mi">4002</span><span class="o">&gt;</span>
+    <span class="n">timeout</span> <span class="n">client</span> <span class="mi">10</span><span class="n">m</span>
+    <span class="n">timeout</span> <span class="n">server</span> <span class="mi">10</span><span class="n">m</span>
+    <span class="n">timeout</span> <span class="n">connect</span> <span class="mi">5</span><span class="n">m</span>
+</pre></div>
+</div>
+</section>
+<section id="putting-it-all-together">
+<h2>Putting it all together<a class="headerlink" href="#putting-it-all-together" title="Permalink to this headline">¶</a></h2>
+<p>Get back to the Evennia game dir and edit mygame/server/conf/settings.py. Add:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WEBSERVER_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">]</span>
+<span class="n">WEBSOCKET_CLIENT_INTERFACE</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1&#39;</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WEBSOCKET_CLIENT_URL</span><span class="o">=</span><span class="s2">&quot;wss://fullhost.domain.name:4002/&quot;</span>
+</pre></div>
+</div>
+<p>Make sure to reboot (stop + start) evennia completely:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">reboot</span>
+</pre></div>
+</div>
+<p>Finally you start the proxy:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">haproxy</span> <span class="o">-</span><span class="n">f</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">the</span><span class="o">/</span><span class="n">above</span><span class="o">/</span><span class="n">config_file</span><span class="o">.</span><span class="n">cfg</span>
+</pre></div>
+</div>
+<p>Make sure you can connect to your game from your browser and that you end up with an <code class="docutils literal notranslate"><span class="pre">https://</span></code> page
+and can use the websocket webclient.</p>
+<p>Once everything works you may want to start the proxy automatically and in the background. Stop the
+proxy with <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> and uncomment the line <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">daemon</span></code> in the config file, then start the proxy again</p>
+<ul class="simple">
+<li><p>it will now start in the bacground.</p></li>
+</ul>
+<p>You may also want to have the proxy start automatically; this you can do with <code class="docutils literal notranslate"><span class="pre">cron</span></code>, the inbuilt
+Linux mechanism for running things at specific times.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">crontab</span> <span class="o">-</span><span class="n">e</span>
+</pre></div>
+</div>
+<p>Choose your editor and add a new line at the end of the crontab file that opens:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@reboot</span> <span class="n">haproxy</span> <span class="o">-</span><span class="n">f</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">the</span><span class="o">/</span><span class="n">above</span><span class="o">/</span><span class="n">config_file</span><span class="o">.</span><span class="n">cfg</span>
+</pre></div>
+</div>
+<p>Save the file and haproxy should start up automatically when you reboot the server.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">HAProxy Config (Optional)</a><ul>
+<li><a class="reference internal" href="#making-evennia-https-and-secure-websockets-play-nicely-together">Making Evennia, HTTPS and Secure Websockets play nicely together</a></li>
+<li><a class="reference internal" href="#getting-certificates">Getting certificates</a></li>
+<li><a class="reference internal" href="#installing-and-configuring-haproxy">Installing and configuring HAProxy</a></li>
+<li><a class="reference internal" href="#putting-it-all-together">Putting it all together</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/HAProxy-Config.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="HAProxy-Config.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">HAProxy Config (Optional)</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

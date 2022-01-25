@@ -52,18 +52,18 @@ need to set up yourself is a Travis config file named <code class="docutils lite
 This should be created in the root of your game directory. The idea with this file is that it
 describes what Travis needs to import and build in order to create an instance of Evennia from
 scratch and then run validation tests on it. Here is an example:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python</span><span class="w"></span>
-<span class="nt">python</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;2.7&quot;</span><span class="w"></span>
-<span class="nt">install</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">git clone https://github.com/evennia/evennia.git</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cd evennia</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pip install -e .</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cd $TRAVIS_BUILD_DIR</span><span class="w"></span>
-<span class="nt">script</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">evennia migrate</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">evennia test evennia</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">evennia test</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">language</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python</span>
+<span class="nt">python</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;2.7&quot;</span>
+<span class="nt">install</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git clone https://github.com/evennia/evennia.git</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cd evennia</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pip install -e .</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cd $TRAVIS_BUILD_DIR</span>
+<span class="nt">script</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">evennia migrate</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">evennia test evennia</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">evennia test</span>
 </pre></div>
 </div>
 <p>This will tell travis how to download Evennia, install it, set up a database and then run the test
@@ -115,6 +115,7 @@ fitting your game.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Using-Travis.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

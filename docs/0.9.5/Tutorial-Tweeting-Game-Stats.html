@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Tutorial Tweeting Game Stats &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tutorial Tweeting Game Stats</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-tweeting-game-stats">
+<h1>Tutorial Tweeting Game Stats<a class="headerlink" href="#tutorial-tweeting-game-stats" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial will create a simple script that will send a tweet to your already configured twitter
+account. Please see: <a class="reference internal" href="How-to-connect-Evennia-to-Twitter.html"><span class="doc std std-doc">How to connect Evennia to Twitter</span></a> if you
+haven’t already done so.</p>
+<p>The script could be expanded to cover a variety of statistics you might wish to tweet about
+regularly, from player deaths to how much currency is in the economy etc.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># evennia/typeclasses/tweet_stats.py</span>
+
+<span class="kn">import</span> <span class="nn">twitter</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">spawner</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
+
+<span class="k">class</span> <span class="nc">TweetStats</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This implements the tweeting of stats to a registered twitter account</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># standard Script hooks</span>
+
+    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Called when script is first created&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;tweet_stats&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;Tweets interesting stats about the game&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="mi">86400</span>  <span class="c1"># 1 day timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">=</span> <span class="kc">False</span>
+        
+    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is called every self.interval seconds to tweet interesting stats about the game.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">api</span> <span class="o">=</span> <span class="n">twitter</span><span class="o">.</span><span class="n">Api</span><span class="p">(</span><span class="n">consumer_key</span><span class="o">=</span><span class="s1">&#39;consumer_key&#39;</span><span class="p">,</span>
+          <span class="n">consumer_secret</span><span class="o">=</span><span class="s1">&#39;consumer_secret&#39;</span><span class="p">,</span>
+          <span class="n">access_token_key</span><span class="o">=</span><span class="s1">&#39;access_token_key&#39;</span><span class="p">,</span>
+          <span class="n">access_token_secret</span><span class="o">=</span><span class="s1">&#39;access_token_secret&#39;</span><span class="p">)</span>
+        
+        <span class="n">number_tweet_outputs</span> <span class="o">=</span> <span class="mi">2</span>
+
+        <span class="n">tweet_output</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">number_tweet_outputs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">tweet_output</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1">##Game Chars, Rooms, Objects taken from @stats command</span>
+            <span class="n">nobjs</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="n">base_char_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span>
+            <span class="n">nchars</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_typeclass_path</span><span class="o">=</span><span class="n">base_char_typeclass</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="n">nrooms</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_location__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_typeclass_path</span><span class="o">=</span><span class="n">bas</span>
+<span class="n">e_char_typeclass</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="n">nexits</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_location__isnull</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="n">db_destination__isnull</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="n">nother</span> <span class="o">=</span> <span class="n">nobjs</span> <span class="o">-</span> <span class="n">nchars</span> <span class="o">-</span> <span class="n">nrooms</span> <span class="o">-</span> <span class="n">nexits</span>
+            <span class="n">tweet</span> <span class="o">=</span> <span class="s2">&quot;Chars: </span><span class="si">%s</span><span class="s2">, Rooms: </span><span class="si">%s</span><span class="s2">, Objects: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">nchars</span><span class="p">,</span> <span class="n">nrooms</span><span class="p">,</span> <span class="n">nother</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tweet_output</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span> <span class="c1">##Number of prototypes and 3 random keys - taken from @spawn</span>
+<span class="n">command</span>
+                <span class="n">prototypes</span> <span class="o">=</span> <span class="n">spawner</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">return_prototypes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            
+                <span class="n">keys</span> <span class="o">=</span> <span class="n">prototypes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                <span class="n">nprots</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">prototypes</span><span class="p">)</span>
+                <span class="n">tweet</span> <span class="o">=</span> <span class="s2">&quot;Prototype Count: </span><span class="si">%s</span><span class="s2">  Random Keys: &quot;</span> <span class="o">%</span> <span class="n">nprots</span>
+
+                <span class="n">tweet</span> <span class="o">+=</span> <span class="s2">&quot; </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">keys</span><span class="p">[</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">):</span> <span class="c1">##tweet 3</span>
+                    <span class="n">tweet</span> <span class="o">+=</span> <span class="s2">&quot;, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">keys</span><span class="p">[</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+        <span class="c1"># post the tweet</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">PostUpdate</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="s2">&quot;Tweet Error: When attempting to tweet </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">tweet</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the <code class="docutils literal notranslate"><span class="pre">at_script_creation</span></code> method, we configure the script to fire immediately (useful for testing)
+and setup the delay (1 day) as well as script information seen when you use <code class="docutils literal notranslate"><span class="pre">&#64;scripts</span></code></p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> method (which is called immediately and then at interval seconds later) we setup
+the Twitter API (just like in the initial configuration of twitter).  numberTweetOutputs is used to
+show how many different types of outputs we have (in this case 2).  We then build the tweet based on
+randomly choosing between these outputs.</p>
+<ol class="simple">
+<li><p>Shows the number of Player Characters, Rooms and Other/Objects</p></li>
+<li><p>Shows the number of prototypes currently in the game and then selects 3 random keys to show</p></li>
+</ol>
+<p><a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts Information</span></a> will show you how to add it as a Global script, however, for testing
+it may be useful to start/stop it quickly from within the game.  Assuming that you create the file
+as <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/tweet_stats.py</span></code> it can be started by using the following command</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@script Here = tweet_stats.TweetStats
+</pre></div>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Tutorial-Tweeting-Game-Stats.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Tutorial-Tweeting-Game-Stats.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tutorial Tweeting Game Stats</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

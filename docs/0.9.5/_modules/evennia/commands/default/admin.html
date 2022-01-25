@@ -1,0 +1,710 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.commands.default.admin &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.admin</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.commands.default.admin</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">Admin commands</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
+<span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evtable</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">class_from_module</span>
+
+<span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
+
+<span class="n">PERMISSION_HIERARCHY</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">PERMISSION_HIERARCHY</span><span class="p">]</span>
+
+<span class="c1"># limit members for API inclusion</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;CmdBoot&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdBan&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdUnban&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdEmit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdNewPassword&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdPerm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdWall&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdForce&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="CmdBoot"><a class="viewcode-back" href="../../../../api/evennia.commands.default.admin.html#evennia.commands.default.admin.CmdBoot">[docs]</a><span class="k">class</span> <span class="nc">CmdBoot</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    kick an account from the server.</span>
+
+<span class="sd">    Usage</span>
+<span class="sd">      boot[/switches] &lt;account obj&gt; [: reason]</span>
+
+<span class="sd">    Switches:</span>
+<span class="sd">      quiet - Silently boot without informing account</span>
+<span class="sd">      sid - boot by session id instead of name or dbref</span>
+
+<span class="sd">    Boot an account object from the server. If a reason is</span>
+<span class="sd">    supplied it will be echoed to the user unless /quiet is set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;boot&quot;</span>
+    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;quiet&quot;</span><span class="p">,</span> <span class="s2">&quot;sid&quot;</span><span class="p">)</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(boot) or perm(Admin)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Admin&quot;</span>
+
+<div class="viewcode-block" id="CmdBoot.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.admin.html#evennia.commands.default.admin.CmdBoot.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implementing the function&quot;&quot;&quot;</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: boot[/switches] &lt;account&gt; [:reason]&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">args</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">args</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="n">args</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">boot_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;sid&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="c1"># Boot a particular session id.</span>
+            <span class="n">sessions</span> <span class="o">=</span> <span class="n">SESSIONS</span><span class="o">.</span><span class="n">get_sessions</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">sessions</span><span class="p">:</span>
+                <span class="c1"># Find the session with the matching session id.</span>
+                <span class="k">if</span> <span class="n">sess</span><span class="o">.</span><span class="n">sessid</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+                    <span class="n">boot_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sess</span><span class="p">)</span>
+                    <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Boot by account object</span>
+            <span class="n">pobj</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">account_search</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pobj</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Account </span><span class="si">%s</span><span class="s2"> was not found.&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="n">pobj</span> <span class="o">=</span> <span class="n">pobj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pobj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;boot&quot;</span><span class="p">):</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You don&#39;t have the permission to boot </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pobj</span><span class="o">.</span><span class="n">key</span><span class="p">,)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="c1"># we have a bootable object with a connected user</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="n">SESSIONS</span><span class="o">.</span><span class="n">sessions_from_account</span><span class="p">(</span><span class="n">pobj</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+                <span class="n">boot_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">boot_list</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No matching sessions found. The Account does not seem to be online.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Carry out the booting of the sessions in the boot list.</span>
+
+        <span class="n">feedback</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="s2">&quot;quiet&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="n">feedback</span> <span class="o">=</span> <span class="s2">&quot;You have been disconnected by </span><span class="si">%s</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">caller</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">if</span> <span class="n">reason</span><span class="p">:</span>
+                <span class="n">feedback</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Reason given: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">reason</span>
+
+        <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="n">boot_list</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">feedback</span><span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">disconnect_session_from_account</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pobj</span> <span class="ow">and</span> <span class="n">boot_list</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
+                <span class="s2">&quot;Booted: </span><span class="si">%s</span><span class="s2"> (Reason: </span><span class="si">%s</span><span class="s2">, Caller: </span><span class="si">%s</span><span class="s2">, IP: </span><span class="si">%s</span><span class="s2">).&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="n">pobj</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+            <span class="p">)</span></div></div>
+
+
+<span class="c1"># regex matching IP addresses with wildcards, eg. 233.122.4.*</span>
+<span class="n">IPREGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[0-9*]{1,3}\.[0-9*]{1,3}\.[0-9*]{1,3}\.[0-9*]{1,3}&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">list_bans</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">banlist</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function to display a list of active bans. Input argument</span>
+<span class="sd">    is the banlist read into the two commands ban and unban below.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cmd (Command): Instance of the Ban command.</span>
+<span class="sd">        banlist (list): List of bans to list.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">banlist</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;No active bans were found.&quot;</span>
+
+    <span class="n">table</span> <span class="o">=</span> <span class="n">cmd</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span><span class="s2">&quot;|wid&quot;</span><span class="p">,</span> <span class="s2">&quot;|wname/ip&quot;</span><span class="p">,</span> <span class="s2">&quot;|wdate&quot;</span><span class="p">,</span> <span class="s2">&quot;|wreason&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">inum</span><span class="p">,</span> <span class="n">ban</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">banlist</span><span class="p">):</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">inum</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">ban</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">ban</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">ban</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ban</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">ban</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+    <span class="k">return</span> <span class="s2">&quot;|wActive bans:|n</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">table</span>
+
+
+<div class="viewcode-block" id="CmdBan"><a class="viewcode-back" href="../../../../api/evennia.commands.default.admin.html#evennia.commands.default.admin.CmdBan">[docs]</a><span class="k">class</span> <span class="nc">CmdBan</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ban an account from the server</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      ban [&lt;name or ip&gt; [: reason]]</span>
+
+<span class="sd">    Without any arguments, shows numbered list of active bans.</span>
+
+<span class="sd">    This command bans a user from accessing the game. Supply an optional</span>
+<span class="sd">    reason to be able to later remember why the ban was put in place.</span>
+
+<span class="sd">    It is often preferable to ban an account from the server than to</span>
+<span class="sd">    delete an account with accounts/delete. If banned by name, that account</span>
+<span class="sd">    account can no longer be logged into.</span>
+
+<span class="sd">    IP (Internet Protocol) address banning allows blocking all access</span>
+<span class="sd">    from a specific address or subnet. Use an asterisk (*) as a</span>
+<span class="sd">    wildcard.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">      ban thomas             - ban account &#39;thomas&#39;</span>
+<span class="sd">      ban/ip 134.233.2.111   - ban specific ip address</span>
+<span class="sd">      ban/ip 134.233.2.*     - ban all in a subnet</span>
+<span class="sd">      ban/ip 134.233.*.*     - even wider ban</span>
+
+<span class="sd">    A single IP filter can be easy to circumvent by changing computers</span>
+<span class="sd">    or requesting a new IP address. Setting a wide IP block filter with</span>
+<span class="sd">    wildcards might be tempting, but remember that it may also</span>
+<span class="sd">    accidentally block innocent users connecting from the same country</span>
+<span class="sd">    or region.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;ban&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bans&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(ban) or perm(Developer)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Admin&quot;</span>
+
+<div class="viewcode-block" id="CmdBan.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.admin.html#evennia.commands.default.admin.CmdBan.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bans are stored in a serverconf db object as a list of</span>
+<span class="sd">        dictionaries:</span>
+<span class="sd">          [ (name, ip, ipregex, date, reason),</span>
+<span class="sd">            (name, ip, ipregex, date, reason),...  ]</span>
+<span class="sd">        where name and ip are set by the user and are shown in</span>
+<span class="sd">        lists. ipregex is a converted form of ip where the * is</span>
+<span class="sd">        replaced by an appropriate regex pattern for fast</span>
+<span class="sd">        matching. date is the time stamp the ban was instigated and</span>
+<span class="sd">        &#39;reason&#39; is any optional info given to the command. Unset</span>
+<span class="sd">        values in each tuple is set to the empty string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">banlist</span> <span class="o">=</span> <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_bans&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">banlist</span><span class="p">:</span>
+            <span class="n">banlist</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">switch</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ip&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">switch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">list_bans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">banlist</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">()</span>
+        <span class="n">reason</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">ban</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ban</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+        <span class="n">ban</span> <span class="o">=</span> <span class="n">ban</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">ipban</span> <span class="o">=</span> <span class="n">IPREGEX</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">ban</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ipban</span><span class="p">:</span>
+            <span class="c1"># store as name</span>
+            <span class="n">typ</span> <span class="o">=</span> <span class="s2">&quot;Name&quot;</span>
+            <span class="n">bantup</span> <span class="o">=</span> <span class="p">(</span><span class="n">ban</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># an ip address.</span>
+            <span class="n">typ</span> <span class="o">=</span> <span class="s2">&quot;IP&quot;</span>
+            <span class="n">ban</span> <span class="o">=</span> <span class="n">ipban</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># replace * with regex form and compile it</span>
+            <span class="n">ipregex</span> <span class="o">=</span> <span class="n">ban</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;\.&quot;</span><span class="p">)</span>
+            <span class="n">ipregex</span> <span class="o">=</span> <span class="n">ipregex</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;[0-9]{1,3}&quot;</span><span class="p">)</span>
+            <span class="n">ipregex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">ipregex</span><span class="p">)</span>
+            <span class="n">bantup</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ban</span><span class="p">,</span> <span class="n">ipregex</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Are you sure you want to </span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s2">-ban &#39;|w</span><span class="si">{</span><span class="n">ban</span><span class="si">}</span><span class="s2">|n&#39; [Y]/N?&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># save updated banlist</span>
+        <span class="n">banlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bantup</span><span class="p">)</span>
+        <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_bans&quot;</span><span class="p">,</span> <span class="n">banlist</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s2">-ban &#39;|w</span><span class="si">{</span><span class="n">ban</span><span class="si">}</span><span class="s2">|n&#39; was added. Use |wunban|n to reinstate.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
+            <span class="s2">&quot;Banned </span><span class="si">{typ}</span><span class="s2">: {ban.strip()} (Caller: </span><span class="si">{self.caller}</span><span class="s2">, IP: </span><span class="si">{self.session.address}</span><span class="s2">).&quot;</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdUnban"><a class="viewcode-back" href="../../../../api/evennia.commands.default.admin.html#evennia.commands.default.admin.CmdUnban">[docs]</a><span class="k">class</span> <span class="nc">CmdUnban</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    remove a ban from an account</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      unban &lt;banid&gt;</span>
+
+<span class="sd">    This will clear an account name/ip ban previously set with the ban</span>
+<span class="sd">    command.  Use this command without an argument to view a numbered</span>
+<span class="sd">    list of bans. Use the numbers in this list to select which one to</span>
+<span class="sd">    unban.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;unban&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(unban) or perm(Developer)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Admin&quot;</span>
+
+<div class="viewcode-block" id="CmdUnban.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.admin.html#evennia.commands.default.admin.CmdUnban.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implement unbanning&quot;&quot;&quot;</span>
+
+        <span class="n">banlist</span> <span class="o">=</span> <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_bans&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">list_bans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">banlist</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must supply a valid ban id to clear.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">banlist</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;There are no bans to clear.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">banlist</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Ban id |w</span><span class="si">%s</span><span class="s2">|x was not found.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># all is ok, ask, then clear ban</span>
+            <span class="n">ban</span> <span class="o">=</span> <span class="n">banlist</span><span class="p">[</span><span class="n">num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ban</span><span class="p">[:</span><span class="mi">2</span><span class="p">]]))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+            <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Are you sure you want to unban </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2">: &#39;|w</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">|n&#39; [Y]/N?&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="k">del</span> <span class="n">banlist</span><span class="p">[</span><span class="n">num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_bans&quot;</span><span class="p">,</span> <span class="n">banlist</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cleared ban </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2">: &#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
+                <span class="s2">&quot;Unbanned: {value.strip()} (Caller: </span><span class="si">{self.caller}</span><span class="s2">, IP: </span><span class="si">{self.session.address}</span><span class="s2">).&quot;</span>
+            <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdEmit"><a class="viewcode-back" href="../../../../api/evennia.commands.default.admin.html#evennia.commands.default.admin.CmdEmit">[docs]</a><span class="k">class</span> <span class="nc">CmdEmit</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    admin command for emitting message to multiple objects</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      emit[/switches] [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;</span>
+<span class="sd">      remit           [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;</span>
+<span class="sd">      pemit           [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;</span>
+
+<span class="sd">    Switches:</span>
+<span class="sd">      room     -  limit emits to rooms only (default)</span>
+<span class="sd">      accounts -  limit emits to accounts only</span>
+<span class="sd">      contents -  send to the contents of matched objects too</span>
+
+<span class="sd">    Emits a message to the selected objects or to</span>
+<span class="sd">    your immediate surroundings. If the object is a room,</span>
+<span class="sd">    send to its contents. remit and pemit are just</span>
+<span class="sd">    limited forms of emit, for sending to rooms and</span>
+<span class="sd">    to accounts respectively.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;emit&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pemit&quot;</span><span class="p">,</span> <span class="s2">&quot;remit&quot;</span><span class="p">]</span>
+    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;room&quot;</span><span class="p">,</span> <span class="s2">&quot;accounts&quot;</span><span class="p">,</span> <span class="s2">&quot;contents&quot;</span><span class="p">)</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(emit) or perm(Builder)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Admin&quot;</span>
+
+<div class="viewcode-block" id="CmdEmit.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.admin.html#evennia.commands.default.admin.CmdEmit.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implement the command&quot;&quot;&quot;</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Usage: &quot;</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">emit[/switches] [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;&quot;</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">remit           [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;&quot;</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">pemit           [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;&quot;</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">rooms_only</span> <span class="o">=</span> <span class="s2">&quot;rooms&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
+        <span class="n">accounts_only</span> <span class="o">=</span> <span class="s2">&quot;accounts&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
+        <span class="n">send_to_contents</span> <span class="o">=</span> <span class="s2">&quot;contents&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
+
+        <span class="c1"># we check which command was used to force the switches</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">==</span> <span class="s2">&quot;remit&quot;</span><span class="p">:</span>
+            <span class="n">rooms_only</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">send_to_contents</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">==</span> <span class="s2">&quot;pemit&quot;</span><span class="p">:</span>
+            <span class="n">accounts_only</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+            <span class="n">objnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+            <span class="n">objnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhslist</span>
+
+        <span class="c1"># send to all objects</span>
+        <span class="k">for</span> <span class="n">objname</span> <span class="ow">in</span> <span class="n">objnames</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">objname</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="n">rooms_only</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">location</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not a room. Ignored.&quot;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">accounts_only</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> has no active account. Ignored.&quot;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;tell&quot;</span><span class="p">):</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">send_to_contents</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;msg_contents&quot;</span><span class="p">):</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Emitted to </span><span class="si">%s</span><span class="s2"> and contents:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">objname</span><span class="p">,</span> <span class="n">message</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Emitted to </span><span class="si">%s</span><span class="s2">:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">objname</span><span class="p">,</span> <span class="n">message</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not allowed to emit to </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdNewPassword"><a class="viewcode-back" href="../../../../api/evennia.commands.default.admin.html#evennia.commands.default.admin.CmdNewPassword">[docs]</a><span class="k">class</span> <span class="nc">CmdNewPassword</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    change the password of an account</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      userpassword &lt;user obj&gt; = &lt;new password&gt;</span>
+
+<span class="sd">    Set an account&#39;s password.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;userpassword&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(newpassword) or perm(Admin)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Admin&quot;</span>
+
+<div class="viewcode-block" id="CmdNewPassword.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.admin.html#evennia.commands.default.admin.CmdNewPassword.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implement the function.&quot;&quot;&quot;</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: userpassword &lt;user obj&gt; = &lt;new password&gt;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># the account search also matches &#39;me&#39; etc.</span>
+        <span class="n">account</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search_account</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">account</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">newpass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+
+        <span class="c1"># Validate password</span>
+        <span class="n">validated</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">validate_password</span><span class="p">(</span><span class="n">newpass</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">validated</span><span class="p">:</span>
+            <span class="n">errors</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">suberror</span> <span class="ow">in</span> <span class="n">error</span><span class="o">.</span><span class="n">messages</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">error</span><span class="o">.</span><span class="n">messages</span><span class="p">]</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">account</span><span class="o">.</span><span class="n">set_password</span><span class="p">(</span><span class="n">newpass</span><span class="p">)</span>
+        <span class="n">account</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> - new password set to &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">newpass</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">account</span><span class="o">.</span><span class="n">character</span> <span class="o">!=</span> <span class="n">caller</span><span class="p">:</span>
+            <span class="n">account</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> has changed your password to &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">newpass</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
+            <span class="s2">&quot;Password Changed: </span><span class="si">%s</span><span class="s2"> (Caller: </span><span class="si">%s</span><span class="s2">, IP: </span><span class="si">%s</span><span class="s2">).&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdPerm"><a class="viewcode-back" href="../../../../api/evennia.commands.default.admin.html#evennia.commands.default.admin.CmdPerm">[docs]</a><span class="k">class</span> <span class="nc">CmdPerm</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    set the permissions of an account/object</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      perm[/switch] &lt;object&gt; [= &lt;permission&gt;[,&lt;permission&gt;,...]]</span>
+<span class="sd">      perm[/switch] *&lt;account&gt; [= &lt;permission&gt;[,&lt;permission&gt;,...]]</span>
+
+<span class="sd">    Switches:</span>
+<span class="sd">      del     -  delete the given permission from &lt;object&gt; or &lt;account&gt;.</span>
+<span class="sd">      account -  set permission on an account (same as adding * to name)</span>
+
+<span class="sd">    This command sets/clears individual permission strings on an object</span>
+<span class="sd">    or account. If no permission is given, list all permissions on &lt;object&gt;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;perm&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;setperm&quot;</span>
+    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;del&quot;</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">)</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(perm) or perm(Developer)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Admin&quot;</span>
+
+<div class="viewcode-block" id="CmdPerm.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.admin.html#evennia.commands.default.admin.CmdPerm.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implement function&quot;&quot;&quot;</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">switches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
+        <span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Usage: perm[/switch] object [ = permission, permission, ...]&quot;</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">accountmode</span> <span class="o">=</span> <span class="s2">&quot;account&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">or</span> <span class="n">lhs</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+        <span class="n">lhs</span> <span class="o">=</span> <span class="n">lhs</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">accountmode</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search_account</span><span class="p">(</span><span class="n">lhs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rhs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;examine&quot;</span><span class="p">):</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not allowed to examine this object.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Permissions on |w</span><span class="si">%s</span><span class="s2">|n: &quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;&lt;None&gt;&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="s2">&quot;is_superuser&quot;</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">is_superuser</span>
+                <span class="p">):</span>
+                    <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">(... but this object is currently controlled by a SUPERUSER! &quot;</span>
+                    <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;All access checks are passed automatically.)&quot;</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># we supplied an argument on the form obj = perm</span>
+        <span class="n">locktype</span> <span class="o">=</span> <span class="s2">&quot;edit&quot;</span> <span class="k">if</span> <span class="n">accountmode</span> <span class="k">else</span> <span class="s2">&quot;control&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">locktype</span><span class="p">):</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;You are not allowed to edit this </span><span class="si">%s</span><span class="s2">&#39;s permissions.&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;account&quot;</span> <span class="k">if</span> <span class="n">accountmode</span> <span class="k">else</span> <span class="s2">&quot;object&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">caller_result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">target_result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="s2">&quot;del&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+            <span class="c1"># delete the given permission(s) from object.</span>
+            <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhslist</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">perm</span><span class="p">):</span>
+                    <span class="n">caller_result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Permissions </span><span class="si">%s</span><span class="s2"> could not be removed from </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">caller_result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Permission </span><span class="si">%s</span><span class="s2"> removed from </span><span class="si">%s</span><span class="s2"> (if they existed).&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="n">target_result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2"> revokes the permission(s) </span><span class="si">%s</span><span class="s2"> from you.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
+                        <span class="s2">&quot;Permissions Deleted: </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2"> (Caller: </span><span class="si">%s</span><span class="s2">, IP: </span><span class="si">%s</span><span class="s2">).&quot;</span>
+                        <span class="o">%</span> <span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+                    <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># add a new permission</span>
+            <span class="n">permissions</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhslist</span><span class="p">:</span>
+
+                <span class="c1"># don&#39;t allow to set a permission higher in the hierarchy than</span>
+                <span class="c1"># the one the caller has (to prevent self-escalation)</span>
+                <span class="k">if</span> <span class="n">perm</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">PERMISSION_HIERARCHY</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span>
+                    <span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;dummy:perm(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">perm</span>
+                <span class="p">):</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                        <span class="s2">&quot;You cannot assign a permission higher than the one you have yourself.&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span>
+
+                <span class="k">if</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">permissions</span><span class="p">:</span>
+                    <span class="n">caller_result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Permission &#39;</span><span class="si">%s</span><span class="s2">&#39; is already defined on </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span>
+                    <span class="n">plystring</span> <span class="o">=</span> <span class="s2">&quot;the Account&quot;</span> <span class="k">if</span> <span class="n">accountmode</span> <span class="k">else</span> <span class="s2">&quot;the Object/Character&quot;</span>
+                    <span class="n">caller_result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Permission &#39;</span><span class="si">%s</span><span class="s2">&#39; given to </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">).&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">plystring</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="n">target_result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2"> gives you (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">) the permission &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span>
+                        <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">plystring</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
+                        <span class="s2">&quot;Permissions Added: </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2"> (Caller: </span><span class="si">%s</span><span class="s2">, IP: </span><span class="si">%s</span><span class="s2">).&quot;</span>
+                        <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+                    <span class="p">)</span>
+
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caller_result</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">target_result</span><span class="p">:</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">target_result</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="CmdWall"><a class="viewcode-back" href="../../../../api/evennia.commands.default.admin.html#evennia.commands.default.admin.CmdWall">[docs]</a><span class="k">class</span> <span class="nc">CmdWall</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    make an announcement to all</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      wall &lt;message&gt;</span>
+
+<span class="sd">    Announces a message to all connected sessions</span>
+<span class="sd">    including all currently unlogged in.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;wall&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(wall) or perm(Admin)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Admin&quot;</span>
+
+<div class="viewcode-block" id="CmdWall.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.admin.html#evennia.commands.default.admin.CmdWall.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implements command&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: wall &lt;message&gt;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> shouts &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Announcing to all connected sessions ...&quot;</span><span class="p">)</span>
+        <span class="n">SESSIONS</span><span class="o">.</span><span class="n">announce_all</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdForce"><a class="viewcode-back" href="../../../../api/evennia.commands.default.admin.html#evennia.commands.default.admin.CmdForce">[docs]</a><span class="k">class</span> <span class="nc">CmdForce</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    forces an object to execute a command</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        force &lt;object&gt;=&lt;command string&gt;</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        force bob=get stick</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;force&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(spawn) or perm(Builder)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
+    <span class="n">perm_used</span> <span class="o">=</span> <span class="s2">&quot;edit&quot;</span>
+
+<div class="viewcode-block" id="CmdForce.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.admin.html#evennia.commands.default.admin.CmdForce.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implements the force command&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must provide a target and a command string to execute.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">targ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">targ</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">targ</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">perm_used</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have permission to force them to execute commands.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">targ</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You have forced </span><span class="si">%s</span><span class="s2"> to: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">targ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">))</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="admin.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.admin</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

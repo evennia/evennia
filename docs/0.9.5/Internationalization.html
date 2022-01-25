@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Internationalization &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Internationalization</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="internationalization">
+<h1>Internationalization<a class="headerlink" href="#internationalization" title="Permalink to this headline">¶</a></h1>
+<p><em>Internationalization</em> (often abbreviated <em>i18n</em> since there are 18 characters between the first “i”
+and the last “n” in that word) allows Evennia’s core server to return texts in other languages than
+English - without anyone having to edit the source code. Take a look at the <code class="docutils literal notranslate"><span class="pre">locale</span></code> directory of
+the Evennia installation, there you will find which languages are currently supported.</p>
+<section id="changing-server-language">
+<h2>Changing server language<a class="headerlink" href="#changing-server-language" title="Permalink to this headline">¶</a></h2>
+<p>Change language by adding the following to your <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">USE_I18N</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">LANGUAGE_CODE</span> <span class="o">=</span> <span class="s1">&#39;en&#39;</span>
+</pre></div>
+</div>
+<p>Here <code class="docutils literal notranslate"><span class="pre">'en'</span></code> should be changed to the abbreviation for one of the supported languages found in
+<code class="docutils literal notranslate"><span class="pre">locale/</span></code>. Restart the server to activate i18n. The two-character international language codes are
+found <a class="reference external" href="http://www.science.co.il/Language/Codes.asp">here</a>.</p>
+<blockquote>
+<div><p>Windows Note: If you get errors concerning <code class="docutils literal notranslate"><span class="pre">gettext</span></code> or <code class="docutils literal notranslate"><span class="pre">xgettext</span></code> on Windows, see the <a class="reference external" href="https://docs.djangoproject.com/en/1.7/topics/i18n/translation/#gettext-on-windows">Django
+documentation</a>. A
+self-installing and up-to-date version of gettext for Windows (32/64-bit) is available on
+<a class="reference external" href="https://github.com/mlocati/gettext-iconv-windows">Github</a>.</p>
+</div></blockquote>
+</section>
+<section id="translating-evennia">
+<h2>Translating Evennia<a class="headerlink" href="#translating-evennia" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p><strong>Important Note:</strong> Evennia offers translations of hard-coded strings in the server, things like
+“Connection closed” or “Server restarted”, strings that end users will see and which game devs are
+not supposed to change on their own. Text you see in the log file or on the command line (like error
+messages) are generally <em>not</em> translated (this is a part of Python).</p>
+</div></blockquote>
+<blockquote>
+<div><p>In addition, text in default Commands and in default Typeclasses will <em>not</em> be translated by
+switching <em>i18n</em> language. To translate Commands and Typeclass hooks you must overload them in your
+game directory and translate their returns to the language you want. This is because from Evennia’s
+perspective, adding <em>i18n</em> code to commands tend to add complexity to code that is <em>meant</em> to be
+changed anyway. One of the goals of Evennia is to keep the user-changeable code as clean and easy-
+to-read as possible.</p>
+</div></blockquote>
+<p>If you cannot find your language in <code class="docutils literal notranslate"><span class="pre">evennia/locale/</span></code> it’s because noone has translated it yet.
+Alternatively you might have the language but find the translation bad … You are welcome to help
+improve the situation!</p>
+<p>To start a new translation you need to first have cloned the Evennia repositry with GIT and
+activated a python virtualenv as described on the <a class="reference internal" href="Getting-Started.html"><span class="doc std std-doc">Getting Started</span></a> page. You now
+need to <code class="docutils literal notranslate"><span class="pre">cd</span></code> to the <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> directory. This is <em>not</em> your created game folder but the main
+Evennia library folder. If you see a folder <code class="docutils literal notranslate"><span class="pre">locale/</span></code> then you are in the right place. From here you
+run:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia makemessages &lt;language-code&gt;
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">&lt;language-code&gt;</span></code> is the <a class="reference external" href="http://www.science.co.il/Language/Codes.asp">two-letter locale code</a>
+for the language you want, like ‘sv’ for Swedish or ‘es’ for Spanish. After a moment it will tell
+you the language has been processed.  For instance:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia makemessages sv
+</pre></div>
+</div>
+<p>If you started a new language a new folder for that language will have emerged in the <code class="docutils literal notranslate"><span class="pre">locale/</span></code>
+folder. Otherwise the system will just have updated the existing translation with eventual new
+strings found in the server. Running this command will not overwrite any existing strings so you can
+run it as much as you want.</p>
+<blockquote>
+<div><p>Note: in Django, the <code class="docutils literal notranslate"><span class="pre">makemessages</span></code> command prefixes the locale name by the <code class="docutils literal notranslate"><span class="pre">-l</span></code> option (<code class="docutils literal notranslate"><span class="pre">...</span> <span class="pre">makemessages</span> <span class="pre">-l</span> <span class="pre">sv</span></code> for instance).  This syntax is not allowed in Evennia, due to the fact that <code class="docutils literal notranslate"><span class="pre">-l</span></code>
+is the option to tail log files.  Hence, <code class="docutils literal notranslate"><span class="pre">makemessages</span></code> doesn’t use the <code class="docutils literal notranslate"><span class="pre">-l</span></code> flag.</p>
+</div></blockquote>
+<p>Next head to <code class="docutils literal notranslate"><span class="pre">locale/&lt;language-code&gt;/LC_MESSAGES</span></code> and edit the <code class="docutils literal notranslate"><span class="pre">**.po</span></code> file you find there.  You can
+edit this with a normal text editor but it is easiest if you use a special po-file editor from the
+web (search the web for “po editor” for many free alternatives).</p>
+<p>The concept of translating is simple, it’s just a matter of taking the english strings you find in
+the <code class="docutils literal notranslate"><span class="pre">**.po</span></code> file and add your language’s translation best you can. The <code class="docutils literal notranslate"><span class="pre">**.po</span></code> format (and many
+supporting editors) allow you to mark translations as “fuzzy”. This tells the system (and future
+translators) that you are unsure about the translation, or that you couldn’t find a translation that
+exactly matched the intention of the original text. Other translators will see this and might be
+able to improve it later.
+Finally, you need to compile your translation into a more efficient form. Do so from the <code class="docutils literal notranslate"><span class="pre">evennia</span></code>
+folder
+again:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia compilemessages
+</pre></div>
+</div>
+<p>This will go through all languages and create/update compiled files (<code class="docutils literal notranslate"><span class="pre">**.mo</span></code>) for them. This needs
+to be done whenever a <code class="docutils literal notranslate"><span class="pre">**.po</span></code> file is updated.</p>
+<p>When you are done, send the <code class="docutils literal notranslate"><span class="pre">**.po</span></code> and <code class="docutils literal notranslate"><span class="pre">*.mo</span></code> file to the Evennia developer list (or push it into
+your own repository clone) so we can integrate your translation into Evennia!</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Internationalization</a><ul>
+<li><a class="reference internal" href="#changing-server-language">Changing server language</a></li>
+<li><a class="reference internal" href="#translating-evennia">Translating Evennia</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Internationalization.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Internationalization.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Internationalization</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

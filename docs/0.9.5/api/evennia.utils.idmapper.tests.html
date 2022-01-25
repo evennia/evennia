@@ -1,0 +1,433 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.utils.idmapper.tests &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.idmapper.tests</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.utils.idmapper.tests">
+<span id="evennia-utils-idmapper-tests"></span><h1>evennia.utils.idmapper.tests<a class="headerlink" href="#module-evennia.utils.idmapper.tests" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="evennia.utils.idmapper.tests.Category">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.idmapper.tests.</code><code class="sig-name descname">Category</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em>, <em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/tests.html#Category"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.idmapper.tests.Category" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.idmapper.models.html#evennia.utils.idmapper.models.SharedMemoryModel" title="evennia.utils.idmapper.models.SharedMemoryModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.idmapper.models.SharedMemoryModel</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.Category.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#evennia.utils.idmapper.tests.Category.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.utils.idmapper.tests.Category.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.utils.idmapper.tests.Category.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.utils.idmapper.tests.Category.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.utils.idmapper.tests.Category.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.Category.article_set">
+<code class="sig-name descname">article_set</code><a class="headerlink" href="#evennia.utils.idmapper.tests.Category.article_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Parent.children**</strong> is a <strong>**ReverseManyToOneDescriptor**</strong> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.Category.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#evennia.utils.idmapper.tests.Category.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.Category.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.utils.idmapper.tests.Category'</em><a class="headerlink" href="#evennia.utils.idmapper.tests.Category.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.Category.regulararticle_set">
+<code class="sig-name descname">regulararticle_set</code><a class="headerlink" href="#evennia.utils.idmapper.tests.Category.regulararticle_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Parent.children**</strong> is a <strong>**ReverseManyToOneDescriptor**</strong> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.Category.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'SharedMemoryModelBase'</em><a class="headerlink" href="#evennia.utils.idmapper.tests.Category.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.idmapper.tests.RegularCategory">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.idmapper.tests.</code><code class="sig-name descname">RegularCategory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em>, <em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/tests.html#RegularCategory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularCategory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.RegularCategory.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularCategory.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.utils.idmapper.tests.RegularCategory.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularCategory.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.utils.idmapper.tests.RegularCategory.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularCategory.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.RegularCategory.article_set">
+<code class="sig-name descname">article_set</code><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularCategory.article_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Parent.children**</strong> is a <strong>**ReverseManyToOneDescriptor**</strong> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.RegularCategory.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularCategory.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.RegularCategory.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularCategory.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.RegularCategory.regulararticle_set">
+<code class="sig-name descname">regulararticle_set</code><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularCategory.regulararticle_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Parent.children**</strong> is a <strong>**ReverseManyToOneDescriptor**</strong> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.idmapper.tests.Article">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.idmapper.tests.</code><code class="sig-name descname">Article</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">category</span></em>, <em class="sig-param"><span class="n">category2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/tests.html#Article"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.idmapper.tests.Article" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.idmapper.models.html#evennia.utils.idmapper.models.SharedMemoryModel" title="evennia.utils.idmapper.models.SharedMemoryModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.idmapper.models.SharedMemoryModel</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.Article.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#evennia.utils.idmapper.tests.Article.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.Article.category">
+<code class="sig-name descname">category</code><a class="headerlink" href="#evennia.utils.idmapper.tests.Article.category" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Child.parent**</strong> is a <strong>**ForwardManyToOneDescriptor**</strong> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.Article.category2">
+<code class="sig-name descname">category2</code><a class="headerlink" href="#evennia.utils.idmapper.tests.Article.category2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Child.parent**</strong> is a <strong>**ForwardManyToOneDescriptor**</strong> instance.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.utils.idmapper.tests.Article.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.utils.idmapper.tests.Article.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.utils.idmapper.tests.Article.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.utils.idmapper.tests.Article.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.Article.category2_id">
+<code class="sig-name descname">category2_id</code><a class="headerlink" href="#evennia.utils.idmapper.tests.Article.category2_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.Article.category_id">
+<code class="sig-name descname">category_id</code><a class="headerlink" href="#evennia.utils.idmapper.tests.Article.category_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.Article.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#evennia.utils.idmapper.tests.Article.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.Article.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.utils.idmapper.tests.Article'</em><a class="headerlink" href="#evennia.utils.idmapper.tests.Article.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.Article.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'SharedMemoryModelBase'</em><a class="headerlink" href="#evennia.utils.idmapper.tests.Article.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.idmapper.tests.RegularArticle">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.idmapper.tests.</code><code class="sig-name descname">RegularArticle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">category</span></em>, <em class="sig-param"><span class="n">category2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/tests.html#RegularArticle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularArticle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.RegularArticle.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularArticle.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.RegularArticle.category">
+<code class="sig-name descname">category</code><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularArticle.category" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Child.parent**</strong> is a <strong>**ForwardManyToOneDescriptor**</strong> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.RegularArticle.category2">
+<code class="sig-name descname">category2</code><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularArticle.category2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Child.parent**</strong> is a <strong>**ForwardManyToOneDescriptor**</strong> instance.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.utils.idmapper.tests.RegularArticle.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularArticle.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.utils.idmapper.tests.RegularArticle.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularArticle.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.RegularArticle.category2_id">
+<code class="sig-name descname">category2_id</code><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularArticle.category2_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.RegularArticle.category_id">
+<code class="sig-name descname">category_id</code><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularArticle.category_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.RegularArticle.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularArticle.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.idmapper.tests.RegularArticle.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#evennia.utils.idmapper.tests.RegularArticle.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.idmapper.tests.SharedMemorysTest">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.idmapper.tests.</code><code class="sig-name descname">SharedMemorysTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/tests.html#SharedMemorysTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.idmapper.tests.SharedMemorysTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<dl class="py method">
+<dt id="evennia.utils.idmapper.tests.SharedMemorysTest.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/tests.html#SharedMemorysTest.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.idmapper.tests.SharedMemorysTest.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.idmapper.tests.SharedMemorysTest.testSharedMemoryReferences">
+<code class="sig-name descname">testSharedMemoryReferences</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/tests.html#SharedMemorysTest.testSharedMemoryReferences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.idmapper.tests.SharedMemorysTest.testSharedMemoryReferences" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.idmapper.tests.SharedMemorysTest.testRegularReferences">
+<code class="sig-name descname">testRegularReferences</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/tests.html#SharedMemorysTest.testRegularReferences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.idmapper.tests.SharedMemorysTest.testRegularReferences" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.idmapper.tests.SharedMemorysTest.testMixedReferences">
+<code class="sig-name descname">testMixedReferences</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/tests.html#SharedMemorysTest.testMixedReferences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.idmapper.tests.SharedMemorysTest.testMixedReferences" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.idmapper.tests.SharedMemorysTest.testObjectDeletion">
+<code class="sig-name descname">testObjectDeletion</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/tests.html#SharedMemorysTest.testObjectDeletion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.idmapper.tests.SharedMemorysTest.testObjectDeletion" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.utils.idmapper.tests.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.utils.idmapper.tests.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.utils.idmapper.tests.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.idmapper.tests</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

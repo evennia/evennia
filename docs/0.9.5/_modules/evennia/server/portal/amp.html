@@ -1,0 +1,653 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.server.portal.amp &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.amp</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.server.portal.amp</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The AMP (Asynchronous Message Protocol)-communication commands and constants used by Evennia.</span>
+
+<span class="sd">This module acts as a central place for AMP-servers and -clients to get commands to use.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">twisted.protocols</span> <span class="kn">import</span> <span class="n">amp</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
+<span class="kn">import</span> <span class="nn">zlib</span>  <span class="c1"># Used in Compressed class</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">DeferredList</span><span class="p">,</span> <span class="n">Deferred</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">variable_from_module</span>
+
+<span class="c1"># delayed import</span>
+<span class="n">_LOGGER</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># communication bits</span>
+<span class="c1"># (chr(9) and chr(10) are \t and \n, so skipping them)</span>
+
+<span class="n">PCONN</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># portal session connect</span>
+<span class="n">PDISCONN</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># portal session disconnect</span>
+<span class="n">PSYNC</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># portal session sync</span>
+<span class="n">SLOGIN</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>  <span class="c1"># server session login</span>
+<span class="n">SDISCONN</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># server session disconnect</span>
+<span class="n">SDISCONNALL</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>  <span class="c1"># server session disconnect all</span>
+<span class="n">SSHUTD</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>  <span class="c1"># server shutdown</span>
+<span class="n">SSYNC</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>  <span class="c1"># server session sync</span>
+<span class="n">SCONN</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>  <span class="c1"># server creating new connection (for irc bots and etc)</span>
+<span class="n">PCONNSYNC</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>  <span class="c1"># portal post-syncing a session</span>
+<span class="n">PDISCONNALL</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>  <span class="c1"># portal session disconnect all</span>
+<span class="n">SRELOAD</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span>  <span class="c1"># server shutdown in reload mode</span>
+<span class="n">SSTART</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>  <span class="c1"># server start (portal must already be running anyway)</span>
+<span class="n">PSHUTD</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>  <span class="c1"># portal (+server) shutdown</span>
+<span class="n">SSHUTD</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>  <span class="c1"># server shutdown</span>
+<span class="n">PSTATUS</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>  <span class="c1"># ping server or portal status</span>
+<span class="n">SRESET</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span>  <span class="c1"># server shutdown in reset mode</span>
+
+<span class="n">NUL</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span>
+<span class="n">NULNUL</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00\x00</span><span class="s2">&quot;</span>
+
+<span class="n">AMP_MAXLEN</span> <span class="o">=</span> <span class="n">amp</span><span class="o">.</span><span class="n">MAX_VALUE_LENGTH</span>  <span class="c1"># max allowed data length in AMP protocol (cannot be changed)</span>
+
+<span class="c1"># amp internal</span>
+<span class="n">ASK</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;_ask&#39;</span>
+<span class="n">ANSWER</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;_answer&#39;</span>
+<span class="n">ERROR</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;_error&#39;</span>
+<span class="n">ERROR_CODE</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;_error_code&#39;</span>
+<span class="n">ERROR_DESCRIPTION</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;_error_description&#39;</span>
+<span class="n">UNKNOWN_ERROR_CODE</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;UNKNOWN&#39;</span>
+
+<span class="c1"># buffers</span>
+<span class="n">_SENDBATCH</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+<span class="n">_MSGBUFFER</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+
+<span class="c1"># resources</span>
+
+<span class="n">DUMMYSESSION</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;DummySession&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;sessid&quot;</span><span class="p">])(</span><span class="mi">0</span><span class="p">)</span>
+
+
+<span class="n">_HTTP_WARNING</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">HTTP/1.1 200 OK</span>
+<span class="sd">Content-Type: text/html</span>
+
+<span class="sd">&lt;html&gt;</span>
+<span class="sd">  &lt;body&gt;</span>
+<span class="sd">    This is Evennia&#39;s internal AMP port. It handles communication</span>
+<span class="sd">    between Evennia&#39;s different processes.</span>
+<span class="sd">    &lt;p&gt;</span>
+<span class="sd">        &lt;h3&gt;This port should NOT be publicly visible.&lt;/h3&gt;</span>
+<span class="sd">    &lt;/p&gt;</span>
+<span class="sd">  &lt;/body&gt;</span>
+<span class="sd">&lt;/html&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+    <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># Helper functions for pickling.</span>
+
+
+<div class="viewcode-block" id="dumps"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.dumps">[docs]</a><span class="k">def</span> <span class="nf">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="loads"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.loads">[docs]</a><span class="k">def</span> <span class="nf">loads</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_logger</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Delay import of logger until absolutely necessary</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_LOGGER</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_LOGGER</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span> <span class="k">as</span> <span class="n">_LOGGER</span>
+    <span class="k">return</span> <span class="n">_LOGGER</span>
+
+
+<span class="nd">@wraps</span>
+<span class="k">def</span> <span class="nf">catch_traceback</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper decorator</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">_get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+            <span class="k">raise</span>  <span class="c1"># make sure the error is visible on the other side of the connection too</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">decorator</span>
+
+
+<span class="c1"># AMP Communication Command types</span>
+
+
+<div class="viewcode-block" id="Compressed"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.Compressed">[docs]</a><span class="k">class</span> <span class="nc">Compressed</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">String</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a custom AMP command Argument that both handles too-long</span>
+<span class="sd">    sends as well as uses zlib for compression across the wire. The</span>
+<span class="sd">    batch-grouping of too-long sends is borrowed from the &quot;mediumbox&quot;</span>
+<span class="sd">    recipy at twisted-hacks&#39;s ~glyph/+junk/amphacks/mediumbox.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Compressed.fromBox"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.Compressed.fromBox">[docs]</a>    <span class="k">def</span> <span class="nf">fromBox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">strings</span><span class="p">,</span> <span class="n">objects</span><span class="p">,</span> <span class="n">proto</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts from box string representation to python. We read back too-long batched data and</span>
+<span class="sd">        put it back together here.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">value</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+        <span class="n">value</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fromStringProto</span><span class="p">(</span><span class="n">strings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">proto</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">counter</span> <span class="ow">in</span> <span class="n">count</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+            <span class="c1"># count from 2 upwards</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">strings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">counter</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">chunk</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fromStringProto</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">proto</span><span class="p">))</span>
+        <span class="n">objects</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Compressed.toBox"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.Compressed.toBox">[docs]</a>    <span class="k">def</span> <span class="nf">toBox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">strings</span><span class="p">,</span> <span class="n">objects</span><span class="p">,</span> <span class="n">proto</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert from python object to string box representation.</span>
+<span class="sd">        we break up too-long data snippets into multiple batches here.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># print(&quot;toBox: name={}, strings={}, objects={}, proto{}&quot;.format(name, strings, objects, proto))</span>
+
+        <span class="n">value</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">(</span><span class="n">objects</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">)])</span>
+        <span class="n">strings</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">toStringProto</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">AMP_MAXLEN</span><span class="p">),</span> <span class="n">proto</span><span class="p">)</span>
+
+        <span class="c1"># print(&quot;toBox strings[name] = {}&quot;.format(strings[name]))</span>
+
+        <span class="k">for</span> <span class="n">counter</span> <span class="ow">in</span> <span class="n">count</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">AMP_MAXLEN</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">strings</span><span class="p">[</span><span class="sa">b</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">counter</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">toStringProto</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">proto</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Compressed.toString"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.Compressed.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inObject</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert to send as a bytestring on the wire, with compression.</span>
+
+<span class="sd">        Note: In Py3 this is really a byte stream.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">zlib</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="n">Compressed</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">toString</span><span class="p">(</span><span class="n">inObject</span><span class="p">),</span> <span class="mi">9</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Compressed.fromString"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.Compressed.fromString">[docs]</a>    <span class="k">def</span> <span class="nf">fromString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inString</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert (decompress) from the string-representation on the wire to Python.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Compressed</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">fromString</span><span class="p">(</span><span class="n">zlib</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">inString</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="MsgLauncher2Portal"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.MsgLauncher2Portal">[docs]</a><span class="k">class</span> <span class="nc">MsgLauncher2Portal</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Message Launcher -&gt; Portal</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;MsgLauncher2Portal&quot;</span>
+    <span class="n">arguments</span> <span class="o">=</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;operation&quot;</span><span class="p">,</span> <span class="n">amp</span><span class="o">.</span><span class="n">String</span><span class="p">()),</span> <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;arguments&quot;</span><span class="p">,</span> <span class="n">amp</span><span class="o">.</span><span class="n">String</span><span class="p">())]</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">{</span><span class="ne">Exception</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;EXCEPTION&quot;</span><span class="p">}</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="MsgPortal2Server"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.MsgPortal2Server">[docs]</a><span class="k">class</span> <span class="nc">MsgPortal2Server</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Message Portal -&gt; Server</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;MsgPortal2Server&quot;</span>
+    <span class="n">arguments</span> <span class="o">=</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;packed_data&quot;</span><span class="p">,</span> <span class="n">Compressed</span><span class="p">())]</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">{</span><span class="ne">Exception</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;EXCEPTION&quot;</span><span class="p">}</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="MsgServer2Portal"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.MsgServer2Portal">[docs]</a><span class="k">class</span> <span class="nc">MsgServer2Portal</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Message Server -&gt; Portal</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;MsgServer2Portal&quot;</span>
+    <span class="n">arguments</span> <span class="o">=</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;packed_data&quot;</span><span class="p">,</span> <span class="n">Compressed</span><span class="p">())]</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">{</span><span class="ne">Exception</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;EXCEPTION&quot;</span><span class="p">}</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="AdminPortal2Server"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AdminPortal2Server">[docs]</a><span class="k">class</span> <span class="nc">AdminPortal2Server</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Administration Portal -&gt; Server</span>
+
+<span class="sd">    Sent when the portal needs to perform admin operations on the</span>
+<span class="sd">    server, such as when a new session connects or resyncs</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;AdminPortal2Server&quot;</span>
+    <span class="n">arguments</span> <span class="o">=</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;packed_data&quot;</span><span class="p">,</span> <span class="n">Compressed</span><span class="p">())]</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">{</span><span class="ne">Exception</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;EXCEPTION&quot;</span><span class="p">}</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="AdminServer2Portal"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AdminServer2Portal">[docs]</a><span class="k">class</span> <span class="nc">AdminServer2Portal</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Administration Server -&gt; Portal</span>
+
+<span class="sd">    Sent when the server needs to perform admin operations on the</span>
+<span class="sd">    portal.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;AdminServer2Portal&quot;</span>
+    <span class="n">arguments</span> <span class="o">=</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;packed_data&quot;</span><span class="p">,</span> <span class="n">Compressed</span><span class="p">())]</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">{</span><span class="ne">Exception</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;EXCEPTION&quot;</span><span class="p">}</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="MsgStatus"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.MsgStatus">[docs]</a><span class="k">class</span> <span class="nc">MsgStatus</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check Status between AMP services</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;MsgStatus&quot;</span>
+    <span class="n">arguments</span> <span class="o">=</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="n">amp</span><span class="o">.</span><span class="n">String</span><span class="p">())]</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">{</span><span class="ne">Exception</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;EXCEPTION&quot;</span><span class="p">}</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="n">amp</span><span class="o">.</span><span class="n">String</span><span class="p">())]</span></div>
+
+
+<div class="viewcode-block" id="FunctionCall"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.FunctionCall">[docs]</a><span class="k">class</span> <span class="nc">FunctionCall</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Bidirectional Server &lt;-&gt; Portal</span>
+
+<span class="sd">    Sent when either process needs to call an arbitrary function in</span>
+<span class="sd">    the other. This does not use the batch-send functionality.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;FunctionCall&quot;</span>
+    <span class="n">arguments</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;module&quot;</span><span class="p">,</span> <span class="n">amp</span><span class="o">.</span><span class="n">String</span><span class="p">()),</span>
+        <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="n">amp</span><span class="o">.</span><span class="n">String</span><span class="p">()),</span>
+        <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;args&quot;</span><span class="p">,</span> <span class="n">amp</span><span class="o">.</span><span class="n">String</span><span class="p">()),</span>
+        <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;kwargs&quot;</span><span class="p">,</span> <span class="n">amp</span><span class="o">.</span><span class="n">String</span><span class="p">()),</span>
+    <span class="p">]</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">{</span><span class="ne">Exception</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;EXCEPTION&quot;</span><span class="p">}</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;result&quot;</span><span class="p">,</span> <span class="n">amp</span><span class="o">.</span><span class="n">String</span><span class="p">())]</span></div>
+
+
+<span class="c1"># -------------------------------------------------------------</span>
+<span class="c1"># Core AMP protocol for communication Server &lt;-&gt; Portal</span>
+<span class="c1"># -------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="AMPMultiConnectionProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol">[docs]</a><span class="k">class</span> <span class="nc">AMPMultiConnectionProtocol</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">AMP</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    AMP protocol that safely handle multiple connections to the same</span>
+<span class="sd">    server without dropping old ones - new clients will receive</span>
+<span class="sd">    all server returns (broadcast). Will also correctly handle</span>
+<span class="sd">    erroneous HTTP requests on the port and return a HTTP error response.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># helper methods</span>
+
+<div class="viewcode-block" id="AMPMultiConnectionProtocol.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize protocol with some things that need to be in place</span>
+<span class="sd">        already before connecting both on portal and server.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_batch_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_reset_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_mode</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_task</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multibatches</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># later twisted amp has its own __init__</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AMPMultiConnectionProtocol</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_commandReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">box</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This overrides the default Twisted AMP error handling which is not</span>
+<span class="sd">        passing enough of the traceback through to the other side. Instead we</span>
+<span class="sd">        add a specific log of the problem on the erroring side.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">formatAnswer</span><span class="p">(</span><span class="n">answerBox</span><span class="p">):</span>
+            <span class="n">answerBox</span><span class="p">[</span><span class="n">ANSWER</span><span class="p">]</span> <span class="o">=</span> <span class="n">box</span><span class="p">[</span><span class="n">ASK</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">answerBox</span>
+
+        <span class="k">def</span> <span class="nf">formatError</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">error</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">RemoteAmpError</span><span class="p">):</span>
+                <span class="n">code</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">errorCode</span>
+                <span class="n">desc</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">description</span>
+
+                <span class="c1"># Evennia extra logging</span>
+                <span class="n">desc</span> <span class="o">+=</span> <span class="s2">&quot; (error logged on other side)&quot;</span>
+                <span class="n">_get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AMP caught exception (</span><span class="si">{</span><span class="n">desc</span><span class="si">}</span><span class="s2">):</span><span class="se">\n</span><span class="si">{</span><span class="n">error</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">error</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">fatal</span><span class="p">:</span>
+                    <span class="n">errorBox</span> <span class="o">=</span> <span class="n">amp</span><span class="o">.</span><span class="n">QuitBox</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">errorBox</span> <span class="o">=</span> <span class="n">amp</span><span class="o">.</span><span class="n">AmpBox</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">errorBox</span> <span class="o">=</span> <span class="n">amp</span><span class="o">.</span><span class="n">QuitBox</span><span class="p">()</span>
+                <span class="n">_get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>  <span class="c1"># server-side logging if unhandled error</span>
+                <span class="n">code</span> <span class="o">=</span> <span class="n">UNKNOWN_ERROR_CODE</span>
+                <span class="n">desc</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;Unknown Error&quot;</span>
+            <span class="n">errorBox</span><span class="p">[</span><span class="n">ERROR</span><span class="p">]</span> <span class="o">=</span> <span class="n">box</span><span class="p">[</span><span class="n">ASK</span><span class="p">]</span>
+            <span class="n">errorBox</span><span class="p">[</span><span class="n">ERROR_DESCRIPTION</span><span class="p">]</span> <span class="o">=</span> <span class="n">desc</span>
+            <span class="n">errorBox</span><span class="p">[</span><span class="n">ERROR_CODE</span><span class="p">]</span> <span class="o">=</span> <span class="n">code</span>
+            <span class="k">return</span> <span class="n">errorBox</span>
+        <span class="n">deferred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dispatchCommand</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ASK</span> <span class="ow">in</span> <span class="n">box</span><span class="p">:</span>
+            <span class="n">deferred</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="n">formatAnswer</span><span class="p">,</span> <span class="n">formatError</span><span class="p">)</span>
+            <span class="n">deferred</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_safeEmit</span><span class="p">)</span>
+        <span class="n">deferred</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unhandledError</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AMPMultiConnectionProtocol.dataReceived"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol.dataReceived">[docs]</a>    <span class="k">def</span> <span class="nf">dataReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle non-AMP messages, such as HTTP communication.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># print(&quot;dataReceived: {}&quot;.format(data))</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">NUL</span><span class="p">:</span>
+            <span class="c1"># an AMP communication</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">!=</span> <span class="n">NULNUL</span><span class="p">:</span>
+                <span class="c1"># an incomplete AMP box means more batches are forthcoming.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">multibatches</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">super</span><span class="p">(</span><span class="n">AMPMultiConnectionProtocol</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">dataReceived</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">_get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span>
+                    <span class="s2">&quot;Discarded incoming partial (packed) data (len </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">multibatches</span><span class="p">:</span>
+            <span class="c1"># invalid AMP, but we have a pending multi-batch that is not yet complete</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">==</span> <span class="n">NULNUL</span><span class="p">:</span>
+                <span class="c1"># end of existing multibatch</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">multibatches</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">multibatches</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">super</span><span class="p">(</span><span class="n">AMPMultiConnectionProtocol</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">dataReceived</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">_get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span>
+                    <span class="s2">&quot;Discarded incoming multi-batch (packed) data (len </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># not an AMP communication, return warning</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">_HTTP_WARNING</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">loseConnection</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;HTTP received (the AMP port should not receive http, only AMP!) </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AMPMultiConnectionProtocol.makeConnection"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol.makeConnection">[docs]</a>    <span class="k">def</span> <span class="nf">makeConnection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transport</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Swallow connection log message here. Copied from original</span>
+<span class="sd">        in the amp protocol.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># copied from original, removing the log message</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ampInitialized</span><span class="p">:</span>
+            <span class="n">amp</span><span class="o">.</span><span class="n">AMP</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transportPeer</span> <span class="o">=</span> <span class="n">transport</span><span class="o">.</span><span class="n">getPeer</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transportHost</span> <span class="o">=</span> <span class="n">transport</span><span class="o">.</span><span class="n">getHost</span><span class="p">()</span>
+        <span class="n">amp</span><span class="o">.</span><span class="n">BinaryBoxProtocol</span><span class="o">.</span><span class="n">makeConnection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transport</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AMPMultiConnectionProtocol.connectionMade"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol.connectionMade">[docs]</a>    <span class="k">def</span> <span class="nf">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is called when an AMP connection is (re-)established. AMP calls it on both sides.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># print(&quot;connectionMade: {}&quot;.format(self))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">broadcasts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AMPMultiConnectionProtocol.connectionLost"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol.connectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We swallow connection errors here. The reason is that during a</span>
+<span class="sd">        normal reload/shutdown there will almost always be cases where</span>
+<span class="sd">        either the portal or server shuts down before a message has</span>
+<span class="sd">        returned its (empty) return, triggering a connectionLost error</span>
+<span class="sd">        that is irrelevant. If a true connection error happens, the</span>
+<span class="sd">        portal will continuously try to reconnect, showing the problem</span>
+<span class="sd">        that way.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># print(&quot;ConnectionLost: {}: {}&quot;.format(self, reason))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">broadcasts</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+    <span class="c1"># Error handling</span>
+
+<div class="viewcode-block" id="AMPMultiConnectionProtocol.errback"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol.errback">[docs]</a>    <span class="k">def</span> <span class="nf">errback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Error callback.</span>
+<span class="sd">        Handles errors to avoid dropping connections on server tracebacks.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            err (Failure): Deferred error instance.</span>
+<span class="sd">            info (str): Error string.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">err</span><span class="o">.</span><span class="n">trap</span><span class="p">(</span><span class="ne">Exception</span><span class="p">)</span>
+        <span class="n">_get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span>
+            <span class="s2">&quot;AMP Error from </span><span class="si">{info}</span><span class="s2">: </span><span class="si">{trcbck}</span><span class="s2"> </span><span class="si">{err}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span> <span class="n">trcbck</span><span class="o">=</span><span class="n">err</span><span class="o">.</span><span class="n">getTraceback</span><span class="p">(),</span> <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="o">.</span><span class="n">getErrorMessage</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="AMPMultiConnectionProtocol.data_in"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol.data_in">[docs]</a>    <span class="k">def</span> <span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packed_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process incoming packed data.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            packed_data (bytes): Pickled data.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            unpaced_data (any): Unpickled package</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">loads</span><span class="p">(</span><span class="n">packed_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">msg</span></div>
+
+<div class="viewcode-block" id="AMPMultiConnectionProtocol.broadcast"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol.broadcast">[docs]</a>    <span class="k">def</span> <span class="nf">broadcast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">sessid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send data across the wire to all connections.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            command (AMP Command): A protocol send command.</span>
+<span class="sd">            sessid (int): A unique Session id.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            deferred (deferred or None): A deferred with an errback.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Data will be sent across the wire pickled as a tuple</span>
+<span class="sd">            (sessid, kwargs).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">deferreds</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># print(&quot;broadcast: {} {}: {}&quot;.format(command, sessid, kwargs))</span>
+
+        <span class="k">for</span> <span class="n">protcl</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">broadcasts</span><span class="p">:</span>
+            <span class="n">deferreds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">protcl</span><span class="o">.</span><span class="n">callRemote</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errback</span><span class="p">,</span> <span class="n">command</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">DeferredList</span><span class="p">(</span><span class="n">deferreds</span><span class="p">)</span></div>
+
+    <span class="c1"># generic function send/recvs</span>
+
+<div class="viewcode-block" id="AMPMultiConnectionProtocol.send_FunctionCall"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol.send_FunctionCall">[docs]</a>    <span class="k">def</span> <span class="nf">send_FunctionCall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modulepath</span><span class="p">,</span> <span class="n">functionname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Access method called by either process. This will call an arbitrary</span>
+<span class="sd">        function on the other process (On Portal if calling from Server and</span>
+<span class="sd">        vice versa).</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">            modulepath (str) - python path to module holding function to call</span>
+<span class="sd">            functionname (str) - name of function in given module</span>
+<span class="sd">            *args, **kwargs will be used as arguments/keyword args for the</span>
+<span class="sd">                            remote function call</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A deferred that fires with the return value of the remote</span>
+<span class="sd">            function call</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">callRemote</span><span class="p">(</span>
+                <span class="n">FunctionCall</span><span class="p">,</span>
+                <span class="n">module</span><span class="o">=</span><span class="n">modulepath</span><span class="p">,</span>
+                <span class="n">function</span><span class="o">=</span><span class="n">functionname</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="n">dumps</span><span class="p">(</span><span class="n">args</span><span class="p">),</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="n">dumps</span><span class="p">(</span><span class="n">kwargs</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]))</span>
+            <span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errback</span><span class="p">,</span> <span class="s2">&quot;FunctionCall&quot;</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="AMPMultiConnectionProtocol.receive_functioncall"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol.receive_functioncall">[docs]</a>    <span class="nd">@FunctionCall</span><span class="o">.</span><span class="n">responder</span>
+    <span class="nd">@catch_traceback</span>
+    <span class="k">def</span> <span class="nf">receive_functioncall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">func_args</span><span class="p">,</span> <span class="n">func_kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This allows Portal- and Server-process to call an arbitrary</span>
+<span class="sd">        function in the other process. It is intended for use by</span>
+<span class="sd">        plugin modules.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            module (str or module): The module containing the</span>
+<span class="sd">                `function` to call.</span>
+<span class="sd">            function (str): The name of the function to call in</span>
+<span class="sd">                `module`.</span>
+<span class="sd">            func_args (str): Pickled args tuple for use in `function` call.</span>
+<span class="sd">            func_kwargs (str): Pickled kwargs dict for use in `function` call.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">loads</span><span class="p">(</span><span class="n">func_args</span><span class="p">)</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="n">loads</span><span class="p">(</span><span class="n">func_kwargs</span><span class="p">)</span>
+
+        <span class="c1"># call the function (don&#39;t catch tracebacks here)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">variable_from_module</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">function</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Deferred</span><span class="p">):</span>
+            <span class="c1"># if result is a deferred, attach handler to properly</span>
+            <span class="c1"># wrap the return value</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">dumps</span><span class="p">(</span><span class="n">r</span><span class="p">)})</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">)}</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="amp.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.amp</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

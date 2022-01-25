@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.server.session &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.session</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.server.session">
+<span id="evennia-server-session"></span><h1>evennia.server.session<a class="headerlink" href="#module-evennia.server.session" title="Permalink to this headline">¶</a></h1>
+<p>This module defines a generic session class. All connection instances
+(both on Portal and Server side) should inherit from this class.</p>
+<dl class="py class">
+<dt id="evennia.server.session.Session">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.session.</code><code class="sig-name descname">Session</code><a class="reference internal" href="../_modules/evennia/server/session.html#Session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class represents a player’s session and is a template for
+both portal- and server-side sessions.</p>
+<p>Each connection will see two session instances created:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>A Portal session. This is customized for the respective connection
+protocols that Evennia supports, like Telnet, SSH etc. The Portal
+session must call init_session() as part of its initialization. The
+respective hook methods should be connected to the methods unique
+for the respective protocol so that there is a unified interface
+to Evennia.</p></li>
+<li><p>A Server session. This is the same for all connected accounts,
+regardless of how they connect.</p></li>
+</ol>
+</div></blockquote>
+<p>The Portal and Server have their own respective sessionhandlers. These
+are synced whenever new connections happen or the Server restarts etc,
+which means much of the same information must be stored in both places
+e.g. the portal can re-sync with the server when the server reboots.</p>
+<dl class="py method">
+<dt id="evennia.server.session.Session.init_session">
+<code class="sig-name descname">init_session</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">protocol_key</span></em>, <em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">sessionhandler</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.init_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.init_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the Session. This should be called by the protocol when
+a new session is established.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>protocol_key</strong> (<em>str</em>) – By default, one of ‘telnet’, ‘telnet/ssl’, ‘ssh’,
+‘webclient/websocket’ or ‘webclient/ajax’.</p></li>
+<li><p><strong>address</strong> (<em>str</em>) – Client address.</p></li>
+<li><p><strong>sessionhandler</strong> (<a class="reference internal" href="evennia.server.sessionhandler.html#evennia.server.sessionhandler.SessionHandler" title="evennia.server.sessionhandler.SessionHandler"><em>SessionHandler</em></a>) – Reference to the
+main sessionhandler instance.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.session.Session.get_sync_data">
+<code class="sig-name descname">get_sync_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.get_sync_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.get_sync_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all data relevant to sync the session.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>syncdata</strong> (<em>dict</em>) – All syncdata values, based on
+the keys given by self._attrs_to_sync.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.session.Session.load_sync_data">
+<code class="sig-name descname">load_sync_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sessdata</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.load_sync_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.load_sync_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a session dictionary, as created by get_sync_data, and
+loads it into the correct properties of the session.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sessdata</strong> (<em>dict</em>) – Session data dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.session.Session.at_sync">
+<code class="sig-name descname">at_sync</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.at_sync"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.at_sync" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called after a session has been fully synced (including
+secondary operations such as setting self.account based
+on uid etc).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.session.Session.disconnect">
+<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reason</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>generic hook called from the outside to disconnect this session
+should be connected to the protocols actual disconnect mechanism.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>reason</strong> (<em>str</em>) – Eventual text motivating the disconnect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.session.Session.data_out">
+<code class="sig-name descname">data_out</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.data_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.data_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic hook for sending data out through the protocol. Server
+protocols can use this right away. Portal sessions
+should overload this to format/handle the outgoing data as needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>any</em>) – Other data to the protocol.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.session.Session.data_in">
+<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.data_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook for protocols to send incoming data to the engine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>any</em>) – Other data from the protocol.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.server.session.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.server.session.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.server.session.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.session</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

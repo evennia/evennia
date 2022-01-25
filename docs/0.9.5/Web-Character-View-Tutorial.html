@@ -1,0 +1,312 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Web Character View Tutorial &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Web Character View Tutorial</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="web-character-view-tutorial">
+<h1>Web Character View Tutorial<a class="headerlink" href="#web-character-view-tutorial" title="Permalink to this headline">¶</a></h1>
+<p><strong>Before doing this tutorial you will probably want to read the intro in <a class="reference internal" href="Web-Tutorial.html"><span class="doc std std-doc">Basic Web tutorial</span></a>.</strong></p>
+<p>In this tutorial we will create a web page that displays the stats of a game character. For this,
+and all other pages we want to make specific to our game, we’ll need to create our own Django “app”</p>
+<p>We’ll call our app <code class="docutils literal notranslate"><span class="pre">character</span></code>, since it will be dealing with character information. From your game
+dir, run</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia startapp character
+</pre></div>
+</div>
+<p>This will create a directory named <code class="docutils literal notranslate"><span class="pre">character</span></code> in the root of your game dir. It contains all basic
+files that a Django app needs. To keep <code class="docutils literal notranslate"><span class="pre">mygame</span></code> well ordered, move it to your <code class="docutils literal notranslate"><span class="pre">mygame/web/</span></code>
+directory instead:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mv character web/
+</pre></div>
+</div>
+<p>Note that we will not edit all files in this new directory, many of the generated files are outside
+the scope of this tutorial.</p>
+<p>In order for Django to find our new web app, we’ll need to add it to the <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code> setting.
+Evennia’s default installed apps are already set, so in <code class="docutils literal notranslate"><span class="pre">server/conf/settings.py</span></code>, we’ll just extend
+them:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39;web.character&#39;</span><span class="p">,)</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>Note: That end comma is important. It makes sure that Python interprets the addition as a tuple
+instead of a string.</p>
+</div></blockquote>
+<p>The first thing we need to do is to create a <em>view</em> and an <em>URL pattern</em> to point to it. A view is a
+function that generates the web page that a visitor wants to see, while the URL pattern lets Django
+know what URL should trigger the view. The pattern may also provide some information of its own as
+we shall see.</p>
+<p>Here is our <code class="docutils literal notranslate"><span class="pre">character/urls.py</span></code> file (<strong>Note</strong>: you may have to create this file if a blank one
+wasn’t generated for you):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># URL patterns for the character app</span>
+
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">web.character.views</span> <span class="kn">import</span> <span class="n">sheet</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^sheet/(?P&lt;object_id&gt;\d+)/$&#39;</span><span class="p">,</span> <span class="n">sheet</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;sheet&quot;</span><span class="p">)</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>This file contains all of the URL patterns for the application. The <code class="docutils literal notranslate"><span class="pre">url</span></code> function in the
+<code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code> list are given three arguments. The first argument is a pattern-string used to
+identify which URLs are valid. Patterns are specified as <em>regular expressions</em>. Regular expressions
+are used to match strings and are written in a special, very compact, syntax. A detailed description
+of regular expressions is beyond this tutorial but you can learn more about them
+<a class="reference external" href="https://docs.python.org/2/howto/regex.html">here</a>. For now, just accept that this regular
+expression requires that the visitor’s URL looks something like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sheet</span><span class="o">/</span><span class="mi">123</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>That is, <code class="docutils literal notranslate"><span class="pre">sheet/</span></code> followed by a number, rather than some other possible URL pattern. We will
+interpret this number as object ID. Thanks to how the regular expression is formulated, the pattern
+recognizer stores the number in a variable called <code class="docutils literal notranslate"><span class="pre">object_id</span></code>. This will be passed to the view (see
+below). We add the imported view function (<code class="docutils literal notranslate"><span class="pre">sheet</span></code>) in the second argument. We also add the <code class="docutils literal notranslate"><span class="pre">name</span></code>
+keyword to identify the URL pattern itself. You should always name your URL patterns, this makes
+them easy to refer to in html templates using the <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">url</span> <span class="pre">%}</span></code> tag (but we won’t get more into that
+in this tutorial).</p>
+<blockquote>
+<div><p>Security Note: Normally, users do not have the ability to see object IDs within the game (it’s
+restricted to superusers only). Exposing the game’s object IDs to the public like this enables
+griefers to perform what is known as an <a class="reference external" href="http://www.sans.edu/research/security-laboratory/article/attacks-browsing">account enumeration
+attack</a> in the efforts of
+hijacking your superuser account. Consider this: in every Evennia installation, there are two
+objects that we can <em>always</em> expect to exist and have the same object IDs– Limbo (#2) and the
+superuser you create in the beginning (#1). Thus, the griefer can get 50% of the information they
+need to hijack the admin account (the admin’s username) just by navigating to <code class="docutils literal notranslate"><span class="pre">sheet/1</span></code>!</p>
+</div></blockquote>
+<p>Next we create <code class="docutils literal notranslate"><span class="pre">views.py</span></code>, the view file that <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> refers to.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Views for our character app</span>
+
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">Http404</span>
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
+<span class="kn">from</span> <span class="nn">evennia.utils.search</span> <span class="kn">import</span> <span class="n">object_search</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span>
+
+<span class="k">def</span> <span class="nf">sheet</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">object_id</span><span class="p">):</span>
+    <span class="n">object_id</span> <span class="o">=</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="n">object_id</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">character</span> <span class="o">=</span> <span class="n">object_search</span><span class="p">(</span><span class="n">object_id</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">Http404</span><span class="p">(</span><span class="s2">&quot;I couldn&#39;t find a character with that ID.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">Http404</span><span class="p">(</span><span class="s2">&quot;I couldn&#39;t find a character with that ID. &quot;</span>
+                      <span class="s2">&quot;Found something else instead.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;character/sheet.html&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;character&#39;</span><span class="p">:</span> <span class="n">character</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>As explained earlier, the URL pattern parser in <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> parses the URL and passes <code class="docutils literal notranslate"><span class="pre">object_id</span></code> to
+our view function <code class="docutils literal notranslate"><span class="pre">sheet</span></code>. We do a database search for the object using this number. We also make
+sure such an object exists and that it is actually a Character. The view function is also handed a
+<code class="docutils literal notranslate"><span class="pre">request</span></code> object. This gives us information about the request, such as if a logged-in user viewed it</p>
+<ul class="simple">
+<li><p>we won’t use that information here but it is good to keep in mind.</p></li>
+</ul>
+<p>On the last line, we call the <code class="docutils literal notranslate"><span class="pre">render</span></code> function. Apart from the <code class="docutils literal notranslate"><span class="pre">request</span></code> object, the <code class="docutils literal notranslate"><span class="pre">render</span></code>
+function takes a path to an html template and a dictionary with extra data you want to pass into
+said template. As extra data we pass the Character object we just found. In the template it will be
+available as the variable “character”.</p>
+<p>The html template is created as <code class="docutils literal notranslate"><span class="pre">templates/character/sheet.html</span></code> under your <code class="docutils literal notranslate"><span class="pre">character</span></code> app folder.
+You may have to manually create both <code class="docutils literal notranslate"><span class="pre">template</span></code> and its subfolder <code class="docutils literal notranslate"><span class="pre">character</span></code>. Here’s the template
+to create:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>{% extends &quot;base.html&quot; %}
+{% block content %}
+
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>{{ character.name }}<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>{{ character.db.desc }}<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>Stats<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">table</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">thead</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>Stat<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>Value<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">thead</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">tbody</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Strength<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ character.db.str }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Intelligence<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ character.db.int }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Speed<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ character.db.spd }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">tbody</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">table</span><span class="p">&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>Skills<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+      {% for skill in character.db.skills %}
+        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>{{ skill }}<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+      {% empty %}
+        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>This character has no skills yet.<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+      {% endfor %}
+    <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+
+    {% if character.db.approved %}
+      <span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;success&quot;</span><span class="p">&gt;</span>This character has been approved!<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+    {% else %}
+      <span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;warning&quot;</span><span class="p">&gt;</span>This character has not yet been approved!<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+    {% endif %}
+{% endblock %}
+</pre></div>
+</div>
+<p>In Django templates, <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">...</span> <span class="pre">%}</span></code> denotes special in-template “functions” that Django understands.
+The <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">...</span> <span class="pre">}}</span></code> blocks work as “slots”. They are replaced with whatever value the code inside the
+block returns.</p>
+<p>The first line, <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">extends</span> <span class="pre">&quot;base.html&quot;</span> <span class="pre">%}</span></code>, tells Django that this template extends the base
+template that Evennia is using. The base template is provided by the theme. Evennia comes with the
+open-source third-party theme <code class="docutils literal notranslate"><span class="pre">prosimii</span></code>. You can find it and its <code class="docutils literal notranslate"><span class="pre">base.html</span></code> in
+<code class="docutils literal notranslate"><span class="pre">evennia/web/templates/prosimii</span></code>. Like other templates, these can be overwritten.</p>
+<p>The next line is <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">block</span> <span class="pre">content</span> <span class="pre">%}</span></code>. The <code class="docutils literal notranslate"><span class="pre">base.html</span></code> file has <code class="docutils literal notranslate"><span class="pre">block</span></code>s, which are placeholders
+that templates can extend. The main block, and the one we use, is named <code class="docutils literal notranslate"><span class="pre">content</span></code>.</p>
+<p>We can access the <code class="docutils literal notranslate"><span class="pre">character</span></code> variable anywhere in the template because we passed it in the <code class="docutils literal notranslate"><span class="pre">render</span></code>
+call at the end of <code class="docutils literal notranslate"><span class="pre">view.py</span></code>. That means we also have access to the Character’s <code class="docutils literal notranslate"><span class="pre">db</span></code> attributes,
+much like you would in normal Python code. You don’t have the ability to call functions with
+arguments in the template– in fact, if you need to do any complicated logic, you should do it in
+<code class="docutils literal notranslate"><span class="pre">view.py</span></code> and pass the results as more variables to the template. But you still have a great deal of
+flexibility in how you display the data.</p>
+<p>We can do a little bit of logic here as well. We use the <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">for</span> <span class="pre">%}</span> <span class="pre">...</span> <span class="pre">{%</span> <span class="pre">endfor</span> <span class="pre">%}</span></code> and <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">if</span> <span class="pre">%}</span> <span class="pre">...</span> <span class="pre">{%</span> <span class="pre">else</span> <span class="pre">%}</span> <span class="pre">...</span> <span class="pre">{%</span> <span class="pre">endif</span> <span class="pre">%}</span></code> structures to change how the template renders depending on how many
+skills the user has, or if the user is approved (assuming your game has an approval system).</p>
+<p>The last file we need to edit is the master URLs file. This is needed in order to smoothly integrate
+the URLs from your new <code class="docutils literal notranslate"><span class="pre">character</span></code> app with the URLs from Evennia’s existing pages. Find the file
+<code class="docutils literal notranslate"><span class="pre">web/urls.py</span></code> and update its <code class="docutils literal notranslate"><span class="pre">patterns</span></code> list as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># web/urls.py</span>
+
+<span class="n">custom_patterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^character/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">&#39;web.character.urls&#39;</span><span class="p">))</span>
+   <span class="p">]</span>
+</pre></div>
+</div>
+<p>Now reload the server with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">reload</span></code> and visit the page in your browser. If you haven’t
+changed your defaults, you should be able to find the sheet for character <code class="docutils literal notranslate"><span class="pre">#1</span></code> at
+<code class="docutils literal notranslate"><span class="pre">http://localhost:4001/character/sheet/1/</span></code></p>
+<p>Try updating the stats in-game and refresh the page in your browser. The results should show
+immediately.</p>
+<p>As an optional final step, you can also change your character typeclass to have a method called
+‘get_absolute_url’.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># typeclasses/characters.py</span>
+
+    <span class="c1"># inside Character</span>
+    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
+        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;character:sheet&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;object_id&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Doing so will give you a ‘view on site’ button in the top right of the Django Admin Objects
+changepage that links to your new character sheet, and allow you to get the link to a character’s
+page by using  in any template where you have a given object.</p>
+<p><em>Now that you’ve made a basic page and app with Django, you may want to read the full Django
+tutorial to get a better idea of what it can do. <a class="reference external" href="https://docs.djangoproject.com/en/1.8/intro/tutorial01/">You can find Django’s tutorial
+here</a>.</em></p>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Web-Character-View-Tutorial.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Web-Character-View-Tutorial.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Web Character View Tutorial</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -1517,7 +1517,7 @@
         <span class="c1"># for the shell pattern we make sure we have matching $N on both sides</span>
         <span class="n">pattern_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">_RE_NICK_RAW_ARG</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">pattern</span><span class="p">)]</span>
         <span class="n">replacement_args</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="k">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">_RE_NICK_RAW_ARG</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">replacement</span><span class="p">)]</span>
+            <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">_RE_NICK_RAW_ARG</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">replacement</span><span class="p">)]</span>
         <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">pattern_args</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">replacement_args</span><span class="p">):</span>
             <span class="c1"># We don&#39;t have the same amount of argN/$N tags in input/output.</span>
             <span class="k">raise</span> <span class="n">NickTemplateInvalid</span><span class="p">(</span><span class="s2">&quot;Nicks: Both in/out-templates must contain the same $N tags.&quot;</span><span class="p">)</span>
@@ -1759,6 +1759,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="attributes.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

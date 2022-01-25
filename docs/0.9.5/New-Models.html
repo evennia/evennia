@@ -1,0 +1,362 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>New Models &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">New Models</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="new-models">
+<h1>New Models<a class="headerlink" href="#new-models" title="Permalink to this headline">¶</a></h1>
+<p><em>Note: This is considered an advanced topic.</em></p>
+<p>Evennia offers many convenient ways to store object data, such as via Attributes or Scripts. This is
+sufficient for most use cases. But if you aim to build a large stand-alone system, trying to squeeze
+your storage requirements into those may be more complex than you bargain for. Examples may be to
+store guild data for guild members to be able to change, tracking the flow of money across a game-
+wide economic system or implement other custom game systems that requires the storage of custom data
+in a quickly accessible way. Whereas <a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tags</span></a> or <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a> can handle many situations,
+sometimes things may be easier to handle by adding your own database model.</p>
+<section id="overview-of-database-tables">
+<h2>Overview of database tables<a class="headerlink" href="#overview-of-database-tables" title="Permalink to this headline">¶</a></h2>
+<p>SQL-type databases (which is what Evennia supports) are basically highly optimized systems for
+retrieving text stored in tables. A table may look like this</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>     <span class="nb">id</span> <span class="o">|</span> <span class="n">db_key</span>    <span class="o">|</span> <span class="n">db_typeclass_path</span>          <span class="o">|</span> <span class="n">db_permissions</span>  <span class="o">...</span>
+    <span class="o">------------------------------------------------------------------</span>
+     <span class="mi">1</span>  <span class="o">|</span>  <span class="n">Griatch</span>  <span class="o">|</span> <span class="n">evennia</span><span class="o">.</span><span class="n">DefaultCharacter</span>   <span class="o">|</span> <span class="n">Developers</span>       <span class="o">...</span>
+     <span class="mi">2</span>  <span class="o">|</span>  <span class="n">Rock</span>     <span class="o">|</span> <span class="n">evennia</span><span class="o">.</span><span class="n">DefaultObject</span>      <span class="o">|</span> <span class="kc">None</span>            <span class="o">...</span>
+</pre></div>
+</div>
+<p>Each line is considerably longer in your database. Each column is referred to as a “field” and every
+row is a separate object. You can check this out for yourself. If you use the default sqlite3
+database, go to your game folder and run</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia dbshell
+</pre></div>
+</div>
+<p>You will drop into the database shell. While there, try:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> sqlite&gt; .help       # view help
+
+ sqlite&gt; .tables     # view all tables
+
+ # show the table field names for objects_objectdb
+ sqlite&gt; .schema objects_objectdb
+
+ # show the first row from the objects_objectdb table
+ sqlite&gt; select * from objects_objectdb limit 1;
+
+ sqlite&gt; .exit
+</pre></div>
+</div>
+<p>Evennia uses <a class="reference external" href="https://docs.djangoproject.com">Django</a>, which abstracts away the database SQL
+manipulation and allows you to search and manipulate your database entirely in Python. Each database
+table is in Django represented by a class commonly called a <em>model</em> since it describes the look of
+the table. In Evennia, Objects, Scripts, Channels etc are examples of Django models that we then
+extend and build on.</p>
+</section>
+<section id="adding-a-new-database-table">
+<h2>Adding a new database table<a class="headerlink" href="#adding-a-new-database-table" title="Permalink to this headline">¶</a></h2>
+<p>Here is how you add your own database table/models:</p>
+<ol>
+<li><p>In Django lingo, we will create a new “application” - a subsystem under the main Evennia program.
+For this example we’ll call it “myapp”. Run the following (you need to have a working Evennia
+running before you do this, so make sure you have run the steps in [Getting Started](Getting-
+Started) first):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> cd mygame/world
+ evennia startapp myapp
+</pre></div>
+</div>
+</li>
+<li><p>A new folder <code class="docutils literal notranslate"><span class="pre">myapp</span></code> is created. “myapp” will also be the name (the “app label”) from now on. We
+chose to put it in the <code class="docutils literal notranslate"><span class="pre">world/</span></code> subfolder here, but you could put it in the root of your <code class="docutils literal notranslate"><span class="pre">mygame</span></code> if
+that makes more sense.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">myapp</span></code> folder contains a few empty default files. What we are
+interested in for now is <code class="docutils literal notranslate"><span class="pre">models.py</span></code>. In <code class="docutils literal notranslate"><span class="pre">models.py</span></code> you define your model(s). Each model will be a
+table in the database. See the next section and don’t continue until you have added the models you
+want.</p></li>
+<li><p>You now need to tell Evennia that the models of your app should be a part of your database
+scheme. Add this line to your <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>file (make sure to use the path where
+you put <code class="docutils literal notranslate"><span class="pre">myapp</span></code> and don’t forget the comma at the end of the tuple):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="n">INSTALLED_APPS</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;world.myapp&quot;</span><span class="p">,</span> <span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>From <code class="docutils literal notranslate"><span class="pre">mygame/</span></code>, run</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia makemigrations myapp
+ evennia migrate
+</pre></div>
+</div>
+</li>
+</ol>
+<p>This will add your new database table to the database. If you have put your game under version
+control (if not, <a class="reference internal" href="Version-Control.html"><span class="doc std std-doc">you should</span></a>), don’t forget to <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span> <span class="pre">myapp/*</span></code> to add all items
+to version control.</p>
+</section>
+<section id="defining-your-models">
+<h2>Defining your models<a class="headerlink" href="#defining-your-models" title="Permalink to this headline">¶</a></h2>
+<p>A Django <em>model</em> is the Python representation of a database table. It can be handled like any other
+Python class. It defines <em>fields</em> on itself, objects of a special type. These become the “columns”
+of the database table. Finally, you create new instances of the model to add new rows to the
+database.</p>
+<p>We won’t describe all aspects of Django models here, for that we refer to the vast <a class="reference external" href="https://docs.djangoproject.com/en/2.2/topics/db/models/">Django
+documentation</a> on the subject. Here is a
+(very) brief example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">MyDataStore</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="s2">&quot;A simple model for storing some data&quot;</span>
+    <span class="n">db_key</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">db_category</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">db_text</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># we need this one if we want to be</span>
+    <span class="c1"># able to store this in an Evennia Attribute!</span>
+    <span class="n">db_date_created</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="s1">&#39;date created&#39;</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                            <span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We create four fields: two character fields of limited length and one text field which has no
+maximum length. Finally we create a field containing the current time of us creating this object.</p>
+<blockquote>
+<div><p>The <code class="docutils literal notranslate"><span class="pre">db_date_created</span></code> field, with exactly this name, is <em>required</em> if you want to be able to store
+instances of your custom model in an Evennia <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attribute</span></a>. It will automatically be set
+upon creation and can after that not be changed. Having this field will allow you to do e.g.
+<code class="docutils literal notranslate"><span class="pre">obj.db.myinstance</span> <span class="pre">=</span> <span class="pre">mydatastore</span></code>. If you know you’ll never store your model instances in Attributes
+the <code class="docutils literal notranslate"><span class="pre">db_date_created</span></code> field is optional.</p>
+</div></blockquote>
+<p>You don’t <em>have</em> to start field names with <code class="docutils literal notranslate"><span class="pre">db_</span></code>, this is an Evennia convention. It’s nevertheless
+recommended that you do use <code class="docutils literal notranslate"><span class="pre">db_</span></code>, partly for clarity and consistency with Evennia (if you ever want
+to share your code) and partly for the case of you later deciding to use Evennia’s
+<code class="docutils literal notranslate"><span class="pre">SharedMemoryModel</span></code> parent down the line.</p>
+<p>The field keyword <code class="docutils literal notranslate"><span class="pre">db_index</span></code> creates a <em>database index</em> for this field, which allows quicker
+lookups, so it’s recommended to put it on fields you know you’ll often use in queries. The
+<code class="docutils literal notranslate"><span class="pre">null=True</span></code> and <code class="docutils literal notranslate"><span class="pre">blank=True</span></code> keywords means that these fields may be left empty or set to the empty
+string without the database complaining. There are many other field types and keywords to define
+them, see django docs for more info.</p>
+<p>Similar to using <a class="reference external" href="https://docs.djangoproject.com/en/2.2/howto/legacy-databases/">django-admin</a> you
+are able to do <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">inspectdb</span></code> to get an automated listing of model information for an existing
+database.  As is the case with any model generating tool you should only use this as a starting
+point for your models.</p>
+</section>
+<section id="creating-a-new-model-instance">
+<h2>Creating a new model instance<a class="headerlink" href="#creating-a-new-model-instance" title="Permalink to this headline">¶</a></h2>
+<p>To create a new row in your table, you instantiate the model and then call its <code class="docutils literal notranslate"><span class="pre">save()</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia.myapp</span> <span class="kn">import</span> <span class="n">MyDataStore</span>
+
+     <span class="n">new_datastore</span> <span class="o">=</span> <span class="n">MyDataStore</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;LargeSword&quot;</span><span class="p">,</span>
+                                 <span class="n">db_category</span><span class="o">=</span><span class="s2">&quot;weapons&quot;</span><span class="p">,</span>
+                                 <span class="n">db_text</span><span class="o">=</span><span class="s2">&quot;This is a huge weapon!&quot;</span><span class="p">)</span>
+     <span class="c1"># this is required to actually create the row in the database!</span>
+     <span class="n">new_datastore</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+</pre></div>
+</div>
+<p>Note that the <code class="docutils literal notranslate"><span class="pre">db_date_created</span></code> field of the model is not specified. Its flag <code class="docutils literal notranslate"><span class="pre">at_now_add=True</span></code>
+makes sure to set it to the current date when the object is created (it can also not be changed
+further after creation).</p>
+<p>When you update an existing object with some new field value, remember that you have to save the
+object afterwards, otherwise the database will not update:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">my_datastore</span><span class="o">.</span><span class="n">db_key</span> <span class="o">=</span> <span class="s2">&quot;Larger Sword&quot;</span>
+    <span class="n">my_datastore</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Evennia’s normal models don’t need to explicitly save, since they are based on <code class="docutils literal notranslate"><span class="pre">SharedMemoryModel</span></code>
+rather than the raw django model. This is covered in the next section.</p>
+</section>
+<section id="using-the-sharedmemorymodel-parent">
+<h2>Using the <code class="docutils literal notranslate"><span class="pre">SharedMemoryModel</span></code> parent<a class="headerlink" href="#using-the-sharedmemorymodel-parent" title="Permalink to this headline">¶</a></h2>
+<p>Evennia doesn’t base most of its models on the raw <code class="docutils literal notranslate"><span class="pre">django.db.models</span></code> but on the Evennia base model
+<code class="docutils literal notranslate"><span class="pre">evennia.utils.idmapper.models.SharedMemoryModel</span></code>. There are two main reasons for this:</p>
+<ol class="simple">
+<li><p>Ease of updating fields without having to explicitly call <code class="docutils literal notranslate"><span class="pre">save()</span></code></p></li>
+<li><p>On-object memory persistence and database caching</p></li>
+</ol>
+<p>The first (and least important) point means that as long as you named your fields <code class="docutils literal notranslate"><span class="pre">db_*</span></code>, Evennia
+will automatically create field wrappers for them. This happens in the model’s
+<a class="reference external" href="http://en.wikibooks.org/wiki/Python_Programming/Metaclasses">Metaclass</a> so there is no speed
+penalty for this. The name of the wrapper will be the same name as the field, minus the <code class="docutils literal notranslate"><span class="pre">db_</span></code>
+prefix. So the <code class="docutils literal notranslate"><span class="pre">db_key</span></code> field will have a wrapper property named <code class="docutils literal notranslate"><span class="pre">key</span></code>. You can then do:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">my_datastore</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Larger Sword&quot;</span>
+</pre></div>
+</div>
+<p>and don’t have to explicitly call <code class="docutils literal notranslate"><span class="pre">save()</span></code> afterwards. The saving also happens in a more efficient
+way under the hood, updating only the field rather than the entire model using django optimizations.
+Note that if you were to manually add the property or method <code class="docutils literal notranslate"><span class="pre">key</span></code> to your model, this will be used
+instead of the automatic wrapper and allows you to fully customize access as needed.</p>
+<p>To explain the second and more important point, consider the following example using the default
+Django model parent:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">shield</span> <span class="o">=</span> <span class="n">MyDataStore</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;SmallShield&quot;</span><span class="p">)</span>
+    <span class="n">shield</span><span class="o">.</span><span class="n">cracked</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># where cracked is not a database field</span>
+</pre></div>
+</div>
+<p>And then later:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">shield</span> <span class="o">=</span> <span class="n">MyDataStore</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;SmallShield&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">shield</span><span class="o">.</span><span class="n">cracked</span><span class="p">)</span>  <span class="c1"># error!</span>
+</pre></div>
+</div>
+<p>The outcome of that last print statement is <em>undefined</em>! It could <em>maybe</em> randomly work but most
+likely you will get an <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> for not finding the <code class="docutils literal notranslate"><span class="pre">cracked</span></code> property. The reason is that
+<code class="docutils literal notranslate"><span class="pre">cracked</span></code> doesn’t represent an actual field in the database. It was just added at run-time and thus
+Django don’t care about it. When you retrieve your shield-match later there is <em>no</em> guarantee you
+will get back the <em>same Python instance</em> of the model where you defined <code class="docutils literal notranslate"><span class="pre">cracked</span></code>, even if you
+search for the same database object.</p>
+<p>Evennia relies heavily on on-model handlers and other dynamically created properties. So rather than
+using the vanilla Django models, Evennia uses <code class="docutils literal notranslate"><span class="pre">SharedMemoryModel</span></code>, which levies something called
+<em>idmapper</em>. The idmapper caches model instances so that we will always get the <em>same</em> instance back
+after the first lookup of a given object. Using idmapper, the above example would work fine and you
+could retrieve your <code class="docutils literal notranslate"><span class="pre">cracked</span></code> property at any time - until you rebooted when all non-persistent data
+goes.</p>
+<p>Using the idmapper is both more intuitive and more efficient <em>per object</em>; it leads to a lot less
+reading from disk. The drawback is that this system tends to be more memory hungry <em>overall</em>. So if
+you know that you’ll <em>never</em> need to add new properties to running instances or know that you will
+create new objects all the time yet rarely access them again (like for a log system), you are
+probably better off making “plain” Django models rather than using <code class="docutils literal notranslate"><span class="pre">SharedMemoryModel</span></code> and its
+idmapper.</p>
+<p>To use the idmapper and the field-wrapper functionality you just have to have your model classes
+inherit from <code class="docutils literal notranslate"><span class="pre">evennia.utils.idmapper.models.SharedMemoryModel</span></code> instead of from the default
+<code class="docutils literal notranslate"><span class="pre">django.db.models.Model</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="kn">import</span> <span class="n">SharedMemoryModel</span>
+
+<span class="k">class</span> <span class="nc">MyDataStore</span><span class="p">(</span><span class="n">SharedMemoryModel</span><span class="p">):</span>
+    <span class="c1"># the rest is the same as before, but db_* is important; these will</span>
+    <span class="c1"># later be settable as .key, .category, .text ...</span>
+    <span class="n">db_key</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">db_category</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">db_text</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">db_date_created</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="s1">&#39;date created&#39;</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                            <span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="searching-for-your-models">
+<h2>Searching for your models<a class="headerlink" href="#searching-for-your-models" title="Permalink to this headline">¶</a></h2>
+<p>To search your new custom database table you need to use its database <em>manager</em> to build a <em>query</em>.
+Note that even if you use <code class="docutils literal notranslate"><span class="pre">SharedMemoryModel</span></code> as described in the previous section, you have to use
+the actual <em>field names</em> in the query, not the wrapper name (so <code class="docutils literal notranslate"><span class="pre">db_key</span></code> and not just <code class="docutils literal notranslate"><span class="pre">key</span></code>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">world.myapp</span> <span class="kn">import</span> <span class="n">MyDataStore</span>
+
+     <span class="c1"># get all datastore objects exactly matching a given key</span>
+     <span class="n">matches</span> <span class="o">=</span> <span class="n">MyDataStore</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;Larger Sword&quot;</span><span class="p">)</span>
+     <span class="c1"># get all datastore objects with a key containing &quot;sword&quot;</span>
+     <span class="c1"># and having the category &quot;weapons&quot; (both ignoring upper/lower case)</span>
+     <span class="n">matches2</span> <span class="o">=</span> <span class="n">MyDataStore</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__icontains</span><span class="o">=</span><span class="s2">&quot;sword&quot;</span><span class="p">,</span>
+                                           <span class="n">db_category__iequals</span><span class="o">=</span><span class="s2">&quot;weapons&quot;</span><span class="p">)</span>
+     <span class="c1"># show the matching data (e.g. inside a command)</span>
+     <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches2</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">db_text</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See the <a class="reference external" href="https://docs.djangoproject.com/en/2.2/topics/db/queries/">Django query documentation</a> for a
+lot more information about querying the database.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">New Models</a><ul>
+<li><a class="reference internal" href="#overview-of-database-tables">Overview of database tables</a></li>
+<li><a class="reference internal" href="#adding-a-new-database-table">Adding a new database table</a></li>
+<li><a class="reference internal" href="#defining-your-models">Defining your models</a></li>
+<li><a class="reference internal" href="#creating-a-new-model-instance">Creating a new model instance</a></li>
+<li><a class="reference internal" href="#using-the-sharedmemorymodel-parent">Using the <code class="docutils literal notranslate"><span class="pre">SharedMemoryModel</span></code> parent</a></li>
+<li><a class="reference internal" href="#searching-for-your-models">Searching for your models</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/New-Models.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="New-Models.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">New Models</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

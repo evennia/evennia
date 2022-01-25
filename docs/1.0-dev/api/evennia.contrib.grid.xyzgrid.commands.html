@@ -40,8 +40,308 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-contrib-grid-xyzgrid-commands">
-<h1>evennia.contrib.grid.xyzgrid.commands<a class="headerlink" href="#evennia-contrib-grid-xyzgrid-commands" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.contrib.grid.xyzgrid.commands">
+<span id="evennia-contrib-grid-xyzgrid-commands"></span><h1>evennia.contrib.grid.xyzgrid.commands<a class="headerlink" href="#module-evennia.contrib.grid.xyzgrid.commands" title="Permalink to this headline">¶</a></h1>
+<p>XYZ-aware commands</p>
+<p>Just add the XYZGridCmdSet to the default character cmdset to override
+the commands with XYZ-aware equivalents.</p>
+<dl class="py class">
+<dt id="evennia.contrib.grid.xyzgrid.commands.PathData">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.xyzgrid.commands.</code><code class="sig-name descname">PathData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">xymap</span></em>, <em class="sig-param"><span class="n">directions</span></em>, <em class="sig-param"><span class="n">step_sequence</span></em>, <em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.PathData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.PathData.directions">
+<code class="sig-name descname">directions</code><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.PathData.directions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.PathData.step_sequence">
+<code class="sig-name descname">step_sequence</code><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.PathData.step_sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.PathData.target">
+<code class="sig-name descname">target</code><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.PathData.target" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.PathData.task">
+<code class="sig-name descname">task</code><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.PathData.task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.PathData.xymap">
+<code class="sig-name descname">xymap</code><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.PathData.xymap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.xyzgrid.commands.</code><code class="sig-name descname">CmdXYZTeleport</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdXYZTeleport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.building.html#evennia.commands.default.building.CmdTeleport" title="evennia.commands.default.building.CmdTeleport"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.building.CmdTeleport</span></code></a></p>
+<p>teleport object to another location</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>tel/switch [&lt;object&gt; to||=] &lt;target location&gt;
+tel/switch [&lt;object&gt; to||=] (X,Y[,Z])</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>tel Limbo
+tel/quiet box = Limbo
+tel/tonone box
+tel (3, 3, the small cave)
+tel (4, 1)   # on the same map
+tel/map Z|mapname</p>
+<dl>
+<dt>Switches:</dt><dd><dl class="simple">
+<dt>quiet  - don’t echo leave/arrive messages to the source/target</dt><dd><p>locations for the move.</p>
+</dd>
+<dt>intoexit - if target is an exit, teleport INTO</dt><dd><p>the exit object instead of to its destination</p>
+</dd>
+<dt>tonone - if set, teleport the object to a None-location. If this</dt><dd><p>switch is set, &lt;target location&gt; is ignored.
+Note that the only way to retrieve
+an object from a None location is by direct #dbref
+reference. A puppeted object cannot be moved to None.</p>
+</dd>
+</dl>
+<p>loc - teleport object to the target’s location instead of its contents
+map - show coordinate map of given Zcoord/mapname.</p>
+</dd>
+</dl>
+<p>Teleports an object somewhere. If no object is given, you yourself are
+teleported to the target location. If (X,Y) or (X,Y,Z) coordinates
+are given, the target is a location on the XYZGrid.</p>
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdXYZTeleport.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Breaking out searching here to make this easier to override.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;tel']</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.key">
+<code class="sig-name descname">key</code><em class="property"> = '&#64;teleport'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(teleport) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;tel', 'category': 'building', 'key': '&#64;teleport', 'no_prefix': 'teleport tel', 'tags': '', 'text': &quot;\n    teleport object to another location\n\n    Usage:\n      tel/switch [&lt;object&gt; to||=] &lt;target location&gt;\n      tel/switch [&lt;object&gt; to||=] (X,Y[,Z])\n\n    Examples:\n      tel Limbo\n      tel/quiet box = Limbo\n      tel/tonone box\n      tel (3, 3, the small cave)\n      tel (4, 1)   # on the same map\n      tel/map Z|mapname\n\n    Switches:\n      quiet  - don't echo leave/arrive messages to the source/target\n               locations for the move.\n      intoexit - if target is an exit, teleport INTO\n                 the exit object instead of to its destination\n      tonone - if set, teleport the object to a None-location. If this\n               switch is set, &lt;target location&gt; is ignored.\n               Note that the only way to retrieve\n               an object from a None location is by direct #dbref\n               reference. A puppeted object cannot be moved to None.\n      loc - teleport object to the target's location instead of its contents\n      map - show coordinate map of given Zcoord/mapname.\n\n    Teleports an object somewhere. If no object is given, you yourself are\n    teleported to the target location. If (X,Y) or (X,Y,Z) coordinates\n    are given, the target is a location on the XYZGrid.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.xyzgrid.commands.</code><code class="sig-name descname">CmdXYZOpen</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdXYZOpen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.building.html#evennia.commands.default.building.CmdOpen" title="evennia.commands.default.building.CmdOpen"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.building.CmdOpen</span></code></a></p>
+<p>open a new exit from the current room</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>open &lt;new exit&gt;[;alias;..][:typeclass] [,&lt;return exit&gt;[;alias;..][:typeclass]]] = &lt;destination&gt;
+open &lt;new exit&gt;[;alias;..][:typeclass] [,&lt;return exit&gt;[;alias;..][:typeclass]]] = (X,Y,Z)</p>
+</dd>
+</dl>
+<p>Handles the creation of exits. If a destination is given, the exit
+will point there. The destination can also be given as an (X,Y,Z) coordinate on the
+XYZGrid - this command is used to link non-grid rooms to the grid and vice-versa.</p>
+<p>The &lt;return exit&gt; argument sets up an exit at the destination leading back to the current room.
+Apart from (X,Y,Z) coordinate, destination name can be given both as a #dbref and a name, if
+that name is globally unique.</p>
+<p class="rubric">Examples</p>
+<p>open kitchen = Kitchen
+open north, south = Town Center
+open cave mouth;cave = (3, 4, the small cave)</p>
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdXYZOpen.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>We need to expand the default parsing to get all
+the cases, see the module doc.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.key">
+<code class="sig-name descname">key</code><em class="property"> = '&#64;open'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(open) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': '&#64;open', 'no_prefix': 'open ', 'tags': '', 'text': '\n    open a new exit from the current room\n\n    Usage:\n      open &lt;new exit&gt;[;alias;..][:typeclass] [,&lt;return exit&gt;[;alias;..][:typeclass]]] = &lt;destination&gt;\n      open &lt;new exit&gt;[;alias;..][:typeclass] [,&lt;return exit&gt;[;alias;..][:typeclass]]] = (X,Y,Z)\n\n    Handles the creation of exits. If a destination is given, the exit\n    will point there. The destination can also be given as an (X,Y,Z) coordinate on the\n    XYZGrid - this command is used to link non-grid rooms to the grid and vice-versa.\n\n    The &lt;return exit&gt; argument sets up an exit at the destination leading back to the current room.\n    Apart from (X,Y,Z) coordinate, destination name can be given both as a #dbref and a name, if\n    that name is globally unique.\n\n    Examples:\n        open kitchen = Kitchen\n        open north, south = Town Center\n        open cave mouth;cave = (3, 4, the small cave)\n\n    '}</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdGoto">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.xyzgrid.commands.</code><code class="sig-name descname">CmdGoto</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdGoto"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Go to a named location in this area via the shortest path.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>path &lt;location&gt;      - find shortest path to target location (don’t move)
+goto &lt;location&gt;      - auto-move to target location, using shortest path
+path                 - show current target location and shortest path
+goto                 - abort current goto, otherwise show current path
+path clear           - clear current path</p>
+</dd>
+</dl>
+<p>Finds the shortest route to a location in your current area and
+can then automatically walk you there.</p>
+<p>Builders can optionally specify a specific grid coordinate (X,Y) to go to.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.key">
+<code class="sig-name descname">key</code><em class="property"> = 'goto'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['path']</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.auto_step_delay">
+<code class="sig-name descname">auto_step_delay</code><em class="property"> = 2</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.auto_step_delay" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.default_xyz_path_interrupt_msg">
+<code class="sig-name descname">default_xyz_path_interrupt_msg</code><em class="property"> = 'Pathfinding interrupted here.'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.default_xyz_path_interrupt_msg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdGoto.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implement command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'path', 'category': 'general', 'key': 'goto', 'no_prefix': ' path', 'tags': '', 'text': &quot;\n    Go to a named location in this area via the shortest path.\n\n    Usage:\n        path &lt;location&gt;      - find shortest path to target location (don't move)\n        goto &lt;location&gt;      - auto-move to target location, using shortest path\n        path                 - show current target location and shortest path\n        goto                 - abort current goto, otherwise show current path\n        path clear           - clear current path\n\n    Finds the shortest route to a location in your current area and\n    can then automatically walk you there.\n\n    Builders can optionally specify a specific grid coordinate (X,Y) to go to.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdMap">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.xyzgrid.commands.</code><code class="sig-name descname">CmdMap</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Show a map of an area</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>map [Zcoord]
+map list</p>
+</dd>
+</dl>
+<p>This is a builder-command.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdMap.key">
+<code class="sig-name descname">key</code><em class="property"> = 'map'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdMap.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(Builders)'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdMap.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdMap.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implement command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdMap.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdMap.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdMap.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(Builders)'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.CmdMap.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'map', 'no_prefix': ' ', 'tags': '', 'text': '\n    Show a map of an area\n\n    Usage:\n        map [Zcoord]\n        map list\n\n    This is a builder-command.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.xyzgrid.commands.</code><code class="sig-name descname">XYZGridCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#XYZGridCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>Cmdset for easily adding the above cmds to the character cmdset.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.key">
+<code class="sig-name descname">key</code><em class="property"> = 'xyzgrid_cmdset'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#XYZGridCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method - this should be overloaded in the inheriting
+class, and should take care of populating the cmdset by use of
+self.add().</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -84,6 +384,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.grid.xyzgrid.commands.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

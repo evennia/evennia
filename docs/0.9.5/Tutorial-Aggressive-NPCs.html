@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Tutorial Aggressive NPCs &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tutorial Aggressive NPCs</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-aggressive-npcs">
+<h1>Tutorial Aggressive NPCs<a class="headerlink" href="#tutorial-aggressive-npcs" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial shows the implementation of an NPC object that responds to characters entering their
+location. In this example the NPC has the option to respond aggressively or not, but any actions
+could be triggered this way.</p>
+<p>One could imagine using a <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Script</span></a> that is constantly checking for newcomers. This would be
+highly inefficient (most of the time its check would fail). Instead we handle this on-demand by
+using a couple of existing object hooks to inform the NPC that a Character has entered.</p>
+<p>It is assumed that you already know how to create custom room and character typeclasses, please see
+the <a class="reference internal" href="Tutorial-for-basic-MUSH-like-game.html"><span class="doc std std-doc">Basic Game tutorial</span></a> if you haven’t already done this.</p>
+<p>What we will need is the following:</p>
+<ul class="simple">
+<li><p>An NPC typeclass that can react when someone enters.</p></li>
+<li><p>A custom <a class="reference internal" href="Objects.html#rooms"><span class="std std-doc">Room</span></a> typeclass that can tell the NPC that someone entered.</p></li>
+<li><p>We will also tweak our default <code class="docutils literal notranslate"><span class="pre">Character</span></code> typeclass a little.</p></li>
+</ul>
+<p>To begin with, we need to create an NPC typeclass. Create a new file inside of your typeclasses
+folder and name it <code class="docutils literal notranslate"><span class="pre">npcs.py</span></code> and then add the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.characters</span> <span class="kn">import</span> <span class="n">Character</span>
+
+<span class="k">class</span> <span class="nc">NPC</span><span class="p">(</span><span class="n">Character</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A NPC typeclass which extends the character class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">at_char_entered</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         A simple is_aggressive check.</span>
+<span class="sd">         Can be expanded upon later.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_aggressive</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;say Graaah, die </span><span class="si">{</span><span class="n">character</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;say Greetings, </span><span class="si">{</span><span class="n">character</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We will define our custom <code class="docutils literal notranslate"><span class="pre">Character</span></code> typeclass below. As for the new <code class="docutils literal notranslate"><span class="pre">at_char_entered</span></code> method we’ve
+just defined, we’ll ensure that it will be called by the room where the NPC is located, when a
+player enters that room.  You’ll notice that right now, the NPC merely speaks.  You can expand this
+part as you like and trigger all sorts of effects here (like combat code, fleeing, bartering or
+quest-giving) as your game design dictates.</p>
+<p>Now your <code class="docutils literal notranslate"><span class="pre">typeclasses.rooms</span></code> module needs to have the following added:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add this import to the top of your file.</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span>
+
+    <span class="c1"># Add this hook in any empty area within your Room class.</span>
+    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;typeclasses.npcs.NPC&#39;</span><span class="p">):</span> <span class="c1"># An NPC has entered</span>
+            <span class="k">return</span>
+        <span class="k">elif</span> <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;typeclasses.characters.Character&#39;</span><span class="p">):</span>
+            <span class="c1"># A PC has entered.</span>
+            <span class="c1"># Cause the player&#39;s character to look around.</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s1">&#39;look&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s1">&#39;typeclasses.npcs.NPC&#39;</span><span class="p">):</span>
+                    <span class="c1"># An NPC is in the room</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">at_char_entered</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">inherits_from</span></code> must be given the full path of the class. If the object inherited a class from your
+<code class="docutils literal notranslate"><span class="pre">world.races</span></code> module, then you would check inheritance with <code class="docutils literal notranslate"><span class="pre">world.races.Human</span></code>, for example. There
+is no need to import these prior, as we are passing in the full path. As a matter of a fact,
+<code class="docutils literal notranslate"><span class="pre">inherits_from</span></code> does not properly work if you import the class and only pass in the name of the
+class.</p>
+<blockquote>
+<div><p>Note:
+<a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L1529">at_object_receive</a>
+is a default hook of the <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> typeclass (and its children). Here we are overriding this
+hook in our customized room typeclass to suit our needs.</p>
+</div></blockquote>
+<p>This room checks the typeclass of objects entering it (using <code class="docutils literal notranslate"><span class="pre">utils.inherits_from</span></code> and responds to
+<code class="docutils literal notranslate"><span class="pre">Characters</span></code>, ignoring other NPCs or objects.  When triggered the room will look through its
+contents and inform any <code class="docutils literal notranslate"><span class="pre">NPCs</span> <span class="pre">inside</span> <span class="pre">by</span> <span class="pre">calling</span> <span class="pre">their</span> </code>at_char_entered` method.</p>
+<p>You’ll also see that we have added a ‘look’ into this code. This is because, by default, the
+<code class="docutils literal notranslate"><span class="pre">at_object_receive</span></code> is carried out <em>before</em> the character’s <code class="docutils literal notranslate"><span class="pre">at_after_move</span></code> which, we will now
+overload.  This means that a character entering would see the NPC perform its actions before the
+‘look’ command. Deactivate the look command in the default <code class="docutils literal notranslate"><span class="pre">Character</span></code> class within the
+<code class="docutils literal notranslate"><span class="pre">typeclasses.characters</span></code> module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># Add this hook in any blank area within your Character class.</span>
+    <span class="k">def</span> <span class="nf">at_after_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Default is to look around after a move</span>
+<span class="sd">        Note:  This has been moved to Room.at_object_receive</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#self.execute_cmd(&#39;look&#39;)</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Now let’s create an NPC and make it aggressive. Type the following commands into your MUD client:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">reload</span>
+<span class="n">create</span><span class="o">/</span><span class="n">drop</span> <span class="n">Orc</span><span class="p">:</span><span class="n">npcs</span><span class="o">.</span><span class="n">NPC</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>Note: You could also give the path as <code class="docutils literal notranslate"><span class="pre">typeclasses.npcs.NPC</span></code>, but Evennia will look into the
+<code class="docutils literal notranslate"><span class="pre">typeclasses</span></code> folder automatically, so this is a little shorter.</p>
+</div></blockquote>
+<p>When you enter the aggressive NPC’s location, it will default to using its peaceful action (say your
+name is Anna):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Orc</span> <span class="n">says</span><span class="p">,</span> <span class="s2">&quot;Greetings, Anna!&quot;</span>
+</pre></div>
+</div>
+<p>Now we turn on the aggressive mode (we do it manually but it could also be triggered by some sort of
+AI code).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span> <span class="n">orc</span><span class="o">/</span><span class="n">is_aggressive</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Now it will perform its aggressive action whenever a character enters.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Orc</span> <span class="n">says</span><span class="p">,</span> <span class="s2">&quot;Graaah, die, Anna!&quot;</span>
+</pre></div>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Tutorial-Aggressive-NPCs.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Tutorial-Aggressive-NPCs.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tutorial Aggressive NPCs</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

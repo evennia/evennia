@@ -1,0 +1,844 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.commands.default.general &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.general</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.commands.default.general</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">General Character commands usually available to all characters</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">NickTemplateInvalid</span>
+
+<span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
+
+<span class="c1"># limit symbol import for API</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;CmdHome&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdLook&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdNick&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdInventory&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdSetDesc&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdGet&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdDrop&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdGive&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdSay&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdWhisper&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdPose&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdAccess&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="CmdHome"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdHome">[docs]</a><span class="k">class</span> <span class="nc">CmdHome</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    move to your character&#39;s home location</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      home</span>
+
+<span class="sd">    Teleports you to your home location.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;home&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(home) or perm(Builder)&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;$&quot;</span>
+
+<div class="viewcode-block" id="CmdHome.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdHome.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implement the command&quot;&quot;&quot;</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">home</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">home</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">home</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You have no home!&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">home</span> <span class="o">==</span> <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are already home!&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;There&#39;s no place like home ...&quot;</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">home</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdLook"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdLook">[docs]</a><span class="k">class</span> <span class="nc">CmdLook</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    look at location or object</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      look</span>
+<span class="sd">      look &lt;obj&gt;</span>
+<span class="sd">      look *&lt;account&gt;</span>
+
+<span class="sd">    Observes your location or objects in your vicinity.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;look&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;l&quot;</span><span class="p">,</span> <span class="s2">&quot;ls&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s|$&quot;</span>
+
+<div class="viewcode-block" id="CmdLook.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle the looking.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">location</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You have no location to look at!&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">at_look</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="c1"># add the type=look to the outputfunc to make it</span>
+        <span class="c1"># easy to separate this output in client.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;look&quot;</span><span class="p">}),</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdNick"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdNick">[docs]</a><span class="k">class</span> <span class="nc">CmdNick</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    define a personal alias/nick by defining a string to</span>
+<span class="sd">    match and replace it with another on the fly</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      nick[/switches] &lt;string&gt; [= [replacement_string]]</span>
+<span class="sd">      nick[/switches] &lt;template&gt; = &lt;replacement_template&gt;</span>
+<span class="sd">      nick/delete &lt;string&gt; or number</span>
+<span class="sd">      nicks</span>
+
+<span class="sd">    Switches:</span>
+<span class="sd">      inputline - replace on the inputline (default)</span>
+<span class="sd">      object    - replace on object-lookup</span>
+<span class="sd">      account   - replace on account-lookup</span>
+<span class="sd">      list      - show all defined aliases (also &quot;nicks&quot; works)</span>
+<span class="sd">      delete    - remove nick by index in /list</span>
+<span class="sd">      clearall  - clear all nicks</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">      nick hi = say Hello, I&#39;m Sarah!</span>
+<span class="sd">      nick/object tom = the tall man</span>
+<span class="sd">      nick build $1 $2 = create/drop $1;$2</span>
+<span class="sd">      nick tell $1 $2=page $1=$2</span>
+<span class="sd">      nick tm?$1=page tallman=$1</span>
+<span class="sd">      nick tm\=$1=page tallman=$1</span>
+
+<span class="sd">    A &#39;nick&#39; is a personal string replacement. Use $1, $2, ... to catch arguments.</span>
+<span class="sd">    Put the last $-marker without an ending space to catch all remaining text. You</span>
+<span class="sd">    can also use unix-glob matching for the left-hand side &lt;string&gt;:</span>
+
+<span class="sd">        * - matches everything</span>
+<span class="sd">        ? - matches 0 or 1 single characters</span>
+<span class="sd">        [abcd] - matches these chars in any order</span>
+<span class="sd">        [!abcd] - matches everything not among these chars</span>
+<span class="sd">        \= - escape literal &#39;=&#39; you want in your &lt;string&gt;</span>
+
+<span class="sd">    Note that no objects are actually renamed or changed by this command - your nicks</span>
+<span class="sd">    are only available to you. If you want to permanently add keywords to an object</span>
+<span class="sd">    for everyone to use, you need build privileges and the alias command.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;nick&quot;</span>
+    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">,</span> <span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;clearall&quot;</span><span class="p">)</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;nickname&quot;</span><span class="p">,</span> <span class="s2">&quot;nicks&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+<div class="viewcode-block" id="CmdNick.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdNick.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Support escaping of = with \=</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CmdNick</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot; = </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(?&lt;!</span><span class="se">\\</span><span class="s2">)=&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="o">=</span> <span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;\=&quot;</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CmdNick.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdNick.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create the nickname&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">_cy</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+            <span class="s2">&quot;add color to the special markers&quot;</span>
+            <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\$[0-9]+|\*|\?|\[.+?\])&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;|Y\1|n&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">switches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
+        <span class="n">nicktypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">switch</span> <span class="k">for</span> <span class="n">switch</span> <span class="ow">in</span> <span class="n">switches</span> <span class="k">if</span> <span class="n">switch</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">,</span> <span class="s2">&quot;inputline&quot;</span><span class="p">)]</span>
+        <span class="n">specified_nicktype</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">nicktypes</span><span class="p">)</span>
+        <span class="n">nicktypes</span> <span class="o">=</span> <span class="n">nicktypes</span> <span class="k">if</span> <span class="n">specified_nicktype</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;inputline&quot;</span><span class="p">]</span>
+
+        <span class="n">nicklist</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[])</span>
+            <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[])</span>
+            <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;account&quot;</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[])</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;list&quot;</span> <span class="ow">in</span> <span class="n">switches</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;nicks&quot;</span><span class="p">,):</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">nicklist</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;|wNo nicks defined.|n&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="s2">&quot;Type&quot;</span><span class="p">,</span> <span class="s2">&quot;Nick match&quot;</span><span class="p">,</span> <span class="s2">&quot;Replacement&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">inum</span><span class="p">,</span> <span class="n">nickobj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nicklist</span><span class="p">):</span>
+                    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nickvalue</span><span class="p">,</span> <span class="n">replacement</span> <span class="o">=</span> <span class="n">nickobj</span><span class="o">.</span><span class="n">value</span>
+                    <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                        <span class="nb">str</span><span class="p">(</span><span class="n">inum</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">nickobj</span><span class="o">.</span><span class="n">db_category</span><span class="p">,</span> <span class="n">_cy</span><span class="p">(</span><span class="n">nickvalue</span><span class="p">),</span> <span class="n">_cy</span><span class="p">(</span><span class="n">replacement</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;|wDefined Nicks:|n</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">table</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="s2">&quot;clearall&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Cleared all nicks.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="s2">&quot;delete&quot;</span> <span class="ow">in</span> <span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;del&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;usage nick/delete &lt;nick&gt; or &lt;#num&gt; (&#39;nicks&#39; for list)&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="c1"># see if a number was given</span>
+            <span class="n">arg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+            <span class="n">oldnicks</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                <span class="c1"># we are given a index in nicklist</span>
+                <span class="n">delindex</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+                <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">delindex</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nicklist</span><span class="p">):</span>
+                    <span class="n">oldnicks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nicklist</span><span class="p">[</span><span class="n">delindex</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Not a valid nick index. See &#39;nicks&#39; for a list.&quot;</span><span class="p">)</span>
+                    <span class="k">return</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">specified_nicktype</span><span class="p">:</span>
+                    <span class="n">nicktypes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">,</span> <span class="s2">&quot;inputline&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">nicktype</span> <span class="ow">in</span> <span class="n">nicktypes</span><span class="p">:</span>
+                    <span class="n">oldnicks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">nicktype</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+            <span class="n">oldnicks</span> <span class="o">=</span> <span class="p">[</span><span class="n">oldnick</span> <span class="k">for</span> <span class="n">oldnick</span> <span class="ow">in</span> <span class="n">oldnicks</span> <span class="k">if</span> <span class="n">oldnick</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">oldnicks</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">oldnick</span> <span class="ow">in</span> <span class="n">oldnicks</span><span class="p">:</span>
+                    <span class="n">nicktype</span> <span class="o">=</span> <span class="n">oldnick</span><span class="o">.</span><span class="n">category</span>
+                    <span class="n">nicktypestr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-nick&quot;</span> <span class="o">%</span> <span class="n">nicktype</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+                    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">old_nickstring</span><span class="p">,</span> <span class="n">old_replstring</span> <span class="o">=</span> <span class="n">oldnick</span><span class="o">.</span><span class="n">value</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">old_nickstring</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">nicktype</span><span class="p">)</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> removed: &#39;|w</span><span class="si">%s</span><span class="s2">|n&#39; -&gt; |w</span><span class="si">%s</span><span class="s2">|n.&quot;</span>
+                        <span class="o">%</span> <span class="p">(</span><span class="n">nicktypestr</span><span class="p">,</span> <span class="n">old_nickstring</span><span class="p">,</span> <span class="n">old_replstring</span><span class="p">)</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No matching nicks to remove.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">:</span>
+            <span class="c1"># check what a nick is set to</span>
+            <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">specified_nicktype</span><span class="p">:</span>
+                <span class="n">nicktypes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">,</span> <span class="s2">&quot;inputline&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">nicktype</span> <span class="ow">in</span> <span class="n">nicktypes</span><span class="p">:</span>
+                <span class="n">nicks</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">nick</span>
+                    <span class="k">for</span> <span class="n">nick</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span>
+                        <span class="n">caller</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">nicktype</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">nick</span>
+                <span class="p">]</span>
+                <span class="k">for</span> <span class="n">nick</span> <span class="ow">in</span> <span class="n">nicks</span><span class="p">:</span>
+                    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nick</span><span class="p">,</span> <span class="n">repl</span> <span class="o">=</span> <span class="n">nick</span><span class="o">.</span><span class="n">value</span>
+                    <span class="k">if</span> <span class="n">nick</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">):</span>
+                        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-nick: &#39;</span><span class="si">{}</span><span class="s2">&#39; -&gt; &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nicktype</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="n">nick</span><span class="p">,</span> <span class="n">repl</span><span class="p">)</span>
+                        <span class="p">)</span>
+            <span class="k">if</span> <span class="n">strings</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No nicks found matching &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">:</span>
+            <span class="c1"># check what a nick is set to</span>
+            <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">specified_nicktype</span><span class="p">:</span>
+                <span class="n">nicktypes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">,</span> <span class="s2">&quot;inputline&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">nicktype</span> <span class="ow">in</span> <span class="n">nicktypes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">nicktype</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
+                    <span class="n">obj</span> <span class="o">=</span> <span class="n">account</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">obj</span> <span class="o">=</span> <span class="n">caller</span>
+                <span class="n">nicks</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">nicktype</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">nick</span> <span class="ow">in</span> <span class="n">nicks</span><span class="p">:</span>
+                    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nick</span><span class="p">,</span> <span class="n">repl</span> <span class="o">=</span> <span class="n">nick</span><span class="o">.</span><span class="n">value</span>
+                    <span class="k">if</span> <span class="n">nick</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">):</span>
+                        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-nick: &#39;</span><span class="si">{}</span><span class="s2">&#39; -&gt; &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nicktype</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="n">nick</span><span class="p">,</span> <span class="n">repl</span><span class="p">)</span>
+                        <span class="p">)</span>
+            <span class="k">if</span> <span class="n">strings</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No nicks found matching &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">:</span>
+            <span class="c1"># check what a nick is set to</span>
+            <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">specified_nicktype</span><span class="p">:</span>
+                <span class="n">nicktypes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">,</span> <span class="s2">&quot;inputline&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">nicktype</span> <span class="ow">in</span> <span class="n">nicktypes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">nicktype</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
+                    <span class="n">obj</span> <span class="o">=</span> <span class="n">account</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">obj</span> <span class="o">=</span> <span class="n">caller</span>
+                <span class="n">nicks</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">nicktype</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">nick</span> <span class="ow">in</span> <span class="n">nicks</span><span class="p">:</span>
+                    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nick</span><span class="p">,</span> <span class="n">repl</span> <span class="o">=</span> <span class="n">nick</span><span class="o">.</span><span class="n">value</span>
+                    <span class="k">if</span> <span class="n">nick</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">):</span>
+                        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-nick: &#39;</span><span class="si">{}</span><span class="s2">&#39; -&gt; &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nicktype</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="n">nick</span><span class="p">,</span> <span class="n">repl</span><span class="p">)</span>
+                        <span class="p">)</span>
+            <span class="k">if</span> <span class="n">strings</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No nicks found matching &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: nick[/switches] nickname = [realname]&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># setting new nicks</span>
+
+        <span class="n">nickstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
+        <span class="n">replstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+
+        <span class="k">if</span> <span class="n">replstring</span> <span class="o">==</span> <span class="n">nickstring</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No point in setting nick same as the string to replace...&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># check so we have a suitable nick type</span>
+        <span class="n">errstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">nicktype</span> <span class="ow">in</span> <span class="n">nicktypes</span><span class="p">:</span>
+            <span class="n">nicktypestr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-nick&quot;</span> <span class="o">%</span> <span class="n">nicktype</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+            <span class="n">old_nickstring</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">old_replstring</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="n">oldnick</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">nickstring</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">nicktype</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">oldnick</span><span class="p">:</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">old_nickstring</span><span class="p">,</span> <span class="n">old_replstring</span> <span class="o">=</span> <span class="n">oldnick</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">if</span> <span class="n">replstring</span><span class="p">:</span>
+                <span class="c1"># creating new nick</span>
+                <span class="n">errstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">if</span> <span class="n">oldnick</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">replstring</span> <span class="o">==</span> <span class="n">old_replstring</span><span class="p">:</span>
+                        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Identical </span><span class="si">%s</span><span class="s2"> already set.&quot;</span> <span class="o">%</span> <span class="n">nicktypestr</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2"> &#39;|w</span><span class="si">%s</span><span class="s2">|n&#39; updated to map to &#39;|w</span><span class="si">%s</span><span class="s2">|n&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                            <span class="n">nicktypestr</span><span class="p">,</span>
+                            <span class="n">old_nickstring</span><span class="p">,</span>
+                            <span class="n">replstring</span><span class="p">,</span>
+                        <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2"> &#39;|w</span><span class="si">%s</span><span class="s2">|n&#39; mapped to &#39;|w</span><span class="si">%s</span><span class="s2">|n&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="n">nicktypestr</span><span class="p">,</span>
+                        <span class="n">nickstring</span><span class="p">,</span>
+                        <span class="n">replstring</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nickstring</span><span class="p">,</span> <span class="n">replstring</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">nicktype</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">NickTemplateInvalid</span><span class="p">:</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                        <span class="s2">&quot;You must use the same $-markers both in the nick and in the replacement.&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span>
+            <span class="k">elif</span> <span class="n">old_nickstring</span> <span class="ow">and</span> <span class="n">old_replstring</span><span class="p">:</span>
+                <span class="c1"># just looking at the nick</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2"> &#39;|w</span><span class="si">%s</span><span class="s2">|n&#39; maps to &#39;|w</span><span class="si">%s</span><span class="s2">|n&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">nicktypestr</span><span class="p">,</span>
+                    <span class="n">old_nickstring</span><span class="p">,</span>
+                    <span class="n">old_replstring</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">errstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="n">errstring</span> <span class="k">if</span> <span class="n">errstring</span> <span class="k">else</span> <span class="n">string</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_cy</span><span class="p">(</span><span class="n">string</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="CmdInventory"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdInventory">[docs]</a><span class="k">class</span> <span class="nc">CmdInventory</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    view inventory</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      inventory</span>
+<span class="sd">      inv</span>
+
+<span class="sd">    Shows your inventory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;inventory&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;inv&quot;</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;$&quot;</span>
+
+<div class="viewcode-block" id="CmdInventory.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdInventory.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;check inventory&quot;&quot;&quot;</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">contents</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">items</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You are not carrying anything.&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">raw</span> <span class="k">as</span> <span class="n">raw_ansi</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span><span class="n">border</span><span class="o">=</span><span class="s2">&quot;header&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+                <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|C</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">|n&quot;</span><span class="p">,</span>
+                              <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">raw_ansi</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|wYou are carrying:</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdGet"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdGet">[docs]</a><span class="k">class</span> <span class="nc">CmdGet</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    pick up something</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      get &lt;obj&gt;</span>
+
+<span class="sd">    Picks up an object from your location and puts it in</span>
+<span class="sd">    your inventory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;get&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;grab&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all();view:perm(Developer);read:perm(Developer)&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s|$&quot;</span>
+
+<div class="viewcode-block" id="CmdGet.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdGet.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;implements the command.&quot;&quot;&quot;</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Get what?&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">caller</span> <span class="o">==</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t get yourself.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;get&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_err_msg</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_err_msg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t get that.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># calling at_pre_get hook method</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_pre_get</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="n">success</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This can&#39;t be picked up.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You pick up </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> picks up </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="n">caller</span>
+            <span class="p">)</span>
+            <span class="c1"># calling at_get hook method</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">at_get</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdDrop"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdDrop">[docs]</a><span class="k">class</span> <span class="nc">CmdDrop</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    drop something</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      drop &lt;obj&gt;</span>
+
+<span class="sd">    Lets you drop an object from your inventory into the</span>
+<span class="sd">    location you are currently in.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;drop&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s|$&quot;</span>
+
+<div class="viewcode-block" id="CmdDrop.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdDrop.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implement command&quot;&quot;&quot;</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Drop what?&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Because the DROP command by definition looks for items</span>
+        <span class="c1"># in inventory, call the search function using location = caller</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+            <span class="n">nofound_string</span><span class="o">=</span><span class="s2">&quot;You aren&#39;t carrying </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">multimatch_string</span><span class="o">=</span><span class="s2">&quot;You carry more than one </span><span class="si">%s</span><span class="s2">:&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Call the object script&#39;s at_pre_drop() method.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_pre_drop</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="n">success</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This couldn&#39;t be dropped.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You drop </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,))</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> drops </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
+            <span class="c1"># Call the object script&#39;s at_drop() method.</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">at_drop</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdGive"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdGive">[docs]</a><span class="k">class</span> <span class="nc">CmdGive</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    give away something to someone</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      give &lt;inventory obj&gt; &lt;to||=&gt; &lt;target&gt;</span>
+
+<span class="sd">    Gives an items from your inventory to another character,</span>
+<span class="sd">    placing it in their inventory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;give&quot;</span>
+    <span class="n">rhs_split</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="s2">&quot; to &quot;</span><span class="p">)</span>  <span class="c1"># Prefer = delimiter, but allow &quot; to &quot; usage.</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s|$&quot;</span>
+
+<div class="viewcode-block" id="CmdGive.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdGive.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implement give&quot;&quot;&quot;</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: give &lt;inventory object&gt; = &lt;target&gt;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">to_give</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+            <span class="n">nofound_string</span><span class="o">=</span><span class="s2">&quot;You aren&#39;t carrying </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span>
+            <span class="n">multimatch_string</span><span class="o">=</span><span class="s2">&quot;You carry more than one </span><span class="si">%s</span><span class="s2">:&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">to_give</span> <span class="ow">and</span> <span class="n">target</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="o">==</span> <span class="n">caller</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You keep </span><span class="si">%s</span><span class="s2"> to yourself.&quot;</span> <span class="o">%</span> <span class="n">to_give</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">to_give</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="n">caller</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not holding </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">to_give</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># calling at_pre_give hook method</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">to_give</span><span class="o">.</span><span class="n">at_pre_give</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="c1"># give object</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="n">to_give</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This could not be given.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You give </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">to_give</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> gives you </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">to_give</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+            <span class="c1"># Call the object script&#39;s at_give() method.</span>
+            <span class="n">to_give</span><span class="o">.</span><span class="n">at_give</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdSetDesc"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdSetDesc">[docs]</a><span class="k">class</span> <span class="nc">CmdSetDesc</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    describe yourself</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      setdesc &lt;description&gt;</span>
+
+<span class="sd">    Add a description to yourself. This</span>
+<span class="sd">    will be visible to people when they</span>
+<span class="sd">    look at you.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;setdesc&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s|$&quot;</span>
+
+<div class="viewcode-block" id="CmdSetDesc.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdSetDesc.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;add the description&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must add a description.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You set your description.&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdSay"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdSay">[docs]</a><span class="k">class</span> <span class="nc">CmdSay</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    speak as your character</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      say &lt;message&gt;</span>
+
+<span class="sd">    Talk to those in your current location.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;say&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+    <span class="c1"># don&#39;t require a space after `say/&#39;/&quot;`</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="CmdSay.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdSay.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run the say command&quot;&quot;&quot;</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Say what?&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">speech</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+
+        <span class="c1"># Calling the at_pre_say hook on the character</span>
+        <span class="n">speech</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">at_pre_say</span><span class="p">(</span><span class="n">speech</span><span class="p">)</span>
+
+        <span class="c1"># If speech is empty, stop here</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">speech</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Call the at_post_say hook on the character</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">at_say</span><span class="p">(</span><span class="n">speech</span><span class="p">,</span> <span class="n">msg_self</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdWhisper"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdWhisper">[docs]</a><span class="k">class</span> <span class="nc">CmdWhisper</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Speak privately as your character to another</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      whisper &lt;character&gt; = &lt;message&gt;</span>
+<span class="sd">      whisper &lt;char1&gt;, &lt;char2&gt; = &lt;message&gt;</span>
+
+<span class="sd">    Talk privately to one or more characters in your current location, without</span>
+<span class="sd">    others in the room being informed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;whisper&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+<div class="viewcode-block" id="CmdWhisper.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdWhisper.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run the whisper command&quot;&quot;&quot;</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: whisper &lt;character&gt; = &lt;message&gt;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">receivers</span> <span class="o">=</span> <span class="p">[</span><span class="n">recv</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">recv</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+
+        <span class="n">receivers</span> <span class="o">=</span> <span class="p">[</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">receiver</span><span class="p">)</span> <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">receivers</span><span class="p">)]</span>
+        <span class="n">receivers</span> <span class="o">=</span> <span class="p">[</span><span class="n">recv</span> <span class="k">for</span> <span class="n">recv</span> <span class="ow">in</span> <span class="n">receivers</span> <span class="k">if</span> <span class="n">recv</span><span class="p">]</span>
+
+        <span class="n">speech</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+        <span class="c1"># If the speech is empty, abort the command</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">speech</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">receivers</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Call a hook to change the speech before whispering</span>
+        <span class="n">speech</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">at_pre_say</span><span class="p">(</span><span class="n">speech</span><span class="p">,</span> <span class="n">whisper</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="n">receivers</span><span class="p">)</span>
+
+        <span class="c1"># no need for self-message if we are whispering to ourselves (for some reason)</span>
+        <span class="n">msg_self</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">caller</span> <span class="ow">in</span> <span class="n">receivers</span> <span class="k">else</span> <span class="kc">True</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">at_say</span><span class="p">(</span><span class="n">speech</span><span class="p">,</span> <span class="n">msg_self</span><span class="o">=</span><span class="n">msg_self</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="n">receivers</span><span class="p">,</span> <span class="n">whisper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdPose"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdPose">[docs]</a><span class="k">class</span> <span class="nc">CmdPose</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    strike a pose</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      pose &lt;pose text&gt;</span>
+<span class="sd">      pose&#39;s &lt;pose text&gt;</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">      pose is standing by the wall, smiling.</span>
+<span class="sd">       -&gt; others will see:</span>
+<span class="sd">      Tom is standing by the wall, smiling.</span>
+
+<span class="sd">    Describe an action being taken. The pose text will</span>
+<span class="sd">    automatically begin with your name.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;pose&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="s2">&quot;emote&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="c1"># we want to be able to pose without whitespace between</span>
+    <span class="c1"># the command/alias and the pose (e.g. :pose)</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="CmdPose.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdPose.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Custom parse the cases where the emote</span>
+<span class="sd">        starts with some special letter, such</span>
+<span class="sd">        as &#39;s, at which we don&#39;t want to separate</span>
+<span class="sd">        the caller&#39;s name and the emote with a</span>
+<span class="sd">        space.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+        <span class="k">if</span> <span class="n">args</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">]:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot; </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span></div>
+
+<div class="viewcode-block" id="CmdPose.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdPose.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Hook function&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;What do you want to do?&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;pose&quot;</span><span class="p">}),</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdAccess"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdAccess">[docs]</a><span class="k">class</span> <span class="nc">CmdAccess</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    show your current game access</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      access</span>
+
+<span class="sd">    This command shows you the permission hierarchy and</span>
+<span class="sd">    which permission groups you are a member of.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;access&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="s2">&quot;hierarchy&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;$&quot;</span>
+
+<div class="viewcode-block" id="CmdAccess.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.general.html#evennia.commands.default.general.CmdAccess.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load the permission groups&quot;&quot;&quot;</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">hierarchy_full</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">PERMISSION_HIERARCHY</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wPermission Hierarchy|n (climbing):</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">hierarchy_full</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
+            <span class="n">cperms</span> <span class="o">=</span> <span class="s2">&quot;&lt;Superuser&gt;&quot;</span>
+            <span class="n">pperms</span> <span class="o">=</span> <span class="s2">&quot;&lt;Superuser&gt;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cperms</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+            <span class="n">pperms</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wYour access|n:&quot;</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Character |c</span><span class="si">%s</span><span class="s2">|n: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">cperms</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">):</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Account |c</span><span class="si">%s</span><span class="s2">|n: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">pperms</span><span class="p">)</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="general.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.general</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

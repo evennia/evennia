@@ -1,0 +1,544 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.utils.batchprocessors &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.batchprocessors</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.utils.batchprocessors</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains the core methods for the Batch-command- and</span>
+<span class="sd">Batch-code-processors respectively. In short, these are two different ways to</span>
+<span class="sd">build a game world using a normal text-editor without having to do so &#39;on the</span>
+<span class="sd">fly&#39; in-game. They also serve as an automatic backup so you can quickly</span>
+<span class="sd">recreate a world also after a server reset. The functions in this module is</span>
+<span class="sd">meant to form the backbone of a system called and accessed through game</span>
+<span class="sd">commands.</span>
+
+<span class="sd">The Batch-command processor is the simplest. It simply runs a list of in-game</span>
+<span class="sd">commands in sequence by reading them from a text file. The advantage of this is</span>
+<span class="sd">that the builder only need to remember the normal in-game commands. They are</span>
+<span class="sd">also executing with full permission checks etc, making it relatively safe for</span>
+<span class="sd">builders to use. The drawback is that in-game there is really a</span>
+<span class="sd">builder-character walking around building things, and it can be important to</span>
+<span class="sd">create rooms and objects in the right order, so the character can move between</span>
+<span class="sd">them. Also objects that affects players (such as mobs, dark rooms etc) will</span>
+<span class="sd">affect the building character too, requiring extra care to turn off/on.</span>
+
+<span class="sd">The Batch-code processor is a more advanced system that accepts full</span>
+<span class="sd">Python code, executing in chunks. The advantage of this is much more</span>
+<span class="sd">power; practically anything imaginable can be coded and handled using</span>
+<span class="sd">the batch-code processor. There is no in-game character that moves and</span>
+<span class="sd">that can be affected by what is being built - the database is</span>
+<span class="sd">populated on the fly. The drawback is safety and entry threshold - the</span>
+<span class="sd">code is executed as would any server code, without mud-specific</span>
+<span class="sd">permission-checks, and you have full access to modifying objects</span>
+<span class="sd">etc. You also need to know Python and Evennia&#39;s API. Hence it&#39;s</span>
+<span class="sd">recommended that the batch-code processor is limited only to</span>
+<span class="sd">superusers or highly trusted staff.</span>
+
+<span class="sd"># Batch-command processor file syntax</span>
+
+<span class="sd">The batch-command processor accepts &#39;batchcommand files&#39; e.g</span>
+<span class="sd">`batch.ev`, containing a sequence of valid Evennia commands in a</span>
+<span class="sd">simple format. The engine runs each command in sequence, as if they</span>
+<span class="sd">had been run at the game prompt.</span>
+
+<span class="sd">Each Evennia command must be delimited by a line comment to mark its</span>
+<span class="sd">end.</span>
+
+<span class="sd">::</span>
+
+<span class="sd">    look</span>
+<span class="sd">    # delimiting comment</span>
+<span class="sd">    create/drop box</span>
+<span class="sd">    # another required comment</span>
+
+<span class="sd">One can also inject another batchcmdfile:</span>
+
+<span class="sd">::</span>
+
+<span class="sd">    #INSERT path.batchcmdfile</span>
+
+<span class="sd">This way entire game worlds can be created and planned offline; it is</span>
+<span class="sd">especially useful in order to create long room descriptions where a</span>
+<span class="sd">real offline text editor is often much better than any online text</span>
+<span class="sd">editor or prompt.</span>
+
+<span class="sd">## Example of batch.ev file:</span>
+
+<span class="sd">::</span>
+
+<span class="sd">    # batch file</span>
+<span class="sd">    # all lines starting with # are comments; they also indicate</span>
+<span class="sd">    # that a command definition is over.</span>
+
+<span class="sd">    create box</span>
+
+<span class="sd">    # this comment ends the @create command.</span>
+
+<span class="sd">    set box/desc = A large box.</span>
+
+<span class="sd">    Inside are some scattered piles of clothing.</span>
+
+
+<span class="sd">    It seems the bottom of the box is a bit loose.</span>
+
+<span class="sd">    # Again, this comment indicates the @set command is over. Note how</span>
+<span class="sd">    # the description could be freely added. Excess whitespace on a line</span>
+<span class="sd">    # is ignored.  An empty line in the command definition is parsed as a \n</span>
+<span class="sd">    # (so two empty lines becomes a new paragraph).</span>
+
+<span class="sd">    teleport #221</span>
+
+<span class="sd">    # (Assuming #221 is a warehouse or something.)</span>
+<span class="sd">    # (remember, this comment ends the @teleport command! Don&#39;f forget it)</span>
+
+<span class="sd">    # Example of importing another file at this point.</span>
+<span class="sd">    #IMPORT examples.batch</span>
+
+<span class="sd">    drop box</span>
+
+<span class="sd">    # Done, the box is in the warehouse! (this last comment is not necessary to</span>
+<span class="sd">    # close the drop command since it&#39;s the end of the file)</span>
+
+<span class="sd">An example batch file is `contrib/examples/batch_example.ev`.</span>
+
+<span class="sd"># Batch-code processor file syntax</span>
+
+<span class="sd">The Batch-code processor accepts full python modules (e.g. `batch.py`)</span>
+<span class="sd">that looks identical to normal Python files. The difference from</span>
+<span class="sd">importing and running any Python module is that the batch-code module</span>
+<span class="sd">is loaded as a file and executed directly, so changes to the file will</span>
+<span class="sd">apply immediately without a server @reload.</span>
+
+<span class="sd">Optionally, one can add some special commented tokens to split the</span>
+<span class="sd">execution of the code for the benefit of the batchprocessor&#39;s</span>
+<span class="sd">interactive- and debug-modes. This allows to conveniently step through</span>
+<span class="sd">the code and re-run sections of it easily during development.</span>
+
+<span class="sd">Code blocks are marked by commented tokens alone on a line:</span>
+
+<span class="sd">- `#HEADER` - This denotes code that should be pasted at the top of all</span>
+<span class="sd">  other code. Multiple HEADER statements - regardless of where</span>
+<span class="sd">  it exists in the file - is the same as one big block.</span>
+<span class="sd">  Observe that changes to variables made in one block is not</span>
+<span class="sd">  preserved between blocks!</span>
+<span class="sd">- `#CODE` - This designates a code block that will be executed like a</span>
+<span class="sd">  stand-alone piece of code together with any HEADER(s)</span>
+<span class="sd">  defined. It is mainly used as a way to mark stop points for</span>
+<span class="sd">  the interactive mode of the batchprocessor. If no CODE block</span>
+<span class="sd">  is defined in the module, the entire module (including HEADERS)</span>
+<span class="sd">  is assumed to be a CODE block.</span>
+<span class="sd">- `#INSERT path.filename` - This imports another batch_code.py file and</span>
+<span class="sd">  runs it in the given position. The inserted file will retain</span>
+<span class="sd">  its own HEADERs which will not be mixed with the headers of</span>
+<span class="sd">  this file.</span>
+
+<span class="sd">Importing works as normal. The following variables are automatically</span>
+<span class="sd">made available in the script namespace.</span>
+
+<span class="sd">- `caller` - The object executing the batchscript</span>
+<span class="sd">- `DEBUG` - This is a boolean marking if the batchprocessor is running</span>
+<span class="sd">            in debug mode. It can be checked to e.g. delete created objects</span>
+<span class="sd">            when running a CODE block multiple times during testing.</span>
+<span class="sd">            (avoids creating a slew of same-named db objects)</span>
+
+<span class="sd">## Example batch.py file</span>
+
+<span class="sd">::</span>
+
+<span class="sd">    #HEADER</span>
+
+<span class="sd">    from django.conf import settings</span>
+<span class="sd">    from evennia.utils import create</span>
+<span class="sd">    from types import basetypes</span>
+
+<span class="sd">    GOLD = 10</span>
+
+<span class="sd">    #CODE</span>
+
+<span class="sd">    obj = create.create_object(basetypes.Object)</span>
+<span class="sd">    obj2 = create.create_object(basetypes.Object)</span>
+<span class="sd">    obj.location = caller.location</span>
+<span class="sd">    obj.db.gold = GOLD</span>
+<span class="sd">    caller.msg(&quot;The object was created!&quot;)</span>
+
+<span class="sd">    if DEBUG:</span>
+<span class="sd">        obj.delete()</span>
+<span class="sd">        obj2.delete()</span>
+
+<span class="sd">    #INSERT another_batch_file</span>
+
+<span class="sd">    #CODE</span>
+
+<span class="sd">    script = create.create_script()</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">codecs</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
+
+<span class="n">_ENCODINGS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">ENCODINGS</span>
+<span class="n">_RE_INSERT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\#INSERT (.*)$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+<span class="n">_RE_CLEANBLOCK</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\#.*?$|^\s*$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+<span class="n">_RE_CMD_SPLIT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\#.*?$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+<span class="n">_RE_CODE_OR_HEADER</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">r</span><span class="s2">&quot;((?:\A|^)#CODE|(?:/A|^)#HEADER|\A)(.*?)$(.*?)(?=^#CODE.*?$|^#HEADER.*?$|\Z)&quot;</span><span class="p">,</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># -------------------------------------------------------------</span>
+<span class="c1"># Helper function</span>
+<span class="c1"># -------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="read_batchfile"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.read_batchfile">[docs]</a><span class="k">def</span> <span class="nf">read_batchfile</span><span class="p">(</span><span class="n">pythonpath</span><span class="p">,</span> <span class="n">file_ending</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This reads the contents of a batch-file.  Filename is considered</span>
+<span class="sd">    to be a python path to a batch file relative the directory</span>
+<span class="sd">    specified in `settings.py`.</span>
+
+<span class="sd">    file_ending specify which batchfile ending should be assumed (.ev</span>
+<span class="sd">    or .py). The ending should not be included in the python path.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pythonpath (str): A dot-python path to a file.</span>
+<span class="sd">        file_ending (str): The file ending of this file (.ev or .py)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        text (str): The text content of the batch file.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        IOError: If problems reading file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># find all possible absolute paths</span>
+    <span class="n">abspaths</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">pypath_to_realpath</span><span class="p">(</span><span class="n">pythonpath</span><span class="p">,</span> <span class="n">file_ending</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_BATCHPROCESS_PATHS</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">abspaths</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Absolute batchcmd paths could not be found.&quot;</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">decoderr</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">abspath</span> <span class="ow">in</span> <span class="n">abspaths</span><span class="p">:</span>
+        <span class="c1"># try different paths, until we get a match</span>
+        <span class="c1"># we read the file directly into string.</span>
+        <span class="k">for</span> <span class="n">file_encoding</span> <span class="ow">in</span> <span class="n">_ENCODINGS</span><span class="p">:</span>
+            <span class="c1"># try different encodings, in order</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">abspath</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">file_encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">fobj</span><span class="p">:</span>
+                    <span class="n">text</span> <span class="o">=</span> <span class="n">fobj</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">UnicodeDecodeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="c1"># this means an encoding error; try another encoding</span>
+                <span class="n">decoderr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="k">continue</span>
+            <span class="k">break</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span> <span class="ow">and</span> <span class="n">decoderr</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">UnicodeDecodeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">decoderr</span><span class="p">),</span> <span class="nb">bytearray</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">text</span></div>
+
+
+<span class="c1"># -------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1"># Batch-command processor</span>
+<span class="c1">#</span>
+<span class="c1"># -------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="BatchCommandProcessor"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCommandProcessor">[docs]</a><span class="k">class</span> <span class="nc">BatchCommandProcessor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class implements a batch-command processor.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BatchCommandProcessor.parse_file"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCommandProcessor.parse_file">[docs]</a>    <span class="k">def</span> <span class="nf">parse_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pythonpath</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This parses the lines of a batch-command-file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pythonpath (str): The dot-python path to the file.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of all parsed commands with arguments, as strings.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Parsing follows the following rules:</span>
+
+<span class="sd">            1. A `#` at the beginning of a line marks the end of the command before</span>
+<span class="sd">               it. It is also a comment and any number of # can exist on</span>
+<span class="sd">               subsequent lines (but not inside comments).</span>
+<span class="sd">            2. #INSERT at the beginning of a line imports another</span>
+<span class="sd">               batch-cmd file file and pastes it into the batch file as if</span>
+<span class="sd">               it was written there.</span>
+<span class="sd">            3. Commands are placed alone at the beginning of a line and their</span>
+<span class="sd">               arguments are considered to be everything following (on any</span>
+<span class="sd">               number of lines) until the next comment line beginning with #.</span>
+<span class="sd">            4. Newlines are ignored in command definitions</span>
+<span class="sd">            5. A completely empty line in a command line definition is condered</span>
+<span class="sd">               a newline (so two empty lines is a paragraph).</span>
+<span class="sd">            6. Excess spaces and indents inside arguments are stripped.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">read_batchfile</span><span class="p">(</span><span class="n">pythonpath</span><span class="p">,</span> <span class="n">file_ending</span><span class="o">=</span><span class="s2">&quot;.ev&quot;</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">replace_insert</span><span class="p">(</span><span class="n">match</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Map replace entries&quot;&quot;&quot;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">#</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parse_file</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;#INSERT </span><span class="si">{}</span><span class="s2"> failed.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+        <span class="n">text</span> <span class="o">=</span> <span class="n">_RE_INSERT</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">replace_insert</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="n">commands</span> <span class="o">=</span> <span class="n">_RE_CMD_SPLIT</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">]</span>
+        <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">commands</span> <span class="k">if</span> <span class="n">c</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">commands</span></div></div>
+
+
+<span class="c1"># -------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1"># Batch-code processor</span>
+<span class="c1">#</span>
+<span class="c1"># -------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="tb_filename"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.tb_filename">[docs]</a><span class="k">def</span> <span class="nf">tb_filename</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Helper to get filename from traceback&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">tb</span><span class="o">.</span><span class="n">tb_frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_filename</span></div>
+
+
+<div class="viewcode-block" id="tb_iter"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.tb_iter">[docs]</a><span class="k">def</span> <span class="nf">tb_iter</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Traceback iterator.&quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="n">tb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">tb</span>
+        <span class="n">tb</span> <span class="o">=</span> <span class="n">tb</span><span class="o">.</span><span class="n">tb_next</span></div>
+
+
+<div class="viewcode-block" id="BatchCodeProcessor"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCodeProcessor">[docs]</a><span class="k">class</span> <span class="nc">BatchCodeProcessor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This implements a batch-code processor</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BatchCodeProcessor.parse_file"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCodeProcessor.parse_file">[docs]</a>    <span class="k">def</span> <span class="nf">parse_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pythonpath</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This parses the lines of a batch-code file</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pythonpath (str): The dot-python path to the file.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of all `#CODE` blocks, each with</span>
+<span class="sd">                prepended `#HEADER` block data. If no `#CODE`</span>
+<span class="sd">                blocks were found, this will be a list of one element</span>
+<span class="sd">                containing all code in the file (so a normal Python file).</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Parsing is done according to the following rules:</span>
+
+<span class="sd">            1. Code before a #CODE/HEADER block are considered part of</span>
+<span class="sd">               the first code/header block or is the ONLY block if no</span>
+<span class="sd">               `#CODE/HEADER` blocks are defined.</span>
+<span class="sd">            2. Lines starting with #HEADER starts a header block (ends other blocks)</span>
+<span class="sd">            3. Lines starting with #CODE begins a code block (ends other blocks)</span>
+<span class="sd">            4. Lines starting with #INSERT are on form #INSERT filename. Code from</span>
+<span class="sd">               this file are processed with their headers *separately* before</span>
+<span class="sd">               being inserted at the point of the #INSERT.</span>
+<span class="sd">            5. Code after the last block is considered part of the last header/code</span>
+<span class="sd">               block</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">read_batchfile</span><span class="p">(</span><span class="n">pythonpath</span><span class="p">,</span> <span class="n">file_ending</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">replace_insert</span><span class="p">(</span><span class="n">match</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Run parse_file on the import before sub:ing it into this file&quot;&quot;&quot;</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;# batchcode insert (</span><span class="si">%s</span><span class="s2">):&quot;</span> <span class="o">%</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parse_file</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;#INSERT </span><span class="si">{}</span><span class="s2"> failed.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+        <span class="c1"># process and then insert code from all #INSERTS</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">_RE_INSERT</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">replace_insert</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">codes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">imatch</span><span class="p">,</span> <span class="n">match</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">_RE_CODE_OR_HEADER</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">text</span><span class="p">))):</span>
+            <span class="n">mtype</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="c1"># we need to handle things differently at the start of the file</span>
+            <span class="k">if</span> <span class="n">mtype</span><span class="p">:</span>
+                <span class="n">istart</span><span class="p">,</span> <span class="n">iend</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">span</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">istart</span><span class="p">,</span> <span class="n">iend</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="n">istart</span><span class="p">:</span><span class="n">iend</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">mtype</span> <span class="o">==</span> <span class="s2">&quot;#HEADER&quot;</span><span class="p">:</span>
+                <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># either #CODE or matching from start of file</span>
+                <span class="n">codes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+
+        <span class="c1"># join all headers together to one</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;# batchcode header:</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span> <span class="k">if</span> <span class="n">headers</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="c1"># add header to each code block</span>
+        <span class="n">codes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"># batchcode code:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span> <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">codes</span></div>
+
+<div class="viewcode-block" id="BatchCodeProcessor.code_exec"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCodeProcessor.code_exec">[docs]</a>    <span class="k">def</span> <span class="nf">code_exec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">extra_environ</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute a single code block, including imports and appending</span>
+<span class="sd">        global vars.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            code (str): Code to run.</span>
+<span class="sd">            extra_environ (dict): Environment variables to run with code.</span>
+<span class="sd">            debug (bool, optional): Set the DEBUG variable in the execution</span>
+<span class="sd">                namespace.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            err (str or None): An error code or None (ok).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># define the execution environment</span>
+        <span class="n">environdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;settings_module&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="n">debug</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">extra_environ</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">environdict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="c1"># initializing the django settings at the top of code</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;# batchcode evennia initialization: </span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;try: settings_module.configure()</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;except RuntimeError: pass</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;finally: del settings_module</span><span class="se">\n\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">code</span>
+        <span class="p">)</span>
+
+        <span class="c1"># execute the block</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">exec</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">environdict</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">etype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span>
+
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">tb_filename</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">tb</span> <span class="ow">in</span> <span class="n">tb_iter</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">fname</span> <span class="o">!=</span> <span class="n">tb_filename</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
+                    <span class="k">break</span>
+            <span class="n">lineno</span> <span class="o">=</span> <span class="n">tb</span><span class="o">.</span><span class="n">tb_lineno</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">iline</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">code</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">iline</span> <span class="o">==</span> <span class="n">lineno</span><span class="p">:</span>
+                    <span class="n">err</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|w</span><span class="si">%02i</span><span class="s2">|n: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">iline</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">lineno</span> <span class="o">-</span> <span class="mi">5</span> <span class="o">&lt;</span> <span class="n">iline</span> <span class="o">&lt;</span> <span class="n">lineno</span> <span class="o">+</span> <span class="mi">5</span><span class="p">:</span>
+                    <span class="n">err</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%02i</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">iline</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+
+            <span class="n">err</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exception</span><span class="p">(</span><span class="n">etype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">err</span>
+        <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
+<span class="n">BATCHCMD</span> <span class="o">=</span> <span class="n">BatchCommandProcessor</span><span class="p">()</span>
+<span class="n">BATCHCODE</span> <span class="o">=</span> <span class="n">BatchCodeProcessor</span><span class="p">()</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="batchprocessors.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.batchprocessors</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

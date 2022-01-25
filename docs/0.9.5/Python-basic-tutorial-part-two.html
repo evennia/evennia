@@ -1,0 +1,571 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Python basic tutorial part two &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Python basic tutorial part two</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="python-basic-tutorial-part-two">
+<h1>Python basic tutorial part two<a class="headerlink" href="#python-basic-tutorial-part-two" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference internal" href="Python-basic-introduction.html"><span class="doc std std-doc">In the first part</span></a> of this Python-for-Evennia basic tutorial we learned
+how to run some simple Python code from inside the game. We also made our first new <em>module</em>
+containing a <em>function</em> that we called. Now we’re going to start exploring the very important
+subject of <em>objects</em>.</p>
+<p><strong>Contents:</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#on-the-subject-of-objects"><span class="std std-doc">On the subject of objects</span></a></p></li>
+<li><p><a class="reference internal" href="#exploring-the-evennia-library"><span class="std std-doc">Exploring the Evennia library</span></a></p></li>
+<li><p><a class="reference internal" href="#tweaking-our-character-class"><span class="std std-doc">Tweaking our Character class</span></a></p></li>
+<li><p><a class="reference internal" href="#the-evennia-shell"><span class="std std-doc">The Evennia shell</span></a></p></li>
+<li><p><a class="reference internal" href="#where-to-go-from-here"><span class="std std-doc">Where to go from here</span></a></p></li>
+</ul>
+<section id="on-the-subject-of-objects">
+<h2>On the subject of objects<a class="headerlink" href="#on-the-subject-of-objects" title="Permalink to this headline">¶</a></h2>
+<p>In the first part of the tutorial we did things like</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py me.msg(&quot;Hello World!&quot;)
+</pre></div>
+</div>
+<p>To learn about functions and imports we also passed that <code class="docutils literal notranslate"><span class="pre">me</span></code> on to a function <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> in
+another module.</p>
+<p>Let’s learn some more about this <code class="docutils literal notranslate"><span class="pre">me</span></code> thing we are passing around all over the place. In the
+following we assume that we named our superuser Character “Christine”.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py me
+Christine
+&gt; py me.key
+Christine
+</pre></div>
+</div>
+<p>These returns look the same at first glance, but not if we examine them more closely:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py type(me)
+&lt;class &#39;typeclasses.characters.Character&#39;&gt;
+&gt; py type(me.key)
+&lt;type str&gt;
+</pre></div>
+</div>
+<blockquote>
+<div><p>Note: In some MU clients, such as Mudlet and MUSHclient simply returning <code class="docutils literal notranslate"><span class="pre">type(me)</span></code>, you may not
+see the proper return from the above commands. This is likely due to the HTML-like tags <code class="docutils literal notranslate"><span class="pre">&lt;...&gt;</span></code>,
+being swallowed by the client.</p>
+</div></blockquote>
+<p>The <code class="docutils literal notranslate"><span class="pre">type</span></code> function is, like <code class="docutils literal notranslate"><span class="pre">print</span></code>, another in-built function in Python. It
+tells us that we (<code class="docutils literal notranslate"><span class="pre">me</span></code>) are of the <em>class</em> <code class="docutils literal notranslate"><span class="pre">typeclasses.characters.Character</span></code>.
+Meanwhile <code class="docutils literal notranslate"><span class="pre">me.key</span></code> is a <em>property</em> on us, a string. It holds the name of this
+object.</p>
+<blockquote>
+<div><p>When you do <code class="docutils literal notranslate"><span class="pre">py</span> <span class="pre">me</span></code>, the <code class="docutils literal notranslate"><span class="pre">me</span></code> is defined in such a way that it will use its <code class="docutils literal notranslate"><span class="pre">.key</span></code> property to
+represent itself. That is why the result is the same as when doing <code class="docutils literal notranslate"><span class="pre">py</span> <span class="pre">me.key</span></code>. Also, remember that
+as noted in the first part of the tutorial, the <code class="docutils literal notranslate"><span class="pre">me</span></code> is <em>not</em> a reserved Python word; it was just
+defined by the Evennia developers as a convenient short-hand when creating the <code class="docutils literal notranslate"><span class="pre">py</span></code> command. So
+don’t expect <code class="docutils literal notranslate"><span class="pre">me</span></code> to be available elsewhere.</p>
+</div></blockquote>
+<p>A <em>class</em> is like a “factory” or blueprint. From a class you then create individual <em>instances</em>. So
+if class is<code class="docutils literal notranslate"><span class="pre">Dog</span></code>, an instance of <code class="docutils literal notranslate"><span class="pre">Dog</span></code> might be <code class="docutils literal notranslate"><span class="pre">fido</span></code>. Our in-game persona is of a class
+<code class="docutils literal notranslate"><span class="pre">Character</span></code>. The superuser <code class="docutils literal notranslate"><span class="pre">christine</span></code> is an <em>instance</em> of the <code class="docutils literal notranslate"><span class="pre">Character</span></code> class (an instance is
+also often referred to as an <em>object</em>). This is an important concept in <em>object oriented
+programming</em>. You are wise to <a class="reference external" href="https://en.wikipedia.org/wiki/Class-based_programming">familiarize yourself with it</a> a little.</p>
+<blockquote>
+<div><p>In other terms:</p>
+<ul class="simple">
+<li><p>class: A description of a thing, all the methods (code) and data (information)</p></li>
+<li><p>object: A thing, defined as an <em>instance</em> of a class.</p></li>
+</ul>
+<p>So in “Fido is a Dog”, “Fido” is an object–a unique thing–and “Dog” is a class. Coders would
+also say, “Fido is an instance of Dog”. There can be other dogs too, such as Butch and Fifi. They,
+too, would be instances of Dog.</p>
+<p>As another example: “Christine is a Character”, or “Christine is an instance of
+typeclasses.characters.Character”. To start, all characters will be instances of
+typeclass.characters.Character.</p>
+<p>You’ll be writing your own class soon! The important thing to know here is how classes and objects
+relate.</p>
+</div></blockquote>
+<p>The string <code class="docutils literal notranslate"><span class="pre">'typeclasses.characters.Character'</span></code> we got from the <code class="docutils literal notranslate"><span class="pre">type()</span></code> function is not arbitrary.
+You’ll recognize this from when we <em>imported</em> <code class="docutils literal notranslate"><span class="pre">world.test</span></code> in part one. This is a <em>path</em> exactly
+describing where to find the python code describing this class. Python treats source code files on
+your hard drive (known as <em>modules</em>) as well as folders (known as <em>packages</em>) as objects that you
+access with the <code class="docutils literal notranslate"><span class="pre">.</span></code> operator. It starts looking at a place that Evennia has set up for you - namely
+the root of your own game directory.</p>
+<p>Open and look at your game folder (named <code class="docutils literal notranslate"><span class="pre">mygame</span></code> if you exactly followed the Getting Started
+instructions) in a file editor or in a new terminal/console. Locate the file
+<code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mygame</span><span class="o">/</span>
+    <span class="n">typeclasses</span>
+        <span class="n">characters</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>This represents the first part of the python path - <code class="docutils literal notranslate"><span class="pre">typeclasses.characters</span></code> (the <code class="docutils literal notranslate"><span class="pre">.py</span></code> file ending
+is never included in the python path). The last bit, <code class="docutils literal notranslate"><span class="pre">.Character</span></code> is the actual class name inside
+the <code class="docutils literal notranslate"><span class="pre">characters.py</span></code> module. Open that file in a text editor and you will see something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">(Doc string for module)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
+
+<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (Doc string for class)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+</pre></div>
+</div>
+<p>There is <code class="docutils literal notranslate"><span class="pre">Character</span></code>, the last part of the path. Note how empty this file is. At first glance one
+would think a Character had no functionality at all. But from what we have used already we know it
+has at least the <code class="docutils literal notranslate"><span class="pre">key</span></code> property and the method <code class="docutils literal notranslate"><span class="pre">msg</span></code>! Where is the code? The answer is that this
+‘emptiness’ is an illusion caused by something called <em>inheritance</em>. Read on.</p>
+<p>Firstly, in the same way as the little <code class="docutils literal notranslate"><span class="pre">hello.py</span></code> we did in the first part of the tutorial, this is
+an example of full, multi-line Python code. Those triple-quoted strings are used for strings that
+have line breaks in them. When they appear on their own like this, at the top of a python module,
+class or similar they are called <em>doc strings</em>. Doc strings are read by Python and is used for
+producing online help about the function/method/class/module. By contrast, a line starting with <code class="docutils literal notranslate"><span class="pre">#</span></code>
+is a <em>comment</em>. It is ignored completely by Python and is only useful to help guide a human to
+understand the code.</p>
+<p>The line</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>means that the class <code class="docutils literal notranslate"><span class="pre">Character</span></code> is a <em>child</em> of the class <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code>. This is called
+<em>inheritance</em> and is another fundamental concept. The answer to the question “where is the code?” is
+that the code is <em>inherited</em> from its parent, <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code>. And that in turn may inherit code
+from <em>its</em> parent(s) and so on. Since our child, <code class="docutils literal notranslate"><span class="pre">Character</span></code> is empty, its functionality is <em>exactly
+identical</em> to that of its parent. The moment we add new things to Character, these will take
+precedence. And if we add something that already existed in the parent, our child-version will
+<em>override</em> the version in the parent. This is very practical: It means that we can let the parent do
+the heavy lifting and only tweak the things we want to change. It also means that we could easily
+have many different Character classes, all inheriting from <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> but changing different
+things. And those can in turn also have children …</p>
+<p>Let’s go on an expedition up the inheritance tree.</p>
+</section>
+<section id="exploring-the-evennia-library">
+<h2>Exploring the Evennia library<a class="headerlink" href="#exploring-the-evennia-library" title="Permalink to this headline">¶</a></h2>
+<p>Let’s figure out how to tweak <code class="docutils literal notranslate"><span class="pre">Character</span></code>. Right now we don’t know much about <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code>
+though. Without knowing that we won’t know what to override. At the top of the file you find</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
+</pre></div>
+</div>
+<p>This is an <code class="docutils literal notranslate"><span class="pre">import</span></code> statement again, but on a different form to what we’ve seen before. <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">...</span> <span class="pre">import</span> <span class="pre">...</span></code> is very commonly used and allows you to precisely dip into a module to extract just the
+component you need to use. In this case we head into the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> package to get
+<code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code>.</p>
+<p>Where is <code class="docutils literal notranslate"><span class="pre">evennia</span></code>? To find it you need to go to the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> folder (repository) you originally
+cloned from us. If you open it, this is how it looks:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span><span class="o">/</span>
+   <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+   <span class="nb">bin</span><span class="o">/</span>
+   <span class="n">CHANGELOG</span><span class="o">.</span><span class="n">txt</span> <span class="n">etc</span><span class="o">.</span>
+   <span class="o">...</span>
+   <span class="n">evennia</span><span class="o">/</span>
+   <span class="o">...</span>
+</pre></div>
+</div>
+<p>There are lots of things in there. There are some docs but most of those have to do with the
+distribution of Evennia and does not concern us right now. The <code class="docutils literal notranslate"><span class="pre">evennia</span></code> subfolder is what we are
+looking for. <em>This</em> is what you are accessing when you do <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia</span> <span class="pre">import</span> <span class="pre">...</span></code>. It’s set up by
+Evennia as a good place to find modules when the server starts. The exact layout of the Evennia
+library <a class="reference internal" href="Directory-Overview.html#evennia-library-layout"><span class="std std-doc">is covered by our directory overview</span></a>. You can
+also explore it <a class="reference external" href="https://github.com/evennia/evennia/tree/master/evennia">online on github</a>.</p>
+<p>The structure of the library directly reflects how you import from it.</p>
+<ul class="simple">
+<li><p>To, for example, import <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/utils/utils.py#L201">the text justify function</a> from
+<code class="docutils literal notranslate"><span class="pre">evennia/utils/utils.py</span></code> you would do <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia.utils.utils</span> <span class="pre">import</span> <span class="pre">justify</span></code>. In your code you
+could then just call <code class="docutils literal notranslate"><span class="pre">justify(...)</span></code> to access its functionality.</p></li>
+<li><p>You could also do <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia.utils</span> <span class="pre">import</span> <span class="pre">utils</span></code>. In code you would then have to write
+<code class="docutils literal notranslate"><span class="pre">utils.justify(...)</span></code>. This is practical if want a lot of stuff from that <code class="docutils literal notranslate"><span class="pre">utils.py</span></code> module and don’t
+want to import each component separately.</p></li>
+<li><p>You could also do <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">evennia</span></code>. You would then have to enter the full
+<code class="docutils literal notranslate"><span class="pre">evennia.utils.utils.justify(...)</span></code> every time you use it. Using <code class="docutils literal notranslate"><span class="pre">from</span></code> to only import the things you
+need is usually easier and more readable.</p></li>
+<li><p>See <a class="reference external" href="http://effbot.org/zone/import-confusion.htm">this overview</a> about the different ways to
+import in Python.</p></li>
+</ul>
+<p>Now, remember that our <code class="docutils literal notranslate"><span class="pre">characters.py</span></code> module did <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia</span> <span class="pre">import</span> <span class="pre">DefaultCharacter</span></code>. But if we
+look at the contents of the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> folder, there is no <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> anywhere! This is
+because Evennia gives a large number of optional “shortcuts”, known as <a class="reference internal" href="Evennia-API.html"><span class="doc std std-doc">the “flat” API</span></a>. The intention is to make it easier to remember where to find stuff. The flat API is defined in
+that weirdly named <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file. This file just basically imports useful things from all over
+Evennia so you can more easily find them in one place.</p>
+<p>We could <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia#typeclasses">just look at the documenation</a> to find out where we can look
+at our <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> parent. But for practice, let’s figure it out. Here is where
+<code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/__init__.py#L188">is imported from</a> inside <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
+</pre></div>
+</div>
+<p>The period at the start means that it imports beginning from the same location this module sits(i.e.
+the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> folder). The full python-path accessible from the outside is thus
+<code class="docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter</span></code>. So to import this into our game it’d be perfectly valid
+to do</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
+</pre></div>
+</div>
+<p>Using</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
+</pre></div>
+</div>
+<p>is the same thing, just a little easier to remember.</p>
+<blockquote>
+<div><p>To access the shortcuts of the flat API you <em>must</em> use <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia</span> <span class="pre">import</span> <span class="pre">...</span></code>. Using something like <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">evennia.DefaultCharacter</span></code> will not work.
+See <a class="reference internal" href="Evennia-API.html"><span class="doc std std-doc">more about the Flat API here</span></a>.</p>
+</div></blockquote>
+</section>
+<section id="tweaking-our-character-class">
+<h2>Tweaking our Character class<a class="headerlink" href="#tweaking-our-character-class" title="Permalink to this headline">¶</a></h2>
+<p>In the previous section we traced the parent of our <code class="docutils literal notranslate"><span class="pre">Character</span></code> class to be
+<code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> in
+<a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py">evennia/objects/objects.py</a>.
+Open that file and locate the <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> class. It’s quite a bit down
+in this module so you might want to search using your editor’s (or browser’s)
+search function. Once you find it, you’ll find that the class starts like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="k">class</span> <span class="nc">DefaultCharacter</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This implements an Object puppeted by a Session - that is, a character</span>
+<span class="sd">    avatar controlled by an account.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setup character-specific security.</span>
+<span class="sd">        You should normally not need to overload this, but if you do,</span>
+<span class="sd">        make sure to reproduce at least the two last commands in this</span>
+<span class="sd">        method (unless you want to fundamentally change how a</span>
+<span class="sd">        Character object works).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">basetype_setup</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;get:false()&quot;</span><span class="p">,</span>     <span class="c1"># noone can pick up the character</span>
+                                 <span class="s2">&quot;call:false()&quot;</span><span class="p">]))</span>  <span class="c1"># no commands can be called on character from</span>
+<span class="n">outside</span>
+        <span class="c1"># add the default cmdset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_CHARACTER</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">at_after_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We make sure to look around after a move.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">at_look</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">at_pre_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the character from storage in None location in `at_post_unpuppet`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="c1"># ...</span>
+
+</pre></div>
+</div>
+<p>… And so on (you can see the full <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L1915">class online here</a>). Here we
+have functional code! These methods may not be directly visible in <code class="docutils literal notranslate"><span class="pre">Character</span></code> back in our game dir,
+but they are still available since <code class="docutils literal notranslate"><span class="pre">Character</span></code> is a child of <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> above. Here is a
+brief summary of the methods we find in <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> (follow in the code to see if you can see
+roughly where things happen)::</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">basetype_setup</span></code> is called by Evennia only once, when a Character is first created. In the
+<code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> class it sets some particular <a class="reference internal" href="Locks.html"><span class="doc std std-doc">Locks</span></a> so that people can’t pick up and
+puppet Characters just like that. It also adds the <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">Character Cmdset</span></a> so that
+Characters always can accept command-input (this should usually not be modified - the normal hook to
+override is <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code>, which is called after <code class="docutils literal notranslate"><span class="pre">basetype_setup</span></code> (it’s in the parent)).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_after_move</span></code> makes it so that every time the Character moves, the <code class="docutils literal notranslate"><span class="pre">look</span></code> command is
+automatically fired (this would not make sense for just any regular Object).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_pre_puppet</span></code> is called when an Account begins to puppet this Character. When not puppeted, the
+Character is hidden away to a <code class="docutils literal notranslate"><span class="pre">None</span></code> location. This brings it back to the location it was in before.
+Without this, “headless” Characters would remain in the game world just standing around.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_post_puppet</span></code> is called when puppeting is complete. It echoes a message to the room that his
+Character has now connected.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_post_unpuppet</span></code> is called once stopping puppeting of the Character. This hides away the
+Character to a <code class="docutils literal notranslate"><span class="pre">None</span></code> location again.</p></li>
+<li><p>There are also some utility properties which makes it easier to get some time stamps from the
+Character.</p></li>
+</ul>
+<p>Reading the class we notice another thing:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DefaultCharacter</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+</pre></div>
+</div>
+<p>This means that <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> is in <em>itself</em> a child of something called <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>! Let’s
+see what this parent class provides. It’s in the same module as <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code>, you just need to
+<a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L193">scroll up near the top</a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DefaultObject</span><span class="p">(</span><span class="n">with_metaclass</span><span class="p">(</span><span class="n">TypeclassBase</span><span class="p">,</span> <span class="n">ObjectDB</span><span class="p">)):</span>
+   <span class="c1"># ...</span>
+</pre></div>
+</div>
+<p>This is a really big class where the bulk of code defining an in-game object resides. It consists of
+a large number of methods, all of which thus also becomes available on the <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> class
+below <em>and</em> by extension in your <code class="docutils literal notranslate"><span class="pre">Character</span></code> class over in your game dir. In this class you can for
+example find the <code class="docutils literal notranslate"><span class="pre">msg</span></code> method we have been using before.</p>
+<blockquote>
+<div><p>You should probably not expect to understand all details yet, but as an exercise, find and read
+the doc string of <code class="docutils literal notranslate"><span class="pre">msg</span></code>.</p>
+</div></blockquote>
+<blockquote>
+<div><p>As seen, <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> actually has multiple parents. In one of those the basic <code class="docutils literal notranslate"><span class="pre">key</span></code> property
+is defined, but we won’t travel further up the inheritance tree in this tutorial. If you are
+interested to see them, you can find <code class="docutils literal notranslate"><span class="pre">TypeclassBase</span></code> in <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/typeclasses/models.py#L93">evennia/typeclasses/models.py</a> and <code class="docutils literal notranslate"><span class="pre">ObjectDB</span></code> in <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/objects/models.py#L121">evennia/obj
+ects/models.py</a>. We
+will also not go into the details of <a class="reference external" href="https://docs.python.org/2/tutorial/classes.html#multiple-inheritance">Multiple Inheritance</a> or
+<a class="reference external" href="http://www.onlamp.com/pub/a/python/2003/04/17/metaclasses.html">Metaclasses</a> here. The general rule
+is that if you realize that you need these features, you already know enough to use them.</p>
+</div></blockquote>
+<p>Remember the <code class="docutils literal notranslate"><span class="pre">at_pre_puppet</span></code> method we looked at in <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code>? If you look at the
+<code class="docutils literal notranslate"><span class="pre">at_pre_puppet</span></code> hook as defined in <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> you’ll find it to be completely empty (just a
+<code class="docutils literal notranslate"><span class="pre">pass</span></code>). So if you puppet a regular object it won’t be hiding/retrieving the object when you
+unpuppet it. The <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> class <em>overrides</em> its parent’s functionality with a version of
+its own. And since it’s <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> that our <code class="docutils literal notranslate"><span class="pre">Character</span></code> class inherits back in our game dir,
+it’s <em>that</em> version of <code class="docutils literal notranslate"><span class="pre">at_pre_puppet</span></code> we’ll get. Anything not explicitly overridden will be passed
+down as-is.</p>
+<p>While it’s useful to read the code, we should never actually modify anything inside the <code class="docutils literal notranslate"><span class="pre">evennia</span></code>
+folder. Only time you would want that is if you are planning to release a bug fix or new feature for
+Evennia itself. Instead you <em>override</em> the default functionality inside your game dir.</p>
+<p>So to conclude our little foray into classes, objects and inheritance, locate the simple little
+<code class="docutils literal notranslate"><span class="pre">at_before_say</span></code> method in the <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">at_before_say</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        (doc string here)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">message</span>
+</pre></div>
+</div>
+<p>If you read the doc string you’ll find that this can be used to modify the output of <code class="docutils literal notranslate"><span class="pre">say</span></code> before it
+goes out. You can think of it like this: Evennia knows the name of this method, and when someone
+speaks, Evennia will make sure to redirect the outgoing message through this method. It makes it
+ripe for us to replace with a version of our own.</p>
+<blockquote>
+<div><p>In the Evennia documentation you may sometimes see the term <em>hook</em> used for a method explicitly
+meant to be overridden like this.</p>
+</div></blockquote>
+<p>As you can see, the first argument to <code class="docutils literal notranslate"><span class="pre">at_before_say</span></code> is <code class="docutils literal notranslate"><span class="pre">self</span></code>. In Python, the first argument of a
+method is <em>always a back-reference to the object instance on which the method is defined</em>. By
+convention this argument is always called <code class="docutils literal notranslate"><span class="pre">self</span></code> but it could in principle be named anything. The
+<code class="docutils literal notranslate"><span class="pre">self</span></code> is very useful. If you wanted to, say, send a message to the same object from inside
+<code class="docutils literal notranslate"><span class="pre">at_before_say</span></code>, you would do <code class="docutils literal notranslate"><span class="pre">self.msg(...)</span></code>.</p>
+<p>What can trip up newcomers is that you <em>don’t</em> include <code class="docutils literal notranslate"><span class="pre">self</span></code> when you <em>call</em> the method. Try:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; @py me.at_before_say(&quot;Hello World!&quot;)
+Hello World!
+</pre></div>
+</div>
+<p>Note that we don’t send <code class="docutils literal notranslate"><span class="pre">self</span></code> but only the <code class="docutils literal notranslate"><span class="pre">message</span></code> argument. Python will automatically add <code class="docutils literal notranslate"><span class="pre">self</span></code>
+for us. In this case, <code class="docutils literal notranslate"><span class="pre">self</span></code> will become equal to the Character instance <code class="docutils literal notranslate"><span class="pre">me</span></code>.</p>
+<p>By default the <code class="docutils literal notranslate"><span class="pre">at_before_say</span></code> method doesn’t do anything. It just takes the <code class="docutils literal notranslate"><span class="pre">message</span></code> input and
+<code class="docutils literal notranslate"><span class="pre">return</span></code>s it just the way it was (the <code class="docutils literal notranslate"><span class="pre">return</span></code> is another reserved Python word).</p>
+<blockquote>
+<div><p>We won’t go into <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> here, but it (and its sibling <code class="docutils literal notranslate"><span class="pre">*args</span></code>) is also important to
+understand, extra reading is <a class="reference external" href="https://stackoverflow.com/questions/1769403/understanding-kwargs-in-python">here for <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code></a>.</p>
+</div></blockquote>
+<p>Now, open your game folder and edit <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>. Locate your <code class="docutils literal notranslate"><span class="pre">Character</span></code>
+class and modify it as such:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (docstring here)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">at_before_say</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="s2">&quot;Called before say, allows for tweaking message&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2"> ...&quot;</span>
+</pre></div>
+</div>
+<p>So we add our own version of <code class="docutils literal notranslate"><span class="pre">at_before_say</span></code>, duplicating the <code class="docutils literal notranslate"><span class="pre">def</span></code> line from the parent but putting
+new code in it. All we do in this tutorial is to add an ellipsis (<code class="docutils literal notranslate"><span class="pre">...</span></code>) to the message as it passes
+through the method.</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">f</span></code> in front of the string, it means we turned the string into a ‘formatted string’. We
+can now easily inject stuff directly into the string by wrapping them in curly brackets <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">}</span></code>. In
+this example, we put the incoming <code class="docutils literal notranslate"><span class="pre">message</span></code> into the string, followed by an ellipsis. This is only
+one way to format a string. Python has very powerful <a class="reference external" href="https://docs.python.org/2/library/string.html#format-specification-mini-language">string formatting</a> and
+you are wise to learn it well, considering your game will be mainly text-based.</p>
+<blockquote>
+<div><p>You could also copy &amp; paste the relevant method from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> here to get the full doc
+string. For more complex methods, or if you only want to change some small part of the default
+behavior, copy &amp; pasting will eliminate the need to constantly look up the original method and keep
+you sane.</p>
+</div></blockquote>
+<p>In-game, now try</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; @reload
+&gt; say Hello
+You say, &quot;Hello ...&quot;
+</pre></div>
+</div>
+<p>An ellipsis <code class="docutils literal notranslate"><span class="pre">...</span></code> is added to what you said! This is a silly example but you have just made your
+first code change to core functionality - without touching any of Evennia’s original code! We just
+plugged in our own version of the <code class="docutils literal notranslate"><span class="pre">at_before_say</span></code> method and it replaced the default one. Evennia
+happily redirected the message through our version and we got a different output.</p>
+<blockquote>
+<div><p>For sane overriding of parent methods you should also be aware of Python’s
+<a class="reference external" href="https://docs.python.org/3/library/functions.html#super">super</a>, which allows you to call the
+methods defined on a parent in your child class.</p>
+</div></blockquote>
+</section>
+<section id="the-evennia-shell">
+<h2>The Evennia shell<a class="headerlink" href="#the-evennia-shell" title="Permalink to this headline">¶</a></h2>
+<p>Now on to some generally useful tools as you continue learning Python and Evennia. We have so far
+explored using <code class="docutils literal notranslate"><span class="pre">py</span></code> and have inserted Python code directly in-game. We have also modified Evennia’s
+behavior by overriding default functionality with our own. There is a third way to conveniently
+explore Evennia and Python - the Evennia shell.</p>
+<p>Outside of your game, <code class="docutils literal notranslate"><span class="pre">cd</span></code> to your mygame folder and make sure any needed virtualenv is running.
+Next:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; pip install ipython      # only needed once
+</pre></div>
+</div>
+<p>The <a class="reference external" href="https://en.wikipedia.org/wiki/IPython"><code class="docutils literal notranslate"><span class="pre">IPython</span></code></a> program is just a nicer interface to the
+Python interpreter - you only need to install it once, after which Evennia will use it
+automatically.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; evennia shell
+</pre></div>
+</div>
+<p>If you did this call from your game dir you will now be in a Python prompt managed by the IPython
+program.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IPython ...
+...
+In [1]: IPython has some very nice ways to explore what Evennia has to offer.
+
+&gt; import evennia
+&gt; evennia.&lt;TAB&gt;
+</pre></div>
+</div>
+<p>That is, write <code class="docutils literal notranslate"><span class="pre">evennia.</span></code> and press the Tab key. You will be presented with a list of all available
+resources in the Evennia Flat API. We looked at the <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file in the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> folder
+earlier, so some of what you see should be familiar. From the IPython prompt, do:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; from evennia import DefaultCharacter
+&gt; DefaultCharacter.at_before_say?
+</pre></div>
+</div>
+<p>Don’t forget that you can use <code class="docutils literal notranslate"><span class="pre">&lt;TAB&gt;</span></code> to auto-complete code as you write. Appending a single <code class="docutils literal notranslate"><span class="pre">?</span></code> to
+the end will show you the doc-string for <code class="docutils literal notranslate"><span class="pre">at_before_say</span></code> we looked at earlier. Use <code class="docutils literal notranslate"><span class="pre">??</span></code> to get the
+whole source code.</p>
+<p>Let’s look at our over-ridden version instead. Since we started the <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">shell</span></code> from our game
+dir we can easily get to our code too:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; from typeclasses.characters import Character
+&gt; Character.at_before_say??
+</pre></div>
+</div>
+<p>This will show us the changed code we just did. Having a window with IPython running is very
+convenient for quickly exploring code without having to go digging through the file structure!</p>
+</section>
+<section id="where-to-go-from-here">
+<h2>Where to go from here<a class="headerlink" href="#where-to-go-from-here" title="Permalink to this headline">¶</a></h2>
+<p>This should give you a running start using Python with Evennia. If you are completely new to
+programming or Python you might want to look at a more formal Python tutorial. You can find links
+and resources <a class="reference internal" href="Links.html"><span class="doc std std-doc">on our link page</span></a>.</p>
+<p>We have touched upon many of the concepts here but to use Evennia and to be able to follow along in
+the code, you will need basic understanding of Python
+<a class="reference external" href="http://docs.python.org/2/tutorial/modules.html">modules</a>,
+<a class="reference external" href="http://www.tutorialspoint.com/python/python_variable_types.htm">variables</a>,
+<a class="reference external" href="http://docs.python.org/tutorial/controlflow.html#if-statements">conditional statements</a>,
+<a class="reference external" href="http://docs.python.org/tutorial/controlflow.html#for-statements">loops</a>,
+<a class="reference external" href="http://docs.python.org/tutorial/controlflow.html#defining-functions">functions</a>,
+<a class="reference external" href="http://docs.python.org/tutorial/datastructures.html">lists, dictionaries, list comprehensions</a>
+and <a class="reference external" href="http://docs.python.org/tutorial/introduction.html#strings">string formatting</a>. You should also have a basic
+understanding of <a class="reference external" href="http://www.tutorialspoint.com/python/python_classes_objects.htm">object-oriented programming</a>
+and what Python <a class="reference external" href="http://docs.python.org/tutorial/classes.html">Classes</a> are.</p>
+<p>Once you have familiarized yourself, or if you prefer to pick Python up as you go, continue to one
+of the beginning-level <a class="reference internal" href="Tutorials.html"><span class="doc std std-doc">Evennia tutorials</span></a> to gradually build up your understanding.</p>
+<p>Good luck!</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Python basic tutorial part two</a><ul>
+<li><a class="reference internal" href="#on-the-subject-of-objects">On the subject of objects</a></li>
+<li><a class="reference internal" href="#exploring-the-evennia-library">Exploring the Evennia library</a></li>
+<li><a class="reference internal" href="#tweaking-our-character-class">Tweaking our Character class</a></li>
+<li><a class="reference internal" href="#the-evennia-shell">The Evennia shell</a></li>
+<li><a class="reference internal" href="#where-to-go-from-here">Where to go from here</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Python-basic-tutorial-part-two.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Python-basic-tutorial-part-two.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Python basic tutorial part two</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

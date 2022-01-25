@@ -1,0 +1,748 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.scripts.tickerhandler &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.scripts.tickerhandler</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.scripts.tickerhandler</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">TickerHandler</span>
+
+<span class="sd">This implements an efficient Ticker which uses a subscription</span>
+<span class="sd">model to &#39;tick&#39; subscribed objects at regular intervals.</span>
+
+<span class="sd">The ticker mechanism is used by importing and accessing</span>
+<span class="sd">the instantiated TICKER_HANDLER instance in this module. This</span>
+<span class="sd">instance is run by the server; it will save its status across</span>
+<span class="sd">server reloads and be started automaticall on boot.</span>
+
+<span class="sd">Example:</span>
+
+<span class="sd">```python</span>
+<span class="sd">    from evennia.scripts.tickerhandler import TICKER_HANDLER</span>
+
+<span class="sd">    # call tick myobj.at_tick(*args, **kwargs) every 15 seconds</span>
+<span class="sd">    TICKER_HANDLER.add(15, myobj.at_tick, *args, **kwargs)</span>
+<span class="sd">```</span>
+
+<span class="sd">You supply the interval to tick and a callable to call regularly with</span>
+<span class="sd">any extra args/kwargs. The callable should either be a stand-alone</span>
+<span class="sd">function in a module *or* the method on a *typeclassed* entity (that</span>
+<span class="sd">is, on an object that can be safely and stably returned from the</span>
+<span class="sd">database).  Functions that are dynamically created or sits on</span>
+<span class="sd">in-memory objects cannot be used by the tickerhandler (there is no way</span>
+<span class="sd">to reference them safely across reboots and saves).</span>
+
+<span class="sd">The handler will transparently set</span>
+<span class="sd">up and add new timers behind the scenes to tick at given intervals,</span>
+<span class="sd">using a TickerPool - all callables with the same interval will share</span>
+<span class="sd">the interval ticker.</span>
+
+<span class="sd">To remove:</span>
+
+<span class="sd">```python</span>
+<span class="sd">    TICKER_HANDLER.remove(15, myobj.at_tick)</span>
+<span class="sd">```</span>
+
+<span class="sd">Both interval and callable must be given since a single object can be subscribed</span>
+<span class="sd">to many different tickers at the same time. You can also supply `idstring`</span>
+<span class="sd">as an identifying string if you ever want to tick the callable at the same interval</span>
+<span class="sd">but with different arguments (args/kwargs are not used for identifying the ticker). There</span>
+<span class="sd">is also `persistent=False` if you don&#39;t want to make a ticker that don&#39;t survive a reload.</span>
+<span class="sd">If either or both `idstring` or `persistent` has been changed from their defaults, they</span>
+<span class="sd">must be supplied to the `TICKER_HANDLER.remove` call to properly identify the ticker</span>
+<span class="sd">to remove.</span>
+
+<span class="sd">The TickerHandler&#39;s functionality can be overloaded by modifying the</span>
+<span class="sd">Ticker class and then changing TickerPool and TickerHandler to use the</span>
+<span class="sd">custom classes</span>
+
+<span class="sd">```python</span>
+<span class="sd">class MyTicker(Ticker):</span>
+<span class="sd">    # [doing custom stuff]</span>
+
+<span class="sd">class MyTickerPool(TickerPool):</span>
+<span class="sd">    ticker_class = MyTicker</span>
+<span class="sd">class MyTickerHandler(TickerHandler):</span>
+<span class="sd">    ticker_pool_class = MyTickerPool</span>
+<span class="sd">```</span>
+
+<span class="sd">If one wants to duplicate TICKER_HANDLER&#39;s auto-saving feature in</span>
+<span class="sd">a  custom handler one can make a custom `AT_STARTSTOP_MODULE` entry to</span>
+<span class="sd">call the handler&#39;s `save()` and `restore()` methods when the server reboots.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">inlineCallbacks</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
+<span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">ExtendedLoopingCall</span>
+<span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span><span class="p">,</span> <span class="n">log_err</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">dbserialize</span><span class="p">,</span> <span class="n">dbunserialize</span><span class="p">,</span> <span class="n">pack_dbobj</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">variable_from_module</span><span class="p">,</span> <span class="n">inherits_from</span>
+
+<span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
+<span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
+
+
+<span class="n">_ERROR_ADD_TICKER</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;TickerHandler: Tried to add an invalid ticker:</span>
+<span class="si">{store_key}</span><span class="s2"></span>
+<span class="s2">Ticker was not added.&quot;&quot;&quot;</span>
+
+<span class="n">_ERROR_ADD_TICKER_SUB_SECOND</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You are trying to add a ticker running faster</span>
+<span class="s2">than once per second. This is not supported and also probably not useful:</span>
+<span class="s2">Spamming messages to the user faster than once per second serves no purpose in</span>
+<span class="s2">a text-game, and if you want to update some property, consider doing so</span>
+<span class="s2">on-demand rather than using a ticker.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ticker"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.Ticker">[docs]</a><span class="k">class</span> <span class="nc">Ticker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a repeatedly running task that calls</span>
+<span class="sd">    hooks repeatedly. Overload `_callback` to change the</span>
+<span class="sd">    way it operates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@inlineCallbacks</span>
+    <span class="k">def</span> <span class="nf">_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This will be called repeatedly every `self.interval` seconds.</span>
+<span class="sd">        `self.subscriptions` contain tuples of (obj, args, kwargs) for</span>
+<span class="sd">        each subscribing object.</span>
+
+<span class="sd">        If overloading, this callback is expected to handle all</span>
+<span class="sd">        subscriptions when it is triggered. It should not return</span>
+<span class="sd">        anything and should not traceback on poorly designed hooks.</span>
+<span class="sd">        The callback should ideally work under @inlineCallbacks so it</span>
+<span class="sd">        can yield appropriately.</span>
+
+<span class="sd">        The _hook_key, which is passed down through the handler via</span>
+<span class="sd">        kwargs is used here to identify which hook method to call.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_to_add</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_ticking</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">store_key</span><span class="p">,</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">callback</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_callback&quot;</span><span class="p">,</span> <span class="s2">&quot;at_tick&quot;</span><span class="p">)</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_obj&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
+                    <span class="c1"># call directly</span>
+                    <span class="k">yield</span> <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="c1"># try object method</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span>
+                    <span class="c1"># object was deleted between calls</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">store_key</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">_GA</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">callback</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">ObjectDoesNotExist</span><span class="p">:</span>
+                <span class="n">log_trace</span><span class="p">(</span><span class="s2">&quot;Removing ticker.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">store_key</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">log_trace</span><span class="p">()</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="c1"># make sure to re-store</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_callback&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">callback</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_obj&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="c1"># cleanup - we do this here to avoid changing the subscription dict while it loops</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_ticking</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">store_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_remove</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">store_key</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">store_key</span><span class="p">,</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_add</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">store_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_to_add</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="Ticker.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.Ticker.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up the ticker</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            interval (int): The stepping interval.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="n">interval</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_ticking</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_to_add</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># set up a twisted asynchronous repeat call</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="n">ExtendedLoopingCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_callback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ticker.validate"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.Ticker.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start/stop the task depending on how many subscribers we have</span>
+<span class="sd">        using it.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            start_delay (int): Time to way before starting.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">subs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">subs</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">subs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="n">start_delay</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ticker.add"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.Ticker.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sign up a subscriber to this ticker.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            store_key (str): Unique storage hash for this ticker subscription.</span>
+<span class="sd">            args (any, optional): Arguments to call the hook method with.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            _start_delay (int): If set, this will be</span>
+<span class="sd">                used to delay the start of the trigger instead of</span>
+<span class="sd">                `interval`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_ticking</span><span class="p">:</span>
+            <span class="c1"># protects the subscription dict from</span>
+            <span class="c1"># updating while it is looping</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_to_add</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">store_key</span><span class="p">,</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">start_delay</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_start_delay&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="p">[</span><span class="n">store_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">start_delay</span><span class="o">=</span><span class="n">start_delay</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ticker.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.Ticker.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Unsubscribe object from this ticker</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            store_key (str): Unique store key.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_ticking</span><span class="p">:</span>
+            <span class="c1"># this protects the subscription dict from</span>
+            <span class="c1"># updating while it is looping</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">store_key</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">store_key</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Ticker.stop"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.Ticker.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Kill the Task, regardless of subscriptions.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="TickerPool"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerPool">[docs]</a><span class="k">class</span> <span class="nc">TickerPool</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This maintains a pool of</span>
+<span class="sd">    `evennia.scripts.scripts.ExtendedLoopingCall` tasks for calling</span>
+<span class="sd">    subscribed objects at given times.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ticker_class</span> <span class="o">=</span> <span class="n">Ticker</span>
+
+<div class="viewcode-block" id="TickerPool.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerPool.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the pool.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tickers</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="TickerPool.add"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerPool.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add new ticker subscriber.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            store_key (str): Unique storage hash.</span>
+<span class="sd">            args (any, optional): Arguments to send to the hook method.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">store_key</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">interval</span><span class="p">:</span>
+            <span class="n">log_err</span><span class="p">(</span><span class="n">_ERROR_ADD_TICKER</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">store_key</span><span class="o">=</span><span class="n">store_key</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">interval</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tickers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tickers</span><span class="p">[</span><span class="n">interval</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticker_class</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tickers</span><span class="p">[</span><span class="n">interval</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">store_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TickerPool.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerPool.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove subscription from pool.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            store_key (str): Unique storage hash to remove</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">store_key</span>
+        <span class="k">if</span> <span class="n">interval</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tickers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tickers</span><span class="p">[</span><span class="n">interval</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">store_key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">tickers</span><span class="p">[</span><span class="n">interval</span><span class="p">]:</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">tickers</span><span class="p">[</span><span class="n">interval</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="TickerPool.stop"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerPool.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop all scripts in pool. This is done at server reload since</span>
+<span class="sd">        restoring the pool will automatically re-populate the pool.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            interval (int, optional): Only stop tickers with this</span>
+<span class="sd">                interval.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">interval</span> <span class="ow">and</span> <span class="n">interval</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tickers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tickers</span><span class="p">[</span><span class="n">interval</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ticker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tickers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">ticker</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="TickerHandler"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler">[docs]</a><span class="k">class</span> <span class="nc">TickerHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Tickerhandler maintains a pool of tasks for subscribing</span>
+<span class="sd">    objects to various tick rates.  The pool maintains creation</span>
+<span class="sd">    instructions and and re-applies them at a server restart.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ticker_pool_class</span> <span class="o">=</span> <span class="n">TickerPool</span>
+
+<div class="viewcode-block" id="TickerHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_name</span><span class="o">=</span><span class="s2">&quot;ticker_storage&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize handler</span>
+
+<span class="sd">        save_name (str, optional): The name of the ServerConfig</span>
+<span class="sd">            instance to store the handler state persistently.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_name</span> <span class="o">=</span> <span class="n">save_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ticker_pool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticker_pool_class</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Analyze callback and determine its consituents</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            callback (function or method): This is either a stand-alone</span>
+<span class="sd">                function or class method on a typeclassed entitye (that is,</span>
+<span class="sd">                an entity that can be saved to the database).</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            ret (tuple): This is a tuple of the form `(obj, path, callfunc)`,</span>
+<span class="sd">                where `obj` is the database object the callback is defined on</span>
+<span class="sd">                if it&#39;s a method (otherwise `None`) and vice-versa, `path` is</span>
+<span class="sd">                the python-path to the stand-alone function (`None` if a method).</span>
+<span class="sd">                The `callfunc` is either the name of the method to call or the</span>
+<span class="sd">                callable function object itself.</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If the callback is of an unsupported type.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">outobj</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">outcallfunc</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismethod</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
+                <span class="n">outobj</span> <span class="o">=</span> <span class="n">callback</span><span class="o">.</span><span class="vm">__self__</span>
+                <span class="n">outcallfunc</span> <span class="o">=</span> <span class="n">callback</span><span class="o">.</span><span class="vm">__func__</span><span class="o">.</span><span class="vm">__name__</span>
+            <span class="k">elif</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isfunction</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
+                <span class="n">outpath</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">callback</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                <span class="n">outcallfunc</span> <span class="o">=</span> <span class="n">callback</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">callback</span><span class="si">}</span><span class="s2"> is not a method or function.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">callback</span><span class="si">}</span><span class="s2"> is not a callable function or method.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">outobj</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">outobj</span><span class="p">,</span> <span class="s2">&quot;evennia.typeclasses.models.TypedObject&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">callback</span><span class="si">}</span><span class="s2"> is a method on a normal object - it must &quot;</span>
+                <span class="s2">&quot;be either a method on a typeclass, or a stand-alone function.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">outobj</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">outcallfunc</span>
+
+    <span class="k">def</span> <span class="nf">_store_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">callfunc</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tries to create a store_key for the object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (Object, tuple or None): Subscribing object if any. If a tuple, this is</span>
+<span class="sd">                a packed_obj tuple from dbserialize.</span>
+<span class="sd">            path (str or None): Python-path to callable, if any.</span>
+<span class="sd">            interval (int): Ticker interval. Floats will be converted to</span>
+<span class="sd">                nearest lower integer value.</span>
+<span class="sd">            callfunc (callable or str): This is either the callable function or</span>
+<span class="sd">                the name of the method to call. Note that the callable is never</span>
+<span class="sd">                stored in the key; that is uniquely identified with the python-path.</span>
+<span class="sd">            idstring (str, optional): Additional separator between</span>
+<span class="sd">                different subscription types.</span>
+<span class="sd">            persistent (bool, optional): If this ticker should survive a system</span>
+<span class="sd">                shutdown or not.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            store_key (tuple): A tuple `(packed_obj, methodname, outpath, interval,</span>
+<span class="sd">                idstring, persistent)` that uniquely identifies the</span>
+<span class="sd">                ticker. Here, `packed_obj` is the unique string representation of the</span>
+<span class="sd">                object or `None`. The `methodname` is the string name of the method on</span>
+<span class="sd">                `packed_obj` to call, or `None` if `packed_obj` is unset. `path` is</span>
+<span class="sd">                the Python-path to a non-method callable, or `None`. Finally, `interval`</span>
+<span class="sd">                `idstring` and `persistent` are integers, strings and bools respectively.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">interval</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">_ERROR_ADD_TICKER_SUB_SECOND</span><span class="p">)</span>
+
+        <span class="n">interval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+        <span class="n">persistent</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">persistent</span><span class="p">)</span>
+        <span class="n">packed_obj</span> <span class="o">=</span> <span class="n">pack_dbobj</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="n">methodname</span> <span class="o">=</span> <span class="n">callfunc</span> <span class="k">if</span> <span class="n">callfunc</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">callfunc</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">outpath</span> <span class="o">=</span> <span class="n">path</span> <span class="k">if</span> <span class="n">path</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">packed_obj</span><span class="p">,</span> <span class="n">methodname</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">idstring</span><span class="p">,</span> <span class="n">persistent</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TickerHandler.save"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save ticker_storage as a serialized string into a temporary</span>
+<span class="sd">        ServerConf field. Whereas saving is done on the fly, if called</span>
+<span class="sd">        by server when it shuts down, the current timer of each ticker</span>
+<span class="sd">        will be saved so it can start over from that point.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span><span class="p">:</span>
+            <span class="c1"># get the current times so the tickers can be restarted with a delay later</span>
+            <span class="n">start_delays</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="n">ticker</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">next_call_time</span><span class="p">())</span>
+                <span class="k">for</span> <span class="n">interval</span><span class="p">,</span> <span class="n">ticker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticker_pool</span><span class="o">.</span><span class="n">tickers</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">)</span>
+
+            <span class="c1"># remove any subscriptions that lost its object in the interim</span>
+            <span class="n">to_save</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">store_key</span><span class="p">:</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">store_key</span><span class="p">,</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="n">store_key</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;_obj&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_obj&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+                        <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_obj&quot;</span><span class="p">],</span> <span class="n">store_key</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="p">)</span>
+                    <span class="ow">or</span> <span class="n">store_key</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># a valid method with existing obj</span>
+                <span class="p">)</span>
+            <span class="p">}</span>  <span class="c1"># a path given</span>
+
+            <span class="c1"># update the timers for the tickers</span>
+            <span class="k">for</span> <span class="n">store_key</span><span class="p">,</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="n">to_save</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">interval</span> <span class="o">=</span> <span class="n">store_key</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="c1"># this is a mutable, so it&#39;s updated in-place in ticker_storage</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_start_delay&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_delays</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">save_name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">dbserialize</span><span class="p">(</span><span class="n">to_save</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># make sure we have nothing lingering in the database</span>
+            <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">save_name</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TickerHandler.restore"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.restore">[docs]</a>    <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server_reload</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Restore ticker_storage from database and re-initialize the</span>
+<span class="sd">        handler from storage. This is triggered by the server at</span>
+<span class="sd">        restart.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            server_reload (bool, optional): If this is False, it means</span>
+<span class="sd">                the server went through a cold reboot and all</span>
+<span class="sd">                non-persistent tickers must be killed.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># load stored command instructions and use them to re-initialize handler</span>
+        <span class="n">restored_tickers</span> <span class="o">=</span> <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">save_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">restored_tickers</span><span class="p">:</span>
+            <span class="c1"># the dbunserialize will convert all serialized dbobjs to real objects</span>
+
+            <span class="n">restored_tickers</span> <span class="o">=</span> <span class="n">dbunserialize</span><span class="p">(</span><span class="n">restored_tickers</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">store_key</span><span class="p">,</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="n">restored_tickers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># at this point obj is the actual object (or None) due to how</span>
+                    <span class="c1"># the dbunserialize works</span>
+                    <span class="n">obj</span><span class="p">,</span> <span class="n">callfunc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">idstring</span><span class="p">,</span> <span class="n">persistent</span> <span class="o">=</span> <span class="n">store_key</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">persistent</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">server_reload</span><span class="p">:</span>
+                        <span class="c1"># this ticker will not be restarted</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">callfunc</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+                        <span class="c1"># methods must have an existing object</span>
+                        <span class="k">continue</span>
+                    <span class="c1"># we must rebuild the store_key here since obj must not be</span>
+                    <span class="c1"># stored as the object itself for the store_key to be hashable.</span>
+                    <span class="n">store_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store_key</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">callfunc</span><span class="p">,</span> <span class="n">idstring</span><span class="p">,</span> <span class="n">persistent</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">obj</span> <span class="ow">and</span> <span class="n">callfunc</span><span class="p">:</span>
+                        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_callback&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">callfunc</span>
+                        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_obj&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+                    <span class="k">elif</span> <span class="n">path</span><span class="p">:</span>
+                        <span class="n">modname</span><span class="p">,</span> <span class="n">varname</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="n">callback</span> <span class="o">=</span> <span class="n">variable_from_module</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">varname</span><span class="p">)</span>
+                        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_callback&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">callback</span>
+                        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_obj&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># Neither object nor path - discard this ticker</span>
+                        <span class="n">log_err</span><span class="p">(</span><span class="s2">&quot;Tickerhandler: Removing malformed ticker: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">store_key</span><span class="p">))</span>
+                        <span class="k">continue</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="c1"># this suggests a malformed save or missing objects</span>
+                    <span class="n">log_trace</span><span class="p">(</span><span class="s2">&quot;Tickerhandler: Removing malformed ticker: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">store_key</span><span class="p">))</span>
+                    <span class="k">continue</span>
+                <span class="c1"># if we get here we should create a new ticker</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span><span class="p">[</span><span class="n">store_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ticker_pool</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">store_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TickerHandler.add"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add subscription to tickerhandler</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            interval (int, optional): Interval in seconds between calling</span>
+<span class="sd">                `callable(*args, **kwargs)`</span>
+<span class="sd">            callable (callable function or method, optional): This</span>
+<span class="sd">                should either be a stand-alone function or a method on a</span>
+<span class="sd">                typeclassed entity (that is, one that can be saved to the</span>
+<span class="sd">                database).</span>
+<span class="sd">            idstring (str, optional): Identifier for separating</span>
+<span class="sd">                this ticker-subscription from others with the same</span>
+<span class="sd">                interval. Allows for managing multiple calls with</span>
+<span class="sd">                the same time interval and callback.</span>
+<span class="sd">            persistent (bool, optional): A ticker will always survive</span>
+<span class="sd">                a server reload. If this is unset, the ticker will be</span>
+<span class="sd">                deleted by a server shutdown.</span>
+<span class="sd">            args, kwargs (optional): These will be passed into the</span>
+<span class="sd">                callback every time it is called. This must be data possible</span>
+<span class="sd">                to pickle!</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            store_key (tuple): The immutable store-key for this ticker. This can</span>
+<span class="sd">                be stored and passed into `.remove(store_key=store_key)` later to</span>
+<span class="sd">                easily stop this ticker later.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            The callback will be identified by type and stored either as</span>
+<span class="sd">            as combination of serialized database object + methodname or</span>
+<span class="sd">            as a python-path to the module + funcname. These strings will</span>
+<span class="sd">            be combined iwth `interval` and `idstring` to define a</span>
+<span class="sd">            unique storage key for saving. These must thus all be supplied</span>
+<span class="sd">            when wanting to modify/remove the ticker later.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">callfunc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+        <span class="n">store_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store_key</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">callfunc</span><span class="p">,</span> <span class="n">idstring</span><span class="p">,</span> <span class="n">persistent</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_obj&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_callback&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">callfunc</span>  <span class="c1"># either method-name or callable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span><span class="p">[</span><span class="n">store_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ticker_pool</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">store_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">store_key</span></div>
+
+<div class="viewcode-block" id="TickerHandler.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">store_key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove ticker subscription from handler.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            interval (int, optional): Interval of ticker to remove.</span>
+<span class="sd">            callback (callable function or method): Either a function or</span>
+<span class="sd">                the method of a typeclassed object.</span>
+<span class="sd">            idstring (str, optional): Identifier id of ticker to remove.</span>
+<span class="sd">            persistent (bool, optional): Whether this ticker is persistent or not.</span>
+<span class="sd">            store_key (str, optional): If given, all other kwargs are ignored and only</span>
+<span class="sd">                this is used to identify the ticker.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            KeyError: If no matching ticker was found to remove.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            The store-key is normally built from the interval/callback/idstring/persistent values;</span>
+<span class="sd">            but if the `store_key` is explicitly given, this is used instead.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;TICKER_HANDLER.remove has changed: &quot;</span>
+                <span class="s2">&quot;the interval is now the first argument, callback the second.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">store_key</span><span class="p">:</span>
+            <span class="n">obj</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">callfunc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+            <span class="n">store_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store_key</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">callfunc</span><span class="p">,</span> <span class="n">idstring</span><span class="p">,</span> <span class="n">persistent</span><span class="p">)</span>
+        <span class="n">to_remove</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">store_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">to_remove</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ticker_pool</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">store_key</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No Ticker was found matching the store-key </span><span class="si">{</span><span class="n">store_key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TickerHandler.clear"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop/remove tickers from handler.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            interval (int): Only stop tickers with this interval.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This is the only supported way to kill tickers related to</span>
+<span class="sd">            non-db objects.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ticker_pool</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">interval</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">store_key</span><span class="p">,</span> <span class="n">store_key</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">store_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span>
+                <span class="k">if</span> <span class="n">store_key</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">interval</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TickerHandler.all"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all subscriptions.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            interval (int): Limit match to tickers with this interval.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tickers (list): If `interval` was given, this is a list of</span>
+<span class="sd">                tickers using that interval.</span>
+<span class="sd">            tickerpool_layout (dict): If `interval` was *not* given,</span>
+<span class="sd">                this is a dict {interval1: [ticker1, ticker2, ...],  ...}</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">interval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># return dict of all, ordered by interval</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="n">ticker</span><span class="o">.</span><span class="n">subscriptions</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">interval</span><span class="p">,</span> <span class="n">ticker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticker_pool</span><span class="o">.</span><span class="n">tickers</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># get individual interval</span>
+            <span class="n">ticker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticker_pool</span><span class="o">.</span><span class="n">tickers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ticker</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">{</span><span class="n">interval</span><span class="p">:</span> <span class="n">ticker</span><span class="o">.</span><span class="n">subscriptions</span><span class="p">}</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="TickerHandler.all_display"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.all_display">[docs]</a>    <span class="k">def</span> <span class="nf">all_display</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all tickers on an easily displayable form.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tickers (dict): A list of all storekeys</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">store_keys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ticker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticker_pool</span><span class="o">.</span><span class="n">tickers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">objtup</span><span class="p">,</span> <span class="n">callfunc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">idstring</span><span class="p">,</span> <span class="n">persistent</span><span class="p">),</span>
+                <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">),</span>
+            <span class="p">)</span> <span class="ow">in</span> <span class="n">ticker</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">store_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_obj&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">callfunc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">idstring</span><span class="p">,</span> <span class="n">persistent</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">store_keys</span></div></div>
+
+
+<span class="c1"># main tickerhandler</span>
+<span class="n">TICKER_HANDLER</span> <span class="o">=</span> <span class="n">TickerHandler</span><span class="p">()</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="tickerhandler.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.scripts.tickerhandler</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

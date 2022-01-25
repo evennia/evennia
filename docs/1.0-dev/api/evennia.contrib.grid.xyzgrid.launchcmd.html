@@ -40,8 +40,26 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-contrib-grid-xyzgrid-launchcmd">
-<h1>evennia.contrib.grid.xyzgrid.launchcmd<a class="headerlink" href="#evennia-contrib-grid-xyzgrid-launchcmd" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.contrib.grid.xyzgrid.launchcmd">
+<span id="evennia-contrib-grid-xyzgrid-launchcmd"></span><h1>evennia.contrib.grid.xyzgrid.launchcmd<a class="headerlink" href="#module-evennia.contrib.grid.xyzgrid.launchcmd" title="Permalink to this headline">¶</a></h1>
+<p>Custom Evennia launcher command option for maintaining the grid in a separate process than the main
+server (since this can be slow).</p>
+<p>To use, add to the settings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EXTRA_LAUNCHER_COMMANDS</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;xyzgrid&#39;</span><span class="p">:</span> <span class="s1">&#39;evennia.contrib.grid.xyzgrid.launchcmd.xyzcommand&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>You should now be able to do</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">xyzgrid</span> <span class="o">&lt;</span><span class="n">options</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Use <strong>evennia xyzgrid help</strong> for usage help.</p>
+<dl class="py function">
+<dt id="evennia.contrib.grid.xyzgrid.launchcmd.xyzcommand">
+<code class="sig-prename descclassname">evennia.contrib.grid.xyzgrid.launchcmd.</code><code class="sig-name descname">xyzcommand</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/launchcmd.html#xyzcommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.launchcmd.xyzcommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evennia launcher command. This is made available as <strong>evennia xyzgrid</strong> on the command line,
+once added to <strong>settings.EXTRA_LAUNCHER_COMMANDS</strong>.</p>
+</dd></dl>
+
 </section>
 
 
@@ -84,6 +102,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.grid.xyzgrid.launchcmd.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>
