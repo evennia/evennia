@@ -22,6 +22,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with: 
+          fetch-depth: 0
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
@@ -34,14 +36,9 @@ jobs:
           cd docs/
           make install
 
-      ## fail early here, run quickstrict with aborts also on warnings
-      #- name: Quick-test docs (no autodocs)
-      #  run: |
-      #    cd docs/
-      #    make quickstrict
-
       # full game dir needed for mv-local
       - name: Set up evennia game dir
+        if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'}}
         run: |
           pip install -e .
           pip install -r requirements_extra.txt
@@ -53,8 +50,8 @@ jobs:
       - name: Build and deploy docs (only from master/develop branch)
         if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'}}
         run: |
-          git fetch origin develop
-          git fetch origin v0.9.5:v0.9.5
+          git checkout origin v0.9.5
+          git checkout develop
           git config --global user.email "docbuilder@evennia.com"
           git config --global user.name "Evennia docbuilder action"
           cd docs
