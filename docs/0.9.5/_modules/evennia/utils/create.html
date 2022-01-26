@@ -1,0 +1,700 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.utils.create &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.create</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.utils.create</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module gathers all the essential database-creation</span>
+<span class="sd">functions for the game engine&#39;s various object types.</span>
+
+<span class="sd">Only objects created &#39;stand-alone&#39; are in here, e.g. object Attributes</span>
+<span class="sd">are always created directly through their respective objects.</span>
+
+<span class="sd">Each creation_* function also has an alias named for the entity being</span>
+<span class="sd">created, such as create_object() and object().  This is for</span>
+<span class="sd">consistency with the utils.search module and allows you to do the</span>
+<span class="sd">shorter &quot;create.object()&quot;.</span>
+
+<span class="sd">The respective object managers hold more methods for manipulating and</span>
+<span class="sd">searching objects already existing in the database.</span>
+
+<span class="sd">Models covered:</span>
+<span class="sd"> Objects</span>
+<span class="sd"> Scripts</span>
+<span class="sd"> Help</span>
+<span class="sd"> Message</span>
+<span class="sd"> Channel</span>
+<span class="sd"> Accounts</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">IntegrityError</span>
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.server</span> <span class="kn">import</span> <span class="n">signals</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">dbid_to_obj</span>
+
+<span class="c1"># delayed imports</span>
+<span class="n">_User</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_ObjectDB</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_Object</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_Script</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_ScriptDB</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_HelpEntry</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_Msg</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_Account</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_AccountDB</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_to_object</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_ChannelDB</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_channelhandler</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="c1"># limit symbol import from API</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;create_object&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;create_script&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;create_help_entry&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;create_message&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;create_channel&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;create_account&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
+
+<span class="c1">#</span>
+<span class="c1"># Game Object creation</span>
+
+
+<div class="viewcode-block" id="create_object"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_object">[docs]</a><span class="k">def</span> <span class="nf">create_object</span><span class="p">(</span>
+    <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">home</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">permissions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">report_to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">nohome</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">nattributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Create a new in-game object.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        typeclass (class or str): Class or python path to a typeclass.</span>
+<span class="sd">        key (str): Name of the new object. If not set, a name of</span>
+<span class="sd">            #dbref will be set.</span>
+<span class="sd">        home (Object or str): Obj or #dbref to use as the object&#39;s</span>
+<span class="sd">            home location.</span>
+<span class="sd">        permissions (list): A list of permission strings or tuples (permstring, category).</span>
+<span class="sd">        locks (str): one or more lockstrings, separated by semicolons.</span>
+<span class="sd">        aliases (list): A list of alternative keys or tuples (aliasstring, category).</span>
+<span class="sd">        tags (list): List of tag keys or tuples (tagkey, category) or (tagkey, category, data).</span>
+<span class="sd">        destination (Object or str): Obj or #dbref to use as an Exit&#39;s</span>
+<span class="sd">            target.</span>
+<span class="sd">        report_to (Object): The object to return error messages to.</span>
+<span class="sd">        nohome (bool): This allows the creation of objects without a</span>
+<span class="sd">            default home location; only used when creating the default</span>
+<span class="sd">            location itself or during unittests.</span>
+<span class="sd">        attributes (list): Tuples on the form (key, value) or (key, value, category),</span>
+<span class="sd">           (key, value, lockstring) or (key, value, lockstring, default_access).</span>
+<span class="sd">           to set as Attributes on the new object.</span>
+<span class="sd">        nattributes (list): Non-persistent tuples on the form (key, value). Note that</span>
+<span class="sd">           adding this rarely makes sense since this data will not survive a reload.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        object (Object): A newly created object of the given typeclass.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ObjectDB.DoesNotExist: If trying to create an Object with</span>
+<span class="sd">        `location` or `home` that can&#39;t be found.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_ObjectDB</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_ObjectDB</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span> <span class="k">as</span> <span class="n">_ObjectDB</span>
+
+    <span class="n">typeclass</span> <span class="o">=</span> <span class="n">typeclass</span> <span class="k">if</span> <span class="n">typeclass</span> <span class="k">else</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span>
+
+    <span class="c1"># convenience converters to avoid common usage mistake</span>
+    <span class="n">permissions</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">permissions</span><span class="p">)</span> <span class="k">if</span> <span class="n">permissions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span> <span class="k">if</span> <span class="n">locks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">aliases</span><span class="p">)</span> <span class="k">if</span> <span class="n">aliases</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">tags</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="k">if</span> <span class="n">tags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span> <span class="k">if</span> <span class="n">attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># a path is given. Load the actual typeclass</span>
+        <span class="n">typeclass</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">TYPECLASS_PATHS</span><span class="p">)</span>
+
+    <span class="c1"># Setup input for the create command. We use ObjectDB as baseclass here</span>
+    <span class="c1"># to give us maximum freedom (the typeclasses will load</span>
+    <span class="c1"># correctly when each object is recovered).</span>
+
+    <span class="n">location</span> <span class="o">=</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">_ObjectDB</span><span class="p">)</span>
+    <span class="n">destination</span> <span class="o">=</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">_ObjectDB</span><span class="p">)</span>
+    <span class="n">home</span> <span class="o">=</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">home</span><span class="p">,</span> <span class="n">_ObjectDB</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">home</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">home</span> <span class="o">=</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="p">,</span> <span class="n">_ObjectDB</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">nohome</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="n">_ObjectDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">_ObjectDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">(</span>
+                <span class="s2">&quot;settings.DEFAULT_HOME (= &#39;</span><span class="si">%s</span><span class="s2">&#39;) does not exist, or the setting is malformed.&quot;</span>
+                <span class="o">%</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span>
+            <span class="p">)</span>
+
+    <span class="c1"># create new instance</span>
+    <span class="n">new_object</span> <span class="o">=</span> <span class="n">typeclass</span><span class="p">(</span>
+        <span class="n">db_key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+        <span class="n">db_location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
+        <span class="n">db_destination</span><span class="o">=</span><span class="n">destination</span><span class="p">,</span>
+        <span class="n">db_home</span><span class="o">=</span><span class="n">home</span><span class="p">,</span>
+        <span class="n">db_typeclass_path</span><span class="o">=</span><span class="n">typeclass</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># store the call signature for the signal</span>
+    <span class="n">new_object</span><span class="o">.</span><span class="n">_createdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+        <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
+        <span class="n">destination</span><span class="o">=</span><span class="n">destination</span><span class="p">,</span>
+        <span class="n">home</span><span class="o">=</span><span class="n">home</span><span class="p">,</span>
+        <span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+        <span class="n">permissions</span><span class="o">=</span><span class="n">permissions</span><span class="p">,</span>
+        <span class="n">locks</span><span class="o">=</span><span class="n">locks</span><span class="p">,</span>
+        <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span>
+        <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span>
+        <span class="n">report_to</span><span class="o">=</span><span class="n">report_to</span><span class="p">,</span>
+        <span class="n">nohome</span><span class="o">=</span><span class="n">nohome</span><span class="p">,</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">,</span>
+        <span class="n">nattributes</span><span class="o">=</span><span class="n">nattributes</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># this will trigger the save signal which in turn calls the</span>
+    <span class="c1"># at_first_save hook on the typeclass, where the _createdict can be</span>
+    <span class="c1"># used.</span>
+    <span class="n">new_object</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="n">signals</span><span class="o">.</span><span class="n">SIGNAL_OBJECT_POST_CREATE</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">new_object</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_object</span></div>
+
+
+<span class="c1"># alias for create_object</span>
+<span class="nb">object</span> <span class="o">=</span> <span class="n">create_object</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Script creation</span>
+
+
+<div class="viewcode-block" id="create_script"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_script">[docs]</a><span class="k">def</span> <span class="nf">create_script</span><span class="p">(</span>
+    <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">start_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">repeats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">persistent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">report_to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a new script. All scripts are a combination of a database</span>
+<span class="sd">    object that communicates with the database, and an typeclass that</span>
+<span class="sd">    &#39;decorates&#39; the database object into being different types of</span>
+<span class="sd">    scripts.  It&#39;s behaviour is similar to the game objects except</span>
+<span class="sd">    scripts has a time component and are more limited in scope.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        typeclass (class or str): Class or python path to a typeclass.</span>
+<span class="sd">        key (str): Name of the new object. If not set, a name of</span>
+<span class="sd">            #dbref will be set.</span>
+<span class="sd">        obj (Object): The entity on which this Script sits. If this</span>
+<span class="sd">            is `None`, we are creating a &quot;global&quot; script.</span>
+<span class="sd">        account (Account): The account on which this Script sits. It is</span>
+<span class="sd">            exclusiv to `obj`.</span>
+<span class="sd">        locks (str): one or more lockstrings, separated by semicolons.</span>
+<span class="sd">        interval (int): The triggering interval for this Script, in</span>
+<span class="sd">            seconds. If unset, the Script will not have a timing</span>
+<span class="sd">            component.</span>
+<span class="sd">        start_delay (bool): If `True`, will wait `interval` seconds</span>
+<span class="sd">            before triggering the first time.</span>
+<span class="sd">        repeats (int): The number of times to trigger before stopping.</span>
+<span class="sd">            If unset, will repeat indefinitely.</span>
+<span class="sd">        persistent (bool): If this Script survives a server shutdown</span>
+<span class="sd">            or not (all Scripts will survive a reload).</span>
+<span class="sd">        autostart (bool): If this Script will start immediately when</span>
+<span class="sd">            created or if the `start` method must be called explicitly.</span>
+<span class="sd">        report_to (Object): The object to return error messages to.</span>
+<span class="sd">        desc (str): Optional description of script</span>
+<span class="sd">        tags (list): List of tags or tuples (tag, category).</span>
+<span class="sd">        attributes (list): List of tuples `(key, value)`, `(key, value, category)`,</span>
+<span class="sd">           `(key, value, category, lockstring)` or</span>
+<span class="sd">           `(key, value, category, lockstring, default_access)`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        script (obj): An instance of the script created</span>
+
+<span class="sd">    See evennia.scripts.manager for methods to manipulate existing</span>
+<span class="sd">    scripts in the database.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_ScriptDB</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_ScriptDB</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span> <span class="k">as</span> <span class="n">_ScriptDB</span>
+
+    <span class="n">typeclass</span> <span class="o">=</span> <span class="n">typeclass</span> <span class="k">if</span> <span class="n">typeclass</span> <span class="k">else</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_SCRIPT_TYPECLASS</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># a path is given. Load the actual typeclass</span>
+        <span class="n">typeclass</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">TYPECLASS_PATHS</span><span class="p">)</span>
+
+    <span class="c1"># validate input</span>
+    <span class="n">kwarg</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
+        <span class="n">kwarg</span><span class="p">[</span><span class="s2">&quot;db_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+    <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
+        <span class="n">kwarg</span><span class="p">[</span><span class="s2">&quot;db_account&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="n">_AccountDB</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">obj</span><span class="p">:</span>
+        <span class="n">kwarg</span><span class="p">[</span><span class="s2">&quot;db_obj&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_ObjectDB</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">interval</span><span class="p">:</span>
+        <span class="n">kwarg</span><span class="p">[</span><span class="s2">&quot;db_interval&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">start_delay</span><span class="p">:</span>
+        <span class="n">kwarg</span><span class="p">[</span><span class="s2">&quot;db_start_delay&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_delay</span>
+    <span class="k">if</span> <span class="n">repeats</span><span class="p">:</span>
+        <span class="n">kwarg</span><span class="p">[</span><span class="s2">&quot;db_repeats&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">repeats</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">persistent</span><span class="p">:</span>
+        <span class="n">kwarg</span><span class="p">[</span><span class="s2">&quot;db_persistent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">persistent</span>
+    <span class="k">if</span> <span class="n">desc</span><span class="p">:</span>
+        <span class="n">kwarg</span><span class="p">[</span><span class="s2">&quot;db_desc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">desc</span>
+    <span class="n">tags</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="k">if</span> <span class="n">tags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span> <span class="k">if</span> <span class="n">attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="c1"># create new instance</span>
+    <span class="n">new_script</span> <span class="o">=</span> <span class="n">typeclass</span><span class="p">(</span><span class="o">**</span><span class="n">kwarg</span><span class="p">)</span>
+
+    <span class="c1"># store the call signature for the signal</span>
+    <span class="n">new_script</span><span class="o">.</span><span class="n">_createdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+        <span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span>
+        <span class="n">account</span><span class="o">=</span><span class="n">account</span><span class="p">,</span>
+        <span class="n">locks</span><span class="o">=</span><span class="n">locks</span><span class="p">,</span>
+        <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>
+        <span class="n">start_delay</span><span class="o">=</span><span class="n">start_delay</span><span class="p">,</span>
+        <span class="n">repeats</span><span class="o">=</span><span class="n">repeats</span><span class="p">,</span>
+        <span class="n">persistent</span><span class="o">=</span><span class="n">persistent</span><span class="p">,</span>
+        <span class="n">autostart</span><span class="o">=</span><span class="n">autostart</span><span class="p">,</span>
+        <span class="n">report_to</span><span class="o">=</span><span class="n">report_to</span><span class="p">,</span>
+        <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span>
+        <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># this will trigger the save signal which in turn calls the</span>
+    <span class="c1"># at_first_save hook on the typeclass, where the _createdict</span>
+    <span class="c1"># can be used.</span>
+    <span class="n">new_script</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">new_script</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+        <span class="c1"># this happens in the case of having a repeating script with `repeats=1` and</span>
+        <span class="c1"># `start_delay=False` - the script will run once and immediately stop before save is over.</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">signals</span><span class="o">.</span><span class="n">SIGNAL_SCRIPT_POST_CREATE</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">new_script</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_script</span></div>
+
+
+<span class="c1"># alias</span>
+<span class="n">script</span> <span class="o">=</span> <span class="n">create_script</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Help entry creation</span>
+<span class="c1">#</span>
+
+
+<div class="viewcode-block" id="create_help_entry"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_help_entry">[docs]</a><span class="k">def</span> <span class="nf">create_help_entry</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">entrytext</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;General&quot;</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a static help entry in the help database. Note that Command</span>
+<span class="sd">    help entries are dynamic and directly taken from the __doc__</span>
+<span class="sd">    entries of the command. The database-stored help entries are</span>
+<span class="sd">    intended for more general help on the game, more extensive info,</span>
+<span class="sd">    in-game setting information and so on.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        key (str): The name of the help entry.</span>
+<span class="sd">        entrytext (str): The body of te help entry</span>
+<span class="sd">        category (str, optional): The help category of the entry.</span>
+<span class="sd">        locks (str, optional): A lockstring to restrict access.</span>
+<span class="sd">        aliases (list of str, optional): List of alternative (likely shorter) keynames.</span>
+<span class="sd">        tags (lst, optional): List of tags or tuples `(tag, category)`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        help (HelpEntry): A newly created help entry.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_HelpEntry</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_HelpEntry</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span> <span class="k">as</span> <span class="n">_HelpEntry</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">new_help</span> <span class="o">=</span> <span class="n">_HelpEntry</span><span class="p">()</span>
+        <span class="n">new_help</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="n">new_help</span><span class="o">.</span><span class="n">entrytext</span> <span class="o">=</span> <span class="n">entrytext</span>
+        <span class="n">new_help</span><span class="o">.</span><span class="n">help_category</span> <span class="o">=</span> <span class="n">category</span>
+        <span class="k">if</span> <span class="n">locks</span><span class="p">:</span>
+            <span class="n">new_help</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">aliases</span><span class="p">:</span>
+            <span class="n">new_help</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">aliases</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
+            <span class="n">new_help</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="n">tags</span><span class="p">)</span>
+        <span class="n">new_help</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">new_help</span>
+    <span class="k">except</span> <span class="n">IntegrityError</span><span class="p">:</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Could not add help entry: key &#39;</span><span class="si">%s</span><span class="s2">&#39; already exists.&quot;</span> <span class="o">%</span> <span class="n">key</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">signals</span><span class="o">.</span><span class="n">SIGNAL_HELPENTRY_POST_CREATE</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">new_help</span><span class="p">)</span></div>
+
+
+<span class="c1"># alias</span>
+<span class="n">help_entry</span> <span class="o">=</span> <span class="n">create_help_entry</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Comm system methods</span>
+
+
+<div class="viewcode-block" id="create_message"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_message">[docs]</a><span class="k">def</span> <span class="nf">create_message</span><span class="p">(</span>
+    <span class="n">senderobj</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a new communication Msg. Msgs represent a unit of</span>
+<span class="sd">    database-persistent communication between entites.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        senderobj (Object or Account): The entity sending the Msg.</span>
+<span class="sd">        message (str): Text with the message. Eventual headers, titles</span>
+<span class="sd">            etc should all be included in this text string. Formatting</span>
+<span class="sd">            will be retained.</span>
+<span class="sd">        channels (Channel, key or list): A channel or a list of channels to</span>
+<span class="sd">            send to. The channels may be actual channel objects or their</span>
+<span class="sd">            unique key strings.</span>
+<span class="sd">        receivers (Object, Account, str or list): An Account/Object to send</span>
+<span class="sd">            to, or a list of them. May be Account objects or accountnames.</span>
+<span class="sd">        locks (str): Lock definition string.</span>
+<span class="sd">        tags (list): A list of tags or tuples `(tag, category)`.</span>
+<span class="sd">        header (str): Mime-type or other optional information for the message</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        The Comm system is created very open-ended, so it&#39;s fully possible</span>
+<span class="sd">        to let a message both go to several channels and to several</span>
+<span class="sd">        receivers at the same time, it&#39;s up to the command definitions to</span>
+<span class="sd">        limit this as desired.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_Msg</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_Msg</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span> <span class="k">as</span> <span class="n">_Msg</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="p">:</span>
+        <span class="c1"># we don&#39;t allow empty messages.</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">new_message</span> <span class="o">=</span> <span class="n">_Msg</span><span class="p">(</span><span class="n">db_message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
+    <span class="n">new_message</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">sender</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">senderobj</span><span class="p">):</span>
+        <span class="n">new_message</span><span class="o">.</span><span class="n">senders</span> <span class="o">=</span> <span class="n">sender</span>
+    <span class="n">new_message</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
+    <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">channels</span><span class="p">):</span>
+        <span class="n">new_message</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="n">channel</span>
+    <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">receivers</span><span class="p">):</span>
+        <span class="n">new_message</span><span class="o">.</span><span class="n">receivers</span> <span class="o">=</span> <span class="n">receiver</span>
+    <span class="k">if</span> <span class="n">locks</span><span class="p">:</span>
+        <span class="n">new_message</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
+        <span class="n">new_message</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="n">tags</span><span class="p">)</span>
+
+    <span class="n">new_message</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">new_message</span></div>
+
+
+<span class="n">message</span> <span class="o">=</span> <span class="n">create_message</span>
+<span class="n">create_msg</span> <span class="o">=</span> <span class="n">create_message</span>
+
+
+<div class="viewcode-block" id="create_channel"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_channel">[docs]</a><span class="k">def</span> <span class="nf">create_channel</span><span class="p">(</span>
+    <span class="n">key</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create A communication Channel. A Channel serves as a central hub</span>
+<span class="sd">    for distributing Msgs to groups of people without specifying the</span>
+<span class="sd">    receivers explicitly. Instead accounts may &#39;connect&#39; to the channel</span>
+<span class="sd">    and follow the flow of messages. By default the channel allows</span>
+<span class="sd">    access to all old messages, but this can be turned off with the</span>
+<span class="sd">    keep_log switch.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        key (str): This must be unique.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        aliases (list of str): List of alternative (likely shorter) keynames.</span>
+<span class="sd">        desc (str): A description of the channel, for use in listings.</span>
+<span class="sd">        locks (str): Lockstring.</span>
+<span class="sd">        keep_log (bool): Log channel throughput.</span>
+<span class="sd">        typeclass (str or class): The typeclass of the Channel (not</span>
+<span class="sd">            often used).</span>
+<span class="sd">        tags (list): A list of tags or tuples `(tag, category)`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        channel (Channel): A newly created channel.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">typeclass</span> <span class="o">=</span> <span class="n">typeclass</span> <span class="k">if</span> <span class="n">typeclass</span> <span class="k">else</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHANNEL_TYPECLASS</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># a path is given. Load the actual typeclass</span>
+        <span class="n">typeclass</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">TYPECLASS_PATHS</span><span class="p">)</span>
+
+    <span class="c1"># create new instance</span>
+    <span class="n">new_channel</span> <span class="o">=</span> <span class="n">typeclass</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+
+    <span class="c1"># store call signature for the signal</span>
+    <span class="n">new_channel</span><span class="o">.</span><span class="n">_createdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="n">locks</span><span class="p">,</span> <span class="n">keep_log</span><span class="o">=</span><span class="n">keep_log</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span>
+    <span class="p">)</span>
+
+    <span class="c1"># this will trigger the save signal which in turn calls the</span>
+    <span class="c1"># at_first_save hook on the typeclass, where the _createdict can be</span>
+    <span class="c1"># used.</span>
+    <span class="n">new_channel</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="n">signals</span><span class="o">.</span><span class="n">SIGNAL_CHANNEL_POST_CREATE</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">new_channel</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_channel</span></div>
+
+
+<span class="n">channel</span> <span class="o">=</span> <span class="n">create_channel</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Account creation methods</span>
+<span class="c1">#</span>
+
+
+<div class="viewcode-block" id="create_account"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_account">[docs]</a><span class="k">def</span> <span class="nf">create_account</span><span class="p">(</span>
+    <span class="n">key</span><span class="p">,</span>
+    <span class="n">email</span><span class="p">,</span>
+    <span class="n">password</span><span class="p">,</span>
+    <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">is_superuser</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">permissions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">report_to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This creates a new account.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        key (str): The account&#39;s name. This should be unique.</span>
+<span class="sd">        email (str or None): Email on valid addr@addr.domain form. If</span>
+<span class="sd">            the empty string, will be set to None.</span>
+<span class="sd">        password (str): Password in cleartext.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        typeclass (str): The typeclass to use for the account.</span>
+<span class="sd">        is_superuser (bool): Wether or not this account is to be a superuser</span>
+<span class="sd">        locks (str): Lockstring.</span>
+<span class="sd">        permission (list): List of permission strings.</span>
+<span class="sd">        tags (list): List of Tags on form `(key, category[, data])`</span>
+<span class="sd">        attributes (list): List of Attributes on form</span>
+<span class="sd">             `(key, value [, category, [,lockstring [, default_pass]]])`</span>
+<span class="sd">        report_to (Object): An object with a msg() method to report</span>
+<span class="sd">            errors to. If not given, errors will be logged.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Account: The newly created Account.</span>
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If `key` already exists in database.</span>
+
+
+<span class="sd">    Notes:</span>
+<span class="sd">        Usually only the server admin should need to be superuser, all</span>
+<span class="sd">        other access levels can be handled with more fine-grained</span>
+<span class="sd">        permissions or groups. A superuser bypasses all lock checking</span>
+<span class="sd">        operations and is thus not suitable for play-testing the game.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_AccountDB</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_AccountDB</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span> <span class="k">as</span> <span class="n">_AccountDB</span>
+
+    <span class="n">typeclass</span> <span class="o">=</span> <span class="n">typeclass</span> <span class="k">if</span> <span class="n">typeclass</span> <span class="k">else</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span> <span class="k">if</span> <span class="n">locks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">permissions</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">permissions</span><span class="p">)</span> <span class="k">if</span> <span class="n">permissions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">tags</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="k">if</span> <span class="n">tags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span> <span class="k">if</span> <span class="n">attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># a path is given. Load the actual typeclass.</span>
+        <span class="n">typeclass</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">TYPECLASS_PATHS</span><span class="p">)</span>
+
+    <span class="c1"># setup input for the create command. We use AccountDB as baseclass</span>
+    <span class="c1"># here to give us maximum freedom (the typeclasses will load</span>
+    <span class="c1"># correctly when each object is recovered).</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">email</span><span class="p">:</span>
+        <span class="n">email</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">_AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">username__iexact</span><span class="o">=</span><span class="n">key</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;An Account with the name &#39;</span><span class="si">%s</span><span class="s2">&#39; already exists.&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
+
+    <span class="c1"># this handles a given dbref-relocate to an account.</span>
+    <span class="n">report_to</span> <span class="o">=</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">report_to</span><span class="p">,</span> <span class="n">_AccountDB</span><span class="p">)</span>
+
+    <span class="c1"># create the correct account entity, using the setup from</span>
+    <span class="c1"># base django auth.</span>
+    <span class="n">now</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">typeclass</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">normalize_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+    <span class="n">new_account</span> <span class="o">=</span> <span class="n">typeclass</span><span class="p">(</span>
+        <span class="n">username</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+        <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span>
+        <span class="n">is_staff</span><span class="o">=</span><span class="n">is_superuser</span><span class="p">,</span>
+        <span class="n">is_superuser</span><span class="o">=</span><span class="n">is_superuser</span><span class="p">,</span>
+        <span class="n">last_login</span><span class="o">=</span><span class="n">now</span><span class="p">,</span>
+        <span class="n">date_joined</span><span class="o">=</span><span class="n">now</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">password</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># the password may be None for &#39;fake&#39; accounts, like bots</span>
+        <span class="n">valid</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">new_account</span><span class="o">.</span><span class="n">validate_password</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">new_account</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">error</span>
+
+        <span class="n">new_account</span><span class="o">.</span><span class="n">set_password</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
+
+    <span class="n">new_account</span><span class="o">.</span><span class="n">_createdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">locks</span><span class="o">=</span><span class="n">locks</span><span class="p">,</span> <span class="n">permissions</span><span class="o">=</span><span class="n">permissions</span><span class="p">,</span> <span class="n">report_to</span><span class="o">=</span><span class="n">report_to</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span>
+    <span class="p">)</span>
+    <span class="c1"># saving will trigger the signal that calls the</span>
+    <span class="c1"># at_first_save hook on the typeclass, where the _createdict</span>
+    <span class="c1"># can be used.</span>
+    <span class="n">new_account</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="c1"># note that we don&#39;t send a signal here, that is sent from the Account.create helper method</span>
+    <span class="c1"># instead.</span>
+
+    <span class="k">return</span> <span class="n">new_account</span></div>
+
+
+<span class="c1"># alias</span>
+<span class="n">account</span> <span class="o">=</span> <span class="n">create_account</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="create.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.create</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

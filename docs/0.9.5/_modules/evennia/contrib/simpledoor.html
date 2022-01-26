@@ -1,0 +1,278 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.simpledoor &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.simpledoor</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.simpledoor</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">SimpleDoor</span>
+
+<span class="sd">Contribution - Griatch 2016</span>
+
+<span class="sd">A simple two-way exit that represents a door that can be opened and</span>
+<span class="sd">closed. Can easily be expanded from to make it lockable, destroyable</span>
+<span class="sd">etc.  Note that the simpledoor is based on Evennia locks, so it will</span>
+<span class="sd">not work for a superuser (which bypasses all locks) - the superuser</span>
+<span class="sd">will always appear to be able to close/open the door over and over</span>
+<span class="sd">without the locks stopping you. To use the door, use `@quell` or a</span>
+<span class="sd">non-superuser account.</span>
+
+<span class="sd">Installation:</span>
+
+<span class="sd">    Import this module in mygame/commands/default_cmdsets and add</span>
+<span class="sd">    the CmdOpen and CmdOpenCloseDoor commands to the CharacterCmdSet;</span>
+<span class="sd">    then reload the server.</span>
+
+<span class="sd">To try it out, `@dig` a new room and then use the (overloaded) `@open`</span>
+<span class="sd">commmand to open a new doorway to it like this:</span>
+
+<span class="sd">    @open doorway:contrib.simpledoor.SimpleDoor = otherroom</span>
+
+<span class="sd">You can then use `open doorway&#39; and `close doorway` to change the open</span>
+<span class="sd">state. If you are not superuser (`@quell` yourself) you&#39;ll find you</span>
+<span class="sd">cannot pass through either side of the door once it&#39;s closed from the</span>
+<span class="sd">other side.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">default_cmds</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span>
+
+
+<div class="viewcode-block" id="SimpleDoor"><a class="viewcode-back" href="../../../api/evennia.contrib.simpledoor.html#evennia.contrib.simpledoor.SimpleDoor">[docs]</a><span class="k">class</span> <span class="nc">SimpleDoor</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A two-way exit &quot;door&quot; with some methods for affecting both &quot;sides&quot;</span>
+<span class="sd">    of the door at the same time. For example, set a lock on either of the two</span>
+<span class="sd">    sides using `exitname.setlock(&quot;traverse:false())`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SimpleDoor.at_object_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.simpledoor.html#evennia.contrib.simpledoor.SimpleDoor.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called the very first time the door is created.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">return_exit</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="SimpleDoor.setlock"><a class="viewcode-back" href="../../../api/evennia.contrib.simpledoor.html#evennia.contrib.simpledoor.SimpleDoor.setlock">[docs]</a>    <span class="k">def</span> <span class="nf">setlock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets identical locks on both sides of the door.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lockstring (str): A lockstring, like `&quot;traverse:true()&quot;`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lockstring</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">return_exit</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lockstring</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SimpleDoor.setdesc"><a class="viewcode-back" href="../../../api/evennia.contrib.simpledoor.html#evennia.contrib.simpledoor.SimpleDoor.setdesc">[docs]</a>    <span class="k">def</span> <span class="nf">setdesc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets identical descs on both sides of the door.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            setdesc (str): A description.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">return_exit</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">description</span></div>
+
+<div class="viewcode-block" id="SimpleDoor.delete"><a class="viewcode-back" href="../../../api/evennia.contrib.simpledoor.html#evennia.contrib.simpledoor.SimpleDoor.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deletes both sides of the door.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># we have to be careful to avoid a delete-loop.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">return_exit</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="SimpleDoor.at_failed_traverse"><a class="viewcode-back" href="../../../api/evennia.contrib.simpledoor.html#evennia.contrib.simpledoor.SimpleDoor.at_failed_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_failed_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when door traverse: lock fails.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            traversing_object (Typeclassed entity): The object</span>
+<span class="sd">                attempting the traversal.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">traversing_object</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is closed.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdOpen"><a class="viewcode-back" href="../../../api/evennia.contrib.simpledoor.html#evennia.contrib.simpledoor.CmdOpen">[docs]</a><span class="k">class</span> <span class="nc">CmdOpen</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdOpen</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdOpen</span><span class="o">.</span><span class="vm">__doc__</span>
+    <span class="c1"># overloading parts of the default CmdOpen command to support doors.</span>
+
+<div class="viewcode-block" id="CmdOpen.create_exit"><a class="viewcode-back" href="../../../api/evennia.contrib.simpledoor.html#evennia.contrib.simpledoor.CmdOpen.create_exit">[docs]</a>    <span class="k">def</span> <span class="nf">create_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit_name</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">exit_aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simple wrapper for the default CmdOpen.create_exit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># create a new exit as normal</span>
+        <span class="n">new_exit</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">create_exit</span><span class="p">(</span>
+            <span class="n">exit_name</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">exit_aliases</span><span class="o">=</span><span class="n">exit_aliases</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;return_exit_already_created&quot;</span><span class="p">):</span>
+            <span class="c1"># we don&#39;t create a return exit if it was already created (because</span>
+            <span class="c1"># we created a door)</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_exit_already_created</span>
+            <span class="k">return</span> <span class="n">new_exit</span>
+        <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">new_exit</span><span class="p">,</span> <span class="n">SimpleDoor</span><span class="p">):</span>
+            <span class="c1"># a door - create its counterpart and make sure to turn off the default</span>
+            <span class="c1"># return-exit creation of CmdOpen</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;Note: A door-type exit was created - ignored eventual custom return-exit type.&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">return_exit_already_created</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">back_exit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_exit</span><span class="p">(</span>
+                <span class="n">exit_name</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">exit_aliases</span><span class="o">=</span><span class="n">exit_aliases</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span>
+            <span class="p">)</span>
+            <span class="n">new_exit</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">return_exit</span> <span class="o">=</span> <span class="n">back_exit</span>
+            <span class="n">back_exit</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">return_exit</span> <span class="o">=</span> <span class="n">new_exit</span>
+        <span class="k">return</span> <span class="n">new_exit</span></div></div>
+
+
+<span class="c1"># A simple example of a command making use of the door exit class&#39;</span>
+<span class="c1"># functionality. One could easily expand it with functionality to</span>
+<span class="c1"># operate on other types of open-able objects as needed.</span>
+
+
+<div class="viewcode-block" id="CmdOpenCloseDoor"><a class="viewcode-back" href="../../../api/evennia.contrib.simpledoor.html#evennia.contrib.simpledoor.CmdOpenCloseDoor">[docs]</a><span class="k">class</span> <span class="nc">CmdOpenCloseDoor</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Open and close a door</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        open &lt;door&gt;</span>
+<span class="sd">        close &lt;door&gt;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
+
+<div class="viewcode-block" id="CmdOpenCloseDoor.func"><a class="viewcode-back" href="../../../api/evennia.contrib.simpledoor.html#evennia.contrib.simpledoor.CmdOpenCloseDoor.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;implement the door functionality&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: open||close &lt;door&gt;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">door</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">door</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">door</span><span class="p">,</span> <span class="n">SimpleDoor</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This is not a door.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">==</span> <span class="s2">&quot;open&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">door</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;traverse&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is already open.&quot;</span> <span class="o">%</span> <span class="n">door</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">door</span><span class="o">.</span><span class="n">setlock</span><span class="p">(</span><span class="s2">&quot;traverse:true()&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You open </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">door</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># close</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">door</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;traverse&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is already closed.&quot;</span> <span class="o">%</span> <span class="n">door</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">door</span><span class="o">.</span><span class="n">setlock</span><span class="p">(</span><span class="s2">&quot;traverse:false()&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You close </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">door</span><span class="o">.</span><span class="n">key</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="simpledoor.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.simpledoor</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

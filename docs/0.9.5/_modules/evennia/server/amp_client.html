@@ -1,0 +1,356 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.server.amp_client &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.amp_client</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.server.amp_client</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The Evennia Server service acts as an AMP-client when talking to the</span>
+<span class="sd">Portal. This module sets up the Client-side communication.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">amp</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">protocol</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+
+
+<div class="viewcode-block" id="AMPClientFactory"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory">[docs]</a><span class="k">class</span> <span class="nc">AMPClientFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">ReconnectingClientFactory</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This factory creates an instance of an AMP client connection. This handles communication from</span>
+<span class="sd">    the be the Evennia &#39;Server&#39; service to the &#39;Portal&#39;. The client will try to auto-reconnect on a</span>
+<span class="sd">    connection error.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Initial reconnect delay in seconds.</span>
+    <span class="n">initialDelay</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">factor</span> <span class="o">=</span> <span class="mf">1.5</span>
+    <span class="n">maxDelay</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="AMPClientFactory.__init__"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the client factory.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            server (server): server instance.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">server</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">AMPServerClientProtocol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxDelay</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="c1"># not really used unless connecting to multiple servers, but</span>
+        <span class="c1"># avoids having to check for its existence on the protocol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">broadcasts</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="AMPClientFactory.startedConnecting"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory.startedConnecting">[docs]</a>    <span class="k">def</span> <span class="nf">startedConnecting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when starting to try to connect to the Portal AMP server.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            connector (Connector): Twisted Connector instance representing</span>
+<span class="sd">                this connection.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="AMPClientFactory.buildProtocol"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory.buildProtocol">[docs]</a>    <span class="k">def</span> <span class="nf">buildProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates an AMPProtocol instance when connecting to the AMP server.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            addr (str): Connection address. Not used.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resetDelay</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span> <span class="o">=</span> <span class="n">AMPServerClientProtocol</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">amp_protocol</span></div>
+
+<div class="viewcode-block" id="AMPClientFactory.clientConnectionLost"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory.clientConnectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">clientConnectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when the AMP connection to the MUD server is lost.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            connector (Connector): Twisted Connector instance representing</span>
+<span class="sd">                this connection.</span>
+<span class="sd">            reason (str): Eventual text describing why connection was lost.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;Server disconnected from the portal.&quot;</span><span class="p">)</span>
+        <span class="n">protocol</span><span class="o">.</span><span class="n">ReconnectingClientFactory</span><span class="o">.</span><span class="n">clientConnectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AMPClientFactory.clientConnectionFailed"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPClientFactory.clientConnectionFailed">[docs]</a>    <span class="k">def</span> <span class="nf">clientConnectionFailed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when an AMP connection attempt to the MUD server fails.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            connector (Connector): Twisted Connector instance representing</span>
+<span class="sd">                this connection.</span>
+<span class="sd">            reason (str): Eventual text describing why connection failed.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_msg</span><span class="p">(</span><span class="s2">&quot;Attempting to reconnect to Portal ...&quot;</span><span class="p">)</span>
+        <span class="n">protocol</span><span class="o">.</span><span class="n">ReconnectingClientFactory</span><span class="o">.</span><span class="n">clientConnectionFailed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="AMPServerClientProtocol"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPServerClientProtocol">[docs]</a><span class="k">class</span> <span class="nc">AMPServerClientProtocol</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">AMPMultiConnectionProtocol</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This protocol describes the Server service (acting as an AMP-client)&#39;s communication with the</span>
+<span class="sd">    Portal (which acts as the AMP-server)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># sending AMP data</span>
+
+<div class="viewcode-block" id="AMPServerClientProtocol.connectionMade"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPServerClientProtocol.connectionMade">[docs]</a>    <span class="k">def</span> <span class="nf">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when a new connection is established.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># print(&quot;AMPClient new connection {}&quot;.format(self))</span>
+        <span class="n">info_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">get_info_dict</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AMPServerClientProtocol</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">connectionMade</span><span class="p">()</span>
+        <span class="c1"># first thing we do is to request the Portal to sync all sessions</span>
+        <span class="c1"># back with the Server side. We also need the startup mode (reload, reset, shutdown)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_AdminServer2Portal</span><span class="p">(</span>
+            <span class="n">amp</span><span class="o">.</span><span class="n">DUMMYSESSION</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">PSYNC</span><span class="p">,</span> <span class="n">spid</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">(),</span> <span class="n">info_dict</span><span class="o">=</span><span class="n">info_dict</span>
+        <span class="p">)</span>
+        <span class="c1"># run the intial setup if needed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">run_initial_setup</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="AMPServerClientProtocol.data_to_portal"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPServerClientProtocol.data_to_portal">[docs]</a>    <span class="k">def</span> <span class="nf">data_to_portal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">sessid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send data across the wire to the Portal</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            command (AMP Command): A protocol send command.</span>
+<span class="sd">            sessid (int): A unique Session id.</span>
+<span class="sd">            kwargs (any): Any data to pickle into the command.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            deferred (deferred or None): A deferred with an errback.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Data will be sent across the wire pickled as a tuple</span>
+<span class="sd">            (sessid, kwargs).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># print(&quot;server data_to_portal: {}, {}, {}&quot;.format(command, sessid, kwargs))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">callRemote</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">packed_data</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">dumps</span><span class="p">((</span><span class="n">sessid</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)))</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">errback</span><span class="p">,</span> <span class="n">command</span><span class="o">.</span><span class="n">key</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="AMPServerClientProtocol.send_MsgServer2Portal"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPServerClientProtocol.send_MsgServer2Portal">[docs]</a>    <span class="k">def</span> <span class="nf">send_MsgServer2Portal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Access method - executed on the Server for sending data</span>
+<span class="sd">            to Portal.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session (Session): Unique Session.</span>
+<span class="sd">            kwargs (any, optiona): Extra data.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_to_portal</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">MsgServer2Portal</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">sessid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AMPServerClientProtocol.send_AdminServer2Portal"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPServerClientProtocol.send_AdminServer2Portal">[docs]</a>    <span class="k">def</span> <span class="nf">send_AdminServer2Portal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Administrative access method called by the Server to send an</span>
+<span class="sd">        instruction to the Portal.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session (Session): Session.</span>
+<span class="sd">            operation (char, optional): Identifier for the server</span>
+<span class="sd">                operation, as defined by the global variables in</span>
+<span class="sd">                `evennia/server/amp.py`.</span>
+<span class="sd">            kwargs (dict, optional): Data going into the adminstrative.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_to_portal</span><span class="p">(</span>
+            <span class="n">amp</span><span class="o">.</span><span class="n">AdminServer2Portal</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">sessid</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">operation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
+
+    <span class="c1"># receiving AMP data</span>
+
+<div class="viewcode-block" id="AMPServerClientProtocol.server_receive_status"><a class="viewcode-back" href="../../../api/evennia.server.amp_client.html#evennia.server.amp_client.AMPServerClientProtocol.server_receive_status">[docs]</a>    <span class="nd">@amp</span><span class="o">.</span><span class="n">MsgStatus</span><span class="o">.</span><span class="n">responder</span>
+    <span class="k">def</span> <span class="nf">server_receive_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">}</span></div>
+
+    <span class="nd">@amp</span><span class="o">.</span><span class="n">MsgPortal2Server</span><span class="o">.</span><span class="n">responder</span>
+    <span class="nd">@amp</span><span class="o">.</span><span class="n">catch_traceback</span>
+    <span class="k">def</span> <span class="nf">server_receive_msgportal2server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packed_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Receives message arriving to server. This method is executed</span>
+<span class="sd">        on the Server.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            packed_data (str): Data to receive (a pickled tuple (sessid,kwargs))</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sessid</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">packed_data</span><span class="p">)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sessid</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">session</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="nd">@amp</span><span class="o">.</span><span class="n">AdminPortal2Server</span><span class="o">.</span><span class="n">responder</span>
+    <span class="nd">@amp</span><span class="o">.</span><span class="n">catch_traceback</span>
+    <span class="k">def</span> <span class="nf">server_receive_adminportal2server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packed_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Receives admin data from the Portal (allows the portal to</span>
+<span class="sd">        perform admin operations on the server). This is executed on</span>
+<span class="sd">        the Server.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            packed_data (str): Incoming, pickled data.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sessid</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">packed_data</span><span class="p">)</span>
+        <span class="n">operation</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;operation&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">server_sessionhandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">sessions</span>
+
+        <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">PCONN</span><span class="p">:</span>  <span class="c1"># portal_session_connect</span>
+            <span class="c1"># create a new session and sync it</span>
+            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">portal_connect</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sessiondata&quot;</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">PCONNSYNC</span><span class="p">:</span>  <span class="c1"># portal_session_sync</span>
+            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">portal_session_sync</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sessiondata&quot;</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">PDISCONN</span><span class="p">:</span>  <span class="c1"># portal_session_disconnect</span>
+            <span class="c1"># session closed from portal sid</span>
+            <span class="n">session</span> <span class="o">=</span> <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sessid</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">session</span><span class="p">:</span>
+                <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">portal_disconnect</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">PDISCONNALL</span><span class="p">:</span>  <span class="c1"># portal_disconnect_all</span>
+            <span class="c1"># portal orders all sessions to close</span>
+            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">portal_disconnect_all</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">PSYNC</span><span class="p">:</span>  <span class="c1"># portal_session_sync</span>
+            <span class="c1"># force a resync of sessions from the portal side. This happens on</span>
+            <span class="c1"># first server-connect.</span>
+            <span class="n">server_restart_mode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;server_restart_mode&quot;</span><span class="p">,</span> <span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">run_init_hooks</span><span class="p">(</span><span class="n">server_restart_mode</span><span class="p">)</span>
+            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">portal_sessions_sync</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sessiondata&quot;</span><span class="p">))</span>
+            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">portal_start_time</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;portal_start_time&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">SRELOAD</span><span class="p">:</span>  <span class="c1"># server reload</span>
+            <span class="c1"># shut down in reload mode</span>
+            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">all_sessions_portal_sync</span><span class="p">()</span>
+            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reload&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">SRESET</span><span class="p">:</span>
+            <span class="c1"># shut down in reset mode</span>
+            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">all_sessions_portal_sync</span><span class="p">()</span>
+            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reset&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="n">amp</span><span class="o">.</span><span class="n">SSHUTD</span><span class="p">:</span>  <span class="c1"># server shutdown</span>
+            <span class="c1"># shutdown in stop mode</span>
+            <span class="n">server_sessionhandler</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;operation </span><span class="si">%(op)s</span><span class="s2"> not recognized.&quot;</span> <span class="o">%</span> <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="n">operation</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="p">{}</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="amp_client.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.amp_client</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

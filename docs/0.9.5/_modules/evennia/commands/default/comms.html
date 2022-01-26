@@ -1,0 +1,1463 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.commands.default.comms &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.comms</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.commands.default.comms</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Comsystem command module.</span>
+
+<span class="sd">Comm commands are OOC commands and intended to be made available to</span>
+<span class="sd">the Account at all times (they go into the AccountCmdSet). So we</span>
+<span class="sd">make sure to homogenize self.caller to always be the account object</span>
+<span class="sd">for easy handling.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span><span class="p">,</span> <span class="n">Msg</span>
+<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+<span class="kn">from</span> <span class="nn">evennia.accounts</span> <span class="kn">import</span> <span class="n">bots</span>
+<span class="kn">from</span> <span class="nn">evennia.comms.channelhandler</span> <span class="kn">import</span> <span class="n">CHANNELHANDLER</span>
+<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockException</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">evtable</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">class_from_module</span>
+
+<span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
+<span class="n">CHANNEL_DEFAULT_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span>
+    <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHANNEL_TYPECLASS</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_CHANNEL_TYPECLASS</span><span class="p">)</span>
+
+
+<span class="c1"># limit symbol import for API</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;CmdAddCom&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdDelCom&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdAllCom&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdChannels&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdCdestroy&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdCBoot&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdCemit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdCWho&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdChannelCreate&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdClock&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdCdesc&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdPage&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdIRC2Chan&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdIRCStatus&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdRSS2Chan&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdGrapevine2Chan&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">_DEFAULT_WIDTH</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span>
+
+
+<span class="k">def</span> <span class="nf">find_channel</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">channelname</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">noaliases</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function for searching for a single channel with</span>
+<span class="sd">    some error handling.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">channels</span> <span class="o">=</span> <span class="n">CHANNEL_DEFAULT_TYPECLASS</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">channel_search</span><span class="p">(</span><span class="n">channelname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">channels</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">noaliases</span><span class="p">:</span>
+            <span class="n">channels</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">chan</span>
+                <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">CHANNEL_DEFAULT_TYPECLASS</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_channels</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">channelname</span> <span class="ow">in</span> <span class="n">chan</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">]</span>
+        <span class="k">if</span> <span class="n">channels</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">channels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">silent</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Channel &#39;</span><span class="si">%s</span><span class="s2">&#39; not found.&quot;</span> <span class="o">%</span> <span class="n">channelname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">silent</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Multiple channels match (be more specific): </span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">matches</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">channels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="CmdAddCom"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdAddCom">[docs]</a><span class="k">class</span> <span class="nc">CmdAddCom</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    add a channel alias and/or subscribe to a channel</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">       addcom [alias=] &lt;channel&gt;</span>
+
+<span class="sd">    Joins a given channel. If alias is given, this will allow you to</span>
+<span class="sd">    refer to the channel by this alias rather than the full channel</span>
+<span class="sd">    name. Subsequent calls of this command can be used to add multiple</span>
+<span class="sd">    aliases to an already joined channel.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;addcom&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;aliaschan&quot;</span><span class="p">,</span> <span class="s2">&quot;chanalias&quot;</span><span class="p">]</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:not pperm(channel_banned)&quot;</span>
+
+    <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
+    <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="CmdAddCom.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdAddCom.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implement the command&quot;&quot;&quot;</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+        <span class="n">account</span> <span class="o">=</span> <span class="n">caller</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: addcom [alias =] channelname.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="c1"># rhs holds the channelname</span>
+            <span class="n">channelname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+            <span class="n">alias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">channelname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+            <span class="n">alias</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">find_channel</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">channelname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="p">:</span>
+            <span class="c1"># we use the custom search method to handle errors.</span>
+            <span class="k">return</span>
+
+        <span class="c1"># check permissions</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="s2">&quot;listen&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: You are not allowed to listen to this channel.&quot;</span> <span class="o">%</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="o">.</span><span class="n">has_connection</span><span class="p">(</span><span class="n">account</span><span class="p">):</span>
+            <span class="c1"># we want to connect as well.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">account</span><span class="p">):</span>
+                <span class="c1"># if this would have returned True, the account is connected</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: You are not allowed to join this channel.&quot;</span> <span class="o">%</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;You now listen to the channel </span><span class="si">%s</span><span class="s2">. &quot;</span> <span class="o">%</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">channel</span><span class="o">.</span><span class="n">unmute</span><span class="p">(</span><span class="n">account</span><span class="p">):</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;You unmute channel </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;You are already connected to channel </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span>
+
+        <span class="k">if</span> <span class="n">alias</span><span class="p">:</span>
+            <span class="c1"># create a nick and add it to the caller.</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; You can now refer to the channel </span><span class="si">%s</span><span class="s2"> with the alias &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span> <span class="o">%</span> <span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">alias</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; No alias added.&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdDelCom"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdDelCom">[docs]</a><span class="k">class</span> <span class="nc">CmdDelCom</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    remove a channel alias and/or unsubscribe from channel</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">       delcom &lt;alias or channel&gt;</span>
+<span class="sd">       delcom/all &lt;channel&gt;</span>
+
+<span class="sd">    If the full channel name is given, unsubscribe from the</span>
+<span class="sd">    channel. If an alias is given, remove the alias but don&#39;t</span>
+<span class="sd">    unsubscribe. If the &#39;all&#39; switch is used, remove all aliases</span>
+<span class="sd">    for that channel.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;delcom&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;delaliaschan&quot;</span><span class="p">,</span> <span class="s2">&quot;delchanalias&quot;</span><span class="p">]</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:not perm(channel_banned)&quot;</span>
+
+    <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
+    <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="CmdDelCom.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdDelCom.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implementing the command. &quot;&quot;&quot;</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">account</span> <span class="o">=</span> <span class="n">caller</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: delcom &lt;alias or channel&gt;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">ostring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">find_channel</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">noaliases</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">channel</span><span class="p">:</span>
+            <span class="c1"># we have given a channel name - unsubscribe</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="o">.</span><span class="n">has_connection</span><span class="p">(</span><span class="n">account</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not listening to that channel.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="n">chkey</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">delnicks</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
+            <span class="c1"># find all nicks linked to this channel and delete them</span>
+            <span class="k">if</span> <span class="n">delnicks</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">nick</span> <span class="ow">in</span> <span class="p">[</span>
+                    <span class="n">nick</span>
+                    <span class="k">for</span> <span class="n">nick</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">nick</span> <span class="ow">and</span> <span class="n">nick</span><span class="o">.</span><span class="n">pk</span> <span class="ow">and</span> <span class="n">nick</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">chkey</span>
+                <span class="p">]:</span>
+                    <span class="n">nick</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+            <span class="n">disconnect</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">disconnect</span><span class="p">:</span>
+                <span class="n">wipednicks</span> <span class="o">=</span> <span class="s2">&quot; Eventual aliases were removed.&quot;</span> <span class="k">if</span> <span class="n">delnicks</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You stop listening to channel &#39;</span><span class="si">%s</span><span class="s2">&#39;.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">wipednicks</span><span class="p">))</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># we are removing a channel nick</span>
+            <span class="n">channame</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">ostring</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">)</span>
+            <span class="n">channel</span> <span class="o">=</span> <span class="n">find_channel</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">channame</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No channel with alias &#39;</span><span class="si">%s</span><span class="s2">&#39; was found.&quot;</span> <span class="o">%</span> <span class="n">ostring</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">caller</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ostring</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">):</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ostring</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Your alias &#39;</span><span class="si">%s</span><span class="s2">&#39; for channel </span><span class="si">%s</span><span class="s2"> was cleared.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ostring</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You had no such alias defined for this channel.&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdAllCom"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdAllCom">[docs]</a><span class="k">class</span> <span class="nc">CmdAllCom</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    perform admin operations on all channels</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      allcom [on | off | who | destroy]</span>
+
+<span class="sd">    Allows the user to universally turn off or on all channels they are on, as</span>
+<span class="sd">    well as perform a &#39;who&#39; for all channels they are on. Destroy deletes all</span>
+<span class="sd">    channels that you control.</span>
+
+<span class="sd">    Without argument, works like comlist.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;allcom&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd: not pperm(channel_banned)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+
+    <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
+    <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="CmdAllCom.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdAllCom.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Runs the function&quot;&quot;&quot;</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;channels&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;(Usage: allcom on | off | who | destroy)&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">args</span> <span class="o">==</span> <span class="s2">&quot;on&quot;</span><span class="p">:</span>
+            <span class="c1"># get names of all channels available to listen to</span>
+            <span class="c1"># and activate them all</span>
+            <span class="n">channels</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">chan</span>
+                <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">CHANNEL_DEFAULT_TYPECLASS</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_channels</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;listen&quot;</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;addcom </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">args</span> <span class="o">==</span> <span class="s2">&quot;off&quot;</span><span class="p">:</span>
+            <span class="c1"># get names all subscribed channels and disconnect from them all</span>
+            <span class="n">channels</span> <span class="o">=</span> <span class="n">CHANNEL_DEFAULT_TYPECLASS</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_subscriptions</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;delcom </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">args</span> <span class="o">==</span> <span class="s2">&quot;destroy&quot;</span><span class="p">:</span>
+            <span class="c1"># destroy all channels you control</span>
+            <span class="n">channels</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">chan</span>
+                <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">CHANNEL_DEFAULT_TYPECLASS</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_channels</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;cdestroy </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">args</span> <span class="o">==</span> <span class="s2">&quot;who&quot;</span><span class="p">:</span>
+            <span class="c1"># run a who, listing the subscribers on visible channels.</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|CChannel subscriptions|n&quot;</span>
+            <span class="n">channels</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">chan</span>
+                <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">CHANNEL_DEFAULT_TYPECLASS</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_channels</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;listen&quot;</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">channels</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;No channels.&quot;</span>
+            <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|w</span><span class="si">%s</span><span class="s2">:|n</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">wholist</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># wrong input</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: allcom on | off | who | clear&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdChannels"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannels">[docs]</a><span class="k">class</span> <span class="nc">CmdChannels</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    list all channels available to you</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      channels</span>
+<span class="sd">      clist</span>
+<span class="sd">      comlist</span>
+
+<span class="sd">    Lists all channels available to you, whether you listen to them or not.</span>
+<span class="sd">    Use &#39;comlist&#39; to only view your current channel subscriptions.</span>
+<span class="sd">    Use addcom/delcom to join and leave channels</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;channels&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;clist&quot;</span><span class="p">,</span> <span class="s2">&quot;comlist&quot;</span><span class="p">,</span> <span class="s2">&quot;chanlist&quot;</span><span class="p">,</span> <span class="s2">&quot;channellist&quot;</span><span class="p">,</span> <span class="s2">&quot;all channels&quot;</span><span class="p">]</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd: not pperm(channel_banned)&quot;</span>
+
+    <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
+    <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="CmdChannels.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannels.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implement function&quot;&quot;&quot;</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+
+        <span class="c1"># all channels we have available to listen to</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">chan</span>
+            <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">CHANNEL_DEFAULT_TYPECLASS</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_channels</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;listen&quot;</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channels</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No channels available.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># all channel we are already subscribed to</span>
+        <span class="n">subs</span> <span class="o">=</span> <span class="n">CHANNEL_DEFAULT_TYPECLASS</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_subscriptions</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">==</span> <span class="s2">&quot;comlist&quot;</span><span class="p">:</span>
+            <span class="c1"># just display the subscribed channels with no extra info</span>
+            <span class="n">comtable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span>
+                <span class="s2">&quot;|wchannel|n&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;|wmy aliases|n&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;|wdescription|n&quot;</span><span class="p">,</span>
+                <span class="n">align</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="p">,</span>
+                <span class="n">maxwidth</span><span class="o">=</span><span class="n">_DEFAULT_WIDTH</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">subs</span><span class="p">:</span>
+                <span class="n">clower</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="n">nicks</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">comtable</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                    <span class="o">*</span><span class="p">[</span>
+                        <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span>
+                        <span class="o">%</span> <span class="p">(</span>
+                            <span class="n">chan</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                            <span class="n">chan</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">and</span> <span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">())</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="p">),</span>
+                        <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span>
+                        <span class="o">%</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                            <span class="n">nick</span><span class="o">.</span><span class="n">db_key</span>
+                            <span class="k">for</span> <span class="n">nick</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">nicks</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">nick</span> <span class="ow">and</span> <span class="n">nick</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">clower</span>
+                        <span class="p">),</span>
+                        <span class="n">chan</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">,</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wChannel subscriptions|n (use |wchannels|n to list all,&quot;</span>
+                <span class="s2">&quot; |waddcom|n/|wdelcom|n to sub/unsub):|n</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">comtable</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># full listing (of channels caller is able to listen to)</span>
+            <span class="n">comtable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span>
+                <span class="s2">&quot;|wsub|n&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;|wchannel|n&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;|wmy aliases|n&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;|wlocks|n&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;|wdescription|n&quot;</span><span class="p">,</span>
+                <span class="n">maxwidth</span><span class="o">=</span><span class="n">_DEFAULT_WIDTH</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+                <span class="n">clower</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="n">nicks</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">nicks</span> <span class="o">=</span> <span class="n">nicks</span> <span class="ow">or</span> <span class="p">[]</span>
+                <span class="k">if</span> <span class="n">chan</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">subs</span><span class="p">:</span>
+                    <span class="n">substatus</span> <span class="o">=</span> <span class="s2">&quot;|rNo|n&quot;</span>
+                <span class="k">elif</span> <span class="n">caller</span> <span class="ow">in</span> <span class="n">chan</span><span class="o">.</span><span class="n">mutelist</span><span class="p">:</span>
+                    <span class="n">substatus</span> <span class="o">=</span> <span class="s2">&quot;|rMuted|n&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">substatus</span> <span class="o">=</span> <span class="s2">&quot;|gYes|n&quot;</span>
+                <span class="n">comtable</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                    <span class="o">*</span><span class="p">[</span>
+                        <span class="n">substatus</span><span class="p">,</span>
+                        <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span>
+                        <span class="o">%</span> <span class="p">(</span>
+                            <span class="n">chan</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                            <span class="n">chan</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">and</span> <span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">())</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="p">),</span>
+                        <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span>
+                        <span class="o">%</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                            <span class="n">nick</span><span class="o">.</span><span class="n">db_key</span>
+                            <span class="k">for</span> <span class="n">nick</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">nicks</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">nick</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">clower</span>
+                        <span class="p">),</span>
+                        <span class="nb">str</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">locks</span><span class="p">),</span>
+                        <span class="n">chan</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">,</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+            <span class="n">comtable</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+            <span class="n">comtable</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wAvailable channels|n (use |wcomlist|n,|waddcom|n and |wdelcom|n&quot;</span>
+                <span class="s2">&quot; to manage subscriptions):</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">comtable</span>
+            <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdCdestroy"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCdestroy">[docs]</a><span class="k">class</span> <span class="nc">CmdCdestroy</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    destroy a channel you created</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      cdestroy &lt;channel&gt;</span>
+
+<span class="sd">    Destroys a channel that you control.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;cdestroy&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd: not pperm(channel_banned)&quot;</span>
+
+    <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
+    <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="CmdCdestroy.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCdestroy.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Destroy objects cleanly.&quot;&quot;&quot;</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: cdestroy &lt;channelname&gt;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">find_channel</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Could not find channel </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not allowed to do that.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">channel_key</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is being destroyed. Make sure to change your aliases.&quot;</span> <span class="o">%</span> <span class="n">channel_key</span>
+        <span class="n">msgobj</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_message</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+        <span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">msgobj</span><span class="p">)</span>
+        <span class="n">channel</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="n">CHANNELHANDLER</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Channel &#39;</span><span class="si">%s</span><span class="s2">&#39; was destroyed.&quot;</span> <span class="o">%</span> <span class="n">channel_key</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
+            <span class="s2">&quot;Channel Deleted: </span><span class="si">%s</span><span class="s2"> (Caller: </span><span class="si">%s</span><span class="s2">, IP: </span><span class="si">%s</span><span class="s2">).&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">channel_key</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdCBoot"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCBoot">[docs]</a><span class="k">class</span> <span class="nc">CmdCBoot</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    kick an account from a channel you control</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">       cboot[/quiet] &lt;channel&gt; = &lt;account&gt; [:reason]</span>
+
+<span class="sd">    Switch:</span>
+<span class="sd">       quiet - don&#39;t notify the channel</span>
+
+<span class="sd">    Kicks an account or object from a channel you control.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;cboot&quot;</span>
+    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;quiet&quot;</span><span class="p">,)</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd: not pperm(channel_banned)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+
+    <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
+    <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="CmdCBoot.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCBoot.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;implement the function&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Usage: cboot[/quiet] &lt;channel&gt; = &lt;account&gt; [:reason]&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">find_channel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">reason</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="n">accountname</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">searchstring</span> <span class="o">=</span> <span class="n">accountname</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">searchstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+        <span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">searchstring</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">account</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">reason</span><span class="p">:</span>
+            <span class="n">reason</span> <span class="o">=</span> <span class="s2">&quot; (reason: </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">reason</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">):</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You don&#39;t control this channel.&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">account</span><span class="p">):</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Account </span><span class="si">%s</span><span class="s2"> is not connected to channel </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="s2">&quot;quiet&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> boots </span><span class="si">%s</span><span class="s2"> from channel.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">account</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
+            <span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+        <span class="c1"># find all account&#39;s nicks linked to this channel and delete them</span>
+        <span class="k">for</span> <span class="n">nick</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="n">nick</span>
+            <span class="k">for</span> <span class="n">nick</span> <span class="ow">in</span> <span class="n">account</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">nick</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span>
+        <span class="p">]:</span>
+            <span class="n">nick</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="c1"># disconnect account</span>
+        <span class="n">channel</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
+        <span class="n">CHANNELHANDLER</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
+            <span class="s2">&quot;Channel Boot: </span><span class="si">%s</span><span class="s2"> (Channel: </span><span class="si">%s</span><span class="s2">, Reason: </span><span class="si">%s</span><span class="s2">, Caller: </span><span class="si">%s</span><span class="s2">, IP: </span><span class="si">%s</span><span class="s2">).&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdCemit"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCemit">[docs]</a><span class="k">class</span> <span class="nc">CmdCemit</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    send an admin message to a channel you control</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      cemit[/switches] &lt;channel&gt; = &lt;message&gt;</span>
+
+<span class="sd">    Switches:</span>
+<span class="sd">      sendername - attach the sender&#39;s name before the message</span>
+<span class="sd">      quiet - don&#39;t echo the message back to sender</span>
+
+<span class="sd">    Allows the user to broadcast a message over a channel as long as</span>
+<span class="sd">    they control it. It does not show the user&#39;s name unless they</span>
+<span class="sd">    provide the /sendername switch.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;cemit&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cmsg&quot;</span><span class="p">]</span>
+    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;sendername&quot;</span><span class="p">,</span> <span class="s2">&quot;quiet&quot;</span><span class="p">)</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd: not pperm(channel_banned) and pperm(Player)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+
+    <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
+    <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="CmdCemit.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCemit.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implement function&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Usage: cemit[/switches] &lt;channel&gt; = &lt;message&gt;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">find_channel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">):</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You don&#39;t control this channel.&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+        <span class="k">if</span> <span class="s2">&quot;sendername&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+        <span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;quiet&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Sent to channel </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdCWho"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCWho">[docs]</a><span class="k">class</span> <span class="nc">CmdCWho</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    show who is listening to a channel</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      cwho &lt;channel&gt;</span>
+
+<span class="sd">    List who is connected to a given channel you have access to.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;cwho&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd: not pperm(channel_banned)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+
+    <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
+    <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="CmdCWho.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCWho.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;implement function&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Usage: cwho &lt;channel&gt;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">find_channel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;listen&quot;</span><span class="p">):</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You can&#39;t access this channel.&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|CChannel subscriptions|n&quot;</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|w</span><span class="si">%s</span><span class="s2">:|n</span><span class="se">\n</span><span class="s2">  </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">wholist</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="CmdChannelCreate"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannelCreate">[docs]</a><span class="k">class</span> <span class="nc">CmdChannelCreate</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    create a new channel</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">     ccreate &lt;new channel&gt;[;alias;alias...] = description</span>
+
+<span class="sd">    Creates a new channel owned by you.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;ccreate&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;channelcreate&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:not pperm(channel_banned) and pperm(Player)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+
+    <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
+    <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="CmdChannelCreate.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannelCreate.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implement the command&quot;&quot;&quot;</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage ccreate &lt;channelname&gt;[;alias;alias..] = description&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+        <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
+        <span class="n">channame</span> <span class="o">=</span> <span class="n">lhs</span>
+        <span class="n">aliases</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="s2">&quot;;&quot;</span> <span class="ow">in</span> <span class="n">lhs</span><span class="p">:</span>
+            <span class="n">channame</span><span class="p">,</span> <span class="n">aliases</span> <span class="o">=</span> <span class="n">lhs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="n">alias</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">aliases</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)]</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">CHANNEL_DEFAULT_TYPECLASS</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">channel_search</span><span class="p">(</span><span class="n">channame</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">channel</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;A channel with that name already exists.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># Create and set the channel up</span>
+        <span class="n">lockstring</span> <span class="o">=</span> <span class="s2">&quot;send:all();listen:all();control:id(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">caller</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">new_chan</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_channel</span><span class="p">(</span><span class="n">channame</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">aliases</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="n">lockstring</span><span class="p">)</span>
+        <span class="n">new_chan</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+        <span class="n">CHANNELHANDLER</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Created channel </span><span class="si">%s</span><span class="s2"> and connected to it.&quot;</span> <span class="o">%</span> <span class="n">new_chan</span><span class="o">.</span><span class="n">key</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdClock"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdClock">[docs]</a><span class="k">class</span> <span class="nc">CmdClock</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    change channel locks of a channel you control</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      clock &lt;channel&gt; [= &lt;lockstring&gt;]</span>
+
+<span class="sd">    Changes the lock access restrictions of a channel. If no</span>
+<span class="sd">    lockstring was given, view the current lock definitions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;clock&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:not pperm(channel_banned)&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;clock&quot;</span><span class="p">]</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+
+    <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
+    <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="CmdClock.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdClock.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;run the function&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Usage: clock channel [= lockstring]&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">find_channel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="c1"># no =, so just view the current locks</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Current locks on </span><span class="si">%s</span><span class="s2">:&quot;</span> <span class="o">%</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">locks</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># we want to add/change a lock.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">):</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You don&#39;t control this channel.&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># Try to add the lock</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">channel</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">LockException</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Lock(s) applied. &quot;</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;Current locks on </span><span class="si">%s</span><span class="s2">:&quot;</span> <span class="o">%</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">locks</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdCdesc"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCdesc">[docs]</a><span class="k">class</span> <span class="nc">CmdCdesc</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    describe a channel you control</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      cdesc &lt;channel&gt; = &lt;description&gt;</span>
+
+<span class="sd">    Changes the description of the channel as shown in</span>
+<span class="sd">    channel lists.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;cdesc&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:not pperm(channel_banned)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+
+    <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
+    <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="CmdCdesc.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCdesc.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implement command&quot;&quot;&quot;</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: cdesc &lt;channel&gt; = &lt;description&gt;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">find_channel</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Channel &#39;</span><span class="si">%s</span><span class="s2">&#39; not found.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># check permissions</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You cannot admin this channel.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># set the description</span>
+        <span class="n">channel</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+        <span class="n">channel</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Description of channel &#39;</span><span class="si">%s</span><span class="s2">&#39; set to &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="CmdPage"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdPage">[docs]</a><span class="k">class</span> <span class="nc">CmdPage</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    send a private message to another account</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      page[/switches] [&lt;account&gt;,&lt;account&gt;,... = &lt;message&gt;]</span>
+<span class="sd">      tell        &#39;&#39;</span>
+<span class="sd">      page &lt;number&gt;</span>
+
+<span class="sd">    Switch:</span>
+<span class="sd">      last - shows who you last messaged</span>
+<span class="sd">      list - show your last &lt;number&gt; of tells/pages (default)</span>
+
+<span class="sd">    Send a message to target user (if online). If no</span>
+<span class="sd">    argument is given, you will get a list of your latest messages.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;page&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tell&quot;</span><span class="p">]</span>
+    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;last&quot;</span><span class="p">,</span> <span class="s2">&quot;list&quot;</span><span class="p">)</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:not pperm(page_banned)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+
+    <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
+    <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="CmdPage.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdPage.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implement function using the Msg methods&quot;&quot;&quot;</span>
+
+        <span class="c1"># Since account_caller is set above, this will be an Account.</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+
+        <span class="c1"># get the messages we&#39;ve sent (not to channels)</span>
+        <span class="n">pages_we_sent</span> <span class="o">=</span> <span class="n">Msg</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_messages_by_sender</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">exclude_channel_messages</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># get last messages we&#39;ve got</span>
+        <span class="n">pages_we_got</span> <span class="o">=</span> <span class="n">Msg</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_messages_by_receiver</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;last&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pages_we_sent</span><span class="p">:</span>
+                <span class="n">recv</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">pages_we_sent</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">receivers</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You last paged |c</span><span class="si">%s</span><span class="s2">|n:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">recv</span><span class="p">,</span> <span class="n">pages_we_sent</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="p">))</span>
+                <span class="k">return</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You haven&#39;t paged anyone yet.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="n">pages</span> <span class="o">=</span> <span class="n">pages_we_sent</span> <span class="o">+</span> <span class="n">pages_we_got</span>
+            <span class="n">pages</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">pages</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">page</span><span class="p">:</span> <span class="n">page</span><span class="o">.</span><span class="n">date_created</span><span class="p">)</span>
+
+            <span class="n">number</span> <span class="o">=</span> <span class="mi">5</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: tell [&lt;account&gt; = msg]&quot;</span><span class="p">)</span>
+                    <span class="k">return</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pages</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">number</span><span class="p">:</span>
+                <span class="n">lastpages</span> <span class="o">=</span> <span class="n">pages</span><span class="p">[</span><span class="o">-</span><span class="n">number</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">lastpages</span> <span class="o">=</span> <span class="n">pages</span>
+            <span class="n">to_template</span> <span class="o">=</span> <span class="s2">&quot;|w</span><span class="si">{date}{clr}</span><span class="s2"> </span><span class="si">{sender}</span><span class="s2">|nto</span><span class="si">{clr}{receiver}</span><span class="s2">|n:&gt; </span><span class="si">{message}</span><span class="s2">&quot;</span>
+            <span class="n">from_template</span> <span class="o">=</span> <span class="s2">&quot;|w</span><span class="si">{date}{clr}</span><span class="s2"> </span><span class="si">{receiver}</span><span class="s2">|nfrom</span><span class="si">{clr}{sender}</span><span class="s2">|n:&lt; </span><span class="si">{message}</span><span class="s2">&quot;</span>
+            <span class="n">listing</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">prev_selfsend</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">lastpages</span><span class="p">:</span>
+                <span class="n">multi_send</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">senders</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                <span class="n">multi_recv</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">receivers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                <span class="n">sending</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">senders</span>
+                <span class="c1"># self-messages all look like sends, so we assume they always</span>
+                <span class="c1"># come in close pairs and treat the second of the pair as the recv.</span>
+                <span class="n">selfsend</span> <span class="o">=</span> <span class="n">sending</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">receivers</span>
+                <span class="k">if</span> <span class="n">selfsend</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">prev_selfsend</span><span class="p">:</span>
+                        <span class="c1"># this is actually a receive of a self-message</span>
+                        <span class="n">sending</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="n">prev_selfsend</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">prev_selfsend</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="n">clr</span> <span class="o">=</span> <span class="s2">&quot;|c&quot;</span> <span class="k">if</span> <span class="n">sending</span> <span class="k">else</span> <span class="s2">&quot;|g&quot;</span>
+
+                <span class="n">sender</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|n,</span><span class="si">{</span><span class="n">clr</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">senders</span><span class="p">)</span>
+                <span class="n">receiver</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|n,</span><span class="si">{</span><span class="n">clr</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">receivers</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">sending</span><span class="p">:</span>
+                    <span class="n">template</span> <span class="o">=</span> <span class="n">to_template</span>
+                    <span class="n">sender</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sender</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="k">if</span> <span class="n">multi_send</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+                    <span class="n">receiver</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">receiver</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">multi_recv</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">receiver</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">template</span> <span class="o">=</span> <span class="n">from_template</span>
+                    <span class="n">receiver</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">receiver</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="k">if</span> <span class="n">multi_recv</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+                    <span class="n">sender</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">sender</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="k">if</span> <span class="n">multi_send</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">sender</span><span class="si">}</span><span class="s2">&quot;</span>
+
+                <span class="n">listing</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">date</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">datetime_format</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">date_created</span><span class="p">),</span>
+                        <span class="n">clr</span><span class="o">=</span><span class="n">clr</span><span class="p">,</span>
+                        <span class="n">sender</span><span class="o">=</span><span class="n">sender</span><span class="p">,</span>
+                        <span class="n">receiver</span><span class="o">=</span><span class="n">receiver</span><span class="p">,</span>
+                        <span class="n">message</span><span class="o">=</span><span class="n">page</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="n">lastpages</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">listing</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">lastpages</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Your latest pages:</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">lastpages</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You haven&#39;t paged anyone yet.&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># We are sending. Build a list of targets</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">:</span>
+            <span class="c1"># If there are no targets, then set the targets</span>
+            <span class="c1"># to the last person we paged.</span>
+            <span class="k">if</span> <span class="n">pages_we_sent</span><span class="p">:</span>
+                <span class="n">receivers</span> <span class="o">=</span> <span class="n">pages_we_sent</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">receivers</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Who do you want to page?&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">receivers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhslist</span>
+
+        <span class="n">recobjs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">receivers</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">pobj</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">receiver</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="s2">&quot;character&quot;</span><span class="p">):</span>
+                <span class="n">pobj</span> <span class="o">=</span> <span class="n">receiver</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Who do you want to page?&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="n">pobj</span><span class="p">:</span>
+                <span class="n">recobjs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pobj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">recobjs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Noone found to page.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;|wAccount|n |c</span><span class="si">%s</span><span class="s2">|n |wpages:|n&quot;</span> <span class="o">%</span> <span class="n">caller</span><span class="o">.</span><span class="n">key</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+
+        <span class="c1"># if message begins with a :, we assume it is a &#39;page-pose&#39;</span>
+        <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">message</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+        <span class="c1"># create the persistent message object</span>
+        <span class="n">create</span><span class="o">.</span><span class="n">create_message</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="n">recobjs</span><span class="p">)</span>
+
+        <span class="c1"># tell the accounts they got a message.</span>
+        <span class="n">received</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">rstrings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">pobj</span> <span class="ow">in</span> <span class="n">recobjs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pobj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">):</span>
+                <span class="n">rstrings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;You are not allowed to page </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">pobj</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">pobj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">message</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pobj</span><span class="p">,</span> <span class="s2">&quot;sessions&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pobj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">count</span><span class="p">():</span>
+                <span class="n">received</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;|C</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">pobj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">rstrings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is offline. They will see your message if they list their pages later.&quot;</span>
+                    <span class="o">%</span> <span class="n">received</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">received</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;|c</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">pobj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rstrings</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rstrings</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You paged </span><span class="si">%s</span><span class="s2"> with: &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">received</span><span class="p">),</span> <span class="n">message</span><span class="p">))</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">_list_bots</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function to produce a list of all IRC bots.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cmd (Command): Instance of the Bot command.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        bots (str): A table of bots or an error message.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ircbots</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">bot</span> <span class="k">for</span> <span class="n">bot</span> <span class="ow">in</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_is_bot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">username__startswith</span><span class="o">=</span><span class="s2">&quot;ircbot-&quot;</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">ircbots</span><span class="p">:</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">cmd</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span>
+            <span class="s2">&quot;|w#dbref|n&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|wbotname|n&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|wev-channel|n&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|wirc-channel|n&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|wSSL|n&quot;</span><span class="p">,</span>
+            <span class="n">maxwidth</span><span class="o">=</span><span class="n">_DEFAULT_WIDTH</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">ircbot</span> <span class="ow">in</span> <span class="n">ircbots</span><span class="p">:</span>
+            <span class="n">ircinfo</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">ircbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_channel</span><span class="p">,</span>
+                <span class="n">ircbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_network</span><span class="p">,</span>
+                <span class="n">ircbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_port</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                <span class="s2">&quot;#</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">ircbot</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">ircbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_botname</span><span class="p">,</span>
+                <span class="n">ircbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">ev_channel</span><span class="p">,</span>
+                <span class="n">ircinfo</span><span class="p">,</span>
+                <span class="n">ircbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_ssl</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">table</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;No irc bots found.&quot;</span>
+
+
+<div class="viewcode-block" id="CmdIRC2Chan"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdIRC2Chan">[docs]</a><span class="k">class</span> <span class="nc">CmdIRC2Chan</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Link an evennia channel to an external IRC channel</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      irc2chan[/switches] &lt;evennia_channel&gt; = &lt;ircnetwork&gt; &lt;port&gt; &lt;#irchannel&gt; &lt;botname&gt;[:typeclass]</span>
+<span class="sd">      irc2chan/delete botname|#dbid</span>
+
+<span class="sd">    Switches:</span>
+<span class="sd">      /delete     - this will delete the bot and remove the irc connection</span>
+<span class="sd">                    to the channel. Requires the botname or #dbid as input.</span>
+<span class="sd">      /remove     - alias to /delete</span>
+<span class="sd">      /disconnect - alias to /delete</span>
+<span class="sd">      /list       - show all irc&lt;-&gt;evennia mappings</span>
+<span class="sd">      /ssl        - use an SSL-encrypted connection</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">      irc2chan myircchan = irc.dalnet.net 6667 #mychannel evennia-bot</span>
+<span class="sd">      irc2chan public = irc.freenode.net 6667 #evgaming #evbot:accounts.mybot.MyBot</span>
+
+<span class="sd">    This creates an IRC bot that connects to a given IRC network and</span>
+<span class="sd">    channel. If a custom typeclass path is given, this will be used</span>
+<span class="sd">    instead of the default bot class.</span>
+<span class="sd">    The bot will relay everything said in the evennia channel to the</span>
+<span class="sd">    IRC channel and vice versa. The bot will automatically connect at</span>
+<span class="sd">    server start, so this command need only be given once. The</span>
+<span class="sd">    /disconnect switch will permanently delete the bot. To only</span>
+<span class="sd">    temporarily deactivate it, use the  |wservices|n command instead.</span>
+<span class="sd">    Provide an optional bot class path to use a custom bot.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;irc2chan&quot;</span>
+    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="s2">&quot;disconnect&quot;</span><span class="p">,</span> <span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;ssl&quot;</span><span class="p">)</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:serversetting(IRC_ENABLED) and pperm(Developer)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+
+<div class="viewcode-block" id="CmdIRC2Chan.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdIRC2Chan.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setup the irc-channel mapping&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">IRC_ENABLED</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;IRC is not enabled. You need to activate it in game/settings.py.&quot;&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="s2">&quot;list&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="c1"># show all connections</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_list_bots</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="s2">&quot;disconnect&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;remove&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;delete&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="n">botname</span> <span class="o">=</span> <span class="s2">&quot;ircbot-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_is_bot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">botname</span><span class="p">)</span>
+            <span class="n">dbref</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">dbref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span> <span class="ow">and</span> <span class="n">dbref</span><span class="p">:</span>
+                <span class="c1"># try dbref match</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_is_bot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">dbref</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">matches</span><span class="p">:</span>
+                <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;IRC connection destroyed.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;IRC connection/bot could not be removed, does it exist?&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Usage: irc2chan[/switches] &lt;evennia_channel&gt; =&quot;</span>
+                <span class="s2">&quot; &lt;ircnetwork&gt; &lt;port&gt; &lt;#irchannel&gt; &lt;botname&gt;[:typeclass]&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>  <span class="c1"># to avoid Python comment issues</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">irc_network</span><span class="p">,</span> <span class="n">irc_port</span><span class="p">,</span> <span class="n">irc_channel</span><span class="p">,</span> <span class="n">irc_botname</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="n">irc_channel</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">irc_channel</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;IRC bot definition &#39;</span><span class="si">%s</span><span class="s2">&#39; is not valid.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">botclass</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">irc_botname</span><span class="p">:</span>
+            <span class="n">irc_botname</span><span class="p">,</span> <span class="n">botclass</span> <span class="o">=</span> <span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">irc_botname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span>
+        <span class="n">botname</span> <span class="o">=</span> <span class="s2">&quot;ircbot-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">irc_botname</span>
+        <span class="c1"># If path given, use custom bot otherwise use default.</span>
+        <span class="n">botclass</span> <span class="o">=</span> <span class="n">botclass</span> <span class="k">if</span> <span class="n">botclass</span> <span class="k">else</span> <span class="n">bots</span><span class="o">.</span><span class="n">IRCBot</span>
+        <span class="n">irc_ssl</span> <span class="o">=</span> <span class="s2">&quot;ssl&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
+
+        <span class="c1"># create a new bot</span>
+        <span class="n">bot</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">username__iexact</span><span class="o">=</span><span class="n">botname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bot</span><span class="p">:</span>
+            <span class="c1"># re-use an existing bot</span>
+            <span class="n">bot</span> <span class="o">=</span> <span class="n">bot</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">bot</span><span class="o">.</span><span class="n">is_bot</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Account &#39;</span><span class="si">%s</span><span class="s2">&#39; already exists and is not a bot.&quot;</span> <span class="o">%</span> <span class="n">botname</span><span class="p">)</span>
+                <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">bot</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_account</span><span class="p">(</span><span class="n">botname</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">botclass</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rError, could not create the bot:|n &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="n">err</span><span class="p">)</span>
+                <span class="k">return</span>
+        <span class="n">bot</span><span class="o">.</span><span class="n">start</span><span class="p">(</span>
+            <span class="n">ev_channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+            <span class="n">irc_botname</span><span class="o">=</span><span class="n">irc_botname</span><span class="p">,</span>
+            <span class="n">irc_channel</span><span class="o">=</span><span class="n">irc_channel</span><span class="p">,</span>
+            <span class="n">irc_network</span><span class="o">=</span><span class="n">irc_network</span><span class="p">,</span>
+            <span class="n">irc_port</span><span class="o">=</span><span class="n">irc_port</span><span class="p">,</span>
+            <span class="n">irc_ssl</span><span class="o">=</span><span class="n">irc_ssl</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Connection created. Starting IRC bot.&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdIRCStatus"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdIRCStatus">[docs]</a><span class="k">class</span> <span class="nc">CmdIRCStatus</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check and reboot IRC bot.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        ircstatus [#dbref ping||nicklist||reconnect]</span>
+
+<span class="sd">    If not given arguments, will return a list of all bots (like</span>
+<span class="sd">    irc2chan/list). The &#39;ping&#39; argument will ping the IRC network to</span>
+<span class="sd">    see if the connection is still responsive. The &#39;nicklist&#39; argument</span>
+<span class="sd">    (aliases are &#39;who&#39; and &#39;users&#39;) will return a list of users on the</span>
+<span class="sd">    remote IRC channel.  Finally, &#39;reconnect&#39; will force the client to</span>
+<span class="sd">    disconnect and reconnect again. This may be a last resort if the</span>
+<span class="sd">    client has silently lost connection (this may happen if the remote</span>
+<span class="sd">    network experience network issues). During the reconnection</span>
+<span class="sd">    messages sent to either channel will be lost.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;ircstatus&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:serversetting(IRC_ENABLED) and perm(ircstatus) or perm(Builder))&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+
+<div class="viewcode-block" id="CmdIRCStatus.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdIRCStatus.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Handles the functioning of the command.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_list_bots</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+            <span class="k">return</span>
+        <span class="c1"># should always be on the form botname option</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: ircstatus [#dbref ping||nicklist||reconnect]&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">botname</span><span class="p">,</span> <span class="n">option</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="n">option</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ping&quot;</span><span class="p">,</span> <span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="s2">&quot;reconnect&quot;</span><span class="p">,</span> <span class="s2">&quot;nicklist&quot;</span><span class="p">,</span> <span class="s2">&quot;who&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Not a valid option.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">dbref</span><span class="p">(</span><span class="n">botname</span><span class="p">):</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_is_bot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">dbref</span><span class="p">(</span><span class="n">botname</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;No matching IRC-bot found. Use ircstatus without arguments to list active bots.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">ircbot</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">ircbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_channel</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="n">ircbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_network</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="n">ircbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_port</span>
+        <span class="n">chtext</span> <span class="o">=</span> <span class="s2">&quot;IRC bot &#39;</span><span class="si">%s</span><span class="s2">&#39; on channel </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">ircbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">irc_botname</span><span class="p">,</span>
+            <span class="n">channel</span><span class="p">,</span>
+            <span class="n">network</span><span class="p">,</span>
+            <span class="n">port</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;ping&quot;</span><span class="p">:</span>
+            <span class="c1"># check connection by sending outself a ping through the server.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Pinging through </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">chtext</span><span class="p">)</span>
+            <span class="n">ircbot</span><span class="o">.</span><span class="n">ping</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="s2">&quot;nicklist&quot;</span><span class="p">,</span> <span class="s2">&quot;who&quot;</span><span class="p">):</span>
+            <span class="c1"># retrieve user list. The bot must handles the echo since it&#39;s</span>
+            <span class="c1"># an asynchronous call.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Requesting nicklist from </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">).&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+            <span class="n">ircbot</span><span class="o">.</span><span class="n">get_nicklist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;dummy:perm(ircstatus) or perm(Developer)&quot;</span>
+        <span class="p">):</span>
+            <span class="c1"># reboot the client</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Forcing a disconnect + reconnect of </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">chtext</span><span class="p">)</span>
+            <span class="n">ircbot</span><span class="o">.</span><span class="n">reconnect</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have permission to force-reload the IRC bot.&quot;</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># RSS connection</span>
+<div class="viewcode-block" id="CmdRSS2Chan"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdRSS2Chan">[docs]</a><span class="k">class</span> <span class="nc">CmdRSS2Chan</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    link an evennia channel to an external RSS feed</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      rss2chan[/switches] &lt;evennia_channel&gt; = &lt;rss_url&gt;</span>
+
+<span class="sd">    Switches:</span>
+<span class="sd">      /disconnect - this will stop the feed and remove the connection to the</span>
+<span class="sd">                    channel.</span>
+<span class="sd">      /remove     -                                 &quot;</span>
+<span class="sd">      /list       - show all rss-&gt;evennia mappings</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">      rss2chan rsschan = http://code.google.com/feeds/p/evennia/updates/basic</span>
+
+<span class="sd">    This creates an RSS reader  that connects to a given RSS feed url. Updates</span>
+<span class="sd">    will be echoed as a title and news link to the given channel. The rate of</span>
+<span class="sd">    updating is set with the RSS_UPDATE_INTERVAL variable in settings (default</span>
+<span class="sd">    is every 10 minutes).</span>
+
+<span class="sd">    When disconnecting you need to supply both the channel and url again so as</span>
+<span class="sd">    to identify the connection uniquely.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;rss2chan&quot;</span>
+    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;disconnect&quot;</span><span class="p">,</span> <span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="s2">&quot;list&quot;</span><span class="p">)</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:serversetting(RSS_ENABLED) and pperm(Developer)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+
+<div class="viewcode-block" id="CmdRSS2Chan.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdRSS2Chan.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setup the rss-channel mapping&quot;&quot;&quot;</span>
+
+        <span class="c1"># checking we have all we need</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">RSS_ENABLED</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;RSS is not enabled. You need to activate it in game/settings.py.&quot;&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">feedparser</span>
+
+            <span class="k">assert</span> <span class="n">feedparser</span>  <span class="c1"># to avoid checker error of not being used</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;RSS requires python-feedparser (https://pypi.python.org/pypi/feedparser).&quot;</span>
+                <span class="s2">&quot; Install before continuing.&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="s2">&quot;list&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="c1"># show all connections</span>
+            <span class="n">rssbots</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">bot</span>
+                <span class="k">for</span> <span class="n">bot</span> <span class="ow">in</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_is_bot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">username__startswith</span><span class="o">=</span><span class="s2">&quot;rssbot-&quot;</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="n">rssbots</span><span class="p">:</span>
+                <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span>
+                    <span class="s2">&quot;|wdbid|n&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;|wupdate rate|n&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;|wev-channel&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;|wRSS feed URL|n&quot;</span><span class="p">,</span>
+                    <span class="n">border</span><span class="o">=</span><span class="s2">&quot;cells&quot;</span><span class="p">,</span>
+                    <span class="n">maxwidth</span><span class="o">=</span><span class="n">_DEFAULT_WIDTH</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">rssbot</span> <span class="ow">in</span> <span class="n">rssbots</span><span class="p">:</span>
+                    <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                        <span class="n">rssbot</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">rssbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rss_rate</span><span class="p">,</span> <span class="n">rssbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">ev_channel</span><span class="p">,</span> <span class="n">rssbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rss_url</span>
+                    <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No rss bots found.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="s2">&quot;disconnect&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;remove&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;delete&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="n">botname</span> <span class="o">=</span> <span class="s2">&quot;rssbot-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_is_bot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">db_key</span><span class="o">=</span><span class="n">botname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span><span class="p">:</span>
+                <span class="c1"># try dbref match</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_is_bot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">matches</span><span class="p">:</span>
+                <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;RSS connection destroyed.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;RSS connection/bot could not be removed, does it exist?&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Usage: rss2chan[/switches] &lt;evennia_channel&gt; = &lt;rss url&gt;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+
+        <span class="n">botname</span> <span class="o">=</span> <span class="s2">&quot;rssbot-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">url</span>
+        <span class="n">bot</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">username__iexact</span><span class="o">=</span><span class="n">botname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bot</span><span class="p">:</span>
+            <span class="c1"># re-use existing bot</span>
+            <span class="n">bot</span> <span class="o">=</span> <span class="n">bot</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">bot</span><span class="o">.</span><span class="n">is_bot</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Account &#39;</span><span class="si">%s</span><span class="s2">&#39; already exists and is not a bot.&quot;</span> <span class="o">%</span> <span class="n">botname</span><span class="p">)</span>
+                <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># create a new bot</span>
+            <span class="n">bot</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_account</span><span class="p">(</span><span class="n">botname</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">bots</span><span class="o">.</span><span class="n">RSSBot</span><span class="p">)</span>
+        <span class="n">bot</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">ev_channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">rss_url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">rss_rate</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;RSS reporter created. Fetching RSS.&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdGrapevine2Chan"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdGrapevine2Chan">[docs]</a><span class="k">class</span> <span class="nc">CmdGrapevine2Chan</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Link an Evennia channel to an exteral Grapevine channel</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      grapevine2chan[/switches] &lt;evennia_channel&gt; = &lt;grapevine_channel&gt;</span>
+<span class="sd">      grapevine2chan/disconnect &lt;connection #id&gt;</span>
+
+<span class="sd">    Switches:</span>
+<span class="sd">        /list     - (or no switch): show existing grapevine &lt;-&gt; Evennia</span>
+<span class="sd">                    mappings and available grapevine chans</span>
+<span class="sd">        /remove   - alias to disconnect</span>
+<span class="sd">        /delete   - alias to disconnect</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        grapevine2chan mygrapevine = gossip</span>
+
+<span class="sd">    This creates a link between an in-game Evennia channel and an external</span>
+<span class="sd">    Grapevine channel. The game must be registered with the Grapevine network</span>
+<span class="sd">    (register at https://grapevine.haus) and the GRAPEVINE_* auth information</span>
+<span class="sd">    must be added to game settings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;grapevine2chan&quot;</span>
+    <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;disconnect&quot;</span><span class="p">,</span> <span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;list&quot;</span><span class="p">)</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:serversetting(GRAPEVINE_ENABLED) and pperm(Developer)&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
+
+<div class="viewcode-block" id="CmdGrapevine2Chan.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdGrapevine2Chan.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setup the Grapevine channel mapping&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">GRAPEVINE_ENABLED</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Set GRAPEVINE_ENABLED=True in settings to enable.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="s2">&quot;list&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="c1"># show all connections</span>
+            <span class="n">gwbots</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">bot</span>
+                <span class="k">for</span> <span class="n">bot</span> <span class="ow">in</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                    <span class="n">db_is_bot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">username__startswith</span><span class="o">=</span><span class="s2">&quot;grapevinebot-&quot;</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="n">gwbots</span><span class="p">:</span>
+                <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span>
+                    <span class="s2">&quot;|wdbid|n&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;|wev-channel&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;|wgw-channel|n&quot;</span><span class="p">,</span>
+                    <span class="n">border</span><span class="o">=</span><span class="s2">&quot;cells&quot;</span><span class="p">,</span>
+                    <span class="n">maxwidth</span><span class="o">=</span><span class="n">_DEFAULT_WIDTH</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">gwbot</span> <span class="ow">in</span> <span class="n">gwbots</span><span class="p">:</span>
+                    <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">gwbot</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">gwbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">ev_channel</span><span class="p">,</span> <span class="n">gwbot</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">grapevine_channel</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No grapevine bots found.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="s2">&quot;disconnect&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;remove&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;delete&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="n">botname</span> <span class="o">=</span> <span class="s2">&quot;grapevinebot-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_is_bot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">db_key</span><span class="o">=</span><span class="n">botname</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span><span class="p">:</span>
+                <span class="c1"># try dbref match</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_is_bot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">matches</span><span class="p">:</span>
+                <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Grapevine connection destroyed.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Grapevine connection/bot could not be removed, does it exist?&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Usage: grapevine2chan[/switches] &lt;evennia_channel&gt; = &lt;grapevine_channel&gt;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
+        <span class="n">grapevine_channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+
+        <span class="n">botname</span> <span class="o">=</span> <span class="s2">&quot;grapewinebot-</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">grapevine_channel</span><span class="p">)</span>
+        <span class="n">bot</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">username__iexact</span><span class="o">=</span><span class="n">botname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bot</span><span class="p">:</span>
+            <span class="c1"># re-use existing bot</span>
+            <span class="n">bot</span> <span class="o">=</span> <span class="n">bot</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">bot</span><span class="o">.</span><span class="n">is_bot</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Account &#39;</span><span class="si">%s</span><span class="s2">&#39; already exists and is not a bot.&quot;</span> <span class="o">%</span> <span class="n">botname</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Reusing bot &#39;</span><span class="si">%s</span><span class="s2">&#39; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">botname</span><span class="p">,</span> <span class="n">bot</span><span class="o">.</span><span class="n">dbref</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># create a new bot</span>
+            <span class="n">bot</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_account</span><span class="p">(</span><span class="n">botname</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">bots</span><span class="o">.</span><span class="n">GrapevineBot</span><span class="p">)</span>
+
+        <span class="n">bot</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">ev_channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">grapevine_channel</span><span class="o">=</span><span class="n">grapevine_channel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Grapevine connection created </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2"> &lt;-&gt; </span><span class="si">{</span><span class="n">grapevine_channel</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="comms.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.comms</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

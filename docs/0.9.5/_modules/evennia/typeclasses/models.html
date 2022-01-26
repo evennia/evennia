@@ -1,0 +1,1185 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.typeclasses.models &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.typeclasses.models</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.typeclasses.models</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is the *abstract* django models for many of the database objects</span>
+<span class="sd">in Evennia. A django abstract (obs, not the same as a Python metaclass!) is</span>
+<span class="sd">a model which is not actually created in the database, but which only exists</span>
+<span class="sd">for other models to inherit from, to avoid code duplication. Any model can</span>
+<span class="sd">import and inherit from these classes.</span>
+
+<span class="sd">Attributes are database objects stored on other objects. The implementing</span>
+<span class="sd">class needs to supply a ForeignKey field attr_object pointing to the kind</span>
+<span class="sd">of object being mapped. Attributes storing iterables actually store special</span>
+<span class="sd">types of iterables named PackedList/PackedDict respectively. These make</span>
+<span class="sd">sure to save changes to them to database - this is criticial in order to</span>
+<span class="sd">allow for obj.db.mylist[2] = data. Also, all dbobjects are saved as</span>
+<span class="sd">dbrefs but are also aggressively cached.</span>
+
+<span class="sd">TypedObjects are objects &#39;decorated&#39; with a typeclass - that is, the typeclass</span>
+<span class="sd">(which is a normal Python class implementing some special tricks with its</span>
+<span class="sd">get/set attribute methods, allows for the creation of all sorts of different</span>
+<span class="sd">objects all with the same database object underneath. Usually attributes are</span>
+<span class="sd">used to permanently store things not hard-coded as field on the database object.</span>
+<span class="sd">The admin should usually not have to deal directly  with the database object</span>
+<span class="sd">layer.</span>
+
+<span class="sd">This module also contains the Managers for the respective models; inherit from</span>
+<span class="sd">these to create custom managers.</span>
+
+<span class="sd">----</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">signals</span>
+
+<span class="kn">from</span> <span class="nn">django.db.models.base</span> <span class="kn">import</span> <span class="n">ModelBase</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
+<span class="kn">from</span> <span class="nn">django.utils.encoding</span> <span class="kn">import</span> <span class="n">smart_str</span>
+<span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
+
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">Attribute</span><span class="p">,</span> <span class="n">AttributeHandler</span><span class="p">,</span> <span class="n">NAttributeHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.tags</span> <span class="kn">import</span> <span class="n">Tag</span><span class="p">,</span> <span class="n">TagHandler</span><span class="p">,</span> <span class="n">AliasHandler</span><span class="p">,</span> <span class="n">PermissionHandler</span>
+
+<span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="kn">import</span> <span class="n">SharedMemoryModel</span><span class="p">,</span> <span class="n">SharedMemoryModelBase</span>
+<span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="kn">import</span> <span class="n">SIGNAL_TYPED_OBJECT_POST_RENAME</span>
+
+<span class="kn">from</span> <span class="nn">evennia.typeclasses</span> <span class="kn">import</span> <span class="n">managers</span>
+<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">inherits_from</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">class_from_module</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;TypedObject&quot;</span><span class="p">,)</span>
+
+<span class="n">TICKER_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">_PERMISSION_HIERARCHY</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">PERMISSION_HIERARCHY</span><span class="p">]</span>
+<span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">TYPECLASS_AGGRESSIVE_CACHE</span>
+<span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
+<span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
+
+
+<span class="c1"># signal receivers. Connected in __new__</span>
+
+
+<span class="k">def</span> <span class="nf">call_at_first_save</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">created</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Receives a signal just after the object is saved.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">created</span><span class="p">:</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">at_first_save</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">remove_attributes_on_delete</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wipe object&#39;s Attributes when it&#39;s deleted</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">instance</span><span class="o">.</span><span class="n">db_attributes</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+
+<span class="c1"># ------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1"># Typed Objects</span>
+<span class="c1">#</span>
+<span class="c1"># ------------------------------------------------------------</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Meta class for typeclasses</span>
+<span class="c1">#</span>
+
+
+<span class="k">class</span> <span class="nc">TypeclassBase</span><span class="p">(</span><span class="n">SharedMemoryModelBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Metaclass which should be set for the root of model proxies</span>
+<span class="sd">    that don&#39;t define any new fields, like Object, Script etc. This</span>
+<span class="sd">    is the basis for the typeclassing system.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We must define our Typeclasses as proxies. We also store the</span>
+<span class="sd">        path directly on the class, this is required by managers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># storage of stats</span>
+        <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;typename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;__module__&quot;</span><span class="p">],</span> <span class="n">name</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_get_dbmodel</span><span class="p">(</span><span class="n">bases</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Recursively get the dbmodel&quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">bases</span><span class="p">,</span> <span class="s2">&quot;__iter__&quot;</span><span class="p">):</span>
+                <span class="n">bases</span> <span class="o">=</span> <span class="p">[</span><span class="n">bases</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">bases</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">base</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">proxy</span> <span class="ow">or</span> <span class="n">base</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">abstract</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">kls</span> <span class="ow">in</span> <span class="n">base</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">parents</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="n">_get_dbmodel</span><span class="p">(</span><span class="n">kls</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="c1"># this happens if trying to parse a non-typeclass mixin parent,</span>
+                    <span class="c1"># without a _meta</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">base</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">dbmodel</span> <span class="o">=</span> <span class="n">_get_dbmodel</span><span class="p">(</span><span class="n">bases</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dbmodel</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not appear to inherit from a database model.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># typeclass proxy setup</span>
+        <span class="c1"># first check explicit __applabel__ on the typeclass, then figure</span>
+        <span class="c1"># it out from the dbmodel</span>
+        <span class="k">if</span> <span class="s2">&quot;__applabel__&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+            <span class="c1"># find the app-label in one of the bases, usually the dbmodel</span>
+            <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;__applabel__&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dbmodel</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span>
+
+        <span class="k">if</span> <span class="s2">&quot;Meta&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+
+            <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+                <span class="n">proxy</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">app_label</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;__applabel__&quot;</span><span class="p">,</span> <span class="s2">&quot;typeclasses&quot;</span><span class="p">)</span>
+
+            <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;Meta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Meta</span>
+        <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;Meta&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">new_class</span> <span class="o">=</span> <span class="n">ModelBase</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">attrs</span><span class="p">)</span>
+
+        <span class="c1"># django doesn&#39;t support inheriting proxy models so we hack support for</span>
+        <span class="c1"># it here by injecting `proxy_for_model` to the actual dbmodel.</span>
+        <span class="c1"># Unfortunately we cannot also set the correct model_name, because this</span>
+        <span class="c1"># would block multiple-inheritance of typeclasses (Django doesn&#39;t allow</span>
+        <span class="c1"># multiple bases of the same model).</span>
+        <span class="k">if</span> <span class="n">dbmodel</span><span class="p">:</span>
+            <span class="n">new_class</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">proxy_for_model</span> <span class="o">=</span> <span class="n">dbmodel</span>
+            <span class="c1"># Maybe Django will eventually handle this in the future:</span>
+            <span class="c1"># new_class._meta.model_name = dbmodel._meta.model_name</span>
+
+        <span class="c1"># attach signals</span>
+        <span class="n">signals</span><span class="o">.</span><span class="n">post_save</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">call_at_first_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">new_class</span><span class="p">)</span>
+        <span class="n">signals</span><span class="o">.</span><span class="n">pre_delete</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">remove_attributes_on_delete</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">new_class</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_class</span>
+
+
+<span class="k">class</span> <span class="nc">DbHolder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Holder for allowing property access of attributes.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">manager_name</span><span class="o">=</span><span class="s2">&quot;attributes&quot;</span><span class="p">):</span>
+        <span class="n">_SA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">manager_name</span><span class="p">))</span>
+        <span class="n">_SA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrname</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">attrname</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+            <span class="c1"># we allow to overload our default .all</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">attr</span> <span class="k">if</span> <span class="n">attr</span> <span class="k">else</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attrname</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrname</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attrname</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrname</span><span class="p">):</span>
+        <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">attrname</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="nb">all</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">get_all</span><span class="p">)</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Main TypedObject abstraction</span>
+<span class="c1">#</span>
+
+
+<div class="viewcode-block" id="TypedObject"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject">[docs]</a><span class="k">class</span> <span class="nc">TypedObject</span><span class="p">(</span><span class="n">SharedMemoryModel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract Django model.</span>
+
+<span class="sd">    This is the basis for a typed object. It also contains all the</span>
+<span class="sd">    mechanics for managing connected attributes.</span>
+
+<span class="sd">    The TypedObject has the following properties:</span>
+<span class="sd">      key - main name</span>
+<span class="sd">      name - alias for key</span>
+<span class="sd">      typeclass_path - the path to the decorating typeclass</span>
+<span class="sd">      typeclass - auto-linked typeclass</span>
+<span class="sd">      date_created - time stamp of object creation</span>
+<span class="sd">      permissions - perm strings</span>
+<span class="sd">      dbref - #id of object</span>
+<span class="sd">      db - persistent attribute storage</span>
+<span class="sd">      ndb - non-persistent attribute storage</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># TypedObject Database Model setup</span>
+    <span class="c1">#</span>
+    <span class="c1">#</span>
+    <span class="c1"># These databse fields are all accessed and set using their corresponding</span>
+    <span class="c1"># properties, named same as the field, but without the db_* prefix</span>
+    <span class="c1"># (no separate save() call is needed)</span>
+
+    <span class="c1"># Main identifier of the object, for searching. Is accessed with self.key</span>
+    <span class="c1"># or self.name</span>
+    <span class="n">db_key</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># This is the python path to the type class this object is tied to. The</span>
+    <span class="c1"># typeclass is what defines what kind of Object this is)</span>
+    <span class="n">db_typeclass_path</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="s2">&quot;typeclass&quot;</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;this defines what &#39;type&#39; of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.&quot;</span><span class="p">,</span>
+        <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># Creation date. This is not changed once the object is created.</span>
+    <span class="n">db_date_created</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="s2">&quot;creation date&quot;</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Lock storage</span>
+    <span class="n">db_lock_storage</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span>
+        <span class="s2">&quot;locks&quot;</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;locks limit access to an entity. A lock is defined as a &#39;lock string&#39; on the form &#39;type:lockfunctions&#39;, defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># many2many relationships</span>
+    <span class="n">db_attributes</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
+        <span class="n">Attribute</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">db_tags</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
+        <span class="n">Tag</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;tags on this object. Tags are simple string markers to identify, group and alias objects.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Database manager</span>
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">managers</span><span class="o">.</span><span class="n">TypedObjectManager</span><span class="p">()</span>
+
+    <span class="c1"># quick on-object typeclass cache for speed</span>
+    <span class="n">_cached_typeclass</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># typeclass mechanism</span>
+
+<div class="viewcode-block" id="TypedObject.set_class_from_typeclass"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.set_class_from_typeclass">[docs]</a>    <span class="k">def</span> <span class="nf">set_class_from_typeclass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typeclass_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">typeclass_path</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span>
+                    <span class="n">typeclass_path</span><span class="p">,</span> <span class="n">defaultpaths</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">TYPECLASS_PATHS</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">log_trace</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__settingsclasspath__</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="n">log_trace</span><span class="p">()</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__defaultclasspath__</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="n">log_trace</span><span class="p">()</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">concrete_model</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_typeclass_path</span> <span class="o">=</span> <span class="n">typeclass_path</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_typeclass_path</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_typeclass_path</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">log_trace</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__defaultclasspath__</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="n">log_trace</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__dbclass__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">concrete_model</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db_typeclass_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="c1"># important to put this at the end since _meta is based on the set __class__</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__dbclass__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">concrete_model</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">err_class</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="s2">&quot;evennia.objects.objects.DefaultObject&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__dbclass__</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="s2">&quot;evennia.objects.models.ObjectDB&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db_typeclass_path</span> <span class="o">=</span> <span class="s2">&quot;evennia.objects.objects.DefaultObject&quot;</span>
+            <span class="n">log_trace</span><span class="p">(</span>
+                <span class="s2">&quot;Critical: Class </span><span class="si">%s</span><span class="s2"> of </span><span class="si">%s</span><span class="s2"> is not a valid typeclass!</span><span class="se">\n</span><span class="s2">Temporarily falling back to </span><span class="si">%s</span><span class="s2">.&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="n">err_class</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TypedObject.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The `__init__` method of typeclasses is the core operational</span>
+<span class="sd">        code of the typeclass system, where it dynamically re-applies</span>
+<span class="sd">        a class based on the db_typeclass_path database field rather</span>
+<span class="sd">        than use the one in the model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *args: Passed through to parent.</span>
+<span class="sd">            **kwargs: Passed through to parent.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            The loading mechanism will attempt the following steps:</span>
+
+<span class="sd">            1. Attempt to load typeclass given on command line</span>
+<span class="sd">            2. Attempt to load typeclass stored in db_typeclass_path</span>
+<span class="sd">            3. Attempt to load `__settingsclasspath__`, which is by the</span>
+<span class="sd">               default classes defined to be the respective user-set</span>
+<span class="sd">               base typeclass settings, like `BASE_OBJECT_TYPECLASS`.</span>
+<span class="sd">            4. Attempt to load `__defaultclasspath__`, which is the</span>
+<span class="sd">               base classes in the library, like DefaultObject etc.</span>
+<span class="sd">            5. If everything else fails, use the database model.</span>
+
+<span class="sd">            Normal operation is to load successfully at either step 1</span>
+<span class="sd">            or 2 depending on how the class was called. Tracebacks</span>
+<span class="sd">            will be logged for every step the loader must take beyond</span>
+<span class="sd">            2.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">typeclass_path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;typeclass&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_class_from_typeclass</span><span class="p">(</span><span class="n">typeclass_path</span><span class="o">=</span><span class="n">typeclass_path</span><span class="p">)</span></div>
+
+    <span class="c1"># initialize all handlers in a lazy fashion</span>
+<div class="viewcode-block" id="TypedObject.attributes"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.attributes">[docs]</a>    <span class="nd">@lazy_property</span>
+    <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">AttributeHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TypedObject.locks"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.locks">[docs]</a>    <span class="nd">@lazy_property</span>
+    <span class="k">def</span> <span class="nf">locks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">LockHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TypedObject.tags"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.tags">[docs]</a>    <span class="nd">@lazy_property</span>
+    <span class="k">def</span> <span class="nf">tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">TagHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TypedObject.aliases"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.aliases">[docs]</a>    <span class="nd">@lazy_property</span>
+    <span class="k">def</span> <span class="nf">aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">AliasHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TypedObject.permissions"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.permissions">[docs]</a>    <span class="nd">@lazy_property</span>
+    <span class="k">def</span> <span class="nf">permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">PermissionHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TypedObject.nattributes"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.nattributes">[docs]</a>    <span class="nd">@lazy_property</span>
+    <span class="k">def</span> <span class="nf">nattributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">NAttributeHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TypedObject.Meta"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Django setup info.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">abstract</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Evennia Database Object&quot;</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-db_date_created&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">]</span></div>
+
+    <span class="c1"># wrapper</span>
+    <span class="c1"># Wrapper properties to easily set database fields. These are</span>
+    <span class="c1"># @property decorators that allows to access these fields using</span>
+    <span class="c1"># normal python operations (without having to remember to save()</span>
+    <span class="c1"># etc). So e.g. a property &#39;attr&#39; has a get/set/del decorator</span>
+    <span class="c1"># defined that allows the user to do self.attr = value,</span>
+    <span class="c1"># value = self.attr and del self.attr respectively (where self</span>
+    <span class="c1"># is the object in question).</span>
+
+    <span class="c1"># name property (alias to self.key)</span>
+    <span class="k">def</span> <span class="nf">__name_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
+
+    <span class="k">def</span> <span class="nf">__name_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">__name_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Cannot delete name&quot;</span><span class="p">)</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__name_get</span><span class="p">,</span> <span class="n">__name_set</span><span class="p">,</span> <span class="n">__name_del</span><span class="p">)</span>
+
+    <span class="c1"># key property (overrides&#39;s the idmapper&#39;s db_key for the at_rename hook)</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_key</span>
+
+    <span class="nd">@key</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">oldname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_key</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_key&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">at_rename</span><span class="p">(</span><span class="n">oldname</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">SIGNAL_TYPED_OBJECT_POST_RENAME</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_key</span><span class="o">=</span><span class="n">oldname</span><span class="p">,</span> <span class="n">new_key</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="c1">#</span>
+    <span class="c1">#</span>
+    <span class="c1"># TypedObject main class methods and properties</span>
+    <span class="c1">#</span>
+    <span class="c1">#</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dbclass__</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">__dbclass__</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbid</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">dbid</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># this is required to maintain hashing</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">smart_str</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_key</span>
+
+    <span class="c1"># @property</span>
+    <span class="k">def</span> <span class="nf">__dbid_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Caches and returns the unique id of the object.</span>
+<span class="sd">        Use this instead of self.id, which is not cached.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+
+    <span class="k">def</span> <span class="nf">__dbid_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;dbid cannot be set!&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__dbid_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;dbid cannot be deleted!&quot;</span><span class="p">)</span>
+
+    <span class="n">dbid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__dbid_get</span><span class="p">,</span> <span class="n">__dbid_set</span><span class="p">,</span> <span class="n">__dbid_del</span><span class="p">)</span>
+
+    <span class="c1"># @property</span>
+    <span class="k">def</span> <span class="nf">__dbref_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the object&#39;s dbref on the form #NN.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;#</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+
+    <span class="k">def</span> <span class="nf">__dbref_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;dbref cannot be set!&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__dbref_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;dbref cannot be deleted!&quot;</span><span class="p">)</span>
+
+    <span class="n">dbref</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__dbref_get</span><span class="p">,</span> <span class="n">__dbref_set</span><span class="p">,</span> <span class="n">__dbref_del</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TypedObject.at_idmapper_flush"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.at_idmapper_flush">[docs]</a>    <span class="k">def</span> <span class="nf">at_idmapper_flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is called when the idmapper cache is flushed and</span>
+<span class="sd">        allows customized actions when this happens.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            do_flush (bool): If True, flush this object as normal. If</span>
+<span class="sd">                False, don&#39;t flush and expect this object to handle</span>
+<span class="sd">                the flushing on its own.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            The default implementation relies on being able to clear</span>
+<span class="sd">            Django&#39;s Foreignkey cache on objects not affected by the</span>
+<span class="sd">            flush (notably objects with an NAttribute stored). We rely</span>
+<span class="sd">            on this cache being stored on the format &quot;_&lt;fieldname&gt;_cache&quot;.</span>
+<span class="sd">            If Django were to change this name internally, we need to</span>
+<span class="sd">            update here (unlikely, but marking just in case).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nattributes</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="c1"># we can&#39;t flush this object if we have non-persistent</span>
+            <span class="c1"># attributes stored - those would get lost! Nevertheless</span>
+            <span class="c1"># we try to flush as many references as we can.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">reset_cache</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">reset_cache</span><span class="p">()</span>
+            <span class="c1"># flush caches for all related fields</span>
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;_</span><span class="si">%s</span><span class="s2">_cache&quot;</span> <span class="o">%</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span>
+                <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">is_relation</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+                    <span class="c1"># a foreignkey - remove its cache</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="c1"># a normal flush</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="c1">#</span>
+    <span class="c1"># Object manipulation methods</span>
+    <span class="c1">#</span>
+
+<div class="viewcode-block" id="TypedObject.is_typeclass"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.is_typeclass">[docs]</a>    <span class="k">def</span> <span class="nf">is_typeclass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns true if this object has this type OR has a typeclass</span>
+<span class="sd">        which is an subclass of the given typeclass. This operates on</span>
+<span class="sd">        the actually loaded typeclass (this is important since a</span>
+<span class="sd">        failing typeclass may instead have its default currently</span>
+<span class="sd">        loaded) typeclass - can be a class object or the python path</span>
+<span class="sd">        to such an object to match against.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            typeclass (str or class): A class or the full python path</span>
+<span class="sd">                to the class to check.</span>
+<span class="sd">            exact (bool, optional): Returns true only if the object&#39;s</span>
+<span class="sd">                type is exactly this typeclass, ignoring parents.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            is_typeclass (bool): If this typeclass matches the given</span>
+<span class="sd">                typeclass.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">typeclass</span> <span class="o">=</span> <span class="p">[</span><span class="n">typeclass</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">TYPECLASS_PATHS</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">typeclass</span> <span class="o">=</span> <span class="p">[</span><span class="n">typeclass</span><span class="o">.</span><span class="n">path</span><span class="p">]</span>
+
+        <span class="n">selfpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span>
+        <span class="k">if</span> <span class="n">exact</span><span class="p">:</span>
+            <span class="c1"># check only exact match</span>
+            <span class="k">return</span> <span class="n">selfpath</span> <span class="ow">in</span> <span class="n">typeclass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># check parent chain</span>
+            <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">path</span> <span class="ow">in</span> <span class="n">typeclass</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">mro</span><span class="p">()</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TypedObject.swap_typeclass"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.swap_typeclass">[docs]</a>    <span class="k">def</span> <span class="nf">swap_typeclass</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">new_typeclass</span><span class="p">,</span>
+        <span class="n">clean_attributes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">run_start_hooks</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="n">no_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">clean_cmdsets</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This performs an in-situ swap of the typeclass. This means</span>
+<span class="sd">        that in-game, this object will suddenly be something else.</span>
+<span class="sd">        Account will not be affected. To &#39;move&#39; an account to a different</span>
+<span class="sd">        object entirely (while retaining this object&#39;s type), use</span>
+<span class="sd">        self.account.swap_object().</span>
+
+<span class="sd">        Note that this might be an error prone operation if the</span>
+<span class="sd">        old/new typeclass was heavily customized - your code</span>
+<span class="sd">        might expect one and not the other, so be careful to</span>
+<span class="sd">        bug test your code if using this feature! Often its easiest</span>
+<span class="sd">        to create a new object and just swap the account over to</span>
+<span class="sd">        that one instead.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_typeclass (str or classobj): Type to switch to.</span>
+<span class="sd">            clean_attributes (bool or list, optional): Will delete all</span>
+<span class="sd">                attributes stored on this object (but not any of the</span>
+<span class="sd">                database fields such as name or location). You can&#39;t get</span>
+<span class="sd">                attributes back, but this is often the safest bet to make</span>
+<span class="sd">                sure nothing in the new typeclass clashes with the old</span>
+<span class="sd">                one. If you supply a list, only those named attributes</span>
+<span class="sd">                will be cleared.</span>
+<span class="sd">            run_start_hooks (str or None, optional): This is either None,</span>
+<span class="sd">                to not run any hooks, &quot;all&quot; to run all hooks defined by</span>
+<span class="sd">                at_first_start, or a string giving the name of the hook</span>
+<span class="sd">                to run (for example &#39;at_object_creation&#39;). This will</span>
+<span class="sd">                always be called without arguments.</span>
+<span class="sd">            no_default (bool, optiona): If set, the swapper will not</span>
+<span class="sd">                allow for swapping to a default typeclass in case the</span>
+<span class="sd">                given one fails for some reason. Instead the old one will</span>
+<span class="sd">                be preserved.</span>
+<span class="sd">            clean_cmdsets (bool, optional): Delete all cmdsets on the object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">new_typeclass</span><span class="p">):</span>
+            <span class="c1"># this is an actual class object - build the path</span>
+            <span class="n">new_typeclass</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">new_typeclass</span><span class="p">,</span> <span class="n">defaultpaths</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">TYPECLASS_PATHS</span><span class="p">)</span>
+
+        <span class="c1"># if we get to this point, the class is ok.</span>
+
+        <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;evennia.scripts.models.ScriptDB&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Cannot use swap_typeclass on time-dependent &quot;</span>
+                    <span class="s2">&quot;Script &#39;</span><span class="si">%s</span><span class="s2">&#39;.</span><span class="se">\n</span><span class="s2">Stop and start a new Script of the &quot;</span>
+                    <span class="s2">&quot;right type instead.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
+                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">typeclass_path</span> <span class="o">=</span> <span class="n">new_typeclass</span><span class="o">.</span><span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">new_typeclass</span>
+
+        <span class="k">if</span> <span class="n">clean_attributes</span><span class="p">:</span>
+            <span class="c1"># Clean out old attributes</span>
+            <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">clean_attributes</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">clean_attributes</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">nattr</span> <span class="ow">in</span> <span class="n">clean_attributes</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="p">,</span> <span class="n">nattr</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">nattributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">nattr</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nattributes</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">clean_cmdsets</span><span class="p">:</span>
+            <span class="c1"># purge all cmdsets</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove_default</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">run_start_hooks</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+            <span class="c1"># fake this call to mimic the first save</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">at_first_save</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">run_start_hooks</span><span class="p">:</span>
+            <span class="c1"># a custom hook-name to call.</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_start_hooks</span><span class="p">)()</span></div>
+
+    <span class="c1">#</span>
+    <span class="c1"># Lock / permission methods</span>
+    <span class="c1">#</span>
+
+<div class="viewcode-block" id="TypedObject.access"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_superuser_bypass</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines if another object has permission to access this one.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            accessing_obj (str): Object trying to access this one.</span>
+<span class="sd">            access_type (str, optional): Type of access sought.</span>
+<span class="sd">            default (bool, optional): What to return if no lock of</span>
+<span class="sd">                access_type was found</span>
+<span class="sd">            no_superuser_bypass (bool, optional): Turn off the</span>
+<span class="sd">                superuser lock bypass (be careful with this one).</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            kwargs (any): Ignored, but is there to make the api</span>
+<span class="sd">                consistent with the object-typeclass method access, which</span>
+<span class="sd">                use it to feed to its hook methods.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check</span><span class="p">(</span>
+            <span class="n">accessing_obj</span><span class="p">,</span>
+            <span class="n">access_type</span><span class="o">=</span><span class="n">access_type</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span>
+            <span class="n">no_superuser_bypass</span><span class="o">=</span><span class="n">no_superuser_bypass</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TypedObject.check_permstring"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.check_permstring">[docs]</a>    <span class="k">def</span> <span class="nf">check_permstring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permstring</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This explicitly checks if we hold particular permission</span>
+<span class="sd">        without involving any locks.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            permstring (str): The permission string to check against.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            result (bool): If the permstring is passed or not.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">account</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">is_superuser</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_quell&quot;</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_superuser</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_quell&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">permstring</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="n">permstring</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">perms</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span>
+        <span class="k">if</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">perms</span><span class="p">:</span>
+            <span class="c1"># simplest case - we have a direct match</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">_PERMISSION_HIERARCHY</span><span class="p">:</span>
+            <span class="c1"># check if we have a higher hierarchy position</span>
+            <span class="n">ppos</span> <span class="o">=</span> <span class="n">_PERMISSION_HIERARCHY</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="kc">True</span>
+                <span class="k">for</span> <span class="n">hpos</span><span class="p">,</span> <span class="n">hperm</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_PERMISSION_HIERARCHY</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">hperm</span> <span class="ow">in</span> <span class="n">perms</span> <span class="ow">and</span> <span class="n">hpos</span> <span class="o">&gt;</span> <span class="n">ppos</span>
+            <span class="p">)</span>
+        <span class="c1"># we ignore pluralization (english only)</span>
+        <span class="k">if</span> <span class="n">perm</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_permstring</span><span class="p">(</span><span class="n">perm</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="c1">#</span>
+    <span class="c1"># Deletion methods</span>
+    <span class="c1">#</span>
+
+    <span class="k">def</span> <span class="nf">_deleted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scrambling method for already deleted objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="n">ObjectDoesNotExist</span><span class="p">(</span><span class="s2">&quot;This object was already deleted!&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TypedObject.delete"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cleaning up handlers on the typeclass level</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">global</span> <span class="n">TICKER_HANDLER</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;nicks&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="c1"># scrambling properties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deleted</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
+
+    <span class="c1">#</span>
+    <span class="c1"># Attribute storage</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># @property db</span>
+    <span class="k">def</span> <span class="nf">__db_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Attribute handler wrapper. Allows for the syntax</span>
+<span class="sd">        ::</span>
+
+<span class="sd">           obj.db.attrname = value</span>
+<span class="sd">             and</span>
+<span class="sd">           value = obj.db.attrname</span>
+<span class="sd">             and</span>
+<span class="sd">           del obj.db.attrname</span>
+<span class="sd">             and</span>
+<span class="sd">           all_attr = obj.db.all()</span>
+
+<span class="sd">        (unless there is an attribute named &#39;all&#39;, in which case that will be</span>
+<span class="sd">        returned instead).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_holder</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_db_holder</span> <span class="o">=</span> <span class="n">DbHolder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;attributes&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_holder</span>
+
+    <span class="c1"># @db.setter</span>
+    <span class="k">def</span> <span class="nf">__db_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stop accidentally replacing the db object&quot;&quot;&quot;</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Cannot assign directly to db object! &quot;</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;Use db.attr=value instead.&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
+    <span class="c1"># @db.deleter</span>
+    <span class="k">def</span> <span class="nf">__db_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stop accidental deletion.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Cannot delete the db object!&quot;</span><span class="p">)</span>
+
+    <span class="n">db</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__db_get</span><span class="p">,</span> <span class="n">__db_set</span><span class="p">,</span> <span class="n">__db_del</span><span class="p">)</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># Non-persistent (ndb) storage</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># @property ndb</span>
+    <span class="k">def</span> <span class="nf">__ndb_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A non-attr_obj store (NonDataBase). Everything stored to this is</span>
+<span class="sd">        guaranteed to be cleared when a server is shutdown. Syntax is same as</span>
+<span class="sd">        for the `.db` property, e.g.</span>
+<span class="sd">        ::</span>
+
+<span class="sd">           obj.ndb.attrname = value</span>
+<span class="sd">             and</span>
+<span class="sd">           value = obj.ndb.attrname</span>
+<span class="sd">             and</span>
+<span class="sd">           del obj.ndb.attrname</span>
+<span class="sd">             and</span>
+<span class="sd">           all_attr = obj.ndb.all()</span>
+
+<span class="sd">        What makes this preferable over just assigning properties directly on</span>
+<span class="sd">        the object is that Evennia can track caching for these properties and</span>
+<span class="sd">        for example avoid wiping objects with set `.ndb` data on cache flushes.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ndb_holder</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ndb_holder</span> <span class="o">=</span> <span class="n">DbHolder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;nattrhandler&quot;</span><span class="p">,</span> <span class="n">manager_name</span><span class="o">=</span><span class="s2">&quot;nattributes&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ndb_holder</span>
+
+    <span class="c1"># @db.setter</span>
+    <span class="k">def</span> <span class="nf">__ndb_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="s2">&quot;Stop accidentally replacing the ndb object&quot;</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Cannot assign directly to ndb object! &quot;</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;Use ndb.attr=value instead.&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
+    <span class="c1"># @db.deleter</span>
+    <span class="k">def</span> <span class="nf">__ndb_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Stop accidental deletion.&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Cannot delete the ndb object!&quot;</span><span class="p">)</span>
+
+    <span class="n">ndb</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__ndb_get</span><span class="p">,</span> <span class="n">__ndb_set</span><span class="p">,</span> <span class="n">__ndb_del</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TypedObject.get_display_name"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Displays the name of the object in a viewer-aware manner.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            looker (TypedObject, optional): The object or account that is looking</span>
+<span class="sd">                at/getting inforamtion for this object. If not given, some</span>
+<span class="sd">                &#39;safe&#39; minimum level should be returned.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            name (str): A string containing the name of the object,</span>
+<span class="sd">                including the DBREF if this user is privileged to control</span>
+<span class="sd">                said object.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This function could be extended to change how object names</span>
+<span class="sd">            appear to users in character, but be wary. This function</span>
+<span class="sd">            does not change an object&#39;s keys or aliases when</span>
+<span class="sd">            searching, and is expected to produce something useful for</span>
+<span class="sd">            builders.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;controls&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(#</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+<div class="viewcode-block" id="TypedObject.get_extra_info"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.get_extra_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_extra_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used when an object is in a list of ambiguous objects as an</span>
+<span class="sd">        additional information tag.</span>
+
+<span class="sd">        For instance, if you had potions which could have varying</span>
+<span class="sd">        levels of liquid left in them, you might want to display how</span>
+<span class="sd">        many drinks are left in each when selecting which to drop, but</span>
+<span class="sd">        not in your normal inventory listing.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            looker (TypedObject): The object or account that is looking</span>
+<span class="sd">                at/getting information for this object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            info (str): A string with disambiguating information,</span>
+<span class="sd">                conventionally with a leading space.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="n">looker</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot; (carried)&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="TypedObject.at_rename"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.at_rename">[docs]</a>    <span class="k">def</span> <span class="nf">at_rename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oldname</span><span class="p">,</span> <span class="n">newname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This Hook is called by @name on a successful rename.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            oldname (str): The instance&#39;s original name.</span>
+<span class="sd">            newname (str): The new name for the instance.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="c1">#</span>
+    <span class="c1"># Web/Django methods</span>
+    <span class="c1">#</span>
+
+<div class="viewcode-block" id="TypedObject.web_get_admin_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_admin_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_admin_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the URI path for the Django Admin page for this object.</span>
+
+<span class="sd">        ex. Account#1 = &#39;/admin/accounts/accountdb/1/change/&#39;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            path (str): URI path to Django Admin page for object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">content_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span>
+            <span class="s2">&quot;admin:</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">_change&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">content_type</span><span class="o">.</span><span class="n">app_label</span><span class="p">,</span> <span class="n">content_type</span><span class="o">.</span><span class="n">model</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TypedObject.web_get_create_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_create_url">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">web_get_create_url</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Returns the URI path for a View that allows users to create new</span>
+<span class="sd">        instances of this object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            path (str): URI path to object creation page, if defined.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            ::</span>
+
+<span class="sd">                Chargen = &#39;/characters/create/&#39;</span>
+
+<span class="sd">            For this to work, the developer must have defined a named view somewhere</span>
+<span class="sd">            in urls.py that follows the format &#39;modelname-action&#39;, so in this case</span>
+<span class="sd">            a named view of &#39;character-create&#39; would be referenced by this method.</span>
+<span class="sd">            ::</span>
+
+<span class="sd">                url(r&#39;characters/create/&#39;, ChargenView.as_view(), name=&#39;character-create&#39;)</span>
+
+<span class="sd">            If no View has been created and defined in urls.py, returns an</span>
+<span class="sd">            HTML anchor.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This method is naive and simply returns a path. Securing access to</span>
+<span class="sd">            the actual view and limiting who can create new objects is the</span>
+<span class="sd">            developer&#39;s responsibility.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-create&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
+
+<div class="viewcode-block" id="TypedObject.web_get_detail_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_detail_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_detail_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the URI path for a View that allows users to view details for</span>
+<span class="sd">        this object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            path (str): URI path to object detail page, if defined.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            ::</span>
+
+<span class="sd">                Oscar (Character) = &#39;/characters/oscar/1/&#39;</span>
+
+<span class="sd">            For this to work, the developer must have defined a named view somewhere</span>
+<span class="sd">            in urls.py that follows the format &#39;modelname-action&#39;, so in this case</span>
+<span class="sd">            a named view of &#39;character-detail&#39; would be referenced by this method.</span>
+<span class="sd">            ::</span>
+
+<span class="sd">                CharDetailView.as_view(), name=&#39;character-detail&#39;)</span>
+
+<span class="sd">            If no View has been created and defined in urls.py, returns an</span>
+<span class="sd">            HTML anchor.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This method is naive and simply returns a path. Securing access to</span>
+<span class="sd">            the actual view and limiting who can view this object is the</span>
+<span class="sd">            developer&#39;s responsibility.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-detail&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">),</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)},</span>
+            <span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
+
+<div class="viewcode-block" id="TypedObject.web_get_puppet_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_puppet_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_puppet_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the URI path for a View that allows users to puppet a specific</span>
+<span class="sd">        object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            path (str): URI path to object puppet page, if defined.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            ::</span>
+
+<span class="sd">                Oscar (Character) = &#39;/characters/oscar/1/puppet/&#39;</span>
+
+<span class="sd">            For this to work, the developer must have defined a named view somewhere</span>
+<span class="sd">            in urls.py that follows the format &#39;modelname-action&#39;, so in this case</span>
+<span class="sd">            a named view of &#39;character-puppet&#39; would be referenced by this method.</span>
+<span class="sd">            ::</span>
+
+<span class="sd">                url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/puppet/$&#39;,</span>
+<span class="sd">                    CharPuppetView.as_view(), name=&#39;character-puppet&#39;)</span>
+
+<span class="sd">            If no View has been created and defined in urls.py, returns an</span>
+<span class="sd">            HTML anchor.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This method is naive and simply returns a path. Securing access to</span>
+<span class="sd">            the actual view and limiting who can view this object is the developer&#39;s</span>
+<span class="sd">            responsibility.</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-puppet&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">),</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)},</span>
+            <span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
+
+<div class="viewcode-block" id="TypedObject.web_get_update_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_update_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_update_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the URI path for a View that allows users to update this</span>
+<span class="sd">        object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            path (str): URI path to object update page, if defined.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            ::</span>
+
+<span class="sd">                Oscar (Character) = &#39;/characters/oscar/1/change/&#39;</span>
+
+<span class="sd">            For this to work, the developer must have defined a named view somewhere</span>
+<span class="sd">            in urls.py that follows the format &#39;modelname-action&#39;, so in this case</span>
+<span class="sd">            a named view of &#39;character-update&#39; would be referenced by this method.</span>
+<span class="sd">            ::</span>
+
+<span class="sd">                url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/change/$&#39;,</span>
+<span class="sd">                    CharUpdateView.as_view(), name=&#39;character-update&#39;)</span>
+
+<span class="sd">            If no View has been created and defined in urls.py, returns an</span>
+<span class="sd">            HTML anchor.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This method is naive and simply returns a path. Securing access to</span>
+<span class="sd">            the actual view and limiting who can modify objects is the developer&#39;s</span>
+<span class="sd">            responsibility.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-update&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">),</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)},</span>
+            <span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
+
+<div class="viewcode-block" id="TypedObject.web_get_delete_url"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.web_get_delete_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_delete_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the URI path for a View that allows users to delete this object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            path (str): URI path to object deletion page, if defined.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            ::</span>
+
+<span class="sd">                Oscar (Character) = &#39;/characters/oscar/1/delete/&#39;</span>
+
+<span class="sd">            For this to work, the developer must have defined a named view somewhere</span>
+<span class="sd">            in urls.py that follows the format &#39;modelname-action&#39;, so in this case</span>
+<span class="sd">            a named view of &#39;character-detail&#39; would be referenced by this method.</span>
+<span class="sd">            ::</span>
+
+<span class="sd">                url(r&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/delete/$&#39;,</span>
+<span class="sd">                    CharDeleteView.as_view(), name=&#39;character-delete&#39;)</span>
+
+<span class="sd">            If no View has been created and defined in urls.py, returns an</span>
+<span class="sd">            HTML anchor.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This method is naive and simply returns a path. Securing access to</span>
+<span class="sd">            the actual view and limiting who can delete this object is the developer&#39;s</span>
+<span class="sd">            responsibility.</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-delete&quot;</span> <span class="o">%</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="p">),</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="n">slugify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)},</span>
+            <span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
+
+    <span class="c1"># Used by Django Sites/Admin</span>
+    <span class="n">get_absolute_url</span> <span class="o">=</span> <span class="n">web_get_detail_url</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="models.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.typeclasses.models</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>
