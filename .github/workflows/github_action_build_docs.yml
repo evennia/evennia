@@ -38,6 +38,8 @@ jobs:
 
       - name: Install doc-building dependencies
         run: |
+          git branch 
+          git checkout develop
           python -m pip install --upgrade pip
           cd docs/
           make install
