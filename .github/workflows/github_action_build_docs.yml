@@ -24,12 +24,10 @@ jobs:
       - name: Checkout 0.9.5 branch 
         uses: actions/checkout@v2
         with:
-            path: v0.9.5
+            ref: v0.9.5
 
       - name: Checkout develop branch 
         uses: actions/checkout@v2
-        with:
-            path: develop
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
