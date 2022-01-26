@@ -808,7 +808,7 @@ class PuzzleSystemCmdSet(CmdSet):
     """
 
     def at_cmdset_creation(self):
-        super(PuzzleSystemCmdSet, self).at_cmdset_creation()
+        super().at_cmdset_creation()
 
         self.add(CmdCreatePuzzleRecipe())
         self.add(CmdEditPuzzle())

@@ -26,7 +26,7 @@ jobs:
         with:
             ref: v0.9.5
 
-      - name: Checkout develop branch 
+      - name: Checkout ${{ github.ref }} branch 
         uses: actions/checkout@v2
 
       - name: Set up Python ${{ matrix.python-version }}
@@ -56,6 +56,5 @@ jobs:
           git config --global user.email "docbuilder@evennia.com"
           git config --global user.name "Evennia docbuilder action"
           git branch
-          git checkout develop
           cd docs
           make release

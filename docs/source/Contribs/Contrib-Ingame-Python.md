@@ -208,7 +208,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         """
         Populates the cmdset
         """
-        super(CharacterCmdSet, self).at_cmdset_creation()
+        super().at_cmdset_creation()
         self.add(CmdCallback())
 ```
 

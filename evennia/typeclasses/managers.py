@@ -751,7 +751,7 @@ class TypeclassManager(TypedObjectManager):
             Annotated queryset.
         """
         return (
-            super(TypeclassManager, self)
+            super()
             .filter(db_typeclass_path=self.model.path)
             .annotate(*args, **kwargs)
         )
@@ -767,7 +767,7 @@ class TypeclassManager(TypedObjectManager):
             Queryset of values dictionaries, just filtered by typeclass first.
         """
         return (
-            super(TypeclassManager, self)
+            super()
             .filter(db_typeclass_path=self.model.path)
             .values(*args, **kwargs)
         )
@@ -783,7 +783,7 @@ class TypeclassManager(TypedObjectManager):
             Queryset of value_list tuples, just filtered by typeclass first.
         """
         return (
-            super(TypeclassManager, self)
+            super()
             .filter(db_typeclass_path=self.model.path)
             .values_list(*args, **kwargs)
         )

@@ -123,7 +123,7 @@ class ObjectDetailView(EvenniaDetailView):
             raise PermissionDenied("You are not authorized to %s this object." % self.access_type)
 
         # Get the object, if it is in the specified queryset
-        obj = super(ObjectDetailView, self).get_object(queryset)
+        obj = super().get_object(queryset)
 
         return obj
 

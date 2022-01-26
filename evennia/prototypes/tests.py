@@ -47,7 +47,7 @@ _PROTPARENTS = {
 
 class TestSpawner(BaseEvenniaTest):
     def setUp(self):
-        super(TestSpawner, self).setUp()
+        super().setUp()
         self.prot1 = {
             "prototype_key": "testprototype",
             "typeclass": "evennia.objects.objects.DefaultObject",
@@ -309,7 +309,7 @@ class TestUtils(BaseEvenniaTest):
 
 class TestProtLib(BaseEvenniaTest):
     def setUp(self):
-        super(TestProtLib, self).setUp()
+        super().setUp()
         self.obj1.attributes.add("testattr", "testval")
         self.prot = spawner.prototype_from_object(self.obj1)
 
@@ -357,7 +357,7 @@ class TestProtFuncs(BaseEvenniaTest):
 
 class TestPrototypeStorage(BaseEvenniaTest):
     def setUp(self):
-        super(TestPrototypeStorage, self).setUp()
+        super().setUp()
         self.maxDiff = None
 
         self.prot1 = spawner.prototype_from_object(self.obj1)
@@ -442,7 +442,7 @@ class TestMenuModule(BaseEvenniaTest):
     maxDiff = None
 
     def setUp(self):
-        super(TestMenuModule, self).setUp()
+        super().setUp()
 
         # set up fake store
         self.caller = self.char1

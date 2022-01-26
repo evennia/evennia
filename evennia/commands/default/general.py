@@ -141,7 +141,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
         """
         Support escaping of = with \=
         """
-        super(CmdNick, self).parse()
+        super().parse()
         args = (self.lhs or "") + (" = %s" % self.rhs if self.rhs else "")
         parts = re.split(r"(?<!\\)=", args, 1)
         self.rhs = None

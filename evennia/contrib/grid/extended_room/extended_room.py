@@ -285,7 +285,7 @@ class ExtendedRoom(DefaultRoom):
         # ensures that our description is current based on time/season
         self.update_current_description()
         # run the normal return_appearance method, now that desc is updated.
-        return super(ExtendedRoom, self).return_appearance(looker, **kwargs)
+        return super().return_appearance(looker, **kwargs)
 
     def update_current_description(self):
         """

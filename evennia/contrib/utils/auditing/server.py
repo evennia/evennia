@@ -228,7 +228,7 @@ class AuditedServerSession(ServerSession):
             except Exception as e:
                 logger.log_err(e)
 
-        super(AuditedServerSession, self).data_out(**kwargs)
+        super().data_out(**kwargs)
 
     def data_in(self, **kwargs):
         """
@@ -246,4 +246,4 @@ class AuditedServerSession(ServerSession):
             except Exception as e:
                 logger.log_err(e)
 
-        super(AuditedServerSession, self).data_in(**kwargs)
+        super().data_in(**kwargs)
