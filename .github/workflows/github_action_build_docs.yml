@@ -21,9 +21,15 @@ jobs:
         python-version: [3.7]
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout develop branch 
+        uses: actions/checkout@v2
         with:
-            fetch-depth: 0
+            path: develop
+        
+      - name: Checkout 0.9.5 branch 
+        uses: actions/checkout@v2
+        with:
+            path: v0.9.5
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
@@ -52,5 +58,6 @@ jobs:
           git config --global user.email "docbuilder@evennia.com"
           git config --global user.name "Evennia docbuilder action"
           git branch
+          git checkout develop
           cd docs
           make release
