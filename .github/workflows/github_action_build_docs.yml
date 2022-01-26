@@ -21,15 +21,15 @@ jobs:
         python-version: [3.7]
 
     steps:
-      - name: Checkout develop branch 
-        uses: actions/checkout@v2
-        with:
-            path: develop
-        
       - name: Checkout 0.9.5 branch 
         uses: actions/checkout@v2
         with:
             path: v0.9.5
+
+      - name: Checkout develop branch 
+        uses: actions/checkout@v2
+        with:
+            path: develop
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
@@ -38,8 +38,6 @@ jobs:
 
       - name: Install doc-building dependencies
         run: |
-          git branch 
-          git checkout develop
           python -m pip install --upgrade pip
           cd docs/
           make install
