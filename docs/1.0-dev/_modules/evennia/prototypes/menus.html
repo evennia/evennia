@@ -2705,7 +2705,7 @@
 <span class="sd">        Format the node text itself.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">OLCMenu</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">nodetext_formatter</span><span class="p">(</span><span class="n">nodetext</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">nodetext_formatter</span><span class="p">(</span><span class="n">nodetext</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="OLCMenu.options_formatter"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.OLCMenu.options_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">options_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optionlist</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2741,7 +2741,7 @@
             <span class="k">if</span> <span class="n">olc_options</span>
             <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="p">)</span>
-        <span class="n">other_options</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">OLCMenu</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">options_formatter</span><span class="p">(</span><span class="n">other_options</span><span class="p">)</span>
+        <span class="n">other_options</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">options_formatter</span><span class="p">(</span><span class="n">other_options</span><span class="p">)</span>
         <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">olc_options</span> <span class="ow">and</span> <span class="n">other_options</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">olc_options</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">other_options</span><span class="p">)</span></div>

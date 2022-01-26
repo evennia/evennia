@@ -75,7 +75,7 @@
     <span class="n">authenticated_response</span> <span class="o">=</span> <span class="mi">200</span>
 
 <div class="viewcode-block" id="EvenniaWebTest.setUp"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.EvenniaWebTest.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
 
         <span class="c1"># Add chars to account rosters</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">]</span>
@@ -154,13 +154,13 @@
     <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">authenticated_response</span> <span class="o">=</span> <span class="mi">200</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unauthenticated_response</span> <span class="o">=</span> <span class="mi">200</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">WebclientTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">test_get</span><span class="p">()</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">test_get</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="WebclientTest.test_get_disabled"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.WebclientTest.test_get_disabled">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">WEBCLIENT_ENABLED</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_get_disabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">authenticated_response</span> <span class="o">=</span> <span class="mi">404</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unauthenticated_response</span> <span class="o">=</span> <span class="mi">404</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">WebclientTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">test_get</span><span class="p">()</span></div></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">test_get</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="ChannelListTest"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.ChannelListTest">[docs]</a><span class="k">class</span> <span class="nc">ChannelListTest</span><span class="p">(</span><span class="n">EvenniaWebTest</span><span class="p">):</span>
@@ -171,7 +171,7 @@
     <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;channel-detail&quot;</span>
 
 <div class="viewcode-block" id="ChannelDetailTest.setUp"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.ChannelDetailTest.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ChannelDetailTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
 
         <span class="n">klass</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_typeclass</span><span class="p">,</span>
                                   <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_CHANNEL_TYPECLASS</span><span class="p">)</span>
@@ -233,7 +233,7 @@
     <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;help-entry-detail&quot;</span>
 
 <div class="viewcode-block" id="HelpLockedDetailTest.setUp"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.HelpLockedDetailTest.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">HelpLockedDetailTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
 
         <span class="c1"># create a db entry with a lock</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_help_entry</span> <span class="o">=</span> <span class="n">create_help_entry</span><span class="p">(</span><span class="s1">&#39;unit test locked topic&#39;</span><span class="p">,</span> <span class="s1">&#39;unit test locked entrytext&#39;</span><span class="p">,</span>

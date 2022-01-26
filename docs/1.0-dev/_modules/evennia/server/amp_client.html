@@ -152,7 +152,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># print(&quot;AMPClient new connection {}&quot;.format(self))</span>
         <span class="n">info_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">get_info_dict</span><span class="p">()</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">AMPServerClientProtocol</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">connectionMade</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">connectionMade</span><span class="p">()</span>
         <span class="c1"># first thing we do is to request the Portal to sync all sessions</span>
         <span class="c1"># back with the Server side. We also need the startup mode (reload, reset, shutdown)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">send_AdminServer2Portal</span><span class="p">(</span>

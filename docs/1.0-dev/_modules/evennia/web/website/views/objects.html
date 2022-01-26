@@ -167,7 +167,7 @@
             <span class="k">raise</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="s2">&quot;You are not authorized to </span><span class="si">%s</span><span class="s2"> this object.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_type</span><span class="p">)</span>
 
         <span class="c1"># Get the object, if it is in the specified queryset</span>
-        <span class="n">obj</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">ObjectDetailView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">queryset</span><span class="p">)</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">queryset</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">obj</span></div></div>
 

@@ -795,7 +795,7 @@
 <span class="sd">            Annotated queryset.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="nb">super</span><span class="p">(</span><span class="n">TypeclassManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="nb">super</span><span class="p">()</span>
             <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_typeclass_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
             <span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="p">)</span>
@@ -811,7 +811,7 @@
 <span class="sd">            Queryset of values dictionaries, just filtered by typeclass first.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="nb">super</span><span class="p">(</span><span class="n">TypeclassManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="nb">super</span><span class="p">()</span>
             <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_typeclass_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
             <span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="p">)</span>
@@ -827,7 +827,7 @@
 <span class="sd">            Queryset of value_list tuples, just filtered by typeclass first.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="nb">super</span><span class="p">(</span><span class="n">TypeclassManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="nb">super</span><span class="p">()</span>
             <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_typeclass_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
             <span class="o">.</span><span class="n">values_list</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="p">)</span>

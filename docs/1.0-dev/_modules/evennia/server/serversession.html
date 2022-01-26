@@ -120,7 +120,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_ObjectDB</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span> <span class="k">as</span> <span class="n">_ObjectDB</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">ServerSession</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">at_sync</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_sync</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logged_in</span><span class="p">:</span>
             <span class="c1"># assign the unloggedin-command set.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_storage</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_UNLOGGEDIN</span>
