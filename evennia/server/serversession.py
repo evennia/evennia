@@ -76,7 +76,7 @@ class ServerSession(_BASE_SESSION_CLASS):
         if not _ObjectDB:
             from evennia.objects.models import ObjectDB as _ObjectDB
 
-        super(ServerSession, self).at_sync()
+        super().at_sync()
         if not self.logged_in:
             # assign the unloggedin-command set.
             self.cmdset_storage = settings.CMDSET_UNLOGGEDIN

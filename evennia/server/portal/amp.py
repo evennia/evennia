@@ -177,14 +177,14 @@ class Compressed(amp.String):
         Note: In Py3 this is really a byte stream.
 
         """
-        return zlib.compress(super(Compressed, self).toString(inObject), 9)
+        return zlib.compress(super().toString(inObject), 9)
 
     def fromString(self, inString):
         """
         Convert (decompress) from the string-representation on the wire to Python.
 
         """
-        return super(Compressed, self).fromString(zlib.decompress(inString))
+        return super().fromString(zlib.decompress(inString))
 
 
 class MsgLauncher2Portal(amp.Command):
@@ -313,7 +313,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         self.send_task = None
         self.multibatches = 0
         # later twisted amp has its own __init__
-        super(AMPMultiConnectionProtocol, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def _commandReceived(self, box):
         """
@@ -368,7 +368,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
                 # an incomplete AMP box means more batches are forthcoming.
                 self.multibatches += 1
             try:
-                super(AMPMultiConnectionProtocol, self).dataReceived(data)
+                super().dataReceived(data)
             except KeyError:
                 _get_logger().log_trace(
                     "Discarded incoming partial (packed) data (len {})".format(len(data))
@@ -379,7 +379,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
                 # end of existing multibatch
                 self.multibatches = max(0, self.multibatches - 1)
             try:
-                super(AMPMultiConnectionProtocol, self).dataReceived(data)
+                super().dataReceived(data)
             except KeyError:
                 _get_logger().log_trace(
                     "Discarded incoming multi-batch (packed) data (len {})".format(len(data))

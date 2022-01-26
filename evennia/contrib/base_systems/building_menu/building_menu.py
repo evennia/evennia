@@ -26,7 +26,7 @@ that will edit any default object offering to change its key and description.
         key = "DefaultCharacter"
 
         def at_cmdset_creation(self):
-            super(CharacterCmdSet, self).at_cmdset_creation()
+            super().at_cmdset_creation()
             # ... add the line below
             self.add(GenericBuildingCmd())
     ```
@@ -338,7 +338,7 @@ class CmdNoInput(Command):
 
     def __init__(self, **kwargs):
         self.menu = kwargs.pop("building_menu", None)
-        super(Command, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def func(self):
         """Display the menu or choice text."""
@@ -359,7 +359,7 @@ class CmdNoMatch(Command):
 
     def __init__(self, **kwargs):
         self.menu = kwargs.pop("building_menu", None)
-        super(Command, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def func(self):
         """Call the proper menu or redirect to nomatch."""

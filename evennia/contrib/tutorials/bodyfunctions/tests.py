@@ -12,11 +12,11 @@ class TestBodyFunctions(BaseEvenniaTest):
     script_typeclass = BodyFunctions
 
     def setUp(self):
-        super(TestBodyFunctions, self).setUp()
+        super().setUp()
         self.script.obj = self.char1
 
     def tearDown(self):
-        super(TestBodyFunctions, self).tearDown()
+        super().tearDown()
         # if we forget to stop the script, DirtyReactorAggregateError will be raised
         self.script.stop()
 

@@ -31,7 +31,7 @@ class EvenniaWebTest(BaseEvenniaTest):
     authenticated_response = 200
 
     def setUp(self):
-        super(EvenniaWebTest, self).setUp()
+        super().setUp()
 
         # Add chars to account rosters
         self.account.db._playable_characters = [self.char1]
@@ -110,13 +110,13 @@ class WebclientTest(EvenniaWebTest):
     def test_get(self):
         self.authenticated_response = 200
         self.unauthenticated_response = 200
-        super(WebclientTest, self).test_get()
+        super().test_get()
 
     @override_settings(WEBCLIENT_ENABLED=False)
     def test_get_disabled(self):
         self.authenticated_response = 404
         self.unauthenticated_response = 404
-        super(WebclientTest, self).test_get()
+        super().test_get()
 
 
 class ChannelListTest(EvenniaWebTest):
@@ -127,7 +127,7 @@ class ChannelDetailTest(EvenniaWebTest):
     url_name = "channel-detail"
 
     def setUp(self):
-        super(ChannelDetailTest, self).setUp()
+        super().setUp()
 
         klass = class_from_module(self.channel_typeclass,
                                   fallback=settings.FALLBACK_CHANNEL_TYPECLASS)
@@ -189,7 +189,7 @@ class HelpLockedDetailTest(EvenniaWebTest):
     url_name = "help-entry-detail"
 
     def setUp(self):
-        super(HelpLockedDetailTest, self).setUp()
+        super().setUp()
 
         # create a db entry with a lock
         self.db_help_entry = create_help_entry('unit test locked topic', 'unit test locked entrytext',

@@ -108,7 +108,7 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         """
         # print("AMPClient new connection {}".format(self))
         info_dict = self.factory.server.get_info_dict()
-        super(AMPServerClientProtocol, self).connectionMade()
+        super().connectionMade()
         # first thing we do is to request the Portal to sync all sessions
         # back with the Server side. We also need the startup mode (reload, reset, shutdown)
         self.send_AdminServer2Portal(

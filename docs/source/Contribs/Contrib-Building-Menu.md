@@ -26,7 +26,7 @@ that will edit any default object, offering to change its key and description.
         key = "DefaultCharacter"
 
         def at_cmdset_creation(self):
-            super(CharacterCmdSet, self).at_cmdset_creation()
+            super().at_cmdset_creation()
             # ... add the line below
             self.add(GenericBuildingCmd())
     ```

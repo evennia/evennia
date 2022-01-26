@@ -14,7 +14,7 @@ class Submenu(BuildingMenu):
 
 class TestBuildingMenu(BaseEvenniaCommandTest):
     def setUp(self):
-        super(TestBuildingMenu, self).setUp()
+        super().setUp()
         self.menu = BuildingMenu(caller=self.char1, obj=self.room1, title="test")
         self.menu.add_choice("title", key="t", attr="key")
 

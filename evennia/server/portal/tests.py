@@ -46,7 +46,7 @@ class TestAMPServer(TwistedTestCase):
     """
 
     def setUp(self):
-        super(TestAMPServer, self).setUp()
+        super().setUp()
         portal = Mock()
         factory = AMPServerFactory(portal)
         self.proto = factory.buildProtocol(("localhost", 0))
@@ -217,7 +217,7 @@ class TestIRC(TestCase):
 
 class TestTelnet(TwistedTestCase):
     def setUp(self):
-        super(TestTelnet, self).setUp()
+        super().setUp()
         factory = TelnetServerFactory()
         factory.protocol = TelnetProtocol
         factory.sessionhandler = PORTAL_SESSIONS

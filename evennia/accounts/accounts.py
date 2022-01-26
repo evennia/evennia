@@ -664,7 +664,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             could get invalidated.
 
         """
-        super(DefaultAccount, self).set_password(password)
+        super().set_password(password)
         logger.log_sec(f"Password successfully changed for {self}.")
         self.at_password_change()
 
