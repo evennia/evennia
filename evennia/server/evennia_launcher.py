@@ -204,7 +204,7 @@ ERROR_SETTINGS = """
 )
 
 ERROR_INITSETTINGS = """
-    ERROR: 'evennia --initsettings' must be called from the root of
+u   ERROR: 'evennia --initsettings' must be called from the root of
     your game directory, since it tries to (re)create the new
     settings.py file in a subfolder server/conf/.
     """
@@ -2323,6 +2323,7 @@ def main():
             global TEST_MODE
             TEST_MODE = True
 
+        # init the db/game dir, if needed
         init_game_directory(CURRENT_DIR, check_db=check_db, need_gamedir=need_gamedir)
 
         if option == "migrate":
@@ -2334,12 +2335,12 @@ def main():
         if run_custom_commands(option, *unknown_args):
             # run any custom commands
             sys.exit()
-
-        # pass on to the core django manager - re-parse the entire input line
-        # but keep 'evennia' as the name instead of django-admin. This is
-        # an exit condition.
-        sys.argv[0] = re.sub(r"(-script\.pyw?|\.exe)?$", "", sys.argv[0])
-        sys.exit(execute_from_command_line(sys.argv))
+        else:
+            # pass on to the core django manager - re-parse the entire input line
+            # but keep 'evennia' as the name instead of django-admin. This is
+            # an exit condition.
+            sys.argv[0] = re.sub(r"(-script\.pyw?|\.exe)?$", "", sys.argv[0])
+            sys.exit(execute_from_command_line(sys.argv))
 
     elif not args.tail_log:
         # no input; print evennia info (don't pring if we're tailing log)
