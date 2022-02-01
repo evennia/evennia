@@ -403,7 +403,7 @@ SCRIPTS START HERE
 """
 
 
-class TBMagicTurnHandler(DefaultScript):
+class TBMagicTurnHandler(tb_basic.TBBasicTurnHandler):
     """
     This is the script that handles the progression of combat through turns.
     On creation (when a fight is started) it adds all combat-ready characters
@@ -776,6 +776,8 @@ class CmdRest(Command):
 
     key = "rest"
     help_category = "combat"
+
+    rules = COMBAT_RULES
 
     def func(self):
         "This performs the actual command."

@@ -343,7 +343,7 @@ class ItemCombatRules(tb_basic.BasicCombatRules):
             condition_turnchar = character.db.conditions[key][1]
             # If the duration is 'True', then the condition doesn't tick down - it lasts
             # indefinitely.
-            if not condition_duration:
+            if condition_duration is not True:
                 # Count down if the given turn character matches the condition's turn character.
                 if condition_turnchar == turnchar:
                     character.db.conditions[key][0] -= 1
@@ -456,7 +456,7 @@ class ItemCombatRules(tb_basic.BasicCombatRules):
         for condition in conditions:
             self.add_condition(target, user, condition[0], condition[1])
 
-    def itemfunc_cure_condition(item, user, target, **kwargs):
+    def itemfunc_cure_condition(self, item, user, target, **kwargs):
         """
         Item function that'll remove given conditions from a target.
 
@@ -873,7 +873,7 @@ class CmdFight(tb_basic.CmdFight):
     combat_handler_class = TBItemsTurnHandler
 
 
-class CmdAttack(tb_basic.CmdFight):
+class CmdAttack(tb_basic.CmdAttack):
     """
     Attacks another character.
 
@@ -906,7 +906,7 @@ class CmdPass(tb_basic.CmdPass):
     rules = COMBAT_RULES
 
 
-class CmdDisengage(Command):
+class CmdDisengage(tb_basic.CmdDisengage):
     """
     Passes your turn and attempts to end combat.
 
@@ -925,7 +925,7 @@ class CmdDisengage(Command):
     rules = COMBAT_RULES
 
 
-class CmdRest(Command):
+class CmdRest(tb_basic.CmdRest):
     """
     Recovers damage.
 
