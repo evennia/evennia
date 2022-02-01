@@ -95,7 +95,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         """
         # wipe broadcast and data memory
-        super(AMPServerProtocol, self).connectionLost(reason)
+        super().connectionLost(reason)
         if self.factory.server_connection == self:
             self.factory.server_connection = None
             self.factory.portal.server_info_dict = {}

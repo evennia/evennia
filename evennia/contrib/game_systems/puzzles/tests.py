@@ -9,14 +9,14 @@ import re
 import itertools
 from mock import Mock
 from evennia.utils import search
-from evennia.commands.default.tests import EvenniaCommandTest
+from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.create import create_object
 from . import puzzles
 
 
-class TestPuzzles(EvenniaCommandTest):
+class TestPuzzles(BaseEvenniaCommandTest):
     def setUp(self):
-        super(TestPuzzles, self).setUp()
+        super().setUp()
         self.steel = create_object(self.object_typeclass, key="steel", location=self.char1.location)
         self.flint = create_object(self.object_typeclass, key="flint", location=self.char1.location)
         self.fire = create_object(self.object_typeclass, key="fire", location=self.char1.location)

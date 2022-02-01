@@ -4,14 +4,14 @@ Turnbattle tests.
 """
 
 from mock import patch, MagicMock
-from evennia.commands.default.tests import EvenniaCommandTest
+from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.create import create_object
 from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.objects.objects import DefaultRoom
 from . import tb_basic, tb_equip, tb_range, tb_items, tb_magic
 
 
-class TestTurnBattleBasicCmd(EvenniaCommandTest):
+class TestTurnBattleBasicCmd(BaseEvenniaCommandTest):
 
     # Test basic combat commands
     def test_turnbattlecmd(self):
@@ -22,9 +22,9 @@ class TestTurnBattleBasicCmd(EvenniaCommandTest):
         self.call(tb_basic.CmdRest(), "", "Char rests to recover HP.")
 
 
-class TestTurnBattleEquipCmd(EvenniaCommandTest):
+class TestTurnBattleEquipCmd(BaseEvenniaCommandTest):
     def setUp(self):
-        super(TestTurnBattleEquipCmd, self).setUp()
+        super().setUp()
         self.testweapon = create_object(tb_equip.TBEWeapon, key="test weapon")
         self.testarmor = create_object(tb_equip.TBEArmor, key="test armor")
         self.testweapon.move_to(self.char1)
@@ -45,7 +45,7 @@ class TestTurnBattleEquipCmd(EvenniaCommandTest):
         self.call(tb_equip.CmdRest(), "", "Char rests to recover HP.")
 
 
-class TestTurnBattleRangeCmd(EvenniaCommandTest):
+class TestTurnBattleRangeCmd(BaseEvenniaCommandTest):
     # Test range commands
     def test_turnbattlerangecmd(self):
         # Start with range module specific commands.
@@ -61,9 +61,9 @@ class TestTurnBattleRangeCmd(EvenniaCommandTest):
         self.call(tb_range.CmdRest(), "", "Char rests to recover HP.")
 
 
-class TestTurnBattleItemsCmd(EvenniaCommandTest):
+class TestTurnBattleItemsCmd(BaseEvenniaCommandTest):
     def setUp(self):
-        super(TestTurnBattleItemsCmd, self).setUp()
+        super().setUp()
         self.testitem = create_object(key="test item")
         self.testitem.move_to(self.char1)
 
@@ -78,7 +78,7 @@ class TestTurnBattleItemsCmd(EvenniaCommandTest):
         self.call(tb_items.CmdRest(), "", "Char rests to recover HP.")
 
 
-class TestTurnBattleMagicCmd(EvenniaCommandTest):
+class TestTurnBattleMagicCmd(BaseEvenniaCommandTest):
 
     # Test magic commands
     def test_turnbattlemagiccmd(self):
@@ -95,7 +95,7 @@ class TestTurnBattleMagicCmd(EvenniaCommandTest):
 
 class TestTurnBattleBasicFunc(BaseEvenniaTest):
     def setUp(self):
-        super(TestTurnBattleBasicFunc, self).setUp()
+        super().setUp()
         self.testroom = create_object(DefaultRoom, key="Test Room")
         self.attacker = create_object(
             tb_basic.TBBasicCharacter, key="Attacker", location=self.testroom
@@ -106,12 +106,12 @@ class TestTurnBattleBasicFunc(BaseEvenniaTest):
         self.joiner = create_object(tb_basic.TBBasicCharacter, key="Joiner", location=None)
 
     def tearDown(self):
-        super(TestTurnBattleBasicFunc, self).tearDown()
+        super().tearDown()
         self.turnhandler.stop()
-        self.testroom.delete()
         self.attacker.delete()
         self.defender.delete()
         self.joiner.delete()
+        self.testroom.delete()
 
     # Test combat functions
     def test_tbbasicfunc(self):
@@ -188,7 +188,7 @@ class TestTurnBattleBasicFunc(BaseEvenniaTest):
 
 class TestTurnBattleEquipFunc(BaseEvenniaTest):
     def setUp(self):
-        super(TestTurnBattleEquipFunc, self).setUp()
+        super().setUp()
         self.testroom = create_object(DefaultRoom, key="Test Room")
         self.attacker = create_object(
             tb_equip.TBEquipCharacter, key="Attacker", location=self.testroom
@@ -199,12 +199,12 @@ class TestTurnBattleEquipFunc(BaseEvenniaTest):
         self.joiner = create_object(tb_equip.TBEquipCharacter, key="Joiner", location=None)
 
     def tearDown(self):
-        super(TestTurnBattleEquipFunc, self).tearDown()
+        super().tearDown()
         self.turnhandler.stop()
-        self.testroom.delete()
         self.attacker.delete()
         self.defender.delete()
         self.joiner.delete()
+        self.testroom.delete()
 
     # Test the combat functions in tb_equip too. They work mostly the same.
     def test_tbequipfunc(self):
@@ -280,7 +280,7 @@ class TestTurnBattleEquipFunc(BaseEvenniaTest):
 
 class TestTurnBattleRangeFunc(BaseEvenniaTest):
     def setUp(self):
-        super(TestTurnBattleRangeFunc, self).setUp()
+        super().setUp()
         self.testroom = create_object(DefaultRoom, key="Test Room")
         self.attacker = create_object(
             tb_range.TBRangeCharacter, key="Attacker", location=self.testroom
@@ -291,12 +291,12 @@ class TestTurnBattleRangeFunc(BaseEvenniaTest):
         self.joiner = create_object(tb_range.TBRangeCharacter, key="Joiner", location=self.testroom)
 
     def tearDown(self):
-        super(TestTurnBattleRangeFunc, self).tearDown()
+        super().tearDown()
         self.turnhandler.stop()
-        self.testroom.delete()
         self.attacker.delete()
         self.defender.delete()
         self.joiner.delete()
+        self.testroom.delete()
 
     # Test combat functions in tb_range too.
     def test_tbrangefunc(self):
@@ -390,7 +390,7 @@ class TestTurnBattleRangeFunc(BaseEvenniaTest):
 class TestTurnBattleItemsFunc(BaseEvenniaTest):
     @patch("evennia.contrib.game_systems.turnbattle.tb_items.tickerhandler", new=MagicMock())
     def setUp(self):
-        super(TestTurnBattleItemsFunc, self).setUp()
+        super().setUp()
         self.testroom = create_object(DefaultRoom, key="Test Room")
         self.attacker = create_object(
             tb_items.TBItemsCharacter, key="Attacker", location=self.testroom
@@ -405,13 +405,13 @@ class TestTurnBattleItemsFunc(BaseEvenniaTest):
         self.test_healpotion.db.item_uses = 3
 
     def tearDown(self):
-        super(TestTurnBattleItemsFunc, self).tearDown()
+        super().tearDown()
         self.turnhandler.stop()
-        self.testroom.delete()
         self.attacker.delete()
         self.defender.delete()
         self.joiner.delete()
         self.user.delete()
+        self.testroom.delete()
 
     # Test functions in tb_items.
     def test_tbitemsfunc(self):
@@ -513,7 +513,7 @@ class TestTurnBattleItemsFunc(BaseEvenniaTest):
 
 class TestTurnBattleMagicFunc(BaseEvenniaTest):
     def setUp(self):
-        super(TestTurnBattleMagicFunc, self).setUp()
+        super().setUp()
         self.testroom = create_object(DefaultRoom, key="Test Room")
         self.attacker = create_object(
             tb_magic.TBMagicCharacter, key="Attacker", location=self.testroom
@@ -524,12 +524,12 @@ class TestTurnBattleMagicFunc(BaseEvenniaTest):
         self.joiner = create_object(tb_magic.TBMagicCharacter, key="Joiner", location=self.testroom)
 
     def tearDown(self):
-        super(TestTurnBattleMagicFunc, self).tearDown()
+        super().tearDown()
         self.turnhandler.stop()
-        self.testroom.delete()
         self.attacker.delete()
         self.defender.delete()
         self.joiner.delete()
+        self.testroom.delete()
 
     # Test combat functions in tb_magic.
     def test_tbbasicfunc(self):

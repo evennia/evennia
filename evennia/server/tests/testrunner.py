@@ -32,6 +32,6 @@ class EvenniaTestSuiteRunner(DiscoverRunner):
         import evennia
 
         evennia._init()
-        return super(EvenniaTestSuiteRunner, self).build_suite(
+        return super().build_suite(
             test_labels, extra_tests=extra_tests, **kwargs
         )

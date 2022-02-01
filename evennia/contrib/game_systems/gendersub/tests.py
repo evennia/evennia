@@ -4,13 +4,13 @@ Test gendersub contrib.
 """
 
 
-from evennia.commands.default.tests import EvenniaCommandTest
+from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.create import create_object
 from mock import patch
 from . import gendersub
 
 
-class TestGenderSub(EvenniaCommandTest):
+class TestGenderSub(BaseEvenniaCommandTest):
     def test_setgender(self):
         self.call(gendersub.SetGender(), "male", "Your gender was set to male.")
         self.call(gendersub.SetGender(), "ambiguous", "Your gender was set to ambiguous.")

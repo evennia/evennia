@@ -7,7 +7,7 @@ from textwrap import dedent
 
 from django.conf import settings
 from evennia import ScriptDB
-from evennia.commands.default.tests import EvenniaCommandTest
+from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.objects.objects import ExitCommand
 from evennia.utils import ansi, utils
 from evennia.utils.create import create_object, create_script
@@ -246,7 +246,7 @@ class TestEventHandler(BaseEvenniaTest):
         self.assertEqual(self.room1.callbacks.all(), {})
 
 
-class TestCmdCallback(EvenniaCommandTest):
+class TestCmdCallback(BaseEvenniaCommandTest):
 
     """Test the @callback command."""
 
@@ -425,7 +425,7 @@ class TestCmdCallback(EvenniaCommandTest):
         self.assertEqual(callback.valid, True)
 
 
-class TestDefaultCallbacks(EvenniaCommandTest):
+class TestDefaultCallbacks(BaseEvenniaCommandTest):
 
     """Test the default callbacks."""
 

@@ -24,7 +24,7 @@ DelayedCall.debug = True
 #        MagicMock(return_value=create.account("TestAMPAccount", "test@test.com", "testpassword")))
 class _TestAMP(TwistedTestCase):
     def setUp(self):
-        super(_TestAMP, self).setUp()
+        super().setUp()
         self.account = mommy.make("accounts.AccountDB", id=1)
         self.server = server.Evennia(MagicMock())
         self.server.sessions.data_in = MagicMock()
@@ -47,7 +47,7 @@ class _TestAMP(TwistedTestCase):
 
     def tearDown(self):
         self.account.delete()
-        super(_TestAMP, self).tearDown()
+        super().tearDown()
 
     def _connect_client(self, mocktransport):
         "Setup client to send data for testing"

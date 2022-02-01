@@ -3,7 +3,6 @@
 SOURCEDIR     = source
 BUILDDIR      = build
 AUTODOCDIR = $(SOURCEDIR)/api
-
 # You can set these variables from the command line, and also
 # from the environment for the first two.
 SPHINXOPTS    ?=
@@ -110,13 +109,14 @@ pdf:
 	@echo "To see result, open evennia/docs/build/latex/evennia.pdf in a PDF reader."
 
 quick:
+	make _check-env
 	make _quick_autodoc-index
-	make _quick-html-build $(FILES)
+	make _html-build
 	@echo ""
 	@echo "Documentation built (single version, no autodocs)."
 	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
 
-# abort on warnings too
+# abort on warnings too (not working atm)
 quickstrict:
 	SPHINXOPTS=-W make quick
 
@@ -156,6 +156,7 @@ deploy:
 	@echo "Documentation deployed."
 
 # build and prepare the docs for release
+#
 release:
 	make mv-local
 	make deploy

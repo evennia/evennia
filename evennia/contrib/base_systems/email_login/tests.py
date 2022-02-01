@@ -3,11 +3,11 @@ Test email login.
 
 """
 
-from evennia.commands.default.tests import EvenniaCommandTest
+from evennia.commands.default.tests import BaseEvenniaCommandTest
 from . import email_login
 
 
-class TestEmailLogin(EvenniaCommandTest):
+class TestEmailLogin(BaseEvenniaCommandTest):
     def test_connect(self):
         self.call(
             email_login.CmdUnconnectedConnect(),

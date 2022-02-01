@@ -6,7 +6,7 @@ Testing of ExtendedRoom contrib
 import datetime
 from mock import patch, Mock
 from django.conf import settings
-from evennia.commands.default.tests import EvenniaCommandTest
+from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.objects.objects import DefaultRoom
 from . import extended_room
 
@@ -24,7 +24,7 @@ class ForceUTCDatetime(datetime.datetime):
 @patch("evennia.contrib.grid.extended_room.extended_room.datetime.datetime", ForceUTCDatetime)
 # mock gametime to return April 9, 2064, at 21:06 (spring evening)
 @patch("evennia.utils.gametime.gametime", new=Mock(return_value=2975000766))
-class TestExtendedRoom(EvenniaCommandTest):
+class TestExtendedRoom(BaseEvenniaCommandTest):
     room_typeclass = extended_room.ExtendedRoom
     DETAIL_DESC = "A test detail."
     SPRING_DESC = "A spring description."

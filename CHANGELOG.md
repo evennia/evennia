@@ -140,6 +140,8 @@ Up requirements to Django 3.2+, Twisted 21+
   with the `set` command. This allows assigning real objects from in-game.
 - Add ability to examine `/script` and `/channel` entities  with `examine` command.
 - Homogenize manager search methods to return querysets and not lists.
+- Restructure unit tests to always honor default settings; make new parents in
+  on location for easy use in game dir.
 
 
 ### Evennia 0.9.5 (2019-2020)

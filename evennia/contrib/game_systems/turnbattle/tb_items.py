@@ -1046,7 +1046,7 @@ class CmdCombatHelp(CmdHelp):
                 + "|wUse:|n Use an item you're carrying."
             )
         else:
-            super(CmdCombatHelp, self).func()  # Call the default help command
+            super().func()  # Call the default help command
 
 
 class CmdUse(MuxCommand):

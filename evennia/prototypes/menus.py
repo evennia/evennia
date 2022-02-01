@@ -2661,7 +2661,7 @@ class OLCMenu(EvMenu):
         Format the node text itself.
 
         """
-        return super(OLCMenu, self).nodetext_formatter(nodetext)
+        return super().nodetext_formatter(nodetext)
 
     def options_formatter(self, optionlist):
         """
@@ -2697,7 +2697,7 @@ class OLCMenu(EvMenu):
             if olc_options
             else ""
         )
-        other_options = super(OLCMenu, self).options_formatter(other_options)
+        other_options = super().options_formatter(other_options)
         sep = "\n\n" if olc_options and other_options else ""
 
         return "{}{}{}".format(olc_options, sep, other_options)

@@ -3,13 +3,13 @@ Testing of TestDice.
 
 """
 
-from evennia.commands.default.tests import EvenniaCommandTest
+from evennia.commands.default.tests import BaseEvenniaCommandTest
 from mock import patch
 from . import dice
 
 
 @patch("evennia.contrib.rpg.dice.dice.randint", return_value=5)
-class TestDice(EvenniaCommandTest):
+class TestDice(BaseEvenniaCommandTest):
     def test_roll_dice(self, mocked_randint):
         self.assertEqual(dice.roll_dice(6, 6, modifier=("+", 4)), mocked_randint() * 6 + 4)
         self.assertEqual(dice.roll_dice(6, 6, conditional=("<", 35)), True)

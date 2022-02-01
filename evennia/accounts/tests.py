@@ -116,7 +116,7 @@ class TestDefaultGuest(BaseEvenniaTest):
 
 class TestDefaultAccountAuth(BaseEvenniaTest):
     def setUp(self):
-        super(TestDefaultAccountAuth, self).setUp()
+        super().setUp()
 
         self.password = "testpassword"
         self.account.delete()

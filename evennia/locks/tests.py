@@ -44,7 +44,7 @@ class TestLockCheck(BaseEvenniaTest):
 
 class TestLockfuncs(BaseEvenniaTest):
     def setUp(self):
-        super(TestLockfuncs, self).setUp()
+        super().setUp()
         self.account2.permissions.add("Admin")
         self.char2.permissions.add("Builder")
 

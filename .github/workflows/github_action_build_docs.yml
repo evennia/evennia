@@ -21,7 +21,13 @@ jobs:
         python-version: [3.7]
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout 0.9.5 branch 
+        uses: actions/checkout@v2
+        with:
+            ref: v0.9.5
+
+      - name: Checkout ${{ github.ref }} branch 
+        uses: actions/checkout@v2
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
@@ -34,26 +40,21 @@ jobs:
           cd docs/
           make install
 
-      # fail early here, run quickstrict with aborts also on warnings
-      - name: Quick-test docs (no autodocs)
-        run: |
-          cd docs/
-          make quickstrict
-
       # full game dir needed for mv-local
-      # - name: Set up evennia game dir
-      #   run: |
-      #     pip install -e .
-      #     cd ..
-      #     evennia --init gamedir
-      #     cd gamedir
-      #     evennia migrate
+      - name: Set up evennia game dir
+        run: |
+          pip install -e .
+          pip install -r requirements_extra.txt
+          cd ..
+          evennia --init gamedir
+          cd gamedir
+          evennia migrate
 
-      - name: Deploy docs (only from master/develop branch)
+      - name: Build and deploy docs (only from master/develop branch)
         if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'}}
         run: |
           git config --global user.email "docbuilder@evennia.com"
-          git config --global user.name "Doc builder mechanism"
+          git config --global user.name "Evennia docbuilder action"
+          git branch
           cd docs
-          make mv-local
-          echo "Would deploy here!"
+          make release
