@@ -1,7 +1,7 @@
 """
 Simple turn-based combat system
 
-Contrib - Tim Ashley Jenkins 2017
+Contrib - Tim Ashley Jenkins 2017, Refactor by Griatch 2022
 
 This is a framework for a simple turn-based combat system, similar
 to those used in D&D-style tabletop role playing games. It allows
@@ -62,237 +62,235 @@ COMBAT FUNCTIONS START HERE
 """
 
 
-def roll_init(character):
+class BasicCombatRules:
     """
-    Rolls a number between 1-1000 to determine initiative.
+    Stores all combat rules and helper methods.
 
-    Args:
-        character (obj): The character to determine initiative for
-
-    Returns:
-        initiative (int): The character's place in initiative - higher
-        numbers go first.
-
-    Notes:
-        By default, does not reference the character and simply returns
-        a random integer from 1 to 1000.
-
-        Since the character is passed to this function, you can easily reference
-        a character's stats to determine an initiative roll - for example, if your
-        character has a 'dexterity' attribute, you can use it to give that character
-        an advantage in turn order, like so:
-
-        return (randint(1,20)) + character.db.dexterity
-
-        This way, characters with a higher dexterity will go first more often.
     """
-    return randint(1, 1000)
 
+    def roll_init(self, character):
+        """
+        Rolls a number between 1-1000 to determine initiative.
 
-def get_attack(attacker, defender):
-    """
-    Returns a value for an attack roll.
+        Args:
+            character (obj): The character to determine initiative for
 
-    Args:
-        attacker (obj): Character doing the attacking
-        defender (obj): Character being attacked
+        Returns:
+            initiative (int): The character's place in initiative - higher
+            numbers go first.
 
-    Returns:
-        attack_value (int): Attack roll value, compared against a defense value
-            to determine whether an attack hits or misses.
+        Notes:
+            By default, does not reference the character and simply returns
+            a random integer from 1 to 1000.
 
-    Notes:
-        By default, returns a random integer from 1 to 100 without using any
-        properties from either the attacker or defender.
+            Since the character is passed to this function, you can easily reference
+            a character's stats to determine an initiative roll - for example, if your
+            character has a 'dexterity' attribute, you can use it to give that character
+            an advantage in turn order, like so:
 
-        This can easily be expanded to return a value based on characters stats,
-        equipment, and abilities. This is why the attacker and defender are passed
-        to this function, even though nothing from either one are used in this example.
-    """
-    # For this example, just return a random integer up to 100.
-    attack_value = randint(1, 100)
-    return attack_value
+            return (randint(1,20)) + character.db.dexterity
 
+            This way, characters with a higher dexterity will go first more often.
+        """
+        return randint(1, 1000)
 
-def get_defense(attacker, defender):
-    """
-    Returns a value for defense, which an attack roll must equal or exceed in order
-    for an attack to hit.
+    def get_attack(self, attacker, defender):
+        """
+        Returns a value for an attack roll.
 
-    Args:
-        attacker (obj): Character doing the attacking
-        defender (obj): Character being attacked
+        Args:
+            attacker (obj): Character doing the attacking
+            defender (obj): Character being attacked
 
-    Returns:
-        defense_value (int): Defense value, compared against an attack roll
-            to determine whether an attack hits or misses.
+        Returns:
+            attack_value (int): Attack roll value, compared against a defense value
+                to determine whether an attack hits or misses.
 
-    Notes:
-        By default, returns 50, not taking any properties of the defender or
-        attacker into account.
+        Notes:
+            By default, returns a random integer from 1 to 100 without using any
+            properties from either the attacker or defender.
 
-        As above, this can be expanded upon based on character stats and equipment.
-    """
-    # For this example, just return 50, for about a 50/50 chance of hit.
-    defense_value = 50
-    return defense_value
+            This can easily be expanded to return a value based on characters stats,
+            equipment, and abilities. This is why the attacker and defender are passed
+            to this function, even though nothing from either one are used in this example.
+        """
+        # For this example, just return a random integer up to 100.
+        attack_value = randint(1, 100)
+        return attack_value
 
+    def get_defense(self, attacker, defender):
+        """
+        Returns a value for defense, which an attack roll must equal or exceed in order
+        for an attack to hit.
 
-def get_damage(attacker, defender):
-    """
-    Returns a value for damage to be deducted from the defender's HP after abilities
-    successful hit.
+        Args:
+            attacker (obj): Character doing the attacking
+            defender (obj): Character being attacked
 
-    Args:
-        attacker (obj): Character doing the attacking
-        defender (obj): Character being damaged
+        Returns:
+            defense_value (int): Defense value, compared against an attack roll
+                to determine whether an attack hits or misses.
 
-    Returns:
-        damage_value (int): Damage value, which is to be deducted from the defending
-            character's HP.
+        Notes:
+            By default, returns 50, not taking any properties of the defender or
+            attacker into account.
 
-    Notes:
-        By default, returns a random integer from 15 to 25 without using any
-        properties from either the attacker or defender.
+            As above, this can be expanded upon based on character stats and equipment.
+        """
+        # For this example, just return 50, for about a 50/50 chance of hit.
+        defense_value = 50
+        return defense_value
 
-        Again, this can be expanded upon.
-    """
-    # For this example, just generate a number between 15 and 25.
-    damage_value = randint(15, 25)
-    return damage_value
+    def get_damage(self, attacker, defender):
+        """
+        Returns a value for damage to be deducted from the defender's HP after abilities
+        successful hit.
 
+        Args:
+            attacker (obj): Character doing the attacking
+            defender (obj): Character being damaged
 
-def apply_damage(defender, damage):
-    """
-    Applies damage to a target, reducing their HP by the damage amount to a
-    minimum of 0.
+        Returns:
+            damage_value (int): Damage value, which is to be deducted from the defending
+                character's HP.
 
-    Args:
-        defender (obj): Character taking damage
-        damage (int): Amount of damage being taken
-    """
-    defender.db.hp -= damage  # Reduce defender's HP by the damage dealt.
-    # If this reduces it to 0 or less, set HP to 0.
-    if defender.db.hp <= 0:
-        defender.db.hp = 0
+        Notes:
+            By default, returns a random integer from 15 to 25 without using any
+            properties from either the attacker or defender.
 
+            Again, this can be expanded upon.
+        """
+        # For this example, just generate a number between 15 and 25.
+        damage_value = randint(15, 25)
+        return damage_value
 
-def at_defeat(defeated):
-    """
-    Announces the defeat of a fighter in combat.
+    def apply_damage(self, defender, damage):
+        """
+        Applies damage to a target, reducing their HP by the damage amount to a
+        minimum of 0.
 
-    Args:
-        defeated (obj): Fighter that's been defeated.
-
-    Notes:
-        All this does is announce a defeat message by default, but if you
-        want anything else to happen to defeated fighters (like putting them
-        into a dying state or something similar) then this is the place to
-        do it.
-    """
-    defeated.location.msg_contents("%s has been defeated!" % defeated)
-
-
-def resolve_attack(attacker, defender, attack_value=None, defense_value=None):
-    """
-    Resolves an attack and outputs the result.
-
-    Args:
-        attacker (obj): Character doing the attacking
-        defender (obj): Character being attacked
-
-    Notes:
-        Even though the attack and defense values are calculated
-        extremely simply, they are separated out into their own functions
-        so that they are easier to expand upon.
-    """
-    # Get an attack roll from the attacker.
-    if not attack_value:
-        attack_value = get_attack(attacker, defender)
-    # Get a defense value from the defender.
-    if not defense_value:
-        defense_value = get_defense(attacker, defender)
-    # If the attack value is lower than the defense value, miss. Otherwise, hit.
-    if attack_value < defense_value:
-        attacker.location.msg_contents("%s's attack misses %s!" % (attacker, defender))
-    else:
-        damage_value = get_damage(attacker, defender)  # Calculate damage value.
-        # Announce damage dealt and apply damage.
-        attacker.location.msg_contents(
-            "%s hits %s for %i damage!" % (attacker, defender, damage_value)
-        )
-        apply_damage(defender, damage_value)
-        # If defender HP is reduced to 0 or less, call at_defeat.
+        Args:
+            defender (obj): Character taking damage
+            damage (int): Amount of damage being taken
+        """
+        defender.db.hp -= damage  # Reduce defender's HP by the damage dealt.
+        # If this reduces it to 0 or less, set HP to 0.
         if defender.db.hp <= 0:
-            at_defeat(defender)
+            defender.db.hp = 0
+
+    def at_defeat(self, defeated):
+        """
+        Announces the defeat of a fighter in combat.
+
+        Args:
+            defeated (obj): Fighter that's been defeated.
+
+        Notes:
+            All this does is announce a defeat message by default, but if you
+            want anything else to happen to defeated fighters (like putting them
+            into a dying state or something similar) then this is the place to
+            do it.
+        """
+        defeated.location.msg_contents("%s has been defeated!" % defeated)
+
+    def resolve_attack(self, attacker, defender, attack_value=None, defense_value=None):
+        """
+        Resolves an attack and outputs the result.
+
+        Args:
+            attacker (obj): Character doing the attacking
+            defender (obj): Character being attacked
+
+        Notes:
+            Even though the attack and defense values are calculated
+            extremely simply, they are separated out into their own functions
+            so that they are easier to expand upon.
+        """
+        # Get an attack roll from the attacker.
+        if not attack_value:
+            attack_value = self.get_attack(attacker, defender)
+        # Get a defense value from the defender.
+        if not defense_value:
+            defense_value = self.get_defense(attacker, defender)
+        # If the attack value is lower than the defense value, miss. Otherwise, hit.
+        if attack_value < defense_value:
+            attacker.location.msg_contents("%s's attack misses %s!" % (attacker, defender))
+        else:
+            damage_value = self.get_damage(attacker, defender)  # Calculate damage value.
+            # Announce damage dealt and apply damage.
+            attacker.location.msg_contents(
+                "%s hits %s for %i damage!" % (attacker, defender, damage_value)
+            )
+            self.apply_damage(defender, damage_value)
+            # If defender HP is reduced to 0 or less, call at_defeat.
+            if defender.db.hp <= 0:
+                self.at_defeat(defender)
+
+    def combat_cleanup(self, character):
+        """
+        Cleans up all the temporary combat-related attributes on a character.
+
+        Args:
+            character (obj): Character to have their combat attributes removed
+
+        Notes:
+            Any attribute whose key begins with 'combat_' is temporary and no
+            longer needed once a fight ends.
+        """
+        for attr in character.attributes.all():
+            if attr.key[:7] == "combat_":  # If the attribute name starts with 'combat_'...
+                character.attributes.remove(key=attr.key)  # ...then delete it!
+
+    def is_in_combat(self, character):
+        """
+        Returns true if the given character is in combat.
+
+        Args:
+            character (obj): Character to determine if is in combat or not
+
+        Returns:
+            (bool): True if in combat or False if not in combat
+        """
+        return bool(character.db.combat_turnhandler)
+
+    def is_turn(self, character):
+        """
+        Returns true if it's currently the given character's turn in combat.
+
+        Args:
+            character (obj): Character to determine if it is their turn or not
+
+        Returns:
+            (bool): True if it is their turn or False otherwise
+        """
+        turnhandler = character.db.combat_turnhandler
+        currentchar = turnhandler.db.fighters[turnhandler.db.turn]
+        return bool(character == currentchar)
+
+    def spend_action(self, character, actions, action_name=None):
+        """
+        Spends a character's available combat actions and checks for end of turn.
+
+        Args:
+            character (obj): Character spending the action
+            actions (int) or 'all': Number of actions to spend, or 'all' to spend all actions
+
+        Keyword Args:
+            action_name (str or None): If a string is given, sets character's last action in
+            combat to provided string
+        """
+        if action_name:
+            character.db.combat_lastaction = action_name
+        if actions == "all":  # If spending all actions
+            character.db.combat_actionsleft = 0  # Set actions to 0
+        else:
+            character.db.combat_actionsleft -= actions  # Use up actions.
+            if character.db.combat_actionsleft < 0:
+                character.db.combat_actionsleft = 0  # Can't have fewer than 0 actions
+        character.db.combat_turnhandler.turn_end_check(character)  # Signal potential end of turn.
 
 
-def combat_cleanup(character):
-    """
-    Cleans up all the temporary combat-related attributes on a character.
-
-    Args:
-        character (obj): Character to have their combat attributes removed
-
-    Notes:
-        Any attribute whose key begins with 'combat_' is temporary and no
-        longer needed once a fight ends.
-    """
-    for attr in character.attributes.all():
-        if attr.key[:7] == "combat_":  # If the attribute name starts with 'combat_'...
-            character.attributes.remove(key=attr.key)  # ...then delete it!
-
-
-def is_in_combat(character):
-    """
-    Returns true if the given character is in combat.
-
-    Args:
-        character (obj): Character to determine if is in combat or not
-
-    Returns:
-        (bool): True if in combat or False if not in combat
-    """
-    return bool(character.db.combat_turnhandler)
-
-
-def is_turn(character):
-    """
-    Returns true if it's currently the given character's turn in combat.
-
-    Args:
-        character (obj): Character to determine if it is their turn or not
-
-    Returns:
-        (bool): True if it is their turn or False otherwise
-    """
-    turnhandler = character.db.combat_turnhandler
-    currentchar = turnhandler.db.fighters[turnhandler.db.turn]
-    return bool(character == currentchar)
-
-
-def spend_action(character, actions, action_name=None):
-    """
-    Spends a character's available combat actions and checks for end of turn.
-
-    Args:
-        character (obj): Character spending the action
-        actions (int) or 'all': Number of actions to spend, or 'all' to spend all actions
-
-    Keyword Args:
-        action_name (str or None): If a string is given, sets character's last action in
-        combat to provided string
-    """
-    if action_name:
-        character.db.combat_lastaction = action_name
-    if actions == "all":  # If spending all actions
-        character.db.combat_actionsleft = 0  # Set actions to 0
-    else:
-        character.db.combat_actionsleft -= actions  # Use up actions.
-        if character.db.combat_actionsleft < 0:
-            character.db.combat_actionsleft = 0  # Can't have fewer than 0 actions
-    character.db.combat_turnhandler.turn_end_check(character)  # Signal potential end of turn.
-
+COMBAT_RULES = BasicCombatRules()
 
 """
 ----------------------------------------------------------------------------
@@ -306,6 +304,7 @@ class TBBasicCharacter(DefaultCharacter):
     A character able to participate in turn-based combat. Has attributes for current
     and maximum HP, and access to combat commands.
     """
+    rules = COMBAT_RULES
 
     def at_object_creation(self):
         """
@@ -339,7 +338,7 @@ class TBBasicCharacter(DefaultCharacter):
 
         """
         # Keep the character from moving if at 0 HP or in combat.
-        if is_in_combat(self):
+        if self.rules.is_in_combat(self):
             self.msg("You can't exit a room while in combat!")
             return False  # Returning false keeps the character from moving.
         if self.db.HP <= 0:
@@ -367,6 +366,8 @@ class TBBasicTurnHandler(DefaultScript):
     remaining participants choose to end the combat with the 'disengage' command.
     """
 
+    rules = COMBAT_RULES
+
     def at_script_creation(self):
         """
         Called once, when the script is created.
@@ -388,9 +389,10 @@ class TBBasicTurnHandler(DefaultScript):
         # Add a reference to this script to the room
         self.obj.db.combat_turnhandler = self
 
-        # Roll initiative and sort the list of fighters depending on who rolls highest to determine turn order.
-        # The initiative roll is determined by the roll_init function and can be customized easily.
-        ordered_by_roll = sorted(self.db.fighters, key=roll_init, reverse=True)
+        # Roll initiative and sort the list of fighters depending on who rolls highest to determine
+        # turn order.  The initiative roll is determined by the roll_init method and can be
+        # customized easily.
+        ordered_by_roll = sorted(self.db.fighters, key=self.rules.roll_init, reverse=True)
         self.db.fighters = ordered_by_roll
 
         # Announce the turn order.
@@ -408,7 +410,7 @@ class TBBasicTurnHandler(DefaultScript):
         Called at script termination.
         """
         for fighter in self.db.fighters:
-            combat_cleanup(fighter)  # Clean up the combat attributes for every fighter.
+            self.rules.combat_cleanup(fighter)  # Clean up the combat attributes for every fighter.
         self.obj.db.combat_turnhandler = None  # Remove reference to turn handler in location
 
     def at_repeat(self):
@@ -423,7 +425,7 @@ class TBBasicTurnHandler(DefaultScript):
         if self.db.timer <= 0:
             # Force current character to disengage if timer runs out.
             self.obj.msg_contents("%s's turn timed out!" % currentchar)
-            spend_action(
+            self.rules.spend_action(
                 currentchar, "all", action_name="disengage"
             )  # Spend all remaining actions.
             return
@@ -439,7 +441,8 @@ class TBBasicTurnHandler(DefaultScript):
         Args:
             character (obj): Character to initialize for combat.
         """
-        combat_cleanup(character)  # Clean up leftover combat attributes beforehand, just in case.
+        # Clean up leftover combat attributes beforehand, just in case.
+        self.rules.combat_cleanup(character)
         character.db.combat_actionsleft = (
             0  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
         )
@@ -560,6 +563,9 @@ class CmdFight(Command):
     key = "fight"
     help_category = "combat"
 
+    rules = COMBAT_RULES
+    combat_handler_class = TBBasicTurnHandler
+
     def func(self):
         """
         This performs the actual command.
@@ -570,7 +576,7 @@ class CmdFight(Command):
         if not self.caller.db.hp:  # If you don't have any hp
             self.caller.msg("You can't start a fight if you've been defeated!")
             return
-        if is_in_combat(self.caller):  # Already in a fight
+        if self.rules.is_in_combat(self.caller):  # Already in a fight
             self.caller.msg("You're already in a fight!")
             return
         for thing in here.contents:  # Test everything in the room to add it to the fight.
@@ -585,8 +591,7 @@ class CmdFight(Command):
             return
         here.msg_contents("%s starts a fight!" % self.caller)
         # Add a turn handler script to the room, which starts combat.
-        here.scripts.add("contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler")
-        # Remember you'll have to change the path to the script if you copy this code to your own modules!
+        here.scripts.add(self.command_handler_class)
 
 
 class CmdAttack(Command):
@@ -603,15 +608,17 @@ class CmdAttack(Command):
     key = "attack"
     help_category = "combat"
 
+    rules = COMBAT_RULES
+
     def func(self):
         "This performs the actual command."
         "Set the attacker to the caller and the defender to the target."
 
-        if not is_in_combat(self.caller):  # If not in combat, can't attack.
+        if not self.rules.is_in_combat(self.caller):  # If not in combat, can't attack.
             self.caller.msg("You can only do that in combat. (see: help fight)")
             return
 
-        if not is_turn(self.caller):  # If it's not your turn, can't attack.
+        if not self.rules.is_turn(self.caller):  # If it's not your turn, can't attack.
             self.caller.msg("You can only do that on your turn.")
             return
 
@@ -634,8 +641,8 @@ class CmdAttack(Command):
             return
 
         "If everything checks out, call the attack resolving function."
-        resolve_attack(attacker, defender)
-        spend_action(self.caller, 1, action_name="attack")  # Use up one action.
+        self.rules.resolve_attack(attacker, defender)
+        self.rules.spend_action(self.caller, 1, action_name="attack")  # Use up one action.
 
 
 class CmdPass(Command):
@@ -653,22 +660,25 @@ class CmdPass(Command):
     aliases = ["wait", "hold"]
     help_category = "combat"
 
+    rules = COMBAT_RULES
+
     def func(self):
         """
         This performs the actual command.
         """
-        if not is_in_combat(self.caller):  # Can only pass a turn in combat.
+        if not self.rules.is_in_combat(self.caller):  # Can only pass a turn in combat.
             self.caller.msg("You can only do that in combat. (see: help fight)")
             return
 
-        if not is_turn(self.caller):  # Can only pass if it's your turn.
+        if not self.rules.is_turn(self.caller):  # Can only pass if it's your turn.
             self.caller.msg("You can only do that on your turn.")
             return
 
         self.caller.location.msg_contents(
             "%s takes no further action, passing the turn." % self.caller
         )
-        spend_action(self.caller, "all", action_name="pass")  # Spend all remaining actions.
+        # Spend all remaining actions.
+        self.rules.spend_action(self.caller, "all", action_name="pass")
 
 
 class CmdDisengage(Command):
@@ -687,20 +697,23 @@ class CmdDisengage(Command):
     aliases = ["spare"]
     help_category = "combat"
 
+    rules = COMBAT_RULES
+
     def func(self):
         """
         This performs the actual command.
         """
-        if not is_in_combat(self.caller):  # If you're not in combat
+        if not self.rules.is_in_combat(self.caller):  # If you're not in combat
             self.caller.msg("You can only do that in combat. (see: help fight)")
             return
 
-        if not is_turn(self.caller):  # If it's not your turn
+        if not self.rules.is_turn(self.caller):  # If it's not your turn
             self.caller.msg("You can only do that on your turn.")
             return
 
         self.caller.location.msg_contents("%s disengages, ready to stop fighting." % self.caller)
-        spend_action(self.caller, "all", action_name="disengage")  # Spend all remaining actions.
+        # Spend all remaining actions.
+        self.rules.spend_action(self.caller, "all", action_name="disengage")
         """
         The action_name kwarg sets the character's last action to "disengage", which is checked by
         the turn handler script to see if all fighters have disengaged.
@@ -721,10 +734,12 @@ class CmdRest(Command):
     key = "rest"
     help_category = "combat"
 
+    rules = COMBAT_RULES
+
     def func(self):
         "This performs the actual command."
 
-        if is_in_combat(self.caller):  # If you're in combat
+        if self.rules.is_in_combat(self.caller):  # If you're in combat
             self.caller.msg("You can't rest while you're in combat.")
             return
 
@@ -748,17 +763,21 @@ class CmdCombatHelp(CmdHelp):
     topics related to the game.
     """
 
+    rules = COMBAT_RULES
+    combat_help_text = (
+        "Available combat commands:|/"
+        "|wAttack:|n Attack a target, attempting to deal damage.|/"
+        "|wPass:|n Pass your turn without further action.|/"
+        "|wDisengage:|n End your turn and attempt to end combat.|/"
+    )
+
     # Just like the default help command, but will give quick
     # tips on combat when used in a fight with no arguments.
 
     def func(self):
-        if is_in_combat(self.caller) and not self.args:  # In combat and entered 'help' alone
-            self.caller.msg(
-                "Available combat commands:|/"
-                + "|wAttack:|n Attack a target, attempting to deal damage.|/"
-                + "|wPass:|n Pass your turn without further action.|/"
-                + "|wDisengage:|n End your turn and attempt to end combat.|/"
-            )
+        # In combat and entered 'help' alone
+        if self.rules.is_in_combat(self.caller) and not self.args:
+            self.caller.msg(self.combat_help_text)
         else:
             super().func()  # Call the default help command
 
