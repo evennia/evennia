@@ -154,6 +154,30 @@ class RangedCombatRules(tb_basic.BasicCombatRules):
             attack_value -= 15
         return attack_value
 
+    def get_defense(self, attacker, defender, attack_type='melee'):
+        """
+        Returns a value for defense, which an attack roll must equal or exceed in order
+        for an attack to hit.
+
+        Args:
+            attacker (obj): Character doing the attacking
+            defender (obj): Character being attacked
+            attack_type (str): Type of attack ('melee' or 'ranged')
+
+        Returns:
+            defense_value (int): Defense value, compared against an attack roll
+                to determine whether an attack hits or misses.
+
+        Notes:
+            By default, returns 50, not taking any properties of the defender or
+            attacker into account.
+
+            As above, this can be expanded upon based on character stats and equipment.
+        """
+        # For this example, just return 50, for about a 50/50 chance of hit.
+        defense_value = 50
+        return defense_value
+
     def get_range(self, obj1, obj2):
         """
         Gets the combat range between two objects.
@@ -192,7 +216,7 @@ class RangedCombatRules(tb_basic.BasicCombatRules):
             target.db.combat_range[mover] = 2
             mover.db.combat_range[target] = 2
 
-    def _distance_dec(self, mover, target):
+    def distance_dec(self, mover, target):
         """
         Helper function that decreases distance in range field between mover and target.
 
@@ -233,12 +257,12 @@ class RangedCombatRules(tb_basic.BasicCombatRules):
             if thing != mover and thing != target:
                 # Move closer to each object closer to the target than you.
                 if self.get_range(mover, thing) > self.get_range(target, thing):
-                    self._distance_dec(mover, thing)
+                    self.distance_dec(mover, thing)
                 # Move further from each object that's further from you than from the target.
                 if self.get_range(mover, thing) < self.get_range(target, thing):
-                    self._distance_inc(mover, thing)
+                    self.distance_inc(mover, thing)
         # Lastly, move closer to your target.
-        self._distance_dec(mover, target)
+        self.distance_dec(mover, target)
 
     def withdraw(self, mover, target):
         """
@@ -262,15 +286,54 @@ class RangedCombatRules(tb_basic.BasicCombatRules):
                 # you than you are to the target.
                 if (self.get_range(mover, thing) >= self.get_range(target, thing)
                         and self.get_range(mover, thing) < self.get_range(mover, target)):
-                    self._distance_inc(mover, thing)
+                    self.distance_inc(mover, thing)
                 # Move away from anything your target is engaged with
                 if self.get_range(target, thing) == 0:
-                    self._distance_inc(mover, thing)
+                    self.distance_inc(mover, thing)
                 # Move away from anything you're engaged with.
                 if self.get_range(mover, thing) == 0:
-                    self._distance_inc(mover, thing)
+                    self.distance_inc(mover, thing)
         # Then, move away from your target.
-        self._distance_inc(mover, target)
+        self.distance_inc(mover, target)
+
+    def resolve_attack(self, attacker, defender, attack_value=None, defense_value=None,
+                       attack_type='melee'):
+        """
+        Resolves an attack and outputs the result.
+
+        Args:
+            attacker (obj): Character doing the attacking
+            defender (obj): Character being attacked
+            attack_type (str): Type of attack (melee or ranged)
+
+        Notes:
+            Even though the attack and defense values are calculated
+            extremely simply, they are separated out into their own functions
+            so that they are easier to expand upon.
+
+        """
+        # Get an attack roll from the attacker.
+        if not attack_value:
+            attack_value = self.get_attack(attacker, defender, attack_type)
+        # Get a defense value from the defender.
+        if not defense_value:
+            defense_value = self.get_defense(attacker, defender, attack_type)
+        # If the attack value is lower than the defense value, miss. Otherwise, hit.
+        if attack_value < defense_value:
+            attacker.location.msg_contents(
+                "%s's %s attack misses %s!" % (attacker, attack_type, defender)
+            )
+        else:
+            damage_value = self.get_damage(attacker, defender)  # Calculate damage value.
+            # Announce damage dealt and apply damage.
+            attacker.location.msg_contents(
+                "%s hits %s with a %s attack for %i damage!"
+                % (attacker, defender, attack_type, damage_value)
+            )
+            self.apply_damage(defender, damage_value)
+            # If defender HP is reduced to 0 or less, call at_defeat.
+            if defender.db.hp <= 0:
+                self.at_defeat(defender)
 
     def combat_status_message(self, fighter):
         """
@@ -320,7 +383,7 @@ SCRIPTS START HERE
 """
 
 
-class TBRangeTurnHandler(DefaultScript):
+class TBRangeTurnHandler(tb_basic.TBBasicTurnHandler):
     """
     This is the script that handles the progression of combat through turns.
     On creation (when a fight is started) it adds all combat-ready characters
@@ -400,7 +463,8 @@ class TBRangeTurnHandler(DefaultScript):
             characters to both move and attack in the same turn (or, alternately,
             move twice or attack twice).
         """
-        super().start_turn()
+        super().start_turn(character)
+        character.db.combat_actionsleft = ACTIONS_PER_TURN
 
     def join_fight(self, character):
         """
