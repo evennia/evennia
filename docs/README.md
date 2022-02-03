@@ -10,7 +10,7 @@ The live documentation is (will in the future be) available at `https://evennia.
 # Editing the docs
 
 The documentation source files are `*.md` (Markdown) files found in `evennia/docs/source/`.
-Markdown files are simple text files that can be edited with a normal text editor. They primaroly use
+Markdown files are simple text files that can be edited with a normal text editor. They primarily use
 the [Markdown][commonmark] syntax. See [the syntax section below](#Editing-syntax) for more help.
 
 Don't edit the files in `source/api/`. These are auto-generated and your changes
@@ -18,7 +18,7 @@ will be lost.
 
 ## Contributing
 
-Contributing to the docs is is like [contributing to the rest of Evennia][contributing]:
+Contributing to the docs is like [contributing to the rest of Evennia][contributing]:
 Check out the branch of Evennia you want to edit the documentation for. Create your
 own work-branch, make your changes to files in `evennia/docs/source/` and make a PR for it!
 
@@ -66,7 +66,7 @@ All is done in your terminal/console.
 The full documentation includes both the doc pages and the API documentation
 generated from the Evennia source. For this you must install Evennia and
 initialize a new game with a default database (you don't need to have it
-running)
+running).
 
 - Follow the normal [Evennia Getting-Started instructions][getting-started]
   to install Evennia. Use a virtualenv.
@@ -79,7 +79,7 @@ repo with
     ```
 
 - Then `cd` into it and create a new, empty database. You don't need to start the game
-  or do any further changes.
+  or make any further changes.
 
     ```
     evennia migrate
@@ -104,7 +104,7 @@ repo with
     pip install -r requirements.txt
     ```
 
-- Finally, build the full documentation, including the auto-docs:
+- Finally, build the full documentation including the auto-docs:
 
     ```
     make local
@@ -274,7 +274,7 @@ The Evennia documentation supports some special reference shortcuts in links:
 
     This will generate a link to https://github.com/evennia/evennia/issues/new/choose.
 
- > For some reason these particular shortcuts gives a warning during documentation compilation. This
+ > For some reason these particular shortcuts give a warning during documentation compilation. This warning
  > can be ignored.
 
 ## Verbatim text
@@ -304,7 +304,7 @@ Everything within these backticks will be verbatim.
 
 ## Code blocks
 
-A special case is code examples - we want them to get code-highlighting for readability. This is done by using
+Code examples are a special case - we want them to get code-highlighting for readability. This is done by using
 the triple-backticks and specify which language we use:
 
 ````
@@ -318,27 +318,18 @@ def a_python_func(x):
 
 ## ReST blocks
 
-Markdown is easy to read and use. But while it does most of what we need, there are some things it's
-not quite as expressive as it needs to be. For this we need to fall back to the [ReST][ReST] markup
-language which the documentation system uses under the hood. This is done by specifying `eval_rst` as
-the name of the `language` of a literal block:
+Markdown is easy to read and use, but it isn't as expressive as it needs to be for some things. For this we
+need to fall back to the [ReST][ReST] markup language which the documentation system uses under the hood. This is
+done by specifying `eval_rst` as the name of the `language` of a literal block:
 
 ````
-```eval_rst
+```{eval_rst}
 
     This will be evaluated as ReST.
 
 ```
 ````
-There is also a short-hand form for starting a [ReST directive][ReST-directives] without need for `eval_rst`:
 
-````
-```directive:: possible-option
-
-  Content that *must* be indented for it to be included in the directive.
-
-  New lines are ignored except if separated by an empty line.
-```
 ````
 
 See below for examples of this.
@@ -349,7 +340,7 @@ This will display a one-line note that will pop even more than a normal `> note`
 
 ````
 ```{important}
-  This is important because it is!
+This is important because it is!
 ```
 ````
 
@@ -359,8 +350,8 @@ A warning block is used to draw attention to particularly dangerous things, or f
 mess up.
 
 ````
-```warning
-  Be careful about this ...
+```{warning}
+Be careful about this ...
 ````
 
 #### Version changes and deprecations
@@ -392,13 +383,13 @@ for example to remind the reader of some concept relevant to the text.
 ````
 ```{sidebar} Things to remember
 
-  - There can be bullet lists
-  - in here.
+- There can be bullet lists
+- in here.
 
-  Headers with indented blocks:
-    like this
-  Will end up as full sub-headings:
-    in the sidebar.
+Headers with indented blocks:
+  like this
+Will end up as full sub-headings:
+  in the sidebar.
 ```
 ````
 
@@ -407,36 +398,24 @@ for example to remind the reader of some concept relevant to the text.
 
 #### Tables
 
-A table is specified using [ReST table syntax][ReST-tables]:
+Tables are done using Markdown syntax
 
-````
-```eval_rst
-
-=====  =====  =======
-A      B      A and B
-=====  =====  =======
-False  False  False
-True   False  False
-False  True   False
-True   True   True
-=====  =====  =======
 ```
-````
-
-or the more flexible but verbose
-
-````
-```eval_rst
-+------------------------+------------+----------+----------+
-| Header row, column 3   | Header 2   | Header 3 | Header 4 |
-| (header rows optional) |            |          |          |
-+========================+============+==========+==========+
-| body row 1, column 1   | column 2   | column 3 | column 4 |
-+------------------------+------------+----------+----------+
-| body row 2             | ...        | ...      |          |
-+------------------------+------------+----------+----------+
+| A | B | A and B |
+| --- | --- | --- |
+| False | False |  False |
+| True |  False | False |
+| False |  True |  False |
+| True  |  True |  True |
 ```
-````
+
+| A | B | A and B |
+| --- | --- | --- |
+| False | False |  False |
+| True |  False | False |
+| False |  True |  False |
+| True  |  True |  True |
+
 
 #### A more flexible code block
 
@@ -446,22 +425,23 @@ for more flexibility. It also provides a link to the code block, identified by i
 
 
 ````
-```code-block:: python
-    :linenos:
-    :emphasize-lines: 6-7,12
-    :caption: An example code block
-    :name: A full code block example
+```{code-block} python
+:linenos:
+:emphasize-lines: 6-7,12
+:caption: An example code block
+:name: A full code block example
 
-    from evennia import Command
-    class CmdEcho(Command):
-        """
-        Usage: echo <arg>
-        """
-        key = "echo"
-        def func(self):
-            self.caller.msg(self.args.strip())
+from evennia import Command
+class CmdEcho(Command):
+    """
+    Usage: echo <arg>
+    """
+    key = "echo"
+    def func(self):
+        self.caller.msg(self.args.strip())
 ```
 ````
+
 Here, `:linenos:` turns on line-numbers and `:emphasize-lines:` allows for emphasizing certain lines
 in a different color. The `:caption:` shows an instructive text and `:name:` is used to reference this
 block through the link that will appear (so it should be unique for a give document).
@@ -472,7 +452,7 @@ block through the link that will appear (so it should be unique for a give docum
 
 # Technical
 
-Evennia leverages [Sphinx][sphinx] with the [recommonmark][recommonmark] extension, which allows us to write our
+Evennia leverages [Sphinx][sphinx] with the [MyST][MyST] extension, which allows us to write our
 docs in light-weight Markdown (more specifically [CommonMark][commonmark], like on github) rather than ReST.
 The recommonmark extension however also allows us to use ReST selectively in the places were it is more
 expressive than the simpler (but much easier) Markdown.
@@ -483,7 +463,7 @@ to understand our friendly Google-style docstrings used in classes and functions
 
 
 [sphinx]: https://www.sphinx-doc.org/en/master/
-[recommonmark]: https://recommonmark.readthedocs.io/en/latest/index.html
+[MyST]: https://myst-parser.readthedocs.io/en/latest/syntax/reference.html
 [commonmark]: https://spec.commonmark.org/current/
 [commonmark-help]: https://commonmark.org/help/
 [sphinx-autodoc]: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc
