@@ -410,7 +410,9 @@ class TBBasicTurnHandler(DefaultScript):
         Called at script termination.
         """
         for fighter in self.db.fighters:
-            self.rules.combat_cleanup(fighter)  # Clean up the combat attributes for every fighter.
+            if fighter:
+                # Clean up the combat attributes for every fighter.
+                self.rules.combat_cleanup(fighter)
         self.obj.db.combat_turnhandler = None  # Remove reference to turn handler in location
 
     def at_repeat(self):
