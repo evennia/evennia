@@ -10,7 +10,7 @@ The live documentation is (will in the future be) available at `https://evennia.
 # Editing the docs
 
 The documentation source files are `*.md` (Markdown) files found in `evennia/docs/source/`.
-Markdown files are simple text files that can be edited with a normal text editor. They primaroly use
+Markdown files are simple text files that can be edited with a normal text editor. They primarily use
 the [Markdown][commonmark] syntax. See [the syntax section below](#Editing-syntax) for more help.
 
 Don't edit the files in `source/api/`. These are auto-generated and your changes
@@ -18,7 +18,7 @@ will be lost.
 
 ## Contributing
 
-Contributing to the docs is is like [contributing to the rest of Evennia][contributing]:
+Contributing to the docs is like [contributing to the rest of Evennia][contributing]:
 Check out the branch of Evennia you want to edit the documentation for. Create your
 own work-branch, make your changes to files in `evennia/docs/source/` and make a PR for it!
 
@@ -66,7 +66,7 @@ All is done in your terminal/console.
 The full documentation includes both the doc pages and the API documentation
 generated from the Evennia source. For this you must install Evennia and
 initialize a new game with a default database (you don't need to have it
-running)
+running).
 
 - Follow the normal [Evennia Getting-Started instructions][getting-started]
   to install Evennia. Use a virtualenv.
@@ -79,7 +79,7 @@ repo with
     ```
 
 - Then `cd` into it and create a new, empty database. You don't need to start the game
-  or do any further changes.
+  or make any further changes.
 
     ```
     evennia migrate
@@ -104,7 +104,7 @@ repo with
     pip install -r requirements.txt
     ```
 
-- Finally, build the full documentation, including the auto-docs:
+- Finally, build the full documentation including the auto-docs:
 
     ```
     make local
@@ -274,7 +274,7 @@ The Evennia documentation supports some special reference shortcuts in links:
 
     This will generate a link to https://github.com/evennia/evennia/issues/new/choose.
     
- > For some reason these particular shortcuts gives a warning during documentation compilation. This 
+ > For some reason these particular shortcuts give a warning during documentation compilation. This warning
  > can be ignored. 
 
 ## Verbatim text
@@ -304,7 +304,7 @@ Everything within these backticks will be verbatim.
 
 ## Code blocks
 
-A special case is code examples - we want them to get code-highlighting for readability. This is done by using 
+Code examples are a special case - we want them to get code-highlighting for readability. This is done by using 
 the triple-backticks and specify which language we use:
 
 ````
@@ -318,10 +318,9 @@ def a_python_func(x):
 
 ## ReST blocks
 
-Markdown is easy to read and use. But while it does most of what we need, there are some things it's 
-not quite as expressive as it needs to be. For this we need to fall back to the [ReST][ReST] markup 
-language which the documentation system uses under the hood. This is done by specifying `eval_rst` as 
-the name of the `language` of a literal block: 
+Markdown is easy to read and use, but it isn't as expressive as it needs to be for some things. For this we 
+need to fall back to the [ReST][ReST] markup language which the documentation system uses under the hood. This is 
+done by specifying `eval_rst` as the name of the `language` of a literal block: 
 
 ````
 ```eval_rst
