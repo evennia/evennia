@@ -108,10 +108,10 @@ class TestTurnBattleBasicFunc(BaseEvenniaTest):
     def tearDown(self):
         super().tearDown()
         self.turnhandler.stop()
-        self.testroom.delete()
         self.attacker.delete()
         self.defender.delete()
         self.joiner.delete()
+        self.testroom.delete()
 
     # Test combat functions
     def test_tbbasicfunc(self):
@@ -202,10 +202,10 @@ class TestTurnBattleEquipFunc(BaseEvenniaTest):
     def tearDown(self):
         super().tearDown()
         self.turnhandler.stop()
-        self.testroom.delete()
         self.attacker.delete()
         self.defender.delete()
         self.joiner.delete()
+        self.testroom.delete()
 
     # Test the combat functions in tb_equip too. They work mostly the same.
     def test_tbequipfunc(self):
@@ -294,10 +294,10 @@ class TestTurnBattleRangeFunc(BaseEvenniaTest):
     def tearDown(self):
         super().tearDown()
         self.turnhandler.stop()
-        self.testroom.delete()
         self.attacker.delete()
         self.defender.delete()
         self.joiner.delete()
+        self.testroom.delete()
 
     # Test combat functions in tb_range too.
     def test_tbrangefunc(self):
@@ -410,11 +410,11 @@ class TestTurnBattleItemsFunc(BaseEvenniaTest):
     def tearDown(self):
         super().tearDown()
         self.turnhandler.stop()
-        self.testroom.delete()
         self.attacker.delete()
         self.defender.delete()
         self.joiner.delete()
         self.user.delete()
+        self.testroom.delete()
 
     # Test functions in tb_items.
     def test_tbitemsfunc(self):
@@ -530,10 +530,10 @@ class TestTurnBattleMagicFunc(BaseEvenniaTest):
     def tearDown(self):
         super().tearDown()
         self.turnhandler.stop()
-        self.testroom.delete()
         self.attacker.delete()
         self.defender.delete()
         self.joiner.delete()
+        self.testroom.delete()
 
     # Test combat functions in tb_magic.
     def test_tbbasicfunc(self):
