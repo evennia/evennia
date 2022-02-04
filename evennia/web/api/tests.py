@@ -5,15 +5,14 @@ Tests for the REST API.
 from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.web.api import serializers
 from rest_framework.test import APIClient
-from django.urls import reverse
+from django.urls import reverse, path, include
 from django.test import override_settings
 from collections import namedtuple
-from django.conf.urls import url, include
 from django.core.exceptions import ObjectDoesNotExist
 
 urlpatterns = [
-    url(r"^", include("evennia.web.website.urls")),
-    url(r"^api/", include("evennia.web.api.urls", namespace="api")),
+    path(r"^", include("evennia.web.website.urls")),
+    path(r"^api/", include("evennia.web.api.urls", namespace="api")),
 ]
 
 

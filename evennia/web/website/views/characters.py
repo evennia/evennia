@@ -199,8 +199,8 @@ class CharacterDeleteView(CharacterMixin, ObjectDeleteView):
     ObjectDeleteView) can delete a character they own.
 
     """
-
-    pass
+    # using the character form fails there
+    form_class = forms.EvenniaForm
 
 
 class CharacterCreateView(CharacterMixin, ObjectCreateView):

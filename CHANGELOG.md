@@ -2,7 +2,7 @@
 
 ## Evennia 1.0 (2019-) (develop branch, WIP)
 
-Up requirements to Django 3.2+, Twisted 21+
+Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 
 - New `drop:holds()` lock default to limit dropping nonsensical things. Access check
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
