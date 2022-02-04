@@ -91,10 +91,10 @@ PSTATUS = chr(18)  # ping server or portal status
 SRESET = chr(19)  # shutdown server in reset mode
 
 # requirements
-PYTHON_MIN = "3.7"
+PYTHON_MIN = "3.9"
 TWISTED_MIN = "20.3.0"
-DJANGO_MIN = "3.2.0"
-DJANGO_LT = "4.0"
+DJANGO_MIN = "4.0.2"
+DJANGO_LT = "4.1"
 
 try:
     sys.path[1] = EVENNIA_ROOT
@@ -375,7 +375,7 @@ ERROR_NOTWISTED = """
 
 ERROR_DJANGO_MIN = """
     ERROR: Django {dversion} found. Evennia requires at least version {django_min} (but
-    no higher than {django_lt}).
+    below version {django_lt}).
 
     If you are using a virtualenv, use the command `pip install --upgrade -e evennia` where
     `evennia` is the folder to where you cloned the Evennia library. If not

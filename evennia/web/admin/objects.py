@@ -4,10 +4,9 @@
 #
 from django.conf import settings
 from django import forms
-from django.urls import reverse
+from django.urls import reverse, path
 from django.http import HttpResponseRedirect
 from django.conf import settings
-from django.conf.urls import url
 from django.contrib import admin, messages
 from django.contrib.admin.utils import flatten_fieldsets
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
@@ -227,7 +226,7 @@ class ObjectAdmin(admin.ModelAdmin):
         return str(dbserialize.pack_dbobj(obj))
 
     serialized_string.help_text = (
-        "Copy & paste this string into an Attribute's `value` field to store it there."
+        "Copy & paste this string into an Attribute's `value` field to store this object there."
     )
 
     def get_fieldsets(self, request, obj=None):
@@ -266,8 +265,8 @@ class ObjectAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
-            url(
-                r"^account-object-link/(?P<object_id>.+)/$",
+            path(
+                "account-object-link/<int:pk>",
                 self.admin_site.admin_view(self.link_object_to_account),
                 name="object-account-link"
             )

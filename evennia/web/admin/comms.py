@@ -129,7 +129,8 @@ class MsgAdmin(admin.ModelAdmin):
         return str(dbserialize.pack_dbobj(obj))
 
     serialized_string.help_text = (
-        "Copy & paste this string into an Attribute's `value` field to store it there."
+        "Copy & paste this string into an Attribute's `value` field to store "
+        "this message-object there."
     )
 
     def get_form(self, request, obj=None, **kwargs):
@@ -246,7 +247,7 @@ class ChannelAdmin(admin.ModelAdmin):
         return str(dbserialize.pack_dbobj(obj))
 
     serialized_string.help_text = (
-        "Copy & paste this string into an Attribute's `value` field to store it there."
+        "Copy & paste this string into an Attribute's `value` field to store this channel there."
     )
 
     def get_form(self, request, obj=None, **kwargs):

@@ -162,27 +162,6 @@ class ObjectDeleteView(LoginRequiredMixin, ObjectDetailView, EvenniaDeleteView):
     # -- Evennia constructs --
     access_type = "delete"
 
-    def delete(self, request, *args, **kwargs):
-        """
-        Calls the delete() method on the fetched object and then
-        redirects to the success URL.
-
-        We extend this so we can capture the name for the sake of confirmation.
-
-        """
-        # Get the object in question. ObjectDetailView.get_object() will also
-        # check to make sure the current user (authenticated or not) has
-        # permission to delete it!
-        obj = str(self.get_object())
-
-        # Perform the actual deletion (the parent class handles this, which will
-        # in turn call the delete() method on the object)
-        response = super().delete(request, *args, **kwargs)
-
-        # Notify the user of the deletion
-        messages.success(request, "Successfully deleted '%s'." % obj)
-        return response
-
 
 class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
     """

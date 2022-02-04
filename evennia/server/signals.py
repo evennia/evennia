@@ -26,45 +26,55 @@ from django.dispatch import Signal
 # Account.create() after the Account is created. Note that this will *not* fire
 # if calling create.create_account alone, since going through the Account.create()
 # is the most expected route.
-SIGNAL_ACCOUNT_POST_CREATE = Signal(providing_args=["ip"])
+# sends with kwarg 'ip'
+SIGNAL_ACCOUNT_POST_CREATE = Signal()
 
 # The Sender is the renamed Account. This is triggered by the username setter in AccountDB.
-SIGNAL_ACCOUNT_POST_RENAME = Signal(providing_args=["old_name", "new_name"])
+# sends with kwargs 'old_name' and 'new_name'
+SIGNAL_ACCOUNT_POST_RENAME = Signal()
 
 # The Sender is the connecting Account. This is triggered when an Account connects cold;
 # that is, it had no other sessions connected.
-SIGNAL_ACCOUNT_POST_FIRST_LOGIN = Signal(providing_args=["session"])
+# sends with kwarg 'session'
+SIGNAL_ACCOUNT_POST_FIRST_LOGIN = Signal()
 
 # The sender is the connecting Account. This is triggered whenever a session authenticates
 # to an Account regardless of existing sessions. It then firest after FIRST_LOGIN signal
-SIGNAL_ACCOUNT_POST_LOGIN = Signal(providing_args=["session"])
+# sends with kwarg 'session'
+SIGNAL_ACCOUNT_POST_LOGIN = Signal()
 
 # The Sender is the Account attempting to authenticate. This is triggered whenever a
 # session tries to login to an Account but fails.
-SIGNAL_ACCOUNT_POST_LOGIN_FAIL = Signal(providing_args=["session"])
+# sends with kwarg 'session'
+SIGNAL_ACCOUNT_POST_LOGIN_FAIL = Signal()
 
 # The sender is the disconnecting Account. This is triggered whenever a session disconnects
 # from the account, regardless of how many it started with or remain.
-SIGNAL_ACCOUNT_POST_LOGOUT = Signal(providing_args=["session"])
+# sends with kwarg 'session'
+SIGNAL_ACCOUNT_POST_LOGOUT = Signal()
 
 # The sender is the Account. This is triggered when an Account's final session disconnects.
-SIGNAL_ACCOUNT_POST_LAST_LOGOUT = Signal(providing_args=["session"])
+# sends with kwarg 'session'
+SIGNAL_ACCOUNT_POST_LAST_LOGOUT = Signal()
 
 # The sender is an Object. This is triggered when Object has been created, after all hooks.
 SIGNAL_OBJECT_POST_CREATE = Signal()
 
 # The sender is the Object being puppeted. This is triggered after all puppeting hooks have
 # been called. The Object has already been puppeted by this point.
-SIGNAL_OBJECT_POST_PUPPET = Signal(providing_args=["session", "account"])
+# sends with kwargs 'session', 'account'
+SIGNAL_OBJECT_POST_PUPPET = Signal()
 
 # The sender is the Object being released. This is triggered after all hooks are called.
 # The Object is no longer puppeted by this point.
-SIGNAL_OBJECT_POST_UNPUPPET = Signal(providing_args=["session", "account"])
+# sends with kwargs 'session', 'account'
+SIGNAL_OBJECT_POST_UNPUPPET = Signal()
 
 # The sender is the Typed Object being renamed. This isn't necessarily an Object;
 # it could be a script. It fires whenever the value of the Typed object's 'key'
 # changes. Will need to use isinstance() or other filtering on things that use this.
-SIGNAL_TYPED_OBJECT_POST_RENAME = Signal(providing_args=["old_key", "new_key"])
+# sends with kwargs 'old_key', 'new_key'
+SIGNAL_TYPED_OBJECT_POST_RENAME = Signal()
 
 # The sender is the created Script. This is called after the Script was first created,
 # after all hooks.

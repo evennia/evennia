@@ -278,7 +278,7 @@ class AccountAdmin(BaseUserAdmin):
 
         return str(dbserialize.pack_dbobj(obj))
     serialized_string.help_text = (
-        "Copy & paste this string into an Attribute's `value` field to store it there."
+        "Copy & paste this string into an Attribute's `value` field to store this account there."
     )
 
     def puppeted_objects(self, obj):
