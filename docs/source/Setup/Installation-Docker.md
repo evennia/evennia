@@ -1,9 +1,7 @@
 # Running Evennia in Docker
 
-Evennia has an [official docker image](https://hub.docker.com/r/evennia/evennia/) which makes
-running an Evennia-based game in a Docker container easy.
-
-## Install Evennia through docker
+Evennia releases [docker images](https://hub.docker.com/r/evennia/evennia/) which makes
+running an Evennia-based game in a Docker container easy. 
 
 First, install the `docker` program so you can run the Evennia container. You can get it freely from
 [docker.com](https://www.docker.com/). Linux users can likely also get it through their normal
@@ -13,16 +11,17 @@ To fetch the latest evennia docker image, run:
 
     docker pull evennia/evennia
 
-This is a good command to know, it is also how you update to the latest version when we make updates
-in the future. This tracks the `master` branch of Evennia.
+This will get the latest stable image.
 
-> Note: If you want to experiment with the (unstable) `develop` branch, use `docker pull
-evennia/evennia:develop`.
+    docker pull evennia/evennia:develop 
 
-Next `cd` to a place where your game dir is, or where you want to create it. Then run: 
+gets the image based off Evennia's unstable `develop` branch.
 
-    docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4002:4002 --rm -v $PWD:/usr/src/game --user
-$UID:$GID evennia/evennia
+Next, `cd` to a place where your game dir is, or where you want to create it. Then run: 
+
+```bash
+docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4002:4002 --rm -v $PWD:/usr/src/game --user $UID:$GID evennia/evennia
+```
 
 Having run this (see next section for a description of what's what), you will be at a prompt inside
 the docker container:
@@ -34,8 +33,8 @@ evennia|docker /usr/src/game $
 This is a normal shell prompt. We are in the `/usr/src/game` location inside the docker container.
 If you had anything in the folder you started from, you should see it here (with `ls`) since we
 mounted the current directory to `usr/src/game` (with `-v` above). You have the `evennia` command
-available and can now proceed to create a new game as per the [Setup Quickstart](./Installation.md)
-instructions (you can skip the virtualenv and install 'globally' in the container though).
+available and can now proceed to create a new game as per the normal [game setup](./Installation.md)
+instructions (no virtualenv needed).
 
 You can run Evennia from inside this container if you want to, it's like you are root in a little
 isolated Linux environment. To exit the container and all processes in there, press `Ctrl-D`. If you
@@ -46,14 +45,7 @@ by `root`. If you want to edit the files outside of the container you should cha
 On Linux/Mac you do this with `sudo chown myname:myname -R mygame`, where you replace `myname` with
 your username and `mygame` with whatever your game folder is named.
 
-### Description of the `docker run` command
-
-```bash
-    docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4002:4002 --rm -v $PWD:/usr/src/game --user
-$UID:$GID evennia/evennia
-```
-
-This is what it does: 
+Below is an explanation of the `docker run` command we used:
 
 - `docker run ... evennia/evennia` tells us that we want to run a new container based on the
 `evennia/evennia` docker image. Everything in between are options for this. The `evennia/evennia` is
@@ -100,14 +92,14 @@ container comes up. If you already have a game folder with a database set up you
 docker container and pass commands directly to it. The command you pass will be the main process to
 run in the container. From your game dir, run for example this command:
 
-    docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4002:4002 --rm -v $PWD:/usr/src/game
-evennia/evennia evennia start -l
+    docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4002:4002 --rm -v $PWD:/usr/src/game evennia/evennia evennia start -l
 
 This will start Evennia as the foreground process, echoing the log to the terminal. Closing the
 terminal will kill the server. Note that you *must* use a foreground command like `evennia start -l`
 or `evennia ipstart` to start the server - otherwise the foreground process will finish immediately
 and the container go down.
-### Create your own game image 
+
+## Create your own game image 
 
 These steps assume that you have created or otherwise obtained a game directory already. First, `cd`
 to your game dir and create a new empty text file named `Dockerfile`. Save the following two lines
