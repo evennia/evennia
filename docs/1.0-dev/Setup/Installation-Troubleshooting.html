@@ -90,6 +90,28 @@ version is usually untested with Evennia.</p></li>
 <p>The evennia code itself is found inside <code class="docutils literal notranslate"><span class="pre">evennia/evennia/</span></code> (so two levels down). Your settings file
 is <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> and the <em>parent</em> setting file is <code class="docutils literal notranslate"><span class="pre">evennia/evennia/settings_default.py</span></code>.</p>
 </section>
+<section id="virtualenv-setup-fails">
+<h2>Virtualenv setup fails<a class="headerlink" href="#virtualenv-setup-fails" title="Permalink to this headline">¶</a></h2>
+<p>When doing the <code class="docutils literal notranslate"><span class="pre">python3.10</span> <span class="pre">-m</span> <span class="pre">venv</span> <span class="pre">evenv</span></code> step, some users report getting an error; something like:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Error: Command &#39;[&#39;evenv&#39;, &#39;-Im&#39;, &#39;ensurepip&#39;, &#39;--upgrade&#39;, &#39;--default-pip&#39;]&#39; 
+returned non-zero exit status 1
+</pre></div>
+</div>
+<p>You can solve this by installing the <code class="docutils literal notranslate"><span class="pre">python3.10-venv</span></code> package or equivalent for your OS. Alternatively
+you can bootstrap it in this way:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>python3.10 -m --without-pip evenv
+</pre></div>
+</div>
+<p>This should set up the virtualenv without <code class="docutils literal notranslate"><span class="pre">pip</span></code>. Activate the new virtualenv and then install pip from within it:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>python -m ensurepip --upgrade
+</pre></div>
+</div>
+<p>If that fails, a worse alternative to try is</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>curl https://bootstrap.pypa.io/get-pip.py | python3.10    (linux/unix/WSL only)
+</pre></div>
+</div>
+<p>Either way, you should now be able to continue with the installation.</p>
+</section>
 <section id="localhost-not-found">
 <h2>Localhost not found<a class="headerlink" href="#localhost-not-found" title="Permalink to this headline">¶</a></h2>
 <p>If <code class="docutils literal notranslate"><span class="pre">localhost</span></code> doesn’t work when trying to connect to your local game, try <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code>, which is the same thing.</p>
@@ -188,6 +210,7 @@ virus software interfering. Try disabling or changing your anti-virus software s
 <li><a class="reference internal" href="#">Installation Troubleshooting</a><ul>
 <li><a class="reference internal" href="#check-your-requirements">Check your Requirements</a></li>
 <li><a class="reference internal" href="#confusion-of-location-git-installation">Confusion of location (GIT installation)</a></li>
+<li><a class="reference internal" href="#virtualenv-setup-fails">Virtualenv setup fails</a></li>
 <li><a class="reference internal" href="#localhost-not-found">Localhost not found</a></li>
 <li><a class="reference internal" href="#linux-troubleshooting">Linux Troubleshooting</a></li>
 <li><a class="reference internal" href="#mac-troubleshooting">Mac Troubleshooting</a></li>

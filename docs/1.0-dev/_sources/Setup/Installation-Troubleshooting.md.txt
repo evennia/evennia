@@ -45,6 +45,28 @@ muddev/
 The evennia code itself is found inside `evennia/evennia/` (so two levels down). Your settings file 
 is `mygame/server/conf/settings.py` and the _parent_ setting file is `evennia/evennia/settings_default.py`.
 
+## Virtualenv setup fails 
+
+When doing the `python3.10 -m venv evenv` step, some users report getting an error; something like:
+
+    Error: Command '['evenv', '-Im', 'ensurepip', '--upgrade', '--default-pip']' 
+    returned non-zero exit status 1
+
+You can solve this by installing the `python3.10-venv` package or equivalent for your OS. Alternatively 
+you can bootstrap it in this way: 
+
+    python3.10 -m --without-pip evenv
+
+This should set up the virtualenv without `pip`. Activate the new virtualenv and then install pip from within it:
+
+    python -m ensurepip --upgrade
+
+If that fails, a worse alternative to try is 
+
+    curl https://bootstrap.pypa.io/get-pip.py | python3.10    (linux/unix/WSL only)
+
+Either way, you should now be able to continue with the installation.
+
 ## Localhost not found 
 
 If `localhost` doesn't work when trying to connect to your local game, try `127.0.0.1`, which is the same thing.
