@@ -139,7 +139,7 @@ Try to avoid doing so.</p>
 distributions (notably Ubuntu 16.04 LTS). Zope is a dependency of Twisted. The error manifests in
 the server not starting with an error that <code class="docutils literal notranslate"><span class="pre">zope.interface</span></code> is not found even though <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">list</span></code>
 shows it’s installed. The reason is a missing empty <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file at the root of the zope
-package. If the virtualenv is named “evenv” as suggested in the <a class="reference internal" href="../Setup/Setup-Quickstart.html"><span class="doc std std-doc">Setup Quickstart</span></a>
+package. If the virtualenv is named “evenv” as suggested in the <a class="reference internal" href="../Setup/Installation.html"><span class="doc std std-doc">Setup Quickstart</span></a>
 instructions, use the following command to fix it:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>touch evenv/local/lib/python2.7/site-packages/zope/__init__.py
 </pre></div>
@@ -204,7 +204,6 @@ instructions, use the following command to fix it:</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="Quirks.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

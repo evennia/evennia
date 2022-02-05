@@ -204,28 +204,7 @@
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/object_confirm_delete.html&quot;</span>
 
     <span class="c1"># -- Evennia constructs --</span>
-    <span class="n">access_type</span> <span class="o">=</span> <span class="s2">&quot;delete&quot;</span>
-
-<div class="viewcode-block" id="ObjectDeleteView.delete"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectDeleteView.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calls the delete() method on the fetched object and then</span>
-<span class="sd">        redirects to the success URL.</span>
-
-<span class="sd">        We extend this so we can capture the name for the sake of confirmation.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Get the object in question. ObjectDetailView.get_object() will also</span>
-        <span class="c1"># check to make sure the current user (authenticated or not) has</span>
-        <span class="c1"># permission to delete it!</span>
-        <span class="n">obj</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">())</span>
-
-        <span class="c1"># Perform the actual deletion (the parent class handles this, which will</span>
-        <span class="c1"># in turn call the delete() method on the object)</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-        <span class="c1"># Notify the user of the deletion</span>
-        <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Successfully deleted &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">response</span></div></div>
+    <span class="n">access_type</span> <span class="o">=</span> <span class="s2">&quot;delete&quot;</span></div>
 
 
 <div class="viewcode-block" id="ObjectUpdateView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectUpdateView">[docs]</a><span class="k">class</span> <span class="nc">ObjectUpdateView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">,</span> <span class="n">EvenniaUpdateView</span><span class="p">):</span>
@@ -344,7 +323,6 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="objects.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

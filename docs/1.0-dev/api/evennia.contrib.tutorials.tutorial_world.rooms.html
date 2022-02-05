@@ -362,6 +362,45 @@ at the given detailkey.</p></li>
 </dd></dl>
 
 <dl class="py class">
+<dt id="evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.tutorial_world.rooms.</code><code class="sig-name descname">TutorialStartExit</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#TutorialStartExit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit" title="evennia.objects.objects.DefaultExit"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit</span></code></a></p>
+<p>This is like a normal exit except it makes the <strong>intro</strong> command available
+on itself. We put it on the exit in order to provide this command to the
+Limbo room without modifying Limbo itself - deleting the tutorial exit
+will also  clean up the intro command.</p>
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit.at_object_creation">
+<code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#TutorialStartExit.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit.at_object_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called once, when this object is first created. This is the
+normal hook to overload for most object types.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.DoesNotExist" title="evennia.objects.objects.DefaultExit.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.MultipleObjectsReturned" title="evennia.objects.objects.DefaultExit.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit'</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'TutorialStartExit'</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.WeatherRoom">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.tutorial_world.rooms.</code><code class="sig-name descname">WeatherRoom</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#WeatherRoom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.WeatherRoom" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoom" title="evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoom"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoom</span></code></a></p>
@@ -716,7 +755,7 @@ if they fall off the bridge.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['?', 'h']</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['h', '?']</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -742,7 +781,7 @@ if they fall off the bridge.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '? h', 'category': 'tutorial world', 'key': 'help', 'no_prefix': ' ? h', 'tags': '', 'text': '\n    Overwritten help command while on the bridge.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'h ?', 'category': 'tutorial world', 'key': 'help', 'no_prefix': ' h ?', 'tags': '', 'text': '\n    Overwritten help command while on the bridge.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -868,7 +907,7 @@ to find something.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'search', 'fiddle', 'feel', 'feel around']</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['feel around', 'fiddle', 'search', 'feel', 'l']</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -896,7 +935,7 @@ random chance of eventually finding a light source.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l search fiddle feel feel around', 'category': 'tutorialworld', 'key': 'look', 'no_prefix': ' l search fiddle feel feel around', 'tags': '', 'text': '\n    Look around in darkness\n\n    Usage:\n      look\n\n    Look around in the darkness, trying\n    to find something.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'feel around fiddle search feel l', 'category': 'tutorialworld', 'key': 'look', 'no_prefix': ' feel around fiddle search feel l', 'tags': '', 'text': '\n    Look around in darkness\n\n    Usage:\n      look\n\n    Look around in the darkness, trying\n    to find something.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1257,7 +1296,6 @@ overriding the call (unused by default).</p></li>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.tutorials.tutorial_world.rooms.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

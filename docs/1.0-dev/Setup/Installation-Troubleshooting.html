@@ -1,0 +1,244 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Installation Troubleshooting &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Installation Troubleshooting</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="installation-troubleshooting">
+<h1>Installation Troubleshooting<a class="headerlink" href="#installation-troubleshooting" title="Permalink to this headline">¶</a></h1>
+<p>If you have an issue not covered here, <a class="reference external" href="https://github.com/evennia/evennia/issues/new/choose">please report it</a>
+so it can be fixed or a workaround found!</p>
+<p>The server logs are in <code class="docutils literal notranslate"><span class="pre">mygame/server/logs/</span></code>. To easily view server logs in the terminal,
+you can run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">-l</span></code>, or (in the future) start the server with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span> <span class="pre">-l</span></code>.</p>
+<section id="check-your-requirements">
+<h2>Check your Requirements<a class="headerlink" href="#check-your-requirements" title="Permalink to this headline">¶</a></h2>
+<p>Any system that supports Python3.9+ should work. We’ll describe how to install
+everything in the following sections.</p>
+<ul class="simple">
+<li><p>Linux/Unix</p></li>
+<li><p>Windows (Win7, Win8, Win10, Win11)</p></li>
+<li><p>Mac OSX (&gt;10.5 recommended)</p></li>
+<li><p><a class="reference external" href="https://www.python.org">Python</a> (v3.9 and 3.10 are tested)</p>
+<ul>
+<li><p><a class="reference external" href="https://pypi.python.org/pypi/virtualenv">virtualenv</a> for making isolated
+Python environments. Installed with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">virtualenv</span></code>.</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://twistedmatrix.com">Twisted</a> (v22.0+)</p>
+<ul>
+<li><p><a class="reference external" href="https://www.zope.org/Products/ZopeInterface">ZopeInterface</a> (v3.0+)  - usually included in
+Twisted packages</p></li>
+<li><p>Linux/Mac users may need the <code class="docutils literal notranslate"><span class="pre">gcc</span></code> and <code class="docutils literal notranslate"><span class="pre">python-dev</span></code> packages or equivalent.</p></li>
+<li><p>Windows users need <a class="reference external" href="https://aka.ms/vs/16/release/vs_buildtools.exe">MS Visual C++</a> and <em>maybe</em>
+<a class="reference external" href="https://pypi.python.org/pypi/pypiwin32">pypiwin32</a>.</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://www.djangoproject.com">Django</a> (v4.0.1+), be warned that latest dev
+version is usually untested with Evennia.</p></li>
+<li><p><a class="reference external" href="https://git-scm.com/">GIT</a> - version control software used if you want to install the sources
+(but also useful to track your own code) -  Mac users can use the
+<a class="reference external" href="https://code.google.com/p/git-osx-installer/">git-osx-installer</a> or the
+<a class="reference external" href="https://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac">MacPorts version</a>.</p></li>
+</ul>
+</section>
+<section id="confusion-of-location-git-installation">
+<h2>Confusion of location (GIT installation)<a class="headerlink" href="#confusion-of-location-git-installation" title="Permalink to this headline">¶</a></h2>
+<p>It’s common to be confused and install Evennia in the wrong location. After following the
+<a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">git install</span></a> instructions, the folder structure should look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">muddev</span><span class="o">/</span>
+    <span class="n">evenv</span><span class="o">/</span>
+    <span class="n">evennia</span><span class="o">/</span>
+    <span class="n">mygame</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>The evennia code itself is found inside <code class="docutils literal notranslate"><span class="pre">evennia/evennia/</span></code> (so two levels down). Your settings file
+is <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> and the <em>parent</em> setting file is <code class="docutils literal notranslate"><span class="pre">evennia/evennia/settings_default.py</span></code>.</p>
+</section>
+<section id="localhost-not-found">
+<h2>Localhost not found<a class="headerlink" href="#localhost-not-found" title="Permalink to this headline">¶</a></h2>
+<p>If <code class="docutils literal notranslate"><span class="pre">localhost</span></code> doesn’t work when trying to connect to your local game, try <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code>, which is the same thing.</p>
+</section>
+<section id="linux-troubleshooting">
+<h2>Linux Troubleshooting<a class="headerlink" href="#linux-troubleshooting" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>If you get an error when installing Evennia (especially with lines mentioning
+failing to include <code class="docutils literal notranslate"><span class="pre">Python.h</span></code>) then try <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">python3-setuptools</span> <span class="pre">python3-dev</span></code>.
+Once installed, run <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">evennia</span></code> again.</p></li>
+<li><p>When doing a <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">git install</span></a>, some not-updated Linux distributions may give errors
+about a too-old <code class="docutils literal notranslate"><span class="pre">setuptools</span></code> or missing <code class="docutils literal notranslate"><span class="pre">functools</span></code>. If so, update your environment
+with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">pip</span> <span class="pre">wheel</span> <span class="pre">setuptools</span></code>. Then try <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">evennia</span></code> again.</p></li>
+<li><p>One user reported a rare issue on Ubuntu 16 is an install error on installing Twisted; <code class="docutils literal notranslate"><span class="pre">Command</span> <span class="pre">&quot;python</span> <span class="pre">setup.py</span> <span class="pre">egg_info&quot;</span> <span class="pre">failed</span> <span class="pre">with</span> <span class="pre">error</span> <span class="pre">code</span> <span class="pre">1</span> <span class="pre">in</span> <span class="pre">/tmp/pip-build-vnIFTg/twisted/</span></code> with errors
+like <code class="docutils literal notranslate"><span class="pre">distutils.errors.DistutilsError:</span> <span class="pre">Could</span> <span class="pre">not</span> <span class="pre">find</span> <span class="pre">suitable</span> <span class="pre">distribution</span> <span class="pre">for</span> <span class="pre">Requirement.parse('incremental&gt;=16.10.1')</span></code>. This appears possible to solve by simply updating Ubuntu
+with <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">update</span> <span class="pre">&amp;&amp;</span> <span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">dist-upgrade</span></code>.</p></li>
+<li><p>Users of Fedora (notably Fedora 24) has reported a <code class="docutils literal notranslate"><span class="pre">gcc</span></code> error saying the directory
+<code class="docutils literal notranslate"><span class="pre">/usr/lib/rpm/redhat/redhat-hardened-cc1</span></code> is missing, despite <code class="docutils literal notranslate"><span class="pre">gcc</span></code> itself being installed. <a class="reference external" href="https://gist.github.com/yograterol/99c8e123afecc828cb8c">The
+confirmed work-around</a> seems to be to
+install the <code class="docutils literal notranslate"><span class="pre">redhat-rpm-config</span></code> package with e.g. <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">dnf</span> <span class="pre">install</span> <span class="pre">redhat-rpm-config</span></code>.</p></li>
+<li><p>Some users trying to set up a virtualenv on an NTFS filesystem find that it fails due to issues
+with symlinks not being supported. Answer is to not use NTFS (seriously, why would you do that to
+yourself?)</p></li>
+</ul>
+</section>
+<section id="mac-troubleshooting">
+<h2>Mac Troubleshooting<a class="headerlink" href="#mac-troubleshooting" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Mac users have reported a critical <code class="docutils literal notranslate"><span class="pre">MemoryError</span></code> when trying to start Evennia on Mac with a Python
+version below <code class="docutils literal notranslate"><span class="pre">2.7.12</span></code>. If you get this error, update to the latest XCode and Python2 version.</p></li>
+<li><p>Some Mac users have reported not being able to connect to <code class="docutils literal notranslate"><span class="pre">localhost</span></code> (i.e. your own computer). If
+so, try to connect to <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> instead, which is the same thing. Use port 4000 from mud clients
+and port 4001 from the web browser as usual.</p></li>
+</ul>
+</section>
+<section id="windows-troubleshooting">
+<h2>Windows Troubleshooting<a class="headerlink" href="#windows-troubleshooting" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Install Python <a class="reference external" href="https://www.python.org/downloads/windows/">from the Python homepage</a>. You will
+need to be a Windows Administrator to install packages.</p></li>
+<li><p>When installing Python, make sure to check-mark <em>all</em> install options, especially the one about making Python
+available on the path (you may have to scroll to see it). This allows you to
+just write <code class="docutils literal notranslate"><span class="pre">python</span></code> in any console without first finding where the <code class="docutils literal notranslate"><span class="pre">python</span></code>
+program actually sits on your hard drive.</p></li>
+<li><p>If you get a <code class="docutils literal notranslate"><span class="pre">command</span> <span class="pre">not</span> <span class="pre">found</span></code> when trying to run the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> program after installation, try closing the
+Console and starting it again (remember to re-activate the virtualenv!). Sometimes Windows is not updating
+its environment properly.</p></li>
+<li><p>If you installed Python but the <code class="docutils literal notranslate"><span class="pre">python</span></code> command is not available (even in a new console), then
+you might have missed installing Python on the path. In the Windows Python installer you get a list
+of options for what to install. Most or all options are pre-checked except this one, and you may
+even have to scroll down to see it. Reinstall Python and make sure it’s checked.</p></li>
+<li><p>If your MUD client cannot connect to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code>, try the equivalent <code class="docutils literal notranslate"><span class="pre">127.0.0.1:4000</span></code>
+instead. Some MUD clients on Windows does not appear to understand the alias <code class="docutils literal notranslate"><span class="pre">localhost</span></code>.</p></li>
+<li><p>Some Windows users get an error installing the Twisted ‘wheel’. A wheel is a pre-compiled binary
+package for Python. A common reason for this error is that you are using a 32-bit version of Python,
+but Twisted has not yet uploaded the latest 32-bit wheel. Easiest way to fix this is to install a
+slightly older Twisted version. So if, say, version <code class="docutils literal notranslate"><span class="pre">22.1</span></code> failed, install <code class="docutils literal notranslate"><span class="pre">22.0</span></code> manually with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">twisted==22.0</span></code>. Alternatively you could check that you are using the 64-bit version of Python
+and uninstall any 32bit one. If so, you must then <code class="docutils literal notranslate"><span class="pre">deactivate</span></code> the virtualenv, delete the <code class="docutils literal notranslate"><span class="pre">evenv</span></code> folder
+and recreate it anew with your new Python.</p></li>
+<li><p>If your server won’t start, with no error messages (and no log files at all when starting from
+scratch), try to start with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">ipstart</span></code> instead. If you then see an error about <code class="docutils literal notranslate"><span class="pre">system</span> <span class="pre">cannot</span> <span class="pre">find</span> <span class="pre">the</span> <span class="pre">path</span> <span class="pre">specified</span></code>, it may be that the file <code class="docutils literal notranslate"><span class="pre">evennia\evennia\server\twistd.bat</span></code> has the wrong
+path to the <code class="docutils literal notranslate"><span class="pre">twistd</span></code> executable. This file is auto-generated, so try to delete it and then run
+<code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code> to rebuild it and see if it works. If it still doesn’t work you need to open it in a
+text editor like Notepad. It’s just one line containing  the path to the <code class="docutils literal notranslate"><span class="pre">twistd.exe</span></code> executable as
+determined by Evennia. If you installed Twisted in a non-standard location this might be wrong and
+you should update the line to the real location.</p></li>
+<li><p>Some users have reported issues with Windows WSL and anti-virus software during Evennia
+development. Timeout errors and the inability to run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">connections</span></code> may be due to your anti-
+virus software interfering. Try disabling or changing your anti-virus software settings.</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation Troubleshooting</a><ul>
+<li><a class="reference internal" href="#check-your-requirements">Check your Requirements</a></li>
+<li><a class="reference internal" href="#confusion-of-location-git-installation">Confusion of location (GIT installation)</a></li>
+<li><a class="reference internal" href="#localhost-not-found">Localhost not found</a></li>
+<li><a class="reference internal" href="#linux-troubleshooting">Linux Troubleshooting</a></li>
+<li><a class="reference internal" href="#mac-troubleshooting">Mac Troubleshooting</a></li>
+<li><a class="reference internal" href="#windows-troubleshooting">Windows Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Setup/Installation-Troubleshooting.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Installation-Troubleshooting.html">1.0-dev (develop branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Installation Troubleshooting</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

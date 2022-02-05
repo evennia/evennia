@@ -119,7 +119,7 @@ default title for the page.</p>
 
 <dl class="py class">
 <dt id="evennia.web.website.views.objects.ObjectDeleteView">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.objects.</code><code class="sig-name descname">ObjectDeleteView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/objects.html#ObjectDeleteView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.objects.ObjectDeleteView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.objects.</code><code class="sig-name descname">ObjectDeleteView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/objects.html#ObjectDeleteView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.objects.ObjectDeleteView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.mixins.LoginRequiredMixin</span></code>, <a class="reference internal" href="#evennia.web.website.views.objects.ObjectDetailView" title="evennia.web.website.views.objects.ObjectDetailView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.objects.ObjectDetailView</span></code></a>, <a class="reference internal" href="evennia.web.website.views.mixins.html#evennia.web.website.views.mixins.EvenniaDeleteView" title="evennia.web.website.views.mixins.EvenniaDeleteView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.mixins.EvenniaDeleteView</span></code></a></p>
 <p>This is an important view for obvious reasons!</p>
 <p>Any view you write that deals with deleting a specific object will want to
@@ -141,14 +141,6 @@ permissions to delete the requested object.</p>
 <dt id="evennia.web.website.views.objects.ObjectDeleteView.access_type">
 <code class="sig-name descname">access_type</code><em class="property"> = 'delete'</em><a class="headerlink" href="#evennia.web.website.views.objects.ObjectDeleteView.access_type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.web.website.views.objects.ObjectDeleteView.delete">
-<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/objects.html#ObjectDeleteView.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.objects.ObjectDeleteView.delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calls the delete() method on the fetched object and then
-redirects to the success URL.</p>
-<p>We extend this so we can capture the name for the sake of confirmation.</p>
-</dd></dl>
 
 </dd></dl>
 
@@ -257,7 +249,6 @@ validated and sanitized.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.web.website.views.objects.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

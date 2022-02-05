@@ -16,7 +16,7 @@ in mind for your own game, this will give you a good start.
 
 1. [Introduction & Overview](Starting/Part1/Starting-Part1.md)
 1. [Building stuff](Starting/Part1/Building-Quickstart.md)
-1. [The Tutorial World](Starting/Part1/Tutorial-World-Introduction.md)
+1. [The Tutorial World](Starting/Part1/Tutorial-World.md)
 1. [Python basics](Starting/Part1/Python-basic-introduction.md)
 1. [Game dir overview](Starting/Part1/Gamedir-Overview.md)
 1. [Python classes and objects](Starting/Part1/Python-classes-and-objects.md)

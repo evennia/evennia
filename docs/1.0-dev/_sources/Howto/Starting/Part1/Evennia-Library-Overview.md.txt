@@ -16,7 +16,7 @@ what you can download from us. The github repo is also searchable.
 
 Finally, you can clone the evennia repo to your own computer and read the sources locally. This is necessary
 if you want to help with Evennia's development itself. See the
-  [extended install instructions](../../../Setup/Extended-Installation.md) if you want to do this.
+  [extended install instructions](../../../Setup/Installation-Git.md) if you want to do this.
 
 ## Where is it?
 

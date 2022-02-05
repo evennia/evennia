@@ -25,7 +25,7 @@ and share with others!
 
 1. Introduction (you are here)
 1. [Building stuff](./Building-Quickstart.md)
-1. [The Tutorial World](./Tutorial-World-Introduction.md)
+1. [The Tutorial World](./Tutorial-World.md)
 1. [Python basics](./Python-basic-introduction.md)
 1. [Game dir overview](./Gamedir-Overview.md)
 1. [Python classes and objects](./Python-classes-and-objects.md)
@@ -79,7 +79,7 @@ things don't change much from year to year. Popular choices for Python are PyCha
 
 ### Set up a game dir for the tutorial
 
-Next you should make sure you have [installed Evennia](../../../Setup/Setup-Quickstart.md). If you followed the instructions
+Next you should make sure you have [installed Evennia](../../../Setup/Installation.md). If you followed the instructions
 you will already have created a game-dir. You could use that for this tutorial or you may want to do the
 tutorial in its own, isolated game dir; it's up to you.
 

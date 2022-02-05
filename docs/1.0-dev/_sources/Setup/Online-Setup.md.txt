@@ -344,7 +344,7 @@ game stays online. Many services guarantee a certain level of up-time and also d
 for you. Make sure to check, some offer lower rates in exchange for you yourself being fully
 responsible for your data/backups.
 - Usually offers a fixed domain name, so no need to mess with IP addresses.
-- May have the ability to easily deploy [docker](./Running-Evennia-in-Docker.md) versions of evennia
+- May have the ability to easily deploy [docker](./Installation-Docker.md) versions of evennia
 and/or your game.
 
 **Disadvantages**
@@ -362,7 +362,7 @@ Docker) to deploy your game to the remote server; it will likely ease installati
 Docker images may be a little confusing if you are completely new to them though.
 
 If not using docker, and assuming you know how to connect to your account over ssh/PuTTy, you should
-be able to follow the [Setup Quickstart](./Setup-Quickstart.md) instructions normally. You only need Python
+be able to follow the [Setup Quickstart](./Installation.md) instructions normally. You only need Python
 and GIT pre-installed; these should both be available on any servers (if not you should be able to
 easily ask for them to be installed). On a VPS or Cloud service you can install them yourself as
 needed.

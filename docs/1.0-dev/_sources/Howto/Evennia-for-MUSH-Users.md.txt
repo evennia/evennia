@@ -88,7 +88,7 @@ based inheritance of MUSH.
 
 There are other differences for sure, but that should give some feel for things. Enough with the
 theory. Let's get down to more practical  matters next. To install, see the 
-[Getting Started instructions](../Setup/Setup-Quickstart.md).
+[Getting Started instructions](../Setup/Installation.md).
 
 ## A first step making things more familiar
 
@@ -211,7 +211,7 @@ for-roleplaying-sessions) that can be of interest.
 An important aspect of making things more familiar for *Players* is adding new and tweaking existing
 commands. How this is done is covered by the [Tutorial on adding new commands](Adding-Command-
 Tutorial). You may also find it useful to shop through the `evennia/contrib/` folder. The 
-[Tutorial world](Starting/Part1/Tutorial-World-Introduction.md) is a small single-player quest you can try (it’s not very MUSH-
+[Tutorial world](Starting/Part1/Tutorial-World.md) is a small single-player quest you can try (it’s not very MUSH-
 like but it does show many Evennia concepts in action). Beyond that there are [many more tutorials](./Howto-Overview.md) 
 to try out. If you feel you want a more visual overview you can also look at
 [Evennia in pictures](https://evennia.blogspot.se/2016/05/evennia-in-pictures.html).

@@ -48,10 +48,9 @@
 <span class="c1">#</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span><span class="p">,</span> <span class="n">path</span>
 <span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
 <span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span><span class="p">,</span> <span class="n">messages</span>
 <span class="kn">from</span> <span class="nn">django.contrib.admin.utils</span> <span class="kn">import</span> <span class="n">flatten_fieldsets</span>
 <span class="kn">from</span> <span class="nn">django.contrib.admin.widgets</span> <span class="kn">import</span> <span class="n">ForeignKeyRawIdWidget</span>
@@ -271,7 +270,7 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">dbserialize</span><span class="o">.</span><span class="n">pack_dbobj</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span></div>
 
     <span class="n">serialized_string</span><span class="o">.</span><span class="n">help_text</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;Copy &amp; paste this string into an Attribute&#39;s `value` field to store it there.&quot;</span>
+        <span class="s2">&quot;Copy &amp; paste this string into an Attribute&#39;s `value` field to store this object there.&quot;</span>
     <span class="p">)</span>
 
 <div class="viewcode-block" id="ObjectAdmin.get_fieldsets"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectAdmin.get_fieldsets">[docs]</a>    <span class="k">def</span> <span class="nf">get_fieldsets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -310,8 +309,8 @@
 <div class="viewcode-block" id="ObjectAdmin.get_urls"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectAdmin.get_urls">[docs]</a>    <span class="k">def</span> <span class="nf">get_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">urls</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_urls</span><span class="p">()</span>
         <span class="n">custom_urls</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">url</span><span class="p">(</span>
-                <span class="sa">r</span><span class="s2">&quot;^account-object-link/(?P&lt;object_id&gt;.+)/$&quot;</span><span class="p">,</span>
+            <span class="n">path</span><span class="p">(</span>
+                <span class="s2">&quot;account-object-link/&lt;int:pk&gt;&quot;</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">admin_site</span><span class="o">.</span><span class="n">admin_view</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">link_object_to_account</span><span class="p">),</span>
                 <span class="n">name</span><span class="o">=</span><span class="s2">&quot;object-account-link&quot;</span>
             <span class="p">)</span>
@@ -427,7 +426,6 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="objects.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

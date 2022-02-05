@@ -51,44 +51,16 @@
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">FieldDoesNotExist</span><span class="p">,</span> <span class="n">FieldError</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">FieldError</span>
 <span class="kn">from</span> <span class="nn">django.db.models.constants</span> <span class="kn">import</span> <span class="n">LOOKUP_SEP</span>
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">tree</span>
-<span class="kn">from</span> <span class="nn">django.utils.deprecation</span> <span class="kn">import</span> <span class="n">RemovedInDjango40Warning</span>
 
 <span class="c1"># PathInfo is used when converting lookups (fk__somecol). The contents</span>
 <span class="c1"># describe the relation in Model terms (model Options and Fields for both</span>
 <span class="c1"># sides of the relation. The join_field is the field backing the relation.</span>
 <span class="n">PathInfo</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;PathInfo&#39;</span><span class="p">,</span> <span class="s1">&#39;from_opts to_opts target_fields join_field m2m direct filtered_relation&#39;</span><span class="p">)</span>
-
-
-<span class="k">class</span> <span class="nc">InvalidQueryType</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">_subclasses</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">FieldDoesNotExist</span><span class="p">,</span> <span class="n">FieldError</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__warn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="s1">&#39;The InvalidQuery exception class is deprecated. Use &#39;</span>
-            <span class="s1">&#39;FieldDoesNotExist or FieldError instead.&#39;</span><span class="p">,</span>
-            <span class="n">category</span><span class="o">=</span><span class="n">RemovedInDjango40Warning</span><span class="p">,</span>
-            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__instancecheck__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__warn</span><span class="p">()</span>
-        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subclasses</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__instancecheck__</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__subclasscheck__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subclass</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__warn</span><span class="p">()</span>
-        <span class="k">return</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">subclass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subclasses</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__subclasscheck__</span><span class="p">(</span><span class="n">subclass</span><span class="p">)</span>
-
-
-<span class="k">class</span> <span class="nc">InvalidQuery</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">InvalidQueryType</span><span class="p">):</span>
-    <span class="k">pass</span>
 
 
 <span class="k">def</span> <span class="nf">subclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
@@ -421,7 +393,6 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="query_utils.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

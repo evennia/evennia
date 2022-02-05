@@ -340,12 +340,12 @@ something like "the command 'evennia' is not available" - it's probably because 
 not 'active' yet (see below).
 
 Usage:
-- `virtualenv <name>` - initialize a new virtualenv `<name>` in a new folder `<name>` in the current
-location. Called `evenv` in these docs.
-- `virtualenv -p path/to/alternate/python_executable <name>` - create a virtualenv using another
-Python version than default.
-- `source <folder_name>/bin/activate`(linux/mac) - activate the virtualenv in `<folder_name>`.
-- `<folder_name>\Scripts\activate` (windows)
+
+- `python3.10 -m venv evenv` - initialize a new virtualenv-folder `evenv` in the current
+location. You can call this whatever you like. The Python-version you use for this call will be the one used
+for everything inside the virtualenv.
+- `source evenv/bin/activate` (linux/mac) or `evenv\Scripts\activate`(windows) - this activates the 
+  virtualenv. 
 - `deactivate` - turn off the currently activated virtualenv.
 
 A virtualenv is 'activated' only for the console/terminal it was started in, but it's safe to
@@ -377,6 +377,6 @@ never have to actually `cd` into the `evenv` folder. You can activate it from an
 still be considered "in" the virtualenv wherever you go until you `deactivate` or close the
 console/terminal.
 
-So, when do I *need* to activate my virtualenv? If the virtualenv is not active, none of the Python
+So, when do you *need* to activate my virtualenv? If the virtualenv is not active, none of the Python
 packages/programs you installed in it will be available to you. So at a minimum, *it needs to be
 activated whenever you want to use the `evennia` command* for any reason.

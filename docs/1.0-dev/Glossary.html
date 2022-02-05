@@ -371,12 +371,11 @@ something like “the command ‘evennia’ is not available” - it’s probabl
 not ‘active’ yet (see below).</p>
 <p>Usage:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">virtualenv</span> <span class="pre">&lt;name&gt;</span></code> - initialize a new virtualenv <code class="docutils literal notranslate"><span class="pre">&lt;name&gt;</span></code> in a new folder <code class="docutils literal notranslate"><span class="pre">&lt;name&gt;</span></code> in the current
-location. Called <code class="docutils literal notranslate"><span class="pre">evenv</span></code> in these docs.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">virtualenv</span> <span class="pre">-p</span> <span class="pre">path/to/alternate/python_executable</span> <span class="pre">&lt;name&gt;</span></code> - create a virtualenv using another
-Python version than default.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">&lt;folder_name&gt;/bin/activate</span></code>(linux/mac) - activate the virtualenv in <code class="docutils literal notranslate"><span class="pre">&lt;folder_name&gt;</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">&lt;folder_name&gt;\Scripts\activate</span></code> (windows)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">python3.10</span> <span class="pre">-m</span> <span class="pre">venv</span> <span class="pre">evenv</span></code> - initialize a new virtualenv-folder <code class="docutils literal notranslate"><span class="pre">evenv</span></code> in the current
+location. You can call this whatever you like. The Python-version you use for this call will be the one used
+for everything inside the virtualenv.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">evenv/bin/activate</span></code> (linux/mac) or <code class="docutils literal notranslate"><span class="pre">evenv\Scripts\activate</span></code>(windows) - this activates the
+virtualenv.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">deactivate</span></code> - turn off the currently activated virtualenv.</p></li>
 </ul>
 <p>A virtualenv is ‘activated’ only for the console/terminal it was started in, but it’s safe to
@@ -408,7 +407,7 @@ never have to actually <code class="docutils literal notranslate"><span class="p
 still be considered “in” the virtualenv wherever you go until you <code class="docutils literal notranslate"><span class="pre">deactivate</span></code> or close the
 console/terminal.</p>
 </div></blockquote>
-<p>So, when do I <em>need</em> to activate my virtualenv? If the virtualenv is not active, none of the Python
+<p>So, when do you <em>need</em> to activate my virtualenv? If the virtualenv is not active, none of the Python
 packages/programs you installed in it will be available to you. So at a minimum, <em>it needs to be
 activated whenever you want to use the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command</em> for any reason.</p>
 </section>
@@ -486,7 +485,6 @@ activated whenever you want to use the <code class="docutils literal notranslate
 <h3>Versions</h3>
 <ul>
   <li><a href="Glossary.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../0.9.5/Glossary.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

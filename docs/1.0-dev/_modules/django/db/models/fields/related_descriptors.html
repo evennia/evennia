@@ -909,18 +909,17 @@
         <span class="n">do_not_call_in_templates</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">def</span> <span class="nf">_build_remove_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">removed_vals</span><span class="p">):</span>
-            <span class="n">filters</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source_field_name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_val</span><span class="p">})</span>
+            <span class="n">filters</span> <span class="o">=</span> <span class="n">Q</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">source_field_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_val</span><span class="p">))</span>
             <span class="c1"># No need to add a subquery condition if removed_vals is a QuerySet without</span>
             <span class="c1"># filters.</span>
             <span class="n">removed_vals_filters</span> <span class="o">=</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">removed_vals</span><span class="p">,</span> <span class="n">QuerySet</span><span class="p">)</span> <span class="ow">or</span>
                                     <span class="n">removed_vals</span><span class="o">.</span><span class="n">_has_filters</span><span class="p">())</span>
             <span class="k">if</span> <span class="n">removed_vals_filters</span><span class="p">:</span>
-                <span class="n">filters</span> <span class="o">&amp;=</span> <span class="n">Q</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">__in&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_field_name</span><span class="p">:</span> <span class="n">removed_vals</span><span class="p">})</span>
+                <span class="n">filters</span> <span class="o">&amp;=</span> <span class="n">Q</span><span class="p">((</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_field_name</span><span class="si">}</span><span class="s1">__in&#39;</span><span class="p">,</span> <span class="n">removed_vals</span><span class="p">))</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">symmetrical</span><span class="p">:</span>
-                <span class="n">symmetrical_filters</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_field_name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_val</span><span class="p">})</span>
+                <span class="n">symmetrical_filters</span> <span class="o">=</span> <span class="n">Q</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">target_field_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_val</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">removed_vals_filters</span><span class="p">:</span>
-                    <span class="n">symmetrical_filters</span> <span class="o">&amp;=</span> <span class="n">Q</span><span class="p">(</span>
-                        <span class="o">**</span><span class="p">{</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">__in&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_field_name</span><span class="p">:</span> <span class="n">removed_vals</span><span class="p">})</span>
+                    <span class="n">symmetrical_filters</span> <span class="o">&amp;=</span> <span class="n">Q</span><span class="p">((</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source_field_name</span><span class="si">}</span><span class="s1">__in&#39;</span><span class="p">,</span> <span class="n">removed_vals</span><span class="p">))</span>
                 <span class="n">filters</span> <span class="o">|=</span> <span class="n">symmetrical_filters</span>
             <span class="k">return</span> <span class="n">filters</span>
 
@@ -1280,7 +1279,6 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="related_descriptors.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

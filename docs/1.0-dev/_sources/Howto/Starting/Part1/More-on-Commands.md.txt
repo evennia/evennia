@@ -144,7 +144,7 @@ change (no code changed, only stuff in the database).
 
 The commands of a cmdset attached to an object with `obj.cmdset.add()` will by default be made available to that object
 but _also to those in the same location as that object_. If you did the [Building introduction](./Building-Quickstart.md)
-you've seen an example of this with the "Red Button" object. The [Tutorial world](./Tutorial-World-Introduction.md)
+you've seen an example of this with the "Red Button" object. The [Tutorial world](./Tutorial-World.md)
 also has many examples of objects with commands on them.
 
 To show how this could work, let's put our 'hit' Command on our simple `sword` object from the previous section.

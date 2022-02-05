@@ -59,20 +59,22 @@
 <span class="kn">import</span> <span class="nn">django</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">global_settings</span>
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ImproperlyConfigured</span>
-<span class="kn">from</span> <span class="nn">django.utils.deprecation</span> <span class="kn">import</span> <span class="n">RemovedInDjango40Warning</span>
+<span class="kn">from</span> <span class="nn">django.utils.deprecation</span> <span class="kn">import</span> <span class="n">RemovedInDjango50Warning</span>
 <span class="kn">from</span> <span class="nn">django.utils.functional</span> <span class="kn">import</span> <span class="n">LazyObject</span><span class="p">,</span> <span class="n">empty</span>
 
 <span class="n">ENVIRONMENT_VARIABLE</span> <span class="o">=</span> <span class="s2">&quot;DJANGO_SETTINGS_MODULE&quot;</span>
 
-<span class="n">PASSWORD_RESET_TIMEOUT_DAYS_DEPRECATED_MSG</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s1">&#39;The PASSWORD_RESET_TIMEOUT_DAYS setting is deprecated. Use &#39;</span>
-    <span class="s1">&#39;PASSWORD_RESET_TIMEOUT instead.&#39;</span>
+<span class="c1"># RemovedInDjango50Warning</span>
+<span class="n">USE_DEPRECATED_PYTZ_DEPRECATED_MSG</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;The USE_DEPRECATED_PYTZ setting, and support for pytz timezones is &#39;</span>
+    <span class="s1">&#39;deprecated in favor of the stdlib zoneinfo module. Please update your &#39;</span>
+    <span class="s1">&#39;code to use zoneinfo and remove the USE_DEPRECATED_PYTZ setting.&#39;</span>
 <span class="p">)</span>
 
-<span class="n">DEFAULT_HASHING_ALGORITHM_DEPRECATED_MSG</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s1">&#39;The DEFAULT_HASHING_ALGORITHM transitional setting is deprecated. &#39;</span>
-    <span class="s1">&#39;Support for it and tokens, cookies, sessions, and signatures that use &#39;</span>
-    <span class="s1">&#39;SHA-1 hashing algorithm will be removed in Django 4.0.&#39;</span>
+<span class="n">USE_L10N_DEPRECATED_MSG</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;The USE_L10N setting is deprecated. Starting with Django 5.0, localized &#39;</span>
+    <span class="s1">&#39;formatting of data will always be enabled. For example Django will &#39;</span>
+    <span class="s1">&#39;display numbers and dates using the format of the current locale.&#39;</span>
 <span class="p">)</span>
 
 
@@ -186,18 +188,25 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">empty</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">PASSWORD_RESET_TIMEOUT_DAYS</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">USE_L10N</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">stack</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">extract_stack</span><span class="p">()</span>
         <span class="c1"># Show a warning if the setting is used outside of Django.</span>
         <span class="c1"># Stack index: -1 this line, -2 the caller.</span>
         <span class="n">filename</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">django</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)):</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="n">PASSWORD_RESET_TIMEOUT_DAYS_DEPRECATED_MSG</span><span class="p">,</span>
-                <span class="n">RemovedInDjango40Warning</span><span class="p">,</span>
+                <span class="n">USE_L10N_DEPRECATED_MSG</span><span class="p">,</span>
+                <span class="n">RemovedInDjango50Warning</span><span class="p">,</span>
                 <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="s1">&#39;PASSWORD_RESET_TIMEOUT_DAYS&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="s1">&#39;USE_L10N&#39;</span><span class="p">)</span>
+
+    <span class="c1"># RemovedInDjango50Warning.</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_USE_L10N_INTERNAL</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Special hook to avoid checking a traceback in internal use on hot</span>
+        <span class="c1"># paths.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="s1">&#39;USE_L10N&#39;</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">Settings</span><span class="p">:</span>
@@ -213,6 +222,7 @@
         <span class="n">mod</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SETTINGS_MODULE</span><span class="p">)</span>
 
         <span class="n">tuple_settings</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;ALLOWED_HOSTS&#39;</span><span class="p">,</span>
             <span class="s2">&quot;INSTALLED_APPS&quot;</span><span class="p">,</span>
             <span class="s2">&quot;TEMPLATE_DIRS&quot;</span><span class="p">,</span>
             <span class="s2">&quot;LOCALE_PATHS&quot;</span><span class="p">,</span>
@@ -224,21 +234,20 @@
 
                 <span class="k">if</span> <span class="p">(</span><span class="n">setting</span> <span class="ow">in</span> <span class="n">tuple_settings</span> <span class="ow">and</span>
                         <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">setting_value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))):</span>
-                    <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span><span class="s2">&quot;The </span><span class="si">%s</span><span class="s2"> setting must be a list or a tuple. &quot;</span> <span class="o">%</span> <span class="n">setting</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span><span class="s2">&quot;The </span><span class="si">%s</span><span class="s2"> setting must be a list or a tuple.&quot;</span> <span class="o">%</span> <span class="n">setting</span><span class="p">)</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setting</span><span class="p">,</span> <span class="n">setting_value</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_explicit_settings</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">setting</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s1">&#39;PASSWORD_RESET_TIMEOUT_DAYS&#39;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s1">&#39;PASSWORD_RESET_TIMEOUT&#39;</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span>
-                    <span class="s1">&#39;PASSWORD_RESET_TIMEOUT_DAYS/PASSWORD_RESET_TIMEOUT are &#39;</span>
-                    <span class="s1">&#39;mutually exclusive.&#39;</span>
-                <span class="p">)</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;PASSWORD_RESET_TIMEOUT&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PASSWORD_RESET_TIMEOUT_DAYS</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span><span class="p">)</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">PASSWORD_RESET_TIMEOUT_DAYS_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango40Warning</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">USE_TZ</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s1">&#39;USE_TZ&#39;</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s1">&#39;The default value of USE_TZ will change from False to True &#39;</span>
+                <span class="s1">&#39;in Django 5.0. Set USE_TZ to False in your project settings &#39;</span>
+                <span class="s1">&#39;if you want to keep the current default behavior.&#39;</span><span class="p">,</span>
+                <span class="n">category</span><span class="o">=</span><span class="n">RemovedInDjango50Warning</span><span class="p">,</span>
+            <span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s1">&#39;DEFAULT_HASHING_ALGORITHM&#39;</span><span class="p">):</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">DEFAULT_HASHING_ALGORITHM_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango40Warning</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s1">&#39;USE_DEPRECATED_PYTZ&#39;</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">USE_DEPRECATED_PYTZ_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango50Warning</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="s1">&#39;tzset&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">TIME_ZONE</span><span class="p">:</span>
             <span class="c1"># When we can, attempt to validate the timezone. If we can&#39;t find</span>
@@ -251,6 +260,9 @@
             <span class="c1"># we don&#39;t do this unconditionally (breaks Windows).</span>
             <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;TZ&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TIME_ZONE</span>
             <span class="n">time</span><span class="o">.</span><span class="n">tzset</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s1">&#39;USE_L10N&#39;</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">USE_L10N_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango50Warning</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">is_overridden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setting</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">setting</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_explicit_settings</span>
@@ -283,12 +295,11 @@
 
     <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_deleted</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;PASSWORD_RESET_TIMEOUT_DAYS&#39;</span><span class="p">:</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;PASSWORD_RESET_TIMEOUT&#39;</span><span class="p">,</span> <span class="n">value</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span><span class="p">)</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">PASSWORD_RESET_TIMEOUT_DAYS_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango40Warning</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;DEFAULT_HASHING_ALGORITHM&#39;</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">DEFAULT_HASHING_ALGORITHM_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango40Warning</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;USE_L10N&#39;</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">USE_L10N_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango50Warning</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;USE_DEPRECATED_PYTZ&#39;</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">USE_DEPRECATED_PYTZ_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango50Warning</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_deleted</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
@@ -348,7 +359,6 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="conf.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

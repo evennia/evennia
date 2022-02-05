@@ -162,8 +162,10 @@
                         <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">meth</span><span class="p">)</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_delegate_bytes</span> <span class="o">=</span> <span class="nb">bytes</span> <span class="ow">in</span> <span class="n">resultclasses</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_delegate_text</span> <span class="o">=</span> <span class="nb">str</span> <span class="ow">in</span> <span class="n">resultclasses</span>
-            <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_delegate_bytes</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_delegate_text</span><span class="p">),</span> <span class="p">(</span>
-                <span class="s2">&quot;Cannot call lazy() with both bytes and text return types.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_delegate_bytes</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_delegate_text</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s1">&#39;Cannot call lazy() with both bytes and text return types.&#39;</span>
+                <span class="p">)</span>
             <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_delegate_text</span><span class="p">:</span>
                 <span class="bp">cls</span><span class="o">.</span><span class="fm">__str__</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__text_cast</span>
             <span class="k">elif</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_delegate_bytes</span><span class="p">:</span>
@@ -498,7 +500,6 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="functional.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

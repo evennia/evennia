@@ -200,7 +200,7 @@ You hit smaug with sword!
 <h2>Adding a Command to an object<a class="headerlink" href="#adding-a-command-to-an-object" title="Permalink to this headline">¶</a></h2>
 <p>The commands of a cmdset attached to an object with <code class="docutils literal notranslate"><span class="pre">obj.cmdset.add()</span></code> will by default be made available to that object
 but <em>also to those in the same location as that object</em>. If you did the <a class="reference internal" href="Building-Quickstart.html"><span class="doc std std-doc">Building introduction</span></a>
-you’ve seen an example of this with the “Red Button” object. The <a class="reference internal" href="Tutorial-World-Introduction.html"><span class="doc std std-doc">Tutorial world</span></a>
+you’ve seen an example of this with the “Red Button” object. The <a class="reference internal" href="Tutorial-World.html"><span class="doc std std-doc">Tutorial world</span></a>
 also has many examples of objects with commands on them.</p>
 <p>To show how this could work, let’s put our ‘hit’ Command on our simple <code class="docutils literal notranslate"><span class="pre">sword</span></code> object from the previous section.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; self.search(&quot;sword&quot;).cmdset.add(&quot;commands.mycommands.MyCmdSet&quot;, persistent=True)
@@ -607,7 +607,6 @@ command on ourselves.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="More-on-Commands.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

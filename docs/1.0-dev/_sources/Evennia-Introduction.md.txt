@@ -49,11 +49,11 @@ connect to the demo via your telnet client you can do so at `demo.evennia.com`, 
 
 Once you installed Evennia yourself it comes with its own tutorial - this shows off some of the
 possibilities _and_ gives you a small single-player quest to play. The tutorial takes only one
-single in-game command to install as explained [here](Howto/Starting/Part1/Tutorial-World-Introduction.md).
+single in-game command to install as explained [here](Howto/Starting/Part1/Tutorial-World.md).
 
 ## What you need to know to work with Evennia
 
-Assuming you have Evennia working (see the [quick start instructions](Setup/Setup-Quickstart.md)) and have
+Assuming you have Evennia working (see the [quick start instructions](Setup/Installation.md)) and have
 gotten as far as to start the server and connect to it with the client of your choice, here's what
 you need to know depending on your skills and needs.
 

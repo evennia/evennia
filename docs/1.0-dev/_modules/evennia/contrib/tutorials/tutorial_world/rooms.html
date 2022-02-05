@@ -56,7 +56,7 @@
 
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">Command</span><span class="p">,</span> <span class="n">DefaultRoom</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">Command</span><span class="p">,</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">DefaultExit</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">syscmdkeys</span><span class="p">,</span> <span class="n">default_cmds</span>
 <span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">LightSource</span>
@@ -348,6 +348,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="p">{</span><span class="n">detailkey</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">description</span><span class="p">}</span></div></div>
 
 
+<div class="viewcode-block" id="TutorialStartExit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit">[docs]</a><span class="k">class</span> <span class="nc">TutorialStartExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is like a normal exit except it makes the `intro` command available</span>
+<span class="sd">    on itself. We put it on the exit in order to provide this command to the</span>
+<span class="sd">    Limbo room without modifying Limbo itself - deleting the tutorial exit</span>
+<span class="sd">    will also  clean up the intro command.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TutorialStartExit.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSetEvenniaIntro</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
+
+
 <span class="c1"># -------------------------------------------------------------</span>
 <span class="c1">#</span>
 <span class="c1"># Weather room - room with a ticker</span>
@@ -443,8 +455,8 @@
         <span class="kn">from</span> <span class="nn">.intro_menu</span> <span class="kn">import</span> <span class="n">init_menu</span>
         <span class="c1"># quell also superusers</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Auto-quelling permissions while in intro ...&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;quell&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;(Auto-quelling)&quot;</span><span class="p">)</span>
         <span class="n">init_menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
 
 
@@ -472,8 +484,7 @@
             <span class="s2">&quot;The first room of the tutorial. &quot;</span>
             <span class="s2">&quot;This assigns the health Attribute to &quot;</span>
             <span class="s2">&quot;the account.&quot;</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSetEvenniaIntro</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="IntroRoom.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.IntroRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1244,7 +1255,6 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="rooms.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

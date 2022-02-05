@@ -135,10 +135,10 @@
 <span class="n">SRESET</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span>  <span class="c1"># shutdown server in reset mode</span>
 
 <span class="c1"># requirements</span>
-<span class="n">PYTHON_MIN</span> <span class="o">=</span> <span class="s2">&quot;3.7&quot;</span>
+<span class="n">PYTHON_MIN</span> <span class="o">=</span> <span class="s2">&quot;3.9&quot;</span>
 <span class="n">TWISTED_MIN</span> <span class="o">=</span> <span class="s2">&quot;20.3.0&quot;</span>
-<span class="n">DJANGO_MIN</span> <span class="o">=</span> <span class="s2">&quot;3.2.0&quot;</span>
-<span class="n">DJANGO_LT</span> <span class="o">=</span> <span class="s2">&quot;4.0&quot;</span>
+<span class="n">DJANGO_MIN</span> <span class="o">=</span> <span class="s2">&quot;4.0.2&quot;</span>
+<span class="n">DJANGO_LT</span> <span class="o">=</span> <span class="s2">&quot;4.1&quot;</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">EVENNIA_ROOT</span>
@@ -248,7 +248,7 @@
 <span class="p">)</span>
 
 <span class="n">ERROR_INITSETTINGS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    ERROR: &#39;evennia --initsettings&#39; must be called from the root of</span>
+<span class="s2">u   ERROR: &#39;evennia --initsettings&#39; must be called from the root of</span>
 <span class="s2">    your game directory, since it tries to (re)create the new</span>
 <span class="s2">    settings.py file in a subfolder server/conf/.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
@@ -419,7 +419,7 @@
 
 <span class="n">ERROR_DJANGO_MIN</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    ERROR: Django </span><span class="si">{dversion}</span><span class="s2"> found. Evennia requires at least version </span><span class="si">{django_min}</span><span class="s2"> (but</span>
-<span class="s2">    no higher than </span><span class="si">{django_lt}</span><span class="s2">).</span>
+<span class="s2">    below version </span><span class="si">{django_lt}</span><span class="s2">).</span>
 
 <span class="s2">    If you are using a virtualenv, use the command `pip install --upgrade -e evennia` where</span>
 <span class="s2">    `evennia` is the folder to where you cloned the Evennia library. If not</span>
@@ -2367,6 +2367,7 @@
             <span class="k">global</span> <span class="n">TEST_MODE</span>
             <span class="n">TEST_MODE</span> <span class="o">=</span> <span class="kc">True</span>
 
+        <span class="c1"># init the db/game dir, if needed</span>
         <span class="n">init_game_directory</span><span class="p">(</span><span class="n">CURRENT_DIR</span><span class="p">,</span> <span class="n">check_db</span><span class="o">=</span><span class="n">check_db</span><span class="p">,</span> <span class="n">need_gamedir</span><span class="o">=</span><span class="n">need_gamedir</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;migrate&quot;</span><span class="p">:</span>
@@ -2378,12 +2379,12 @@
         <span class="k">if</span> <span class="n">run_custom_commands</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="o">*</span><span class="n">unknown_args</span><span class="p">):</span>
             <span class="c1"># run any custom commands</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
-
-        <span class="c1"># pass on to the core django manager - re-parse the entire input line</span>
-        <span class="c1"># but keep &#39;evennia&#39; as the name instead of django-admin. This is</span>
-        <span class="c1"># an exit condition.</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(-script\.pyw?|\.exe)?$&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">execute_from_command_line</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># pass on to the core django manager - re-parse the entire input line</span>
+            <span class="c1"># but keep &#39;evennia&#39; as the name instead of django-admin. This is</span>
+            <span class="c1"># an exit condition.</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(-script\.pyw?|\.exe)?$&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">execute_from_command_line</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">))</span>
 
     <span class="k">elif</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">tail_log</span><span class="p">:</span>
         <span class="c1"># no input; print evennia info (don&#39;t pring if we&#39;re tailing log)</span>
@@ -2430,7 +2431,6 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia_launcher.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

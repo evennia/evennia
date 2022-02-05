@@ -49,7 +49,7 @@ documentation specifically regarding DRF integration.</p>
 <p><a class="reference external" href="https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html">https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html</a></p>
 <dl class="py function">
 <dt id="evennia.web.api.filters.get_tag_query">
-<code class="sig-prename descclassname">evennia.web.api.filters.</code><code class="sig-name descname">get_tag_query</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag_type</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; django.db.models.query_utils.Q<a class="reference internal" href="../_modules/evennia/web/api/filters.html#get_tag_query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.get_tag_query" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.web.api.filters.</code><code class="sig-name descname">get_tag_query</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag_type</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">, </span>None<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; django.db.models.query_utils.Q<a class="reference internal" href="../_modules/evennia/web/api/filters.html#get_tag_query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.api.filters.get_tag_query" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a Q object for searching by tag names for typeclasses
 :param tag_type: The type of tag (None, ‘alias’, etc)
 :type tag_type: str or None
@@ -295,7 +295,6 @@ documentation specifically regarding DRF integration.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.web.api.filters.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
         </div>

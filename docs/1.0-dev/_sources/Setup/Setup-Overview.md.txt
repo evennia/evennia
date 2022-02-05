@@ -4,10 +4,10 @@ This documentation covers how to setup and maintain the server, from first insta
 
 ## Installation & running 
 
-- [Installation & Setup quick-start](./Setup-Quickstart.md) - one page to quickly get you going
-- [Extended Install instructions](./Extended-Installation.md) - if you have trouble or want to contribute to Evennia itself
-- [Running through Docker](./Running-Evennia-in-Docker.md) - alternative install method, useful for quick deployment on remote servers
-- [Installing Evennia on Android](./Installing-on-Android.md) - for those craving a mobile life
+- [Installation & Setup quick-start](./Installation.md) - one page to quickly get you going
+- [Extended Install instructions](./Installation-Git.md) - if you have trouble or want to contribute to Evennia itself
+- [Running through Docker](./Installation-Docker.md) - alternative install method, useful for quick deployment on remote servers
+- [Installing Evennia on Android](./Installation-Android.md) - for those craving a mobile life
 - [Controlling the server](./Start-Stop-Reload.md) - an extended view on how to start/stop/update the server
 
 ## Installing custom game dirs
@@ -16,7 +16,7 @@ This documentation covers how to setup and maintain the server, from first insta
 
 ## Configuring
 
-- [The settings file](./Settings-File.md) - how and where to change the main settings of the server
+- [The settings file](./Settings-Default.md) - how and where to change the main settings of the server
 - [Change database engine](./Choosing-An-SQL-Server.md) - if you want to use something other than SQLite3
 - [Evennia game index](./Evennia-Game-Index.md) - register your upcoming game with the index to start the hype going
 
