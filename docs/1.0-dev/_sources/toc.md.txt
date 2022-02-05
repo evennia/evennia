@@ -75,7 +75,7 @@ Concepts/TextTags
 Concepts/Using-MUX-as-a-Standard
 Concepts/Web-Features
 Concepts/Zones
-Contribs/Arxcode-installing-help
+Contribs/Arxcode-Installation
 Contribs/Building-menus
 Contribs/Contrib-AWSStorage
 Contribs/Contrib-Auditing

@@ -1,17 +1,14 @@
 # Arxcode installing help
 
-## Introduction
-
 [Arx - After the Reckoning](https://play.arxmush.org/) is a big and very popular
 [Evennia](https://www.evennia.com)-based game. Arx is heavily roleplaying-centric, relying on game
 masters to drive the story. Technically it's maybe best described as "a MUSH, but with more coded
 systems". In August of 2018, the game's developer, Tehom, generously released the [source code of
 Arx on github](https://github.com/Arx-Game/arxcode). This is a treasure-trove for developers wanting
-to pick ideas or even get a starting game to build on. These instructions are based on the Arx-code
-released as of *Aug 12, 2018*.
+to pick ideas or even get a starting game to build on. 
 
-If you are not familiar with what Evennia is, you can read
-[an introduction here](../Evennia-Introduction.md).
+> These instructions are based on the Arx-code released as of *Aug 12, 2018*. They will probably 
+> not work 100% out of the box anymore. Report any differences and changes needed.
 
 It's not too hard to run Arx from the sources (of course you'll start with an empty database) but
 since part of Arx has grown organically, it doesn't follow standard Evennia paradigms everywhere.

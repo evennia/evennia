@@ -46,16 +46,10 @@
 itself or have an easier time exploring the code. See the basic <a class="reference internal" href="Installation.html"><span class="doc std std-doc">Installation</span></a> for
 a quick installation of the library. See the <a class="reference internal" href="Installation-Troubleshooting.html"><span class="doc std std-doc">troubleshooting</span></a> if you run
 into trouble.</p>
-<ul class="simple">
-<li><p><span class="xref myst">Quick Start</span></p></li>
-<li><p><a class="reference internal" href="#linux-install"><span class="std std-doc">Linux Install</span></a></p></li>
-<li><p><a class="reference internal" href="#mac-install"><span class="std std-doc">Mac Install</span></a></p></li>
-<li><p><a class="reference internal" href="#windows-install"><span class="std std-doc">Windows Install</span></a></p></li>
-<li><p><a class="reference internal" href="Installation-Docker.html"><span class="doc std std-doc">Running in Docker</span></a></p></li>
-<li><p><a class="reference internal" href="#where-to-go-next"><span class="std std-doc">Where to Go Next</span></a></p></li>
-<li><p><span class="xref myst">Troubleshooting</span></p></li>
-<li><p><a class="reference internal" href="../Glossary.html"><span class="doc std std-doc">Glossary of terms</span></a></p></li>
-</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>If you are converting an existing game from a previous version, <a class="reference internal" href="Installation-Upgrade.html"><span class="doc std std-doc">see here</span></a>.</p>
+</div>
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p>For the impatient. If you have trouble with a step, you should jump on to the
@@ -71,21 +65,18 @@ more detailed instructions for your platform.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">--init</span> <span class="pre">mygame</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">mygame</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code> (make sure to make a  superuser when asked)
-Evennia should now be running and you can connect to it by pointing a web browser to
-<code class="docutils literal notranslate"><span class="pre">http://localhost:4001</span></code> or a MUD telnet client to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> (use <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> if your OS does
-not recognize <code class="docutils literal notranslate"><span class="pre">localhost</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code> (make sure to make a  superuser when asked)</p></li>
 </ol>
+<p>Evennia should now be running and you can connect to it by pointing a web browser to
+<code class="docutils literal notranslate"><span class="pre">http://localhost:4001</span></code> or a MUD telnet client to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> (use <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> if your OS does
+not recognize <code class="docutils literal notranslate"><span class="pre">localhost</span></code>).</p>
 </section>
 <section id="linux-install">
 <h2>Linux Install<a class="headerlink" href="#linux-install" title="Permalink to this headline">¶</a></h2>
-<p>If you run into any issues during the installation and first start, please
-check out <span class="xref myst">Linux Troubleshooting</span>.</p>
 <p>For Debian-derived systems (like Ubuntu, Mint etc), start a terminal and
-install the <span class="xref myst">dependencies</span>:</p>
+install the requirements:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
 <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python3</span><span class="mf">.10</span> <span class="n">python3</span><span class="mf">.10</span><span class="o">-</span><span class="n">venv</span> <span class="n">python3</span><span class="mf">.10</span><span class="o">-</span><span class="n">dev</span> <span class="n">gcc</span>
-
 </pre></div>
 </div>
 <p>You should make sure to <em>not</em> be <code class="docutils literal notranslate"><span class="pre">root</span></code> after this step, running as <code class="docutils literal notranslate"><span class="pre">root</span></code> is a
@@ -137,8 +128,7 @@ folders) and run</p>
 <p>The Evennia server is a terminal program. Open the terminal e.g. from
 <em>Applications-&gt;Utilities-&gt;Terminal</em>. <a class="reference external" href="https://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line">Here is an introduction to the Mac
 terminal</a>
-if you are unsure how it works. If you run into any issues during the
-installation, please check out <span class="xref myst">Mac Troubleshooting</span>.</p>
+if you are unsure how it works.</p>
 <ul class="simple">
 <li><p>Python should already be installed but you must make sure it’s a high enough version - go for
 3.10.
@@ -166,7 +156,6 @@ Evennia install and its dependencies from the rest of the system, it is good
 Python practice to install into a <em>virtualenv</em>. If you are unsure about what a
 virtualenv is and why it’s useful, see the <a class="reference internal" href="../Glossary.html#virtualenv"><span class="std std-doc">Glossary entry on virtualenv</span></a>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span><span class="mf">.10</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">evenv</span> 
-
 </pre></div>
 </div>
 <p>A new folder <code class="docutils literal notranslate"><span class="pre">evenv</span></code> will appear (we could have called it anything). This
@@ -247,7 +236,6 @@ Evennia install and its dependencies from the rest of the system, it is good
 Python practice to install into a <em>virtualenv</em>. If you are unsure about what a
 virtualenv is and why it’s useful, see the <a class="reference internal" href="../Glossary.html#virtualenv"><span class="std std-doc">Glossary entry on virtualenv</span></a>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span><span class="mf">.10</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">evenv</span> 
-
 </pre></div>
 </div>
 <p>A new folder <code class="docutils literal notranslate"><span class="pre">evenv</span></code> will appear (we could have called it anything). This
@@ -258,7 +246,6 @@ with default Python packages on your system. Activate the virtualenv:</p>
 
 <span class="c1"># If you are using a PS Shell, Git Bash, or other, you can use the following:</span>
 <span class="o">.</span>\<span class="n">evenv</span>\<span class="n">scripts</span>\<span class="n">activate</span>
-
 </pre></div>
 </div>
 <p>The text <code class="docutils literal notranslate"><span class="pre">(evenv)</span></code> should appear next to your prompt to show the virtual
@@ -276,37 +263,6 @@ folders when you use the <code class="docutils literal notranslate"><span class=
 </div>
 <p>Test that you can run the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command everywhere while your virtualenv (evenv) is active.</p>
 <p>Next you can continue initializing your game from the regular <a class="reference internal" href="Installation.html"><span class="doc std std-doc">Installation instructions</span></a>.</p>
-</section>
-<section id="where-to-go-next">
-<h2>Where to Go Next<a class="headerlink" href="#where-to-go-next" title="Permalink to this headline">¶</a></h2>
-<p>Welcome to Evennia! Your new game is fully functioning, but empty. If you just
-logged in, stand in the <code class="docutils literal notranslate"><span class="pre">Limbo</span></code> room and run</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@batchcommand tutorial_world.build
-</pre></div>
-</div>
-<p>to build <a class="reference internal" href="../Howto/Starting/Part1/Tutorial-World.html"><span class="doc std std-doc">Evennia’s tutorial world</span></a> - it’s a small solo quest to
-explore. Only run the instructed <code class="docutils literal notranslate"><span class="pre">&#64;batchcommand</span></code> once. You’ll get a lot of text scrolling by as the
-tutorial is built. Once done, the <code class="docutils literal notranslate"><span class="pre">tutorial</span></code> exit will have appeared out of Limbo - just write
-<code class="docutils literal notranslate"><span class="pre">tutorial</span></code> to enter it.</p>
-<p>Once you get back to <code class="docutils literal notranslate"><span class="pre">Limbo</span></code> from the tutorial (if you get stuck in the tutorial quest you can do
-<code class="docutils literal notranslate"><span class="pre">&#64;tel</span> <span class="pre">#2</span></code> to jump to Limbo), a good idea is to learn how to [start, stop and reload](Start-Stop-
-Reload) the Evennia server. You may also want to familiarize yourself with some
-<a class="reference internal" href="../Glossary.html"><span class="doc std std-doc">commonly used terms in our Glossary</span></a>. After that, why not experiment with
-<a class="reference internal" href="../Howto/Starting/Part1/Building-Quickstart.html"><span class="doc std std-doc">creating some new items and build some new rooms</span></a> out from Limbo.</p>
-<p>From here on, you could move on to do one of our <a class="reference internal" href="../Howto/Howto-Overview.html"><span class="doc std std-doc">introductory tutorials</span></a> or simply dive
-headlong into Evennia’s comprehensive <a class="reference external" href="https://github.com/evennia/evennia/wiki">manual</a>. While
-Evennia has no major game systems out of the box, we do supply a range of optional <em>contribs</em> that
-you can use or borrow from. They range from dice rolling and alternative color schemes to barter and
-combat systems. You can find the <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/contrib/README.md">growing list of contribs
-here</a>.</p>
-<p>If you have any questions, you can always ask in <a class="reference external" href="https://webchat.freenode.net/?channels=evennia&amp;uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">the developer
-chat</a>
-<code class="docutils literal notranslate"><span class="pre">#evennia</span></code> on <code class="docutils literal notranslate"><span class="pre">irc.freenode.net</span></code> or by posting to the <a class="reference external" href="https://groups.google.com/forum/#%21forum/evennia">Evennia
-forums</a>. You can also join the <a class="reference external" href="https://discord.gg/NecFePw">Discord
-Server</a>.</p>
-<p>Finally, if you are itching to help out or support Evennia (awesome!) have an
-issue to report or a feature to request, <a class="reference internal" href="../Contributing.html"><span class="doc std std-doc">see here</span></a>.</p>
-<p>Enjoy your stay!</p>
 </section>
 </section>
 
@@ -337,7 +293,6 @@ issue to report or a feature to request, <a class="reference internal" href="../
 <li><a class="reference internal" href="#linux-install">Linux Install</a></li>
 <li><a class="reference internal" href="#mac-install">Mac Install</a></li>
 <li><a class="reference internal" href="#windows-install">Windows Install</a></li>
-<li><a class="reference internal" href="#where-to-go-next">Where to Go Next</a></li>
 </ul>
 </li>
 </ul>
