@@ -26,7 +26,7 @@ defaults for our particular use-case. Below we will flesh out these components f
 
 ## Starting out
 
-We will assume you start from scratch. You need Evennia installed, as per the [Setup Quickstart](../Setup/Setup-Quickstart.md) 
+We will assume you start from scratch. You need Evennia installed, as per the [Setup Quickstart](../Setup/Installation.md) 
 instructions. Initialize a new game directory with `evennia init
 <gamedirname>`. In this tutorial we assume your game dir is simply named `mygame`. You can use the
 default database and keep all other settings to default for now. Familiarize yourself with the

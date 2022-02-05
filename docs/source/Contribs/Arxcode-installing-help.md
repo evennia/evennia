@@ -23,7 +23,7 @@ better match with the vanilla Evennia install.
 Firstly, set aside a folder/directory on your drive for everything to follow.
 
 You need to start by installing [Evennia](https://www.evennia.com) by following most of the
-[Getting Started Instructions](../Setup/Setup-Quickstart.md) for your OS. The difference is that you need to `git clone
+[Getting Started Instructions](../Setup/Installation.md) for your OS. The difference is that you need to `git clone
 https://github.com/TehomCD/evennia.git` instead of Evennia's repo because Arx uses TehomCD's older
 Evennia 0.8 [fork](https://github.com/TehomCD/evennia), notably still using Python2. This detail is
 important if referring to newer Evennia documentation.
@@ -31,7 +31,7 @@ important if referring to newer Evennia documentation.
 If you are new to Evennia it's *highly* recommended that you run through the
 instructions in full - including initializing and starting a new empty game and connecting to it.
 That way you can be sure Evennia works correctly as a base line. If you have trouble, make sure to
-read the [Troubleshooting instructions](../Setup/Extended-Installation.md#troubleshooting) for your
+read the [Troubleshooting instructions](../Setup/Installation-Git.md#troubleshooting) for your
 operating system. You can also drop into our
 [forums](https://groups.google.com/forum/#%21forum/evennia), join `#evennia` on `irc.freenode.net`
 or chat from the linked [Discord Server](https://discord.gg/NecFePw).
