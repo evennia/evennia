@@ -12,7 +12,7 @@ administrator or superuser.
 ```{warning}
 pip install evennia is not yet available in develop branch. Use the [git installation](./Installation-Git.md).
 ```
-```{warning}
+```{important}
 If you are converting an existing game from a previous version, [see here](./Installation-Upgrade.md).
 ```
 
@@ -22,7 +22,7 @@ Once installed, make sure the `evennia` command works. Use `evennia -h` for usag
 virtualenv, make sure it's active whenever you need to use the `evennia` command.
 
 Alternatively, you can [install Evennia from github](./Installation-Git.md) or use [docker](./Installation-Docker.md).
-Check out [installation troubleshooting](./Installation-Troubleshootin.md) if you run into problems. Some 
+Check out [installation troubleshooting](./Installation-Troubleshooting.md) if you run into problems. Some 
 users have also experimented with [installing Evennia on Android](./Installation-Android.md).
 
 ## Initialize a new game

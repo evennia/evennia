@@ -5,7 +5,7 @@ This page describes how to install and run the Evennia server on an Android phon
 installing a slew of third-party programs from the Google Play store, so make sure you are okay with
 this before starting.
 
-```warning
+```{warning}
 Android installation is experimental and not tested with later versions of Android. 
 Report your findings.
 ```
