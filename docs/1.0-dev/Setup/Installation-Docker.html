@@ -42,10 +42,8 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="running-evennia-in-docker">
 <h1>Running Evennia in Docker<a class="headerlink" href="#running-evennia-in-docker" title="Permalink to this headline">¶</a></h1>
-<p>Evennia has an <a class="reference external" href="https://hub.docker.com/r/evennia/evennia/">official docker image</a> which makes
+<p>Evennia releases <a class="reference external" href="https://hub.docker.com/r/evennia/evennia/">docker images</a> which makes
 running an Evennia-based game in a Docker container easy.</p>
-<section id="install-evennia-through-docker">
-<h2>Install Evennia through docker<a class="headerlink" href="#install-evennia-through-docker" title="Permalink to this headline">¶</a></h2>
 <p>First, install the <code class="docutils literal notranslate"><span class="pre">docker</span></code> program so you can run the Evennia container. You can get it freely from
 <a class="reference external" href="https://www.docker.com/">docker.com</a>. Linux users can likely also get it through their normal
 package manager.</p>
@@ -53,16 +51,15 @@ package manager.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>docker pull evennia/evennia
 </pre></div>
 </div>
-<p>This is a good command to know, it is also how you update to the latest version when we make updates
-in the future. This tracks the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch of Evennia.</p>
-<blockquote>
-<div><p>Note: If you want to experiment with the (unstable) <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch, use <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">pull</span> <span class="pre">evennia/evennia:develop</span></code>.</p>
-</div></blockquote>
-<p>Next <code class="docutils literal notranslate"><span class="pre">cd</span></code> to a place where your game dir is, or where you want to create it. Then run:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4002:4002 --rm -v $PWD:/usr/src/game --user
+<p>This will get the latest stable image.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>docker pull evennia/evennia:develop 
 </pre></div>
 </div>
-<p><span class="math notranslate nohighlight">\(UID:\)</span>GID evennia/evennia</p>
+<p>gets the image based off Evennia’s unstable <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch.</p>
+<p>Next, <code class="docutils literal notranslate"><span class="pre">cd</span></code> to a place where your game dir is, or where you want to create it. Then run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run -it --rm -p <span class="m">4000</span>:4000 -p <span class="m">4001</span>:4001 -p <span class="m">4002</span>:4002 --rm -v <span class="nv">$PWD</span>:/usr/src/game --user <span class="nv">$UID</span>:<span class="nv">$GID</span> evennia/evennia
+</pre></div>
+</div>
 <p>Having run this (see next section for a description of what’s what), you will be at a prompt inside
 the docker container:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>evennia<span class="p">|</span>docker /usr/src/game $
@@ -71,8 +68,8 @@ the docker container:</p>
 <p>This is a normal shell prompt. We are in the <code class="docutils literal notranslate"><span class="pre">/usr/src/game</span></code> location inside the docker container.
 If you had anything in the folder you started from, you should see it here (with <code class="docutils literal notranslate"><span class="pre">ls</span></code>) since we
 mounted the current directory to <code class="docutils literal notranslate"><span class="pre">usr/src/game</span></code> (with <code class="docutils literal notranslate"><span class="pre">-v</span></code> above). You have the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command
-available and can now proceed to create a new game as per the <a class="reference internal" href="Installation.html"><span class="doc std std-doc">Setup Quickstart</span></a>
-instructions (you can skip the virtualenv and install ‘globally’ in the container though).</p>
+available and can now proceed to create a new game as per the normal <a class="reference internal" href="Installation.html"><span class="doc std std-doc">game setup</span></a>
+instructions (no virtualenv needed).</p>
 <p>You can run Evennia from inside this container if you want to, it’s like you are root in a little
 isolated Linux environment. To exit the container and all processes in there, press <code class="docutils literal notranslate"><span class="pre">Ctrl-D</span></code>. If you
 created a new game folder, you will find that it has appeared on-disk.</p>
@@ -82,13 +79,7 @@ by <code class="docutils literal notranslate"><span class="pre">root</span></cod
 On Linux/Mac you do this with <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">chown</span> <span class="pre">myname:myname</span> <span class="pre">-R</span> <span class="pre">mygame</span></code>, where you replace <code class="docutils literal notranslate"><span class="pre">myname</span></code> with
 your username and <code class="docutils literal notranslate"><span class="pre">mygame</span></code> with whatever your game folder is named.</p>
 </div></blockquote>
-<section id="description-of-the-docker-run-command">
-<h3>Description of the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> command<a class="headerlink" href="#description-of-the-docker-run-command" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    docker run -it --rm -p <span class="m">4000</span>:4000 -p <span class="m">4001</span>:4001 -p <span class="m">4002</span>:4002 --rm -v <span class="nv">$PWD</span>:/usr/src/game --user
-<span class="nv">$UID</span>:<span class="nv">$GID</span> evennia/evennia
-</pre></div>
-</div>
-<p>This is what it does:</p>
+<p>Below is an explanation of the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> command we used:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span> <span class="pre">...</span> <span class="pre">evennia/evennia</span></code> tells us that we want to run a new container based on the
 <code class="docutils literal notranslate"><span class="pre">evennia/evennia</span></code> docker image. Everything in between are options for this. The <code class="docutils literal notranslate"><span class="pre">evennia/evennia</span></code> is
@@ -114,8 +105,6 @@ group IDs instead of root’s IDs (root is the user running evennia inside the c
 having stale <code class="docutils literal notranslate"><span class="pre">.pid</span></code> files in your filesystem between container reboots which you have to force
 delete with <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">rm</span> <span class="pre">server/*.pid</span></code> before each boot.</p></li>
 </ul>
-</section>
-</section>
 <section id="running-your-game-as-a-docker-image">
 <h2>Running your game as a docker image<a class="headerlink" href="#running-your-game-as-a-docker-image" title="Permalink to this headline">¶</a></h2>
 <p>If you run the  <code class="docutils literal notranslate"><span class="pre">docker</span></code> command given in the previous section from your game dir you can then
@@ -133,17 +122,17 @@ install dependencies.</p>
 container comes up. If you already have a game folder with a database set up you can also start the
 docker container and pass commands directly to it. The command you pass will be the main process to
 run in the container. From your game dir, run for example this command:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4002:4002 --rm -v $PWD:/usr/src/game
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4002:4002 --rm -v $PWD:/usr/src/game evennia/evennia evennia start -l
 </pre></div>
 </div>
-<p>evennia/evennia evennia start -l</p>
 <p>This will start Evennia as the foreground process, echoing the log to the terminal. Closing the
 terminal will kill the server. Note that you <em>must</em> use a foreground command like <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span> <span class="pre">-l</span></code>
 or <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">ipstart</span></code> to start the server - otherwise the foreground process will finish immediately
 and the container go down.</p>
 </section>
+</section>
 <section id="create-your-own-game-image">
-<h3>Create your own game image<a class="headerlink" href="#create-your-own-game-image" title="Permalink to this headline">¶</a></h3>
+<h2>Create your own game image<a class="headerlink" href="#create-your-own-game-image" title="Permalink to this headline">¶</a></h2>
 <p>These steps assume that you have created or otherwise obtained a game directory already. First, <code class="docutils literal notranslate"><span class="pre">cd</span></code>
 to your game dir and create a new empty text file named <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>. Save the following two lines
 into it:</p>
@@ -165,7 +154,6 @@ build the image locally only (name the container whatever you like in that case,
 <code class="docutils literal notranslate"><span class="pre">mygame</span></code>).</p>
 <p>Docker images are stored centrally on your computer. You can see which ones you have available
 locally with <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">images</span></code>. Once built, you have a couple of options to run your game.</p>
-</section>
 <section id="run-container-from-your-game-image-for-development">
 <h3>Run container from your game image for development<a class="headerlink" href="#run-container-from-your-game-image-for-development" title="Permalink to this headline">¶</a></h3>
 <p>To run the container based on your game image locally for development, mount the local game
@@ -335,13 +323,11 @@ line.</p>
 <p><h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Running Evennia in Docker</a><ul>
-<li><a class="reference internal" href="#install-evennia-through-docker">Install Evennia through docker</a><ul>
-<li><a class="reference internal" href="#description-of-the-docker-run-command">Description of the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> command</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#running-your-game-as-a-docker-image">Running your game as a docker image</a><ul>
 <li><a class="reference internal" href="#start-evennia-and-run-through-docker">Start Evennia and run through docker</a></li>
-<li><a class="reference internal" href="#create-your-own-game-image">Create your own game image</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-your-own-game-image">Create your own game image</a><ul>
 <li><a class="reference internal" href="#run-container-from-your-game-image-for-development">Run container from your game image for development</a></li>
 <li><a class="reference internal" href="#deploy-game-image-for-production">Deploy game image for production</a></li>
 </ul>
