@@ -7,7 +7,7 @@ from random import randint, sample
 import mock
 import uuid
 from time import time
-from anything import Something
+from anything import Something, Anything
 from django.test.utils import override_settings
 from evennia.utils.test_resources import EvenniaTest
 from evennia.utils.tests.test_evmenu import TestEvMenu
@@ -363,7 +363,7 @@ class TestProtFuncs(EvenniaTest):
         )
         self.assertEqual(
             protlib.protfunc_parser("$right_justify( foo  )", testing=True),
-            (None, "                 foo"),
+            (Anything, "                 foo"),
         )
 
         test_prot = {"key1": "value1", "key2": 2}
