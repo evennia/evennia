@@ -128,7 +128,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     -
       name: Build and push for master
-      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10' && github.ref == 'refs/heads/master'
+      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.9' && github.ref == 'refs/heads/master'
       id: docker_build_master
       uses: docker/build-push-action@v2
       with:
