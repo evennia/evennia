@@ -12,7 +12,7 @@ in a separate module (e.g. if they could have been re-used elsewhere.)
 
 import random
 from evennia import TICKER_HANDLER
-from evennia import CmdSet, Command, DefaultRoom
+from evennia import CmdSet, Command, DefaultRoom, DefaultExit
 from evennia import utils, create_object, search_object
 from evennia import syscmdkeys, default_cmds
 from .objects import LightSource
@@ -304,6 +304,18 @@ class TutorialRoom(DefaultRoom):
             self.db.details = {detailkey.lower(): description}
 
 
+class TutorialStartExit(DefaultExit):
+    """
+    This is like a normal exit except it makes the `intro` command available
+    on itself. We put it on the exit in order to provide this command to the
+    Limbo room without modifying Limbo itself - deleting the tutorial exit
+    will also  clean up the intro command.
+
+    """
+    def at_object_creation(self):
+        self.cmdset.add(CmdSetEvenniaIntro, persistent=True)
+
+
 # -------------------------------------------------------------
 #
 # Weather room - room with a ticker
@@ -399,8 +411,8 @@ class CmdEvenniaIntro(Command):
         from .intro_menu import init_menu
         # quell also superusers
         if self.caller.account:
+            self.caller.msg("Auto-quelling permissions while in intro ...")
             self.caller.account.execute_cmd("quell")
-            self.caller.msg("(Auto-quelling)")
         init_menu(self.caller)
 
 
@@ -429,7 +441,6 @@ class IntroRoom(TutorialRoom):
             "This assigns the health Attribute to "
             "the account."
         )
-        self.cmdset.add(CmdSetEvenniaIntro, persistent=True)
 
     def at_object_receive(self, character, source_location):
         """

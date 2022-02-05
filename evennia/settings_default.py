@@ -485,8 +485,9 @@ COMMAND_DEFAULT_CLASS = "evennia.commands.default.muxcommand.MuxCommand"
 # Command.arg_regex is a regular expression desribing how the arguments
 # to the command must be structured for the command to match a given user
 # input. By default the command-name should end with a space or / (since the
-# default commands uses MuxCommand and /switches).
-COMMAND_DEFAULT_ARG_REGEX = r'^[ /]+.*$|$'
+# default commands uses MuxCommand and /switches). Note that the extra \n
+# is necessary for use with batchprocessor.
+COMMAND_DEFAULT_ARG_REGEX = r'^[ /]|\n|$'
 # By default, Command.msg will only send data to the Session calling
 # the Command in the first place. If set, Command.msg will instead return
 # data to all Sessions connected to the Account/Character associated with

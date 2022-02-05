@@ -57,6 +57,7 @@ class DemoCommandSetHelp(CmdSet):
         from evennia import default_cmds
 
         self.add(default_cmds.CmdHelp())
+        self.add(default_cmds.CmdChannel())
 
 
 def goto_command_demo_help(caller, raw_string, **kwargs):
@@ -124,11 +125,11 @@ The small sign reads:
     of their name (like '|ylook cozy|n') or use the number in the list to pick
     the one you want, like this:
 
-        |ylook 2-small|n
+        |ylook small-2|n
 
     As long as what you write is uniquely identifying you can be lazy and not
     write the full name of the thing you want to look at. Try '|ylook bo|n',
-    '|yl co|n' or '|yl 1-sm|n'!
+    '|yl co|n' or '|yl sm-1|n'!
 
     ... Oh, and if you see database-ids like (#1245) by the name of objects,
     it's because you are playing with Builder-privileges or higher. Regular
@@ -357,7 +358,7 @@ graphical game is like comparing a book to a movie - it's just a different
 experience altogether.
 
 MUDs are |wdifferent|n from Interactive Fiction (IF) in that they are multiplayer
-and usually has a consistent game world with many stories and protagonists
+and usually have a consistent game world with many stories and protagonists
 acting at the same time.
 
 Like there are many different styles of graphical MMOs, there are |wmany
@@ -499,8 +500,8 @@ Use |yhelp <topic>|n to get specific help. Try |yhelp help|n to get help on usin
 the help command. For your game you could add help about your game, lore, rules etc
 as well.
 
-At the moment you only have |whelp|n and some |wChannel Names|n (the '<menu commands>'
-is just a placeholder to indicate you are using this menu).
+At the moment you probably only have |whelp|n and a |wchannel|n command
+(the '<menu commands>' is just a placeholder to indicate you are using this menu).
 
 We'll add more commands as we get to them in this tutorial - but we'll only
 cover a small handful. Once you exit you'll find a lot more! Now let's try
@@ -529,9 +530,7 @@ This will send a message to the |wpublic|n channel where everyone on that
 channel can see it. If someone else is on your server, you may get a reply!
 
 Evennia can link its in-game channels to external chat networks. This allows
-you to talk with people not actually logged into the game. For
-example, the online Evennia-demo links its |wpublic|n channel to the #evennia
-IRC support channel.
+you to talk with people not actually logged into the game.
 
 ## OPTIONS
 
@@ -578,19 +577,13 @@ include other people/objects in the emote, reference things by a short-descripti
 |g** Paging people **|n
 
 Halfway between talking on a |wChannel|n and chatting in your current location
-with |wsay|n and |wpose|n, you can also |wpage|n people. This is like a private
-message only they can see.
+with |wsay|n and |wpose|n, you can also send private messages with |wpage|n:
 
-    |ypage <name> = Hello there!
-    page <name1>, <name2> = Hello both of you!|n
+    |ypage <name> Hello there!|n
 
-If you are alone on the server, put your own name as |w<name>|n to test it and
-page yourself. Write just |ypage|n to see your latest pages. This will also show
-you if anyone paged you while you were offline.
-
-(By the way - depending on which games you are used to, you may think that the
-use of |y=|n above is strange. This is a MUSH/MUX-style of syntax. For your own
-game you can change the |wpose|n command to work however you prefer).
+Put your own name as |y<name>|n to page yourself as a test. Write just |ypage|n
+to see your latest pages. This will also show you if anyone paged you while you
+were offline.
 
 ## OPTIONS
 
@@ -675,8 +668,8 @@ That concludes this little quick-intro to using the base game commands of
 Evennia. With this you should be able to continue exploring and also find help
 if you get stuck!
 
-Write |ynext|n to end this wizard and continue to the tutorial-world quest!
-If you want there is also some |wextra|n info for where to go beyond that.
+Write |ynext|n to end this wizard. If you want there is also some |wextra|n info
+for where to go beyond that.
 
 ## OPTIONS
 
@@ -704,12 +697,12 @@ Evennia you are wise to take a look at the |wEvennia documentation|n at
 - The tutorial-world may or may not be your cup of tea, but it does show off
   several |wuseful tools|n of Evennia. You may want to check out how it works:
 
-    |yhttps://www.evennia.com/docs/latest/Tutorial-World-Introduction|n
+    |yhttps://www.evennia.com/docs/latest/Howto/Starting/Part1/Tutorial-World|n
 
 - You can then continue looking through the |wTutorials|n and pick one that
   fits your level of understanding.
 
-    |yhttps://www.evennia.com/docs/latest/Tutorials|n
+    |yhttps://www.evennia.com/docs/latest/Howto/Howto-Overview|n
 
 - Make sure to |wjoin our forum|n and connect to our |wsupport chat|n! The
   Evennia community is very active and friendly and no question is too simple.
@@ -751,6 +744,9 @@ class TutorialEvMenu(EvMenu):
         self.caller.cmdset.remove(DemoCommandSetComms)
         _maintain_demo_room(self.caller, delete=True)
         super().close_menu()
+        if self.caller.account:
+            self.caller.msg("Restoring permissions ...")
+            self.caller.account.execute_cmd("unquell")
 
     def options_formatter(self, optionslist):
 
