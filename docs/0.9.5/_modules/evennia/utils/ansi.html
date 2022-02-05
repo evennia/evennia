@@ -1,0 +1,1524 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.utils.ansi &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.ansi</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.utils.ansi</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">ANSI - Gives colour to text.</span>
+
+<span class="sd">Use the codes defined in ANSIPARSER in your text to apply colour to text</span>
+<span class="sd">according to the ANSI standard.</span>
+
+<span class="sd">Examples:</span>
+
+<span class="sd">```python</span>
+<span class="sd">&quot;This is |rRed text|n and this is normal again.&quot;</span>
+<span class="sd">```</span>
+
+<span class="sd">Mostly you should not need to call `parse_ansi()` explicitly; it is run by</span>
+<span class="sd">Evennia just before returning data to/from the user. Depreciated example forms</span>
+<span class="sd">are available by extending the ansi mapping.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">to_str</span>
+
+
+<span class="c1"># ANSI definitions</span>
+
+<span class="n">ANSI_BEEP</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\07</span><span class="s2">&quot;</span>
+<span class="n">ANSI_ESCAPE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">&quot;</span>
+<span class="n">ANSI_NORMAL</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[0m&quot;</span>
+
+<span class="n">ANSI_UNDERLINE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[4m&quot;</span>
+<span class="n">ANSI_HILITE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[1m&quot;</span>
+<span class="n">ANSI_UNHILITE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[22m&quot;</span>
+<span class="n">ANSI_BLINK</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[5m&quot;</span>
+<span class="n">ANSI_INVERSE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[7m&quot;</span>
+<span class="n">ANSI_INV_HILITE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[1;7m&quot;</span>
+<span class="n">ANSI_INV_BLINK</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[7;5m&quot;</span>
+<span class="n">ANSI_BLINK_HILITE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[1;5m&quot;</span>
+<span class="n">ANSI_INV_BLINK_HILITE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[1;5;7m&quot;</span>
+
+<span class="c1"># Foreground colors</span>
+<span class="n">ANSI_BLACK</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[30m&quot;</span>
+<span class="n">ANSI_RED</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[31m&quot;</span>
+<span class="n">ANSI_GREEN</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[32m&quot;</span>
+<span class="n">ANSI_YELLOW</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[33m&quot;</span>
+<span class="n">ANSI_BLUE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[34m&quot;</span>
+<span class="n">ANSI_MAGENTA</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[35m&quot;</span>
+<span class="n">ANSI_CYAN</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[36m&quot;</span>
+<span class="n">ANSI_WHITE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[37m&quot;</span>
+
+<span class="c1"># Background colors</span>
+<span class="n">ANSI_BACK_BLACK</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[40m&quot;</span>
+<span class="n">ANSI_BACK_RED</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[41m&quot;</span>
+<span class="n">ANSI_BACK_GREEN</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[42m&quot;</span>
+<span class="n">ANSI_BACK_YELLOW</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[43m&quot;</span>
+<span class="n">ANSI_BACK_BLUE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[44m&quot;</span>
+<span class="n">ANSI_BACK_MAGENTA</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[45m&quot;</span>
+<span class="n">ANSI_BACK_CYAN</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[46m&quot;</span>
+<span class="n">ANSI_BACK_WHITE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[47m&quot;</span>
+
+<span class="c1"># Formatting Characters</span>
+<span class="n">ANSI_RETURN</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span>
+<span class="n">ANSI_TAB</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span>
+<span class="n">ANSI_SPACE</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span>
+
+<span class="c1"># Escapes</span>
+<span class="n">ANSI_ESCAPES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;{{&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;\|\|&quot;</span><span class="p">)</span>
+
+<span class="n">_PARSE_CACHE</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+<span class="n">_PARSE_CACHE_SIZE</span> <span class="o">=</span> <span class="mi">10000</span>
+
+<span class="n">_COLOR_NO_DEFAULT</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COLOR_NO_DEFAULT</span>
+
+
+<div class="viewcode-block" id="ANSIParser"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser">[docs]</a><span class="k">class</span> <span class="nc">ANSIParser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class that parses ANSI markup to ANSI command sequences.</span>
+
+<span class="sd">    We also allow to escape colour codes by prepending with an extra `|`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Mapping using {r {n etc</span>
+
+    <span class="n">ansi_map</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="c1"># alternative |-format</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|n&quot;</span><span class="p">,</span> <span class="n">ANSI_NORMAL</span><span class="p">),</span>  <span class="c1"># reset</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|/&quot;</span><span class="p">,</span> <span class="n">ANSI_RETURN</span><span class="p">),</span>  <span class="c1"># line break</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|-&quot;</span><span class="p">,</span> <span class="n">ANSI_TAB</span><span class="p">),</span>  <span class="c1"># tab</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|&gt;&quot;</span><span class="p">,</span> <span class="n">ANSI_SPACE</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>  <span class="c1"># indent (4 spaces)</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|_&quot;</span><span class="p">,</span> <span class="n">ANSI_SPACE</span><span class="p">),</span>  <span class="c1"># space</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|*&quot;</span><span class="p">,</span> <span class="n">ANSI_INVERSE</span><span class="p">),</span>  <span class="c1"># invert</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|^&quot;</span><span class="p">,</span> <span class="n">ANSI_BLINK</span><span class="p">),</span>  <span class="c1"># blinking text (very annoying and not supported by all clients)</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|u&quot;</span><span class="p">,</span> <span class="n">ANSI_UNDERLINE</span><span class="p">),</span>  <span class="c1"># underline</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|r&quot;</span><span class="p">,</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_RED</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|g&quot;</span><span class="p">,</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_GREEN</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|y&quot;</span><span class="p">,</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_YELLOW</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|b&quot;</span><span class="p">,</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_BLUE</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|m&quot;</span><span class="p">,</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_MAGENTA</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|c&quot;</span><span class="p">,</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_CYAN</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|w&quot;</span><span class="p">,</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_WHITE</span><span class="p">),</span>  <span class="c1"># pure white</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|x&quot;</span><span class="p">,</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_BLACK</span><span class="p">),</span>  <span class="c1"># dark grey</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|R&quot;</span><span class="p">,</span> <span class="n">ANSI_UNHILITE</span> <span class="o">+</span> <span class="n">ANSI_RED</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|G&quot;</span><span class="p">,</span> <span class="n">ANSI_UNHILITE</span> <span class="o">+</span> <span class="n">ANSI_GREEN</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|Y&quot;</span><span class="p">,</span> <span class="n">ANSI_UNHILITE</span> <span class="o">+</span> <span class="n">ANSI_YELLOW</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|B&quot;</span><span class="p">,</span> <span class="n">ANSI_UNHILITE</span> <span class="o">+</span> <span class="n">ANSI_BLUE</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|M&quot;</span><span class="p">,</span> <span class="n">ANSI_UNHILITE</span> <span class="o">+</span> <span class="n">ANSI_MAGENTA</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|C&quot;</span><span class="p">,</span> <span class="n">ANSI_UNHILITE</span> <span class="o">+</span> <span class="n">ANSI_CYAN</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|W&quot;</span><span class="p">,</span> <span class="n">ANSI_UNHILITE</span> <span class="o">+</span> <span class="n">ANSI_WHITE</span><span class="p">),</span>  <span class="c1"># light grey</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|X&quot;</span><span class="p">,</span> <span class="n">ANSI_UNHILITE</span> <span class="o">+</span> <span class="n">ANSI_BLACK</span><span class="p">),</span>  <span class="c1"># pure black</span>
+        <span class="c1"># hilight-able colors</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|h&quot;</span><span class="p">,</span> <span class="n">ANSI_HILITE</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|H&quot;</span><span class="p">,</span> <span class="n">ANSI_UNHILITE</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|!R&quot;</span><span class="p">,</span> <span class="n">ANSI_RED</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|!G&quot;</span><span class="p">,</span> <span class="n">ANSI_GREEN</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|!Y&quot;</span><span class="p">,</span> <span class="n">ANSI_YELLOW</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|!B&quot;</span><span class="p">,</span> <span class="n">ANSI_BLUE</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|!M&quot;</span><span class="p">,</span> <span class="n">ANSI_MAGENTA</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|!C&quot;</span><span class="p">,</span> <span class="n">ANSI_CYAN</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|!W&quot;</span><span class="p">,</span> <span class="n">ANSI_WHITE</span><span class="p">),</span>  <span class="c1"># light grey</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|!X&quot;</span><span class="p">,</span> <span class="n">ANSI_BLACK</span><span class="p">),</span>  <span class="c1"># pure black</span>
+        <span class="c1"># normal ANSI backgrounds</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[R&quot;</span><span class="p">,</span> <span class="n">ANSI_BACK_RED</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[G&quot;</span><span class="p">,</span> <span class="n">ANSI_BACK_GREEN</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[Y&quot;</span><span class="p">,</span> <span class="n">ANSI_BACK_YELLOW</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[B&quot;</span><span class="p">,</span> <span class="n">ANSI_BACK_BLUE</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[M&quot;</span><span class="p">,</span> <span class="n">ANSI_BACK_MAGENTA</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[C&quot;</span><span class="p">,</span> <span class="n">ANSI_BACK_CYAN</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[W&quot;</span><span class="p">,</span> <span class="n">ANSI_BACK_WHITE</span><span class="p">),</span>  <span class="c1"># light grey background</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[X&quot;</span><span class="p">,</span> <span class="n">ANSI_BACK_BLACK</span><span class="p">),</span>  <span class="c1"># pure black background</span>
+    <span class="p">]</span>
+
+    <span class="n">ansi_xterm256_bright_bg_map</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="c1"># &quot;bright&quot; ANSI backgrounds using xterm256 since ANSI</span>
+        <span class="c1"># standard does not support it (will</span>
+        <span class="c1"># fallback to dark ANSI background colors if xterm256</span>
+        <span class="c1"># is not supported by client)</span>
+        <span class="c1"># |-style variations</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[r&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;|[500&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[g&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;|[050&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[y&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;|[550&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[b&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;|[005&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[m&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;|[505&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[c&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;|[055&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[w&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;|[555&quot;</span><span class="p">),</span>  <span class="c1"># white background</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[x&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;|[222&quot;</span><span class="p">),</span>
+    <span class="p">]</span>  <span class="c1"># dark grey background</span>
+
+    <span class="c1"># xterm256. These are replaced directly by</span>
+    <span class="c1"># the sub_xterm256 method</span>
+
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">COLOR_NO_DEFAULT</span><span class="p">:</span>
+        <span class="n">ansi_map</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COLOR_ANSI_EXTRA_MAP</span>
+        <span class="n">xterm256_fg</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COLOR_XTERM256_EXTRA_FG</span>
+        <span class="n">xterm256_bg</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COLOR_XTERM256_EXTRA_BG</span>
+        <span class="n">xterm256_gfg</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COLOR_XTERM256_EXTRA_GFG</span>
+        <span class="n">xterm256_gbg</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COLOR_XTERM256_EXTRA_GBG</span>
+        <span class="n">ansi_xterm256_bright_bg_map</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">xterm256_fg</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;\|([0-5])([0-5])([0-5])&quot;</span><span class="p">]</span>  <span class="c1"># |123 - foreground colour</span>
+        <span class="n">xterm256_bg</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;\|\[([0-5])([0-5])([0-5])&quot;</span><span class="p">]</span>  <span class="c1"># |[123 - background colour</span>
+        <span class="n">xterm256_gfg</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;\|=([a-z])&quot;</span><span class="p">]</span>  <span class="c1"># |=a - greyscale foreground</span>
+        <span class="n">xterm256_gbg</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;\|\[=([a-z])&quot;</span><span class="p">]</span>  <span class="c1"># |[=a - greyscale background</span>
+        <span class="n">ansi_map</span> <span class="o">+=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COLOR_ANSI_EXTRA_MAP</span>
+        <span class="n">xterm256_fg</span> <span class="o">+=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COLOR_XTERM256_EXTRA_FG</span>
+        <span class="n">xterm256_bg</span> <span class="o">+=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COLOR_XTERM256_EXTRA_BG</span>
+        <span class="n">xterm256_gfg</span> <span class="o">+=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COLOR_XTERM256_EXTRA_GFG</span>
+        <span class="n">xterm256_gbg</span> <span class="o">+=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COLOR_XTERM256_EXTRA_GBG</span>
+        <span class="n">ansi_xterm256_bright_bg_map</span> <span class="o">+=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP</span>
+
+    <span class="n">mxp_re</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\|lc(.*?)\|lt(.*?)\|le&quot;</span>
+
+    <span class="c1"># prepare regex matching</span>
+    <span class="n">brightbg_sub</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">r</span><span class="s2">&quot;(?&lt;!\|)</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">ansi_xterm256_bright_bg_map</span><span class="p">]),</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">xterm256_fg_sub</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">xterm256_fg</span><span class="p">),</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+    <span class="n">xterm256_bg_sub</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">xterm256_bg</span><span class="p">),</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+    <span class="n">xterm256_gfg_sub</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">xterm256_gfg</span><span class="p">),</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+    <span class="n">xterm256_gbg_sub</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">xterm256_gbg</span><span class="p">),</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+
+    <span class="c1"># xterm256_sub = re.compile(r&quot;|&quot;.join([tup[0] for tup in xterm256_map]), re.DOTALL)</span>
+    <span class="n">ansi_sub</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">ansi_map</span><span class="p">]),</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+    <span class="n">mxp_sub</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">mxp_re</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+
+    <span class="c1"># used by regex replacer to correctly map ansi sequences</span>
+    <span class="n">ansi_map_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ansi_map</span><span class="p">)</span>
+    <span class="n">ansi_xterm256_bright_bg_map_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ansi_xterm256_bright_bg_map</span><span class="p">)</span>
+
+    <span class="c1"># prepare matching ansi codes overall</span>
+    <span class="n">ansi_re</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\033\[[0-9;]+m&quot;</span>
+    <span class="n">ansi_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">ansi_re</span><span class="p">)</span>
+
+    <span class="c1"># escapes - these double-chars will be replaced with a single</span>
+    <span class="c1"># instance of each</span>
+    <span class="n">ansi_escapes</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ANSI_ESCAPES</span><span class="p">),</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ANSIParser.sub_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.sub_ansi">[docs]</a>    <span class="k">def</span> <span class="nf">sub_ansi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ansimatch</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replacer used by `re.sub` to replace ANSI</span>
+<span class="sd">        markers with correct ANSI sequences</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ansimatch (re.matchobject): The match.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            processed (str): The processed match string.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ansi_map_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ansimatch</span><span class="o">.</span><span class="n">group</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ANSIParser.sub_brightbg"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.sub_brightbg">[docs]</a>    <span class="k">def</span> <span class="nf">sub_brightbg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ansimatch</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replacer used by `re.sub` to replace ANSI</span>
+<span class="sd">        bright background markers with Xterm256 replacement</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ansimatch (re.matchobject): The match.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            processed (str): The processed match string.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ansi_xterm256_bright_bg_map_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ansimatch</span><span class="o">.</span><span class="n">group</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ANSIParser.sub_xterm256"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.sub_xterm256">[docs]</a>    <span class="k">def</span> <span class="nf">sub_xterm256</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rgbmatch</span><span class="p">,</span> <span class="n">use_xterm256</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">color_type</span><span class="o">=</span><span class="s2">&quot;fg&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is a replacer method called by `re.sub` with the matched</span>
+<span class="sd">        tag. It must return the correct ansi sequence.</span>
+
+<span class="sd">        It checks `self.do_xterm256` to determine if conversion</span>
+<span class="sd">        to standard ANSI should be done or not.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            rgbmatch (re.matchobject): The match.</span>
+<span class="sd">            use_xterm256 (bool, optional): Don&#39;t convert 256-colors to 16.</span>
+<span class="sd">            color_type (str): One of &#39;fg&#39;, &#39;bg&#39;, &#39;gfg&#39;, &#39;gbg&#39;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            processed (str): The processed match string.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rgbmatch</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># get tag, stripping the initial marker</span>
+        <span class="c1"># rgbtag = rgbmatch.group()[1:]</span>
+
+        <span class="n">background</span> <span class="o">=</span> <span class="n">color_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;bg&quot;</span><span class="p">,</span> <span class="s2">&quot;gbg&quot;</span><span class="p">)</span>
+        <span class="n">grayscale</span> <span class="o">=</span> <span class="n">color_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;gfg&quot;</span><span class="p">,</span> <span class="s2">&quot;gbg&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">grayscale</span><span class="p">:</span>
+            <span class="c1"># 6x6x6 color-cube (xterm indexes 16-231)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">rgbmatch</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span> <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">rgbmatch</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># grayscale values (xterm indexes 0, 232-255, 15) for full spectrum</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">letter</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">rgbmatch</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span> <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">rgbmatch</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">letter</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span>
+                <span class="n">colval</span> <span class="o">=</span> <span class="mi">16</span>  <span class="c1"># pure black @ index 16 (first color cube entry)</span>
+            <span class="k">elif</span> <span class="n">letter</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+                <span class="n">colval</span> <span class="o">=</span> <span class="mi">231</span>  <span class="c1"># pure white @ index 231 (last color cube entry)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># letter in range [b..y] (exactly 24 values!)</span>
+                <span class="n">colval</span> <span class="o">=</span> <span class="mi">134</span> <span class="o">+</span> <span class="nb">ord</span><span class="p">(</span><span class="n">letter</span><span class="p">)</span>
+
+            <span class="c1"># ansi fallback logic expects r,g,b values in [0..5] range</span>
+            <span class="n">gray</span> <span class="o">=</span> <span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">letter</span><span class="p">)</span> <span class="o">-</span> <span class="mi">97</span><span class="p">)</span> <span class="o">/</span> <span class="mf">5.0</span>
+            <span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span> <span class="o">=</span> <span class="n">gray</span><span class="p">,</span> <span class="n">gray</span><span class="p">,</span> <span class="n">gray</span>
+
+        <span class="k">if</span> <span class="n">use_xterm256</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">grayscale</span><span class="p">:</span>
+                <span class="n">colval</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">+</span> <span class="p">(</span><span class="n">red</span> <span class="o">*</span> <span class="mi">36</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">green</span> <span class="o">*</span> <span class="mi">6</span><span class="p">)</span> <span class="o">+</span> <span class="n">blue</span>
+
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[</span><span class="si">%s</span><span class="s2">8;5;</span><span class="si">%s</span><span class="s2">m&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">background</span><span class="p">),</span> <span class="n">colval</span><span class="p">)</span>
+            <span class="c1"># replaced since some clients (like Potato) does not accept codes with leading zeroes, see issue #1024.</span>
+            <span class="c1"># return &quot;\033[%s8;5;%s%s%sm&quot; % (3 + int(background), colval // 100, (colval % 100) // 10, colval%10)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># xterm256 not supported, convert the rgb value to ansi instead</span>
+            <span class="k">if</span> <span class="n">red</span> <span class="o">==</span> <span class="n">green</span> <span class="o">==</span> <span class="n">blue</span> <span class="ow">and</span> <span class="n">red</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">background</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_BLACK</span>
+                <span class="k">elif</span> <span class="n">red</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_BLACK</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_BLACK</span>
+            <span class="k">elif</span> <span class="n">red</span> <span class="o">==</span> <span class="n">green</span> <span class="o">==</span> <span class="n">blue</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">background</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_WHITE</span>
+                <span class="k">elif</span> <span class="n">red</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_WHITE</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_WHITE</span>
+            <span class="k">elif</span> <span class="n">red</span> <span class="o">&gt;</span> <span class="n">green</span> <span class="ow">and</span> <span class="n">red</span> <span class="o">&gt;</span> <span class="n">blue</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">background</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_RED</span>
+                <span class="k">elif</span> <span class="n">red</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_RED</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_RED</span>
+            <span class="k">elif</span> <span class="n">red</span> <span class="o">==</span> <span class="n">green</span> <span class="ow">and</span> <span class="n">red</span> <span class="o">&gt;</span> <span class="n">blue</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">background</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_YELLOW</span>
+                <span class="k">elif</span> <span class="n">red</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_YELLOW</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_YELLOW</span>
+            <span class="k">elif</span> <span class="n">red</span> <span class="o">==</span> <span class="n">blue</span> <span class="ow">and</span> <span class="n">red</span> <span class="o">&gt;</span> <span class="n">green</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">background</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_MAGENTA</span>
+                <span class="k">elif</span> <span class="n">red</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_MAGENTA</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_MAGENTA</span>
+            <span class="k">elif</span> <span class="n">green</span> <span class="o">&gt;</span> <span class="n">blue</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">background</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_GREEN</span>
+                <span class="k">elif</span> <span class="n">green</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_GREEN</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_GREEN</span>
+            <span class="k">elif</span> <span class="n">green</span> <span class="o">==</span> <span class="n">blue</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">background</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_CYAN</span>
+                <span class="k">elif</span> <span class="n">green</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_CYAN</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_CYAN</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># mostly blue</span>
+                <span class="k">if</span> <span class="n">background</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_BACK_BLUE</span>
+                <span class="k">elif</span> <span class="n">blue</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_HILITE</span> <span class="o">+</span> <span class="n">ANSI_BLUE</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_BLUE</span></div>
+
+<div class="viewcode-block" id="ANSIParser.strip_raw_codes"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.strip_raw_codes">[docs]</a>    <span class="k">def</span> <span class="nf">strip_raw_codes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Strips raw ANSI codes from a string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            string (str): The string to strip.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            string (str): The processed string.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ansi_regex</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ANSIParser.strip_mxp"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.strip_mxp">[docs]</a>    <span class="k">def</span> <span class="nf">strip_mxp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Strips all MXP codes from a string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            string (str): The string to strip.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            string (str): The processed string.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mxp_sub</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\2&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ANSIParser.parse_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.parse_ansi">[docs]</a>    <span class="k">def</span> <span class="nf">parse_ansi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parses a string, subbing color codes according to the stored</span>
+<span class="sd">        mapping.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            string (str): The string to parse.</span>
+<span class="sd">            strip_ansi (boolean, optional): Strip all found ansi markup.</span>
+<span class="sd">            xterm256 (boolean, optional): If actually using xterm256 or if</span>
+<span class="sd">                these values should be converted to 16-color ANSI.</span>
+<span class="sd">            mxp (boolean, optional): Parse MXP commands in string.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            string (str): The parsed string.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="s2">&quot;_raw_string&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">strip_ansi</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">raw</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">string</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># check cached parsings</span>
+        <span class="k">global</span> <span class="n">_PARSE_CACHE</span>
+        <span class="n">cachekey</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="p">,</span> <span class="n">xterm256</span><span class="p">,</span> <span class="n">mxp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cachekey</span> <span class="ow">in</span> <span class="n">_PARSE_CACHE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_PARSE_CACHE</span><span class="p">[</span><span class="n">cachekey</span><span class="p">]</span>
+
+        <span class="c1"># pre-convert bright colors to xterm256 color tags</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">brightbg_sub</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sub_brightbg</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">do_xterm256_fg</span><span class="p">(</span><span class="n">part</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_xterm256</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">xterm256</span><span class="p">,</span> <span class="s2">&quot;fg&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">do_xterm256_bg</span><span class="p">(</span><span class="n">part</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_xterm256</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">xterm256</span><span class="p">,</span> <span class="s2">&quot;bg&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">do_xterm256_gfg</span><span class="p">(</span><span class="n">part</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_xterm256</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">xterm256</span><span class="p">,</span> <span class="s2">&quot;gfg&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">do_xterm256_gbg</span><span class="p">(</span><span class="n">part</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_xterm256</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">xterm256</span><span class="p">,</span> <span class="s2">&quot;gbg&quot;</span><span class="p">)</span>
+
+        <span class="n">in_string</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_str</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
+        <span class="c1"># do string replacement</span>
+        <span class="n">parsed_string</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ansi_escapes</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">in_string</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">sep</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">parts</span><span class="p">[::</span><span class="mi">2</span><span class="p">],</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]):</span>
+            <span class="n">pstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xterm256_fg_sub</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">do_xterm256_fg</span><span class="p">,</span> <span class="n">part</span><span class="p">)</span>
+            <span class="n">pstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xterm256_bg_sub</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">do_xterm256_bg</span><span class="p">,</span> <span class="n">pstring</span><span class="p">)</span>
+            <span class="n">pstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xterm256_gfg_sub</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">do_xterm256_gfg</span><span class="p">,</span> <span class="n">pstring</span><span class="p">)</span>
+            <span class="n">pstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xterm256_gbg_sub</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">do_xterm256_gbg</span><span class="p">,</span> <span class="n">pstring</span><span class="p">)</span>
+            <span class="n">pstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ansi_sub</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sub_ansi</span><span class="p">,</span> <span class="n">pstring</span><span class="p">)</span>
+            <span class="n">parsed_string</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pstring</span><span class="p">,</span> <span class="n">sep</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()))</span>
+        <span class="n">parsed_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parsed_string</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">mxp</span><span class="p">:</span>
+            <span class="n">parsed_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip_mxp</span><span class="p">(</span><span class="n">parsed_string</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">strip_ansi</span><span class="p">:</span>
+            <span class="c1"># remove all ansi codes (including those manually</span>
+            <span class="c1"># inserted in string)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip_raw_codes</span><span class="p">(</span><span class="n">parsed_string</span><span class="p">)</span>
+
+        <span class="c1"># cache and crop old cache</span>
+        <span class="n">_PARSE_CACHE</span><span class="p">[</span><span class="n">cachekey</span><span class="p">]</span> <span class="o">=</span> <span class="n">parsed_string</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_PARSE_CACHE</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">_PARSE_CACHE_SIZE</span><span class="p">:</span>
+            <span class="n">_PARSE_CACHE</span><span class="o">.</span><span class="n">popitem</span><span class="p">(</span><span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">parsed_string</span></div></div>
+
+
+<span class="n">ANSI_PARSER</span> <span class="o">=</span> <span class="n">ANSIParser</span><span class="p">()</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Access function</span>
+<span class="c1">#</span>
+
+
+<div class="viewcode-block" id="parse_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.parse_ansi">[docs]</a><span class="k">def</span> <span class="nf">parse_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">ANSI_PARSER</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parses a string, subbing color codes as needed.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        string (str): The string to parse.</span>
+<span class="sd">        strip_ansi (bool, optional): Strip all ANSI sequences.</span>
+<span class="sd">        parser (ansi.AnsiParser, optional): A parser instance to use.</span>
+<span class="sd">        xterm256 (bool, optional): Support xterm256 or not.</span>
+<span class="sd">        mxp (bool, optional): Support MXP markup or not.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        string (str): The parsed string.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">strip_ansi</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="n">xterm256</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="n">mxp</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="strip_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.strip_ansi">[docs]</a><span class="k">def</span> <span class="nf">strip_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">ANSI_PARSER</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Strip all ansi from the string. This handles the Evennia-specific</span>
+<span class="sd">    markup.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        string (str): The string to strip.</span>
+<span class="sd">        parser (ansi.AnsiParser, optional): The parser to use.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        string (str): The stripped string.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="strip_raw_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.strip_raw_ansi">[docs]</a><span class="k">def</span> <span class="nf">strip_raw_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">ANSI_PARSER</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove raw ansi codes from string. This assumes pure</span>
+<span class="sd">    ANSI-bytecodes in the string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        string (str): The string to parse.</span>
+<span class="sd">        parser (bool, optional): The parser to use.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        string (str): the stripped string.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">strip_raw_codes</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="raw"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.raw">[docs]</a><span class="k">def</span> <span class="nf">raw</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Escapes a string into a form which won&#39;t be colorized by the ansi</span>
+<span class="sd">    parser.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        string (str): The raw, escaped string.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">,</span> <span class="s2">&quot;{{&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">,</span> <span class="s2">&quot;||&quot;</span><span class="p">)</span></div>
+
+
+<span class="c1"># ------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1"># ANSIString - ANSI-aware string class</span>
+<span class="c1">#</span>
+<span class="c1"># ------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">_spacing_preflight</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This wrapper function is used to do some preflight checks on</span>
+<span class="sd">    functions used for padding ANSIStrings.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">78</span><span class="p">,</span> <span class="n">fillchar</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">fillchar</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fillchar</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fillchar</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fillchar</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;must be char, not </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">fillchar</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;integer argument expected, got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">width</span><span class="p">))</span>
+        <span class="n">_difference</span> <span class="o">=</span> <span class="n">width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_difference</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">fillchar</span><span class="p">,</span> <span class="n">_difference</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wrapped</span>
+
+
+<span class="k">def</span> <span class="nf">_query_super</span><span class="p">(</span><span class="n">func_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Have the string class handle this with the cleaned string instead</span>
+<span class="sd">    of ANSIString.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">(),</span> <span class="n">func_name</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wrapped</span>
+
+
+<span class="k">def</span> <span class="nf">_on_raw</span><span class="p">(</span><span class="n">func_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Like query_super, but makes the operation run on the raw string.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="s2">&quot;_raw_string&quot;</span><span class="p">):</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">string</span><span class="o">.</span><span class="n">raw</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="c1"># just skip out if there are no more strings</span>
+            <span class="k">pass</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">,</span> <span class="n">func_name</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">decoded</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">return</span> <span class="n">wrapped</span>
+
+
+<span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="n">func_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Some string functions, like those manipulating capital letters,</span>
+<span class="sd">    return a string the same length as the original. This function</span>
+<span class="sd">    allows us to do the same, replacing all the non-coded characters</span>
+<span class="sd">    with the resulting string.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">replacement_string</span> <span class="o">=</span> <span class="n">_query_super</span><span class="p">(</span><span class="n">func_name</span><span class="p">)(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">to_string</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">char_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code_indexes</span><span class="p">:</span>
+                <span class="n">to_string</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_char_indexes</span><span class="p">:</span>
+                <span class="n">to_string</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">replacement_string</span><span class="p">[</span><span class="n">char_counter</span><span class="p">])</span>
+                <span class="n">char_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span>
+            <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">to_string</span><span class="p">),</span>
+            <span class="n">decoded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">code_indexes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_code_indexes</span><span class="p">,</span>
+            <span class="n">char_indexes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_char_indexes</span><span class="p">,</span>
+            <span class="n">clean_string</span><span class="o">=</span><span class="n">replacement_string</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wrapped</span>
+
+
+<div class="viewcode-block" id="ANSIMeta"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIMeta">[docs]</a><span class="k">class</span> <span class="nc">ANSIMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Many functions on ANSIString are just light wrappers around the string</span>
+<span class="sd">    base class. We apply them here, as part of the classes construction.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ANSIMeta.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIMeta.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">func_name</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">&quot;count&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;startswith&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;endswith&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;find&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;index&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;isalnum&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;isalpha&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;isdigit&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;islower&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;isspace&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;istitle&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;isupper&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rfind&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rindex&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;__len__&quot;</span><span class="p">,</span>
+        <span class="p">]:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">_query_super</span><span class="p">(</span><span class="n">func_name</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">func_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;__mod__&quot;</span><span class="p">,</span> <span class="s2">&quot;expandtabs&quot;</span><span class="p">,</span> <span class="s2">&quot;decode&quot;</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">,</span> <span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="s2">&quot;encode&quot;</span><span class="p">]:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">_on_raw</span><span class="p">(</span><span class="n">func_name</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">func_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;capitalize&quot;</span><span class="p">,</span> <span class="s2">&quot;translate&quot;</span><span class="p">,</span> <span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="s2">&quot;upper&quot;</span><span class="p">,</span> <span class="s2">&quot;swapcase&quot;</span><span class="p">]:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">_transform</span><span class="p">(</span><span class="n">func_name</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ANSIString"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString">[docs]</a><span class="k">class</span> <span class="nc">ANSIString</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ANSIMeta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Unicode-like object that is aware of ANSI codes.</span>
+
+<span class="sd">    This class can be used nearly identically to strings, in that it will</span>
+<span class="sd">    report string length, handle slices, etc, much like a string object</span>
+<span class="sd">    would. The methods should be used identically as string methods are.</span>
+
+<span class="sd">    There is at least one exception to this (and there may be more, though</span>
+<span class="sd">    they have not come up yet). When using &#39;&#39;.join() or u&#39;&#39;.join() on an</span>
+<span class="sd">    ANSIString, color information will get lost. You must use</span>
+<span class="sd">    ANSIString(&#39;&#39;).join() to preserve color information.</span>
+
+<span class="sd">    This implementation isn&#39;t perfectly clean, as it doesn&#39;t really have an</span>
+<span class="sd">    understanding of what the codes mean in order to eliminate</span>
+<span class="sd">    redundant characters-- though cleaning up the strings might end up being</span>
+<span class="sd">    inefficient and slow without some C code when dealing with larger values.</span>
+<span class="sd">    Such enhancements could be made as an enhancement to ANSI_PARSER</span>
+<span class="sd">    if needed, however.</span>
+
+<span class="sd">    If one is going to use ANSIString, one should generally avoid converting</span>
+<span class="sd">    away from it until one is about to send information on the wire. This is</span>
+<span class="sd">    because escape sequences in the string may otherwise already be decoded,</span>
+<span class="sd">    and taken literally the second time around.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># A compiled Regex for the format mini-language: https://docs.python.org/3/library/string.html#formatspec</span>
+    <span class="n">re_format</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s2">&quot;(?i)(?P&lt;just&gt;(?P&lt;fill&gt;.)?(?P&lt;align&gt;\&lt;|\&gt;|\=|\^))?(?P&lt;sign&gt;\+|\-| )?(?P&lt;alt&gt;\#)?&quot;</span>
+        <span class="sa">r</span><span class="s2">&quot;(?P&lt;zero&gt;0)?(?P&lt;width&gt;\d+)?(?P&lt;grouping&gt;\_|\,)?(?:\.(?P&lt;precision&gt;\d+))?&quot;</span>
+        <span class="sa">r</span><span class="s2">&quot;(?P&lt;type&gt;b|c|d|e|E|f|F|g|G|n|o|s|x|X|%)?&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When creating a new ANSIString, you may use a custom parser that has</span>
+<span class="sd">        the same attributes as the standard one, and you may declare the</span>
+<span class="sd">        string to be handled as already decoded. It is important not to double</span>
+<span class="sd">        decode strings, as escapes can only be respected once.</span>
+
+<span class="sd">        Internally, ANSIString can also passes itself precached code/character</span>
+<span class="sd">        indexes and clean strings to avoid doing extra work when combining</span>
+<span class="sd">        ANSIStrings.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">to_str</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;parser&quot;</span><span class="p">,</span> <span class="n">ANSI_PARSER</span><span class="p">)</span>
+        <span class="n">decoded</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;decoded&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="s2">&quot;_raw_string&quot;</span><span class="p">)</span>
+        <span class="n">code_indexes</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;code_indexes&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">char_indexes</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;char_indexes&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">clean_string</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;clean_string&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># All True, or All False, not just one.</span>
+        <span class="n">checks</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="n">code_indexes</span><span class="p">,</span> <span class="n">char_indexes</span><span class="p">,</span> <span class="n">clean_string</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">checks</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;You must specify code_indexes, char_indexes, &quot;</span>
+                <span class="s2">&quot;and clean_string together, or not at all.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">checks</span><span class="p">):</span>
+            <span class="n">decoded</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">decoded</span><span class="p">:</span>
+            <span class="c1"># Completely new ANSI String</span>
+            <span class="n">clean_string</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">clean_string</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># We have an explicit clean string.</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="s2">&quot;_clean_string&quot;</span><span class="p">):</span>
+            <span class="c1"># It&#39;s already an ANSIString</span>
+            <span class="n">clean_string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">_clean_string</span>
+            <span class="n">code_indexes</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">_code_indexes</span>
+            <span class="n">char_indexes</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">_char_indexes</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">_raw_string</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># It&#39;s a string that has been pre-ansi decoded.</span>
+            <span class="n">clean_string</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">strip_raw_codes</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+        <span class="n">ansi_string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">,</span> <span class="n">to_str</span><span class="p">(</span><span class="n">clean_string</span><span class="p">))</span>
+        <span class="n">ansi_string</span><span class="o">.</span><span class="n">_raw_string</span> <span class="o">=</span> <span class="n">string</span>
+        <span class="n">ansi_string</span><span class="o">.</span><span class="n">_clean_string</span> <span class="o">=</span> <span class="n">clean_string</span>
+        <span class="n">ansi_string</span><span class="o">.</span><span class="n">_code_indexes</span> <span class="o">=</span> <span class="n">code_indexes</span>
+        <span class="n">ansi_string</span><span class="o">.</span><span class="n">_char_indexes</span> <span class="o">=</span> <span class="n">char_indexes</span>
+        <span class="k">return</span> <span class="n">ansi_string</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span>
+
+    <span class="k">def</span> <span class="fm">__format__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">format_spec</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This magic method covers ANSIString&#39;s behavior within a str.format() or f-string.</span>
+
+<span class="sd">        Current features supported: fill, align, width.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            format_spec (str): The format specification passed by f-string or str.format(). This is a string such as</span>
+<span class="sd">                &quot;0&lt;30&quot; which would mean &quot;left justify to 30, filling with zeros&quot;. The full specification can be found</span>
+<span class="sd">                at https://docs.python.org/3/library/string.html#formatspec</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ansi_str (str): The formatted ANSIString&#39;s .raw() form, for display.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># This calls the compiled regex stored on ANSIString&#39;s class to analyze the format spec.</span>
+        <span class="c1"># It returns a dictionary.</span>
+        <span class="n">format_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">re_format</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">format_spec</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+        <span class="n">clean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+        <span class="n">base_output</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">())</span>
+        <span class="n">align</span> <span class="o">=</span> <span class="n">format_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;align&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">)</span>
+        <span class="n">fill</span> <span class="o">=</span> <span class="n">format_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fill&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+        <span class="c1"># Need to coerce width into an integer. We can be certain that it&#39;s numeric thanks to regex.</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">format_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">align</span> <span class="o">==</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">:</span>
+            <span class="n">base_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">fill</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">align</span> <span class="o">==</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">:</span>
+            <span class="n">base_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">fill</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">align</span> <span class="o">==</span> <span class="s2">&quot;^&quot;</span><span class="p">:</span>
+            <span class="n">base_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">fill</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">align</span> <span class="o">==</span> <span class="s2">&quot;=&quot;</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="c1"># Return the raw string with ANSI markup, ready to be displayed.</span>
+        <span class="k">return</span> <span class="n">base_output</span><span class="o">.</span><span class="n">raw</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Let&#39;s make the repr the command that would actually be used to</span>
+<span class="sd">        construct this object, for convenience and reference.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;ANSIString(</span><span class="si">%s</span><span class="s2">, decoded=True)&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ANSIString.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When the ANSIString is first initialized, a few internal variables</span>
+<span class="sd">        have to be set.</span>
+
+<span class="sd">        The first is the parser. It is possible to replace Evennia&#39;s standard</span>
+<span class="sd">        ANSI parser with one of your own syntax if you wish, so long as it</span>
+<span class="sd">        implements the same interface.</span>
+
+<span class="sd">        The second is the _raw_string. This is the original &quot;dumb&quot; string</span>
+<span class="sd">        with ansi escapes that ANSIString represents.</span>
+
+<span class="sd">        The third thing to set is the _clean_string. This is a string that is</span>
+<span class="sd">        devoid of all ANSI Escapes.</span>
+
+<span class="sd">        Finally, _code_indexes and _char_indexes are defined. These are lookup</span>
+<span class="sd">        tables for which characters in the raw string are related to ANSI</span>
+<span class="sd">        escapes, and which are for the readable text.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;parser&quot;</span><span class="p">,</span> <span class="n">ANSI_PARSER</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code_indexes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_code_indexes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_char_indexes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_indexes</span><span class="p">()</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_shifter</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Takes a list of integers, and produces a new one incrementing all</span>
+<span class="sd">        by a number.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">offset</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">iterable</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">offset</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">]</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_adder</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Joins two ANSIStrings, preserving calculated info.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">raw_string</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">_raw_string</span> <span class="o">+</span> <span class="n">second</span><span class="o">.</span><span class="n">_raw_string</span>
+        <span class="n">clean_string</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">_clean_string</span> <span class="o">+</span> <span class="n">second</span><span class="o">.</span><span class="n">_clean_string</span>
+        <span class="n">code_indexes</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">_code_indexes</span><span class="p">[:]</span>
+        <span class="n">char_indexes</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">_char_indexes</span><span class="p">[:]</span>
+        <span class="n">code_indexes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_shifter</span><span class="p">(</span><span class="n">second</span><span class="o">.</span><span class="n">_code_indexes</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">first</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">)))</span>
+        <span class="n">char_indexes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_shifter</span><span class="p">(</span><span class="n">second</span><span class="o">.</span><span class="n">_char_indexes</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">first</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span>
+            <span class="n">raw_string</span><span class="p">,</span>
+            <span class="n">code_indexes</span><span class="o">=</span><span class="n">code_indexes</span><span class="p">,</span>
+            <span class="n">char_indexes</span><span class="o">=</span><span class="n">char_indexes</span><span class="p">,</span>
+            <span class="n">clean_string</span><span class="o">=</span><span class="n">clean_string</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We have to be careful when adding two strings not to reprocess things</span>
+<span class="sd">        that don&#39;t need to be reprocessed, lest we end up with escapes being</span>
+<span class="sd">        interpreted literally.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ANSIString</span><span class="p">):</span>
+            <span class="n">other</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Likewise, if we&#39;re on the other end.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ANSIString</span><span class="p">):</span>
+            <span class="n">other</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adder</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getslice__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function is deprecated, so we just make it call the proper</span>
+<span class="sd">        function.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slc</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function takes a slice() object.</span>
+
+<span class="sd">        Slices have to be handled specially. Not only are they able to specify</span>
+<span class="sd">        a start and end with [x:y], but many forget that they can also specify</span>
+<span class="sd">        an interval with [x:y:z]. As a result, not only do we have to track</span>
+<span class="sd">        the ANSI Escapes that have played before the start of the slice, we</span>
+<span class="sd">        must also replay any in these intervals, should they exist.</span>
+
+<span class="sd">        Thankfully, slicing the _char_indexes table gives us the actual</span>
+<span class="sd">        indexes that need slicing in the raw string. We can check between</span>
+<span class="sd">        those indexes to figure out what escape characters need to be</span>
+<span class="sd">        replayed.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">char_indexes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_char_indexes</span>
+        <span class="n">slice_indexes</span> <span class="o">=</span> <span class="n">char_indexes</span><span class="p">[</span><span class="n">slc</span><span class="p">]</span>
+        <span class="c1"># If it&#39;s the end of the string, we need to append final color codes.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">slice_indexes</span><span class="p">:</span>
+            <span class="c1"># if we find no characters it may be because we are just outside</span>
+            <span class="c1"># of the interval, using an open-ended slice. We must replay all</span>
+            <span class="c1"># of the escape characters until/after this point.</span>
+            <span class="k">if</span> <span class="n">char_indexes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">slc</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">slc</span><span class="o">.</span><span class="n">stop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># a [:] slice of only escape characters</span>
+                    <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[</span><span class="n">slc</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">slc</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># this is a [:x] slice</span>
+                    <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[:</span><span class="n">char_indexes</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+                <span class="k">if</span> <span class="n">slc</span><span class="o">.</span><span class="n">stop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># a [x:] slice</span>
+                    <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[</span><span class="n">char_indexes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:])</span>
+            <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">slc</span><span class="o">.</span><span class="n">start</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_raw_string</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">last_mark</span> <span class="o">=</span> <span class="n">slice_indexes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Check between the slice intervals for escape sequences.</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">slice_indexes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">last_mark</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code_indexes</span><span class="p">:</span>
+                    <span class="n">string</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="n">last_mark</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="c1"># raw_string not long enough</span>
+                <span class="k">pass</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">append_tail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_interleving</span><span class="p">(</span><span class="n">char_indexes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">append_tail</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">string</span> <span class="o">+</span> <span class="n">append_tail</span><span class="p">,</span> <span class="n">decoded</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gateway for slices and getting specific indexes in the ANSIString. If</span>
+<span class="sd">        this is a regexable ANSIString, it will get the data from the raw</span>
+<span class="sd">        string instead, bypassing ANSIString&#39;s intelligent escape skipping,</span>
+<span class="sd">        for reasons explained in the __new__ method&#39;s docstring.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="c1"># Slices must be handled specially.</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slice</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_char_indexes</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;ANSIString Index out of range&quot;</span><span class="p">)</span>
+        <span class="c1"># Get character codes after the index as well.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_char_indexes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_char_indexes</span><span class="p">[</span><span class="n">item</span><span class="p">]:</span>
+            <span class="n">append_tail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_interleving</span><span class="p">(</span><span class="n">item</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">append_tail</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_char_indexes</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+
+        <span class="n">clean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="c1"># Get the character they&#39;re after, and replay all escape sequences</span>
+        <span class="c1"># previous to it.</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">item</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code_indexes</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">result</span> <span class="o">+</span> <span class="n">clean</span> <span class="o">+</span> <span class="n">append_tail</span><span class="p">,</span> <span class="n">decoded</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ANSIString.clean"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a string object *without* the ANSI escapes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            clean_string (str): A unicode object with no ANSI escapes.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_string</span></div>
+
+<div class="viewcode-block" id="ANSIString.raw"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.raw">[docs]</a>    <span class="k">def</span> <span class="nf">raw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a string object with the ANSI escapes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            raw (str): A unicode object *with* the raw ANSI escape sequences.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span></div>
+
+<div class="viewcode-block" id="ANSIString.partition"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.partition">[docs]</a>    <span class="k">def</span> <span class="nf">partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Splits once into three sections (with the separator being the middle section)</span>
+
+<span class="sd">        We use the same techniques we used in split() to make sure each are</span>
+<span class="sd">        colored.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sep (str): The separator to split the string on.</span>
+<span class="sd">            reverse (boolean): Whether to split the string on the last</span>
+<span class="sd">                occurrence of the separator rather than the first.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ANSIString: The part of the string before the separator</span>
+<span class="sd">            ANSIString: The separator itself</span>
+<span class="sd">            ANSIString: The part of the string after the separator.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sep</span><span class="p">,</span> <span class="s2">&quot;_clean_string&quot;</span><span class="p">):</span>
+            <span class="n">sep</span> <span class="o">=</span> <span class="n">sep</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
+            <span class="n">parent_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_string</span><span class="o">.</span><span class="n">rpartition</span><span class="p">(</span><span class="n">sep</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parent_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_string</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">sep</span><span class="p">)</span>
+        <span class="n">current_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">parent_result</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">current_index</span> <span class="p">:</span> <span class="n">current_index</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">section</span><span class="p">)],)</span>
+            <span class="n">current_index</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_indexes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Two tables need to be made, one which contains the indexes of all</span>
+<span class="sd">        readable characters, and one which contains the indexes of all ANSI</span>
+<span class="sd">        escapes. It&#39;s important to remember that ANSI escapes require more</span>
+<span class="sd">        that one character at a time, though no readable character needs more</span>
+<span class="sd">        than one character, since the string base class abstracts that away</span>
+<span class="sd">        from us. However, several readable characters can be placed in a row.</span>
+
+<span class="sd">        We must use regexes here to figure out where all the escape sequences</span>
+<span class="sd">        are hiding in the string. Then we use the ranges of their starts and</span>
+<span class="sd">        ends to create a final, comprehensive list of all indexes which are</span>
+<span class="sd">        dedicated to code, and all dedicated to text.</span>
+
+<span class="sd">        It&#39;s possible that only one of these tables is actually needed, the</span>
+<span class="sd">        other assumed to be what isn&#39;t in the first.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">code_indexes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">ansi_regex</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">):</span>
+            <span class="n">code_indexes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">())))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">code_indexes</span><span class="p">:</span>
+            <span class="c1"># Plain string, no ANSI codes.</span>
+            <span class="k">return</span> <span class="n">code_indexes</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">)))</span>
+        <span class="c1"># all indexes not occupied by ansi codes are normal characters</span>
+        <span class="n">char_indexes</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">))</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">code_indexes</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">code_indexes</span><span class="p">,</span> <span class="n">char_indexes</span>
+
+    <span class="k">def</span> <span class="nf">_get_interleving</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the code characters from the given slice end to the next</span>
+<span class="sd">        character.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_char_indexes</span><span class="p">[</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_char_indexes</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code_indexes</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="n">s</span>
+
+    <span class="k">def</span> <span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Multiplication method. Implemented for performance reasons.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="n">raw_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span> <span class="o">*</span> <span class="n">other</span>
+        <span class="n">clean_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_string</span> <span class="o">*</span> <span class="n">other</span>
+        <span class="n">code_indexes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code_indexes</span><span class="p">[:]</span>
+        <span class="n">char_indexes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_char_indexes</span><span class="p">[:]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+            <span class="n">code_indexes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shifter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_code_indexes</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">)))</span>
+            <span class="n">char_indexes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shifter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_char_indexes</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span>
+            <span class="n">raw_string</span><span class="p">,</span>
+            <span class="n">code_indexes</span><span class="o">=</span><span class="n">code_indexes</span><span class="p">,</span>
+            <span class="n">char_indexes</span><span class="o">=</span><span class="n">char_indexes</span><span class="p">,</span>
+            <span class="n">clean_string</span><span class="o">=</span><span class="n">clean_string</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__mul__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ANSIString.split"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Splits a string based on a separator.</span>
+
+<span class="sd">        Stolen from PyPy&#39;s pure Python string implementation, tweaked for</span>
+<span class="sd">        ANSIString.</span>
+
+<span class="sd">        PyPy is distributed under the MIT licence.</span>
+<span class="sd">        http://opensource.org/licenses/MIT</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            by (str): A string to search for which will be used to split</span>
+<span class="sd">                the string. For instance, &#39;,&#39; for &#39;Hello,world&#39; would</span>
+<span class="sd">                result in [&#39;Hello&#39;, &#39;world&#39;]</span>
+<span class="sd">            maxsplit (int): The maximum number of times to split the string.</span>
+<span class="sd">                For example, a maxsplit of 2 with a by of &#39;,&#39; on the string</span>
+<span class="sd">                &#39;Hello,world,test,string&#39; would result in</span>
+<span class="sd">                [&#39;Hello&#39;, &#39;world&#39;, &#39;test,string&#39;]</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            result (list of ANSIStrings): A list of ANSIStrings derived from</span>
+<span class="sd">                this string.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">drop_spaces</span> <span class="o">=</span> <span class="n">by</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">drop_spaces</span><span class="p">:</span>
+            <span class="n">by</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span>
+
+        <span class="n">bylen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">by</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bylen</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;empty separator&quot;</span><span class="p">)</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">maxsplit</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_string</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">by</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">next</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="c1"># Get character codes after the index as well.</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="nb">next</span><span class="p">])</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="nb">next</span> <span class="o">+</span> <span class="n">bylen</span>
+            <span class="n">maxsplit</span> <span class="o">-=</span> <span class="mi">1</span>  <span class="c1"># NB. if it&#39;s already &lt; 0, it stays &lt; 0</span>
+
+        <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">start</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)])</span>
+        <span class="k">if</span> <span class="n">drop_spaces</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">part</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">res</span> <span class="k">if</span> <span class="n">part</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="ANSIString.rsplit"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.rsplit">[docs]</a>    <span class="k">def</span> <span class="nf">rsplit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Like split, but starts from the end of the string rather than the</span>
+<span class="sd">        beginning.</span>
+
+<span class="sd">        Stolen from PyPy&#39;s pure Python string implementation, tweaked for</span>
+<span class="sd">        ANSIString.</span>
+
+<span class="sd">        PyPy is distributed under the MIT licence.</span>
+<span class="sd">        http://opensource.org/licenses/MIT</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            by (str): A string to search for which will be used to split</span>
+<span class="sd">                the string. For instance, &#39;,&#39; for &#39;Hello,world&#39; would</span>
+<span class="sd">                result in [&#39;Hello&#39;, &#39;world&#39;]</span>
+<span class="sd">            maxsplit (int): The maximum number of times to split the string.</span>
+<span class="sd">                For example, a maxsplit of 2 with a by of &#39;,&#39; on the string</span>
+<span class="sd">                &#39;Hello,world,test,string&#39; would result in</span>
+<span class="sd">                [&#39;Hello,world&#39;, &#39;test&#39;, &#39;string&#39;]</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            result (list of ANSIStrings): A list of ANSIStrings derived from</span>
+<span class="sd">                this string.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">drop_spaces</span> <span class="o">=</span> <span class="n">by</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">drop_spaces</span><span class="p">:</span>
+            <span class="n">by</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span>
+        <span class="n">bylen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">by</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bylen</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;empty separator&quot;</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="n">maxsplit</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_string</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="n">by</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">next</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="c1"># Get character codes after the index as well.</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="nb">next</span> <span class="o">+</span> <span class="n">bylen</span> <span class="p">:</span> <span class="n">end</span><span class="p">])</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">next</span>
+            <span class="n">maxsplit</span> <span class="o">-=</span> <span class="mi">1</span>  <span class="c1"># NB. if it&#39;s already &lt; 0, it stays &lt; 0</span>
+
+        <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[:</span><span class="n">end</span><span class="p">])</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">drop_spaces</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">part</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">res</span> <span class="k">if</span> <span class="n">part</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="ANSIString.strip"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.strip">[docs]</a>    <span class="k">def</span> <span class="nf">strip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chars</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Strip from both ends, taking ANSI markers into account.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            chars (str, optional): A string containing individual characters</span>
+<span class="sd">                to strip off of both ends of the string. By default, any blank</span>
+<span class="sd">                spaces are trimmed.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            result (ANSIString): A new ANSIString with the ends trimmed of the</span>
+<span class="sd">                relevant characters.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">clean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_string</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span>
+
+        <span class="c1"># count continuous sequence of chars from left and right</span>
+        <span class="n">nlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean</span><span class="p">)</span>
+        <span class="n">nlstripped</span> <span class="o">=</span> <span class="n">nlen</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">chars</span><span class="p">))</span>
+        <span class="n">nrstripped</span> <span class="o">=</span> <span class="n">nlen</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="n">chars</span><span class="p">))</span>
+
+        <span class="c1"># within the stripped regions, only retain parts of the raw</span>
+        <span class="c1"># string *not* matching the clean string (these are ansi/mxp tags)</span>
+        <span class="n">lstripped</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">ic</span><span class="p">,</span> <span class="n">ir1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">nlstripped</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ic</span> <span class="o">&gt;=</span> <span class="n">nlstripped</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">raw</span><span class="p">[</span><span class="n">ir1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">clean</span><span class="p">[</span><span class="n">ic</span><span class="p">]:</span>
+                <span class="n">lstripped</span> <span class="o">+=</span> <span class="n">raw</span><span class="p">[</span><span class="n">ir1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ic</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">ir1</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">rstripped</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">ic</span><span class="p">,</span> <span class="n">ir2</span> <span class="o">=</span> <span class="n">nlen</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">nrstripped</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">nlen</span> <span class="o">-</span> <span class="n">ic</span> <span class="o">&gt;</span> <span class="n">nrstripped</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">raw</span><span class="p">[</span><span class="n">ir2</span><span class="p">]</span> <span class="o">!=</span> <span class="n">clean</span><span class="p">[</span><span class="n">ic</span><span class="p">]:</span>
+                <span class="n">rstripped</span> <span class="o">+=</span> <span class="n">raw</span><span class="p">[</span><span class="n">ir2</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ic</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="n">ir2</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">rstripped</span> <span class="o">=</span> <span class="n">rstripped</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">lstripped</span> <span class="o">+</span> <span class="n">raw</span><span class="p">[</span><span class="n">ir1</span> <span class="p">:</span> <span class="n">ir2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">rstripped</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ANSIString.lstrip"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.lstrip">[docs]</a>    <span class="k">def</span> <span class="nf">lstrip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chars</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Strip from the left, taking ANSI markers into account.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            chars (str, optional): A string containing individual characters</span>
+<span class="sd">                to strip off of the left end of the string. By default, any</span>
+<span class="sd">                blank spaces are trimmed.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            result (ANSIString): A new ANSIString with the left end trimmed of</span>
+<span class="sd">                the relevant characters.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">clean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_string</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span>
+
+        <span class="c1"># count continuous sequence of chars from left and right</span>
+        <span class="n">nlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean</span><span class="p">)</span>
+        <span class="n">nlstripped</span> <span class="o">=</span> <span class="n">nlen</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">chars</span><span class="p">))</span>
+        <span class="c1"># within the stripped regions, only retain parts of the raw</span>
+        <span class="c1"># string *not* matching the clean string (these are ansi/mxp tags)</span>
+        <span class="n">lstripped</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">ic</span><span class="p">,</span> <span class="n">ir1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">nlstripped</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ic</span> <span class="o">&gt;=</span> <span class="n">nlstripped</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">raw</span><span class="p">[</span><span class="n">ir1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">clean</span><span class="p">[</span><span class="n">ic</span><span class="p">]:</span>
+                <span class="n">lstripped</span> <span class="o">+=</span> <span class="n">raw</span><span class="p">[</span><span class="n">ir1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ic</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">ir1</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">lstripped</span> <span class="o">+</span> <span class="n">raw</span><span class="p">[</span><span class="n">ir1</span><span class="p">:])</span></div>
+
+<div class="viewcode-block" id="ANSIString.rstrip"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.rstrip">[docs]</a>    <span class="k">def</span> <span class="nf">rstrip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chars</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Strip from the right, taking ANSI markers into account.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            chars (str, optional): A string containing individual characters</span>
+<span class="sd">                to strip off of the right end of the string. By default, any</span>
+<span class="sd">                blank spaces are trimmed.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            result (ANSIString): A new ANSIString with the right end trimmed of</span>
+<span class="sd">                the relevant characters.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">clean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_string</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span>
+        <span class="n">nlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean</span><span class="p">)</span>
+        <span class="n">nrstripped</span> <span class="o">=</span> <span class="n">nlen</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="n">chars</span><span class="p">))</span>
+        <span class="n">rstripped</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">ic</span><span class="p">,</span> <span class="n">ir2</span> <span class="o">=</span> <span class="n">nlen</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">nrstripped</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">nlen</span> <span class="o">-</span> <span class="n">ic</span> <span class="o">&gt;</span> <span class="n">nrstripped</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">raw</span><span class="p">[</span><span class="n">ir2</span><span class="p">]</span> <span class="o">!=</span> <span class="n">clean</span><span class="p">[</span><span class="n">ic</span><span class="p">]:</span>
+                <span class="n">rstripped</span> <span class="o">+=</span> <span class="n">raw</span><span class="p">[</span><span class="n">ir2</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ic</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="n">ir2</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">rstripped</span> <span class="o">=</span> <span class="n">rstripped</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">raw</span><span class="p">[:</span> <span class="n">ir2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">rstripped</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ANSIString.join"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Joins together strings in an iterable, using this string between each</span>
+<span class="sd">        one.</span>
+
+<span class="sd">        NOTE: This should always be used for joining strings when ANSIStrings</span>
+<span class="sd">        are involved. Otherwise color information will be discarded by python,</span>
+<span class="sd">        due to details in the C implementation of strings.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            iterable (list of strings): A list of strings to join together</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ANSIString: A single string with all of the iterable&#39;s</span>
+<span class="sd">                contents concatenated, with this string between each.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            ::</span>
+
+<span class="sd">                &gt;&gt;&gt; ANSIString(&#39;, &#39;).join([&#39;up&#39;, &#39;right&#39;, &#39;left&#39;, &#39;down&#39;])</span>
+<span class="sd">                ANSIString(&#39;up, right, left, down&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">last_item</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">last_item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">ANSIString</span><span class="p">):</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="n">item</span>
+            <span class="n">last_item</span> <span class="o">=</span> <span class="n">item</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+    <span class="k">def</span> <span class="nf">_filler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">char</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a line of characters in a more efficient way than just adding</span>
+<span class="sd">        ANSIStrings.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">ANSIString</span><span class="p">):</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">char</span> <span class="o">*</span> <span class="n">amount</span>
+            <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span>
+                <span class="n">char</span> <span class="o">*</span> <span class="n">amount</span><span class="p">,</span>
+                <span class="n">code_indexes</span><span class="o">=</span><span class="p">[],</span>
+                <span class="n">char_indexes</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">))),</span>
+                <span class="n">clean_string</span><span class="o">=</span><span class="n">char</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">char</span><span class="o">.</span><span class="n">_code_indexes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">char</span><span class="o">.</span><span class="n">_char_indexes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">char</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+        <span class="n">postfix</span> <span class="o">=</span> <span class="n">char</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[</span><span class="n">end</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">char</span><span class="o">.</span><span class="n">_clean_string</span> <span class="o">*</span> <span class="n">amount</span>
+        <span class="n">code_indexes</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">))]</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">code_indexes</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">length</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">postfix</span><span class="p">))])</span>
+        <span class="n">char_indexes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shifter</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">))),</span> <span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
+        <span class="n">raw_string</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">line</span> <span class="o">+</span> <span class="n">postfix</span>
+        <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span>
+            <span class="n">raw_string</span><span class="p">,</span> <span class="n">clean_string</span><span class="o">=</span><span class="n">line</span><span class="p">,</span> <span class="n">char_indexes</span><span class="o">=</span><span class="n">char_indexes</span><span class="p">,</span> <span class="n">code_indexes</span><span class="o">=</span><span class="n">code_indexes</span>
+        <span class="p">)</span>
+
+    <span class="c1"># The following methods should not be called with the &#39;_difference&#39; argument explicitly. This is</span>
+    <span class="c1"># data provided by the wrapper _spacing_preflight.</span>
+<div class="viewcode-block" id="ANSIString.center"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.center">[docs]</a>    <span class="nd">@_spacing_preflight</span>
+    <span class="k">def</span> <span class="nf">center</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">fillchar</span><span class="p">,</span> <span class="n">_difference</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Center some text with some spaces padding both sides.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            width (int): The target width of the output string.</span>
+<span class="sd">            fillchar (str): A single character string to pad the output string</span>
+<span class="sd">                with.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            result (ANSIString): A string padded on both ends with fillchar.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">remainder</span> <span class="o">=</span> <span class="n">_difference</span> <span class="o">%</span> <span class="mi">2</span>
+        <span class="n">_difference</span> <span class="o">//=</span> <span class="mi">2</span>
+        <span class="n">spacing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filler</span><span class="p">(</span><span class="n">fillchar</span><span class="p">,</span> <span class="n">_difference</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">spacing</span> <span class="o">+</span> <span class="bp">self</span> <span class="o">+</span> <span class="n">spacing</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filler</span><span class="p">(</span><span class="n">fillchar</span><span class="p">,</span> <span class="n">remainder</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="ANSIString.ljust"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.ljust">[docs]</a>    <span class="nd">@_spacing_preflight</span>
+    <span class="k">def</span> <span class="nf">ljust</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">fillchar</span><span class="p">,</span> <span class="n">_difference</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Left justify some text.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            width (int): The target width of the output string.</span>
+<span class="sd">            fillchar (str): A single character string to pad the output string</span>
+<span class="sd">                with.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            result (ANSIString): A string padded on the right with fillchar.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filler</span><span class="p">(</span><span class="n">fillchar</span><span class="p">,</span> <span class="n">_difference</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ANSIString.rjust"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.rjust">[docs]</a>    <span class="nd">@_spacing_preflight</span>
+    <span class="k">def</span> <span class="nf">rjust</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">fillchar</span><span class="p">,</span> <span class="n">_difference</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Right justify some text.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            width (int): The target width of the output string.</span>
+<span class="sd">            fillchar (str): A single character string to pad the output string</span>
+<span class="sd">                with.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            result (ANSIString): A string padded on the left with fillchar.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filler</span><span class="p">(</span><span class="n">fillchar</span><span class="p">,</span> <span class="n">_difference</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="ansi.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.ansi</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

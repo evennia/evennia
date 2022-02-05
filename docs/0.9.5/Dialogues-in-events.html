@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Dialogues in events &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Dialogues in events</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="dialogues-in-events">
+<h1>Dialogues in events<a class="headerlink" href="#dialogues-in-events" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Next tutorial: [adding a voice-operated elevator with events](A-voice-operated-elevator-using-
+events).</p></li>
+</ul>
+<p>This tutorial will walk you through the steps to create several dialogues with characters, using the
+<a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/contrib/ingame_python/README.md">in-game Python
+system</a>.
+This tutorial assumes the in-game Python system is installed in your game.  If it isn’t, you can
+follow the installation steps given in <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/contrib/ingame_python/README.md">the documentation on in-game
+Python</a>, and
+come back on this tutorial once the system is installed.  <strong>You do not need to read</strong> the entire
+documentation, it’s a good reference, but not the easiest way to learn about it.  Hence these
+tutorials.</p>
+<p>The in-game Python system allows to run code on individual objects in some situations.  You don’t
+have to modify the source code to add these features, past the installation.  The entire system
+makes it easy to add specific features to some objects, but not all.  This is why it can be very
+useful to create a dialogue system taking advantage of the in-game Python system.</p>
+<blockquote>
+<div><p>What will we try to do?</p>
+</div></blockquote>
+<p>In this tutorial, we are going to create a basic dialogue to have several characters automatically
+respond to specific messages said by others.</p>
+<section id="a-first-example-with-a-first-character">
+<h2>A first example with a first character<a class="headerlink" href="#a-first-example-with-a-first-character" title="Permalink to this headline">¶</a></h2>
+<p>Let’s create a character to begin with.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@charcreate a merchant
+</pre></div>
+</div>
+<p>This will create a merchant in the room where you currently are.  It doesn’t have anything, like a
+description, you can decorate it a bit if you like.</p>
+<p>As said above, the in-game Python system consists in linking objects with arbitrary code.  This code
+will be executed in some circumstances.  Here, the circumstance is “when someone says something in
+the same room”, and might be more specific like “when someone says hello”.  We’ll decide what code
+to run (we’ll actually type the code in-game).  Using the vocabulary of the in-game Python system,
+we’ll create a callback: a callback is just a set of lines of code that will run under some
+conditions.</p>
+<p>You can have an overview of every “conditions” in which callbacks can be created using the <code class="docutils literal notranslate"><span class="pre">&#64;call</span></code>
+command (short for <code class="docutils literal notranslate"><span class="pre">&#64;callback</span></code>).  You need to give it an object as argument.  Here for instance, we
+could do:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@call a merchant
+</pre></div>
+</div>
+<p>You should see a table with three columns, showing the list of events existing on our newly-created
+merchant.  There are quite a lot of them, as it is, althougn no line of code has been set yet.  For
+our system, you might be more interested by the line describing the <code class="docutils literal notranslate"><span class="pre">say</span></code> event:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>| say              |   0 (0) | After another character has said something in |
+|                  |         | the character&#39;s room.                         |
+</pre></div>
+</div>
+<p>We’ll create a callback on the <code class="docutils literal notranslate"><span class="pre">say</span></code> event, called when we say “hello” in the merchant’s room:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@call/add a merchant = say hello
+</pre></div>
+</div>
+<p>Before seeing what this command displays, let’s see the command syntax itself:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;call</span></code> is the command name, <code class="docutils literal notranslate"><span class="pre">/add</span></code> is a switch.  You can read the help of the command to get the
+help of available switches and a brief overview of syntax.</p></li>
+<li><p>We then enter the object’s name, here “a merchant”.  You can enter the ID too (“#3” in my case),
+which is useful to edit the object when you’re not in the same room.  You can even enter part of the
+name, as usual.</p></li>
+<li><p>An equal sign, a simple separator.</p></li>
+<li><p>The event’s name.  Here, it’s “say”.  The available events are displayed when you use <code class="docutils literal notranslate"><span class="pre">&#64;call</span></code>
+without switch.</p></li>
+<li><p>After a space, we enter the conditions in which this callback should be called.  Here, the
+conditions represent what the other character should say.  We enter “hello”.  Meaning that if
+someone says something containing “hello” in the room, the callback we are now creating will be
+called.</p></li>
+</ul>
+<p>When you enter this command, you should see something like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">After</span> <span class="n">another</span> <span class="n">character</span> <span class="n">has</span> <span class="n">said</span> <span class="n">something</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">character</span><span class="s1">&#39;s room.</span>
+<span class="n">This</span> <span class="n">event</span> <span class="ow">is</span> <span class="n">called</span> <span class="n">right</span> <span class="n">after</span> <span class="n">another</span> <span class="n">character</span> <span class="n">has</span> <span class="n">said</span>
+<span class="n">something</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">same</span> <span class="n">location</span><span class="o">.</span>  <span class="n">The</span> <span class="n">action</span> <span class="n">cannot</span> <span class="n">be</span> <span class="n">prevented</span>
+<span class="n">at</span> <span class="n">this</span> <span class="n">moment</span><span class="o">.</span>  <span class="n">Instead</span><span class="p">,</span> <span class="n">this</span> <span class="n">event</span> <span class="ow">is</span> <span class="n">ideal</span> <span class="n">to</span> <span class="n">create</span> <span class="n">keywords</span>
+<span class="n">that</span> <span class="n">would</span> <span class="n">trigger</span> <span class="n">a</span> <span class="n">character</span> <span class="p">(</span><span class="n">like</span> <span class="n">a</span> <span class="n">NPC</span><span class="p">)</span> <span class="ow">in</span> <span class="n">doing</span> <span class="n">something</span>
+<span class="k">if</span> <span class="n">a</span> <span class="n">specific</span> <span class="n">phrase</span> <span class="ow">is</span> <span class="n">spoken</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">same</span> <span class="n">location</span><span class="o">.</span>
+
+<span class="n">To</span> <span class="n">use</span> <span class="n">this</span> <span class="n">event</span><span class="p">,</span> <span class="n">you</span> <span class="n">have</span> <span class="n">to</span> <span class="n">specify</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">keywords</span> <span class="k">as</span>
+<span class="n">parameters</span> <span class="n">that</span> <span class="n">should</span> <span class="n">be</span> <span class="n">present</span><span class="p">,</span> <span class="k">as</span> <span class="n">separate</span> <span class="n">words</span><span class="p">,</span> <span class="ow">in</span> <span class="n">the</span>
+<span class="n">spoken</span> <span class="n">phrase</span><span class="o">.</span>  <span class="n">For</span> <span class="n">instance</span><span class="p">,</span> <span class="n">you</span> <span class="n">can</span> <span class="nb">set</span> <span class="n">a</span> <span class="n">callback</span> <span class="n">that</span> <span class="n">would</span>
+<span class="n">fire</span> <span class="k">if</span> <span class="n">the</span> <span class="n">phrase</span> <span class="n">spoken</span> <span class="n">by</span> <span class="n">the</span> <span class="n">character</span> <span class="n">contains</span> <span class="s2">&quot;menu&quot;</span> <span class="ow">or</span>
+<span class="s2">&quot;dinner&quot;</span> <span class="ow">or</span> <span class="s2">&quot;lunch&quot;</span><span class="p">:</span>
+    <span class="nd">@call</span><span class="o">/</span><span class="n">add</span> <span class="o">...</span> <span class="o">=</span> <span class="n">say</span> <span class="n">menu</span><span class="p">,</span> <span class="n">dinner</span><span class="p">,</span> <span class="n">lunch</span>
+<span class="n">Then</span> <span class="k">if</span> <span class="n">one</span> <span class="n">of</span> <span class="n">the</span> <span class="n">words</span> <span class="ow">is</span> <span class="n">present</span> <span class="ow">in</span> <span class="n">what</span> <span class="n">the</span> <span class="n">character</span> <span class="n">says</span><span class="p">,</span>
+<span class="n">this</span> <span class="n">callback</span> <span class="n">will</span> <span class="n">fire</span><span class="o">.</span>
+
+<span class="n">Variables</span> <span class="n">you</span> <span class="n">can</span> <span class="n">use</span> <span class="ow">in</span> <span class="n">this</span> <span class="n">event</span><span class="p">:</span>
+    <span class="n">speaker</span><span class="p">:</span> <span class="n">the</span> <span class="n">character</span> <span class="n">speaking</span> <span class="ow">in</span> <span class="n">this</span> <span class="n">room</span><span class="o">.</span>
+    <span class="n">character</span><span class="p">:</span> <span class="n">the</span> <span class="n">character</span> <span class="n">connected</span> <span class="n">to</span> <span class="n">this</span> <span class="n">event</span><span class="o">.</span>
+    <span class="n">message</span><span class="p">:</span> <span class="n">the</span> <span class="n">text</span> <span class="n">having</span> <span class="n">been</span> <span class="n">spoken</span> <span class="n">by</span> <span class="n">the</span> <span class="n">character</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>That’s some list of information.  What’s most important to us now is:</p>
+<ul class="simple">
+<li><p>The “say” event is called whenever someone else speaks in the room.</p></li>
+<li><p>We can set callbacks to fire when specific keywords are present in the phrase by putting them as
+additional parameters.  Here we have set this parameter to “hello”.  We can have several keywords
+separated by a comma (we’ll see this in more details later).</p></li>
+<li><p>We have three default variables we can use in this callback: <code class="docutils literal notranslate"><span class="pre">speaker</span></code> which contains the
+character who speaks, <code class="docutils literal notranslate"><span class="pre">character</span></code> which contains the character who’s modified by the in-game Python
+system (here, or merchant), and <code class="docutils literal notranslate"><span class="pre">message</span></code> which contains the spoken phrase.</p></li>
+</ul>
+<p>This concept of variables is important.  If it makes things more simple to you, think of them as
+parameters in a function: they can be used inside of the function body because they have been set
+when the function was called.</p>
+<p>This command has opened an editor where we can type our Python code.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">----------</span><span class="n">Line</span> <span class="n">Editor</span> <span class="p">[</span><span class="n">Callback</span> <span class="n">say</span> <span class="n">of</span> <span class="n">a</span> <span class="n">merchant</span><span class="p">]</span><span class="o">--------------------------------</span>
+<span class="mi">01</span><span class="o">|</span>
+<span class="o">----------</span><span class="p">[</span><span class="n">l</span><span class="p">:</span><span class="mi">01</span> <span class="n">w</span><span class="p">:</span><span class="mi">000</span> <span class="n">c</span><span class="p">:</span><span class="mi">0000</span><span class="p">]</span><span class="o">------------</span><span class="p">(:</span><span class="n">h</span> <span class="k">for</span> <span class="n">help</span><span class="p">)</span><span class="o">----------------------------</span>
+</pre></div>
+</div>
+<p>For our first test, let’s type something like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> shrugs and says: &#39;well, yes, hello to you!&#39;&quot;</span><span class="p">,</span>
+<span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">character</span><span class="o">=</span><span class="n">character</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Once you have entered this line, you can type <code class="docutils literal notranslate"><span class="pre">:wq</span></code> to save the editor and quit it.</p>
+<p>And now if you use the “say” command with a message containing “hello”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">You</span> <span class="n">say</span><span class="p">,</span> <span class="s2">&quot;Hello sir merchant!&quot;</span>
+<span class="n">a</span> <span class="n">merchant</span><span class="p">(</span><span class="c1">#3) shrugs and says: &#39;well, yes, hello to you!&#39;</span>
+</pre></div>
+</div>
+<p>If you say something that doesn’t contain “hello”, our callback won’t execute.</p>
+<p><strong>In summary</strong>:</p>
+<ol class="simple">
+<li><p>When we say something in the room, using the “say” command, the “say” event of all characters
+(except us) is called.</p></li>
+<li><p>The in-game Python system looks at what we have said, and checks whether one of our callbacks in
+the “say” event contains a keyword that we have spoken.</p></li>
+<li><p>If so, call it, defining the event variables as we have seen.</p></li>
+<li><p>The callback is then executed as normal Python code.  Here we have called the <code class="docutils literal notranslate"><span class="pre">msg_contents</span></code>
+method on the character’s location (probably a room) to display a message to the entire room.  We
+have also used mapping to easily display the character’s name.  This is not specific to the in-game
+Python system.  If you feel overwhelmed by the code we’ve used, just shorten it and use something
+more simple, for instance:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">speaker</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You have said something to me.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="the-same-callback-for-several-keywords">
+<h2>The same callback for several keywords<a class="headerlink" href="#the-same-callback-for-several-keywords" title="Permalink to this headline">¶</a></h2>
+<p>It’s easy to create a callback that will be triggered if the sentence contains one of several
+keywords.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@call/add merchant = say trade, trader, goods
+</pre></div>
+</div>
+<p>And in the editor that opens:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> says: &#39;Ho well, trade&#39;s fine as long as roads are</span>
+<span class="n">safe</span><span class="o">.</span><span class="s1">&#39;&quot;, mapping=dict(character=character))</span>
+</pre></div>
+</div>
+<p>Then you can say something with either “trade”, “trader” or “goods” in your sentence, which should
+call the callback:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">You</span> <span class="n">say</span><span class="p">,</span> <span class="s2">&quot;and how is your trade going?&quot;</span>
+<span class="n">a</span> <span class="n">merchant</span><span class="p">(</span><span class="c1">#3) says: &#39;Ho well, trade&#39;s fine as long as roads are safe.&#39;</span>
+</pre></div>
+</div>
+<p>We can set several keywords when adding the callback.  We just need to separate them with commas.</p>
+</section>
+<section id="a-longer-callback">
+<h2>A longer callback<a class="headerlink" href="#a-longer-callback" title="Permalink to this headline">¶</a></h2>
+<p>So far, we have only set one line in our callbacks.  Which is useful, but we often need more.  For
+an entire dialogue, you might want to do a bit more than that.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@call/add merchant = say bandit, bandits
+</pre></div>
+</div>
+<p>And in the editor you can paste the following lines:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> says: &#39;Bandits he?&#39;&quot;</span><span class="p">,</span>
+<span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">character</span><span class="o">=</span><span class="n">character</span><span class="p">))</span>
+<span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> scratches his head, considering.&quot;</span><span class="p">,</span>
+<span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">character</span><span class="o">=</span><span class="n">character</span><span class="p">))</span>
+<span class="n">character</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> whispers: &#39;Aye, saw some of them, north from here.  No</span>
+<span class="n">trouble</span> <span class="n">o</span><span class="s1">&#39; mine, but...&#39;</span><span class="s2">&quot;, mapping=dict(character=character))</span>
+<span class="n">speaker</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> looks at you more</span>
+<span class="n">closely</span><span class="o">.</span><span class="s2">&quot;.format(character=character.get_display_name(speaker)))</span>
+<span class="n">speaker</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{character}</span><span class="s2"> continues in a low voice: &#39;Ain&#39;t my place to say, but if you need to find</span>
+<span class="s1">&#39;em, they&#39;</span><span class="n">re</span> <span class="n">encamped</span> <span class="n">some</span> <span class="n">distance</span> <span class="n">away</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">road</span><span class="p">,</span> <span class="n">I</span> <span class="n">guess</span> <span class="n">near</span> <span class="n">a</span> <span class="n">cave</span> <span class="ow">or</span>
+<span class="n">something</span><span class="o">.</span><span class="s1">&#39;.&quot;.format(character=character.get_display_name(speaker)))</span>
+</pre></div>
+</div>
+<p>Now try to ask the merchant about bandits:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">You</span> <span class="n">say</span><span class="p">,</span> <span class="s2">&quot;have you seen bandits?&quot;</span>
+<span class="n">a</span> <span class="n">merchant</span><span class="p">(</span><span class="c1">#3) says: &#39;Bandits he?&#39;</span>
+<span class="n">a</span> <span class="n">merchant</span><span class="p">(</span><span class="c1">#3) scratches his head, considering.</span>
+<span class="n">a</span> <span class="n">merchant</span><span class="p">(</span><span class="c1">#3) whispers: &#39;Aye, saw some of them, north from here.  No trouble o&#39; mine, but...&#39;</span>
+<span class="n">a</span> <span class="n">merchant</span><span class="p">(</span><span class="c1">#3) looks at you more closely.</span>
+<span class="n">a</span> <span class="n">merchant</span><span class="p">(</span><span class="c1">#3) continues in a low voice: &#39;Ain&#39;t my place to say, but if you need to find &#39;em,</span>
+<span class="n">they</span><span class="s1">&#39;re encamped some distance away from the road, I guess near a cave or something.&#39;</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Notice here that the first lines of dialogue are spoken to the entire room, but then the merchant is
+talking directly to the speaker, and only the speaker hears it.  There’s no real limit to what you
+can do with this.</p>
+<ul class="simple">
+<li><p>You can set a mood system, storing attributes in the NPC itself to tell you in what mood he is,
+which will influence the information he will give… perhaps the accuracy of it as well.</p></li>
+<li><p>You can add random phrases spoken in some context.</p></li>
+<li><p>You can use other actions (you’re not limited to having the merchant say something, you can ask
+him to move, gives you something, attack if you have a combat system, or whatever else).</p></li>
+<li><p>The callbacks are in pure Python, so you can write conditions or loops.</p></li>
+<li><p>You can add in “pauses” between some instructions using chained events.  This tutorial won’t
+describe how to do that however.  You already have a lot to play with.</p></li>
+</ul>
+</section>
+<section id="tutorial-f-a-q">
+<h2>Tutorial F.A.Q.<a class="headerlink" href="#tutorial-f-a-q" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Q:</strong> can I create several characters who would answer to specific dialogue?</p></li>
+<li><p><strong>A:</strong> of course.  Te in-game Python system is so powerful because you can set unique code for
+various objects.  You can have several characters answering to different things.  You can even have
+different characters in the room answering to greetings.  All callbacks will be executed one after
+another.</p></li>
+<li><p><strong>Q:</strong> can I have two characters answering to the same dialogue in exactly the same way?</p></li>
+<li><p><strong>A:</strong> It’s possible but not so easy to do.  Usually, event grouping is set in code, and depends
+on different games.  However, if it is for some infrequent occurrences, it’s easy to do using
+<a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/contrib/ingame_python/README.md#chained-events">chained events</a>.</p></li>
+<li><p><strong>Q:</strong> is it possible to deploy callbacks on all characters sharing the same prototype?</p></li>
+<li><p><strong>A:</strong> not out of the box.  This depends on individual settings in code.  One can imagine that all
+characters of some type would share some events, but this is game-specific.  Rooms of the same zone
+could share the same events as well.  It is possible to do but requires modification of the source
+code.</p></li>
+<li><p>Next tutorial: [adding a voice-operated elevator with events](A-voice-operated-elevator-using-
+events).</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Dialogues in events</a><ul>
+<li><a class="reference internal" href="#a-first-example-with-a-first-character">A first example with a first character</a></li>
+<li><a class="reference internal" href="#the-same-callback-for-several-keywords">The same callback for several keywords</a></li>
+<li><a class="reference internal" href="#a-longer-callback">A longer callback</a></li>
+<li><a class="reference internal" href="#tutorial-f-a-q">Tutorial F.A.Q.</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Dialogues-in-events.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Dialogues-in-events.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Dialogues in events</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

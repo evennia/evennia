@@ -1,0 +1,602 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Online Setup &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Online Setup</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="online-setup">
+<h1>Online Setup<a class="headerlink" href="#online-setup" title="Permalink to this headline">¶</a></h1>
+<p>Evennia development can be made without any Internet connection beyond fetching updates. At some
+point however, you are likely to want to make your game visible online, either as part opening it to
+the public or to allow other developers or beta testers access to it.</p>
+<section id="connecting-from-the-outside">
+<h2>Connecting from the outside<a class="headerlink" href="#connecting-from-the-outside" title="Permalink to this headline">¶</a></h2>
+<p>Accessing your Evennia server from the outside is not hard on its own. Any issues are usually due to
+the various security measures your computer, network or hosting service has. These will generally
+(and correctly) block outside access to servers on your machine unless you tell them otherwise.</p>
+<p>We will start by showing how to host your server on your own local computer. Even if you plan to
+host your “real” game on a remote host later, setting it up locally is useful practice. We cover
+remote hosting later in this document.</p>
+<p>Out of the box, Evennia uses three ports for outward communication. If your computer has a firewall,
+these should be open for in/out communication (and only these, other ports used by Evennia are
+internal to your computer only).</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">4000</span></code>, telnet, for traditional mud clients</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">4001</span></code>, HTTP for the website)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">4002</span></code>, websocket, for the web client</p></li>
+</ul>
+<p>Evennia will by default accept incoming connections on all interfaces (<code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code>) so in principle
+anyone knowing the ports to use and has the IP address to your machine should be able to connect to
+your game.</p>
+<ul class="simple">
+<li><p>Make sure Evennia is installed and that you have activated the virtualenv. Start the server with
+<code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span> <span class="pre">--log</span></code>. The <code class="docutils literal notranslate"><span class="pre">--log</span></code> (or <code class="docutils literal notranslate"><span class="pre">-l</span></code>) will make sure that the logs are echoed to the
+terminal.</p></li>
+</ul>
+<blockquote>
+<div><p>Note: If you need to close the log-view, use <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code>. Use just <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">--log</span></code> on its own to
+start tailing the logs again.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Make sure you can connect with your web browser to <code class="docutils literal notranslate"><span class="pre">http://localhost:4001</span></code> or, alternatively,
+<code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:4001</span></code> which is the same thing. You should get your Evennia web site and be able to
+play the game in the web client. Also check so that you can connect with a mud client to host
+<code class="docutils literal notranslate"><span class="pre">localhost</span></code>, port <code class="docutils literal notranslate"><span class="pre">4000</span></code> or host <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code>, port <code class="docutils literal notranslate"><span class="pre">4000</span></code>.</p></li>
+<li><p><a class="reference external" href="https://www.google.se/search?q=my+ip">Google for “my ip”</a> or use any online service to figure out
+what your “outward-facing” IP address is. For our purposes, let’s say your outward-facing IP is
+<code class="docutils literal notranslate"><span class="pre">203.0.113.0</span></code>.</p></li>
+<li><p>Next try your outward-facing IP by opening <code class="docutils literal notranslate"><span class="pre">http://203.0.113.0:4001</span></code> in a browser. If this works,
+that’s it! Also try telnet, with the server set to <code class="docutils literal notranslate"><span class="pre">203.0.113.0</span></code> and port <code class="docutils literal notranslate"><span class="pre">4000</span></code>. However, most
+likely it will <em>not</em> work. If so, read on.</p></li>
+<li><p>If your computer has a firewall, it may be blocking the ports we need (it may also block telnet
+overall). If so, you need to open the outward-facing ports to in/out communication. See the
+manual/instructions for your firewall software on how to do this. To test you could also temporarily
+turn off your firewall entirely to see if that was indeed the problem.</p></li>
+<li><p>Another common problem for not being able to connect is that you are using a hardware router
+(like a wifi router). The router sits ‘between’ your computer and the Internet. So the IP you find
+with Google is the <em>router’s</em> IP, not that of your computer. To resolve this you need to configure
+your router to <em>forward</em> data it gets on its ports to the IP and ports of your computer sitting in
+your private network. How to do this depends on the make of your router; you usually configure it
+using a normal web browser. In the router interface, look for “Port forwarding” or maybe “Virtual
+server”. If that doesn’t work, try to temporarily wire your computer directly to the Internet outlet
+(assuming your computer has the ports for it). You’ll need to check for your IP again. If that
+works, you know the problem is the router.</p></li>
+</ul>
+<blockquote>
+<div><p>Note: If you need to reconfigure a router, the router’s Internet-facing ports do <em>not</em> have to
+have to have the same numbers as your computer’s (and Evennia’s) ports! For example, you might want
+to connect Evennia’s outgoing port 4001 to an outgoing router port 80 - this is the port HTTP
+requests use and web browsers automatically look for - if you do that you could go to
+<code class="docutils literal notranslate"><span class="pre">http://203.0.113.0</span></code> without having to add the port at the end. This would collide with any other
+web services you are running through this router though.</p>
+</div></blockquote>
+<section id="settings-example">
+<h3>Settings example<a class="headerlink" href="#settings-example" title="Permalink to this headline">¶</a></h3>
+<p>You can connect Evennia to the Internet without any changes to your settings. The default settings
+are easy to use but are not necessarily the safest. You can customize your online presence in your
+<a class="reference internal" href="Server-Conf.html#settings-file"><span class="std std-doc">settings file</span></a>. To have Evennia recognize changed port settings you have
+to do a full <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">reboot</span></code> to also restart the Portal and not just the Server component.</p>
+<p>Below is an example of a simple set of settings, mostly using the defaults. Evennia will require
+access to five computer ports, of which three (only) should be open to the outside world. Below we
+continue to assume that our server address is <code class="docutils literal notranslate"><span class="pre">203.0.113.0</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/server/conf/settings.py</span>
+
+<span class="n">SERVERNAME</span> <span class="o">=</span> <span class="s2">&quot;MyGame&quot;</span>
+
+<span class="c1"># open to the internet: 4000, 4001, 4002</span>
+<span class="c1"># closed to the internet (internal use): 4005, 4006</span>
+<span class="n">TELNET_PORTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4000</span><span class="p">]</span>
+<span class="n">WEBSOCKET_CLIENT_PORT</span> <span class="o">=</span> <span class="mi">4002</span>
+<span class="n">WEBSERVER_PORTS</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">4001</span><span class="p">,</span> <span class="mi">4005</span><span class="p">)]</span>
+<span class="n">AMP_PORT</span> <span class="o">=</span> <span class="mi">4006</span>
+
+<span class="c1"># Optional - security measures limiting interface access</span>
+<span class="c1"># (don&#39;t set these before you know things work without them)</span>
+<span class="n">TELNET_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;203.0.113.0&#39;</span><span class="p">]</span>
+<span class="n">WEBSOCKET_CLIENT_INTERFACE</span> <span class="o">=</span> <span class="s1">&#39;203.0.113.0&#39;</span>
+<span class="n">ALLOWED_HOSTS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.mymudgame.com&quot;</span><span class="p">]</span>
+
+<span class="c1"># uncomment if you want to lock the server down for maintenance.</span>
+<span class="c1"># LOCKDOWN_MODE = True</span>
+
+</pre></div>
+</div>
+<p>Read on for a description of the individual settings.</p>
+</section>
+<section id="telnet">
+<h3>Telnet<a class="headerlink" href="#telnet" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Required. Change to whichever outgoing Telnet port(s)</span>
+<span class="c1"># you are allowed to use on your host.</span>
+<span class="n">TELNET_PORTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4000</span><span class="p">]</span>
+<span class="c1"># Optional for security. Restrict which telnet</span>
+<span class="c1"># interfaces we should accept. Should be set to your</span>
+<span class="c1"># outward-facing IP address(es). Default is ´0.0.0.0´</span>
+<span class="c1"># which accepts all interfaces.</span>
+<span class="n">TELNET_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">TELNET_*</span></code> settings are the most important ones for getting a traditional base game going. Which
+IP addresses you have available depends on your server hosting solution (see the next sections).
+Some hosts will restrict which ports you are allowed you use so make sure to check.</p>
+</section>
+<section id="web-server">
+<h3>Web server<a class="headerlink" href="#web-server" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Required. This is a list of tuples</span>
+<span class="c1"># (outgoing_port, internal_port). Only the outgoing</span>
+<span class="c1"># port should be open to the world!</span>
+<span class="c1"># set outgoing port to 80 if you want to run Evennia</span>
+<span class="c1"># as the only web server on your machine (if available).</span>
+<span class="n">WEBSERVER_PORTS</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">4001</span><span class="p">,</span> <span class="mi">4005</span><span class="p">)]</span>
+<span class="c1"># Optional for security. Change this to the IP your</span>
+<span class="c1"># server can be reached at (normally the same</span>
+<span class="c1"># as TELNET_INTERFACES)</span>
+<span class="n">WEBSERVER_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">]</span>
+<span class="c1"># Optional for security. Protects against</span>
+<span class="c1"># man-in-the-middle attacks. Change  it to your server&#39;s</span>
+<span class="c1"># IP address or URL when you run a production server.</span>
+<span class="n">ALLOWED_HOSTS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;*&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The web server is always configured with two ports at a time. The <em>outgoing</em> port (<code class="docutils literal notranslate"><span class="pre">4001</span></code> by
+default) is the port external connections can use. If you don’t want users to have to specify the
+port when they connect, you should set this to <code class="docutils literal notranslate"><span class="pre">80</span></code> - this however only works if you are not running
+any other web server on the machine.
+The <em>internal</em> port (<code class="docutils literal notranslate"><span class="pre">4005</span></code> by default) is used internally by Evennia to communicate between the
+Server and the Portal. It should not be available to the outside world. You usually only need to
+change the outgoing port unless the default internal port is clashing with some other program.</p>
+</section>
+<section id="web-client">
+<h3>Web client<a class="headerlink" href="#web-client" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Required. Change this to the main IP address of your server.</span>
+<span class="n">WEBSOCKET_CLIENT_INTERFACE</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span>
+<span class="c1"># Optional and needed only if using a proxy or similar. Change</span>
+<span class="c1"># to the IP or address where the client can reach</span>
+<span class="c1"># your server. The ws:// part is then required. If not given, the client</span>
+<span class="c1"># will use its host location.</span>
+<span class="n">WEBSOCKET_CLIENT_URL</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="c1"># Required. Change to a free port for the websocket client to reach</span>
+<span class="c1"># the server on. This will be automatically appended</span>
+<span class="c1"># to WEBSOCKET_CLIENT_URL by the web client.</span>
+<span class="n">WEBSOCKET_CLIENT_PORT</span> <span class="o">=</span> <span class="mi">4002</span>
+</pre></div>
+</div>
+<p>The websocket-based web client needs to be able to call back to the server, and these settings must
+be changed for it to find where to look. If it cannot find the server you will get an warning in
+your browser’s Console (in the dev tools of the browser), and the client will revert to the AJAX-
+based of the client instead, which tends to be slower.</p>
+</section>
+<section id="other-ports">
+<h3>Other ports<a class="headerlink" href="#other-ports" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Optional public facing. Only allows SSL connections (off by default).</span>
+<span class="n">SSL_PORTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4003</span><span class="p">]</span>
+<span class="n">SSL_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">]</span>
+<span class="c1"># Optional public facing. Only if you allow SSH connections (off by default).</span>
+<span class="n">SSH_PORTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4004</span><span class="p">]</span>
+<span class="n">SSH_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">]</span>
+<span class="c1"># Required private. You should only change this if there is a clash</span>
+<span class="c1"># with other services on your host. Should NOT be open to the</span>
+<span class="c1"># outside world.</span>
+<span class="n">AMP_PORT</span> <span class="o">=</span> <span class="mi">4006</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">AMP_PORT</span></code> is required to work, since this is the internal port linking Evennia’s
+<a class="reference internal" href="Portal-And-Server.html"><span class="doc std std-doc">Server and Portal</span></a> components together. The other ports are encrypted ports that may be
+useful for custom protocols but are otherwise not used.</p>
+</section>
+<section id="lockdown-mode">
+<h3>Lockdown mode<a class="headerlink" href="#lockdown-mode" title="Permalink to this headline">¶</a></h3>
+<p>When you test things out and check configurations you may not want players to drop in on you.
+Similarly, if you are doing maintenance on a live game you may want to take it offline for a while
+to fix eventual problems without risking people connecting. To do this, stop the server with
+<code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code> and add <code class="docutils literal notranslate"><span class="pre">LOCKDOWN_MODE</span> <span class="pre">=</span> <span class="pre">True</span></code> to your settings file. When you start the server
+again, your game will only be accessible from localhost.</p>
+</section>
+<section id="registering-with-the-evennia-game-directory">
+<h3>Registering with the Evennia game directory<a class="headerlink" href="#registering-with-the-evennia-game-directory" title="Permalink to this headline">¶</a></h3>
+<p>Once your game is online you should make sure to register it with the <a class="reference external" href="http://games.evennia.com/">Evennia Game
+Index</a>. Registering with the index will help  people find your server,
+drum up interest for your game and also shows people that Evennia is being used. You can do this
+even if you are just starting development - if you don’t give any telnet/web address it will appear
+as <em>Not yet public</em> and just be a teaser. If so, pick <em>pre-alpha</em> as the development status.</p>
+<p>To register, stand in your game dir, run</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia connections
+</pre></div>
+</div>
+<p>and follow the instructions. See the <a class="reference internal" href="Evennia-Game-Index.html"><span class="doc std std-doc">Game index page</span></a> for more details.</p>
+</section>
+</section>
+<section id="ssl">
+<h2>SSL<a class="headerlink" href="#ssl" title="Permalink to this headline">¶</a></h2>
+<p>SSL can be very useful for web clients. It will protect the credentials and gameplay of your users
+over a web client if they are in a public place, and your websocket can also be switched to WSS for
+the same benefit. SSL certificates used to cost money on a yearly basis, but there is now a program
+that issues them for free with assisted setup to make the entire process less painful.</p>
+<p>Options that may be useful in combination with an SSL proxy:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># See above for the section on Lockdown Mode.</span>
+<span class="c1"># Useful for a proxy on the public interface connecting to Evennia on localhost.</span>
+<span class="n">LOCKDOWN_MODE</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1"># Have clients communicate via wss after connecting with https to port 4001.</span>
+<span class="c1"># Without this, you may get DOMException errors when the browser tries</span>
+<span class="c1"># to create an insecure websocket from a secure webpage.</span>
+<span class="n">WEBSOCKET_CLIENT_URL</span> <span class="o">=</span> <span class="s2">&quot;wss://fqdn:4002&quot;</span>
+</pre></div>
+</div>
+<section id="lets-encrypt">
+<h3>Let’s Encrypt<a class="headerlink" href="#lets-encrypt" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://letsencrypt.org">Let’s Encrypt</a> is a certificate authority offering free certificates to
+secure a website with HTTPS. To get started issuing a certificate for your web server using Let’s
+Encrypt, see these links:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://letsencrypt.org/getting-started/">Let’s Encrypt - Getting Started</a></p></li>
+<li><p>The <a class="reference external" href="https://certbot.eff.org/">CertBot Client</a> is a program for automatically obtaining a
+certificate, use it and maintain it with your website.</p></li>
+</ul>
+<p>Also, on Freenode visit the #letsencrypt channel for assistance from the community. For an
+additional resource, Let’s Encrypt has a very active <a class="reference external" href="https://community.letsencrypt.org/">community
+forum</a>.</p>
+<p>[A blog where someone sets up Let’s Encrypt](<a class="reference external" href="https://www.digitalocean.com/community/tutorials/how-">https://www.digitalocean.com/community/tutorials/how-</a>
+to-secure-apache-with-let-s-encrypt-on-ubuntu-16-04)</p>
+<p>The only process missing from all of the above documentation is how to pass verification. This is
+how Let’s Encrypt verifies that you have control over your domain (not necessarily ownership, it’s
+Domain Validation (DV)). This can be done either with configuring a certain path on your web server
+or through a TXT record in your DNS. Which one you will want to do is a personal preference, but can
+also be based on your hosting choice. In a controlled/cPanel environment, you will most likely have
+to use DNS verification.</p>
+</section>
+</section>
+<section id="relevant-ssl-proxy-setup-information">
+<h2>Relevant SSL Proxy Setup Information<a class="headerlink" href="#relevant-ssl-proxy-setup-information" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="Apache-Config.html"><span class="doc std std-doc">Apache webserver configuration</span></a> (optional)</p></li>
+<li><p><a class="reference internal" href="HAProxy-Config.html"><span class="doc std std-doc">HAProxy Config</span></a></p></li>
+</ul>
+</section>
+<section id="hosting-locally-or-remotely">
+<h2>Hosting locally or remotely?<a class="headerlink" href="#hosting-locally-or-remotely" title="Permalink to this headline">¶</a></h2>
+<section id="using-your-own-computer-as-a-server">
+<h3>Using your own computer as a server<a class="headerlink" href="#using-your-own-computer-as-a-server" title="Permalink to this headline">¶</a></h3>
+<p>What we showed above is by far the simplest and probably cheapest option: Run Evennia on your own
+home computer. Moreover, since Evennia is its own web server, you don’t need to install anything
+extra to have a website.</p>
+<p><strong>Advantages</strong></p>
+<ul class="simple">
+<li><p>Free (except for internet costs and the electrical bill).</p></li>
+<li><p>Full control over the server and hardware (it sits right there!).</p></li>
+<li><p>Easy to set up.</p></li>
+<li><p>Suitable for quick setups - e.g. to briefly show off results to your collaborators.</p></li>
+</ul>
+<p><strong>Disadvantages</strong></p>
+<ul class="simple">
+<li><p>You need a good internet connection, ideally without any upload/download limits/costs.</p></li>
+<li><p>If you want to run a full game this way, your computer needs to always be on. It could be noisy,
+and as mentioned, the electrical bill must be considered.</p></li>
+<li><p>No support or safety - if your house burns down, so will your game. Also, you are yourself
+responsible for doing regular backups.</p></li>
+<li><p>Potentially not as easy if you don’t know how to open ports in your firewall or router.</p></li>
+<li><p>Home IP numbers are often dynamically allocated, so for permanent online time you need to set up a
+DNS to always re-point to the right place (see below).</p></li>
+<li><p>You are personally responsible for any use/misuse of your internet connection– though unlikely
+(but not impossible) if running your server somehow causes issues for other customers on the
+network, goes against your ISP’s terms of service (many ISPs insist on upselling you to a business-
+tier connection) or you are the subject of legal action by a copyright holder, you may find your
+main internet connection terminated as a consequence.</p></li>
+</ul>
+<section id="setting-up-your-own-machine-as-a-server">
+<h4>Setting up your own machine as a server<a class="headerlink" href="#setting-up-your-own-machine-as-a-server" title="Permalink to this headline">¶</a></h4>
+<p><a class="reference internal" href="#connecting-from-the-outside"><span class="std std-doc">The first section</span></a> of this page describes how to do this
+and allow users to connect to the IP address of your machine/router.</p>
+<p>A complication with using a specific IP address like this is that your home IP might not remain the
+same. Many ISPs (Internet Service Providers) allocates a <em>dynamic</em> IP to you which could change at
+any time. When that happens, that IP you told people to go to will be worthless. Also, that long
+string of numbers is not very pretty, is it? It’s hard to remember and not easy to use in marketing
+your game. What you need is to alias it to a more sensible domain name - an alias that follows you
+around also when the IP changes.</p>
+<ol>
+<li><p>To set up a domain name alias, we recommend starting with a free domain name from
+<a class="reference external" href="https://freedns.afraid.org/">FreeDNS</a>. Once you register there (it’s free) you have access to tens
+of thousands domain names that people have “donated” to allow you to use for your own sub domain.
+For example, <code class="docutils literal notranslate"><span class="pre">strangled.net</span></code> is one of those available domains. So tying our IP address to
+<code class="docutils literal notranslate"><span class="pre">strangled.net</span></code> using the subdomain <code class="docutils literal notranslate"><span class="pre">evennia</span></code> would mean that one could henceforth direct people to
+<code class="docutils literal notranslate"><span class="pre">http://evennia.strangled.net:4001</span></code> for their gaming needs - far easier to remember!</p></li>
+<li><p>So how do we make this new, nice domain name follow us also if our IP changes? For this we need
+to set up a little program on our computer. It will check whenever our ISP decides to change our IP
+and tell FreeDNS that. There are many alternatives to be found from FreeDNS:s homepage, one that
+works on multiple platforms is <a class="reference external" href="http://www.inatech.eu/inadyn/">inadyn</a>. Get it from their page or,
+in Linux, through something like <code class="docutils literal notranslate"><span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">inadyn</span></code>.</p></li>
+<li><p>Next, you login to your account on FreeDNS and go to the
+<a class="reference external" href="https://freedns.afraid.org/dynamic/">Dynamic</a> page. You should have a list of your subdomains. Click
+the <code class="docutils literal notranslate"><span class="pre">Direct</span> <span class="pre">URL</span></code> link and you’ll get a page with a text message. Ignore that and look at the URL of
+the page. It should be ending in a lot of random letters. Everything after the question mark is your
+unique “hash”. Copy this string.</p></li>
+<li><p>You now start inadyn with the following command (Linux):</p>
+<p><code class="docutils literal notranslate"><span class="pre">inadyn</span> <span class="pre">--dyndns_system</span> <span class="pre">default&#64;freedns.afraid.org</span> <span class="pre">-a</span> <span class="pre">&lt;my.domain&gt;,&lt;hash&gt;</span> <span class="pre">&amp;</span></code></p>
+</li>
+</ol>
+<p>where <code class="docutils literal notranslate"><span class="pre">&lt;my.domain&gt;</span></code> would be <code class="docutils literal notranslate"><span class="pre">evennia.strangled.net</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;hash&gt;</span></code> the string of numbers we copied
+from FreeDNS. The <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> means we run in the background (might not  be valid in other operating
+systems). <code class="docutils literal notranslate"><span class="pre">inadyn</span></code> will henceforth check for changes every 60 seconds. You should put the <code class="docutils literal notranslate"><span class="pre">inadyn</span></code>
+command string in a startup script somewhere so it kicks into gear whenever your computer starts.</p>
+</section>
+</section>
+<section id="remote-hosting">
+<h3>Remote hosting<a class="headerlink" href="#remote-hosting" title="Permalink to this headline">¶</a></h3>
+<p>Your normal “web hotel” will probably not be enough to run Evennia. A web hotel is normally aimed at
+a very specific usage - delivering web pages, at the most with some dynamic content. The “Python
+scripts” they refer to on their home pages are usually only intended to be CGI-like scripts launched
+by their webserver. Even if they allow you shell access (so you can install the Evennia dependencies
+in the first place), resource usage will likely be very restricted. Running a full-fledged game
+server like Evennia will probably be shunned upon or be outright impossible.  If you are unsure,
+contact your web hotel and ask about their policy on you running third-party servers that will want
+to open custom ports.</p>
+<p>The options you probably need to look for are <em>shell account services</em>, <em>VPS:es</em> or <em>Cloud
+services</em>. A “Shell account” service means that you get a shell account on a server and can log in
+like any normal user. By contrast, a <em>VPS</em> (Virtual Private Server) service usually means that you
+get <code class="docutils literal notranslate"><span class="pre">root</span></code> access, but in a virtual machine. There are also <em>Cloud</em>-type services which allows for
+starting up multiple virtual machines and pay for what resources you use.</p>
+<p><strong>Advantages</strong></p>
+<ul class="simple">
+<li><p>Shell accounts/VPS/clouds offer more flexibility than your average web hotel - it’s the ability to
+log onto a shared computer away from home.</p></li>
+<li><p>Usually runs a Linux flavor, making it easy to install Evennia.</p></li>
+<li><p>Support. You don’t need to maintain the server hardware. If your house burns down, at least your
+game stays online. Many services guarantee a certain level of up-time and also do regular backups
+for you. Make sure to check, some offer lower rates in exchange for you yourself being fully
+responsible for your data/backups.</p></li>
+<li><p>Usually offers a fixed domain name, so no need to mess with IP addresses.</p></li>
+<li><p>May have the ability to easily deploy <a class="reference internal" href="Running-Evennia-in-Docker.html"><span class="doc std std-doc">docker</span></a> versions of evennia
+and/or your game.</p></li>
+</ul>
+<p><strong>Disadvantages</strong></p>
+<ul class="simple">
+<li><p>Might be pretty expensive (more so than a web hotel). Note that Evennia will normally need at
+least 100MB RAM and likely much more for a large production game.</p></li>
+<li><p>Linux flavors might feel unfamiliar to users not used to ssh/PuTTy and the Linux command line.</p></li>
+<li><p>You are probably sharing the server with many others, so you are not completely in charge. CPU
+usage might be limited. Also, if the server people decides to take the server down for maintenance,
+you have no choice but to sit it out (but you’ll hopefully be warned ahead of time).</p></li>
+</ul>
+<section id="installing-evennia-on-a-remote-server">
+<h4>Installing Evennia on a remote server<a class="headerlink" href="#installing-evennia-on-a-remote-server" title="Permalink to this headline">¶</a></h4>
+<p>Firstly, if you are familiar with server infrastructure, consider using [Docker](Running-Evennia-in-
+Docker) to deploy your game to the remote server; it will likely ease installation and deployment.
+Docker images may be a little confusing if you are completely new to them though.</p>
+<p>If not using docker, and assuming you know how to connect to your account over ssh/PuTTy, you should
+be able to follow the <span class="xref myst">Setup Quickstart</span> instructions normally. You only need Python
+and GIT pre-installed; these should both be available on any servers (if not you should be able to
+easily ask for them to be installed). On a VPS or Cloud service you can install them yourself as
+needed.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> is not available and you can’t get it, you can download it (it’s just a single file)
+from <a class="reference external" href="https://pypi.python.org/pypi/virtualenv">the virtualenv pypi</a>. Using <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> you can
+install everything without actually needing to have further <code class="docutils literal notranslate"><span class="pre">root</span></code> access. Ports might be an issue,
+so make sure you know which ports are available to use and reconfigure Evennia accordingly.</p>
+</section>
+</section>
+<section id="hosting-options">
+<h3>Hosting options<a class="headerlink" href="#hosting-options" title="Permalink to this headline">¶</a></h3>
+<p>To find commercial solutions, browse the web for “shell access”, “VPS” or “Cloud services” in your
+region. You may find useful offers for “low cost” VPS hosting on <a class="reference external" href="https://lowendbox.com/">Low End Box</a>. The associated
+<a class="reference external" href="https://www.lowendtalk.com">Low End Talk</a> forum can be useful for health checking the many small businesses that offer
+“value” hosting, and occasionally for technical suggestions.</p>
+<p>There are all sorts of services available. Below are some international suggestions offered by
+Evennia users:</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Hosting name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Lowest price</p></th>
+<th class="head"><p>Comments</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://silvren.com">silvren.com</a></p></td>
+<td><p>Shell account</p></td>
+<td><p>Free for MU*</p></td>
+<td><p>Private hobby provider so don’t assume backups or expect immediate support. To ask for an account,connect with a MUD client to <a class="reference external" href="http://rostdev.mushpark.com">rostdev.mushpark.com</a>, port 4201 and ask for “Jarin”.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://www.digitalocean.com/pricing">Digital Ocean</a></p></td>
+<td><p>VPS</p></td>
+<td><p>$5/month</p></td>
+<td><p>You can get a $50 credit if you use the referral link <a class="reference external" href="https://m.do.co/c/8f64fec2670c">https://m.do.co/c/8f64fec2670c</a> - if you do, once you’ve had it long enough to have paid $25 we will get that as a referral bonus to help Evennia development.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://aws.amazon.com/pricing/">Amazon Web services</a></p></td>
+<td><p>Cloud</p></td>
+<td><p>~$5/month / on-demand</p></td>
+<td><p>Free Tier first 12 months. Regions available around the globe.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://amazonlightsail.com">Amazon Lightsail</a></p></td>
+<td><p>Cloud</p></td>
+<td><p>$5/month</p></td>
+<td><p>Free first month. AWS’s new “fixed cost” offering.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://azure.microsoft.com/en-us/pricing/details/app-service/windows/">Azure App Services</a></p></td>
+<td><p>Cloud</p></td>
+<td><p>Free</p></td>
+<td><p>Provides a free tier for hobbyist. Limited regions to be deployed to under the free tier</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://activity.huaweicloud.com/intl/en-us/free_packages/index.html">Huawei Cloud</a></p></td>
+<td><p>Cloud</p></td>
+<td><p>on demand</p></td>
+<td><p>Similar to Amazon. Free Tier first 12 months. Limited regions to be deployed to</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.genesismuds.com/">Genesis MUD hosting</a></p></td>
+<td><p>Shell account</p></td>
+<td><p>$8/month</p></td>
+<td><p>Dedicated MUD host with very limited memory offerings. As for 2017, runs a 13 years old Python version (2.4) so you’d need to either convince them to update or compile yourself. Note that Evennia needs <em>at least</em> the “Deluxe” package (50MB RAM) and probably <em>a lot</em> higher for a production game. This host is <em>not</em> recommended for Evennia.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://www.host1plus.com/">Host1Plus</a></p></td>
+<td><p>VPS &amp; Cloud</p></td>
+<td><p>$4/month</p></td>
+<td><p>$4-$8/month depending on length of sign-up period.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.scaleway.com/">Scaleway</a></p></td>
+<td><p>Cloud</p></td>
+<td><p>€3/month / on-demand</p></td>
+<td><p>EU based (Paris, Amsterdam). Smallest option provides 2GB RAM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://prgmr.com/">Prgmr</a></p></td>
+<td><p>VPS</p></td>
+<td><p>$5/month</p></td>
+<td><p>1 month free with a year prepay. You likely want some experience with servers with this option as they don’t have a lot of support.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.linode.com/">Linode</a></p></td>
+<td><p>Cloud</p></td>
+<td><p>$5/month / on-demand</p></td>
+<td><p>Multiple regions. Smallest option provides 1GB RAM</p></td>
+</tr>
+</tbody>
+</table>
+<p><em>Please help us expand this list.</em></p>
+</section>
+</section>
+<section id="cloud9">
+<h2>Cloud9<a class="headerlink" href="#cloud9" title="Permalink to this headline">¶</a></h2>
+<p>If you are interested in running Evennia in the online dev environment <a class="reference external" href="https://c9.io/">Cloud9</a>, you
+can spin it up through their normal online setup using the Evennia Linux install instructions. The
+one extra thing you will have to do is update <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> and add
+<code class="docutils literal notranslate"><span class="pre">WEBSERVER_PORTS</span> <span class="pre">=</span> <span class="pre">[(8080,</span> <span class="pre">4001)]</span></code>. This will then let you access the web server and do everything
+else as normal.</p>
+<p>Note that, as of December 2017, Cloud9 was re-released by Amazon as a service within their AWS cloud
+service offering. New customers entitled to the 1 year AWS “free tier” may find it provides
+sufficient resources to operate a Cloud9 development environment without charge.
+<a class="reference external" href="https://aws.amazon.com/cloud9/">https://aws.amazon.com/cloud9/</a></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Online Setup</a><ul>
+<li><a class="reference internal" href="#connecting-from-the-outside">Connecting from the outside</a><ul>
+<li><a class="reference internal" href="#settings-example">Settings example</a></li>
+<li><a class="reference internal" href="#telnet">Telnet</a></li>
+<li><a class="reference internal" href="#web-server">Web server</a></li>
+<li><a class="reference internal" href="#web-client">Web client</a></li>
+<li><a class="reference internal" href="#other-ports">Other ports</a></li>
+<li><a class="reference internal" href="#lockdown-mode">Lockdown mode</a></li>
+<li><a class="reference internal" href="#registering-with-the-evennia-game-directory">Registering with the Evennia game directory</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ssl">SSL</a><ul>
+<li><a class="reference internal" href="#lets-encrypt">Let’s Encrypt</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#relevant-ssl-proxy-setup-information">Relevant SSL Proxy Setup Information</a></li>
+<li><a class="reference internal" href="#hosting-locally-or-remotely">Hosting locally or remotely?</a><ul>
+<li><a class="reference internal" href="#using-your-own-computer-as-a-server">Using your own computer as a server</a><ul>
+<li><a class="reference internal" href="#setting-up-your-own-machine-as-a-server">Setting up your own machine as a server</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#remote-hosting">Remote hosting</a><ul>
+<li><a class="reference internal" href="#installing-evennia-on-a-remote-server">Installing Evennia on a remote server</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hosting-options">Hosting options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cloud9">Cloud9</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Online-Setup.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Online-Setup.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Online Setup</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

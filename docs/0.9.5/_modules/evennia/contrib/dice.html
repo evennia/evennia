@@ -1,0 +1,368 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.dice &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.dice</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.dice</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Dice - rolls dice for roleplaying, in-game gambling or GM:ing</span>
+
+<span class="sd">Evennia contribution - Griatch 2012</span>
+
+
+<span class="sd">This module implements a full-fledged dice-roller and a &#39;dice&#39; command</span>
+<span class="sd">to go with it. It uses standard RPG &#39;d&#39;-syntax (e.g. 2d6 to roll two</span>
+<span class="sd">six-sided die) and also supports modifiers such as 3d6 + 5.</span>
+
+<span class="sd">One can also specify a standard Python operator in order to specify</span>
+<span class="sd">eventual target numbers and get results in a fair and guaranteed</span>
+<span class="sd">unbiased way.  For example a GM could (using the dice command) from</span>
+<span class="sd">the start define the roll as 2d6 &lt; 8 to show that a roll below 8 is</span>
+<span class="sd">required to succeed. The command will normally echo this result to all</span>
+<span class="sd">parties (although it also has options for hidden and secret rolls).</span>
+
+
+<span class="sd">Installation:</span>
+
+<span class="sd">To use in your code, just import the roll_dice function from this module.</span>
+
+<span class="sd">To use  the dice/roll command, just import this module in your custom</span>
+<span class="sd">cmdset module and add the following line to the end of DefaultCmdSet&#39;s</span>
+<span class="sd">at_cmdset_creation():</span>
+
+<span class="sd">   self.add(dice.CmdDice())</span>
+
+<span class="sd">After a reload the dice (or roll) command will be available in-game.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">CmdSet</span>
+
+
+<div class="viewcode-block" id="roll_dice"><a class="viewcode-back" href="../../../api/evennia.contrib.dice.html#evennia.contrib.dice.roll_dice">[docs]</a><span class="k">def</span> <span class="nf">roll_dice</span><span class="p">(</span><span class="n">dicenum</span><span class="p">,</span> <span class="n">dicetype</span><span class="p">,</span> <span class="n">modifier</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conditional</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_tuple</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a standard dice roller.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">     dicenum (int): Number of dice to roll (the result to be added).</span>
+<span class="sd">     dicetype (int): Number of sides of the dice to be rolled.</span>
+<span class="sd">     modifier (tuple): A tuple `(operator, value)`, where operator is</span>
+<span class="sd">        one of `&quot;+&quot;`, `&quot;-&quot;`, `&quot;/&quot;` or `&quot;*&quot;`. The result of the dice</span>
+<span class="sd">        roll(s) will be modified by this value.</span>
+<span class="sd">     conditional (tuple): A tuple `(conditional, value)`, where</span>
+<span class="sd">        conditional is one of `&quot;==&quot;`,`&quot;&lt;&quot;`,`&quot;&gt;&quot;`,`&quot;&gt;=&quot;`,`&quot;&lt;=`&quot; or &quot;`!=`&quot;.</span>
+<span class="sd">        This allows the roller to directly return a result depending</span>
+<span class="sd">        on if the conditional was passed or not.</span>
+<span class="sd">     return_tuple (bool): Return a tuple with all individual roll</span>
+<span class="sd">        results or not.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        roll_result (int): The result of the roll + modifiers. This is the</span>
+<span class="sd">             default return.</span>
+<span class="sd">        condition_result (bool): A True/False value returned if `conditional`</span>
+<span class="sd">            is set but not `return_tuple`. This effectively hides the result</span>
+<span class="sd">            of the roll.</span>
+<span class="sd">        full_result (tuple): If, return_tuple` is `True`, instead</span>
+<span class="sd">            return a tuple `(result, outcome, diff, rolls)`. Here,</span>
+<span class="sd">            `result` is the normal result of the roll + modifiers.</span>
+<span class="sd">            `outcome` and `diff` are the boolean result of the roll and</span>
+<span class="sd">            absolute difference to the `conditional` input; they will</span>
+<span class="sd">            be will be `None` if `conditional` is not set. `rolls` is</span>
+<span class="sd">            itself a tuple holding all the individual rolls in the case of</span>
+<span class="sd">            multiple die-rolls.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        TypeError if non-supported modifiers or conditionals are given.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        All input numbers are converted to integers.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        print roll_dice(2, 6) # 2d6</span>
+<span class="sd">        &lt;&lt;&lt; 7</span>
+<span class="sd">        print roll_dice(1, 100, (&#39;+&#39;, 5) # 1d100 + 5</span>
+<span class="sd">        &lt;&lt;&lt; 34</span>
+<span class="sd">        print roll_dice(1, 20, conditional=(&#39;&lt;&#39;, 10) # let&#39;say we roll 3</span>
+<span class="sd">        &lt;&lt;&lt; True</span>
+<span class="sd">        print roll_dice(3, 10, return_tuple=True)</span>
+<span class="sd">        &lt;&lt;&lt; (11, None, None, (2, 5, 4))</span>
+<span class="sd">        print roll_dice(2, 20, (&#39;-&#39;, 2), conditional=(&#39;&gt;=&#39;, 10), return_tuple=True)</span>
+<span class="sd">        &lt;&lt;&lt; (8, False, 2, (4, 6)) # roll was 4 + 6 - 2 = 8</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dicenum</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dicenum</span><span class="p">)</span>
+    <span class="n">dicetype</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dicetype</span><span class="p">)</span>
+
+    <span class="c1"># roll all dice, remembering each roll</span>
+    <span class="n">rolls</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dicetype</span><span class="p">)</span> <span class="k">for</span> <span class="n">roll</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dicenum</span><span class="p">)])</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">rolls</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">modifier</span><span class="p">:</span>
+        <span class="c1"># make sure to check types well before eval</span>
+        <span class="n">mod</span><span class="p">,</span> <span class="n">modvalue</span> <span class="o">=</span> <span class="n">modifier</span>
+        <span class="k">if</span> <span class="n">mod</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Non-supported dice modifier: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">mod</span><span class="p">)</span>
+        <span class="n">modvalue</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">modvalue</span><span class="p">)</span>  <span class="c1"># for safety</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">mod</span><span class="p">,</span> <span class="n">modvalue</span><span class="p">))</span>
+    <span class="n">outcome</span><span class="p">,</span> <span class="n">diff</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">conditional</span><span class="p">:</span>
+        <span class="c1"># make sure to check types well before eval</span>
+        <span class="n">cond</span><span class="p">,</span> <span class="n">condvalue</span> <span class="o">=</span> <span class="n">conditional</span>
+        <span class="k">if</span> <span class="n">cond</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">,</span> <span class="s2">&quot;==&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Non-supported dice result conditional: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">conditional</span><span class="p">)</span>
+        <span class="n">condvalue</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">condvalue</span><span class="p">)</span>  <span class="c1"># for safety</span>
+        <span class="n">outcome</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">cond</span><span class="p">,</span> <span class="n">condvalue</span><span class="p">))</span>  <span class="c1"># True/False</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">result</span> <span class="o">-</span> <span class="n">condvalue</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">outcome</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">rolls</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">conditional</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">outcome</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span></div>
+
+
+<span class="n">RE_PARTS</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(d|\+|-|/|\*|&lt;|&gt;|&lt;=|&gt;=|!=|==)&quot;</span><span class="p">)</span>
+<span class="n">RE_MOD</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\+|-|/|\*)&quot;</span><span class="p">)</span>
+<span class="n">RE_COND</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(&lt;|&gt;|&lt;=|&gt;=|!=|==)&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="CmdDice"><a class="viewcode-back" href="../../../api/evennia.contrib.dice.html#evennia.contrib.dice.CmdDice">[docs]</a><span class="k">class</span> <span class="nc">CmdDice</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    roll dice</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      dice[/switch] &lt;nr&gt;d&lt;sides&gt; [modifier] [success condition]</span>
+
+<span class="sd">    Switch:</span>
+<span class="sd">      hidden - tell the room the roll is being done, but don&#39;t show the result</span>
+<span class="sd">      secret - don&#39;t inform the room about neither roll nor result</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">      dice 3d6 + 4</span>
+<span class="sd">      dice 1d100 - 2 &lt; 50</span>
+
+<span class="sd">    This will roll the given number of dice with given sides and modifiers.</span>
+<span class="sd">    So e.g. 2d6 + 3 means to &#39;roll a 6-sided die 2 times and add the result,</span>
+<span class="sd">    then add 3 to the total&#39;.</span>
+<span class="sd">    Accepted modifiers are +, -, * and /.</span>
+<span class="sd">    A success condition is given as normal Python conditionals</span>
+<span class="sd">    (&lt;,&gt;,&lt;=,&gt;=,==,!=). So e.g. 2d6 + 3 &gt; 10 means that the roll will succeed</span>
+<span class="sd">    only if the final result is above 8. If a success condition is given, the</span>
+<span class="sd">    outcome (pass/fail) will be echoed along with how much it succeeded/failed</span>
+<span class="sd">    with. The hidden/secret switches will hide all or parts of the roll from</span>
+<span class="sd">    everyone but the person rolling.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;dice&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;roll&quot;</span><span class="p">,</span> <span class="s2">&quot;@dice&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+<div class="viewcode-block" id="CmdDice.func"><a class="viewcode-back" href="../../../api/evennia.contrib.dice.html#evennia.contrib.dice.CmdDice.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mostly parsing for calling the dice roller function&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: @dice &lt;nr&gt;d&lt;sides&gt; [modifier] [conditional]&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">argstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">part</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">RE_PARTS</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="k">if</span> <span class="n">part</span><span class="p">]</span>
+        <span class="n">len_parts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+        <span class="n">modifier</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">conditional</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">len_parts</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;You must specify the die roll(s) as &lt;nr&gt;d&lt;sides&gt;.&quot;</span>
+                <span class="s2">&quot; For example, 2d6 means rolling a 6-sided die 2 times.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Limit the number of dice and sides a character can roll to prevent server slow down and crashes</span>
+        <span class="n">ndicelimit</span> <span class="o">=</span> <span class="mi">10000</span>  <span class="c1"># Maximum number of dice</span>
+        <span class="n">nsidelimit</span> <span class="o">=</span> <span class="mi">10000</span>  <span class="c1"># Maximum number of sides</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">ndicelimit</span> <span class="ow">or</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">nsidelimit</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The maximum roll allowed is </span><span class="si">%s</span><span class="s2">d</span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ndicelimit</span><span class="p">,</span> <span class="n">nsidelimit</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="n">ndice</span><span class="p">,</span> <span class="n">nsides</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">len_parts</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="c1"># just something like 1d6</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">len_parts</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="c1"># either e.g. 1d6 + 3  or something like 1d6 &gt; 3</span>
+            <span class="k">if</span> <span class="n">parts</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">):</span>
+                <span class="n">modifier</span> <span class="o">=</span> <span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">parts</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># assume it is a conditional</span>
+                <span class="n">conditional</span> <span class="o">=</span> <span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">parts</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">len_parts</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
+            <span class="c1"># the whole sequence, e.g. 1d6 + 3 &gt; 5</span>
+            <span class="n">modifier</span> <span class="o">=</span> <span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">parts</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+            <span class="n">conditional</span> <span class="o">=</span> <span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">parts</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># error</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must specify a valid die roll&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># do the roll</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">,</span> <span class="n">outcome</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">rolls</span> <span class="o">=</span> <span class="n">roll_dice</span><span class="p">(</span>
+                <span class="n">ndice</span><span class="p">,</span> <span class="n">nsides</span><span class="p">,</span> <span class="n">modifier</span><span class="o">=</span><span class="n">modifier</span><span class="p">,</span> <span class="n">conditional</span><span class="o">=</span><span class="n">conditional</span><span class="p">,</span> <span class="n">return_tuple</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;You need to enter valid integer numbers, modifiers and operators.&quot;</span>
+                <span class="s2">&quot; |w</span><span class="si">%s</span><span class="s2">|n was not understood.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># format output</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rolls</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">rolls</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">roll</span><span class="p">)</span> <span class="k">for</span> <span class="n">roll</span> <span class="ow">in</span> <span class="n">rolls</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot; and &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rolls</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rolls</span> <span class="o">=</span> <span class="n">rolls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">outcome</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">outcomestring</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">elif</span> <span class="n">outcome</span><span class="p">:</span>
+            <span class="n">outcomestring</span> <span class="o">=</span> <span class="s2">&quot; This is a |gsuccess|n (by </span><span class="si">%s</span><span class="s2">).&quot;</span> <span class="o">%</span> <span class="n">diff</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">outcomestring</span> <span class="o">=</span> <span class="s2">&quot; This is a |rfailure|n (by </span><span class="si">%s</span><span class="s2">).&quot;</span> <span class="o">%</span> <span class="n">diff</span>
+        <span class="n">yourollstring</span> <span class="o">=</span> <span class="s2">&quot;You roll </span><span class="si">%s%s</span><span class="s2">.&quot;</span>
+        <span class="n">roomrollstring</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> rolls </span><span class="si">%s%s</span><span class="s2">.&quot;</span>
+        <span class="n">resultstring</span> <span class="o">=</span> <span class="s2">&quot; Roll(s): </span><span class="si">%s</span><span class="s2">. Total result is |w</span><span class="si">%s</span><span class="s2">|n.&quot;</span>
+
+        <span class="k">if</span> <span class="s2">&quot;secret&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="c1"># don&#39;t echo to the room at all</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">yourollstring</span> <span class="o">%</span> <span class="p">(</span><span class="n">argstring</span><span class="p">,</span> <span class="s2">&quot; (secret, not echoed)&quot;</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">resultstring</span> <span class="o">%</span> <span class="p">(</span><span class="n">rolls</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="n">outcomestring</span> <span class="o">+</span> <span class="s2">&quot; (not echoed)&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s2">&quot;hidden&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="c1"># announce the roll to the room, result only to caller</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">yourollstring</span> <span class="o">%</span> <span class="p">(</span><span class="n">argstring</span><span class="p">,</span> <span class="s2">&quot; (hidden)&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">roomrollstring</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">argstring</span><span class="p">,</span> <span class="s2">&quot; (hidden)&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+            <span class="c1"># handle result</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">resultstring</span> <span class="o">%</span> <span class="p">(</span><span class="n">rolls</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="n">outcomestring</span> <span class="o">+</span> <span class="s2">&quot; (not echoed)&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># normal roll</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">yourollstring</span> <span class="o">%</span> <span class="p">(</span><span class="n">argstring</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">roomrollstring</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">argstring</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">resultstring</span> <span class="o">%</span> <span class="p">(</span><span class="n">rolls</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="n">outcomestring</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="DiceCmdSet"><a class="viewcode-back" href="../../../api/evennia.contrib.dice.html#evennia.contrib.dice.DiceCmdSet">[docs]</a><span class="k">class</span> <span class="nc">DiceCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    a small cmdset for testing purposes.</span>
+<span class="sd">    Add with @py self.cmdset.add(&quot;contrib.dice.DiceCmdSet&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DiceCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.dice.html#evennia.contrib.dice.DiceCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when set is created&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdDice</span><span class="p">())</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="dice.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.dice</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

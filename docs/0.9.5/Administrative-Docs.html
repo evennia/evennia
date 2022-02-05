@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Administrative Docs &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Developer Central" href="Developer-Central.html" />
+    <link rel="prev" title="Getting Started" href="Getting-Started.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Developer-Central.html" title="Developer Central"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Getting-Started.html" title="Getting Started"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Administrative Docs</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="administrative-docs">
+<h1>Administrative Docs<a class="headerlink" href="#administrative-docs" title="Permalink to this headline">¶</a></h1>
+<p>The following pages are aimed at game administrators – the higher-ups that possess shell access and
+are responsible for managing the game.</p>
+<section id="installation-and-early-life">
+<h2>Installation and Early Life<a class="headerlink" href="#installation-and-early-life" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="Choosing-An-SQL-Server.html"><span class="doc std std-doc">Choosing (and installing) an SQL Server</span></a></p></li>
+<li><p><a class="reference internal" href="Getting-Started.html"><span class="doc std std-doc">Getting Started - Installing Evennia</span></a></p></li>
+<li><p><a class="reference internal" href="Running-Evennia-in-Docker.html"><span class="doc std std-doc">Running Evennia in Docker Containers</span></a></p></li>
+<li><p><a class="reference internal" href="Start-Stop-Reload.html"><span class="doc std std-doc">Starting, stopping, reloading and resetting Evennia</span></a></p></li>
+<li><p><a class="reference internal" href="Updating-Your-Game.html"><span class="doc std std-doc">Keeping your game up to date</span></a></p></li>
+<li><p><a class="reference internal" href="Updating-Your-Game.html#resetting-your-database"><span class="std std-doc">Resetting your database</span></a></p></li>
+<li><p><a class="reference internal" href="Online-Setup.html"><span class="doc std std-doc">Making your game available online</span></a></p>
+<ul>
+<li><p><a class="reference internal" href="Online-Setup.html#hosting-options"><span class="std std-doc">Hosting options</span></a></p></li>
+<li><p><a class="reference internal" href="Online-Setup.html#ssl"><span class="std std-doc">Securing your server with SSL/Let’s Encrypt</span></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="Evennia-Game-Index.html"><span class="doc std std-doc">Listing your game</span></a> at the online <a class="reference external" href="http://games.evennia.com">Evennia game
+index</a></p></li>
+</ul>
+</section>
+<section id="customizing-the-server">
+<h2>Customizing the server<a class="headerlink" href="#customizing-the-server" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="Server-Conf.html#settings-file"><span class="std std-doc">Changing the Settings</span></a></p>
+<ul>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/settings_default.py">Available Master
+Settings</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="Internationalization.html"><span class="doc std std-doc">Change Evennia’s language</span></a> (internationalization)</p></li>
+<li><p><a class="reference internal" href="Apache-Config.html"><span class="doc std std-doc">Apache webserver configuration</span></a> (optional)</p></li>
+<li><p><a class="reference internal" href="Text-Encodings.html"><span class="doc std std-doc">Changing text encodings used by the server</span></a></p></li>
+<li><p><a class="reference internal" href="Connection-Screen.html"><span class="doc std std-doc">The Connection Screen</span></a></p></li>
+<li><p><a class="reference internal" href="Guest-Logins.html"><span class="doc std std-doc">Guest Logins</span></a></p></li>
+<li><p><a class="reference internal" href="IRC.html"><span class="doc std std-doc">How to connect Evennia to IRC channels</span></a></p></li>
+<li><p><a class="reference internal" href="RSS.html"><span class="doc std std-doc">How to connect Evennia to RSS feeds</span></a></p></li>
+<li><p><a class="reference internal" href="Grapevine.html"><span class="doc std std-doc">How to connect Evennia to Grapevine</span></a></p></li>
+<li><p><a class="reference internal" href="How-to-connect-Evennia-to-Twitter.html"><span class="doc std std-doc">How to connect Evennia to Twitter</span></a></p></li>
+</ul>
+</section>
+<section id="administrating-the-running-game">
+<h2>Administrating the running game<a class="headerlink" href="#administrating-the-running-game" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="Client-Support-Grid.html"><span class="doc std std-doc">Supported clients</span></a> (grid of known client issues)</p></li>
+<li><p><a class="reference internal" href="Building-Permissions.html"><span class="doc std std-doc">Changing Permissions</span></a> of users</p></li>
+<li><p><a class="reference internal" href="Banning.html"><span class="doc std std-doc">Banning</span></a> and deleting users</p>
+<ul>
+<li><p><a class="reference internal" href="Banning.html#summary-of-abuse-handling-tools"><span class="std std-doc">Summary of abuse-handling tools</span></a> in the default cmdset</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="working-with-evennia">
+<h2>Working with Evennia<a class="headerlink" href="#working-with-evennia" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="Version-Control.html"><span class="doc std std-doc">Setting up your work environment with version control</span></a></p></li>
+<li><p><a class="reference internal" href="First-Steps-Coding.html"><span class="doc std std-doc">First steps coding with Evennia</span></a></p></li>
+<li><p><a class="reference internal" href="Continuous-Integration.html"><span class="doc std std-doc">Setting up a continuous integration build environment</span></a></p></li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Administrative Docs</a><ul>
+<li><a class="reference internal" href="#installation-and-early-life">Installation and Early Life</a></li>
+<li><a class="reference internal" href="#customizing-the-server">Customizing the server</a></li>
+<li><a class="reference internal" href="#administrating-the-running-game">Administrating the running game</a></li>
+<li><a class="reference internal" href="#working-with-evennia">Working with Evennia</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Getting-Started.html"
+                        title="previous chapter">Getting Started</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Developer-Central.html"
+                        title="next chapter">Developer Central</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Administrative-Docs.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Administrative-Docs.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Developer-Central.html" title="Developer Central"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Getting-Started.html" title="Getting Started"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Administrative Docs</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>
