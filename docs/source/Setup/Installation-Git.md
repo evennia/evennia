@@ -5,14 +5,9 @@ itself or have an easier time exploring the code. See the basic [Installation](.
 a quick installation of the library. See the [troubleshooting](./Installation-Troubleshooting.md) if you run 
 into trouble.
 
-- [Quick Start](#quick-start)
-- [Linux Install](#linux-install)
-- [Mac Install](#mac-install)
-- [Windows Install](#windows-install)
-- [Running in Docker](./Installation-Docker.md)
-- [Where to Go Next](#where-to-go-next)
-- [Troubleshooting](#troubleshooting)
-- [Glossary of terms](../Glossary.md)
+```{important}
+If you are converting an existing game from a previous version, [see here](./Installation-Upgrade.md).
+```
 
 ## Summary
 
@@ -30,22 +25,19 @@ more detailed instructions for your platform.
 8. `cd mygame`
 9. `evennia migrate`
 10. `evennia start` (make sure to make a  superuser when asked)
+ 
 Evennia should now be running and you can connect to it by pointing a web browser to
 `http://localhost:4001` or a MUD telnet client to `localhost:4000` (use `127.0.0.1` if your OS does
 not recognize `localhost`).
 
 ## Linux Install
 
-If you run into any issues during the installation and first start, please
-check out [Linux Troubleshooting](#linux-troubleshooting).
-
 For Debian-derived systems (like Ubuntu, Mint etc), start a terminal and
-install the [dependencies](#requirements):
+install the requirements:
 
 ```
 sudo apt-get update
 sudo apt-get install python3.10 python3.10-venv python3.10-dev gcc
-
 ```
 You should make sure to *not* be `root` after this step, running as `root` is a
 security risk. Now create a folder where you want to do all your Evennia
@@ -107,8 +99,7 @@ Next you can continue initializing your game from the regular [Installation inst
 The Evennia server is a terminal program. Open the terminal e.g. from
 *Applications->Utilities->Terminal*. [Here is an introduction to the Mac
 terminal](https://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line)
-if you are unsure how it works. If you run into any issues during the
-installation, please check out [Mac Troubleshooting](#mac-troubleshooting).
+if you are unsure how it works. 
 
 * Python should already be installed but you must make sure it's a high enough version - go for 
  3.10.
@@ -143,7 +134,6 @@ virtualenv is and why it's useful, see the [Glossary entry on virtualenv](../Glo
 
 ```
 python3.10 -m venv evenv 
-
 ```
 A new folder `evenv` will appear (we could have called it anything). This
 folder will hold a self-contained setup of Python packages without interfering
@@ -232,7 +222,6 @@ virtualenv is and why it's useful, see the [Glossary entry on virtualenv](../Glo
 
 ```
 python3.10 -m venv evenv 
-
 ```
 A new folder `evenv` will appear (we could have called it anything). This
 folder will hold a self-contained setup of Python packages without interfering
@@ -244,7 +233,6 @@ evenv\scripts\activate.bat
 
 # If you are using a PS Shell, Git Bash, or other, you can use the following:
 .\evenv\scripts\activate
-
 ```
 The text `(evenv)` should appear next to your prompt to show the virtual
 environment is active.
@@ -264,39 +252,3 @@ pip install -e evennia
 Test that you can run the `evennia` command everywhere while your virtualenv (evenv) is active.
 
 Next you can continue initializing your game from the regular [Installation instructions](./Installation.md).
-
-## Where to Go Next
-
-Welcome to Evennia! Your new game is fully functioning, but empty. If you just
-logged in, stand in the `Limbo` room and run
-
-    @batchcommand tutorial_world.build
-
-to build [Evennia's tutorial world](../Howto/Starting/Part1/Tutorial-World.md) - it's a small solo quest to
-explore. Only run the instructed `@batchcommand` once. You'll get a lot of text scrolling by as the
-tutorial is built. Once done, the `tutorial` exit will have appeared out of Limbo - just write
-`tutorial` to enter it.
-
-Once you get back to `Limbo` from the tutorial (if you get stuck in the tutorial quest you can do
-`@tel #2` to jump to Limbo), a good idea is to learn how to [start, stop and reload](Start-Stop-
-Reload) the Evennia server. You may also want to familiarize yourself with some
-[commonly used terms in our Glossary](../Glossary.md). After that, why not experiment with
-[creating some new items and build some new rooms](../Howto/Starting/Part1/Building-Quickstart.md) out from Limbo.
-
-From here on, you could move on to do one of our [introductory tutorials](../Howto/Howto-Overview.md) or simply dive
-headlong into Evennia's comprehensive [manual](https://github.com/evennia/evennia/wiki). While
-Evennia has no major game systems out of the box, we do supply a range of optional *contribs* that
-you can use or borrow from. They range from dice rolling and alternative color schemes to barter and
-combat systems. You can find the [growing list of contribs
-here](https://github.com/evennia/evennia/blob/master/evennia/contrib/README.md).
-
-If you have any questions, you can always ask in [the developer
-chat](https://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb)
-`#evennia` on `irc.freenode.net` or by posting to the [Evennia
-forums](https://groups.google.com/forum/#%21forum/evennia). You can also join the [Discord
-Server](https://discord.gg/NecFePw).
-
-Finally, if you are itching to help out or support Evennia (awesome!) have an
-issue to report or a feature to request, [see here](../Contributing.md).
-
-Enjoy your stay!
