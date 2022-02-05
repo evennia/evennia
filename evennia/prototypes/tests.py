@@ -363,7 +363,7 @@ class TestProtFuncs(EvenniaTest):
         )
         self.assertEqual(
             protlib.protfunc_parser("$right_justify( foo  )", testing=True),
-            ("unexpected indent (<unknown>, line 1)", "                 foo"),
+            (None, "                 foo"),
         )
 
         test_prot = {"key1": "value1", "key2": 2}

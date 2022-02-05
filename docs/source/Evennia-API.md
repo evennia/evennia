@@ -1,6 +1,6 @@
 # API Summary 
 
-[evennia](evennia) - library root
+[evennia](api/evennia.md) - library root
 - [evennia.accounts](evennia.accounts) - the out-of-character entities representing players
 - [evennia.commands](evennia.commands) - handle all inputs. Also includes default commands
 - [evennia.comms](evennia.comms) - in-game channels and messaging
