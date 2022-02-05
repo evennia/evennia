@@ -206,7 +206,7 @@ class CmdTestMenu(Command):
 
     def func(self):
 
-	EvMenu(caller, "world.mymenu")
+	EvMenu(self.caller, "world.mymenu")
 
 ```
 
