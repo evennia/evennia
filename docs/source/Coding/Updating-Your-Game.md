@@ -2,7 +2,7 @@
 
 
 Fortunately, it's extremely easy to keep your Evennia server up-to-date. If you haven't already, see
-the [Getting Started guide](../Setup/Setup-Quickstart.md) and get everything running.
+the [Getting Started guide](../Setup/Installation.md) and get everything running.
 
 ## Updating with the latest Evennia code changes
 

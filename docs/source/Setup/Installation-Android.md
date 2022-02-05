@@ -5,6 +5,11 @@ This page describes how to install and run the Evennia server on an Android phon
 installing a slew of third-party programs from the Google Play store, so make sure you are okay with
 this before starting.
 
+```warning
+Android installation is experimental and not tested with later versions of Android. 
+Report your findings.
+```
+
 ## Install Termux
 
 The first thing to do is install a terminal emulator that allows a "full" version of linux to be
@@ -80,7 +85,7 @@ Install the latest Evennia in a way that lets you edit the source
 
 This step will possibly take quite a while - we are downloading Evennia and are then installing it,
 building all of the requirements for Evennia to run. If you run into trouble on this step, please
-see [Troubleshooting](./Installing-on-Android.md#troubleshooting).
+see [Troubleshooting](./Installation-Android.md#troubleshooting).
 
 You can go to the dir where Evennia is installed with `cd $VIRTUAL_ENV/src/evennia`. `git grep
 (something)` can be handy, as can `git diff`
@@ -88,7 +93,7 @@ You can go to the dir where Evennia is installed with `cd $VIRTUAL_ENV/src/evenn
 ### Final steps
 
 At this point, Evennia is installed on your phone! You can now continue with the original
-[Setup Quickstart](./Setup-Quickstart.md) instruction, we repeat them here for clarity.
+[Setup Quickstart](./Installation.md) instruction, we repeat them here for clarity.
 
 To start a new game:
 
@@ -120,7 +125,7 @@ $ cd ~ && source evenv/bin/activate
 (evenv) $ evennia start
 ```
 
-You may wish to look at the [Linux Instructions](./Extended-Installation.md#linux-install) for more.
+You may wish to look at the [Linux Instructions](./Installation-Git.md#linux-install) for more.
 
 ## Caveats
 

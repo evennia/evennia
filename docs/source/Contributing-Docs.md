@@ -720,7 +720,7 @@ available at https://evennia.github.io/evennia/latest/.
 [commonmark-help]: https://commonmark.org/help/
 [sphinx-autodoc]: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc
 [sphinx-napoleon]: https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html
-[getting-started]: Setup/Setup-Quickstart
+[getting-started]: Setup/Installation
 [contributing]: ./Contributing
 [ReST]: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
 [ReST-tables]: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#tables

@@ -660,6 +660,6 @@ The simple "Power" game mechanic should be easily expandable to something more f
 useful, same is true for the combat score principle. The `+attack` could be made to target a
 specific player (or npc) and automatically compare their relevant attributes to determine a result.
 
-To continue from here, you can take a look at the [Tutorial World](../Part1/Tutorial-World-Introduction.md). For
+To continue from here, you can take a look at the [Tutorial World](../Part1/Tutorial-World.md). For
 more specific ideas, see the [other tutorials and hints](../../Howto-Overview.md) as well
 as the [Evennia Component overview](../../../Components/Components-Overview.md).

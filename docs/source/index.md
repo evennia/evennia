@@ -17,7 +17,7 @@ This is the manual of [Evennia](https://www.evennia.com), the open source Python
 `MU*` creation system.
 
 - [Evennia Introduction](./Evennia-Introduction.md)
-- [Install & Setup Quickstart](Setup/Setup-Quickstart.md)
+- [Install & Setup Quickstart](Setup/Installation.md)
 - [Starting tutorial](Howto/Starting/Part1/Starting-Part1.md)
 - [How to contribute and get help](./Contributing.md)
 

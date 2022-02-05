@@ -3,7 +3,7 @@
 
 You control Evennia from your game folder (we refer to it as `mygame/` here), using the `evennia`
 program. If the `evennia` program is not available on the command line you must first install
-Evennia as described in the [Setup Quickstart](./Setup-Quickstart.md) page.
+Evennia as described in the [Setup Quickstart](./Installation.md) page.
 
 > Hint: If you ever try the `evennia` command and get an error complaining that the command is not
 available, make sure your [virtualenv](../Glossary.md#virtualenv) is active.
