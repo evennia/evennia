@@ -1,9 +1,5 @@
 # Upgrading an existing installation
 
-These are steps to take when you have an _exiting game dir that you want to keep_. 
-If you don't, you can always just delete your old game dir and initialize a fresh one using 
-the normal [install instructions](./Installation.md).
-
 ## Evennia v0.9.5 to  1.0
 
 Prior to 1.0, all Evennia installs were [Git-installs](./Installation-Git.md). These instructions
@@ -13,8 +9,6 @@ assume that you have a cloned `evennia` repo and use a virtualenv (best practice
 - `deactivate` to leave your active virtualenv.
 - Make a _backup_ of your entire `mygame` folder, just to be sure! 
 - Delete the old `evenv` folder, or rename it (in case you want to keep using 0.9.5 for a while).
-
-
 - Install Python 3.10 (recommended) or 3.9. Follow the [Git-installation](./Installation-Git.md) for your OS if needed.
 - If using virtualenv, make a _new_ one with `python3.10 -m venv evenv`, then activate with `source evenv/bin/activate`
   (linux/mac) or `\evenv\Script\activate` (windows)
@@ -26,8 +20,11 @@ assume that you have a cloned `evennia` repo and use a virtualenv (best practice
 - If you want the optional extra libs, do `pip install -r requirements_extra.txt`.
 - Test that you can run the `evennia` command.
 
+If you don't have anything you want to keep in your existing game dir, you can just start a new onew 
+using the normal [install instructions](./Installation.md). If you want to keep/convert your existing 
+game dir, continue below. 
 
-- Next, `cd` to your game folder (like `mygame`.)
+- `cd` to your existing 0.9.5-based game folder (like `mygame`.)
 - If you have changed `mygame/web`, _rename_ the folder to `web_0.9.5`. If you didn't change anything (or don't have 
 anything you want to keep), you can _delete_ it entirely.
 - Copy `evennia/evennia/game_template/web` to `mygame/` (e.g. using `cp -Rf` or a file manager). This new `web` folder
