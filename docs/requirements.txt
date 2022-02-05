@@ -1,11 +1,11 @@
 # requirements for building the docs
 
 sphinx==3.2.1
-sphinx-multiversion==0.2.4
-# lunr==0.5.8
+myst-parser==0.15.2
+myst-parser[linkify]==0.15.2
 
-# recommonmark custom branch with evennia-specific fixes
-git+https://github.com/evennia/recommonmark.git@evennia-mods#egg=recommonmark
+# sphinx-multiversion with evennia fixes 
+git+https://github.com/evennia/sphinx-multiversion.git@evennia-mods#egg=sphinx-multiversion
 
 # sphinxcontrib-lunrsearch custom branch with evennia-specific fixes
-git+https://github.com/evennia/sphinxcontrib-lunrsearch.git@evennia-mods#egg=sphinxcontrib-lunrsearch
+# git+https://github.com/evennia/sphinxcontrib-lunrsearch.git@evennia-mods#egg=sphinxcontrib-lunrsearch
