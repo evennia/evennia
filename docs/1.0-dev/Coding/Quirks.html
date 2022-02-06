@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Changelog" href="Changelog.html" />
+    <link rel="prev" title="Profiling" href="Profiling.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Changelog.html" title="Changelog"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Profiling.html" title="Profiling"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Coding-Overview.html" accesskey="U">Coding and development help</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Quirks</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -45,7 +52,7 @@
 <p>This is a list of various quirks or common stumbling blocks that people often ask about or report
 when using (or trying to use) Evennia. They are not bugs.</p>
 <section id="forgetting-to-use-reload-to-see-changes-to-your-typeclasses">
-<h2>Forgetting to use &#64;reload to see changes to your typeclasses<a class="headerlink" href="#forgetting-to-use-reload-to-see-changes-to-your-typeclasses" title="Permalink to this headline">¶</a></h2>
+<h2>Forgetting to use <code class="docutils literal notranslate"><span class="pre">reload</span></code> to see changes to your typeclasses<a class="headerlink" href="#forgetting-to-use-reload-to-see-changes-to-your-typeclasses" title="Permalink to this headline">¶</a></h2>
 <p>Firstly: Reloading the server is a safe and usually quick operation which will <em>not</em> disconnect any
 accounts.</p>
 <p>New users tend to forget this step. When editing source code (such as when tweaking typeclasses and
@@ -132,21 +139,37 @@ can result in very inconsistent and hard-to-diagnose errors.</p>
 <p>The moral of the story– it can be dangerous to tinker with magic methods on typeclassed objects.
 Try to avoid doing so.</p>
 </section>
-<section id="known-upstream-bugs">
-<h2>Known upstream bugs<a class="headerlink" href="#known-upstream-bugs" title="Permalink to this headline">¶</a></h2>
-<ul>
-<li><p>There is currently (Autumn 2017) a bug in the <code class="docutils literal notranslate"><span class="pre">zope.interface</span></code> installer on some Linux Ubuntu
-distributions (notably Ubuntu 16.04 LTS). Zope is a dependency of Twisted. The error manifests in
-the server not starting with an error that <code class="docutils literal notranslate"><span class="pre">zope.interface</span></code> is not found even though <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">list</span></code>
-shows it’s installed. The reason is a missing empty <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file at the root of the zope
-package. If the virtualenv is named “evenv” as suggested in the <a class="reference internal" href="../Setup/Installation.html"><span class="doc std std-doc">Setup Quickstart</span></a>
-instructions, use the following command to fix it:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>touch evenv/local/lib/python2.7/site-packages/zope/__init__.py
+<section id="things-to-remember-about-the-flat-api">
+<h2>Things to remember about the flat API<a class="headerlink" href="#things-to-remember-about-the-flat-api" title="Permalink to this headline">¶</a></h2>
+<p>The flat API is a series of ‘shortcuts’ on the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> main library root (defined in
+<code class="docutils literal notranslate"><span class="pre">evennia/__init__.py</span></code>). Its componentas are documented <a class="reference internal" href="../Evennia-API.html"><span class="doc std std-doc">as part of the auto-documentation</span></a>.</p>
+<section id="to-remember-when-importing-from-evennia">
+<h3>To remember when importing from <code class="docutils literal notranslate"><span class="pre">evennia</span></code><a class="headerlink" href="#to-remember-when-importing-from-evennia" title="Permalink to this headline">¶</a></h3>
+<p>Properties on the root of the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> package are <em>not</em> modules in their own right. They are just
+shortcut properties stored in the <code class="docutils literal notranslate"><span class="pre">evennia/__init__.py</span></code> module. That means that you cannot use dot-
+notation to <code class="docutils literal notranslate"><span class="pre">import</span></code> nested module-names over <code class="docutils literal notranslate"><span class="pre">evennia</span></code>. The rule of thumb is that you cannot use
+<code class="docutils literal notranslate"><span class="pre">import</span></code> for more than one level down. Hence you can do</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">evennia</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">evennia</span><span class="o">.</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This will create the missing file and things should henceforth work correctly.</p>
-</li>
-</ul>
+<p>or import one level down</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>but you <em>cannot</em> import two levels down</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia.default_cmds</span> <span class="kn">import</span> <span class="n">CmdLook</span> <span class="c1"># error!</span>
+</pre></div>
+</div>
+<p>This will give you an <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> telling you that the module <code class="docutils literal notranslate"><span class="pre">default_cmds</span></code> cannot be found -
+this is becasue <code class="docutils literal notranslate"><span class="pre">default_cmds</span></code> is just a <em>variable</em> stored in <code class="docutils literal notranslate"><span class="pre">evennia.__init__.py</span></code>; this cannot be
+imported from. If you really want full control over which level of package you import you can always
+bypass the root package and import directly from from the real location. For example
+<code class="docutils literal notranslate"><span class="pre">evennia.DefaultObject</span></code> is a shortcut to <code class="docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject</span></code>. Using this full
+path will have the import mechanism work normally. See <code class="docutils literal notranslate"><span class="pre">evennia/__init__.py</span></code> to see where the
+package imports from.</p>
+</section>
 </section>
 </section>
 
@@ -173,17 +196,26 @@ instructions, use the following command to fix it:</p>
 <p><h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Quirks</a><ul>
-<li><a class="reference internal" href="#forgetting-to-use-reload-to-see-changes-to-your-typeclasses">Forgetting to use &#64;reload to see changes to your typeclasses</a></li>
+<li><a class="reference internal" href="#forgetting-to-use-reload-to-see-changes-to-your-typeclasses">Forgetting to use <code class="docutils literal notranslate"><span class="pre">reload</span></code> to see changes to your typeclasses</a></li>
 <li><a class="reference internal" href="#web-admin-to-create-new-account">Web admin to create new Account</a></li>
 <li><a class="reference internal" href="#mutable-attributes-and-their-connection-to-the-database">Mutable attributes and their connection to the database</a></li>
 <li><a class="reference internal" href="#commands-are-matched-by-name-or-alias">Commands are matched by name <em>or</em> alias</a></li>
 <li><a class="reference internal" href="#objects-turning-to-defaultobject">Objects turning to <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code></a></li>
 <li><a class="reference internal" href="#overriding-of-magic-methods">Overriding of magic methods</a></li>
-<li><a class="reference internal" href="#known-upstream-bugs">Known upstream bugs</a></li>
+<li><a class="reference internal" href="#things-to-remember-about-the-flat-api">Things to remember about the flat API</a><ul>
+<li><a class="reference internal" href="#to-remember-when-importing-from-evennia">To remember when importing from <code class="docutils literal notranslate"><span class="pre">evennia</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Profiling.html"
+                        title="previous chapter">Profiling</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Changelog.html"
+                        title="next chapter">Changelog</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -220,7 +252,14 @@ instructions, use the following command to fix it:</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Changelog.html" title="Changelog"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Profiling.html" title="Profiling"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Coding-Overview.html" >Coding and development help</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Quirks</a></li> 
       </ul>
         <div class="develop">develop branch</div>

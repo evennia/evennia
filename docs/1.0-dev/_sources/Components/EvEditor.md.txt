@@ -54,7 +54,7 @@ class CmdSetTestAttr(Command):
             return caller.attributes.get("test")
         def save(caller, buffer):
             "save the buffer"
-            caller.attributes.set("test", buffer)
+            caller.attributes.add("test", buffer)
         def quit(caller):
             "Since we define it, we must handle messages"
             caller.msg("Editor exited")
@@ -82,7 +82,7 @@ def load(caller):
 
 def save(caller, buffer):
     "save the buffer"
-    caller.attributes.set("test", buffer)
+    caller.attributes.add("test", buffer)
 
 def quit(caller):
     "Since we define it, we must handle messages"

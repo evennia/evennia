@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Spawner and Prototypes" href="Prototypes.html" />
+    <link rel="prev" title="Nicks" href="Nicks.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Prototypes.html" title="Spawner and Prototypes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Nicks.html" title="Nicks"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Tags</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -91,7 +98,7 @@ free up the <em>category</em> property for any use you desire.</p></li>
 <section id="adding-removing-tags">
 <h2>Adding/Removing Tags<a class="headerlink" href="#adding-removing-tags" title="Permalink to this headline">¶</a></h2>
 <p>You can tag any <em>typeclassed</em> object, namely <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>, <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a>,
-<a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a> and <a class="reference internal" href="Communications.html"><span class="doc std std-doc">Channels</span></a>. General tags are added by the <em>Taghandler</em>.  The
+<a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a> and <a class="reference internal" href="Channels.html"><span class="doc std std-doc">Channels</span></a>. General tags are added by the <em>Taghandler</em>.  The
 tag handler is accessed as a property <code class="docutils literal notranslate"><span class="pre">tags</span></code> on the relevant entity:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">)</span>
      <span class="n">mychair</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;luxurious&quot;</span><span class="p">)</span>
@@ -229,6 +236,12 @@ is found in the <a class="reference internal" href="../Concepts/Zones.html"><spa
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Nicks.html"
+                        title="previous chapter">Nicks</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Prototypes.html"
+                        title="next chapter">Spawner and Prototypes</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -265,7 +278,14 @@ is found in the <a class="reference internal" href="../Concepts/Zones.html"><spa
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Prototypes.html" title="Spawner and Prototypes"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Nicks.html" title="Nicks"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Tags</a></li> 
       </ul>
         <div class="develop">develop branch</div>

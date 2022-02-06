@@ -206,7 +206,7 @@ class CmdTestMenu(Command):
 
     def func(self):
 
-	EvMenu(caller, "world.mymenu")
+	EvMenu(self.caller, "world.mymenu")
 
 ```
 
@@ -1115,7 +1115,7 @@ function - for example you can't use other Python keywords like `if` inside the 
 
 Unless you are dealing with a relatively simple dynamic menu, defining menus with lambda's is
 probably more work than it's worth: You can create dynamic menus by instead making each node
-function more clever. See the [NPC shop tutorial](../Howto/NPC-shop-Tutorial.md) for an example of this.
+function more clever. See the [NPC shop tutorial](../Howtos/NPC-shop-Tutorial.md) for an example of this.
 
 
 ## Ask for simple input

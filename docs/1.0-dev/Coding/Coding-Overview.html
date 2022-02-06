@@ -14,13 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Contribs" href="../Contribs/Contrib-Overview.html" />
-    <link rel="prev" title="Default Commands" href="../Components/Default-Commands.html" /> 
+    <link rel="next" title="Version Control" href="Version-Control.html" />
+    <link rel="prev" title="Web Features" href="../Concepts/Web-Features.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -32,10 +30,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../Contribs/Contrib-Overview.html" title="Contribs"
+          <a href="Version-Control.html" title="Version Control"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="../Components/Default-Commands.html" title="Default Commands"
+          <a href="../Concepts/Web-Features.html" title="Web Features"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Coding and development help</a></li> 
@@ -53,40 +51,131 @@
 <p>This documentation aims to help you set up a sane development environment to
 make your game, also if you never coded before. If you are an experienced coder, much of this will be familiar
 to you, but some things may still be useful.</p>
-<section id="find-your-way">
-<h2>Find your way<a class="headerlink" href="#find-your-way" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="../Howto/Starting/Part1/Gamedir-Overview.html"><span class="doc std std-doc">Directory-Overview</span></a></p></li>
-<li><p><a class="reference internal" href="Quirks.html"><span class="doc std std-doc">Quirks of Evennia</span></a></p></li>
-</ul>
-</section>
 <section id="setting-up-a-workflow">
 <h2>Setting up a workflow<a class="headerlink" href="#setting-up-a-workflow" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="Setting-up-PyCharm.html"><span class="doc std std-doc">Setting up PyCharm</span></a></p></li>
-<li><p><a class="reference internal" href="Version-Control.html"><span class="doc std std-doc">Using Version-Control</span></a></p></li>
-<li><p><a class="reference internal" href="Updating-Your-Game.html"><span class="doc std std-doc">Updating Evennia sources</span></a></p></li>
+<p>See also the <a class="reference internal" href="../Howtos/Beginner-Tutorial/Beginner-Tutorial-Intro.html"><span class="doc std std-doc">Beginner Tutorial</span></a>.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Version-Control.html">Version Control</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Version-Control.html#setting-up-git">Setting up Git</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Version-Control.html#putting-your-game-folder-under-version-control">Putting your game folder under version control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Version-Control.html#forking-evennia">Forking Evennia</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Version-Control.html#working-with-your-evennia-fork">Working with your Evennia fork</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Version-Control.html#sharing-your-evennia-fixes-on-github">Sharing your Evennia fixes on Github</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Version-Control.html#making-an-evennia-pull-request">Making an Evennia Pull Request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Version-Control.html#git-tips-and-tricks">GIT tips and tricks</a></li>
 </ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Updating-Your-Game.html">Updating Your Game</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Updating-Your-Game.html#updating-with-the-latest-evennia-code-changes">Updating with the latest Evennia code changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Updating-Your-Game.html#upgrading-evennia-dependencies">Upgrading Evennia dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Updating-Your-Game.html#migrating-the-database-schema">Migrating the Database Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Updating-Your-Game.html#resetting-your-database">Resetting your database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Updating-Your-Game.html#more-about-schema-migrations">More about schema migrations</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </section>
 <section id="coding-away">
 <h2>Coding away<a class="headerlink" href="#coding-away" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="Coding-Introduction.html"><span class="doc std std-doc">Coding Introduction</span></a></p></li>
-<li><p><a class="reference internal" href="Debugging.html"><span class="doc std std-doc">Ways to Debug</span></a></p></li>
-<li><p><a class="reference internal" href="Unit-Testing.html"><span class="doc std std-doc">Adding unit-tests</span></a></p></li>
-<li><p><a class="reference internal" href="Flat-API.html"><span class="doc std std-doc">Things to remember when importing from evennia</span></a></p></li>
-</ul>
-</section>
-<section id="advanced-concepts">
-<h2>Advanced concepts<a class="headerlink" href="#advanced-concepts" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="Continuous-Integration.html"><span class="doc std std-doc">Continuous Integration</span></a></p>
+<div class="toctree-wrapper compound">
 <ul>
-<li><p><a class="reference internal" href="Using-Travis.html"><span class="doc std std-doc">Using Travis</span></a></p></li>
+<li class="toctree-l1"><a class="reference internal" href="Coding-Introduction.html">Coding Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Coding-Introduction.html#start-with-the-tutorial">Start with the tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coding-Introduction.html#python">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coding-Introduction.html#explore-evennia-interactively">Explore Evennia interactively</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coding-Introduction.html#use-a-python-syntax-checker">Use a python syntax checker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coding-Introduction.html#plan-before-you-code">Plan before you code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coding-Introduction.html#code-in-your-game-folder-not-in-the-evennia-repository">Code in your game folder, not in the evennia/ repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coding-Introduction.html#learn-to-read-tracebacks">Learn to read tracebacks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coding-Introduction.html#docs-are-here-to-help-you">Docs are here to help you</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coding-Introduction.html#the-most-important-point">The most important point</a></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="Profiling.html"><span class="doc std std-doc">Profiling</span></a></p></li>
+<li class="toctree-l1"><a class="reference internal" href="Debugging.html">Debugging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Debugging.html#debugging-evennia">Debugging Evennia</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Debugging.html#a-simple-example-using-pdb">A simple example using pdb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Debugging.html#cheat-sheet-of-pdb-pudb-commands">Cheat-sheet of pdb/pudb commands</a></li>
 </ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Unit-Testing.html">Unit Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Unit-Testing.html#running-the-evennia-test-suite">Running the Evennia test suite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Unit-Testing.html#running-tests-for-your-game-dir">Running tests for your game dir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Unit-Testing.html#writing-new-tests">Writing new tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Unit-Testing.html#using-the-evennia-testing-classes">Using the Evennia testing classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Unit-Testing.html#unit-testing-contribs-with-custom-models">Unit testing contribs with custom models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Unit-Testing.html#a-note-on-making-the-test-runner-faster">A note on making the test runner faster</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Profiling.html">Profiling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Profiling.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Profiling.html#simple-timer-tests">Simple timer tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Profiling.html#using-cprofile">Using cProfile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Profiling.html#the-dummyrunner">The Dummyrunner</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Quirks.html">Quirks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Quirks.html#forgetting-to-use-reload-to-see-changes-to-your-typeclasses">Forgetting to use <code class="docutils literal notranslate"><span class="pre">reload</span></code> to see changes to your typeclasses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Quirks.html#web-admin-to-create-new-account">Web admin to create new Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Quirks.html#mutable-attributes-and-their-connection-to-the-database">Mutable attributes and their connection to the database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Quirks.html#commands-are-matched-by-name-or-alias">Commands are matched by name <em>or</em> alias</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Quirks.html#objects-turning-to-defaultobject">Objects turning to <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Quirks.html#overriding-of-magic-methods">Overriding of magic methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Quirks.html#things-to-remember-about-the-flat-api">Things to remember about the flat API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#evennia-1-0">Evennia 1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#evennia-0-9-5">Evennia 0.9.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#evennia-0-9">Evennia 0.9</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#evennia-0-8">Evennia 0.8</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Changelog.html#overview-changelogs">Overview-Changelogs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#sept-2017">Sept 2017:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#feb-2017">Feb 2017:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#dec-2016">Dec 2016:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#may-2016">May 2016:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#feb-2016">Feb 2016:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#sept-2015">Sept 2015:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#feb-2015">Feb 2015:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#sept-2014">Sept 2014:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#jan-2014">Jan 2014:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#nov-2013">Nov 2013:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#may-2013">May 2013:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#oct-2012">Oct 2012:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#march-2012">March 2012:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#nov-2011">Nov 2011:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#aug-2011">Aug 2011:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#may-2011">May 2011:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#aug-2010">Aug 2010:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#may-2010">May 2010:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#april-2010">April 2010:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Changelog.html#older">Older</a></li>
+</ul>
+</div>
+</section>
+<section id="third-party-integrations">
+<h2>Third-party integrations<a class="headerlink" href="#third-party-integrations" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Continuous-Integration.html">Continuous Integration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Continuous-Integration.html#what-is-continuous-integration-ci">What is Continuous Integration (CI)?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Continuous-Integration.html#list-of-continuous-integration-tools">List of continuous integration tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Setting-up-PyCharm.html">Setting up PyCharm with Evennia</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Setting-up-PyCharm.html#setting-up-the-project-interpreter">Setting up the project interpreter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Setting-up-PyCharm.html#attaching-pycharm-debugger-to-evennia">Attaching PyCharm debugger to Evennia</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Setting-up-PyCharm.html#setting-up-an-evennia-run-configuration">Setting up an Evennia run configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Setting-up-PyCharm.html#alternative-run-configuration-utilizing-logfiles-as-source-of-data">Alternative run configuration - utilizing logfiles as source of data</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </section>
 </section>
 
@@ -113,20 +202,19 @@ to you, but some things may still be useful.</p>
 <p><h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Coding and development help</a><ul>
-<li><a class="reference internal" href="#find-your-way">Find your way</a></li>
 <li><a class="reference internal" href="#setting-up-a-workflow">Setting up a workflow</a></li>
 <li><a class="reference internal" href="#coding-away">Coding away</a></li>
-<li><a class="reference internal" href="#advanced-concepts">Advanced concepts</a></li>
+<li><a class="reference internal" href="#third-party-integrations">Third-party integrations</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="../Components/Default-Commands.html"
-                        title="previous chapter">Default Commands</a></p>
+  <p class="topless"><a href="../Concepts/Web-Features.html"
+                        title="previous chapter">Web Features</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="../Contribs/Contrib-Overview.html"
-                        title="next chapter">Contribs</a></p>
+  <p class="topless"><a href="Version-Control.html"
+                        title="next chapter">Version Control</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -164,10 +252,10 @@ to you, but some things may still be useful.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../Contribs/Contrib-Overview.html" title="Contribs"
+          <a href="Version-Control.html" title="Version Control"
              >next</a> |</li>
         <li class="right" >
-          <a href="../Components/Default-Commands.html" title="Default Commands"
+          <a href="../Concepts/Web-Features.html" title="Web Features"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Coding and development help</a></li> 

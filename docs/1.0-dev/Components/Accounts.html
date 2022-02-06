@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Objects" href="Objects.html" />
+    <link rel="prev" title="Sessions" href="Sessions.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Objects.html" title="Objects"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Sessions.html" title="Sessions"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Accounts</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -49,7 +56,7 @@ game account.  In order to actually get on the game the Account must <em>puppet<
 <p>Exactly how many Sessions can interact with an Account and its Puppets at once is determined by
 Evennia’s <a class="reference internal" href="Sessions.html#multisession-mode"><span class="std std-doc">MULTISESSION_MODE</span></a> setting.</p>
 <p>Apart from storing login information and other account-specific data, the Account object is what is
-chatting on <a class="reference internal" href="Communications.html"><span class="doc std std-doc">Channels</span></a>.  It is also a good place to store <a class="reference internal" href="Locks.html"><span class="doc std std-doc">Permissions</span></a> to be
+chatting on <a class="reference internal" href="Channels.html"><span class="doc std std-doc">Channels</span></a>.  It is also a good place to store <a class="reference internal" href="Locks.html"><span class="doc std std-doc">Permissions</span></a> to be
 consistent between different in-game characters as well as configuration options.  The Account
 object also has its own <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">CmdSet</span></a>, the <code class="docutils literal notranslate"><span class="pre">AccountCmdSet</span></code>.</p>
 <p>Logged into default evennia, you can use the <code class="docutils literal notranslate"><span class="pre">ooc</span></code> command to leave your current
@@ -168,6 +175,12 @@ any.</p></li>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Sessions.html"
+                        title="previous chapter">Sessions</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Objects.html"
+                        title="next chapter">Objects</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -204,7 +217,14 @@ any.</p></li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Objects.html" title="Objects"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Sessions.html" title="Sessions"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Accounts</a></li> 
       </ul>
         <div class="develop">develop branch</div>

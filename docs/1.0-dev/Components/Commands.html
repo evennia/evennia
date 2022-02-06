@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Command Sets" href="Command-Sets.html" />
+    <link rel="prev" title="Command System" href="Command-System.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Command-Sets.html" title="Command Sets"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Command-System.html" title="Command System"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Commands</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -67,7 +74,7 @@ object in various ways. Consider a “Tree” object with a cmdset defining the 
 </ol>
 <p>This page goes into full detail about how to use Commands. To fully use them you must also read the
 page detailing <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">Command Sets</span></a>.  There is also a step-by-step
-<a class="reference internal" href="../Howto/Starting/Part1/Adding-Commands.html"><span class="doc std std-doc">Adding Command Tutorial</span></a> that will get you started quickly without the
+<a class="reference internal" href="../Howtos/Beginner-Tutorial/Part1/Adding-Commands.html"><span class="doc std std-doc">Adding Command Tutorial</span></a> that will get you started quickly without the
 extra explanations.</p>
 <section id="defining-commands">
 <h2>Defining Commands<a class="headerlink" href="#defining-commands" title="Permalink to this headline">¶</a></h2>
@@ -428,7 +435,7 @@ else.</p>
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Command execution.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Starting to wait ...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Beginner-Tutorial to wait ...&quot;</span><span class="p">)</span>
         <span class="k">yield</span> <span class="mi">5</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;... This shows after 5 seconds. Waiting ...&quot;</span><span class="p">)</span>
         <span class="k">yield</span> <span class="mi">2</span>
@@ -514,7 +521,7 @@ display the “Huh?” error message.</p></li>
 matches.</p></li>
 <li><p>User is not allowed to execute the command (<code class="docutils literal notranslate"><span class="pre">syscmdkeys.CMD_NOPERM</span></code>) - Default is to display the
 “Huh?” error message.</p></li>
-<li><p>Channel (<code class="docutils literal notranslate"><span class="pre">syscmdkeys.CMD_CHANNEL</span></code>) - This is a <a class="reference internal" href="Communications.html"><span class="doc std std-doc">Channel</span></a> name of a channel you are
+<li><p>Channel (<code class="docutils literal notranslate"><span class="pre">syscmdkeys.CMD_CHANNEL</span></code>) - This is a <a class="reference internal" href="Channels.html"><span class="doc std std-doc">Channel</span></a> name of a channel you are
 subscribing to - Default is to relay the command’s argument to that channel. Such commands are
 created by the Comm system on the fly depending on your subscriptions.</p></li>
 <li><p>New session connection (<code class="docutils literal notranslate"><span class="pre">syscmdkeys.CMD_LOGINSTART</span></code>). This command name should be put in the
@@ -755,6 +762,12 @@ on.</p>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Command-System.html"
+                        title="previous chapter">Command System</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Command-Sets.html"
+                        title="next chapter">Command Sets</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -791,7 +804,14 @@ on.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Command-Sets.html" title="Command Sets"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Command-System.html" title="Command System"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Commands</a></li> 
       </ul>
         <div class="develop">develop branch</div>

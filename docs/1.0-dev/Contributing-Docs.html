@@ -14,11 +14,11 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Licensing Q&amp;A" href="Licensing.html" />
+    <link rel="prev" title="How To Contribute And Get Help" href="Contributing.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,6 +29,12 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Licensing.html" title="Licensing Q&amp;A"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Contributing.html" title="How To Contribute And Get Help"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Contributing to Evennia Docs</a></li> 
       </ul>
@@ -98,13 +104,12 @@ feature or changing the look of the HTML documentation.</p></li>
 the Evennia version on a new branch.</p></li>
 </ul>
 </section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="editing-syntax">
-<h1>Editing syntax<a class="headerlink" href="#editing-syntax" title="Permalink to this headline">¶</a></h1>
+<section id="editing-syntax">
+<h2>Editing syntax<a class="headerlink" href="#editing-syntax" title="Permalink to this headline">¶</a></h2>
 <p>The format used for Evennia’s docs is <a class="reference external" href="https://commonmark.org/help/">Markdown</a> (Commonmark). While markdown
 supports a few alternative forms for some of these, we try to stick to the below forms for consistency.</p>
 <section id="italic-bold">
-<h2>Italic/Bold<a class="headerlink" href="#italic-bold" title="Permalink to this headline">¶</a></h2>
+<h3>Italic/Bold<a class="headerlink" href="#italic-bold" title="Permalink to this headline">¶</a></h3>
 <p>We generally use underscores for italics and double-asterisks for bold:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">_Italic</span> <span class="pre">text_</span></code> - <em>Italic text</em></p></li>
@@ -112,7 +117,7 @@ supports a few alternative forms for some of these, we try to stick to the below
 </ul>
 </section>
 <section id="headings">
-<h2>Headings<a class="headerlink" href="#headings" title="Permalink to this headline">¶</a></h2>
+<h3>Headings<a class="headerlink" href="#headings" title="Permalink to this headline">¶</a></h3>
 <p>We use <code class="docutils literal notranslate"><span class="pre">#</span></code> to indicate sections/headings. The more <code class="docutils literal notranslate"><span class="pre">#</span></code> the more of a sub-heading it is (will get
 smaller and smaller font).</p>
 <ul class="simple">
@@ -128,7 +133,7 @@ The Evennia documentation preparser will detect this and give you an error.</p>
 </div></blockquote>
 </section>
 <section id="lists">
-<h2>Lists<a class="headerlink" href="#lists" title="Permalink to this headline">¶</a></h2>
+<h3>Lists<a class="headerlink" href="#lists" title="Permalink to this headline">¶</a></h3>
 <p>One can create both bullet-point lists and numbered lists:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">first</span> <span class="n">bulletpoint</span>
 <span class="o">-</span> <span class="n">second</span> <span class="n">bulletpoint</span>
@@ -152,7 +157,7 @@ The Evennia documentation preparser will detect this and give you an error.</p>
 </ol>
 </section>
 <section id="blockquotes">
-<h2>Blockquotes<a class="headerlink" href="#blockquotes" title="Permalink to this headline">¶</a></h2>
+<h3>Blockquotes<a class="headerlink" href="#blockquotes" title="Permalink to this headline">¶</a></h3>
 <p>A blockquote will create an indented block. It’s useful for emphasis and is
 added by starting one or more lines with <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>. For ‘notes’ you can also use
 an explicit <a class="reference internal" href="#note"><span class="std std-doc">Note</span></a>.</p>
@@ -166,10 +171,10 @@ thing to remember.</p>
 </div></blockquote>
 </section>
 <section id="links">
-<h2>Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
+<h3>Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h3>
 <p>The link syntax is <code class="docutils literal notranslate"><span class="pre">[linktext](url_or_ref)</span></code> - this gives a clickable link <a class="reference internal" href="#links"><span class="std std-doc">linktext</span></a>.</p>
 <section id="internal-links">
-<h3>Internal links<a class="headerlink" href="#internal-links" title="Permalink to this headline">¶</a></h3>
+<h4>Internal links<a class="headerlink" href="#internal-links" title="Permalink to this headline">¶</a></h4>
 <p>Most links will be to other pages of the documentation or to Evennia’s API docs. Each document
 heading can be referenced. The reference always starts with <code class="docutils literal notranslate"><span class="pre">#</span></code>. The heading-name is always
 given in lowercase and ignores any non-letters. Spaces in the heading title are replaced with
@@ -204,7 +209,7 @@ will correct for this (and also insert any needed relative paths in the referenc
 </div></blockquote>
 </section>
 <section id="api-links">
-<h3>API links<a class="headerlink" href="#api-links" title="Permalink to this headline">¶</a></h3>
+<h4>API links<a class="headerlink" href="#api-links" title="Permalink to this headline">¶</a></h4>
 <p>The documentation contains auto-generated documentation for all of Evennia’s source code. You
 can direct the reader to the sources by just giving the python-path to the location of the
 resource under the <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> repository:</p>
@@ -216,7 +221,7 @@ resource under the <code class="docutils literal notranslate"><span class="pre">
 dynamically and is not part of the api docs. Refer to the parent classes in <code class="docutils literal notranslate"><span class="pre">evennia</span></code> where possible.</p>
 </section>
 <section id="external-links">
-<h3>External links<a class="headerlink" href="#external-links" title="Permalink to this headline">¶</a></h3>
+<h4>External links<a class="headerlink" href="#external-links" title="Permalink to this headline">¶</a></h4>
 <p>These are links to resources outside of the documentation. We also provide some convenient shortcuts.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">[linkname](https://evennia.com)</span></code> - link to an external website.</p></li>
@@ -229,6 +234,7 @@ default this is code in the <code class="docutils literal notranslate"><span cla
 <div><p>Note that if you want to refer to code, it’s usually better to <a class="reference internal" href="#api-links"><span class="std std-doc">link to the API</span></a> as
 described above.</p>
 </div></blockquote>
+</section>
 </section>
 <section id="urls-references-in-one-place">
 <h3>Urls/References in one place<a class="headerlink" href="#urls-references-in-one-place" title="Permalink to this headline">¶</a></h3>
@@ -247,9 +253,8 @@ You can then refer to it by putting your reference within square brackets <code 
 </div>
 <p>This makes the main text a little shorter.</p>
 </section>
-</section>
 <section id="tables">
-<h2>Tables<a class="headerlink" href="#tables" title="Permalink to this headline">¶</a></h2>
+<h3>Tables<a class="headerlink" href="#tables" title="Permalink to this headline">¶</a></h3>
 <p>A table is done like this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|</span> <span class="n">heading1</span> <span class="o">|</span> <span class="n">heading2</span> <span class="o">|</span> <span class="n">heading3</span> <span class="o">|</span>
 <span class="o">|</span> <span class="o">---</span> <span class="o">|</span> <span class="o">---</span> <span class="o">|</span> <span class="o">---</span> <span class="o">|</span>
@@ -284,7 +289,7 @@ You can then refer to it by putting your reference within square brackets <code 
 include the heading separators and make sure to add the correct number of <code class="docutils literal notranslate"><span class="pre">|</span></code> on every line.</p>
 </section>
 <section id="verbatim-text">
-<h2>Verbatim text<a class="headerlink" href="#verbatim-text" title="Permalink to this headline">¶</a></h2>
+<h3>Verbatim text<a class="headerlink" href="#verbatim-text" title="Permalink to this headline">¶</a></h3>
 <p>It’s common to want to mark something to be displayed verbatim - just as written - without any
 Markdown parsing. In running text, this is done using backticks (`), like `verbatim text` becomes
 <code class="docutils literal notranslate"><span class="pre">verbatim</span> <span class="pre">text</span></code>.</p>
@@ -304,6 +309,7 @@ Everything within these backticks will be verbatim.
 ```
 </pre></div>
 </div>
+</section>
 <section id="code-blocks">
 <h3>Code blocks<a class="headerlink" href="#code-blocks" title="Permalink to this headline">¶</a></h3>
 <p>A special ‘verbatim’ case is code examples - we want them to get code-highlighting for readability.
@@ -373,9 +379,8 @@ evennia/ mygame/
 </pre></div>
 </div>
 </section>
-</section>
 <section id="myst-directives">
-<h2>MyST directives<a class="headerlink" href="#myst-directives" title="Permalink to this headline">¶</a></h2>
+<h3>MyST directives<a class="headerlink" href="#myst-directives" title="Permalink to this headline">¶</a></h3>
 <p>Markdown is easy to read and use. But while it does most of what we need, there are some things it’s
 not quite as expressive as it needs to be. For this we use extended <a class="reference external" href="https://myst-parser.readthedocs.io/en/latest/syntax/reference.html">MyST</a> syntax. This is
 on the form</p>
@@ -387,7 +392,7 @@ content
 </pre></div>
 </div>
 <section id="note">
-<h3>Note<a class="headerlink" href="#note" title="Permalink to this headline">¶</a></h3>
+<h4>Note<a class="headerlink" href="#note" title="Permalink to this headline">¶</a></h4>
 <p>This kind of note may pop more than doing a <code class="docutils literal notranslate"><span class="pre">&gt;</span> <span class="pre">Note:</span> <span class="pre">...</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```{note}
 
@@ -404,7 +409,7 @@ Also the important/warning notes indents like this.</p>
 </div>
 </section>
 <section id="important">
-<h3>Important<a class="headerlink" href="#important" title="Permalink to this headline">¶</a></h3>
+<h4>Important<a class="headerlink" href="#important" title="Permalink to this headline">¶</a></h4>
 <p>This is for particularly important and visible notes.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```{important}
   This is important because it is!
@@ -418,7 +423,7 @@ Also the important/warning notes indents like this.</p>
 </div>
 </section>
 <section id="warning">
-<h3>Warning<a class="headerlink" href="#warning" title="Permalink to this headline">¶</a></h3>
+<h4>Warning<a class="headerlink" href="#warning" title="Permalink to this headline">¶</a></h4>
 <p>A warning block is used to draw attention to particularly dangerous things, or features easy to
 mess up.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```{warning}
@@ -432,7 +437,7 @@ mess up.</p>
 </div>
 </section>
 <section id="version-changes-and-deprecations">
-<h3>Version changes and deprecations<a class="headerlink" href="#version-changes-and-deprecations" title="Permalink to this headline">¶</a></h3>
+<h4>Version changes and deprecations<a class="headerlink" href="#version-changes-and-deprecations" title="Permalink to this headline">¶</a></h4>
 <p>These will show up as one-line warnings that suggest an added, changed or deprecated
 feature beginning with particular version.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```{versionadded} 1.0
@@ -459,7 +464,7 @@ feature beginning with particular version.</p>
 </div>
 </section>
 <section id="sidebar">
-<h3>Sidebar<a class="headerlink" href="#sidebar" title="Permalink to this headline">¶</a></h3>
+<h4>Sidebar<a class="headerlink" href="#sidebar" title="Permalink to this headline">¶</a></h4>
 <p>This will display an informative sidebar that floats to the side of regular content. This is useful
 for example to remind the reader of some concept relevant to the text.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```{sidebar} Things to remember
@@ -490,7 +495,7 @@ squeezed to the left of the sidebar), one can embed a plain HTML string in the m
 <div style="clear: right;"></div>
 </section>
 <section id="a-more-flexible-code-block">
-<h3>A more flexible code block<a class="headerlink" href="#a-more-flexible-code-block" title="Permalink to this headline">¶</a></h3>
+<h4>A more flexible code block<a class="headerlink" href="#a-more-flexible-code-block" title="Permalink to this headline">¶</a></h4>
 <p>The regular Markdown Python codeblock is usually enough but for more direct control over the style, one
 can also use the <code class="docutils literal notranslate"><span class="pre">{code-block}</span></code> directive that takes a set of additional <code class="docutils literal notranslate"><span class="pre">:options:</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```{code-block} python
@@ -536,7 +541,7 @@ this
 block through the link that will appear (so it should be unique for a given document).</p>
 </section>
 <section id="eval-rst-directive">
-<h3>eval-rst directive<a class="headerlink" href="#eval-rst-directive" title="Permalink to this headline">¶</a></h3>
+<h4>eval-rst directive<a class="headerlink" href="#eval-rst-directive" title="Permalink to this headline">¶</a></h4>
 <p>As a last resort, we can also fall back to writing <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html">ReST</a> directives directly:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```{eval-rst}
 
@@ -560,6 +565,7 @@ same as Markdown.</p>
 <p><a class="reference external" href="https://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html">Here is a ReST formatting cheat sheet</a>.</p>
 </section>
 </section>
+</section>
 <section id="code-docstrings">
 <h2>Code docstrings<a class="headerlink" href="#code-docstrings" title="Permalink to this headline">¶</a></h2>
 <p>The source code docstrings will be parsed as Markdown. When writing a module docstring, you can use Markdown formatting,
@@ -579,9 +585,8 @@ make us able to express more complex displays than plain Markdown can.</p>
 <p>For <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc">autodoc-generation</a> generation, we use the sphinx-<a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html">napoleon</a>
 extension to understand our friendly Google-style docstrings used in classes and functions etc.</p>
 </section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="building-the-docs-locally">
-<h1>Building the docs locally<a class="headerlink" href="#building-the-docs-locally" title="Permalink to this headline">¶</a></h1>
+<section id="building-the-docs-locally">
+<h2>Building the docs locally<a class="headerlink" href="#building-the-docs-locally" title="Permalink to this headline">¶</a></h2>
 <p>The sources in <code class="docutils literal notranslate"><span class="pre">evennia/docs/source/</span></code> are built into a documentation using the
 <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> static generator system. To do this locally you need to use a
 system with <code class="docutils literal notranslate"><span class="pre">make</span></code> (Linux/Unix/Mac or <a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Windows-WSL</a>). Lacking
@@ -596,7 +601,7 @@ Markdown-viewer like <a class="reference external" href="https://github.com/joey
 however the only way to make sure the outcome is exactly as you expect. The process
 will also find any mistakes you made, like making a typo in a link.</p>
 <section id="building-only-the-main-documentation">
-<h2>Building only the main documentation<a class="headerlink" href="#building-only-the-main-documentation" title="Permalink to this headline">¶</a></h2>
+<h3>Building only the main documentation<a class="headerlink" href="#building-only-the-main-documentation" title="Permalink to this headline">¶</a></h3>
 <p>This is the fastest way to compile and view your changes. It will only build
 the main documentation pages and not the API auto-docs or versions.  All is
 done in your terminal/console.</p>
@@ -624,7 +629,7 @@ build them!</p></li>
 </ul>
 </section>
 <section id="building-the-main-documentation-and-api-docs">
-<h2>Building the main documentation and API docs<a class="headerlink" href="#building-the-main-documentation-and-api-docs" title="Permalink to this headline">¶</a></h2>
+<h3>Building the main documentation and API docs<a class="headerlink" href="#building-the-main-documentation-and-api-docs" title="Permalink to this headline">¶</a></h3>
 <p>The full documentation includes both the doc pages and the API documentation
 generated from the Evennia source. For this you must install Evennia and
 initialize a new game with a default database (you don’t need to have any server
@@ -681,7 +686,7 @@ Note any errors from files you have edited.</p></li>
 view the full docs.</p></li>
 </ul>
 <section id="building-with-another-gamedir">
-<h3>Building with another gamedir<a class="headerlink" href="#building-with-another-gamedir" title="Permalink to this headline">¶</a></h3>
+<h4>Building with another gamedir<a class="headerlink" href="#building-with-another-gamedir" title="Permalink to this headline">¶</a></h4>
 <p>If you for some reason want to use another location of your <code class="docutils literal notranslate"><span class="pre">gamedir/</span></code>, or want it
 named something else (maybe you already use the name ‘gamedir’ for your development …),
 you can do so by setting the <code class="docutils literal notranslate"><span class="pre">EVGAMEDIR</span></code> environment variable to the absolute path
@@ -692,7 +697,7 @@ of your alternative game dir. For example:</p>
 </section>
 </section>
 <section id="building-for-release">
-<h2>Building for release<a class="headerlink" href="#building-for-release" title="Permalink to this headline">¶</a></h2>
+<h3>Building for release<a class="headerlink" href="#building-for-release" title="Permalink to this headline">¶</a></h3>
 <p>The full Evennia documentation contains docs from many Evennia
 versions, old and new. This is done by pulling documentation from Evennia’s old release
 branches and building them all so readers can choose which one to view. Only
@@ -711,7 +716,7 @@ docs are built by looking at the git tree.</p></li>
 will be found under <code class="docutils literal notranslate"><span class="pre">evennia/docs/build/versions/</span></code>. During deploy a symlink <code class="docutils literal notranslate"><span class="pre">latest</span></code> will point
 to the latest version of the docs.</p>
 <section id="release">
-<h3>Release<a class="headerlink" href="#release" title="Permalink to this headline">¶</a></h3>
+<h4>Release<a class="headerlink" href="#release" title="Permalink to this headline">¶</a></h4>
 <p>Releasing the official docs requires git-push access the the Evennia <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch
 on <code class="docutils literal notranslate"><span class="pre">github</span></code>. So there is no risk of you releasing your local changes accidentally.</p>
 <ul>
@@ -729,6 +734,7 @@ on <code class="docutils literal notranslate"><span class="pre">github</span></c
 </ul>
 <p>After deployment finishes, the updated live documentation will be
 available at <a class="reference external" href="https://evennia.github.io/evennia/latest/">https://evennia.github.io/evennia/latest/</a>.</p>
+</section>
 </section>
 </section>
 </section>
@@ -757,8 +763,6 @@ available at <a class="reference external" href="https://evennia.github.io/evenn
   <ul>
 <li><a class="reference internal" href="#">Contributing to Evennia Docs</a><ul>
 <li><a class="reference internal" href="#source-file-structure">Source file structure</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#editing-syntax">Editing syntax</a><ul>
 <li><a class="reference internal" href="#italic-bold">Italic/Bold</a></li>
 <li><a class="reference internal" href="#headings">Headings</a></li>
@@ -768,14 +772,12 @@ available at <a class="reference external" href="https://evennia.github.io/evenn
 <li><a class="reference internal" href="#internal-links">Internal links</a></li>
 <li><a class="reference internal" href="#api-links">API links</a></li>
 <li><a class="reference internal" href="#external-links">External links</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#urls-references-in-one-place">Urls/References in one place</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#tables">Tables</a></li>
-<li><a class="reference internal" href="#verbatim-text">Verbatim text</a><ul>
+<li><a class="reference internal" href="#verbatim-text">Verbatim text</a></li>
 <li><a class="reference internal" href="#code-blocks">Code blocks</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#myst-directives">MyST directives</a><ul>
 <li><a class="reference internal" href="#note">Note</a></li>
 <li><a class="reference internal" href="#important">Important</a></li>
@@ -786,10 +788,10 @@ available at <a class="reference external" href="https://evennia.github.io/evenn
 <li><a class="reference internal" href="#eval-rst-directive">eval-rst directive</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#code-docstrings">Code docstrings</a></li>
-<li><a class="reference internal" href="#technical">Technical</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#code-docstrings">Code docstrings</a></li>
+<li><a class="reference internal" href="#technical">Technical</a></li>
 <li><a class="reference internal" href="#building-the-docs-locally">Building the docs locally</a><ul>
 <li><a class="reference internal" href="#building-only-the-main-documentation">Building only the main documentation</a></li>
 <li><a class="reference internal" href="#building-the-main-documentation-and-api-docs">Building the main documentation and API docs</a><ul>
@@ -803,7 +805,15 @@ available at <a class="reference external" href="https://evennia.github.io/evenn
 </ul>
 </li>
 </ul>
+</li>
+</ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Contributing.html"
+                        title="previous chapter">How To Contribute And Get Help</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Licensing.html"
+                        title="next chapter">Licensing Q&amp;A</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -840,6 +850,12 @@ available at <a class="reference external" href="https://evennia.github.io/evenn
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Licensing.html" title="Licensing Q&amp;A"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Contributing.html" title="How To Contribute And Get Help"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Contributing to Evennia Docs</a></li> 
       </ul>

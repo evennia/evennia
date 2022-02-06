@@ -14,13 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tutorials and Howto’s" href="../Howto/Howto-Overview.html" />
-    <link rel="prev" title="How To Contribute And Get Help" href="../Contributing.html" /> 
+    <link rel="next" title="Installation" href="Installation.html" />
+    <link rel="prev" title="Evennia Introduction" href="../Evennia-Introduction.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -32,10 +30,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../Howto/Howto-Overview.html" title="Tutorials and Howto’s"
+          <a href="Installation.html" title="Installation"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="../Contributing.html" title="How To Contribute And Get Help"
+          <a href="../Evennia-Introduction.html" title="Evennia Introduction"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Server Setup and Life</a></li> 
@@ -50,47 +48,163 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="server-setup-and-life">
 <h1>Server Setup and Life<a class="headerlink" href="#server-setup-and-life" title="Permalink to this headline">¶</a></h1>
-<p>This documentation covers how to setup and maintain the server, from first install to opening your game to the public.</p>
+<p>This documentation covers how to setup and maintain the server,
+from first install to opening your game to the public.</p>
 <section id="installation-running">
 <h2>Installation &amp; running<a class="headerlink" href="#installation-running" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="Installation.html"><span class="doc std std-doc">Installation &amp; Setup quick-start</span></a> - one page to quickly get you going</p></li>
-<li><p><a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">Extended Install instructions</span></a> - if you have trouble or want to contribute to Evennia itself</p></li>
-<li><p><a class="reference internal" href="Installation-Docker.html"><span class="doc std std-doc">Running through Docker</span></a> - alternative install method, useful for quick deployment on remote servers</p></li>
-<li><p><a class="reference internal" href="Installation-Android.html"><span class="doc std std-doc">Installing Evennia on Android</span></a> - for those craving a mobile life</p></li>
-<li><p><a class="reference internal" href="Start-Stop-Reload.html"><span class="doc std std-doc">Controlling the server</span></a> - an extended view on how to start/stop/update the server</p></li>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#initialize-a-new-game">Initialize a new game</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#start-the-new-game">Start the new game</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#restarting-and-stopping">Restarting and stopping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#see-server-logs">See server logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#server-configuration">Server configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#register-with-the-evennia-game-index-optional">Register with the Evennia Game Index (optional)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#the-next-steps">The Next steps</a></li>
 </ul>
-</section>
-<section id="installing-custom-game-dirs">
-<h2>Installing custom game dirs<a class="headerlink" href="#installing-custom-game-dirs" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="../Contribs/Arxcode-Installation.html"><span class="doc std std-doc">Installing Arxcode</span></a> - a custom gamedir based on the popular Evennia game <a class="reference external" href="https://play.arxgame.org/">Arx</a></p></li>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Installation-Git.html">Installing with GIT</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Git.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Git.html#linux-install">Linux Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Git.html#mac-install">Mac Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Git.html#windows-install">Windows Install</a></li>
 </ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Installation-Docker.html">Installing with Docker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Docker.html#running-your-game-as-a-docker-image">Running your game as a docker image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Docker.html#create-your-own-game-image">Create your own game image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Docker.html#how-it-works">How it Works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Docker.html#additional-creature-comforts">Additional Creature Comforts</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Installation-Troubleshooting.html">Installation Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Troubleshooting.html#check-your-requirements">Check your Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Troubleshooting.html#confusion-of-location-git-installation">Confusion of location (GIT installation)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Troubleshooting.html#virtualenv-setup-fails">Virtualenv setup fails</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Troubleshooting.html#localhost-not-found">Localhost not found</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Troubleshooting.html#linux-troubleshooting">Linux Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Troubleshooting.html#mac-troubleshooting">Mac Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Troubleshooting.html#windows-troubleshooting">Windows Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Installation-Android.html">Installing on Android</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Android.html#install-termux">Install Termux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Android.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Android.html#running-evennia">Running Evennia</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Android.html#caveats">Caveats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Android.html#troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Installation-Upgrade.html">Upgrading an existing installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Installation-Upgrade.html#evennia-v0-9-5-to-1-0">Evennia v0.9.5 to  1.0</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Installation-Non-Interactive.html">Non-interactive setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Start-Stop-Reload.html">Start Stop Reload</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#starting-evennia">Starting Evennia</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#foreground-mode">Foreground mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#reloading">Reloading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#resetting">Resetting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#rebooting">Rebooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#shutting-down">Shutting down</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#status-and-info">Status and info</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#killing-linux-mac-only">Killing (Linux/Mac only)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#django-options">Django options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Start-Stop-Reload.html#advanced-handling-of-evennia-processes">Advanced handling of Evennia processes</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </section>
 <section id="configuring">
 <h2>Configuring<a class="headerlink" href="#configuring" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="Settings-Default.html"><span class="doc std std-doc">The settings file</span></a> - how and where to change the main settings of the server</p></li>
-<li><p><a class="reference internal" href="Choosing-An-SQL-Server.html"><span class="doc std std-doc">Change database engine</span></a> - if you want to use something other than SQLite3</p></li>
-<li><p><a class="reference internal" href="Evennia-Game-Index.html"><span class="doc std std-doc">Evennia game index</span></a> - register your upcoming game with the index to start the hype going</p></li>
-<li><p><a class="reference internal" href="IRC.html"><span class="doc std std-doc">Chat on IRC</span></a> - how to link your game’s channels to an external <a class="reference external" href="https://en.wikipedia.org/wiki/Internet_Relay_Chat">IRC</a> channel</p></li>
-<li><p><a class="reference internal" href="Grapevine.html"><span class="doc std std-doc">Chat on Grapevine</span></a> - how to link your game’s channels the <a class="reference external" href="https://grapevine.haus/">Grapevine</a> mud network/chat</p></li>
-<li><p><a class="reference internal" href="RSS.html"><span class="doc std std-doc">Messages to RSS</span></a> - have your game notify people through RSS</p></li>
-<li><p><a class="reference internal" href="How-to-connect-Evennia-to-Twitter.html"><span class="doc std std-doc">Messages to Twitter</span></a> - have Evennia send messages to <a class="reference external" href="https://twitter.com/">Twitter</a> (requires some coding)</p></li>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Settings.html">Game Settings and Configuration direcotry</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Settings.html#settings-file">Settings file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Settings.html#other-files-in-the-server-conf-directory">Other files in the <code class="docutils literal notranslate"><span class="pre">server/conf</span></code> directory</a></li>
 </ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Settings-Default.html">Evennia Default settings file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Choosing-An-SQL-Server.html">Choosing An SQL Server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Choosing-An-SQL-Server.html#sqlite3">SQLite3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Choosing-An-SQL-Server.html#postgresql">PostgreSQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Choosing-An-SQL-Server.html#mysql-mariadb">MySQL / MariaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Choosing-An-SQL-Server.html#add-mysql-configuration-to-evennia">Add MySQL configuration to Evennia</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Choosing-An-SQL-Server.html#others">Others</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Evennia-Game-Index.html">Evennia Game Index</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Evennia-Game-Index.html#connect-with-the-wizard">Connect with the wizard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Evennia-Game-Index.html#manual-settings">Manual Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Evennia-Game-Index.html#non-public-games">Non-public games</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="IRC.html">IRC</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="IRC.html#configuring-irc">Configuring IRC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IRC.html#setting-up-irc-step-by-step">Setting up IRC, step by step</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Grapevine.html">Grapevine</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Grapevine.html#configuring-grapevine">Configuring Grapevine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Grapevine.html#setting-up-grapevine-step-by-step">Setting up Grapevine, step by step</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="RSS.html">RSS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="RSS.html#configuring-rss">Configuring RSS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="How-to-connect-Evennia-to-Twitter.html">How to connect Evennia to Twitter</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="How-to-connect-Evennia-to-Twitter.html#configuring-twitter">Configuring Twitter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="How-to-connect-Evennia-to-Twitter.html#install-the-twitter-python-module">Install the twitter python module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="How-to-connect-Evennia-to-Twitter.html#a-basic-tweet-command">A basic tweet command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="How-to-connect-Evennia-to-Twitter.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Client-Support-Grid.html">Client Support Grid</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Client-Support-Grid.html#client-grid">Client Grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client-Support-Grid.html#workarounds-for-client-issues">Workarounds for client issues:</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </section>
 <section id="going-public">
 <h2>Going public<a class="headerlink" href="#going-public" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="Security.html"><span class="doc std std-doc">Notes about security</span></a> - some things to think about to stay safe®</p>
+<div class="toctree-wrapper compound">
 <ul>
-<li><p><a class="reference internal" href="HAProxy-Config.html"><span class="doc std std-doc">Using HAProxy</span></a> - putting a proxy in front of the game server for security</p></li>
-<li><p><a class="reference internal" href="Apache-Config.html"><span class="doc std std-doc">Using Apache as a webserver</span></a> - use Apache instead of Evennia’s webserver (limited support)</p></li>
+<li class="toctree-l1"><a class="reference internal" href="Online-Setup.html">Online Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Online-Setup.html#connecting-from-the-outside">Connecting from the outside</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Online-Setup.html#ssl">SSL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Online-Setup.html#relevant-ssl-proxy-setup-information">Relevant SSL Proxy Setup Information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Online-Setup.html#hosting-locally-or-remotely">Hosting locally or remotely?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Online-Setup.html#cloud9">Cloud9</a></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="Online-Setup.html"><span class="doc std std-doc">Taking your server online</span></a> - decide on where to host and configure your game for production</p></li>
-<li><p><a class="reference internal" href="Client-Support-Grid.html"><span class="doc std std-doc">Client support grid</span></a> - clients known to work (or not) with Evennia</p></li>
+<li class="toctree-l1"><a class="reference internal" href="Security.html">Security</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Security.html#know-your-logs">Know your logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Security.html#disable-development-debugging-options">Disable development/debugging options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Security.html#handle-user-uploaded-images-with-care">Handle user-uploaded images with care</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Security.html#disable-the-web-interface">Disable the web interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Security.html#change-your-ssh-port">Change your ssh port</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Security.html#set-up-a-firewall">Set up a firewall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Security.html#use-an-external-webserver">Use an external webserver</a></li>
 </ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="HAProxy-Config.html">Making Evennia, HTTPS and WSS (Secure Websockets) play nicely together</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="HAProxy-Config.html#getting-certificates">Getting certificates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HAProxy-Config.html#installing-and-configuring-haproxy">Installing and configuring HAProxy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HAProxy-Config.html#putting-it-all-together">Putting it all together</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Apache-Config.html">Apache Config</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Apache-Config.html#mod-wsgi-setup"><code class="docutils literal notranslate"><span class="pre">mod_wsgi</span></code> Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Apache-Config.html#mod-proxy-and-mod-ssl-setup"><code class="docutils literal notranslate"><span class="pre">mod_proxy</span></code> and <code class="docutils literal notranslate"><span class="pre">mod_ssl</span></code> setup</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </section>
 </section>
 
@@ -118,7 +232,6 @@
   <ul>
 <li><a class="reference internal" href="#">Server Setup and Life</a><ul>
 <li><a class="reference internal" href="#installation-running">Installation &amp; running</a></li>
-<li><a class="reference internal" href="#installing-custom-game-dirs">Installing custom game dirs</a></li>
 <li><a class="reference internal" href="#configuring">Configuring</a></li>
 <li><a class="reference internal" href="#going-public">Going public</a></li>
 </ul>
@@ -126,11 +239,11 @@
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="../Contributing.html"
-                        title="previous chapter">How To Contribute And Get Help</a></p>
+  <p class="topless"><a href="../Evennia-Introduction.html"
+                        title="previous chapter">Evennia Introduction</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="../Howto/Howto-Overview.html"
-                        title="next chapter">Tutorials and Howto’s</a></p>
+  <p class="topless"><a href="Installation.html"
+                        title="next chapter">Installation</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -168,10 +281,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../Howto/Howto-Overview.html" title="Tutorials and Howto’s"
+          <a href="Installation.html" title="Installation"
              >next</a> |</li>
         <li class="right" >
-          <a href="../Contributing.html" title="How To Contribute And Get Help"
+          <a href="../Evennia-Introduction.html" title="Evennia Introduction"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Server Setup and Life</a></li> 

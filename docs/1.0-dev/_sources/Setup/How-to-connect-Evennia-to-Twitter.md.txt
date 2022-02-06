@@ -30,7 +30,7 @@ pip install python-twitter
 
 Evennia doesn't have a `tweet` command out of the box so you need to write your own little
 [Command](../Components/Commands.md) in order to tweet. If you are unsure about how commands work and how to add
-them, it can be an idea to go through the [Adding a Command Tutorial](../Howto/Starting/Part1/Adding-Commands.md)
+them, it can be an idea to go through the [Adding a Command Tutorial](../Howtos/Beginner-Tutorial/Part1/Adding-Commands.md)
 before continuing.
 
 You can create the command in a separate command module (something like `mygame/commands/tweet.py`)
@@ -106,5 +106,5 @@ This shows only a basic tweet setup, other things to do could be:
 * Echo your tweets to an in-game channel
 
 Rather than using an explicit command you can set up a Script to send automatic tweets, for example
-to post updated game stats. See the [Tweeting Game Stats tutorial](../Howto/Tutorial-Tweeting-Game-Stats.md) for
+to post updated game stats. See the [Tweeting Game Stats tutorial](../Howtos/Tutorial-Tweeting-Game-Stats.md) for
 help.

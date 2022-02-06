@@ -22,8 +22,9 @@ assume that you have a cloned `evennia` repo and use a virtualenv (best practice
 
 If you don't have anything you want to keep in your existing game dir, you can just start a new onew 
 using the normal [install instructions](./Installation.md). If you want to keep/convert your existing 
-game dir, continue below. 
+game dir, continue below.
 
+- First, make a backup of your exising game dir! If you use version control, make sure to commit your current state.
 - `cd` to your existing 0.9.5-based game folder (like `mygame`.)
 - If you have changed `mygame/web`, _rename_ the folder to `web_0.9.5`. If you didn't change anything (or don't have 
 anything you want to keep), you can _delete_ it entirely.
@@ -38,4 +39,4 @@ changes to your code before it will start with Evennia 1.0. Some important point
 - The `evennia/contrib/` folder changed structure - there are now categorized sub-folders, so you have to update 
 your imports.
 - Any `web` changes need to be moved back from your backup into the new structure of `web/` manually.
-- See the [Evennia 1.0 Changelog](./Changelog.md) for all changes.
+- See the [Evennia 1.0 Changelog](../Coding/Changelog.md) for all changes.

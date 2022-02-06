@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Installing with GIT" href="Installation-Git.html" />
+    <link rel="prev" title="Server Setup and Life" href="Setup-Overview.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Installation-Git.html" title="Installing with GIT"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Setup-Overview.html" title="Server Setup and Life"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Setup-Overview.html" accesskey="U">Server Setup and Life</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Installation</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -132,15 +139,26 @@ a web browser at <a class="reference external" href="http://localhost:4001">http
 <p>The server configuration file is <code class="docutils literal notranslate"><span class="pre">mygame/server/settings.py</span></code>. It’s empty by default. Copy and change
 only the settings you want from the <a class="reference internal" href="Settings-Default.html"><span class="doc std std-doc">default settings file</span></a>.</p>
 </section>
+<section id="register-with-the-evennia-game-index-optional">
+<h2>Register with the Evennia Game Index (optional)<a class="headerlink" href="#register-with-the-evennia-game-index-optional" title="Permalink to this headline">¶</a></h2>
+<p>You can optionally let the world know that you are working on a new Evennia-based game by
+registering your server with the <em>Evennia game index</em>. You don’t have to be
+open for players to do this - you just mark your game as closed and “pre-alpha”.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia connections 
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="Evennia-Game-Index.html"><span class="doc std std-doc">here</span></a> for more instructions and please <a class="reference external" href="http:///games.evennia.com">check out the index</a>
+beforehand to make sure you don’t pick a game name that is already taken - be nice!</p>
+</section>
 <section id="the-next-steps">
 <h2>The Next steps<a class="headerlink" href="#the-next-steps" title="Permalink to this headline">¶</a></h2>
 <p>You are good to go!</p>
-<p>Evennia comes with a small <a class="reference internal" href="../Howto/Starting/Part1/Tutorial-World.html"><span class="doc std std-doc">Tutorial World</span></a> to experiment and learn from. After logging
+<p>Evennia comes with a small <a class="reference internal" href="../Howtos/Beginner-Tutorial/Part1/Tutorial-World.html"><span class="doc std std-doc">Tutorial World</span></a> to experiment and learn from. After logging
 in, you can create it by running</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>batchcommand tutorial_world.build
 </pre></div>
 </div>
-<p>Next, why not head into the <a class="reference internal" href="../Howto/Starting/Part1/Starting-Part1.html"><span class="doc std std-doc">Starting Tutorial</span></a>
+<p>Next, why not head into the <a class="reference internal" href="../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Intro.html"><span class="doc std std-doc">Starting Tutorial</span></a>
 to learn how to start making your new game!</p>
 </section>
 </section>
@@ -173,11 +191,18 @@ to learn how to start making your new game!</p>
 <li><a class="reference internal" href="#restarting-and-stopping">Restarting and stopping</a></li>
 <li><a class="reference internal" href="#see-server-logs">See server logs</a></li>
 <li><a class="reference internal" href="#server-configuration">Server configuration</a></li>
+<li><a class="reference internal" href="#register-with-the-evennia-game-index-optional">Register with the Evennia Game Index (optional)</a></li>
 <li><a class="reference internal" href="#the-next-steps">The Next steps</a></li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Setup-Overview.html"
+                        title="previous chapter">Server Setup and Life</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Installation-Git.html"
+                        title="next chapter">Installing with GIT</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -214,7 +239,14 @@ to learn how to start making your new game!</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Installation-Git.html" title="Installing with GIT"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Setup-Overview.html" title="Server Setup and Life"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Setup-Overview.html" >Server Setup and Life</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Installation</a></li> 
       </ul>
         <div class="develop">develop branch</div>

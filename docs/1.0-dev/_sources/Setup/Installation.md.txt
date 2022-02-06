@@ -96,15 +96,25 @@ To exit the log tailing, enter `Ctrl-C` (`Cmd-C` for Mac). This will not affect 
 The server configuration file is `mygame/server/settings.py`. It's empty by default. Copy and change 
 only the settings you want from the [default settings file](./Settings-Default.md).
 
+## Register with the Evennia Game Index (optional)
+
+You can optionally let the world know that you are working on a new Evennia-based game by 
+registering your server with the _Evennia game index_. You don't have to be 
+open for players to do this - you just mark your game as closed and "pre-alpha".
+
+    evennia connections 
+
+See [here](./Evennia-Game-Index.md) for more instructions and please [check out the index](http:games.evennia.com) 
+beforehand to make sure you don't pick a game name that is already taken - be nice!
 
 ## The Next steps
 
 You are good to go! 
 
-Evennia comes with a small [Tutorial World](../Howto/Starting/Part1/Tutorial-World.md) to experiment and learn from. After logging 
+Evennia comes with a small [Tutorial World](../Howtos/Beginner-Tutorial/Part1/Tutorial-World.md) to experiment and learn from. After logging 
 in, you can create it by running 
 
     batchcommand tutorial_world.build
 
-Next, why not head into the [Starting Tutorial](../Howto/Starting/Part1/Starting-Part1.md) 
+Next, why not head into the [Starting Tutorial](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Intro.md) 
 to learn how to start making your new game!

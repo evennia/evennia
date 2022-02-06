@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Channels" href="Channels.html" />
+    <link rel="prev" title="Objects" href="Objects.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Channels.html" title="Channels"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Objects.html" title="Objects"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Scripts</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -156,7 +163,7 @@ can use this as a base for your own scripts.</p>
     <span class="c1"># stuff common for all your scripts goes here</span>
 
 <span class="k">class</span> <span class="nc">MyScript</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="n">selfself</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Called once, when script is first created&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;myscript&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
@@ -168,7 +175,7 @@ can use this as a base for your own scripts.</p>
 
 <span class="c1"># from somewhere else</span>
 
-<span class="n">myscript</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_script</span><span class="p">(</span><span class="s2">&quot;myscript&quot;</span><span class="p">)</span>
+<span class="n">myscript</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_script</span><span class="p">(</span><span class="s2">&quot;myscript&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
 <span class="n">bar</span> <span class="o">=</span> <span class="n">myscript</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">foo</span>
 <span class="n">myscript</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">something_else</span> <span class="o">=</span> <span class="mi">1000</span>
 
@@ -483,6 +490,12 @@ traceback occurred in your script.</p>
 <li><a class="reference internal" href="#hints-dealing-with-script-errors">Hints: Dealing with Script Errors</a></li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Objects.html"
+                        title="previous chapter">Objects</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Channels.html"
+                        title="next chapter">Channels</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -519,7 +532,14 @@ traceback occurred in your script.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Channels.html" title="Channels"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Objects.html" title="Objects"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Scripts</a></li> 
       </ul>
         <div class="develop">develop branch</div>

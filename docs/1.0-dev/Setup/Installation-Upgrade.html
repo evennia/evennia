@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Non-interactive setup" href="Installation-Non-Interactive.html" />
+    <link rel="prev" title="Installing on Android" href="Installation-Android.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Installation-Non-Interactive.html" title="Non-interactive setup"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Installation-Android.html" title="Installing on Android"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Setup-Overview.html" accesskey="U">Server Setup and Life</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Upgrading an existing installation</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -66,6 +73,7 @@ be found on the default master branch.</p></li>
 using the normal <a class="reference internal" href="Installation.html"><span class="doc std std-doc">install instructions</span></a>. If you want to keep/convert your existing
 game dir, continue below.</p>
 <ul class="simple">
+<li><p>First, make a backup of your exising game dir! If you use version control, make sure to commit your current state.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> to your existing 0.9.5-based game folder (like <code class="docutils literal notranslate"><span class="pre">mygame</span></code>.)</p></li>
 <li><p>If you have changed <code class="docutils literal notranslate"><span class="pre">mygame/web</span></code>, <em>rename</em> the folder to <code class="docutils literal notranslate"><span class="pre">web_0.9.5</span></code>. If you didn’t change anything (or don’t have
 anything you want to keep), you can <em>delete</em> it entirely.</p></li>
@@ -80,7 +88,7 @@ changes to your code before it will start with Evennia 1.0. Some important point
 <li><p>The <code class="docutils literal notranslate"><span class="pre">evennia/contrib/</span></code> folder changed structure - there are now categorized sub-folders, so you have to update
 your imports.</p></li>
 <li><p>Any <code class="docutils literal notranslate"><span class="pre">web</span></code> changes need to be moved back from your backup into the new structure of <code class="docutils literal notranslate"><span class="pre">web/</span></code> manually.</p></li>
-<li><p>See the <a class="reference internal" href="Changelog.html"><span class="doc std std-doc">Evennia 1.0 Changelog</span></a> for all changes.</p></li>
+<li><p>See the <a class="reference internal" href="../Coding/Changelog.html"><span class="doc std std-doc">Evennia 1.0 Changelog</span></a> for all changes.</p></li>
 </ul>
 </section>
 </section>
@@ -113,6 +121,12 @@ your imports.</p></li>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Installation-Android.html"
+                        title="previous chapter">Installing on Android</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Installation-Non-Interactive.html"
+                        title="next chapter">Non-interactive setup</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -149,7 +163,14 @@ your imports.</p></li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Installation-Non-Interactive.html" title="Non-interactive setup"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Installation-Android.html" title="Installing on Android"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Setup-Overview.html" >Server Setup and Life</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Upgrading an existing installation</a></li> 
       </ul>
         <div class="develop">develop branch</div>

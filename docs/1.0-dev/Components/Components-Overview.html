@@ -14,13 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Core Concepts" href="../Concepts/Concepts-Overview.html" />
-    <link rel="prev" title="Tutorials and Howto’s" href="../Howto/Howto-Overview.html" /> 
+    <link rel="next" title="Typeclasses" href="Typeclasses.html" />
+    <link rel="prev" title="Tutorial for basic MUSH like game" href="../Howtos/Tutorial-for-basic-MUSH-like-game.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -32,10 +30,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../Concepts/Concepts-Overview.html" title="Core Concepts"
+          <a href="Typeclasses.html" title="Typeclasses"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="../Howto/Howto-Overview.html" title="Tutorials and Howto’s"
+          <a href="../Howtos/Tutorial-for-basic-MUSH-like-game.html" title="Tutorial for basic MUSH like game"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Core Components</a></li> 
@@ -54,82 +52,306 @@
 than, the doc-strings of each component in the <a class="reference internal" href="../Evennia-API.html"><span class="doc std std-doc">API</span></a>.</p>
 <section id="database-entites">
 <h2>Database entites<a class="headerlink" href="#database-entites" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclasses</span></a></p>
+<div class="toctree-wrapper compound">
 <ul>
-<li><p><a class="reference internal" href="Sessions.html"><span class="doc std std-doc">Sessions</span></a></p></li>
-<li><p><a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Acccounts</span></a></p>
-<ul>
-<li><p><a class="reference internal" href="../Concepts/Guest-Logins.html"><span class="doc std std-doc">Guests</span></a></p></li>
+<li class="toctree-l1"><a class="reference internal" href="Typeclasses.html">Typeclasses</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Typeclasses.html#difference-between-typeclasses-and-classes">Difference between typeclasses and classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Typeclasses.html#creating-a-new-typeclass">Creating a new typeclass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Typeclasses.html#about-typeclass-properties">About typeclass properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Typeclasses.html#overloading-hooks">Overloading hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Typeclasses.html#querying-for-typeclasses">Querying for typeclasses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Typeclasses.html#updating-existing-typeclass-instances">Updating existing typeclass instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Typeclasses.html#swap-typeclass">Swap typeclass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Typeclasses.html#how-typeclasses-actually-work">How typeclasses actually work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Typeclasses.html#caveats">Caveats</a></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a></p></li>
-<li><p><a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a></p></li>
-<li><p><a class="reference internal" href="Communications.html"><span class="doc std std-doc">Channels and Messages</span></a></p></li>
+<li class="toctree-l1"><a class="reference internal" href="Sessions.html">Sessions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Sessions.html#properties-on-sessions">Properties on Sessions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Sessions.html#multisession-mode">Multisession mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Sessions.html#returning-data-to-the-session">Returning data to the session</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Sessions.html#customizing-the-session-object">Customizing the Session object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Sessions.html#portal-and-server-sessions">Portal and Server Sessions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Sessions.html#sessionhandlers">Sessionhandlers</a></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a></p></li>
-<li><p><a class="reference internal" href="Nicks.html"><span class="doc std std-doc">Nicks</span></a></p></li>
-<li><p><a class="reference internal" href="Tags.html"><span class="doc std std-doc">Tags</span></a></p></li>
-<li><p><a class="reference internal" href="Prototypes.html"><span class="doc std std-doc">Spawner and prototypes</span></a></p></li>
-<li><p><a class="reference internal" href="Help-System.html"><span class="doc std std-doc">Help entries</span></a></p></li>
+<li class="toctree-l1"><a class="reference internal" href="Accounts.html">Accounts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Accounts.html#how-to-create-your-own-account-types">How to create your own Account types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Accounts.html#properties-on-accounts">Properties on Accounts</a></li>
 </ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Objects.html">Objects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Objects.html#how-to-create-your-own-object-types">How to create your own object types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Objects.html#properties-and-functions-on-objects">Properties and functions on Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Objects.html#subclasses-of-object">Subclasses of <code class="docutils literal notranslate"><span class="pre">Object</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Scripts.html#in-game-command-examples">In-game command examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Scripts.html#code-examples">Code examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Scripts.html#defining-new-scripts">Defining new Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Scripts.html#simple-storage-script">Simple storage script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Scripts.html#timed-scripts">Timed Scripts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Scripts.html#script-attached-to-another-object">Script attached to another object</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Scripts.html#other-script-methods">Other Script methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Scripts.html#the-global-scripts-container">The GLOBAL_SCRIPTS container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Scripts.html#hints-dealing-with-script-errors">Hints: Dealing with Script Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Channels.html">Channels</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Channels.html#using-channels-in-game">Using channels in-game</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Channels.html#allowing-characters-to-use-channels">Allowing Characters to use Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Channels.html#customizing-channel-output-and-behavior">Customizing channel output and behavior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Channels.html#channels-in-code">Channels in code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Channels.html#channel-logging">Channel logging</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Msg.html">Msg</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Msg.html#msg-in-code">Msg in code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Msg.html#tempmsg">TempMsg</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Attributes.html">Attributes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Attributes.html#managing-attributes-in-code">Managing Attributes in Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Attributes.html#managing-attributes-in-game">Managing Attributes in-game</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Attributes.html#locking-and-checking-attributes">Locking and checking Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Attributes.html#what-types-of-data-can-i-save-in-an-attribute">What types of data can I save in an Attribute?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Attributes.html#properties-of-attributes">Properties of Attributes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Attributes.html#in-memory-attributes-nattributes">In-memory Attributes (NAttributes)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Attributes.html#persistent-vs-non-persistent">Persistent vs non-persistent</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Nicks.html">Nicks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Nicks.html#coding-with-nicks">Coding with nicks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Nicks.html#advanced-note">Advanced note</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tags.html">Tags</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Tags.html#properties-of-tags-and-aliases-and-permissions">Properties of Tags (and Aliases and Permissions)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tags.html#adding-removing-tags">Adding/Removing Tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tags.html#searching-for-objects-with-a-given-tag">Searching for objects with a given tag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tags.html#using-aliases-and-permissions">Using Aliases and Permissions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tags.html#assorted-notes">Assorted notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Prototypes.html">Spawner and Prototypes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Prototypes.html#using-the-olc">Using the OLC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Prototypes.html#the-prototype">The prototype</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Prototypes.html#storing-prototypes">Storing prototypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Prototypes.html#using-spawn">Using &#64;spawn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Prototypes.html#using-evennia-prototypes-spawner">Using evennia.prototypes.spawner()</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Help-System.html">Help System</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Help-System.html#using-the-help-system-from-in-game">Using the help system from in-game</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Help-System.html#sources-of-help-entries">Sources of help entries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Help-System.html#entry-priority">Entry priority</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Help-System.html#locking-help-entries">Locking help entries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Help-System.html#customizing-the-look-of-the-help-system">Customizing the look of the help system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Help-System.html#technical-notes">Technical notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Permissions.html">Permissions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Permissions.html#managing-permissions">Managing Permissions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Permissions.html#the-permission-hierarchy">The permission hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Permissions.html#checking-permissions">Checking permissions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Permissions.html#superusers">Superusers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Permissions.html#quelling">Quelling</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </section>
 <section id="commands">
 <h2>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="Default-Commands.html"><span class="doc std std-doc">Available Default Commands</span></a></p></li>
-<li><p><a class="reference internal" href="Command-System.html"><span class="doc std std-doc">Command system</span></a></p>
+<div class="toctree-wrapper compound">
 <ul>
-<li><p><a class="reference internal" href="Commands.html"><span class="doc std std-doc">Commands</span></a></p></li>
-<li><p><a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">Command-Sets</span></a></p></li>
-<li><p><a class="reference internal" href="Connection-Screen.html"><span class="doc std std-doc">The Connection Screen</span></a></p></li>
+<li class="toctree-l1"><a class="reference internal" href="Command-System.html">Command System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Commands.html">Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Commands.html#defining-commands">Defining Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Commands.html#exiting-a-command">Exiting a command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Commands.html#pauses-in-commands">Pauses in commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Commands.html#asking-for-user-input">Asking for user input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Commands.html#system-commands">System commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Commands.html#dynamic-commands">Dynamic Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Commands.html#exits">Exits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Commands.html#command-instances-are-re-used">Command instances are re-used</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Commands.html#dynamically-created-commands">Dynamically created commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Commands.html#how-commands-actually-work">How commands actually work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Commands.html#assorted-notes">Assorted notes</a></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="Batch-Processors.html"><span class="doc std std-doc">Batch-Processors</span></a></p>
-<ul>
-<li><p><a class="reference internal" href="Batch-Code-Processor.html"><span class="doc std std-doc">Batch-Code-Processor</span></a></p></li>
-<li><p><a class="reference internal" href="Batch-Command-Processor.html"><span class="doc std std-doc">Batch-Command-Processor</span></a></p></li>
+<li class="toctree-l1"><a class="reference internal" href="Command-Sets.html">Command Sets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Command-Sets.html#defining-command-sets">Defining Command Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Command-Sets.html#command-sets-searched">Command Sets Searched</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Command-Sets.html#adding-and-merging-command-sets">Adding and Merging Command Sets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Default-Commands.html">Default Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Connection-Screen.html">Connection Screen</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Connection-Screen.html#commands-available-at-the-connection-screen">Commands available at the Connection Screen</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Batch-Processors.html">Batch Processors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Processors.html#a-note-on-file-encodings">A note on File Encodings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Batch-Code-Processor.html">Batch Code Processor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Code-Processor.html#basic-usage">Basic Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Code-Processor.html#the-batch-file">The batch file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Code-Processor.html#debug-mode">Debug mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Code-Processor.html#interactive-mode">Interactive mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Code-Processor.html#limitations-and-caveats">Limitations and Caveats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Batch-Command-Processor.html">Batch Command Processor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Command-Processor.html#basic-usage">Basic Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Command-Processor.html#the-batch-file">The batch file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Command-Processor.html#interactive-mode">Interactive mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Command-Processor.html#limitations-and-caveats">Limitations and Caveats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Batch-Command-Processor.html#assorted-notes">Assorted notes</a></li>
 </ul>
 </li>
 </ul>
+</div>
 </section>
 <section id="utils-and-tools">
 <h2>Utils and tools<a class="headerlink" href="#utils-and-tools" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="Coding-Utils.html"><span class="doc std std-doc">Misc Utils</span></a></p></li>
-<li><p><a class="reference internal" href="EvEditor.html"><span class="doc std std-doc">EvEditor</span></a></p></li>
-<li><p><a class="reference internal" href="EvMenu.html"><span class="doc std std-doc">EvMenu</span></a></p></li>
-<li><p><a class="reference internal" href="EvMore.html"><span class="doc std std-doc">EvMore</span></a></p></li>
-<li><p><a class="reference internal" href="MonitorHandler.html"><span class="doc std std-doc">MonitorHandler</span></a></p></li>
-<li><p><a class="reference internal" href="TickerHandler.html"><span class="doc std std-doc">TickerHandler</span></a></p></li>
-<li><p><a class="reference internal" href="Locks.html"><span class="doc std std-doc">Lock system</span></a></p></li>
-<li><p><a class="reference internal" href="FuncParser.html"><span class="doc std std-doc">FuncParser</span></a></p></li>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Coding-Utils.html">Coding Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Coding-Utils.html#searching">Searching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coding-Utils.html#create">Create</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coding-Utils.html#logging">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coding-Utils.html#time-utilities">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coding-Utils.html#object-classes">Object Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coding-Utils.html#text-utilities">Text utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Coding-Utils.html#display-utilities">Display utilities</a></li>
 </ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="EvEditor.html">EvEditor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="EvEditor.html#launching-the-editor">Launching the editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EvEditor.html#example-of-usage">Example of usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EvEditor.html#persistent-editor">Persistent editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EvEditor.html#line-editor-usage">Line editor usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EvEditor.html#the-eveditor-to-edit-code">The EvEditor to edit code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="EvMenu.html">EvMenu</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="EvMenu.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EvMenu.html#launching-the-menu">Launching the menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EvMenu.html#the-menu-nodes">The Menu nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EvMenu.html#temporary-storage">Temporary storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EvMenu.html#customizing-menu-formatting">Customizing Menu formatting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EvMenu.html#evmenu-templating-language">EvMenu templating language</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EvMenu.html#id1">Examples:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EvMenu.html#ask-for-simple-input">Ask for simple input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EvMenu.html#the-list-node-decorator">The <code class="docutils literal notranslate"><span class="pre">&#64;list_node</span></code> decorator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EvMenu.html#assorted-notes">Assorted notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="EvMore.html">EvMore</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="EvMore.html#using-evmore">Using EvMore</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="MonitorHandler.html">MonitorHandler</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="MonitorHandler.html#using-the-monitorhandler">Using the MonitorHandler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="TickerHandler.html">TickerHandler</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="TickerHandler.html#about-tickers">About Tickers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Locks.html">Locks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Locks.html#setting-and-checking-a-lock">Setting and checking a lock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Locks.html#defining-locks">Defining locks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Locks.html#checking-simple-strings">Checking simple strings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Locks.html#default-locks">Default locks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Locks.html#more-lock-definition-examples">More Lock definition examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Locks.html#a-complete-example-of-setting-locks-on-an-object">A complete example of setting locks on an object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Locks.html#on-djangos-permission-system">On Django’s permission system</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="FuncParser.html">The Inline Function Parser</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="FuncParser.html#uses-in-default-evennia">Uses in default Evennia</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FuncParser.html#using-the-funcparser">Using the FuncParser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FuncParser.html#defining-custom-callables">Defining custom callables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FuncParser.html#default-callables">Default callables</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="web-components">
+<h2>Web components<a class="headerlink" href="#web-components" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Website.html">Game website</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Website.html#modifying-the-default-website">Modifying the default Website</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Website.html#examples-of-commom-web-changes">Examples of commom web changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Website.html#adding-a-new-web-page">Adding a new web page</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Website.html#user-forms">User forms</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Web-API.html">Evennia REST API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Web-API.html#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Web-API.html#customizing-the-api">Customizing the API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Web-Admin.html">The Web Admin</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Web-Admin.html#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Web-Admin.html#grant-others-access-to-the-admin">Grant others access to the admin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Web-Admin.html#customizing-the-web-admin">Customizing the web admin</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </section>
 <section id="server-and-network">
 <h2>Server and network<a class="headerlink" href="#server-and-network" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="Portal-And-Server.html"><span class="doc std std-doc">Portal</span></a></p>
+<div class="toctree-wrapper compound">
 <ul>
-<li><p><a class="reference internal" href="Inputfuncs.html"><span class="doc std std-doc">Inputfuncs</span></a></p></li>
-<li><p><a class="reference internal" href="Outputfuncs.html"><span class="doc std std-doc">Outputfuncs</span></a></p></li>
-<li><p><a class="reference internal" href="../Concepts/Custom-Protocols.html"><span class="doc std std-doc">Protocols</span></a></p></li>
+<li class="toctree-l1"><a class="reference internal" href="Portal-And-Server.html">Portal And Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Inputfuncs.html">Inputfuncs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Inputfuncs.html#adding-your-own-inputfuncs">Adding your own inputfuncs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Inputfuncs.html#default-inputfuncs">Default inputfuncs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Inputfuncs.html#unmonitor">unmonitor</a></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="Server.html"><span class="doc std std-doc">Server</span></a></p>
-<ul>
-<li><p><a class="reference internal" href="../Setup/Server-Conf.html"><span class="doc std std-doc">Server conf object</span></a></p></li>
+<li class="toctree-l1"><a class="reference internal" href="Outputfuncs.html">Outputfuncs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Server.html">Server component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Webserver.html">Webserver</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Webserver.html#basic-webserver-data-flow">Basic Webserver data flow</a></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="Webserver.html"><span class="doc std std-doc">Webserver</span></a></p>
-<ul>
-<li><p><a class="reference internal" href="Webclient.html"><span class="doc std std-doc">Webclient</span></a></p></li>
-<li><p><a class="reference internal" href="Bootstrap-Components-and-Utilities.html"><span class="doc std std-doc">Bootstrap</span></a></p></li>
+<li class="toctree-l1"><a class="reference internal" href="Webclient.html">Web Client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Webclient.html#customizing-the-web-client">Customizing the web client</a></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="Signals.html"><span class="doc std std-doc">Signals</span></a></p></li>
+<li class="toctree-l1"><a class="reference internal" href="Webclient.html#evennia-web-client-api-from-evennia-js">Evennia Web Client API (from evennia.js)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Webclient.html#plugin-manager-api-from-webclient-gui-js">Plugin Manager API (from webclient_gui.js)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Webclient.html#plugin-callbacks-api">Plugin callbacks API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Webclient.html#example-default-plugins-plugins-js">Example/Default Plugins (plugins/*.js)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Webclient.html#writing-your-own-plugins">Writing your own Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Webclient.html#goldenlayout">GoldenLayout</a></li>
 </ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Bootstrap-Components-and-Utilities.html">Bootstrap Components and Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Bootstrap-Components-and-Utilities.html#general-styling">General Styling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Bootstrap-Components-and-Utilities.html#components">Components</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Signals.html">Signals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Signals.html#attaching-a-handler-to-a-signal">Attaching a handler to a signal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Signals.html#available-signals">Available signals</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </section>
 </section>
 
@@ -159,17 +381,18 @@ than, the doc-strings of each component in the <a class="reference internal" hre
 <li><a class="reference internal" href="#database-entites">Database entites</a></li>
 <li><a class="reference internal" href="#commands">Commands</a></li>
 <li><a class="reference internal" href="#utils-and-tools">Utils and tools</a></li>
+<li><a class="reference internal" href="#web-components">Web components</a></li>
 <li><a class="reference internal" href="#server-and-network">Server and network</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="../Howto/Howto-Overview.html"
-                        title="previous chapter">Tutorials and Howto’s</a></p>
+  <p class="topless"><a href="../Howtos/Tutorial-for-basic-MUSH-like-game.html"
+                        title="previous chapter">Tutorial for basic MUSH like game</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="../Concepts/Concepts-Overview.html"
-                        title="next chapter">Core Concepts</a></p>
+  <p class="topless"><a href="Typeclasses.html"
+                        title="next chapter">Typeclasses</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -207,10 +430,10 @@ than, the doc-strings of each component in the <a class="reference internal" hre
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../Concepts/Concepts-Overview.html" title="Core Concepts"
+          <a href="Typeclasses.html" title="Typeclasses"
              >next</a> |</li>
         <li class="right" >
-          <a href="../Howto/Howto-Overview.html" title="Tutorials and Howto’s"
+          <a href="../Howtos/Tutorial-for-basic-MUSH-like-game.html" title="Tutorial for basic MUSH like game"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Core Components</a></li> 

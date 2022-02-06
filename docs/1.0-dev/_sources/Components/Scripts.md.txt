@@ -131,7 +131,7 @@ class Script(DefaultScript):
     # stuff common for all your scripts goes here
 
 class MyScript(Script):
-    def at_script_creation(selfself):
+    def at_script_creation(self):
         """Called once, when script is first created"""
         self.key = "myscript"
         self.db.foo = "bar"
@@ -145,7 +145,7 @@ evennia.create_script('typeclasses.scripts.MyScript')
 
 # from somewhere else
 
-myscript = evennia.search_script("myscript")
+myscript = evennia.search_script("myscript").first()
 bar = myscript.db.foo
 myscript.db.something_else = 1000
 

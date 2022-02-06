@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.base_systems.email_login.tests" href="evennia.contrib.base_systems.email_login.tests.html" />
+    <link rel="prev" title="evennia.contrib.base_systems.email_login.connection_screens" href="evennia.contrib.base_systems.email_login.connection_screens.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,19 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.email_login.tests.html" title="evennia.contrib.base_systems.email_login.tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.email_login.connection_screens.html" title="evennia.contrib.base_systems.email_login.connection_screens"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.base_systems.html" >evennia.contrib.base_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.base_systems.email_login.html" accesskey="U">evennia.contrib.base_systems.email_login</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.email_login.email_login</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -78,7 +90,7 @@ the module given by settings.CONNECTION_SCREEN_MODULE.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['conn', 'co', 'con']</em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['co', 'con', 'conn']</em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -108,7 +120,7 @@ there is no object yet before the account has logged in)</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'conn co con', 'category': 'general', 'key': 'connect', 'no_prefix': ' conn co con', 'tags': '', 'text': '\n    Connect to the game.\n\n    Usage (at login screen):\n        connect &lt;email&gt; &lt;password&gt;\n\n    Use the create command to first create an account before logging in.\n    '}</em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'co con conn', 'category': 'general', 'key': 'connect', 'no_prefix': ' co con conn', 'tags': '', 'text': '\n    Connect to the game.\n\n    Usage (at login screen):\n        connect &lt;email&gt; &lt;password&gt;\n\n    Use the create command to first create an account before logging in.\n    '}</em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -130,7 +142,7 @@ there is no object yet before the account has logged in)</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['cre', 'cr']</em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['cr', 'cre']</em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -166,7 +178,7 @@ name enclosed in quotes:</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'cre cr', 'category': 'general', 'key': 'create', 'no_prefix': ' cre cr', 'tags': '', 'text': '\n    Create a new account.\n\n    Usage (at login screen):\n        create &quot;accountname&quot; &lt;email&gt; &lt;password&gt;\n\n    This creates a new account account.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'cr cre', 'category': 'general', 'key': 'create', 'no_prefix': ' cr cre', 'tags': '', 'text': '\n    Create a new account.\n\n    Usage (at login screen):\n        create &quot;accountname&quot; &lt;email&gt; &lt;password&gt;\n\n    This creates a new account account.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -185,7 +197,7 @@ version is a bit more complicated.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['qu', 'q']</em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['q', 'qu']</em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -211,7 +223,7 @@ version is a bit more complicated.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'qu q', 'category': 'general', 'key': 'quit', 'no_prefix': ' qu q', 'tags': '', 'text': '\n    We maintain a different version of the `quit` command\n    here for unconnected accounts for the sake of simplicity. The logged in\n    version is a bit more complicated.\n    '}</em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'q qu', 'category': 'general', 'key': 'quit', 'no_prefix': ' q qu', 'tags': '', 'text': '\n    We maintain a different version of the `quit` command\n    here for unconnected accounts for the sake of simplicity. The logged in\n    version is a bit more complicated.\n    '}</em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -230,7 +242,7 @@ All it does is display the connect screen.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['look', 'l']</em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'look']</em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -256,7 +268,7 @@ All it does is display the connect screen.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'look l', 'category': 'general', 'key': '__unloggedin_look_command', 'no_prefix': ' look l', 'tags': '', 'text': '\n    This is an unconnected version of the `look` command for simplicity.\n\n    This is called by the server and kicks everything in gear.\n    All it does is display the connect screen.\n    '}</em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l look', 'category': 'general', 'key': '__unloggedin_look_command', 'no_prefix': ' l look', 'tags': '', 'text': '\n    This is an unconnected version of the `look` command for simplicity.\n\n    This is called by the server and kicks everything in gear.\n    All it does is display the connect screen.\n    '}</em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -327,6 +339,12 @@ for simplicity. It shows a pane of info.</p>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.contrib.base_systems.email_login.connection_screens.html"
+                        title="previous chapter">evennia.contrib.base_systems.email_login.connection_screens</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.contrib.base_systems.email_login.tests.html"
+                        title="next chapter">evennia.contrib.base_systems.email_login.tests</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -363,7 +381,19 @@ for simplicity. It shows a pane of info.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.email_login.tests.html" title="evennia.contrib.base_systems.email_login.tests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.email_login.connection_screens.html" title="evennia.contrib.base_systems.email_login.connection_screens"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.base_systems.html" >evennia.contrib.base_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.base_systems.email_login.html" >evennia.contrib.base_systems.email_login</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.email_login.email_login</a></li> 
       </ul>
         <div class="develop">develop branch</div>

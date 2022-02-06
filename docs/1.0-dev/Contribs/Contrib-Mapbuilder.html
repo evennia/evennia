@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="SimpleDoor" href="Contrib-Simpledoor.html" />
+    <link rel="prev" title="Extended Room" href="Contrib-Extended-Room.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Simpledoor.html" title="SimpleDoor"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Extended-Room.html" title="Extended Room"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" accesskey="U">Contribs</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Map Builder</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -89,9 +96,8 @@ be used on the second iteration. The iteration number and a dictionary of
 references to rooms previously created is passed to the build commands.</p>
 <p>You then call the command in-game using the path to the MAP and MAP_LEGEND vars
 The path you provide is relative to the evennia or mygame folder.</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Use by importing and including the command in your default_cmdsets module.
 For example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/commands/default_cmdsets.py</span>
@@ -104,8 +110,8 @@ For example:</p>
 </pre></div>
 </div>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="usage">
-<h1>Usage:<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<section id="usage">
+<h2>Usage:<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mapbuilder[/switch] &lt;path.to.file.MAPNAME&gt; &lt;path.to.file.MAP_LEGEND&gt;
 
 one - execute build instructions once without automatic exit creation.
@@ -113,8 +119,8 @@ two - execute build instructions twice without automatic exit creation.
 </pre></div>
 </div>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="examples">
-<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mapbuilder world.gamemap.MAP world.maplegend.MAP_LEGEND
 mapbuilder evennia.contrib.grid.mapbuilder.EXAMPLE1_MAP EXAMPLE1_LEGEND
 mapbuilder/two evennia.contrib.grid.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND
@@ -125,7 +131,7 @@ mapbuilder/two evennia.contrib.grid.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND
 custom exit generation. Whilst located, and can be used, from this module for
 convenience The below example code should be in <a class="reference external" href="http://mymap.py">mymap.py</a> in mygame/world.</p>
 <section id="example-one">
-<h2>Example One<a class="headerlink" href="#example-one" title="Permalink to this headline">¶</a></h2>
+<h3>Example One<a class="headerlink" href="#example-one" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
@@ -229,7 +235,7 @@ convenience The below example code should be in <a class="reference external" hr
 </div>
 </section>
 <section id="example-two">
-<h2>Example Two<a class="headerlink" href="#example-two" title="Permalink to this headline">¶</a></h2>
+<h3>Example Two<a class="headerlink" href="#example-two" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># @mapbuilder/two evennia.contrib.grid.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND</span>
 
 <span class="c1"># -*- coding: utf-8 -*-</span>
@@ -319,6 +325,7 @@ convenience The below example code should be in <a class="reference external" hr
 file will be overwritten, so edit that file rather than this one.</small></p>
 </section>
 </section>
+</section>
 
 
             <div class="clearer"></div>
@@ -342,7 +349,7 @@ file will be overwritten, so edit that file rather than this one.</small></p>
 <script>$('#searchbox').show(0);</script>
 <p><h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Map Builder</a></li>
+<li><a class="reference internal" href="#">Map Builder</a><ul>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#usage">Usage:</a></li>
 <li><a class="reference internal" href="#examples">Examples</a><ul>
@@ -351,7 +358,15 @@ file will be overwritten, so edit that file rather than this one.</small></p>
 </ul>
 </li>
 </ul>
+</li>
+</ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Contrib-Extended-Room.html"
+                        title="previous chapter">Extended Room</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Contrib-Simpledoor.html"
+                        title="next chapter">SimpleDoor</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -388,7 +403,14 @@ file will be overwritten, so edit that file rather than this one.</small></p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Simpledoor.html" title="SimpleDoor"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Extended-Room.html" title="Extended Room"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" >Contribs</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Map Builder</a></li> 
       </ul>
         <div class="develop">develop branch</div>

@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.utils.evform" href="evennia.utils.evform.html" />
+    <link rel="prev" title="evennia.utils.dbserialize" href="evennia.utils.dbserialize.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,17 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.evform.html" title="evennia.utils.evform"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.dbserialize.html" title="evennia.utils.dbserialize"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.utils.html" accesskey="U">evennia.utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.eveditor</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -277,7 +287,7 @@ indentation.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.eveditor.CmdEditorGroup.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = [':=', ':dw', ':dd', ':wq', ':', ':!', ':u', ':uu', ':fi', ':j', ':UU', ':I', ':::', ':q', ':S', ':DD', ':r', ':s', ':w', ':A', '::', ':p', ':q!', ':y', ':echo', ':fd', ':&lt;', ':&gt;', ':x', ':i', ':f', ':h']</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = [':y', ':x', ':=', ':S', ':p', ':f', ':fd', ':::', ':A', ':i', ':&lt;', ':!', ':s', ':q!', ':u', ':fi', ':DD', ':h', ':uu', ':j', ':echo', ':w', ':', ':I', ':dw', ':r', ':wq', '::', ':dd', ':q', ':&gt;', ':UU']</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -305,7 +315,7 @@ efficient presentation.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.eveditor.CmdEditorGroup.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ':= :dw :dd :wq : :! :u :uu :fi :j :UU :I ::: :q :S :DD :r :s :w :A :: :p :q! :y :echo :fd :&lt; :&gt; :x :i :f :h', 'category': 'general', 'key': ':editor_command_group', 'no_prefix': ' := :dw :dd :wq : :! :u :uu :fi :j :UU :I ::: :q :S :DD :r :s :w :A :: :p :q! :y :echo :fd :&lt; :&gt; :x :i :f :h', 'tags': '', 'text': '\n    Commands for the editor\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ':y :x := :S :p :f :fd ::: :A :i :&lt; :! :s :q! :u :fi :DD :h :uu :j :echo :w : :I :dw :r :wq :: :dd :q :&gt; :UU', 'category': 'general', 'key': ':editor_command_group', 'no_prefix': ' :y :x := :S :p :f :fd ::: :A :i :&lt; :! :s :q! :u :fi :DD :h :uu :j :echo :w : :I :dw :r :wq :: :dd :q :&gt; :UU', 'tags': '', 'text': '\n    Commands for the editor\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -513,6 +523,12 @@ formatting information.</p></li>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.utils.dbserialize.html"
+                        title="previous chapter">evennia.utils.dbserialize</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.utils.evform.html"
+                        title="next chapter">evennia.utils.evform</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -549,7 +565,17 @@ formatting information.</p></li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.evform.html" title="evennia.utils.evform"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.dbserialize.html" title="evennia.utils.dbserialize"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.utils.html" >evennia.utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.utils.eveditor</a></li> 
       </ul>
         <div class="develop">develop branch</div>

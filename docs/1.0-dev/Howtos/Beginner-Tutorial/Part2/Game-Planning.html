@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>On Planning a Game &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Planning the use of some useful contribs" href="Planning-Some-Useful-Contribs.html" />
+    <link rel="prev" title="Where do I begin?" href="Planning-Where-Do-I-Begin.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Planning-Some-Useful-Contribs.html" title="Planning the use of some useful contribs"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Planning-Where-Do-I-Begin.html" title="Where do I begin?"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part2-Intro.html" accesskey="U">Part 2: What we want</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">On Planning a Game</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="on-planning-a-game">
+<h1>On Planning a Game<a class="headerlink" href="#on-planning-a-game" title="Permalink to this headline">¶</a></h1>
+<p>Last lesson we asked ourselves some questions about our motivation. In this one we’ll present
+some more technical questions to consider. In the next lesson we’ll answer them for the sake of
+our tutorial game.</p>
+<p>Note that the suggestions on this page are just that - suggestions. Also, they are primarily aimed at a lone
+hobby designer or a small team developing a game in their free time.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Your first all overshadowing goal is to beat the odds and get <strong>something</strong> out the door!
+Even if it’s a scaled-down version of your dream game, lacking many “must-have” features!</p>
+</div>
+<p>Remember: <em>99.99999% of all great game ideas never lead to a game</em>. Especially not to an online
+game that people can actually play and enjoy. It’s better to get your game out there and expand on it
+later than to code in isolation until you burn out, lose interest or your hard drive crashes.</p>
+<ul class="simple">
+<li><p>Keep the scope of your initial release down. Way down.</p></li>
+<li><p>Start small, with an eye towards expansions later, after first release.</p></li>
+<li><p>If the suggestions here seems boring or a chore to you, do it your way instead. Everyone’s different.</p></li>
+<li><p>Keep having <em>fun</em>. You must keep your motivation up, whichever way works for <em>you</em>.</p></li>
+</ul>
+<section id="the-steps">
+<h2>The steps<a class="headerlink" href="#the-steps" title="Permalink to this headline">¶</a></h2>
+<p>Here are the rough steps towards your goal.</p>
+<ol class="simple">
+<li><p>Planning</p></li>
+<li><p>Coding + Gradually building a tech-demo</p></li>
+<li><p>Building the actual game world</p></li>
+<li><p>Release</p></li>
+<li><p>Celebrate</p></li>
+</ol>
+</section>
+<section id="planning">
+<h2>Planning<a class="headerlink" href="#planning" title="Permalink to this headline">¶</a></h2>
+<p>You need to have at least a rough idea about what you want to create. Some like a lot of planning, others
+do it more seat-of-the-pants style. Regardless, while <em>some</em> planning is always good to do, it’s common
+to have your plans change on you as you create your code prototypes. So don’t get <em>too</em> bogged down in
+the details out of the gate.</p>
+<p>Many prospective game developers are very good at <em>parts</em> of this process, namely in defining what their
+world is “about”: The theme, the world concept, cool monsters and so on. Such things are very important. But
+unfortunately, they are not enough to make your game. You need to figure out how to accomplish your ideas in
+Evennia.</p>
+<p>Below are some questions to get you going. In the next lesson we will try to answer them for our particular
+tutorial game. There are of course many more questions you could be asking yourself.</p>
+<section id="administration">
+<h3>Administration<a class="headerlink" href="#administration" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Should your game rules be enforced by coded systems or by human game masters?</p></li>
+<li><p>What is the staff hierarchy in your game? Is vanilla Evennia roles enough or do you need something else?</p></li>
+<li><p>Should players be able to post out-of-characters on channels and via other means like bulletin-boards?</p></li>
+</ul>
+</section>
+<section id="building">
+<h3>Building<a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>How will the world be built? Traditionally (from in-game with build-commands) or externally (by batchcmds/code
+or directly with custom code)?</p></li>
+<li><p>Can only privileged Builders create things or should regular players also have limited build-capability?</p></li>
+</ul>
+</section>
+<section id="systems">
+<h3>Systems<a class="headerlink" href="#systems" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Do you base your game off an existing RPG system or make up your own?</p></li>
+<li><p>What are the game mechanics? How do you decide if an action succeeds or fails?</p></li>
+<li><p>Does the flow of time matter in your game - does night and day change? What about seasons?</p></li>
+<li><p>Do you want changing, global weather or should weather just be set manually in roleplay?</p></li>
+<li><p>Do you want a coded world-economy or just a simple barter system? Or no formal economy at all?</p></li>
+<li><p>Do you have concepts like reputation and influence?</p></li>
+<li><p>Will your characters be known by their name or only by their physical appearance?</p></li>
+</ul>
+</section>
+<section id="rooms">
+<h3>Rooms<a class="headerlink" href="#rooms" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Is a simple room description enough or should the description be able to change (such as with time, by
+light conditions, weather or season)?</p></li>
+<li><p>Should the room have different statuses? Can it have smells, sounds? Can it be affected by
+dramatic weather, fire or magical effects? If so, how would this affect things in the room? Or are
+these things something admins/game masters should handle manually?</p></li>
+<li><p>Can objects be hidden in the room? Can a person hide in the room? How does the room display this?</p></li>
+</ul>
+</section>
+<section id="objects-items">
+<h3>Objects / items<a class="headerlink" href="#objects-items" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>How numerous are your objects? Do you want large loot-lists or are objects just role playing props
+created on demand?</p></li>
+<li><p>If you use money, is each coin a separate object or do you just store a bank account value?</p></li>
+<li><p>Do multiple similar objects form stacks and how are those stacks handled in that case?</p></li>
+<li><p>Does an object have weight or volume (so you cannot carry an infinite amount of them)?</p></li>
+<li><p>Can objects be broken? Can they be repaired?</p></li>
+<li><p>Can you fight with a chair or a flower or must you use a specific ‘weapon’ kind of thing?</p></li>
+<li><p>Will characters be able to craft new objects?</p></li>
+<li><p>Should mobs/NPCs have some sort of AI?</p></li>
+<li><p>Are NPCs and mobs different entities? How do they differ?</p></li>
+<li><p>Should there be NPCs giving quests? If so, how do you track Quest status?</p></li>
+</ul>
+</section>
+<section id="characters">
+<h3>Characters<a class="headerlink" href="#characters" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Can players have more than one Character active at a time or are they allowed to multi-play?</p></li>
+<li><p>How does the character-generation work? Walk from room-to-room? A menu?</p></li>
+<li><p>How do you implement different “classes” or “races”? Are they separate types of objects or do you
+simply load different stats on a basic object depending on what the Player wants?</p></li>
+<li><p>If a Character can hide in a room, what skill will decide if they are detected?</p></li>
+<li><p>What does the skill tree look like? Can a Character gain experience to improve? By killing
+enemies? Solving quests? By roleplaying?</p></li>
+<li><p>May player-characters attack each other (PvP)?</p></li>
+<li><p>What are the penalties of defeat? Permanent death? Quick respawn? Time in prison?</p></li>
+</ul>
+<p>A MUD’s a lot more involved than you would think and these things hang together in a complex web. It
+can easily become overwhelming and it’s tempting to want <em>all</em> functionality right out of the door.
+Try to identify the basic things that “make” your game and focus <em>only</em> on them for your first
+release. Make a list. Keep future expansions in mind but limit yourself.</p>
+</section>
+</section>
+<section id="coding-and-tech-demo">
+<h2>Coding and Tech demo<a class="headerlink" href="#coding-and-tech-demo" title="Permalink to this headline">¶</a></h2>
+<p>This is the actual work of creating the “game” part of your game. As you code and test systems you should
+build a little “tech demo” along the way.</p>
+<aside class="sidebar">
+<p class="sidebar-title">Tech demo</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>With &quot;tech demo&quot; we mean a small example of your code in-action: A room with a mob,
+a way to jump into and test character-creation etc. The tech demo need not be pretty, it&#39;s
+there to test functionality. It&#39;s not the beginning of your game world (unless you find that
+to be more fun).
+</pre></div>
+</div>
+</aside>
+<p>Try to avoid going wild with building a huge game world before you have a tech-demo showing off all parts
+you expect to have in the first version of your game. Otherwise you run the risk of having to redo it all
+again.</p>
+<p>Evennia tries hard to make the coding easier for you, but there is no way around the fact that if you want
+anything but a basic chat room you <em>will</em> have to bite the bullet and code your game (or find a coder willing
+to do it for you).</p>
+<blockquote>
+<div><p>Even if you won’t code anything yourself, as a designer you need to at least understand the basic
+paradigms and components of Evennia. It’s recommended you look over the rest of this Beginner Tutorial to learn
+what tools you have available.</p>
+</div></blockquote>
+<p>During Coding you look back at the things you wanted during the <strong>Planning</strong> phase and try to
+implement them. Don’t be shy to update your plans if you find things easier/harder than you thought.
+The earlier you revise problems, the easier they will be to fix.</p>
+<p>A good idea is to host your code online using <em>version control</em>. <a class="reference external" href="http://Github.com">Github.com</a> offers free Private repos
+these days if you don’t want the world to learn your secrets. Not only version control
+make it easy for your team to collaborate, it also means
+your work is backed up at all times. The page on <a class="reference internal" href="../../../Coding/Version-Control.html"><span class="doc std std-doc">Version Control</span></a>
+will help you to setting up a sane developer environment with proper version control.</p>
+</section>
+<section id="world-building">
+<h2>World Building<a class="headerlink" href="#world-building" title="Permalink to this headline">¶</a></h2>
+<p>Up until this point we’ve only had a few tech-demo objects in the database. This step is the act of
+populating the database with a larger, thematic world. Too many would-be developers jump to this
+stage too soon (skipping the <strong>Coding</strong> or even <strong>Planning</strong> stages).  What if the rooms you build
+now doesn’t include all the nice weather messages the code grows to support? Or the way you store
+data changes under the hood? Your building work would at best require some rework and at worst you
+would have to redo the whole thing. You could be in for a <em>lot</em> of unnecessary work if you build stuff
+en masse without having the underlying code systems in some reasonable shape first.</p>
+<p>So before starting to build, the “game” bit (<strong>Coding</strong> + <strong>Testing</strong>) should be more or less
+<strong>complete</strong>, <em>at least to the level of your initial release</em>.</p>
+<p>Make sure it is clear to yourself and your eventual builders just which parts of the world you want
+for your initial release. Establish for everyone which style, quality and level of detail you expect.</p>
+<p>Your goal should <em>not</em> be to complete your entire world in one go. You want just enough to make the
+game’s “feel” come across. You want a minimal but functioning world where the intended game play can
+be tested and roughly balanced. You can always add new areas later.</p>
+<p>During building you get free and extensive testing of whatever custom build commands and systems you
+have made at this point. If Builders and coders are different people you also
+get a chance to hear if some things are hard to understand or non-intuitive.  Make sure to respond
+to this feedback.</p>
+</section>
+<section id="alpha-release">
+<h2>Alpha Release<a class="headerlink" href="#alpha-release" title="Permalink to this headline">¶</a></h2>
+<p>As mentioned, don’t hold onto your world more than necessary. <em>Get it out there</em> with a huge <em>Alpha</em>
+flag and let people try it!</p>
+<p>Call upon your alpha-players to try everything - they <em>will</em> find ways to break your game in ways that
+you never could have imagined. In Alpha you might be best off to
+focus on inviting friends and maybe other MUD developers, people who you can pester to give proper
+feedback and bug reports (there <em>will</em> be bugs, there is no way around it).</p>
+<p>Follow the quick instructions for <a class="reference internal" href="../../../Setup/Online-Setup.html"><span class="doc std std-doc">Online Setup</span></a> to make your
+game visible online.</p>
+<p>If you hadn’t already, make sure to put up your game on the
+<a class="reference external" href="http://games.evennia.com/">Evennia game index</a> so people know it’s in the works (actually, even
+pre-alpha games are allowed in the index so don’t be shy)!</p>
+</section>
+<section id="beta-release-perpetual-beta">
+<h2>Beta Release/Perpetual Beta<a class="headerlink" href="#beta-release-perpetual-beta" title="Permalink to this headline">¶</a></h2>
+<p>Once things stabilize in Alpha you can move to <em>Beta</em> and let more people in. Many MUDs are in
+<a class="reference external" href="https://en.wikipedia.org/wiki/Perpetual_beta">perpetual beta</a>, meaning they are never considered
+“finished”, but just repeat the cycle of Planning, Coding, Testing and Building over and over as new
+features get implemented or Players come with suggestions. As the game designer it is now up to you
+to gradually perfect your vision.</p>
+</section>
+<section id="congratulate-yourself">
+<h2>Congratulate yourself!<a class="headerlink" href="#congratulate-yourself" title="Permalink to this headline">¶</a></h2>
+<p>You are worthy of a celebration since at this point you have joined the small, exclusive crowd who
+have made their dream game a reality!</p>
+</section>
+<section id="planning-our-tutorial-game">
+<h2>Planning our tutorial game<a class="headerlink" href="#planning-our-tutorial-game" title="Permalink to this headline">¶</a></h2>
+<p>In the next lesson we’ll make use of these general points and try to plan out our tutorial game.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">On Planning a Game</a><ul>
+<li><a class="reference internal" href="#the-steps">The steps</a></li>
+<li><a class="reference internal" href="#planning">Planning</a><ul>
+<li><a class="reference internal" href="#administration">Administration</a></li>
+<li><a class="reference internal" href="#building">Building</a></li>
+<li><a class="reference internal" href="#systems">Systems</a></li>
+<li><a class="reference internal" href="#rooms">Rooms</a></li>
+<li><a class="reference internal" href="#objects-items">Objects / items</a></li>
+<li><a class="reference internal" href="#characters">Characters</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#coding-and-tech-demo">Coding and Tech demo</a></li>
+<li><a class="reference internal" href="#world-building">World Building</a></li>
+<li><a class="reference internal" href="#alpha-release">Alpha Release</a></li>
+<li><a class="reference internal" href="#beta-release-perpetual-beta">Beta Release/Perpetual Beta</a></li>
+<li><a class="reference internal" href="#congratulate-yourself">Congratulate yourself!</a></li>
+<li><a class="reference internal" href="#planning-our-tutorial-game">Planning our tutorial game</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Planning-Where-Do-I-Begin.html"
+                        title="previous chapter">Where do I begin?</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Planning-Some-Useful-Contribs.html"
+                        title="next chapter">Planning the use of some useful contribs</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/Howtos/Beginner-Tutorial/Part2/Game-Planning.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Game-Planning.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Planning-Some-Useful-Contribs.html" title="Planning the use of some useful contribs"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Planning-Where-Do-I-Begin.html" title="Where do I begin?"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part2-Intro.html" >Part 2: What we want</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">On Planning a Game</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

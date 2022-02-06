@@ -1,0 +1,541 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>5. Introduction to Python classes and objects &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="6. Overview of the Evennia library" href="Evennia-Library-Overview.html" />
+    <link rel="prev" title="4. Overview of your new Game Dir" href="Gamedir-Overview.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Evennia-Library-Overview.html" title="6. Overview of the Evennia library"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Gamedir-Overview.html" title="4. Overview of your new Game Dir"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part1-Intro.html" accesskey="U">Part 1: What we have</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">5. </span>Introduction to Python classes and objects</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-python-classes-and-objects">
+<h1><span class="section-number">5. </span>Introduction to Python classes and objects<a class="headerlink" href="#introduction-to-python-classes-and-objects" title="Permalink to this headline">¶</a></h1>
+<p>We have now learned how to run some simple Python code from inside (and outside) your game server.
+We have also taken a look at what our game dir looks and what is where. Now we’ll start to use it.</p>
+<section id="importing-things">
+<h2><span class="section-number">5.1. </span>Importing things<a class="headerlink" href="#importing-things" title="Permalink to this headline">¶</a></h2>
+<p>No one writes something as big as an online game in one single huge file. Instead one breaks up the
+code into separate files (modules). Each module is dedicated to different purposes. Not only does
+it make things cleaner, organized and easier to understand. It also makes it easier to re-use code -
+you just import the resources you need and know you only get just what you requested. This makes
+it much easier to find errors and to know what code is good and which has issues.</p>
+<blockquote>
+<div><p>Evennia itself uses your code in the same way - you just tell it where a particular type of code is,
+and it will import and use it (often instead of its defaults).</p>
+</div></blockquote>
+<p>We have already successfully imported things, for example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py import world.test ; world.test.hello_world(me)
+Hello World!
+</pre></div>
+</div>
+<p>In this example, on your hard drive, the files looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mygame</span><span class="o">/</span>
+    <span class="n">world</span><span class="o">/</span>
+        <span class="n">test</span><span class="o">.</span><span class="n">py</span>    <span class="o">&lt;-</span> <span class="n">inside</span> <span class="n">this</span> <span class="n">file</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">function</span> <span class="n">hello_world</span>
+
+</pre></div>
+</div>
+<p>If you followed earlier tutorial lessons, the <code class="docutils literal notranslate"><span class="pre">mygame/world/test.py</span></code> file should look like this (if
+not, make it so):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">who</span><span class="p">):</span>
+    <span class="n">who</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<aside class="sidebar">
+<p class="sidebar-title">Remember:</p>
+<ul class="simple">
+<li><p>Indentation matters in Python</p></li>
+<li><p>So does capitalization</p></li>
+<li><p>Use 4 <cite>spaces</cite> to indent, not tabs</p></li>
+<li><p>Empty lines are fine</p></li>
+<li><p>Anything on a line after a <cite>#</cite> is a <cite>comment</cite>, ignored by Python</p></li>
+</ul>
+</aside>
+<p>The <em>python_path</em> describes the relation between Python resources, both between and inside
+Python <em>modules</em> (that is, files ending with .py). A python-path separates each part of the
+path <code class="docutils literal notranslate"><span class="pre">.</span></code> and always skips the <code class="docutils literal notranslate"><span class="pre">.py</span></code> file endings. Also, Evennia already knows to start looking
+for python resources inside <code class="docutils literal notranslate"><span class="pre">mygame/</span></code> so this should never be specified. Hence</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>import world.test
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">import</span></code> Python instruction loads <code class="docutils literal notranslate"><span class="pre">world.test</span></code> so you have it available. You can now go “into”
+this module to get to the function you want:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>world.test.hello_world(me)
+</pre></div>
+</div>
+<p>Using <code class="docutils literal notranslate"><span class="pre">import</span></code> like this means that you have to specify the full <code class="docutils literal notranslate"><span class="pre">world.test</span></code> every time you want
+to get to your function. Here’s a more powerful form of import:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from world.test import hello_world
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">...</span> <span class="pre">import</span> <span class="pre">...</span></code> is very, very common as long as you want to get something with a longer
+python path. It imports <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> directly, so you can use it right away!</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; py from world.test import hello_world ; hello_world(me)
+ Hello World!
+</pre></div>
+</div>
+<p>Let’s say your <code class="docutils literal notranslate"><span class="pre">test.py</span></code> module had a bunch of interesting functions. You could then import them
+all one by one:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from world.test import hello_world, my_func, awesome_func
+</pre></div>
+</div>
+<p>If there were <em>a lot</em> of functions, you could instead just import <code class="docutils literal notranslate"><span class="pre">test</span></code> and get the function
+from there when you need (without having to give the full <code class="docutils literal notranslate"><span class="pre">world.test</span></code> every time):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; from world import test ; test.hello_world(me
+Hello World!
+</pre></div>
+</div>
+<p>You can also <em>rename</em> stuff you import. Say for example that the module you import to already
+has a function <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> but we also want to use the one from <code class="docutils literal notranslate"><span class="pre">world/test.py</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from world.test import hello_world as test_hello_world
+</pre></div>
+</div>
+<p>The form <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">...</span> <span class="pre">import</span> <span class="pre">...</span> <span class="pre">as</span> <span class="pre">...</span></code> renames the import.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; from world.test import hello_world as hw ; hw(me)
+Hello World!
+</pre></div>
+</div>
+<blockquote>
+<div><p>Avoid renaming unless it’s to avoid a name-collistion like above - you want to make things as
+easy to read as possible, and renaming adds another layer of potential confusion.</p>
+</div></blockquote>
+<p>In <a class="reference internal" href="Python-basic-introduction.html"><span class="doc std std-doc">the basic intro to Python</span></a> we learned how to open the in-game
+multi-line interpreter.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py
+Evennia Interactive Python mode
+Python 3.7.1 (default, Oct 22 2018, 11:21:55)
+[GCC 8.2.0] on Linux
+[py mode - quit() to exit]
+</pre></div>
+</div>
+<p>You now only need to import once to use the imported function over and over.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; from world.test import hello_world
+&gt; hello_world()
+Hello World!
+&gt; hello_world()
+Hello World!
+&gt; hello_world()
+Hello World!
+&gt; quit()
+Closing the Python console.
+</pre></div>
+</div>
+<p>The same goes when writing code in a module - in most Python modules you will see a bunch of
+imports at the top, resources that are then used by all code in that module.</p>
+</section>
+<section id="on-classes-and-objects">
+<h2><span class="section-number">5.2. </span>On classes and objects<a class="headerlink" href="#on-classes-and-objects" title="Permalink to this headline">¶</a></h2>
+<p>Now that we know about imports, let look at a real Evennia module and try to understand it.</p>
+<p>Open <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/objects.py</span></code> in your text editor of choice.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">module docstring</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+
+<span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    class docstring</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<aside class="sidebar">
+<p class="sidebar-title">Docstrings vs Comments</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A docstring is not the same as a comment (created by `#`). A
+docstring is not ignored by Python but is an integral part of the thing
+it is documenting (the module and the class in this case).
+</pre></div>
+</div>
+</aside>
+<p>The real file is much longer but we can ignore the multi-line strings (<code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;</span> <span class="pre">...</span> <span class="pre">&quot;&quot;&quot;</span></code>). These serve
+as documentation-strings, or <em>docstrings</em> for the module (at the top) and the <code class="docutils literal notranslate"><span class="pre">class</span></code> below.</p>
+<p>Below the module doc string we have the import. In this case we are importing a resource
+from the core <code class="docutils literal notranslate"><span class="pre">evennia</span></code> library itself. We will dive into this later, for now we just treat this
+as a black box.</p>
+<p>Next we have a <code class="docutils literal notranslate"><span class="pre">class</span></code> named <code class="docutils literal notranslate"><span class="pre">Object</span></code>, which <em>inherits</em> from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>. This class doesn’t
+actually do anything on its own, its only code (except the docstring) is <code class="docutils literal notranslate"><span class="pre">pass</span></code> which means,
+well, to pass and don’t do anything.</p>
+<p>We will get back to this module in the <a class="reference internal" href="Learning-Typeclasses.html"><span class="doc std std-doc">next lesson</span></a>. First we need to do a
+little detour to understand what a ‘class’, an ‘object’ or ‘instance’ is. These are fundamental
+things to understand before you can use Evennia efficiently.</p>
+<aside class="sidebar">
+<p class="sidebar-title">OOP</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Classes, objects, instances and inheritance are fundamental to Python. This and some
+other concepts are often clumped together under the term Object-Oriented-Programming (OOP).
+</pre></div>
+</div>
+</aside>
+<section id="classes-and-instances">
+<h3><span class="section-number">5.2.1. </span>Classes and instances<a class="headerlink" href="#classes-and-instances" title="Permalink to this headline">¶</a></h3>
+<p>A ‘class’ can be seen as a ‘template’ for a ‘type’ of object. The class describes the basic functionality
+of everyone of that class. For example, we could have a class <code class="docutils literal notranslate"><span class="pre">Monster</span></code> which has resources for moving itself
+from room to room.</p>
+<p>Open a new file <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/monsters.py</span></code>. Add the following simple class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="k">class</span> <span class="nc">Monster</span><span class="p">:</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Monster&quot;</span>
+
+    <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is moving!&quot;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>Above we have defined a <code class="docutils literal notranslate"><span class="pre">Monster</span></code> class with one variable <code class="docutils literal notranslate"><span class="pre">key</span></code> (that is, the name) and one
+<em>method</em> on it. A method is like a function except it sits “on” the class. It also always has
+at least one argument (almost always written as <code class="docutils literal notranslate"><span class="pre">self</span></code> although you could in principle use
+another name), which is a reference back to itself. So when we print <code class="docutils literal notranslate"><span class="pre">self.key</span></code> we are referring
+back to the <code class="docutils literal notranslate"><span class="pre">key</span></code> on the class.</p>
+<aside class="sidebar">
+<p class="sidebar-title">Terms</p>
+<ul class="simple">
+<li><p>A <cite>class</cite> is a code template describing a ‘type’ of something</p></li>
+<li><p>An <cite>object</cite> is an <cite>instance</cite> of a <cite>class</cite>. Like using a mold to cast tin soldiers, one class can be <cite>instantiated</cite> into any number of object-instances.</p></li>
+</ul>
+</aside>
+<p>A class is just a template. Before it can be used, we must create an <em>instance</em> of the class. If
+<code class="docutils literal notranslate"><span class="pre">Monster</span></code> is a class, then an instance is Fluffy, the individual red dragon. You instantiate
+by <em>calling</em> the class, much like you would a function:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>fluffy = Monster()
+</pre></div>
+</div>
+<p>Let’s try it in-game (we use multi-line mode, it’s easier)</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py
+&gt; from typeclasses.monsters import Monster
+&gt; fluffy = Monster()
+&gt; fluffy.move_around()
+Monster is moving!
+</pre></div>
+</div>
+<p>We created an <em>instance</em> of <code class="docutils literal notranslate"><span class="pre">Monster</span></code>, which we stored in the variable <code class="docutils literal notranslate"><span class="pre">fluffy</span></code>. We then
+called the <code class="docutils literal notranslate"><span class="pre">move_around</span></code> method on fluffy to get the printout.</p>
+<blockquote>
+<div><p>Note how we <em>didn’t</em> call the method as <code class="docutils literal notranslate"><span class="pre">fluffy.move_around(self)</span></code>. While the <code class="docutils literal notranslate"><span class="pre">self</span></code> has to be
+there when defining the method, we <em>never</em> add it explicitly when we call the method (Python
+will add the correct <code class="docutils literal notranslate"><span class="pre">self</span></code> for us automatically behind the scenes).</p>
+</div></blockquote>
+<p>Let’s create the sibling of Fluffy, Cuddly:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; cuddly = Monster()
+&gt; cuddly.move_around()
+Monster is moving!
+</pre></div>
+</div>
+<p>We now have two dragons and they’ll hang around until with call <code class="docutils literal notranslate"><span class="pre">quit()</span></code> to exit this Python
+instance. We can have them move as many times as we want. But no matter how many dragons we
+create, they will all show the same printout since <code class="docutils literal notranslate"><span class="pre">key</span></code> is always fixed as “Monster”.</p>
+<p>Let’s make the class a little more flexible:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="k">class</span> <span class="nc">Monster</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+
+    <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is moving!&quot;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">__init__</span></code> is a special method that Python recognizes. If given, this handles extra arguments
+when you instantiate a new Monster. We have it add an argument <code class="docutils literal notranslate"><span class="pre">key</span></code> that we store on <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+<p>Now, for Evennia to see this code change, we need to reload the server. You can either do it this
+way:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; quit()
+Python Console is closing.
+&gt; reload
+</pre></div>
+</div>
+<p>Or you can use a separate terminal and restart from outside the game:</p>
+<aside class="sidebar">
+<p class="sidebar-title">On reloading</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Reloading with the python mode gets a little annoying since you need to redo everything
+after every reload. Just keep in mind that during regular development you will not be
+working this way. The in-game python mode is practical for quick fixes and experiments like
+this, but actual code is normally written externally, in python modules.
+</pre></div>
+</div>
+</aside>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ evennia reload   (or restart)
+</pre></div>
+</div>
+<p>Either way you’ll need to go into <code class="docutils literal notranslate"><span class="pre">py</span></code> again:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py
+&gt; from typeclasses.monsters import Monster
+fluffy = Monster(&quot;Fluffy&quot;)
+fluffy.move_around()
+Fluffy is moving!
+</pre></div>
+</div>
+<p>Now we passed <code class="docutils literal notranslate"><span class="pre">&quot;Fluffy&quot;</span></code> as an argument to the class. This went into <code class="docutils literal notranslate"><span class="pre">__init__</span></code> and set <code class="docutils literal notranslate"><span class="pre">self.key</span></code>, which we
+later used to print with the right name! Again, note that we didn’t include <code class="docutils literal notranslate"><span class="pre">self</span></code> when calling.</p>
+</section>
+<section id="whats-so-good-about-objects">
+<h3><span class="section-number">5.2.2. </span>What’s so good about objects?<a class="headerlink" href="#whats-so-good-about-objects" title="Permalink to this headline">¶</a></h3>
+<p>So far all we’ve seen a class do is to behave our first <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> function but more complex. We
+could just have made a function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>     <span class="k">def</span> <span class="nf">monster_move_around</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is moving!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The difference between the function and an instance of a class (the object), is that the
+object retains <em>state</em>. Once you called the function it forgets everything about what you called
+it with last time. The object, on the other hand, remembers changes:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; fluffy.key = &quot;Cuddly&quot;
+&gt; fluffy.move_around()
+Cuddly is moving!
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">fluffy</span></code> object’s <code class="docutils literal notranslate"><span class="pre">key</span></code> was changed to “Cuddly” for as long as it’s around. This makes objects
+extremely useful for representing and remembering collections of data - some of which can be other
+objects in turn:</p>
+<ul class="simple">
+<li><p>A player character with all its stats</p></li>
+<li><p>A monster with HP</p></li>
+<li><p>A chest with a number of gold coins in it</p></li>
+<li><p>A room with other objects inside it</p></li>
+<li><p>The current policy positions of a political party</p></li>
+<li><p>A rule with methods for resolving challenges or roll dice</p></li>
+<li><p>A multi-dimenstional data-point for a complex economic simulation</p></li>
+<li><p>And so much more!</p></li>
+</ul>
+</section>
+<section id="classes-can-have-children">
+<h3><span class="section-number">5.2.3. </span>Classes can have children<a class="headerlink" href="#classes-can-have-children" title="Permalink to this headline">¶</a></h3>
+<p>Classes can <em>inherit</em> from each other. A “child” class will inherit everything from its “parent” class. But if
+the child adds something with the same name as its parent, it will <em>override</em> whatever it got from its parent.</p>
+<p>Let’s expand <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/monsters.py</span></code> with another class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="k">class</span> <span class="nc">Monster</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a base class for Monster.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+
+    <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is moving!&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Dragon</span><span class="p">(</span><span class="n">Monster</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a dragon-specific monster.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> flies through the air high above!&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">firebreath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Let our dragon breathe fire.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> breathes fire!&quot;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>We added some docstrings for clarity. It’s always a good idea to add doc strings; you can do so also for methods,
+as exemplified for the new <code class="docutils literal notranslate"><span class="pre">firebreath</span></code> method.</p>
+<p>We created the new class <code class="docutils literal notranslate"><span class="pre">Dragon</span></code> but we also specified that <code class="docutils literal notranslate"><span class="pre">Monster</span></code> is the <em>parent</em> of <code class="docutils literal notranslate"><span class="pre">Dragon</span></code> but adding
+the parent in parenthesis. <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Classname(Parent)</span></code> is the way to do this.</p>
+<aside class="sidebar">
+<p class="sidebar-title">Multi-inheritance</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>It&#39;s possible to add more comma-separated parents to a class. You should usually avoid
+this until you `really` know what you are doing. A single parent will be enough for almost
+every case you&#39;ll need.
+</pre></div>
+</div>
+</aside>
+<p>Let’s try out our new class. First <code class="docutils literal notranslate"><span class="pre">reload</span></code> the server and the do</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py
+&gt; from typeclasses.monsters import Dragon
+&gt; smaug = Dragon(&quot;Smaug&quot;)
+&gt; smaug.move_around()
+Smaug flies through the air high above!
+&gt; smaug.firebreath()
+Smaug breathes fire!
+</pre></div>
+</div>
+<p>Because we didn’t implement <code class="docutils literal notranslate"><span class="pre">__init__</span></code> in <code class="docutils literal notranslate"><span class="pre">Dragon</span></code>, we got the one from <code class="docutils literal notranslate"><span class="pre">Monster</span></code> instead. But since we
+implemented our own <code class="docutils literal notranslate"><span class="pre">move_around</span></code> in <code class="docutils literal notranslate"><span class="pre">Dragon</span></code>, it <em>overrides</em> the one in <code class="docutils literal notranslate"><span class="pre">Monster</span></code>. And <code class="docutils literal notranslate"><span class="pre">firebreath</span></code> is only
+available for <code class="docutils literal notranslate"><span class="pre">Dragon</span></code>s of course. Having that on <code class="docutils literal notranslate"><span class="pre">Monster</span></code> would not have made much sense, since not every monster
+can breathe fire.</p>
+<p>One can also force a class to use resources from the parent even if you are overriding some of it. This is done
+with the <code class="docutils literal notranslate"><span class="pre">super()</span></code> method. Modify your <code class="docutils literal notranslate"><span class="pre">Dragon</span></code> class as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+
+<span class="k">class</span> <span class="nc">Dragon</span><span class="p">(</span><span class="n">Monster</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">move_around</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">move_around</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The world trembles.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ...</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>Keep <code class="docutils literal notranslate"><span class="pre">Monster</span></code> and the <code class="docutils literal notranslate"><span class="pre">firebreath</span></code> method, <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">...</span></code> indicates the rest of the code is untouched.</p>
+</div></blockquote>
+<p>The <code class="docutils literal notranslate"><span class="pre">super().move_around()</span></code> line means that we are calling <code class="docutils literal notranslate"><span class="pre">move_around()</span></code> on the parent of the class. So in this
+case, we will call <code class="docutils literal notranslate"><span class="pre">Monster.move_around</span></code> first, before doing our own thing.</p>
+<p>Now <code class="docutils literal notranslate"><span class="pre">reload</span></code> the server and then:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py
+&gt; from typeclasses.monsters import Dragon
+&gt; smaug = Dragon(&quot;Smaug&quot;)
+&gt; smaug.move_around()
+Smaug is moving!
+The world trembles.
+</pre></div>
+</div>
+<p>We can see that <code class="docutils literal notranslate"><span class="pre">Monster.move_around()</span></code> is calls first and prints “Smaug is moving!”, followed by the extra bit
+about the trembling world we added in the <code class="docutils literal notranslate"><span class="pre">Dragon</span></code> class.</p>
+<p>Inheritance is very powerful because it allows you to organize and re-use code while only adding the special things
+you want to change. Evennia uses this concept a lot.</p>
+</section>
+</section>
+<section id="summary">
+<h2><span class="section-number">5.3. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>We have created our first dragons from classes. We have learned a little about how you <em>instantiate</em> a class
+into an <em>object</em>. We have seen some examples of <em>inheritance</em> and we tested to <em>override</em> a method in the parent
+with one in the child class. We also used <code class="docutils literal notranslate"><span class="pre">super()</span></code> to good effect.</p>
+<p>We have used pretty much raw Python so far. In the coming lessons we’ll start to look at the extra bits that Evennia
+provides. But first we need to learn just where to find everything.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">5. Introduction to Python classes and objects</a><ul>
+<li><a class="reference internal" href="#importing-things">5.1. Importing things</a></li>
+<li><a class="reference internal" href="#on-classes-and-objects">5.2. On classes and objects</a><ul>
+<li><a class="reference internal" href="#classes-and-instances">5.2.1. Classes and instances</a></li>
+<li><a class="reference internal" href="#whats-so-good-about-objects">5.2.2. What’s so good about objects?</a></li>
+<li><a class="reference internal" href="#classes-can-have-children">5.2.3. Classes can have children</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#summary">5.3. Summary</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Gamedir-Overview.html"
+                        title="previous chapter"><span class="section-number">4. </span>Overview of your new Game Dir</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Evennia-Library-Overview.html"
+                        title="next chapter"><span class="section-number">6. </span>Overview of the Evennia library</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/Howtos/Beginner-Tutorial/Part1/Python-classes-and-objects.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Python-classes-and-objects.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Evennia-Library-Overview.html" title="6. Overview of the Evennia library"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Gamedir-Overview.html" title="4. Overview of your new Game Dir"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part1-Intro.html" >Part 1: What we have</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">5. </span>Introduction to Python classes and objects</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

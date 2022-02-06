@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Sessions" href="Sessions.html" />
+    <link rel="prev" title="Core Components" href="Components-Overview.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Sessions.html" title="Sessions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Components-Overview.html" title="Core Components"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Typeclasses</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -42,7 +49,7 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="typeclasses">
 <h1>Typeclasses<a class="headerlink" href="#typeclasses" title="Permalink to this headline">¶</a></h1>
-<p><em>Typeclasses</em> form the core of Evennia data storage. It allows Evennia to represent any number of
+<p><em>Typeclasses</em> form the core of Evennia’s data storage. It allows Evennia to represent any number of
 different game entities as Python classes, without having to modify the database schema for every
 new type.</p>
 <p>In Evennia the most important game entities, <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a>, <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>,
@@ -213,7 +220,7 @@ database.</p></li>
 </ul>
 <p>Each of the typeclassed entities then extend this list with their own properties. Go to the
 respective pages for <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Objects</span></a>, <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a>, <a class="reference internal" href="Accounts.html"><span class="doc std std-doc">Accounts</span></a> and
-<a class="reference internal" href="Communications.html"><span class="doc std std-doc">Channels</span></a> for more info. It’s also recommended that you explore the available
+<a class="reference internal" href="Channels.html"><span class="doc std std-doc">Channels</span></a> for more info. It’s also recommended that you explore the available
 entities using <a class="reference internal" href="../Evennia-API.html"><span class="doc std std-doc">Evennia’s flat API</span></a> to explore which properties and methods they have
 available.</p>
 </section>
@@ -258,9 +265,8 @@ example for Scripts:</p>
 <p>When querying from the database model parent you don’t need to use <code class="docutils literal notranslate"><span class="pre">filter_family</span></code> or <code class="docutils literal notranslate"><span class="pre">get_family</span></code> -
 you will always query all children on the database model.</p>
 </section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="updating-existing-typeclass-instances">
-<h1>Updating existing typeclass instances<a class="headerlink" href="#updating-existing-typeclass-instances" title="Permalink to this headline">¶</a></h1>
+<section id="updating-existing-typeclass-instances">
+<h2>Updating existing typeclass instances<a class="headerlink" href="#updating-existing-typeclass-instances" title="Permalink to this headline">¶</a></h2>
 <p>If you already have created instances of Typeclasses, you can modify the <em>Python code</em> at any time -
 due to how Python inheritance works your changes will automatically be applied to all children once
 you have reloaded the server.</p>
@@ -295,6 +301,7 @@ line break, that’s only for readability in the wiki):</p>
 </div>
 <p>It is recommended that you plan your game properly before starting to build, to avoid having to
 retroactively update objects more than necessary.</p>
+</section>
 <section id="swap-typeclass">
 <h2>Swap typeclass<a class="headerlink" href="#swap-typeclass" title="Permalink to this headline">¶</a></h2>
 <p>If you want to swap an already existing typeclass, there are two ways to do so: From in-game and via
@@ -319,9 +326,8 @@ to re-run the creation hook on an existing class.</p></li>
 <p>The arguments to this method are described <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.typeclasses.models#typedobjectswap_typeclass">in the API docs
 here</a>.</p>
 </section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="how-typeclasses-actually-work">
-<h1>How typeclasses actually work<a class="headerlink" href="#how-typeclasses-actually-work" title="Permalink to this headline">¶</a></h1>
+<section id="how-typeclasses-actually-work">
+<h2>How typeclasses actually work<a class="headerlink" href="#how-typeclasses-actually-work" title="Permalink to this headline">¶</a></h2>
 <p><em>This is considered an advanced section.</em></p>
 <p>Technically, typeclasses are <a class="reference external" href="https://docs.djangoproject.com/en/1.7/topics/db/models/#proxy-models">Django proxy
 models</a>.  The only database
@@ -334,6 +340,7 @@ database layout.</p>
 (for example you don’t need to set the Django “proxy” property in the model <code class="docutils literal notranslate"><span class="pre">Meta</span></code> subclass, Evennia
 handles this for you using metaclasses). Evennia also makes sure you can query subclasses as well as
 patches django to allow multiple inheritance from the same base class.</p>
+</section>
 <section id="caveats">
 <h2>Caveats<a class="headerlink" href="#caveats" title="Permalink to this headline">¶</a></h2>
 <p>Evennia uses the <em>idmapper</em> to cache its typeclasses (Django proxy models) in memory. The idmapper
@@ -381,18 +388,20 @@ comments</a> for examples and solutions.</p>
 <li><a class="reference internal" href="#about-typeclass-properties">About typeclass properties</a></li>
 <li><a class="reference internal" href="#overloading-hooks">Overloading hooks</a></li>
 <li><a class="reference internal" href="#querying-for-typeclasses">Querying for typeclasses</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#updating-existing-typeclass-instances">Updating existing typeclass instances</a><ul>
+<li><a class="reference internal" href="#updating-existing-typeclass-instances">Updating existing typeclass instances</a></li>
 <li><a class="reference internal" href="#swap-typeclass">Swap typeclass</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#how-typeclasses-actually-work">How typeclasses actually work</a><ul>
+<li><a class="reference internal" href="#how-typeclasses-actually-work">How typeclasses actually work</a></li>
 <li><a class="reference internal" href="#caveats">Caveats</a></li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Components-Overview.html"
+                        title="previous chapter">Core Components</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Sessions.html"
+                        title="next chapter">Sessions</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -429,7 +438,14 @@ comments</a> for examples and solutions.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Sessions.html" title="Sessions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Components-Overview.html" title="Core Components"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Typeclasses</a></li> 
       </ul>
         <div class="develop">develop branch</div>

@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="EvMenu" href="EvMenu.html" />
+    <link rel="prev" title="Coding Utils" href="Coding-Utils.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="EvMenu.html" title="EvMenu"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Coding-Utils.html" title="Coding Utils"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">EvEditor</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -92,7 +99,7 @@ It has no other mechanical function.</p></li>
             <span class="k">return</span> <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
             <span class="s2">&quot;save the buffer&quot;</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">buffer</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">buffer</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">quit</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
             <span class="s2">&quot;Since we define it, we must handle messages&quot;</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Editor exited&quot;</span><span class="p">)</span>
@@ -119,7 +126,7 @@ functions will be stored, Python will need to find them.</p>
 
 <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
     <span class="s2">&quot;save the buffer&quot;</span>
-    <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">buffer</span><span class="p">)</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">buffer</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">quit</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="s2">&quot;Since we define it, we must handle messages&quot;</span>
@@ -249,6 +256,12 @@ editor can be useful if you want to test the code you have typed but add new lin
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Coding-Utils.html"
+                        title="previous chapter">Coding Utils</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="EvMenu.html"
+                        title="next chapter">EvMenu</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -285,7 +298,14 @@ editor can be useful if you want to test the code you have typed but add new lin
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="EvMenu.html" title="EvMenu"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Coding-Utils.html" title="Coding Utils"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">EvEditor</a></li> 
       </ul>
         <div class="develop">develop branch</div>

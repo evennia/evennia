@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="EvMore" href="EvMore.html" />
+    <link rel="prev" title="EvEditor" href="EvEditor.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="EvMore.html" title="EvMore"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="EvEditor.html" title="EvEditor"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">EvMenu</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -224,7 +231,7 @@ most common way to do so - from inside a <a class="reference internal" href="Com
 
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-	<span class="n">EvMenu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;world.mymenu&quot;</span><span class="p">)</span>
+	<span class="n">EvMenu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;world.mymenu&quot;</span><span class="p">)</span>
 
 </pre></div>
 </div>
@@ -1065,7 +1072,7 @@ function - for example you can’t use other Python keywords like <code class="d
 <code class="docutils literal notranslate"><span class="pre">lambda</span></code>.</p>
 <p>Unless you are dealing with a relatively simple dynamic menu, defining menus with lambda’s is
 probably more work than it’s worth: You can create dynamic menus by instead making each node
-function more clever. See the <a class="reference internal" href="../Howto/NPC-shop-Tutorial.html"><span class="doc std std-doc">NPC shop tutorial</span></a> for an example of this.</p>
+function more clever. See the <a class="reference internal" href="../Howtos/NPC-shop-Tutorial.html"><span class="doc std std-doc">NPC shop tutorial</span></a> for an example of this.</p>
 </section>
 </section>
 <section id="ask-for-simple-input">
@@ -1315,6 +1322,12 @@ until the exit node.</p>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="EvEditor.html"
+                        title="previous chapter">EvEditor</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="EvMore.html"
+                        title="next chapter">EvMore</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -1351,7 +1364,14 @@ until the exit node.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="EvMore.html" title="EvMore"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="EvEditor.html" title="EvEditor"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">EvMenu</a></li> 
       </ul>
         <div class="develop">develop branch</div>

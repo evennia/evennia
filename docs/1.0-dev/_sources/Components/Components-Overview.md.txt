@@ -5,50 +5,82 @@ than, the doc-strings of each component in the [API](../Evennia-API.md).
 
 ## Database entites
 
-- [Typeclasses](./Typeclasses.md)
-  - [Sessions](./Sessions.md)
-  - [Acccounts](./Accounts.md)
-    - [Guests](../Concepts/Guest-Logins.md)
-  - [Objects](./Objects.md)
-  - [Scripts](./Scripts.md)
-  - [Channels and Messages](./Communications.md)
-- [Attributes](./Attributes.md)
-- [Nicks](./Nicks.md)
-- [Tags](./Tags.md)
-- [Spawner and prototypes](./Prototypes.md)
-- [Help entries](./Help-System.md)
+```{toctree} 
+:maxdepth: 2
+
+Typeclasses.md
+Sessions.md
+Accounts.md
+Objects.md
+Scripts.md
+Channels.md
+Msg.md
+Attributes.md
+Nicks.md
+Tags.md
+Prototypes.md
+Help-System.md
+Permissions.md
+
+```
 
 ## Commands
 
-- [Available Default Commands](./Default-Commands.md)
-- [Command system](./Command-System.md)
-    - [Commands](./Commands.md)
-    - [Command-Sets](./Command-Sets.md)
-    - [The Connection Screen](./Connection-Screen.md)
-- [Batch-Processors](./Batch-Processors.md)
-  - [Batch-Code-Processor](./Batch-Code-Processor.md)
-  - [Batch-Command-Processor](./Batch-Command-Processor.md)
+```{toctree} 
+:maxdepth: 2
+
+Command-System.md
+Commands.md
+Command-Sets.md
+Default-Commands.md
+Connection-Screen.md
+Batch-Processors.md
+Batch-Code-Processor.md
+Batch-Command-Processor.md
+```
+
 
 ## Utils and tools
 
-- [Misc Utils](./Coding-Utils.md)
-- [EvEditor](./EvEditor.md)
-- [EvMenu](./EvMenu.md)
-- [EvMore](./EvMore.md)
-- [MonitorHandler](./MonitorHandler.md)
-- [TickerHandler](./TickerHandler.md)
-- [Lock system](./Locks.md)
-- [FuncParser](./FuncParser.md)
+```{toctree} 
+:maxdepth: 2
+
+Coding-Utils.md
+EvEditor.md
+EvMenu.md
+EvMore.md
+MonitorHandler.md
+TickerHandler.md
+Locks.md
+FuncParser.md
+```
+
+## Web components
+
+```{toctree} 
+:maxdepth: 2
+
+Website.md
+Web-API.md
+Web-Admin.md
+```
 
 ## Server and network
 
-- [Portal](./Portal-And-Server.md)
-  - [Inputfuncs](./Inputfuncs.md)
-  - [Outputfuncs](./Outputfuncs.md)
-  - [Protocols](../Concepts/Custom-Protocols.md)
-- [Server](./Server.md)
-  - [Server conf object](../Setup/Server-Conf.md)
-- [Webserver](./Webserver.md)
-  - [Webclient](./Webclient.md)
-  - [Bootstrap](./Bootstrap-Components-and-Utilities.md)
-- [Signals](./Signals.md)
+```{toctree} 
+:maxdepth: 2
+
+Portal-And-Server.md
+Inputfuncs.md
+Outputfuncs.md
+Server.md
+Setup/Server-Conf.md
+Webserver.md
+Webclient.md
+Bootstrap-Components-and-Utilities.md
+Signals.md
+```
+
+
+
+

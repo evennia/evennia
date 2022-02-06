@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Evennia Multidescer" href="Contrib-Multidescer.html" />
+    <link rel="prev" title="Gendersub" href="Contrib-Gendersub.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Multidescer.html" title="Evennia Multidescer"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Gendersub.html" title="Gendersub"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" accesskey="U">Contribs</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">In-Game Mail system</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -59,9 +66,27 @@ IC and OOC mailing systems, with different lists of mail for IC and OOC modes.</
 <section id="installation">
 <h2>Installation:<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Install one or both of the following (see above):</p>
-<ul class="simple">
-<li><p>CmdMail (IC + OOC mail, sent between players)</p></li>
-<li><p>CmdMailCharacter (optional, IC only mail, sent between characters)</p></li>
+<ul>
+<li><p>CmdMail (IC + OOC mail, sent between players)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/default_cmds.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems</span> <span class="kn">import</span> <span class="n">mail</span>
+
+<span class="c1"># in AccountCmdSet.at_cmdset_creation:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mail</span><span class="o">.</span><span class="n">CmdMail</span><span class="p">())</span>
+</pre></div>
+</div>
+</li>
+<li><p>CmdMailCharacter (optional, IC only mail, sent between characters)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/default_cmds.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia.contrib.game_systems</span> <span class="kn">import</span> <span class="n">mail</span>
+
+<span class="c1"># in CharacterCmdSet.at_cmdset_creation:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mail</span><span class="o">.</span><span class="n">CmdMailCharacter</span><span class="p">())</span>
+</pre></div>
+</div>
+</li>
 </ul>
 <p>Once installed, use <code class="docutils literal notranslate"><span class="pre">help</span> <span class="pre">mail</span></code> in game for help with the mail command. Use
 ic/ooc to switch in and out of IC/OOC modes.</p>
@@ -69,26 +94,6 @@ ic/ooc to switch in and out of IC/OOC modes.</p>
 <p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/game_systems/mail/README.md</span></code>. Changes to this
 file will be overwritten, so edit that file rather than this one.</small></p>
 </section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="mygame-commands-default-cmds-py">
-<h1>mygame/commands/default_cmds.py<a class="headerlink" href="#mygame-commands-default-cmds-py" title="Permalink to this headline">¶</a></h1>
-<p>from evennia.contrib.game_systems import mail</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="in-accountcmdset-at-cmdset-creation">
-<h1>in AccountCmdSet.at_cmdset_creation:<a class="headerlink" href="#in-accountcmdset-at-cmdset-creation" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  self.add(mail.CmdMail())
-</pre></div>
-</div>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>mygame/commands/default_cmds.py<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
-<p>from evennia.contrib.game_systems import mail</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="in-charactercmdset-at-cmdset-creation">
-<h1>in CharacterCmdSet.at_cmdset_creation:<a class="headerlink" href="#in-charactercmdset-at-cmdset-creation" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  self.add(mail.CmdMailCharacter())
-</pre></div>
-</div>
 </section>
 
 
@@ -117,12 +122,14 @@ file will be overwritten, so edit that file rather than this one.</small></p>
 <li><a class="reference internal" href="#installation">Installation:</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#mygame-commands-default-cmds-py">mygame/commands/default_cmds.py</a></li>
-<li><a class="reference internal" href="#in-accountcmdset-at-cmdset-creation">in AccountCmdSet.at_cmdset_creation:</a></li>
-<li><a class="reference internal" href="#id1">mygame/commands/default_cmds.py</a></li>
-<li><a class="reference internal" href="#in-charactercmdset-at-cmdset-creation">in CharacterCmdSet.at_cmdset_creation:</a></li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Contrib-Gendersub.html"
+                        title="previous chapter">Gendersub</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Contrib-Multidescer.html"
+                        title="next chapter">Evennia Multidescer</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -159,7 +166,14 @@ file will be overwritten, so edit that file rather than this one.</small></p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Multidescer.html" title="Evennia Multidescer"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Gendersub.html" title="Gendersub"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" >Contribs</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">In-Game Mail system</a></li> 
       </ul>
         <div class="develop">develop branch</div>

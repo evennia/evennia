@@ -104,7 +104,7 @@ may store.
 When testing, you can stop all tickers in the entire game with `tickerhandler.clear()`. You can also
 view the currently subscribed objects with `tickerhandler.all()`.
 
-See the [Weather Tutorial](../Howto/Weather-Tutorial.md) for an example of using the TickerHandler.
+See the [Weather Tutorial](../Howtos/Weather-Tutorial.md) for an example of using the TickerHandler.
 
 ### When *not* to use TickerHandler
 

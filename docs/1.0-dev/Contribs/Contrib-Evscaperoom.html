@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Barter system" href="Contrib-Barter.html" />
+    <link rel="prev" title="Unix-like Command style" href="Contrib-Unixcommand.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Barter.html" title="Barter system"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Unixcommand.html" title="Unix-like Command style"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" accesskey="U">Contribs</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">EvscapeRoom</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -55,15 +62,14 @@ rather look at <a class="reference external" href="https://github.com/evennia/ev
 instead. A copy of the full game can also be played on the Evennia demo server
 at <a class="reference external" href="https://demo.evennia.com">https://demo.evennia.com</a> - just connect to the server and write <code class="docutils literal notranslate"><span class="pre">evscaperoom</span></code>
 in the first room to start!</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="introduction">
-<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>Evscaperoom is, as it sounds, an escaperoom in text form. You start locked into
 a room and have to figure out how to get out. This engine contains everything
 needed to make a fully-featured puzzle game of this type!</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>The Evscaperoom is installed by adding the <code class="docutils literal notranslate"><span class="pre">evscaperoom</span></code> command to your
 character cmdset. When you run that command in-game you’re ready to play!</p>
 <p>In <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>:</p>
@@ -81,8 +87,8 @@ character cmdset. When you run that command in-game you’re ready to play!</p>
 <p>Reload the server and the <code class="docutils literal notranslate"><span class="pre">evscaperoom</span></code> command will be available. The contrib
 comes with a small (very small) escape room as an example.</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="making-your-own-evscaperoom">
-<h1>Making your own evscaperoom<a class="headerlink" href="#making-your-own-evscaperoom" title="Permalink to this headline">¶</a></h1>
+<section id="making-your-own-evscaperoom">
+<h2>Making your own evscaperoom<a class="headerlink" href="#making-your-own-evscaperoom" title="Permalink to this headline">¶</a></h2>
 <p>To do this, you need to make your own states. First make sure you can play the
 simple example room installed above.</p>
 <p>Copy <code class="docutils literal notranslate"><span class="pre">evennia/contrib/full_systems/evscaperoom/states</span></code> to somewhere in your game folder (let’s
@@ -96,7 +102,7 @@ the following to your <code class="docutils literal notranslate"><span class="pr
 <p>Reload and the example evscaperoom should still work, but you can now modify and
 expand it from your game dir!</p>
 <section id="other-useful-settings">
-<h2>Other useful settings<a class="headerlink" href="#other-useful-settings" title="Permalink to this headline">¶</a></h2>
+<h3>Other useful settings<a class="headerlink" href="#other-useful-settings" title="Permalink to this headline">¶</a></h3>
 <p>There are a few other settings that may be useful:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">EVSCAPEROOM_START_STATE</span></code> - default is <code class="docutils literal notranslate"><span class="pre">state_001_start</span></code> and is the name of
@@ -108,8 +114,8 @@ the room without an argument. The original is found at the top of
 </ul>
 </section>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="playing-the-game">
-<h1>Playing the game<a class="headerlink" href="#playing-the-game" title="Permalink to this headline">¶</a></h1>
+<section id="playing-the-game">
+<h2>Playing the game<a class="headerlink" href="#playing-the-game" title="Permalink to this headline">¶</a></h2>
 <p>You should start by <code class="docutils literal notranslate"><span class="pre">look</span></code>ing around and at objects.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">examine</span> <span class="pre">&lt;object&gt;</span></code> command allows you to ‘focus’ on an object. When you do
 you’ll learn actions you could try for the object you are focusing on, such as
@@ -119,8 +125,8 @@ when you focus. Focusing on another object or use <code class="docutils literal 
 focus.</p>
 <p>There is also a full hint system.</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="technical">
-<h1>Technical<a class="headerlink" href="#technical" title="Permalink to this headline">¶</a></h1>
+<section id="technical">
+<h2>Technical<a class="headerlink" href="#technical" title="Permalink to this headline">¶</a></h2>
 <p>When connecting to the game, the user has the option to join an existing room
 (which may already be in some state of ongoing progress), or may create a fresh
 room for them to start solving on their own (but anyone may still join them later).</p>
@@ -132,8 +138,8 @@ the states from each other and will hopefully make it easier to track
 the logic and (in principle) inject new puzzles later.</p>
 <p>Once no players remain in the room, the room and its state will be wiped.</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="design-philosophy">
-<h1>Design Philosophy<a class="headerlink" href="#design-philosophy" title="Permalink to this headline">¶</a></h1>
+<section id="design-philosophy">
+<h2>Design Philosophy<a class="headerlink" href="#design-philosophy" title="Permalink to this headline">¶</a></h2>
 <p>Some basic premises inspired the design of this.</p>
 <ul class="simple">
 <li><p>You should be able to resolve the room alone. So no puzzles should require the
@@ -155,6 +161,7 @@ easy to start “fresh” rooms for them to take on.</p></li>
 <hr class="docutils" />
 <p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/full_systems/evscaperoom/README.md</span></code>. Changes to this
 file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
 </section>
 
 
@@ -179,7 +186,7 @@ file will be overwritten, so edit that file rather than this one.</small></p>
 <script>$('#searchbox').show(0);</script>
 <p><h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">EvscapeRoom</a></li>
+<li><a class="reference internal" href="#">EvscapeRoom</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#making-your-own-evscaperoom">Making your own evscaperoom</a><ul>
@@ -190,7 +197,15 @@ file will be overwritten, so edit that file rather than this one.</small></p>
 <li><a class="reference internal" href="#technical">Technical</a></li>
 <li><a class="reference internal" href="#design-philosophy">Design Philosophy</a></li>
 </ul>
+</li>
+</ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Contrib-Unixcommand.html"
+                        title="previous chapter">Unix-like Command style</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Contrib-Barter.html"
+                        title="next chapter">Barter system</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -227,7 +242,14 @@ file will be overwritten, so edit that file rather than this one.</small></p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Barter.html" title="Barter system"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Unixcommand.html" title="Unix-like Command style"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" >Contribs</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">EvscapeRoom</a></li> 
       </ul>
         <div class="develop">develop branch</div>

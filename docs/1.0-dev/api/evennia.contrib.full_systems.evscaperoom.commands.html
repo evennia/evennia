@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.full_systems.evscaperoom.menu" href="evennia.contrib.full_systems.evscaperoom.menu.html" />
+    <link rel="prev" title="evennia.contrib.full_systems.evscaperoom" href="evennia.contrib.full_systems.evscaperoom.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,19 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.full_systems.evscaperoom.menu.html" title="evennia.contrib.full_systems.evscaperoom.menu"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.full_systems.evscaperoom.html" title="evennia.contrib.full_systems.evscaperoom"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.full_systems.html" >evennia.contrib.full_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.full_systems.evscaperoom.html" accesskey="U">evennia.contrib.full_systems.evscaperoom</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.full_systems.evscaperoom.commands</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -150,7 +162,7 @@ the operation will be general or on the room.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['chicken out', 'q', 'quit', 'abort']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['quit', 'q', 'chicken out', 'abort']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -174,7 +186,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'chicken out q quit abort', 'category': 'evscaperoom', 'key': 'give up', 'no_prefix': ' chicken out q quit abort', 'tags': '', 'text': '\n    Give up\n\n    Usage:\n      give up\n\n    Abandons your attempts at escaping and of ever winning the pie-eating contest.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'quit q chicken out abort', 'category': 'evscaperoom', 'key': 'give up', 'no_prefix': ' quit q chicken out abort', 'tags': '', 'text': '\n    Give up\n\n    Usage:\n      give up\n\n    Abandons your attempts at escaping and of ever winning the pie-eating contest.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -310,7 +322,7 @@ shout</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = [';', 'whisper', 'shout']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['shout', 'whisper', ';']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -339,7 +351,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '; whisper shout', 'category': 'general', 'key': 'say', 'no_prefix': ' ; whisper shout', 'tags': '', 'text': '\n    Perform an communication action.\n\n    Usage:\n      say &lt;text&gt;\n      whisper\n      shout\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'shout whisper ;', 'category': 'general', 'key': 'say', 'no_prefix': ' shout whisper ;', 'tags': '', 'text': '\n    Perform an communication action.\n\n    Usage:\n      say &lt;text&gt;\n      whisper\n      shout\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -367,7 +379,7 @@ emote /me points to /box and /lever.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = [':', 'pose']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['pose', ':']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -406,7 +418,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ': pose', 'category': 'general', 'key': 'emote', 'no_prefix': ' : pose', 'tags': '', 'text': '\n    Perform a free-form emote. Use /me to\n    include yourself in the emote and /name\n    to include other objects or characters.\n    Use &quot;...&quot; to enact speech.\n\n    Usage:\n        emote &lt;emote&gt;\n        :&lt;emote\n\n    Example:\n        emote /me smiles at /peter\n        emote /me points to /box and /lever.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'pose :', 'category': 'general', 'key': 'emote', 'no_prefix': ' pose :', 'tags': '', 'text': '\n    Perform a free-form emote. Use /me to\n    include yourself in the emote and /name\n    to include other objects or characters.\n    Use &quot;...&quot; to enact speech.\n\n    Usage:\n        emote &lt;emote&gt;\n        :&lt;emote\n\n    Example:\n        emote /me smiles at /peter\n        emote /me points to /box and /lever.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -429,7 +441,7 @@ looks and what actions is available.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['unfocus', 'ex', 'examine', 'e']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['e', 'examine', 'ex', 'unfocus']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -458,7 +470,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'unfocus ex examine e', 'category': 'evscaperoom', 'key': 'focus', 'no_prefix': ' unfocus ex examine e', 'tags': '', 'text': '\n    Focus your attention on a target.\n\n    Usage:\n      focus &lt;obj&gt;\n\n    Once focusing on an object, use look to get more information about how it\n    looks and what actions is available.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'e examine ex unfocus', 'category': 'evscaperoom', 'key': 'focus', 'no_prefix': ' e examine ex unfocus', 'tags': '', 'text': '\n    Focus your attention on a target.\n\n    Usage:\n      focus &lt;obj&gt;\n\n    Once focusing on an object, use look to get more information about how it\n    looks and what actions is available.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -520,7 +532,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdGet.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['i', 'give', 'inv', 'inventory']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGet.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['i', 'give', 'inventory', 'inv']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGet.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -544,7 +556,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdGet.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'i give inv inventory', 'category': 'evscaperoom', 'key': 'get', 'no_prefix': ' i give inv inventory', 'tags': '', 'text': '\n    Use focus / examine instead.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGet.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'i give inventory inv', 'category': 'evscaperoom', 'key': 'get', 'no_prefix': ' i give inventory inv', 'tags': '', 'text': '\n    Use focus / examine instead.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGet.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1017,6 +1029,12 @@ self.add().</p>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.contrib.full_systems.evscaperoom.html"
+                        title="previous chapter">evennia.contrib.full_systems.evscaperoom</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.contrib.full_systems.evscaperoom.menu.html"
+                        title="next chapter">evennia.contrib.full_systems.evscaperoom.menu</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -1053,7 +1071,19 @@ self.add().</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.full_systems.evscaperoom.menu.html" title="evennia.contrib.full_systems.evscaperoom.menu"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.full_systems.evscaperoom.html" title="evennia.contrib.full_systems.evscaperoom"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.full_systems.html" >evennia.contrib.full_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.full_systems.evscaperoom.html" >evennia.contrib.full_systems.evscaperoom</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.contrib.full_systems.evscaperoom.commands</a></li> 
       </ul>
         <div class="develop">develop branch</div>

@@ -101,7 +101,7 @@ offers effective error checking, searches and conversion.
 In a command definition you can reach the nick handler through `self.caller.nicks`. See the `nick`
 command in `evennia/commands/default/general.py` for more examples.
 
-As a last note, The Evennia [channel](./Communications.md) alias systems are using nicks with the
+As a last note, The Evennia [channel](./Channels.md) alias systems are using nicks with the
 `nick_type="channel"` in order to allow users to create their own custom aliases to channels.
 
 # Advanced note

@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Default Commands" href="Default-Commands.html" />
+    <link rel="prev" title="Commands" href="Commands.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Default-Commands.html" title="Default Commands"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Commands.html" title="Commands"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Command Sets</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -61,7 +68,7 @@ like a <code class="docutils literal notranslate"><span class="pre">Television</
 on. The tutorial world included with Evennia showcases a dark room that replaces certain critical
 commands with its own versions because the Character cannot see.</p>
 <p>If you want a quick start into defining your first commands and using them with command sets, you
-can head over to the <a class="reference internal" href="../Howto/Starting/Part1/Adding-Commands.html"><span class="doc std std-doc">Adding Command Tutorial</span></a> which steps through things
+can head over to the <a class="reference internal" href="../Howtos/Beginner-Tutorial/Part1/Adding-Commands.html"><span class="doc std std-doc">Adding Command Tutorial</span></a> which steps through things
 without the explanations.</p>
 <section id="defining-command-sets">
 <h2>Defining Command Sets<a class="headerlink" href="#defining-command-sets" title="Permalink to this headline">¶</a></h2>
@@ -130,7 +137,7 @@ remove the latest added cmdset.</p>
 back even if all other cmdsets fail or are removed. It is always persistent and will not be affected
 by <code class="docutils literal notranslate"><span class="pre">cmdset.delete()</span></code>. To remove a default cmdset you must explicitly call <code class="docutils literal notranslate"><span class="pre">cmdset.remove_default()</span></code>.</p>
 <p>Command sets are often added to an object in its <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> method. For more examples of
-adding commands, read the <a class="reference internal" href="../Howto/Starting/Part1/Adding-Commands.html"><span class="doc std std-doc">Step by step tutorial</span></a>. Generally you can
+adding commands, read the <a class="reference internal" href="../Howtos/Beginner-Tutorial/Part1/Adding-Commands.html"><span class="doc std std-doc">Step by step tutorial</span></a>. Generally you can
 customize which command sets are added to your objects by using <code class="docutils literal notranslate"><span class="pre">self.cmdset.add()</span></code> or
 <code class="docutils literal notranslate"><span class="pre">self.cmdset.add_default()</span></code>.</p>
 <blockquote>
@@ -248,7 +255,7 @@ included if <code class="docutils literal notranslate"><span class="pre">no_objs
 <code class="docutils literal notranslate"><span class="pre">no_objs</span></code> option is active in the merge stack.</p></li>
 <li><p>The cmdsets of Exits in the location. Merge priority <code class="docutils literal notranslate"><span class="pre">+101</span></code>. Will not be included if <code class="docutils literal notranslate"><span class="pre">no_exits</span></code>
 <em>or</em> <code class="docutils literal notranslate"><span class="pre">no_objs</span></code> option is active in the merge stack.</p></li>
-<li><p>The <a class="reference internal" href="Communications.html"><span class="doc std std-doc">channel</span></a> cmdset containing commands for posting to all channels the account
+<li><p>The <a class="reference internal" href="Channels.html"><span class="doc std std-doc">channel</span></a> cmdset containing commands for posting to all channels the account
 or character is currently connected to. Merge priority <code class="docutils literal notranslate"><span class="pre">+101</span></code>. Will not be included if <code class="docutils literal notranslate"><span class="pre">no_channels</span></code>
 option is active in the merge stack.</p></li>
 </ul>
@@ -443,6 +450,12 @@ commands having any combination of the keys and/or aliases “kick”, “punch�
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Commands.html"
+                        title="previous chapter">Commands</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Default-Commands.html"
+                        title="next chapter">Default Commands</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -479,7 +492,14 @@ commands having any combination of the keys and/or aliases “kick”, “punch�
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Default-Commands.html" title="Default Commands"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Commands.html" title="Commands"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Command Sets</a></li> 
       </ul>
         <div class="develop">develop branch</div>

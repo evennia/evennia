@@ -1,0 +1,260 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Default Exit Errors &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Manually Configuring Color" href="Manually-Configuring-Color.html" />
+    <link rel="prev" title="Command Duration" href="Command-Duration.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Manually-Configuring-Color.html" title="Manually Configuring Color"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Command-Duration.html" title="Command Duration"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" accesskey="U">Tutorials and Howto’s</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Default Exit Errors</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="default-exit-errors">
+<h1>Default Exit Errors<a class="headerlink" href="#default-exit-errors" title="Permalink to this headline">¶</a></h1>
+<p>Evennia allows for exits to have any name. The command “kitchen” is a valid exit name as well as “jump out the window”
+or “north”. An exit actually consists of two parts: an <a class="reference internal" href="../Components/Objects.html"><span class="doc std std-doc">Exit Object</span></a> and
+an <a class="reference internal" href="../Components/Commands.html"><span class="doc std std-doc">Exit Command</span></a> stored on said exit object. The command has the same key and aliases as the
+exit-object, which is why you can see the exit in the room and just write its name to traverse it.</p>
+<p>So if you try to enter the name of a non-existing exit, Evennia treats is the same way as if you were trying to
+use a non-existing command:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; jump out the window
+ Command &#39;jump out the window&#39; is not available. Type &quot;help&quot; for help.
+</pre></div>
+</div>
+<p>Many games don’t need this type of freedom however. They define only the cardinal directions as valid exit names (
+Evennia’s <code class="docutils literal notranslate"><span class="pre">tunnel</span></code> command also offers this functionality). In this case, the error starts to look less logical:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; west
+ Command &#39;west&#39; is not available. Maybe you meant &quot;set&quot; or &quot;reset&quot;?
+</pre></div>
+</div>
+<p>Since we for our particular game <em>know</em> that west is an exit direction, it would be better if the error message just
+told us that we couldn’t go there.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; west 
+ You cannot move west.
+</pre></div>
+</div>
+<section id="adding-default-error-commands">
+<h2>Adding default error commands<a class="headerlink" href="#adding-default-error-commands" title="Permalink to this headline">¶</a></h2>
+<p>The way to do this is to give Evennia an <em>alternative</em> Command to use when no Exit-Command is found
+in the room. See <a class="reference internal" href="Beginner-Tutorial/Part1/Adding-Commands.html"><span class="doc std std-doc">Adding Commands</span></a> for more info about the
+process of adding new Commands to Evennia.</p>
+<p>In this example all we’ll do is echo an error message.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># for example in a file mygame/commands/movecommands.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">CmdSet</span>
+
+<span class="k">class</span> <span class="nc">CmdExitError</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parent class for all exit-errors.&quot;&quot;&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s|$&quot;</span>
+    <span class="n">auto_help</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns error based on key&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You cannot move </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">CmdExitErrorNorth</span><span class="p">(</span><span class="n">CmdExitError</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;north&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">CmdExitErrorEast</span><span class="p">(</span><span class="n">CmdExitError</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;east&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;e&quot;</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">CmdExitErrorSouth</span><span class="p">(</span><span class="n">CmdExitError</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;south&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">CmdExitErrorWest</span><span class="p">(</span><span class="n">CmdExitError</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;west&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">]</span>
+
+<span class="c1"># you could add each command on its own to the default cmdset,</span>
+<span class="c1"># but putting them all in a cmdset here allows you to</span>
+<span class="c1"># just add this and makes it easier to expand with more </span>
+<span class="c1"># exit-errors in the future</span>
+
+<span class="k">class</span> <span class="nc">MovementFailCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdExitErrorNorth</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdExitErrorEast</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdExitErrorWest</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdExitErrorSouth</span><span class="p">())</span> 
+</pre></div>
+</div>
+<p>We pack our commands in a new little cmdset; if we add this to our
+<code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>, we can just add more errors to <code class="docutils literal notranslate"><span class="pre">MovementFailCmdSet</span></code>
+later without having to change code in two places.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py</span>
+
+<span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">movecommands</span>
+
+<span class="c1"># [...]</span>
+<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+    <span class="c1"># [...]</span>
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># [...]</span>
+        <span class="c1"># this adds all the commands at once</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">movecommands</span><span class="o">.</span><span class="n">MovementFailCmdSet</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">reload</span></code> the server. What happens henceforth is that if you are in a room with an Exitobject (let’s say it’s “north”),
+the proper Exit-command will <em>overload</em> your error command (also named “north”). But if you enter a direction without
+having a matching exit for it, you will fall back to your default error commands:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; east
+ You cannot move east.
+</pre></div>
+</div>
+<p>Further expansions by the exit system (including manipulating the way the Exit command itself is created) can be done by
+modifying the <a class="reference internal" href="../Components/Typeclasses.html"><span class="doc std std-doc">Exit typeclass</span></a> directly.</p>
+</section>
+<section id="why-not-a-single-command">
+<h2>Why not a single command?<a class="headerlink" href="#why-not-a-single-command" title="Permalink to this headline">¶</a></h2>
+<p>So why didn’t we create a single error command above? Something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdExitError</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+   <span class="s2">&quot;Handles all exit-errors.&quot;</span>
+   <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;error_cmd&quot;</span>
+   <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;north&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">,</span> 
+              <span class="s2">&quot;east&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;south&quot;</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;west&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">]</span>
+    <span class="c1">#[...]</span>
+</pre></div>
+</div>
+<p>The reason is that this would <em>not</em> work. Understanding why is important.</p>
+<p>Evennia’s <a class="reference internal" href="../Components/Commands.html"><span class="doc std std-doc">command system</span></a> compares commands by key and/or aliases. If <em>any</em> key or alias
+match, the two commands are considered <em>identical</em>. When the cmdsets merge, priority will then decide which of these
+‘identical’ commandss replace which.</p>
+<p>So the above example would work fine as long as there were <em>no Exits at all</em> in the room. But when we enter
+a room with an exit “north”, its Exit-command (which has a higher priority) will override the single <code class="docutils literal notranslate"><span class="pre">CmdExitError</span></code>
+with its alias ‘north’. So the <code class="docutils literal notranslate"><span class="pre">CmdExitError</span></code> will be gone and while “north” will work, we’ll again get the normal
+“Command not recognized” error for the other directions.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Default Exit Errors</a><ul>
+<li><a class="reference internal" href="#adding-default-error-commands">Adding default error commands</a></li>
+<li><a class="reference internal" href="#why-not-a-single-command">Why not a single command?</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Command-Duration.html"
+                        title="previous chapter">Command Duration</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Manually-Configuring-Color.html"
+                        title="next chapter">Manually Configuring Color</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Howtos/Default-Exit-Errors.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Default-Exit-Errors.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Manually-Configuring-Color.html" title="Manually Configuring Color"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Command-Duration.html" title="Command Duration"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Default Exit Errors</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

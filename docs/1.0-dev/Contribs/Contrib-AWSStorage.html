@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Building menu" href="Contrib-Building-Menu.html" />
+    <link rel="prev" title="Contribs" href="Contribs-Overview.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Building-Menu.html" title="Building menu"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Contribs-Overview.html" title="Contribs"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" accesskey="U">Contribs</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">AWSstorage system</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -68,9 +75,8 @@ of storage space on S3, making the current total cost of running this plugin
 them to many users, caveat emptor on a total cost of ownership - check AWS’s
 pricing structure.</p>
 </section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="technical-details">
-<h1>Technical details<a class="headerlink" href="#technical-details" title="Permalink to this headline">¶</a></h1>
+<section id="technical-details">
+<h2>Technical details<a class="headerlink" href="#technical-details" title="Permalink to this headline">¶</a></h2>
 <p>This is a drop-in replacement that operates deeper than all of Evennia’s code,
 so your existing code does not need to change at all to support it.</p>
 <p>For example, when Evennia (or Django), tries to save a file permanently (say, an
@@ -88,10 +94,10 @@ sending the files to S3 via the storage backend defined herein.</p>
 other contributions or custom code. Simply work how you would normally, Django
 will handle the rest.</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <section id="set-up-aws-account">
-<h2>Set up AWS account<a class="headerlink" href="#set-up-aws-account" title="Permalink to this headline">¶</a></h2>
+<h3>Set up AWS account<a class="headerlink" href="#set-up-aws-account" title="Permalink to this headline">¶</a></h3>
 <p>If you don’t have an AWS S3 account, you should create one at
 <a class="reference external" href="https://aws.amazon.com/">https://aws.amazon.com/</a> - documentation for AWS S3 is available at:
 <a class="reference external" href="https://docs.aws.amazon.com/AmazonS3/latest/gsg/GetStartedWithS3.html">https://docs.aws.amazon.com/AmazonS3/latest/gsg/GetStartedWithS3.html</a></p>
@@ -141,6 +147,7 @@ that this plugin has access to.</p>
 for initial installation. You can remove it later, or you can
 create the bucket and set the ACL yourself before you continue.</p>
 </section>
+</section>
 <section id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
 <p>This package requires the dependency “boto3 &gt;= 1.4.4”, the official
@@ -189,17 +196,16 @@ checking the source of any image (for instance, the logo).  It should read
 <code class="docutils literal notranslate"><span class="pre">https://your-bucket-name.s3.amazonaws.com/path/to/file</span></code>. If so, the system
 works and you shouldn’t need to do anything else.</p>
 </section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="uninstallation">
-<h1>Uninstallation<a class="headerlink" href="#uninstallation" title="Permalink to this headline">¶</a></h1>
+<section id="uninstallation">
+<h2>Uninstallation<a class="headerlink" href="#uninstallation" title="Permalink to this headline">¶</a></h2>
 <p>If you haven’t made changes to your static files (uploaded images, etc),
 you can simply remove the lines you added to <code class="docutils literal notranslate"><span class="pre">secret_settings.py</span></code>. If you
 have made changes and want to uninstall at a later date, you can export
 your files from your S3 bucket and put them in /static/ in the evennia
 directory.</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="license">
-<h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
 <p>Draws heavily from code provided by django-storages, for which these contributors
 are authors:</p>
 <p>Marty Alchin (S3)
@@ -247,12 +253,13 @@ Andrew Perry (Bug fixes in SFTPStorage)</p>
 <p>The repurposed code from django-storages is released under BSD 3-Clause,
 same as Evennia, so for detailed licensing, refer to the Evennia license.</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="versioning">
-<h1>Versioning<a class="headerlink" href="#versioning" title="Permalink to this headline">¶</a></h1>
+<section id="versioning">
+<h2>Versioning<a class="headerlink" href="#versioning" title="Permalink to this headline">¶</a></h2>
 <p>This is confirmed to work for Django 2 and Django 3.</p>
 <hr class="docutils" />
 <p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/base_systems/awsstorage/README.md</span></code>. Changes to this
 file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
 </section>
 
 
@@ -279,21 +286,27 @@ file will be overwritten, so edit that file rather than this one.</small></p>
   <ul>
 <li><a class="reference internal" href="#">AWSstorage system</a><ul>
 <li><a class="reference internal" href="#on-costs">On costs</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#technical-details">Technical details</a></li>
 <li><a class="reference internal" href="#installation">Installation</a><ul>
 <li><a class="reference internal" href="#set-up-aws-account">Set up AWS account</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#dependencies">Dependencies</a></li>
 <li><a class="reference internal" href="#configure-evennia">Configure Evennia</a></li>
 <li><a class="reference internal" href="#check-that-it-works">Check that it works</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#uninstallation">Uninstallation</a></li>
 <li><a class="reference internal" href="#license">License</a></li>
 <li><a class="reference internal" href="#versioning">Versioning</a></li>
 </ul>
+</li>
+</ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Contribs-Overview.html"
+                        title="previous chapter">Contribs</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Contrib-Building-Menu.html"
+                        title="next chapter">Building menu</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -330,7 +343,14 @@ file will be overwritten, so edit that file rather than this one.</small></p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Building-Menu.html" title="Building menu"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Contribs-Overview.html" title="Contribs"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" >Contribs</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">AWSstorage system</a></li> 
       </ul>
         <div class="develop">develop branch</div>

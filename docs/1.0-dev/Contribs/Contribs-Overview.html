@@ -1,0 +1,684 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Contribs &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="AWSstorage system" href="Contrib-AWSStorage.html" />
+    <link rel="prev" title="Setting up PyCharm with Evennia" href="../Coding/Setting-up-PyCharm.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-AWSStorage.html" title="AWSstorage system"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../Coding/Setting-up-PyCharm.html" title="Setting up PyCharm with Evennia"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Contribs</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="contribs">
+<h1>Contribs<a class="headerlink" href="#contribs" title="Permalink to this headline">¶</a></h1>
+<p><em>Contribs</em> are optional code snippets and systems contributed by
+the Evennia community. They vary in size and complexity and
+may be more specific about game types and styles than ‘core’ Evennia.
+This page is auto-generated and summarizes all contribs currently included.</p>
+<p>All contrib categories are imported from <code class="docutils literal notranslate"><span class="pre">evennia.contrib</span></code>, such as</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from evennia.contrib.base_systems import building_menu
+</pre></div>
+</div>
+<p>Each contrib contains installation instructions for how to integrate it
+with your other code. If you want to tweak the code of a contrib, just
+copy its entire folder to your game directory and modify/use it from there.</p>
+<blockquote>
+<div><p>Hint: Additional (potentially un-maintained) code snippets from the community can be found
+in our discussion forum’s <a class="reference external" href="https://github.com/evennia/evennia/discussions/categories/community-contribs-snippets">Community Contribs &amp; Snippets</a> category.</p>
+</div></blockquote>
+<p>If you want to contribute yourself, see <a class="reference internal" href="../Contributing.html"><span class="doc std std-doc">here</span></a>!</p>
+<section id="base-systems">
+<h2>base_systems<a class="headerlink" href="#base-systems" title="Permalink to this headline">¶</a></h2>
+<p><em>This category contains systems that are not necessarily tied to a specific
+in-game mechanic but is useful for the game as a whole. Examples include
+login systems, new command syntaxes, and build helpers.</em></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-AWSStorage.html">AWSstorage system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Building-Menu.html">Building menu</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Color-Markups.html">Additional Color markups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Custom-Gametime.html">Custom gameime</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Email-Login.html">Email-based login system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Ingame-Python.html">Evennia in-game Python system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Menu-Login.html">Menu-based login system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Mux-Comms-Cmds.html">Legacy Comms-commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Unixcommand.html">Unix-like Command style</a></li>
+</ul>
+</div>
+<section id="contrib-awsstorage">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">awsstorage</span></code><a class="headerlink" href="#contrib-awsstorage" title="Permalink to this headline">¶</a></h3>
+<p><em>Contrib by The Right Honourable Reverend (trhr), 2020</em></p>
+<p>This plugin migrates the Web-based portion of Evennia, namely images,
+javascript, and other items located inside staticfiles into Amazon AWS (S3)
+cloud hosting. Great for those serving media with the game.</p>
+<p><a class="reference internal" href="Contrib-AWSStorage.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.base_systems.awsstorage.html#evennia-contrib-base-systems-awsstorage"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-building-menu">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">building_menu</span></code><a class="headerlink" href="#contrib-building-menu" title="Permalink to this headline">¶</a></h3>
+<p><em>Contrib by vincent-lg, 2018</em></p>
+<p>Building menus are in-game menus, not unlike <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> though using a
+different approach. Building menus have been specifically designed to edit
+information as a builder. Creating a building menu in a command allows
+builders quick-editing of a given object, like a room. If you follow the
+steps to add the contrib, you will have access to an <code class="docutils literal notranslate"><span class="pre">edit</span></code> command
+that will edit any default object, offering to change its key and description.</p>
+<p><a class="reference internal" href="Contrib-Building-Menu.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.base_systems.building_menu.html#evennia-contrib-base-systems-building-menu"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-color-markups">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">color_markups</span></code><a class="headerlink" href="#contrib-color-markups" title="Permalink to this headline">¶</a></h3>
+<p><em>Contrib by Griatch, 2017</em></p>
+<p>Additional color markup styles for Evennia (extending or replacing the default
+<code class="docutils literal notranslate"><span class="pre">|r</span></code>, <code class="docutils literal notranslate"><span class="pre">|234</span></code>). Adds support for MUSH-style (<code class="docutils literal notranslate"><span class="pre">%cr</span></code>, <code class="docutils literal notranslate"><span class="pre">%c123</span></code>) and/or legacy-Evennia
+(<code class="docutils literal notranslate"><span class="pre">{r</span></code>, <code class="docutils literal notranslate"><span class="pre">{123</span></code>).</p>
+<p><a class="reference internal" href="Contrib-Color-Markups.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.base_systems.color_markups.html#evennia-contrib-base-systems-color-markups"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-custom-gametime">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">custom_gametime</span></code><a class="headerlink" href="#contrib-custom-gametime" title="Permalink to this headline">¶</a></h3>
+<p><em>Contrib by vlgeoff, 2017 - based on Griatch’s core original</em></p>
+<p>This reimplements the <code class="docutils literal notranslate"><span class="pre">evennia.utils.gametime</span></code> module but with a <em>custom</em>
+calendar (unusual number of days per week/month/year etc) for your game world.
+Like the original, it allows for scheduling events to happen at given
+in-game times, but now taking this custom calendar into account.</p>
+<p><a class="reference internal" href="Contrib-Custom-Gametime.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.base_systems.custom_gametime.html#evennia-contrib-base-systems-custom-gametime"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-email-login">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">email_login</span></code><a class="headerlink" href="#contrib-email-login" title="Permalink to this headline">¶</a></h3>
+<p><em>Contrib by Griatch, 2012</em></p>
+<p>This is a variant of the login system that asks for an email-address
+instead of a username to login. Note that it does not verify the email,
+it just uses it as the identifier rather than a username.</p>
+<p><a class="reference internal" href="Contrib-Email-Login.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.base_systems.email_login.html#evennia-contrib-base-systems-email-login"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-ingame-python">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">ingame_python</span></code><a class="headerlink" href="#contrib-ingame-python" title="Permalink to this headline">¶</a></h3>
+<p><em>Contrib by Vincent Le Goff 2017</em></p>
+<p>This contrib adds the ability to script with Python in-game. It allows trusted
+staff/builders to dynamically add features and triggers to individual objects
+without needing to do it in external Python modules. Using custom Python in-game,
+specific rooms, exits, characters, objects etc can be made to behave differently from
+its “cousins”. This is similar to how softcode works for MU or MudProgs for DIKU.
+Keep in mind, however, that allowing Python in-game comes with <em>severe</em>
+security concerns (you must trust your builders deeply), so read the warnings in
+this module carefully before continuing.</p>
+<p><a class="reference internal" href="Contrib-Ingame-Python.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.base_systems.ingame_python.html#evennia-contrib-base-systems-ingame-python"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-menu-login">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">menu_login</span></code><a class="headerlink" href="#contrib-menu-login" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Vincent-lg 2016. Reworked for modern EvMenu by Griatch, 2019.</em></p>
+<p>This changes the Evennia login to ask for the account name and password as a series
+of questions instead of requiring you to enter both at once. It uses Evennia’s
+menu system <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> under the hood.</p>
+<p><a class="reference internal" href="Contrib-Menu-Login.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.base_systems.menu_login.html#evennia-contrib-base-systems-menu-login"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-mux-comms-cmds">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">mux_comms_cmds</span></code><a class="headerlink" href="#contrib-mux-comms-cmds" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch 2021</em></p>
+<p>In Evennia 1.0+, the old Channel commands (originally inspired by MUX) were
+replaced by the single <code class="docutils literal notranslate"><span class="pre">channel</span></code> command that performs all these functions.
+This contrib (extracted from Evennia 0.9.5) breaks out the functionality into
+separate Commands more familiar to MU* users. This is just for show though, the
+main <code class="docutils literal notranslate"><span class="pre">channel</span></code> command is still called under the hood.</p>
+<p><a class="reference internal" href="Contrib-Mux-Comms-Cmds.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.base_systems.mux_comms_cmds.html#evennia-contrib-base-systems-mux-comms-cmds"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-unixcommand">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">unixcommand</span></code><a class="headerlink" href="#contrib-unixcommand" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Vincent Le Geoff (vlgeoff), 2017</em></p>
+<p>This module contains a command class with an alternate syntax parser implementing
+Unix-style command syntax in-game. This means <code class="docutils literal notranslate"><span class="pre">--options</span></code>, positional arguments
+and stuff like <code class="docutils literal notranslate"><span class="pre">-n</span> <span class="pre">10</span></code>. It might not the best syntax for the average player
+but can be really useful for builders when they need to have a single command do
+many things with many options. It uses the <code class="docutils literal notranslate"><span class="pre">ArgumentParser</span></code> from Python’s standard
+library under the hood.</p>
+<p><a class="reference internal" href="Contrib-Unixcommand.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.base_systems.unixcommand.html#evennia-contrib-base-systems-unixcommand"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+</section>
+<section id="full-systems">
+<h2>full_systems<a class="headerlink" href="#full-systems" title="Permalink to this headline">¶</a></h2>
+<p><em>This category contains ‘complete’ game engines that can be used directly
+to start creating content without no further additions (unless you want to).</em></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Evscaperoom.html">EvscapeRoom</a></li>
+</ul>
+</div>
+<section id="contrib-evscaperoom">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">evscaperoom</span></code><a class="headerlink" href="#contrib-evscaperoom" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch, 2019</em></p>
+<p>A full engine for creating multiplayer escape-rooms in Evennia. Allows players to
+spawn and join puzzle rooms that track their state independently. Any number of players
+can join to solve a room together. This is the engine created for ‘EvscapeRoom’, which won
+the MUD Coders Guild “One Room” Game Jam in April-May, 2019. The contrib has no game
+content but contains the utilities and base classes and an empty example room.</p>
+<p><a class="reference internal" href="Contrib-Evscaperoom.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.full_systems.evscaperoom.html#evennia-contrib-full-systems-evscaperoom"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+</section>
+<section id="game-systems">
+<h2>game_systems<a class="headerlink" href="#game-systems" title="Permalink to this headline">¶</a></h2>
+<p><em>This category holds code implementing in-game gameplay systems like
+crafting, mail, combat and more. Each system is meant to be adopted
+piecemeal and adopted for your game. This does not include
+roleplaying-specific systems, those are found in the <code class="docutils literal notranslate"><span class="pre">rpg</span></code> folder.</em></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Barter.html">Barter system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Clothing.html">Clothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Cooldowns.html">Cooldowns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Crafting.html">Crafting system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Gendersub.html">Gendersub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Mail.html">In-Game Mail system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Multidescer.html">Evennia Multidescer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Puzzles.html">Puzzles System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Turnbattle.html">Turn based battle system framework</a></li>
+</ul>
+</div>
+<section id="contrib-barter">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">barter</span></code><a class="headerlink" href="#contrib-barter" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch, 2012</em></p>
+<p>This implements a full barter system - a way for players to safely
+trade items between each other in code rather than simple <code class="docutils literal notranslate"><span class="pre">give/get</span></code>
+commands. This increases both safety (at no time will one player have
+both goods and payment in-hand) and speed, since agreed goods will
+be moved automatically). By just replacing one side with coin objects,
+(or a mix of coins and goods), this also works fine for regular money
+transactions.</p>
+<p><a class="reference internal" href="Contrib-Barter.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.game_systems.barter.html#evennia-contrib-game-systems-barter"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-clothing">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">clothing</span></code><a class="headerlink" href="#contrib-clothing" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Tim Ashley Jenkins, 2017</em></p>
+<p>Provides a typeclass and commands for wearable clothing. These
+look of these clothes are appended to the character’s description when worn.</p>
+<p><a class="reference internal" href="Contrib-Clothing.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.game_systems.clothing.html#evennia-contrib-game-systems-clothing"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-cooldowns">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">cooldowns</span></code><a class="headerlink" href="#contrib-cooldowns" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by owllex, 2021</em></p>
+<p>Cooldowns are used to model rate-limited actions, like how often a
+character can perform a given action; until a certain time has passed their
+command can not be used again. This contrib provides a simple cooldown
+handler that can be attached to any typeclass. A cooldown is a lightweight persistent
+asynchronous timer that you can query to see if a certain time has yet passed.</p>
+<p><a class="reference internal" href="Contrib-Cooldowns.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.game_systems.cooldowns.html#evennia-contrib-game-systems-cooldowns"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-crafting">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">crafting</span></code><a class="headerlink" href="#contrib-crafting" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch 2020</em></p>
+<p>This implements a full crafting system. The principle is that of a ‘recipe’,
+where you combine items (tagged as ingredients) create something new. The recipe can also
+require certain (non-consumed) tools. An example would be to use the ‘bread recipe’ to
+combine ‘flour’, ‘water’ and ‘yeast’ with an ‘oven’ to bake a ‘loaf of bread’.</p>
+<p><a class="reference internal" href="Contrib-Crafting.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.game_systems.crafting.html#evennia-contrib-game-systems-crafting"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-gendersub">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">gendersub</span></code><a class="headerlink" href="#contrib-gendersub" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch 2015</em></p>
+<p>This is a simple gender-aware Character class for allowing users to
+insert custom markers in their text to indicate gender-aware
+messaging. It relies on a modified msg() and is meant as an
+inspiration and starting point to how to do stuff like this.</p>
+<p><a class="reference internal" href="Contrib-Gendersub.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.game_systems.gendersub.html#evennia-contrib-game-systems-gendersub"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-mail">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">mail</span></code><a class="headerlink" href="#contrib-mail" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by grungies1138 2016</em></p>
+<p>A simple Brandymail style mail system that uses the <code class="docutils literal notranslate"><span class="pre">Msg</span></code> class from Evennia
+Core. It has two Commands for either sending mails between Accounts (out of game)
+or between Characters (in-game). The two types of mails can be used together or
+on their own.</p>
+<p><a class="reference internal" href="Contrib-Mail.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.game_systems.mail.html#evennia-contrib-game-systems-mail"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-multidescer">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">multidescer</span></code><a class="headerlink" href="#contrib-multidescer" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch 2016</em></p>
+<p>A “multidescer” is a concept from the MUSH world. It allows for
+creating, managing and switching between multiple character
+descriptions and is a way for quickly managing your look (such as when
+changing clothes) in more free-form roleplaying systems. This will also
+work well together with the <code class="docutils literal notranslate"><span class="pre">rpsystem</span></code> contrib.</p>
+<p><a class="reference internal" href="Contrib-Multidescer.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.game_systems.multidescer.html#evennia-contrib-game-systems-multidescer"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-puzzles">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">puzzles</span></code><a class="headerlink" href="#contrib-puzzles" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Henddher 2018</em></p>
+<p>Intended for adventure-game style combination puzzles, such as combining fruits
+and a blender to create a smoothie. Provides a typeclass and commands for objects
+that can be combined (i.e. used together). Unlike the <code class="docutils literal notranslate"><span class="pre">crafting</span></code> contrib, each
+puzzle is built from unique objects rather than using tags and a builder can create
+the puzzle entirely from in-game.</p>
+<p><a class="reference internal" href="Contrib-Puzzles.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.game_systems.puzzles.html#evennia-contrib-game-systems-puzzles"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-turnbattle">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">turnbattle</span></code><a class="headerlink" href="#contrib-turnbattle" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Tim Ashley Jenkins, 2017</em></p>
+<p>This is a framework for a simple turn-based combat system, similar
+to those used in D&amp;D-style tabletop role playing games. It allows
+any character to start a fight in a room, at which point initiative
+is rolled and a turn order is established. Each participant in combat
+has a limited time to decide their action for that turn (30 seconds by
+default), and combat progresses through the turn order, looping through
+the participants until the fight ends.</p>
+<p><a class="reference internal" href="Contrib-Turnbattle.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.game_systems.turnbattle.html#evennia-contrib-game-systems-turnbattle"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+</section>
+<section id="grid">
+<h2>grid<a class="headerlink" href="#grid" title="Permalink to this headline">¶</a></h2>
+<p><em>Systems related to the game world’s topology and structure. This has
+contribs related to rooms, exits and map building.</em></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Extended-Room.html">Extended Room</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Mapbuilder.html">Map Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Simpledoor.html">SimpleDoor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Slow-Exit.html">Slow Exit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Wilderness.html">Wilderness system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-XYZGrid.html">XYZgrid</a></li>
+</ul>
+</div>
+<section id="contrib-extended-room">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">extended_room</span></code><a class="headerlink" href="#contrib-extended-room" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution - Griatch 2012, vincent-lg 2019</em></p>
+<p>This extends the normal <code class="docutils literal notranslate"><span class="pre">Room</span></code> typeclass to allow its description to change
+with time-of-day and/or season. It also adds ‘details’ for the player to look at
+in the room (without having to create a new in-game object for each). The room is
+supported by new <code class="docutils literal notranslate"><span class="pre">look</span></code> and <code class="docutils literal notranslate"><span class="pre">desc</span></code> commands.</p>
+<p><a class="reference internal" href="Contrib-Extended-Room.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.grid.extended_room.html#evennia-contrib-grid-extended-room"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-mapbuilder">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">mapbuilder</span></code><a class="headerlink" href="#contrib-mapbuilder" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Cloud_Keeper 2016</em></p>
+<p>Build a game map from the drawing of a 2D ASCII map.</p>
+<p><a class="reference internal" href="Contrib-Mapbuilder.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.grid.mapbuilder.html#evennia-contrib-grid-mapbuilder"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-simpledoor">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">simpledoor</span></code><a class="headerlink" href="#contrib-simpledoor" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch, 2016</em></p>
+<p>A simple two-way exit that represents a door that can be opened and
+closed from both sides. Can easily be expanded to make it lockable,
+destroyable etc.</p>
+<p><a class="reference internal" href="Contrib-Simpledoor.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.grid.simpledoor.html#evennia-contrib-grid-simpledoor"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-slow-exit">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">slow_exit</span></code><a class="headerlink" href="#contrib-slow-exit" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch 2014</em></p>
+<p>An example of an Exit-type that delays its traversal. This simulates
+slow movement, common in many games. The contrib also
+contains two commands, <code class="docutils literal notranslate"><span class="pre">setspeed</span></code> and <code class="docutils literal notranslate"><span class="pre">stop</span></code> for changing the movement speed
+and abort an ongoing traversal, respectively.</p>
+<p><a class="reference internal" href="Contrib-Slow-Exit.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.grid.slow_exit.html#evennia-contrib-grid-slow-exit"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-wilderness">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">wilderness</span></code><a class="headerlink" href="#contrib-wilderness" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by titeuf87, 2017</em></p>
+<p>This contrib provides a wilderness map without actually creating a large number
+of rooms - as you move, you instead end up back in the same room but its description
+changes. This means you can make huge areas with little database use as
+long as the rooms are relatively similar (name/desc changing).</p>
+<p><a class="reference internal" href="Contrib-Wilderness.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.grid.wilderness.html#evennia-contrib-grid-wilderness"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-xyzgrid">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">xyzgrid</span></code><a class="headerlink" href="#contrib-xyzgrid" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch 2021</em></p>
+<p>Places Evennia’s game world on an xy (z being different maps) coordinate grid.
+Grid is created and maintained externally by drawing and parsing 2D ASCII maps,
+including teleports, map transitions and special markers to aid pathfinding.
+Supports very fast shortest-route pathfinding on each map. Also includes a
+fast view function for seeing only a limited number of steps away from your
+current location (useful for displaying the grid as an in-game, updating map).</p>
+<p><a class="reference internal" href="Contrib-XYZGrid.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.grid.xyzgrid.html#evennia-contrib-grid-xyzgrid"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+</section>
+<section id="rpg">
+<h2>rpg<a class="headerlink" href="#rpg" title="Permalink to this headline">¶</a></h2>
+<p><em>These are systems specifically related to roleplaying
+and rule implementation like character traits, dice rolling and emoting.</em></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Dice.html">Dice roller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Health-Bar.html">Health Bar</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-RPSystem.html">Roleplaying base system for Evennia</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Traits.html">Traits</a></li>
+</ul>
+</div>
+<section id="contrib-dice">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">dice</span></code><a class="headerlink" href="#contrib-dice" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch, 2012</em></p>
+<p>A dice roller for any number and side of dice. Adds in-game dice rolling
+(<code class="docutils literal notranslate"><span class="pre">roll</span> <span class="pre">2d10</span> <span class="pre">+</span> <span class="pre">1</span></code>) as well as conditionals (roll under/over/equal to a target)
+and functions for rolling dice in code. Command also supports hidden or secret
+rolls for use by a human game master.</p>
+<p><a class="reference internal" href="Contrib-Dice.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.rpg.dice.html#evennia-contrib-rpg-dice"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-health-bar">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">health_bar</span></code><a class="headerlink" href="#contrib-health-bar" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Tim Ashley Jenkins, 2017</em></p>
+<p>The function provided in this module lets you easily display visual
+bars or meters as a colorful bar instead of just a number. A “health bar”
+is merely the most obvious use for this, but the bar is highly customizable
+and can be used for any sort of appropriate data besides player health.</p>
+<p><a class="reference internal" href="Contrib-Health-Bar.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.rpg.health_bar.html#evennia-contrib-rpg-health-bar"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-rpsystem">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">rpsystem</span></code><a class="headerlink" href="#contrib-rpsystem" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch, 2015</em></p>
+<p>A full roleplaying emote system. Short-descriptions and recognition (only
+know people by their looks until you assign a name to them). Room poses. Masks/disguises
+(hide your description). Speak directly in emote, with optional language obscuration
+(words get garbled if you don’t know the language, you can also have different languages
+with different ‘sounding’ garbling). Whispers can be partly overheard from a distance. A
+very powerful in-emote reference system, for referencing and differentiate targets
+(including objects).</p>
+<p><a class="reference internal" href="Contrib-RPSystem.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.rpg.rpsystem.html#evennia-contrib-rpg-rpsystem"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-traits">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">traits</span></code><a class="headerlink" href="#contrib-traits" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch 2020, based on code by Whitenoise and Ainneve contribs, 2014</em></p>
+<p>A <code class="docutils literal notranslate"><span class="pre">Trait</span></code> represents a modifiable property on (usually) a Character. They can
+be used to represent everything from attributes (str, agi etc) to skills
+(hunting 10, swords 14 etc) and dynamically changing things like HP, XP etc.
+Traits differ from normal Attributes in that they track their changes and limit
+themselves to particular value-ranges. One can add/subtract from them easily and
+they can even change dynamically at a particular rate (like you being poisoned or
+healed).</p>
+<p><a class="reference internal" href="Contrib-Traits.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.rpg.traits.html#evennia-contrib-rpg-traits"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+</section>
+<section id="tutorials">
+<h2>tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h2>
+<p><em>Helper resources specifically meant to teach a development concept or
+to exemplify an Evennia system. Any extra resources tied to documentation
+tutorials are found here. Also the home of the Tutorial World demo adventure.</em></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Batchprocessor.html">Batch processor examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Bodyfunctions.html">Script example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Mirror.html">TutorialMirror</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Red-Button.html">Red Button example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Talking-Npc.html">Talkative NPC example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Tutorial-World.html">Evennia Tutorial World</a></li>
+</ul>
+</div>
+<section id="contrib-batchprocessor">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">batchprocessor</span></code><a class="headerlink" href="#contrib-batchprocessor" title="Permalink to this headline">¶</a></h3>
+<p><em>Contibution by Griatch, 2012</em></p>
+<p>Simple examples for the batch-processor. The batch processor is used for generating
+in-game content from one or more static files. Files can be stored with version
+control and then ‘applied’ to the game to create content.</p>
+<p><a class="reference internal" href="Contrib-Batchprocessor.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.tutorials.batchprocessor.html#evennia-contrib-tutorials-batchprocessor"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-bodyfunctions">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">bodyfunctions</span></code><a class="headerlink" href="#contrib-bodyfunctions" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch, 2012</em></p>
+<p>Example script for testing. This adds a simple timer that has your
+character make small verbal observations at irregular intervals.</p>
+<p><a class="reference internal" href="Contrib-Bodyfunctions.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.tutorials.bodyfunctions.html#evennia-contrib-tutorials-bodyfunctions"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-mirror">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">mirror</span></code><a class="headerlink" href="#contrib-mirror" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch, 2017</em></p>
+<p>A simple mirror object to experiment with. It will respond to being looked at.</p>
+<p><a class="reference internal" href="Contrib-Mirror.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.tutorials.mirror.html#evennia-contrib-tutorials-mirror"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-red-button">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">red_button</span></code><a class="headerlink" href="#contrib-red-button" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch, 2011</em></p>
+<p>A red button that you can press to have an effect. This is a more advanced example
+object with its own functionality and state tracking.</p>
+<p><a class="reference internal" href="Contrib-Red-Button.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.tutorials.red_button.html#evennia-contrib-tutorials-red-button"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-talking-npc">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">talking_npc</span></code><a class="headerlink" href="#contrib-talking-npc" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch 2011. Updated by grungies1138, 2016</em></p>
+<p>This is an example of a static NPC object capable of holding a simple menu-driven
+conversation. Suitable for example as a quest giver or merchant.</p>
+<p><a class="reference internal" href="Contrib-Talking-Npc.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.tutorials.talking_npc.html#evennia-contrib-tutorials-talking-npc"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-tutorial-world">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">tutorial_world</span></code><a class="headerlink" href="#contrib-tutorial-world" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Griatch 2011, 2015</em></p>
+<p>A stand-alone tutorial area for an unmodified Evennia install.
+Think of it as a sort of single-player adventure rather than a
+full-fledged multi-player game world. The various rooms and objects
+are designed to show off features of Evennia, not to be a
+very challenging (nor long) gaming experience. As such it’s of course
+only skimming the surface of what is possible. Taking this apart
+is a great way to start learning the system.</p>
+<p><a class="reference internal" href="Contrib-Tutorial-World.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.tutorials.tutorial_world.html#evennia-contrib-tutorials-tutorial-world"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+</section>
+<section id="utils">
+<h2>utils<a class="headerlink" href="#utils" title="Permalink to this headline">¶</a></h2>
+<p><em>Miscellaneous, optional tools for manipulating text, auditing connections
+and more.</em></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Auditing.html">Input/Output Auditing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Fieldfill.html">Easy fillable form</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Random-String-Generator.html">Pseudo-random generator and registry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Tree-Select.html">Easy menu selection tree</a></li>
+</ul>
+</div>
+<section id="contrib-auditing">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">auditing</span></code><a class="headerlink" href="#contrib-auditing" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Johnny, 2017</em></p>
+<p>Utility that taps and intercepts all data sent to/from clients and the
+server and passes it to a callback of your choosing. This is intended for
+quality assurance, post-incident investigations and debugging.</p>
+<p><a class="reference internal" href="Contrib-Auditing.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.utils.auditing.html#evennia-contrib-utils-auditing"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-fieldfill">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">fieldfill</span></code><a class="headerlink" href="#contrib-fieldfill" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Tim Ashley Jenkins, 2018</em></p>
+<p>This module contains a function that generates an <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> for you - this
+menu presents the player with a form of fields that can be filled
+out in any order (e.g. for character generation or building). Each field’s value can
+be verified, with the function allowing easy checks for text and integer input,
+minimum and maximum values / character lengths, or can even be verified by a custom
+function. Once the form is submitted, the form’s data is submitted as a dictionary
+to any callable of your choice.</p>
+<p><a class="reference internal" href="Contrib-Fieldfill.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.utils.fieldfill.html#evennia-contrib-utils-fieldfill"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-random-string-generator">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">random_string_generator</span></code><a class="headerlink" href="#contrib-random-string-generator" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Vincent Le Goff (vlgeoff), 2017</em></p>
+<p>This utility can be used to generate pseudo-random strings of information
+with specific criteria.  You could, for instance, use it to generate
+phone numbers, license plate numbers, validation codes, in-game security
+passwords and so on. The strings generated will be stored and won’t be repeated.</p>
+<p><a class="reference internal" href="Contrib-Random-String-Generator.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.utils.random_string_generator.html#evennia-contrib-utils-random-string-generator"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-tree-select">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">tree_select</span></code><a class="headerlink" href="#contrib-tree-select" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Tim Ashley Jenkins, 2017</em></p>
+<p>This utility allows you to create and initialize an entire branching EvMenu
+instance from a multi-line string passed to one function.</p>
+<p><a class="reference internal" href="Contrib-Tree-Select.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.utils.tree_select.html#evennia-contrib-utils-tree-select"><span class="std std-ref">Browse the Code</span></a></p>
+<hr class="docutils" />
+<p><small>This document page is auto-generated. Manual changes
+will be overwritten.</small></p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Contribs</a><ul>
+<li><a class="reference internal" href="#base-systems">base_systems</a><ul>
+<li><a class="reference internal" href="#contrib-awsstorage">Contrib: <code class="docutils literal notranslate"><span class="pre">awsstorage</span></code></a></li>
+<li><a class="reference internal" href="#contrib-building-menu">Contrib: <code class="docutils literal notranslate"><span class="pre">building_menu</span></code></a></li>
+<li><a class="reference internal" href="#contrib-color-markups">Contrib: <code class="docutils literal notranslate"><span class="pre">color_markups</span></code></a></li>
+<li><a class="reference internal" href="#contrib-custom-gametime">Contrib: <code class="docutils literal notranslate"><span class="pre">custom_gametime</span></code></a></li>
+<li><a class="reference internal" href="#contrib-email-login">Contrib: <code class="docutils literal notranslate"><span class="pre">email_login</span></code></a></li>
+<li><a class="reference internal" href="#contrib-ingame-python">Contrib: <code class="docutils literal notranslate"><span class="pre">ingame_python</span></code></a></li>
+<li><a class="reference internal" href="#contrib-menu-login">Contrib: <code class="docutils literal notranslate"><span class="pre">menu_login</span></code></a></li>
+<li><a class="reference internal" href="#contrib-mux-comms-cmds">Contrib: <code class="docutils literal notranslate"><span class="pre">mux_comms_cmds</span></code></a></li>
+<li><a class="reference internal" href="#contrib-unixcommand">Contrib: <code class="docutils literal notranslate"><span class="pre">unixcommand</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#full-systems">full_systems</a><ul>
+<li><a class="reference internal" href="#contrib-evscaperoom">Contrib: <code class="docutils literal notranslate"><span class="pre">evscaperoom</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#game-systems">game_systems</a><ul>
+<li><a class="reference internal" href="#contrib-barter">Contrib: <code class="docutils literal notranslate"><span class="pre">barter</span></code></a></li>
+<li><a class="reference internal" href="#contrib-clothing">Contrib: <code class="docutils literal notranslate"><span class="pre">clothing</span></code></a></li>
+<li><a class="reference internal" href="#contrib-cooldowns">Contrib: <code class="docutils literal notranslate"><span class="pre">cooldowns</span></code></a></li>
+<li><a class="reference internal" href="#contrib-crafting">Contrib: <code class="docutils literal notranslate"><span class="pre">crafting</span></code></a></li>
+<li><a class="reference internal" href="#contrib-gendersub">Contrib: <code class="docutils literal notranslate"><span class="pre">gendersub</span></code></a></li>
+<li><a class="reference internal" href="#contrib-mail">Contrib: <code class="docutils literal notranslate"><span class="pre">mail</span></code></a></li>
+<li><a class="reference internal" href="#contrib-multidescer">Contrib: <code class="docutils literal notranslate"><span class="pre">multidescer</span></code></a></li>
+<li><a class="reference internal" href="#contrib-puzzles">Contrib: <code class="docutils literal notranslate"><span class="pre">puzzles</span></code></a></li>
+<li><a class="reference internal" href="#contrib-turnbattle">Contrib: <code class="docutils literal notranslate"><span class="pre">turnbattle</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#grid">grid</a><ul>
+<li><a class="reference internal" href="#contrib-extended-room">Contrib: <code class="docutils literal notranslate"><span class="pre">extended_room</span></code></a></li>
+<li><a class="reference internal" href="#contrib-mapbuilder">Contrib: <code class="docutils literal notranslate"><span class="pre">mapbuilder</span></code></a></li>
+<li><a class="reference internal" href="#contrib-simpledoor">Contrib: <code class="docutils literal notranslate"><span class="pre">simpledoor</span></code></a></li>
+<li><a class="reference internal" href="#contrib-slow-exit">Contrib: <code class="docutils literal notranslate"><span class="pre">slow_exit</span></code></a></li>
+<li><a class="reference internal" href="#contrib-wilderness">Contrib: <code class="docutils literal notranslate"><span class="pre">wilderness</span></code></a></li>
+<li><a class="reference internal" href="#contrib-xyzgrid">Contrib: <code class="docutils literal notranslate"><span class="pre">xyzgrid</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#rpg">rpg</a><ul>
+<li><a class="reference internal" href="#contrib-dice">Contrib: <code class="docutils literal notranslate"><span class="pre">dice</span></code></a></li>
+<li><a class="reference internal" href="#contrib-health-bar">Contrib: <code class="docutils literal notranslate"><span class="pre">health_bar</span></code></a></li>
+<li><a class="reference internal" href="#contrib-rpsystem">Contrib: <code class="docutils literal notranslate"><span class="pre">rpsystem</span></code></a></li>
+<li><a class="reference internal" href="#contrib-traits">Contrib: <code class="docutils literal notranslate"><span class="pre">traits</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tutorials">tutorials</a><ul>
+<li><a class="reference internal" href="#contrib-batchprocessor">Contrib: <code class="docutils literal notranslate"><span class="pre">batchprocessor</span></code></a></li>
+<li><a class="reference internal" href="#contrib-bodyfunctions">Contrib: <code class="docutils literal notranslate"><span class="pre">bodyfunctions</span></code></a></li>
+<li><a class="reference internal" href="#contrib-mirror">Contrib: <code class="docutils literal notranslate"><span class="pre">mirror</span></code></a></li>
+<li><a class="reference internal" href="#contrib-red-button">Contrib: <code class="docutils literal notranslate"><span class="pre">red_button</span></code></a></li>
+<li><a class="reference internal" href="#contrib-talking-npc">Contrib: <code class="docutils literal notranslate"><span class="pre">talking_npc</span></code></a></li>
+<li><a class="reference internal" href="#contrib-tutorial-world">Contrib: <code class="docutils literal notranslate"><span class="pre">tutorial_world</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#utils">utils</a><ul>
+<li><a class="reference internal" href="#contrib-auditing">Contrib: <code class="docutils literal notranslate"><span class="pre">auditing</span></code></a></li>
+<li><a class="reference internal" href="#contrib-fieldfill">Contrib: <code class="docutils literal notranslate"><span class="pre">fieldfill</span></code></a></li>
+<li><a class="reference internal" href="#contrib-random-string-generator">Contrib: <code class="docutils literal notranslate"><span class="pre">random_string_generator</span></code></a></li>
+<li><a class="reference internal" href="#contrib-tree-select">Contrib: <code class="docutils literal notranslate"><span class="pre">tree_select</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../Coding/Setting-up-PyCharm.html"
+                        title="previous chapter">Setting up PyCharm with Evennia</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Contrib-AWSStorage.html"
+                        title="next chapter">AWSstorage system</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contribs-Overview.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Contribs-Overview.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-AWSStorage.html" title="AWSstorage system"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../Coding/Setting-up-PyCharm.html" title="Setting up PyCharm with Evennia"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Contribs</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Soft Code" href="Soft-Code.html" />
+    <link rel="prev" title="Core Concepts" href="Concepts-Overview.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Soft-Code.html" title="Soft Code"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Concepts-Overview.html" title="Core Concepts"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Concepts-Overview.html" accesskey="U">Core Concepts</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Async Process</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -163,7 +170,7 @@ sleep.</p>
 </pre></div>
 </div>
 <p>This will delay the execution of the callback for 10 seconds. This function is explored much more in
-the <a class="reference internal" href="../Howto/Command-Duration.html"><span class="doc std std-doc">Command Duration Tutorial</span></a>.</p>
+the <a class="reference internal" href="../Howtos/Command-Duration.html"><span class="doc std std-doc">Command Duration Tutorial</span></a>.</p>
 <p>You can also try the following snippet just see how it works:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@py from evennia.utils import delay; delay(10, lambda who: who.msg(&quot;Test!&quot;), self)
 </pre></div>
@@ -281,6 +288,12 @@ your own liking.</p>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Concepts-Overview.html"
+                        title="previous chapter">Core Concepts</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Soft-Code.html"
+                        title="next chapter">Soft Code</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -317,7 +330,14 @@ your own liking.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Soft-Code.html" title="Soft Code"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Concepts-Overview.html" title="Core Concepts"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Concepts-Overview.html" >Core Concepts</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Async Process</a></li> 
       </ul>
         <div class="develop">develop branch</div>

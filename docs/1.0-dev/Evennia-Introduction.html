@@ -14,12 +14,10 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Starting Tutorial (Part 1)" href="Howto/Starting/Part1/Starting-Part1.html" />
+    <link rel="next" title="Server Setup and Life" href="Setup/Setup-Overview.html" />
     <link rel="prev" title="Evennia Documentation" href="index.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -32,7 +30,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Howto/Starting/Part1/Starting-Part1.html" title="Starting Tutorial (Part 1)"
+          <a href="Setup/Setup-Overview.html" title="Server Setup and Life"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Evennia Documentation"
@@ -74,7 +72,7 @@ behind-the-scenes administration stuff that all online games need whether they l
 Evennia is <em>fully persistent</em>, that means things you drop on the ground somewhere will still be
 there a dozen server reboots later. Through Django we support a large variety of different database
 systems (a database is created for you automatically if you use the defaults).</p>
-<p>We also include a growing list of <em>optional</em> <a class="reference internal" href="Contribs/Contrib-Overview.html"><span class="doc std std-doc">contribs</span></a> you can use for your game
+<p>We also include a growing list of <em>optional</em> <a class="reference internal" href="Contribs/Contribs-Overview.html"><span class="doc std std-doc">contribs</span></a> you can use for your game
 would you want something to build from.</p>
 <p>Using the full power of Python throughout the server offers some distinct advantages. All your
 coding, from object definitions and custom commands to AI scripts and economic systems is  done in
@@ -93,7 +91,7 @@ Or why not create a new and better command system of your own design.</p>
 connect to the demo via your telnet client you can do so at <code class="docutils literal notranslate"><span class="pre">demo.evennia.com</span></code>, port <code class="docutils literal notranslate"><span class="pre">4000</span></code>.</p>
 <p>Once you installed Evennia yourself it comes with its own tutorial - this shows off some of the
 possibilities <em>and</em> gives you a small single-player quest to play. The tutorial takes only one
-single in-game command to install as explained <a class="reference internal" href="Howto/Starting/Part1/Tutorial-World.html"><span class="doc std std-doc">here</span></a>.</p>
+single in-game command to install as explained <a class="reference internal" href="Howtos/Beginner-Tutorial/Part1/Tutorial-World.html"><span class="doc std std-doc">here</span></a>.</p>
 </section>
 <section id="what-you-need-to-know-to-work-with-evennia">
 <h2>What you need to know to work with Evennia<a class="headerlink" href="#what-you-need-to-know-to-work-with-evennia" title="Permalink to this headline">¶</a></h2>
@@ -114,7 +112,7 @@ very basic game indeed if you are not willing to do at least <em>some</em> codin
 online</a>. We also have a comprehensive <a class="reference external" href="https://evennia.com/docs">online
 manual</a> with lots of examples. But while Python is
 considered a very easy programming language to get into, you do have a learning curve to climb if
-you are new to programming. Evennia’s <a class="reference internal" href="Howto/Starting/Part1/Starting-Part1.html"><span class="doc std std-doc">Starting-tutorial</span></a> has a <a class="reference internal" href="Howto/Starting/Part1/Python-basic-introduction.html"><span class="doc std std-doc">basic introduction
+you are new to programming. Evennia’s <a class="reference internal" href="Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Intro.html"><span class="doc std std-doc">Starting-tutorial</span></a> has a <a class="reference internal" href="Howtos/Beginner-Tutorial/Part1/Python-basic-introduction.html"><span class="doc std std-doc">basic introduction
 to Python</span></a> but you should probably also sit down
 with a full Python beginner’s tutorial at some point (there are plenty of them on
 the web if you look around). See also our <a class="reference internal" href="Links.html"><span class="doc std std-doc">link
@@ -153,7 +151,7 @@ presence (a website and a mud web client) to play around with …</p>
 <section id="where-to-from-here">
 <h3>Where to from here?<a class="headerlink" href="#where-to-from-here" title="Permalink to this headline">¶</a></h3>
 <p>From here you can continue browsing the <a class="reference internal" href="index.html"><span class="doc std std-doc">online documentation</span></a> to
-find more info about Evennia. Or you can jump into the <a class="reference internal" href="Howto/Howto-Overview.html"><span class="doc std std-doc">Tutorials</span></a> and get your hands
+find more info about Evennia. Or you can jump into the <a class="reference internal" href="Howtos/Howtos-Overview.html"><span class="doc std std-doc">Tutorials</span></a> and get your hands
 dirty with code right away. You can also read the lead developer’s <a class="reference external" href="https://evennia.blogspot.com/">dev blog</a> for many tidbits and snippets about Evennia’s development and
 structure.</p>
 <p>Some more hints:</p>
@@ -165,10 +163,10 @@ chat</a>
 on IRC. This allows you to chat directly with other developers new and old as well as with the devs
 of Evennia itself. This chat is logged (you can find links on <a class="reference external" href="https://www.evennia.com">https://www.evennia.com</a>) and can also
 be searched from the same place for discussion topics you are interested in.</p></li>
-<li><p>Read the <a class="reference internal" href="Howto/Starting/Part2/Game-Planning.html"><span class="doc std std-doc">Game Planning</span></a> wiki page. It gives some ideas for your work flow and the
+<li><p>Read the <a class="reference internal" href="Howtos/Beginner-Tutorial/Part2/Game-Planning.html"><span class="doc std std-doc">Game Planning</span></a> wiki page. It gives some ideas for your work flow and the
 state of mind you should aim for - including cutting down the scope of your game for its first
 release.</p></li>
-<li><p>Do the <a class="reference internal" href="Howto/Starting/Part3/Tutorial-for-basic-MUSH-like-game.html"><span class="doc std std-doc">Tutorial for basic MUSH-like game</span></a> carefully from
+<li><p>Do the <a class="reference internal" href="Howtos/Tutorial-for-basic-MUSH-like-game.html"><span class="doc std std-doc">Tutorial for basic MUSH-like game</span></a> carefully from
 beginning to end and try to understand what does what. Even if you are not interested in a MUSH for
 your own game, you will end up with a small (very small) game that you can build or learn from.</p></li>
 </ol>
@@ -215,8 +213,8 @@ your own game, you will end up with a small (very small) game that you can build
   <p class="topless"><a href="index.html"
                         title="previous chapter">Evennia Documentation</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Howto/Starting/Part1/Starting-Part1.html"
-                        title="next chapter">Starting Tutorial (Part 1)</a></p>
+  <p class="topless"><a href="Setup/Setup-Overview.html"
+                        title="next chapter">Server Setup and Life</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -254,7 +252,7 @@ your own game, you will end up with a small (very small) game that you can build
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Howto/Starting/Part1/Starting-Part1.html" title="Starting Tutorial (Part 1)"
+          <a href="Setup/Setup-Overview.html" title="Server Setup and Life"
              >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Evennia Documentation"

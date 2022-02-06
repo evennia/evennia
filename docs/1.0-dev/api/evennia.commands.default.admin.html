@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.commands.default.batchprocess" href="evennia.commands.default.batchprocess.html" />
+    <link rel="prev" title="evennia.commands.default.account" href="evennia.commands.default.account.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,7 +29,18 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.commands.default.batchprocess.html" title="evennia.commands.default.batchprocess"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.commands.default.account.html" title="evennia.commands.default.account"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.commands.html" >evennia.commands</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.commands.default.html" accesskey="U">evennia.commands.default</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.default.admin</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -257,7 +268,7 @@ to accounts respectively.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.admin.CmdEmit.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['remit', 'pemit']</em><a class="headerlink" href="#evennia.commands.default.admin.CmdEmit.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['pemit', 'remit']</em><a class="headerlink" href="#evennia.commands.default.admin.CmdEmit.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -288,7 +299,7 @@ to accounts respectively.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.admin.CmdEmit.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'remit pemit', 'category': 'admin', 'key': 'emit', 'no_prefix': ' remit pemit', 'tags': '', 'text': '\n    admin command for emitting message to multiple objects\n\n    Usage:\n      emit[/switches] [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;\n      remit           [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;\n      pemit           [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;\n\n    Switches:\n      room     -  limit emits to rooms only (default)\n      accounts -  limit emits to accounts only\n      contents -  send to the contents of matched objects too\n\n    Emits a message to the selected objects or to\n    your immediate surroundings. If the object is a room,\n    send to its contents. remit and pemit are just\n    limited forms of emit, for sending to rooms and\n    to accounts respectively.\n    '}</em><a class="headerlink" href="#evennia.commands.default.admin.CmdEmit.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'pemit remit', 'category': 'admin', 'key': 'emit', 'no_prefix': ' pemit remit', 'tags': '', 'text': '\n    admin command for emitting message to multiple objects\n\n    Usage:\n      emit[/switches] [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;\n      remit           [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;\n      pemit           [&lt;obj&gt;, &lt;obj&gt;, ... =] &lt;message&gt;\n\n    Switches:\n      room     -  limit emits to rooms only (default)\n      accounts -  limit emits to accounts only\n      contents -  send to the contents of matched objects too\n\n    Emits a message to the selected objects or to\n    your immediate surroundings. If the object is a room,\n    send to its contents. remit and pemit are just\n    limited forms of emit, for sending to rooms and\n    to accounts respectively.\n    '}</em><a class="headerlink" href="#evennia.commands.default.admin.CmdEmit.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -524,6 +535,12 @@ including all currently unlogged in.</p>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.commands.default.account.html"
+                        title="previous chapter">evennia.commands.default.account</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.commands.default.batchprocess.html"
+                        title="next chapter">evennia.commands.default.batchprocess</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -560,7 +577,18 @@ including all currently unlogged in.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.commands.default.batchprocess.html" title="evennia.commands.default.batchprocess"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.commands.default.account.html" title="evennia.commands.default.account"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.commands.html" >evennia.commands</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.commands.default.html" >evennia.commands.default</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">evennia.commands.default.admin</a></li> 
       </ul>
         <div class="develop">develop branch</div>

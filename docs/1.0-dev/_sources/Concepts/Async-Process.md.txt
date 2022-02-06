@@ -139,7 +139,7 @@ sleep.
 ```
 
 This will delay the execution of the callback for 10 seconds. This function is explored much more in
-the [Command Duration Tutorial](../Howto/Command-Duration.md).
+the [Command Duration Tutorial](../Howtos/Command-Duration.md).
 
 You can also try the following snippet just see how it works:
 

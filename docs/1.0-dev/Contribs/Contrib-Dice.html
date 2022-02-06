@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Dice &#8212; Evennia 1.0-dev documentation</title>
+    <title>Dice roller &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -14,11 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Health Bar" href="Contrib-Health-Bar.html" />
+    <link rel="prev" title="XYZgrid" href="Contrib-XYZGrid.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,8 +29,15 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Health-Bar.html" title="Health Bar"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-XYZGrid.html" title="XYZgrid"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Dice</a></li> 
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" accesskey="U">Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Dice roller</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -40,16 +47,15 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="dice">
-<h1>Dice<a class="headerlink" href="#dice" title="Permalink to this headline">¶</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="dice-roller">
+<h1>Dice roller<a class="headerlink" href="#dice-roller" title="Permalink to this headline">¶</a></h1>
 <p>Contribution by Griatch, 2012</p>
 <p>A dice roller for any number and side of dice. Adds in-game dice rolling
 (<code class="docutils literal notranslate"><span class="pre">roll</span> <span class="pre">2d10</span> <span class="pre">+</span> <span class="pre">1</span></code>) as well as conditionals (roll under/over/equal to a target)
 and functions for rolling dice in code. Command also supports hidden or secret
 rolls for use by a human game master.</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="installation">
-<h1>Installation:<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<section id="installation">
+<h2>Installation:<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Add the <code class="docutils literal notranslate"><span class="pre">CmdDice</span></code> command from this module to your character’s cmdset
 (and then restart the server):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py</span>
@@ -66,8 +72,8 @@ rolls for use by a human game master.</p>
 </pre></div>
 </div>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="usage">
-<h1>Usage:<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<section id="usage">
+<h2>Usage:<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; roll 1d100 + 2
 &gt; roll 1d20
 &gt; roll 1d20 - 4
@@ -91,7 +97,7 @@ was.</p>
 </div>
 <p>Is a hidden roll that does not inform the room it happened.</p>
 <section id="rolling-dice-from-code">
-<h2>Rolling dice from code<a class="headerlink" href="#rolling-dice-from-code" title="Permalink to this headline">¶</a></h2>
+<h3>Rolling dice from code<a class="headerlink" href="#rolling-dice-from-code" title="Permalink to this headline">¶</a></h3>
 <p>To roll dice in code, use the <code class="docutils literal notranslate"><span class="pre">roll</span></code> function from this module:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="kn">from</span> <span class="nn">evennia.contrib.rpg</span> <span class="kn">import</span> <span class="n">dice</span>
@@ -102,6 +108,7 @@ was.</p>
 <hr class="docutils" />
 <p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/rpg/dice/README.md</span></code>. Changes to this
 file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
 </section>
 </section>
 
@@ -127,14 +134,22 @@ file will be overwritten, so edit that file rather than this one.</small></p>
 <script>$('#searchbox').show(0);</script>
 <p><h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Dice</a></li>
+<li><a class="reference internal" href="#">Dice roller</a><ul>
 <li><a class="reference internal" href="#installation">Installation:</a></li>
 <li><a class="reference internal" href="#usage">Usage:</a><ul>
 <li><a class="reference internal" href="#rolling-dice-from-code">Rolling dice from code</a></li>
 </ul>
 </li>
 </ul>
+</li>
+</ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Contrib-XYZGrid.html"
+                        title="previous chapter">XYZgrid</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Contrib-Health-Bar.html"
+                        title="next chapter">Health Bar</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -171,8 +186,15 @@ file will be overwritten, so edit that file rather than this one.</small></p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Health-Bar.html" title="Health Bar"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-XYZGrid.html" title="XYZgrid"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Dice</a></li> 
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" >Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Dice roller</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

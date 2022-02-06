@@ -1,4 +1,4 @@
-# Licensing
+# Licensing Q&A
 
 
 Evennia is licensed under the very friendly [BSD](https://en.wikipedia.org/wiki/BSD_license)
