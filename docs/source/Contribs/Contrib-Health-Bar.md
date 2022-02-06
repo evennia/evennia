@@ -3,8 +3,8 @@
 Contribution by Tim Ashley Jenkins, 2017
 
 The function provided in this module lets you easily display visual
-bars or meters as a colorful bar instead of just a number. A "health bar" 
-is merely the most obvious use for this, but the bar is highly customizable 
+bars or meters as a colorful bar instead of just a number. A "health bar"
+is merely the most obvious use for this, but the bar is highly customizable
 and can be used for any sort of appropriate data besides player health.
 
 Today's players may be more used to seeing statistics like health,

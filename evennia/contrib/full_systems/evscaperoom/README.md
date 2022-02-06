@@ -2,10 +2,10 @@
 
 Contribution by Griatch, 2019
 
-A full engine for creating multiplayer escape-rooms in Evennia. Allows players to 
-spawn and join puzzle rooms that track their state independently. Any number of players 
-can join to solve a room together. This is the engine created for 'EvscapeRoom', which won 
-the MUD Coders Guild "One Room" Game Jam in April-May, 2019. The contrib has no game 
+A full engine for creating multiplayer escape-rooms in Evennia. Allows players to
+spawn and join puzzle rooms that track their state independently. Any number of players
+can join to solve a room together. This is the engine created for 'EvscapeRoom', which won
+the MUD Coders Guild "One Room" Game Jam in April-May, 2019. The contrib has no game
 content but contains the utilities and base classes and an empty example room.
 
 The original code for the contest is found at
@@ -16,13 +16,13 @@ instead. A copy of the full game can also be played on the Evennia demo server
 at https://demo.evennia.com - just connect to the server and write `evscaperoom`
 in the first room to start!
 
-# Introduction
+## Introduction
 
 Evscaperoom is, as it sounds, an escaperoom in text form. You start locked into
 a room and have to figure out how to get out. This engine contains everything
 needed to make a fully-featured puzzle game of this type!
 
-# Installation
+## Installation
 
 The Evscaperoom is installed by adding the `evscaperoom` command to your
 character cmdset. When you run that command in-game you're ready to play!
@@ -44,7 +44,7 @@ class CharacterCmdSet(...):
 Reload the server and the `evscaperoom` command will be available. The contrib
 comes with a small (very small) escape room as an example.
 
-# Making your own evscaperoom
+## Making your own evscaperoom
 
 To do this, you need to make your own states. First make sure you can play the
 simple example room installed above.
@@ -63,7 +63,7 @@ the following to your `mygame/server/conf/settings.py` file:
 Reload and the example evscaperoom should still work, but you can now modify and
 expand it from your game dir!
 
-## Other useful settings
+### Other useful settings
 
 There are a few other settings that may be useful:
 
@@ -74,7 +74,7 @@ There are a few other settings that may be useful:
   the room without an argument. The original is found at the top of
   `evennia/contrib/full_systems/evscaperoom/commands.py`.
 
-# Playing the game
+## Playing the game
 
 You should start by `look`ing around and at objects.
 
@@ -87,7 +87,7 @@ focus.
 
 There is also a full hint system.
 
-# Technical
+## Technical
 
 When connecting to the game, the user has the option to join an existing room
 (which may already be in some state of ongoing progress), or may create a fresh
@@ -102,7 +102,7 @@ the logic and (in principle) inject new puzzles later.
 
 Once no players remain in the room, the room and its state will be wiped.
 
-# Design Philosophy
+## Design Philosophy
 
 Some basic premises inspired the design of this.
 

@@ -220,7 +220,7 @@ callable must be a module-global function on the form
 
     ## options
 
-        # Starting the option-line with >
+        # Beginner-Tutorial the option-line with >
         # allows to perform different actions depending on
         # what is inserted.
 

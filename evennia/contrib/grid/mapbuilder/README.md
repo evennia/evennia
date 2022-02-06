@@ -52,7 +52,7 @@ references to rooms previously created is passed to the build commands.
 You then call the command in-game using the path to the MAP and MAP_LEGEND vars
 The path you provide is relative to the evennia or mygame folder.
 
-# Installation
+## Installation
 
 Use by importing and including the command in your default_cmdsets module.
 For example:
@@ -68,14 +68,14 @@ For example:
 ```
 
 
-# Usage:
+## Usage:
 
     mapbuilder[/switch] <path.to.file.MAPNAME> <path.to.file.MAP_LEGEND>
 
     one - execute build instructions once without automatic exit creation.
     two - execute build instructions twice without automatic exit creation.
 
-# Examples
+## Examples
 
     mapbuilder world.gamemap.MAP world.maplegend.MAP_LEGEND
     mapbuilder evennia.contrib.grid.mapbuilder.EXAMPLE1_MAP EXAMPLE1_LEGEND
@@ -86,7 +86,7 @@ Below are two examples showcasing the use of automatic exit generation and
 custom exit generation. Whilst located, and can be used, from this module for
 convenience The below example code should be in mymap.py in mygame/world.
 
-## Example One
+### Example One
 
 ```python
 
@@ -190,7 +190,7 @@ EXAMPLE1_LEGEND = {
 }
 ```
 
-## Example Two
+### Example Two
 
 ```python
 # @mapbuilder/two evennia.contrib.grid.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND

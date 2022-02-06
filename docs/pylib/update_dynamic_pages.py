@@ -17,7 +17,7 @@ def update_changelog():
     """
 
     sourcefile = pathjoin(ROOTDIR, "CHANGELOG.md")
-    targetfile = pathjoin(DOCSRCDIR, "Setup", "Changelog.md")
+    targetfile = pathjoin(DOCSRCDIR, "Coding", "Changelog.md")
 
     with open(sourcefile) as fil:
         txt = fil.read()

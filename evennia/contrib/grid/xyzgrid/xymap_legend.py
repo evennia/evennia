@@ -1128,7 +1128,7 @@ class BasicMapNode(MapNode):
 
 class InterruptMapNode(MapNode):
     """A point of interest node/room. Pathfinder will ignore but auto-stepper will
-    stop here if passing through. Starting from here is fine."""
+    stop here if passing through. Beginner-Tutorial from here is fine."""
     symbol = "I"
     display_symbol = "#"
     interrupt_path = True

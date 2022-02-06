@@ -889,7 +889,7 @@ def reload_evennia(sprofiler=False, reset=False):
             send_instruction(SSTART, server_cmd)
 
     def _portal_not_running(fail):
-        print("Evennia not running. Starting up ...")
+        print("Evennia not running. Beginner-Tutorial up ...")
         start_evennia()
 
     collectstatic()
@@ -962,7 +962,7 @@ def reboot_evennia(pprofiler=False, sprofiler=False):
             wait_for_status(False, None, _portal_stopped)
 
     def _portal_not_running(fail):
-        print("Evennia not running. Starting up ...")
+        print("Evennia not running. Beginner-Tutorial up ...")
         start_evennia()
 
     collectstatic()
@@ -988,7 +988,7 @@ def start_server_interactive():
     def _iserver():
         _, server_twistd_cmd = _get_twistd_cmdline(False, False)
         server_twistd_cmd.append("--nodaemon")
-        print("Starting Server in interactive mode (stop with Ctrl-C)...")
+        print("Beginner-Tutorial Server in interactive mode (stop with Ctrl-C)...")
         try:
             Popen(server_twistd_cmd, env=getenv(), stderr=STDOUT).wait()
         except KeyboardInterrupt:
@@ -1026,7 +1026,7 @@ def start_portal_interactive():
         else:
             Popen(server_twistd_cmd, env=getenv(), bufsize=-1)
 
-        print("Starting Portal in interactive mode (stop with Ctrl-C)...")
+        print("Beginner-Tutorial Portal in interactive mode (stop with Ctrl-C)...")
         try:
             Popen(portal_twistd_cmd, env=getenv(), stderr=STDOUT).wait()
         except KeyboardInterrupt:

@@ -1,6 +1,4 @@
-# Setting up PyCharm
-
-# Directions for setting up PyCharm with Evennia
+# Setting up PyCharm with Evennia
 
 [PyCharm](https://www.jetbrains.com/pycharm/) is a Python developer's IDE from Jetbrains available
 for Windows, Mac and Linux. It is a commercial product but offer free trials, a scaled-down

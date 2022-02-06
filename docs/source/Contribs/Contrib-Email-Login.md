@@ -3,7 +3,7 @@
 Contrib by Griatch, 2012
 
 This is a variant of the login system that asks for an email-address
-instead of a username to login. Note that it does not verify the email, 
+instead of a username to login. Note that it does not verify the email,
 it just uses it as the identifier rather than a username.
 
 This used to be the default Evennia login before replacing it with a

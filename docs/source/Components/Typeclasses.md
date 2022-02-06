@@ -1,7 +1,6 @@
 # Typeclasses
 
-
-*Typeclasses* form the core of Evennia data storage. It allows Evennia to represent any number of
+*Typeclasses* form the core of Evennia's data storage. It allows Evennia to represent any number of
 different game entities as Python classes, without having to modify the database schema for every
 new type.
 
@@ -193,7 +192,7 @@ database.
 
 Each of the typeclassed entities then extend this list with their own properties. Go to the
 respective pages for [Objects](./Objects.md), [Scripts](./Scripts.md), [Accounts](./Accounts.md) and
-[Channels](./Communications.md) for more info. It's also recommended that you explore the available
+[Channels](./Channels.md) for more info. It's also recommended that you explore the available
 entities using [Evennia's flat API](../Evennia-API.md) to explore which properties and methods they have
 available.
 
@@ -245,7 +244,7 @@ matches = ScriptDB.objects.filter(db_key__contains="Combat")
 When querying from the database model parent you don't need to use `filter_family` or `get_family` -
 you will always query all children on the database model.
 
-# Updating existing typeclass instances
+## Updating existing typeclass instances
 
 If you already have created instances of Typeclasses, you can modify the *Python code* at any time -
 due to how Python inheritance works your changes will automatically be applied to all children once
@@ -317,7 +316,7 @@ The arguments to this method are described [in the API docs
 here](github:evennia.typeclasses.models#typedobjectswap_typeclass).
 
 
-# How typeclasses actually work
+## How typeclasses actually work
 
 *This is considered an advanced section.*
 

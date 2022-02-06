@@ -1,9 +1,9 @@
-# Unix-like Command style parent
+# Unix-like Command style
 
 Contribution by Vincent Le Geoff (vlgeoff), 2017
 
-This module contains a command class with an alternate syntax parser implementing 
-Unix-style command syntax in-game. This means `--options`, positional arguments 
+This module contains a command class with an alternate syntax parser implementing
+Unix-style command syntax in-game. This means `--options`, positional arguments
 and stuff like `-n 10`. It might not the best syntax for the average player
 but can be really useful for builders when they need to have a single command do
 many things with many options. It uses the `ArgumentParser` from Python's standard

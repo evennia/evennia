@@ -4,7 +4,7 @@ Contribution by grungies1138 2016
 
 A simple Brandymail style mail system that uses the `Msg` class from Evennia
 Core. It has two Commands for either sending mails between Accounts (out of game)
-or between Characters (in-game). The two types of mails can be used together or 
+or between Characters (in-game). The two types of mails can be used together or
 on their own.
 
    - `CmdMail` - this should sit on the Account cmdset and makes the `mail` command
@@ -21,22 +21,23 @@ Install one or both of the following (see above):
 
 - CmdMail (IC + OOC mail, sent between players)
 
+    ```python
     # mygame/commands/default_cmds.py
 
     from evennia.contrib.game_systems import mail
 
     # in AccountCmdSet.at_cmdset_creation:
         self.add(mail.CmdMail())
-
+    ```
 - CmdMailCharacter (optional, IC only mail, sent between characters)
 
+    ```python
     # mygame/commands/default_cmds.py
 
     from evennia.contrib.game_systems import mail
 
     # in CharacterCmdSet.at_cmdset_creation:
         self.add(mail.CmdMailCharacter())
-
+    ```
 Once installed, use `help mail` in game for help with the mail command. Use
 ic/ooc to switch in and out of IC/OOC modes.
-

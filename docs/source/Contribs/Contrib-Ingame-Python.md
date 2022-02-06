@@ -895,6 +895,15 @@ The in-game Python system will still be accessible (you will have access to the 
 but no event will be called automatically.
 
 
+```{toctree}
+:hidden:
+
+Contrib-Ingame-Python-Tutorial-Dialogue
+Contrib-Ingame-Python-Tutorial-Elevator
+
+```
+
+
 ----
 
 <small>This document page is generated from `evennia/contrib/base_systems/ingame_python/README.md`. Changes to this

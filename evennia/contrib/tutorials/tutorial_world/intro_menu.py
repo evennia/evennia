@@ -697,12 +697,12 @@ Evennia you are wise to take a look at the |wEvennia documentation|n at
 - The tutorial-world may or may not be your cup of tea, but it does show off
   several |wuseful tools|n of Evennia. You may want to check out how it works:
 
-    |yhttps://www.evennia.com/docs/latest/Howto/Starting/Part1/Tutorial-World|n
+    |yhttps://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Part1/Tutorial-World|n
 
 - You can then continue looking through the |wTutorials|n and pick one that
   fits your level of understanding.
 
-    |yhttps://www.evennia.com/docs/latest/Howto/Howto-Overview|n
+    |yhttps://www.evennia.com/docs/latest/Howtos/Howtos-Overview|n
 
 - Make sure to |wjoin our forum|n and connect to our |wsupport chat|n! The
   Evennia community is very active and friendly and no question is too simple.

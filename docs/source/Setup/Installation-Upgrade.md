@@ -39,4 +39,4 @@ changes to your code before it will start with Evennia 1.0. Some important point
 - The `evennia/contrib/` folder changed structure - there are now categorized sub-folders, so you have to update 
 your imports.
 - Any `web` changes need to be moved back from your backup into the new structure of `web/` manually.
-- See the [Evennia 1.0 Changelog](./Changelog.md) for all changes.
+- See the [Evennia 1.0 Changelog](../Coding/Changelog.md) for all changes.

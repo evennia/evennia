@@ -893,3 +893,12 @@ EVENTS_DISABLED = True
 
 The in-game Python system will still be accessible (you will have access to the `call` command, to debug),
 but no event will be called automatically.
+
+
+```{toctree}
+:hidden:
+
+Contrib-Ingame-Python-Tutorial-Dialogue
+Contrib-Ingame-Python-Tutorial-Elevator
+
+```
