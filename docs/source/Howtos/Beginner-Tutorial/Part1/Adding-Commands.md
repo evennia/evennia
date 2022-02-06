@@ -9,9 +9,9 @@ what is in it.
 
 ```{sidebar} Commands are not typeclassed
 
-    If you just came from the previous lesson, you might want to know that Commands and
-    CommandSets are not `typeclassed`. That is, instances of them are not saved to the
-    database. They are "just" normal Python classes.
+If you just came from the previous lesson, you might want to know that Commands and
+CommandSets are not `typeclassed`. That is, instances of them are not saved to the
+database. They are "just" normal Python classes.
 ```
 
 In Evennia, a Command is a Python _class_. If you are unsure about what a class is, review the
@@ -271,7 +271,9 @@ Here, `<hitter>` would be the one using the `hit` command and `<target>` is the 
 
 Still in `mygame/commands/mycommands.py`, add a new class, between `CmdEcho` and `MyCmdSet`.
 
-```python
+```{code-block} python
+:linenos:
+
 # ...
 
 class CmdHit(Command):
@@ -299,30 +301,30 @@ class CmdHit(Command):
 ```
 
 A lot of things to dissect here:
-- **Line 4**: The normal `class` header. We inherit from `Command` which we imported at the top of this file.
-- **Lines 5**-11: The docstring and help-entry for the command. You could expand on this as much as you wanted.
-- **Line 12**: We want to write `hit` to use this command.
-- **Line 15**: We strip the whitespace from the argument like before. Since we don't want to have to do
+- **Line 3**: The normal `class` header. We inherit from `Command` which we imported at the top of this file.
+- **Lines 4-10**: The docstring and help-entry for the command. You could expand on this as much as you wanted.
+- **Line 11**: We want to write `hit` to use this command.
+- **Line 14**: We strip the whitespace from the argument like before. Since we don't want to have to do
     `self.args.strip()` over and over, we store the stripped version
     in a _local variable_ `args`. Note that we don't modify `self.args` by doing this, `self.args` will still
     have the whitespace and is not the same as `args` in this example.
 ```{sidebar} if-statements
 
-    The full form of the if statement is
+The full form of the if statement is
 
-        if condition:
-            ...
-        elif othercondition:
-            ...
-        else:
-            ...
+if condition:
+    ...
+elif othercondition:
+    ...
+else:
+    ...
 
-    There can be any number of `elifs` to mark when different branches of the code should run. If
-    the `else` condition is given, it will run if none of the other conditions was truthy. In Python
-    the `if..elif..else` structure also serves the same function as `case` in some other languages.
+There can be any number of `elifs` to mark when different branches of the code should run. If
+the `else` condition is given, it will run if none of the other conditions was truthy. In Python
+the `if..elif..else` structure also serves the same function as `case` in some other languages.
 
 ```
-- **Line 16** has our first _conditional_, an `if` statement. This is written on the form `if <condition>:` and only
+- **Line 15** has our first _conditional_, an `if` statement. This is written on the form `if <condition>:` and only
     if that condition is 'truthy' will the indented code block under the `if` statement run. To learn what is truthy in
     Python it's usually easier to learn what is "falsy":
     - `False` - this is a reserved boolean word in Python. The opposite is `True`.
@@ -334,12 +336,12 @@ A lot of things to dissect here:
 
    Line 16's condition is `not args`. The `not` _inverses_ the result, so if `args` is the empty string (falsy), the
    whole conditional becomes truthy. Let's continue in the code:
-- **Lines 17-18**: This code will only run if the `if` statement is truthy, in this case if `args` is the empty string.
-- **Line 18**: `return` is a reserved Python word that exits `func` immediately.
-- **Line 19**: We use `self.caller.search` to look for the target in the current location.
-- **Lines 20-21**: A feature of `.search` is that it will already inform `self.caller` if it couldn't find the target.
+- **Lines 16-17**: This code will only run if the `if` statement is truthy, in this case if `args` is the empty string.
+- **Line 17**: `return` is a reserved Python word that exits `func` immediately.
+- **Line 18**: We use `self.caller.search` to look for the target in the current location.
+- **Lines 19-20**: A feature of `.search` is that it will already inform `self.caller` if it couldn't find the target.
    In that case, `target` will be `None` and we should just directly `return`.
-- **Lines 22-23**: At this point we have a suitable target and can send our punching strings to each.
+- **Lines 21-22**: At this point we have a suitable target and can send our punching strings to each.
 
 Finally we must also add this to a CmdSet. Let's add it to `MyCmdSet` which we made persistent earlier.
 
@@ -356,12 +358,12 @@ class MyCmdSet(CmdSet):
 
 ```{sidebar} Errors in your code
 
-    With longer code snippets to try, it gets more and more likely you'll
-    make an error and get a `traceback` when you reload. This will either appear
-    directly in-game or in your log (view it with `evennia -l` in a terminal).
-    Don't panic; tracebacks are your friends - they are to be read bottom-up and usually describe
-    exactly where your problem is. Refer to `The Python intro <Python-basic-introduction.html>`_ for
-    more hints. If you get stuck, reach out to the Evennia community for help.
+With longer code snippets to try, it gets more and more likely you'll
+make an error and get a `traceback` when you reload. This will either appear
+directly in-game or in your log (view it with `evennia -l` in a terminal).
+Don't panic; tracebacks are your friends - they are to be read bottom-up and usually describe
+exactly where your problem is. Refer to `The Python intro <Python-basic-introduction.html>`_ for
+more hints. If you get stuck, reach out to the Evennia community for help.
 
 ```
 
