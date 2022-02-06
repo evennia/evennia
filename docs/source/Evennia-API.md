@@ -24,7 +24,7 @@ The flat API is defined in `__init__.py` [viewable here](github:evennia/__init__
 
 ### Main config
 
-- [evennia.settings_default](Settings-Default) - all settings (modify/override in `mygame/server/settings.py`)
+- [evennia.settings_default](Setup/Settings-Default.md) - all settings (modify/override in `mygame/server/settings.py`)
 
 ### Search functions
 
