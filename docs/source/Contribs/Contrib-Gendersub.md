@@ -17,9 +17,38 @@ An object can have the following genders:
 ## Installation
 
 Import and add the `SetGender` command to your default cmdset in
-`mygame/commands/default_cmdset.py`
+`mygame/commands/default_cmdset.py`:
+
+```python
+# mygame/commands/default_cmdsets.py
+
+# ...
+
+from evennia.contrib.game_systems.gendersub import SetGender   # <---
+
+# ...
+
+class CharacterCmdSet(default_cmds.CharacterCmdSet):
+    # ...
+    def at_cmdset_creation(self):
+        # ...
+        self.add(SetGender())   # <---
+```
 
 Make your `Character` inherit from `GenderCharacter`.
+
+```python
+# mygame/typeclasses/characters.py
+
+# ...
+
+from evennia.contrib.game_systems.gendersub import GenderCharacter  # <---
+
+class Character(GenderCharacter):  # <---
+    # ...
+```
+
+Reload the server (`evennia reload` or `reload` from inside the game).
 
 
 ## Usage

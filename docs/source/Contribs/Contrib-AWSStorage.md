@@ -29,7 +29,7 @@ of storage space on S3, making the current total cost of running this plugin
 them to many users, caveat emptor on a total cost of ownership - check AWS's
 pricing structure.
 
-# Technical details
+## Technical details
 
 This is a drop-in replacement that operates deeper than all of Evennia's code,
 so your existing code does not need to change at all to support it.
@@ -52,9 +52,9 @@ other contributions or custom code. Simply work how you would normally, Django
 will handle the rest.
 
 
-# Installation
+## Installation
 
-## Set up AWS account
+### Set up AWS account
 
 If you don't have an AWS S3 account, you should create one at
 https://aws.amazon.com/ - documentation for AWS S3 is available at:
@@ -161,7 +161,7 @@ checking the source of any image (for instance, the logo).  It should read
 `https://your-bucket-name.s3.amazonaws.com/path/to/file`. If so, the system
 works and you shouldn't need to do anything else.
 
-# Uninstallation
+## Uninstallation
 
 If you haven't made changes to your static files (uploaded images, etc),
 you can simply remove the lines you added to `secret_settings.py`. If you
@@ -170,7 +170,7 @@ your files from your S3 bucket and put them in /static/ in the evennia
 directory.
 
 
-# License
+## License
 
 Draws heavily from code provided by django-storages, for which these contributors
 are authors:
@@ -221,7 +221,7 @@ Andrew Perry (Bug fixes in SFTPStorage)
 The repurposed code from django-storages is released under BSD 3-Clause,
 same as Evennia, so for detailed licensing, refer to the Evennia license.
 
-# Versioning
+## Versioning
 
 This is confirmed to work for Django 2 and Django 3.
 

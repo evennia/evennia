@@ -1,6 +1,5 @@
 # Online Setup
 
-
 Evennia development can be made without any Internet connection beyond fetching updates. At some
 point however, you are likely to want to make your game visible online, either as part opening it to
 the public or to allow other developers or beta testers access to it.
@@ -18,6 +17,7 @@ remote hosting later in this document.
 Out of the box, Evennia uses three ports for outward communication. If your computer has a firewall,
 these should be open for in/out communication (and only these, other ports used by Evennia are
 internal to your computer only).
+
  - `4000`, telnet, for traditional mud clients
  - `4001`, HTTP for the website)
  - `4002`, websocket, for the web client
@@ -66,7 +66,7 @@ web services you are running through this router though.
 
 You can connect Evennia to the Internet without any changes to your settings. The default settings
 are easy to use but are not necessarily the safest. You can customize your online presence in your
-[settings file](./Server-Conf.md#settings-file). To have Evennia recognize changed port settings you have
+[settings file](./Settings.md#settings-file). To have Evennia recognize changed port settings you have
 to do a full `evennia reboot` to also restart the Portal and not just the Server component.
 
 Below is an example of a simple set of settings, mostly using the defaults. Evennia will require

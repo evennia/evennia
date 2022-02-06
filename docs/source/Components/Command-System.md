@@ -6,4 +6,4 @@
 
 See also:
 - [Default Commands](./Default-Commands.md)
-- [Adding Command Tutorial](../Howto/Starting/Part1/Adding-Commands.md)
+- [Adding Command Tutorial](../Howtos/Beginner-Tutorial/Part1/Adding-Commands.md)

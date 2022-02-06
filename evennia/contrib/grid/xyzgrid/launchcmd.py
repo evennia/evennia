@@ -315,7 +315,7 @@ def _option_spawn(*suboptions):
         print("Aborted.")
         return
 
-    print("Starting spawn ...")
+    print("Beginner-Tutorial spawn ...")
     grid.spawn(xyz=(x, y, z))
     print("... spawn complete!\nIt's recommended to reload the server to refresh caches if this "
           "modified an existing grid.")

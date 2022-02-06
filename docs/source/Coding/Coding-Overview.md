@@ -5,26 +5,38 @@ make your game, also if you never coded before. If you are an experienced coder,
 to you, but some things may still be useful. 
 
 
-## Find your way 
-
-- [Directory-Overview](../Howto/Starting/Part1/Gamedir-Overview.md)
-- [Quirks of Evennia](./Quirks.md)
-
 ## Setting up a workflow
 
-- [Setting up PyCharm](./Setting-up-PyCharm.md)
-- [Using Version-Control](./Version-Control.md)
-- [Updating Evennia sources](./Updating-Your-Game.md)
+See also the [Beginner Tutorial](../Howtos/Beginner-Tutorial/Beginner-Tutorial-Intro.md).
+
+```{toctree}
+:maxdepth: 2
+
+Version-Control.md
+Updating-Your-Game.md
+
+```
 
 ## Coding away
 
-- [Coding Introduction](./Coding-Introduction.md)
-- [Ways to Debug](./Debugging.md)
-- [Adding unit-tests](./Unit-Testing.md)
-- [Things to remember when importing from evennia](./Flat-API.md)
+```{toctree}
+:maxdepth: 2
 
-## Advanced concepts 
+Coding-Introduction.md
+Debugging.md
+Unit-Testing.md
+Profiling.md
+Quirks.md
+Changelog.md
 
-- [Continuous Integration](./Continuous-Integration.md)
-  - [Using Travis](./Using-Travis.md)
-- [Profiling](./Profiling.md)
+```
+
+## Third-party integrations
+
+```{toctree}
+:maxdepth: 2
+
+Continuous-Integration.md
+Setting-up-PyCharm.md
+
+```

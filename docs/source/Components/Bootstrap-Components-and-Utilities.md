@@ -2,8 +2,8 @@
 
 Bootstrap provides many utilities and components you can use when customizing Evennia's web
 presence. We'll go over a few examples here that you might find useful.
-> Please take a look at either [the basic web tutorial](../Howto/Starting/Part5/Add-a-simple-new-web-page.md) or 
->[the web character view tutorial](../Howto/Web-Character-View-Tutorial.md)
+> Please take a look at either [the basic web tutorial](../Howtos/Beginner-Tutorial/Part5/Add-a-simple-new-web-page.md) or 
+>[the web character view tutorial](../Howtos/Web-Character-View-Tutorial.md)
 > to get a feel for how to add pages to Evennia's website to test these examples.
 
 ## General Styling
@@ -77,4 +77,4 @@ width of the page - Evennia's base site uses the former.
 ### Forms
 [Forms](https://getbootstrap.com/docs/4.0/components/forms/) are highly customizable with Bootstrap.
 For a more in-depth look at how to use forms and their styles in your own Evennia site, please read
-over [the web character gen tutorial.](../Howto/Web-Character-Generation.md)
+over [the web character gen tutorial.](../Howtos/Web-Character-Generation.md)

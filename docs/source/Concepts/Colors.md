@@ -14,7 +14,7 @@ equipment by people who are blind or have otherwise diminished eyesight.
 
 So a good rule of thumb is to use colour to enhance your game but don't *rely* on it to display
 critical information. If you are coding the game, you can add functionality to let users disable
-colours as they please, as described [here](../Howto/Manually-Configuring-Color.md).
+colours as they please, as described [here](../Howtos/Manually-Configuring-Color.md).
 
 To see which colours your client support, use the default `@color` command. This will list all
 available colours for ANSI and Xterm256 along with the codes you use for them. You can find a list
@@ -178,6 +178,6 @@ to activate some features manually.
 
 ## More reading
 
-There is an [Understanding Color Tags](../Howto/Understanding-Color-Tags.md) tutorial which expands on the
+There is an [Understanding Color Tags](../Howtos/Understanding-Color-Tags.md) tutorial which expands on the
 use of ANSI color tags and the pitfalls of mixing ANSI and Xterms256 color tags in the same context.
 

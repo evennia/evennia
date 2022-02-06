@@ -38,18 +38,18 @@ TXT_REMAPS = {
 }
 URL_REMAPS = {
     "Developer-Central": "Components/Components-Overview",
-    "Tutorials": "Howto/Howto-Overview",
-    "../Howto/Starting/Directory-Overview": "Gamedir-Overview",
-    "Howto/Starting/Directory-Overview": "Gamedir-Overview",
-    "Starting/Directory-Overview": "Gamedir-Overview",
+    "Tutorials": "Howtos/Howtos-Overview",
+    "../Howtos/Beginner-Tutorial/Directory-Overview": "Gamedir-Overview",
+    "Howtos/Beginner-Tutorial/Directory-Overview": "Gamedir-Overview",
+    "Beginner-Tutorial/Directory-Overview": "Gamedir-Overview",
     "Directory-Overview": "Gamedir-Overview",
     "../Setup/Getting-Started": "Setup-Quickstart",
     "Setup/Getting-Started": "Setup-Quickstart",
     "Getting-Started": "Setup-Quickstart",
-    "First-Steps-Coding": "Starting-Part1",
-    "../Howto/Starting/Adding-Command-Tutorial": "Adding-Commands",
-    "Howto/Starting/Adding-Command-Tutorial": "Adding-Commands",
-    "Starting/Adding-Command-Tutorial": "Adding-Commands",
+    "First-Steps-Coding": "Beginner-Tutorial-Part1",
+    "../Howtos/Beginner-Tutorial/Adding-Command-Tutorial": "Adding-Commands",
+    "Howtos/Beginner-Tutorial/Adding-Command-Tutorial": "Adding-Commands",
+    "Beginner-Tutorial/Adding-Command-Tutorial": "Adding-Commands",
     "Adding-Command-Tutorial": "Adding-Commands",
     "CmdSet": "Command-Sets",
     "Spawner": "Prototypes",
@@ -248,26 +248,26 @@ def auto_link_remapper(no_autodoc=False):
             print(f"  ORPHANED DOC: no refs found to {src_url}.md")
 
     # write tocfile
-    with open(_TOC_FILE, "w") as fil:
-        fil.write("```{toctree}\n")
+    # with open(_TOC_FILE, "w") as fil:
+    #     fil.write("```{toctree}\n")
 
-        if not no_autodoc:
-            fil.write("- [API root](api/evennia-api.rst)")
+    #     if not no_autodoc:
+    #         fil.write("- [API root](api/evennia-api.rst)")
 
-        for ref in sorted(toc_map.values()):
+    #     for ref in sorted(toc_map.values()):
 
-            if ref == "toc":
-                continue
+    #         if ref == "toc":
+    #             continue
 
-            # if not "/" in ref:
-            #     ref = "./" + ref
+    #         # if not "/" in ref:
+    #         #     ref = "./" + ref
 
-            # linkname = ref.replace("-", " ")
-            fil.write(f"\n{ref}")  # - [{linkname}]({ref})")
+    #         # linkname = ref.replace("-", " ")
+    #         fil.write(f"\n{ref}")  # - [{linkname}]({ref})")
 
-        # we add a self-reference so the toc itself is also a part of a toctree
-        fil.write("\n```\n\n```{toctree}\n  :hidden:\n\ntoc\n```")
-        print("  -- File toc.md updated.")
+    #     # we add a self-reference so the toc itself is also a part of a toctree
+    #     fil.write("\n```\n\n```{toctree}\n  :hidden:\n\ntoc\n```")
+    #     print("  -- File toc.md updated.")
 
     print("  -- Auto-Remapper finished.")
 
