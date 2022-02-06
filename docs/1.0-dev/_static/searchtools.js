@@ -15,14 +15,28 @@ if (!Scorer) {
    */
   var Scorer = {
     // Implement the following function to further tweak the score for each result
-    // The function takes a result array [filename, title, anchor, descr, score]
+    // The function takes a result array query, [filename, title, anchor, descr, score]
     // and returns the new score.
     /*
     score: function(result) {
       return result[4];
     },
     */
-
+    // Evennia optimized scorer
+    score: function(query, result) {
+        var scorevar = 0;
+        if(result[1].startsWith("evennia.")) {
+            scorevar = result[4] * 0.8;
+        }
+        else if(result[1].toLowerCase().startsWith(query) & query.length == result[1].length) {
+            scorevar = result[4] * 1.5;
+        }
+        else {
+            scorevar = result[4];
+        }
+        // console.debug("Scored:", result[1], scorevar)
+        return scorevar;
+    },
     // query matches the full name of an object
     objNameMatch: 11,
     // or matches in the last dotted part of the object name
@@ -217,7 +231,7 @@ var Search = {
     // let the scorer override scores with a custom scoring function
     if (Scorer.score) {
       for (i = 0; i < results.length; i++)
-        results[i][4] = Scorer.score(results[i]);
+        results[i][4] = Scorer.score(query, results[i]);
     }
 
     // now sort the results by score (in opposite order of appearance, since the
@@ -483,7 +497,7 @@ var Search = {
 
   /**
    * helper function to return a node containing the
-   * search summary for a given text. keywords is a list
+   * search summary for a given text. Keywords is a list
    * of stemmed words, hlwords is the list of normal, unstemmed
    * words. the first one is used to find the occurrence, the
    * latter for highlighting it.
