@@ -68,10 +68,6 @@ You can also use [shell-type wildcards](http://www.linfo.org/wildcard.html):
 - [seq] - matches everything in the sequence, e.g. [xyz] will match both x, y and z
 - [!seq] - matches everything *not* in the sequence. e.g. [!xyz] will match all but x,y z.
 
-
-
-
-
 ## Coding with nicks
 
 Nicks are stored as the `Nick` database model and are referred from the normal Evennia
@@ -104,7 +100,7 @@ command in `evennia/commands/default/general.py` for more examples.
 As a last note, The Evennia [channel](./Channels.md) alias systems are using nicks with the
 `nick_type="channel"` in order to allow users to create their own custom aliases to channels.
 
-# Advanced note
+## Advanced note
 
 Internally, nicks are [Attributes](./Attributes.md) saved with the `db_attrype` set to "nick" (normal
 Attributes has this set to `None`).
