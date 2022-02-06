@@ -146,13 +146,12 @@ sections).</p>
 </pre></div>
 </div>
 </section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="defining-new-scripts">
-<h1>Defining new Scripts<a class="headerlink" href="#defining-new-scripts" title="Permalink to this headline">¶</a></h1>
+<section id="defining-new-scripts">
+<h2>Defining new Scripts<a class="headerlink" href="#defining-new-scripts" title="Permalink to this headline">¶</a></h2>
 <p>A Script is defined as a class and is created in the same way as other
 <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">typeclassed</span></a> entities. The parent class is <code class="docutils literal notranslate"><span class="pre">evennia.DefaultScript</span></code>.</p>
 <section id="simple-storage-script">
-<h2>Simple storage script<a class="headerlink" href="#simple-storage-script" title="Permalink to this headline">¶</a></h2>
+<h3>Simple storage script<a class="headerlink" href="#simple-storage-script" title="Permalink to this headline">¶</a></h3>
 <p>In <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/scripts.py</span></code> is an empty <code class="docutils literal notranslate"><span class="pre">Script</span></code> class already set up. You
 can use this as a base for your own scripts.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/scripts.py</span>
@@ -193,6 +192,7 @@ you set in your <code class="docutils literal notranslate"><span class="pre">at_
 <p>See the <a class="reference internal" href="../api/evennia.utils.create.html#evennia.utils.create.create_script" title="evennia.utils.create.create_script"><span class="xref myst py py-func">create_script</span></a> and
 <a class="reference internal" href="../api/evennia.utils.search.html#evennia.utils.search.search_script" title="evennia.utils.search.search_script"><span class="xref myst py py-func">search_script</span></a> API documentation for more options
 on creating and finding Scripts.</p>
+</section>
 </section>
 <section id="timed-scripts">
 <h2>Timed Scripts<a class="headerlink" href="#timed-scripts" title="Permalink to this headline">¶</a></h2>
@@ -321,9 +321,8 @@ but only <code class="docutils literal notranslate"><span class="pre">scripts.We
 </pre></div>
 </div>
 </section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="other-script-methods">
-<h1>Other Script methods<a class="headerlink" href="#other-script-methods" title="Permalink to this headline">¶</a></h1>
+<section id="other-script-methods">
+<h2>Other Script methods<a class="headerlink" href="#other-script-methods" title="Permalink to this headline">¶</a></h2>
 <p>A Script has all the properties of a typeclassed object, such as <code class="docutils literal notranslate"><span class="pre">db</span></code> and <code class="docutils literal notranslate"><span class="pre">ndb</span></code>(see
 <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclasses</span></a>). Setting <code class="docutils literal notranslate"><span class="pre">key</span></code> is useful in order to manage scripts (delete them by name
 etc). These are usually set up in the Script’s typeclass, but can also be assigned on the fly as
@@ -348,8 +347,8 @@ it will also stop the timer (if it runs), leading to the <code class="docutils l
 Typeclassed entities.</p>
 <p>See also the methods involved in controlling a <a class="reference internal" href="#timed-scripts"><span class="std std-doc">Timed Script</span></a> above.</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="the-global-scripts-container">
-<h1>The GLOBAL_SCRIPTS container<a class="headerlink" href="#the-global-scripts-container" title="Permalink to this headline">¶</a></h1>
+<section id="the-global-scripts-container">
+<h2>The GLOBAL_SCRIPTS container<a class="headerlink" href="#the-global-scripts-container" title="Permalink to this headline">¶</a></h2>
 <p>A Script not attached to another entity is commonly referred to as a <em>Global</em> script since it’t available
 to access from anywhere. This means they need to be searched for in order to be used.</p>
 <p>Evennia supplies a convenient “container” <code class="docutils literal notranslate"><span class="pre">evennia.GLOBAL_SCRIPTS</span></code> to help organize your global
@@ -425,8 +424,8 @@ and your Script will temporarily fall back to being a `DefaultScript` type.
 <p>That is, if the script is deleted, next time you get it from <code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPTS</span></code>, Evennia will use the
 information in settings to recreate it for you on the fly.</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="hints-dealing-with-script-errors">
-<h1>Hints: Dealing with Script Errors<a class="headerlink" href="#hints-dealing-with-script-errors" title="Permalink to this headline">¶</a></h1>
+<section id="hints-dealing-with-script-errors">
+<h2>Hints: Dealing with Script Errors<a class="headerlink" href="#hints-dealing-with-script-errors" title="Permalink to this headline">¶</a></h2>
 <p>Errors inside a timed, executing script can sometimes be rather terse or point to
 parts of the execution mechanism that is hard to interpret. One way to make it
 easier to debug scripts is to import Evennia’s native logger and wrap your
@@ -447,6 +446,7 @@ traceback occurred in your script.</p>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
 </pre></div>
 </div>
+</section>
 </section>
 
 
@@ -474,20 +474,20 @@ traceback occurred in your script.</p>
 <li><a class="reference internal" href="#">Scripts</a><ul>
 <li><a class="reference internal" href="#in-game-command-examples">In-game command examples</a></li>
 <li><a class="reference internal" href="#code-examples">Code examples</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#defining-new-scripts">Defining new Scripts</a><ul>
 <li><a class="reference internal" href="#simple-storage-script">Simple storage script</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#timed-scripts">Timed Scripts</a><ul>
 <li><a class="reference internal" href="#script-timers-vs-delay-repeat">Script timers vs delay/repeat</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#script-attached-to-another-object">Script attached to another object</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#other-script-methods">Other Script methods</a></li>
 <li><a class="reference internal" href="#the-global-scripts-container">The GLOBAL_SCRIPTS container</a></li>
 <li><a class="reference internal" href="#hints-dealing-with-script-errors">Hints: Dealing with Script Errors</a></li>
+</ul>
+</li>
 </ul>
 
   <h4>Previous topic</h4>

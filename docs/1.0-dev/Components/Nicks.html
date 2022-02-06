@@ -143,9 +143,8 @@ command in <code class="docutils literal notranslate"><span class="pre">evennia/
 <p>As a last note, The Evennia <a class="reference internal" href="Channels.html"><span class="doc std std-doc">channel</span></a> alias systems are using nicks with the
 <code class="docutils literal notranslate"><span class="pre">nick_type=&quot;channel&quot;</span></code> in order to allow users to create their own custom aliases to channels.</p>
 </section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="advanced-note">
-<h1>Advanced note<a class="headerlink" href="#advanced-note" title="Permalink to this headline">¶</a></h1>
+<section id="advanced-note">
+<h2>Advanced note<a class="headerlink" href="#advanced-note" title="Permalink to this headline">¶</a></h2>
 <p>Internally, nicks are <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a> saved with the <code class="docutils literal notranslate"><span class="pre">db_attrype</span></code> set to “nick” (normal
 Attributes has this set to <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
 <p>The nick stores the replacement data in the Attribute.db_value field as a tuple with four fields
@@ -159,6 +158,7 @@ basically the unchanged strings you enter to the <code class="docutils literal n
 <span class="nb">tuple</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nickname&quot;</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
 </pre></div>
 </div>
+</section>
 </section>
 
 
@@ -185,9 +185,9 @@ basically the unchanged strings you enter to the <code class="docutils literal n
   <ul>
 <li><a class="reference internal" href="#">Nicks</a><ul>
 <li><a class="reference internal" href="#coding-with-nicks">Coding with nicks</a></li>
+<li><a class="reference internal" href="#advanced-note">Advanced note</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#advanced-note">Advanced note</a></li>
 </ul>
 
   <h4>Previous topic</h4>

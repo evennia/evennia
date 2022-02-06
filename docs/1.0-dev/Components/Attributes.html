@@ -590,9 +590,8 @@ need to be modified.</p></li>
 <p>Non-database attributes are not stored in the database and have no equivalence
 to <code class="docutils literal notranslate"><span class="pre">category</span></code> nor <code class="docutils literal notranslate"><span class="pre">strvalue</span></code>, <code class="docutils literal notranslate"><span class="pre">attrtype</span></code> or <code class="docutils literal notranslate"><span class="pre">model</span></code>.</p>
 </section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="in-memory-attributes-nattributes">
-<h1>In-memory Attributes (NAttributes)<a class="headerlink" href="#in-memory-attributes-nattributes" title="Permalink to this headline">¶</a></h1>
+<section id="in-memory-attributes-nattributes">
+<h2>In-memory Attributes (NAttributes)<a class="headerlink" href="#in-memory-attributes-nattributes" title="Permalink to this headline">¶</a></h2>
 <p><em>NAttributes</em> (short of Non-database Attributes) mimic Attributes in most things except they
 are <strong>non-persistent</strong> - they will <em>not</em> survive a server reload.</p>
 <ul class="simple">
@@ -625,7 +624,7 @@ the server lives.</p></li>
 where it’s clear how long-lived (or not) your data is to be.</p></li>
 </ul>
 <section id="persistent-vs-non-persistent">
-<h2>Persistent vs non-persistent<a class="headerlink" href="#persistent-vs-non-persistent" title="Permalink to this headline">¶</a></h2>
+<h3>Persistent vs non-persistent<a class="headerlink" href="#persistent-vs-non-persistent" title="Permalink to this headline">¶</a></h3>
 <p>So <em>persistent</em> data means that your data will survive a server reboot, whereas with
 <em>non-persistent</em> data it will not …</p>
 <p>… So why would you ever want to use non-persistent data? The answer is, you don’t have to. Most of
@@ -650,6 +649,7 @@ don’t need to worry about being saved to the database - they work very well fo
 <li><p>You want to implement a fully or partly <em>non-persistent world</em>. Who are we to argue with your
 grand vision!</p></li>
 </ul>
+</section>
 </section>
 </section>
 
@@ -691,10 +691,10 @@ grand vision!</p></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#properties-of-attributes">Properties of Attributes</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#in-memory-attributes-nattributes">In-memory Attributes (NAttributes)</a><ul>
 <li><a class="reference internal" href="#persistent-vs-non-persistent">Persistent vs non-persistent</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
