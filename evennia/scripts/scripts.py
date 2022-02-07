@@ -473,6 +473,14 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         super().delete()
         return True
 
+    def at_init(self):
+        """
+        Called when the Script is cached in the idmapper. This is usually more reliable
+        than overriding `__init__` since the latter can be called at unexpected times.
+
+        """
+        pass
+
     def at_script_creation(self):
         """
         Should be overridden in child.

@@ -313,6 +313,7 @@ class SharedMemoryModel(Model, metaclass=SharedMemoryModelBase):
         """
         pk = instance._get_pk_val()
         if pk is not None:
+            new = new or pk not in cls.__dbclass__.__instance_cache__
             cls.__dbclass__.__instance_cache__[pk] = instance
             if new:
                 try:

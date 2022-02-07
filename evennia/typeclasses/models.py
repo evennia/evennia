@@ -485,6 +485,14 @@ class TypedObject(SharedMemoryModel):
     # Object manipulation methods
     #
 
+    def at_init(self):
+        """
+        Called when this object is loaded into cache. This is  more reliable
+        than to override `__init__`.
+
+        """
+        pass
+
     @classmethod
     def search(cls, query, **kwargs):
         """

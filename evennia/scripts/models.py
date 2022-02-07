@@ -157,8 +157,6 @@ class ScriptDB(TypedObject):
             # deprecated ...
             pass
         if isinstance(value, (str, int)):
-            from evennia.objects.models import ObjectDB
-
             value = to_str(value)
             if value.isdigit() or value.startswith("#"):
                 dbid = dbref(value, reqhash=False)

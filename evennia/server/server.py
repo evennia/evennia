@@ -395,7 +395,7 @@ class Evennia:
             mode (str): One of shutdown, reload or reset
 
         """
-        from evennia.objects.models import ObjectDB
+        from evennia.typeclasses.models import TypedObject
 
         # start server time and maintenance task
         self.maintenance_task = LoopingCall(_server_maintenance)
@@ -404,8 +404,10 @@ class Evennia:
         # update eventual changed defaults
         self.update_defaults()
 
-        [o.at_init() for o in ObjectDB.get_all_cached_instances()]
-        [p.at_init() for p in AccountDB.get_all_cached_instances()]
+        # run at_init() on all cached entities on reconnect
+        [[entity.at_init()
+          for entity in typeclass_db.get_all_cached_instances()]
+          for typeclass_db in TypedObject.__subclasses__()]
 
         # call correct server hook based on start file value
         if mode == "reload":
