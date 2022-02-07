@@ -41,11 +41,15 @@ class ContentsHandler:
             obj (Object):  The object on which the
                 handler is defined
 
+        Notes:
+            This was changed from using `set` to using `dict` internally
+            in order to retain insertion order.
+
         """
         self.obj = obj
-        self._pkcache = set()
+        self._pkcache = {}
         self._idcache = obj.__class__.__instance_cache__
-        self._typecache = defaultdict(set)
+        self._typecache = defaultdict(dict)
         self.init()
 
     def load(self):
@@ -63,10 +67,10 @@ class ContentsHandler:
 
         """
         objects = self.load()
-        self._pkcache = {obj.pk for obj in objects}
+        self._pkcache = {obj.pk: True for obj in objects}
         for obj in objects:
             for ctype in obj._content_types:
-                self._typecache[ctype].add(obj.pk)
+                self._typecache[ctype][obj.pk] = True
 
     def get(self, exclude=None, content_type=None):
         """
@@ -81,11 +85,11 @@ class ContentsHandler:
 
         """
         if content_type is not None:
-            pks = self._typecache[content_type]
+            pks = self._typecache[content_type].keys()
         else:
-            pks = self._pkcache
+            pks = self._pkcache.keys()
         if exclude:
-            pks = pks - {excl.pk for excl in make_iter(exclude)}
+            pks = set(pks) - {excl.pk for excl in make_iter(exclude)}
         try:
             return [self._idcache[pk] for pk in pks]
         except KeyError:
@@ -107,9 +111,9 @@ class ContentsHandler:
             obj (Object): object to add
 
         """
-        self._pkcache.add(obj.pk)
+        self._pkcache[obj.pk] = obj
         for ctype in obj._content_types:
-            self._typecache[ctype].add(obj.pk)
+            self._typecache[ctype][obj.pk] = True
 
     def remove(self, obj):
         """
@@ -119,15 +123,10 @@ class ContentsHandler:
             obj (Object): object to remove
 
         """
-        try:
-            self._pkcache.remove(obj.pk)
-        except KeyError:
-            # not in pk cache, but can happen deletions happens
-            # remotely from out-of-thread.
-            pass
+        self._pkcache.pop(obj.pk, None)
         for ctype in obj._content_types:
             if obj.pk in self._typecache[ctype]:
-                self._typecache[ctype].remove(obj.pk)
+                self._typecache[ctype].pop(obj.pk, None)
 
     def clear(self):
         """
@@ -135,7 +134,7 @@ class ContentsHandler:
 
         """
         self._pkcache = {}
-        self._typecache = defaultdict(set)
+        self._typecache = defaultdict(dict)
         self.init()
 
 
