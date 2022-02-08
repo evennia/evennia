@@ -104,7 +104,8 @@ try:
 except ImportError as err:
     raise ImportError(
         f"{err}\nThe XYZgrid contrib requires "
-        "the SciPy package. Install with `pip install scipy'.")
+        "the SciPy package. Install with `pip install scipy'."
+    )
 from django.conf import settings
 from evennia.utils.utils import variable_from_module, mod_import, is_iter
 from evennia.utils import logger
@@ -122,9 +123,7 @@ _CACHE_DIR = settings.CACHE_DIR
 _LOADED_PROTOTYPES = None
 _XYZROOMCLASS = None
 
-MAP_DATA_KEYS = [
-    "zcoord", "map", "legend", "prototypes", "options", "module_path"
-]
+MAP_DATA_KEYS = ["zcoord", "map", "legend", "prototypes", "options", "module_path"]
 
 DEFAULT_LEGEND = xymap_legend.LEGEND
 
@@ -172,11 +171,11 @@ class XYMap:
     but recommended for readability!
 
     """
-    mapcorner_symbol = '+'
+    mapcorner_symbol = "+"
     max_pathfinding_length = 500
-    empty_symbol = ' '
+    empty_symbol = " "
     # we normally only accept one single character for the legend key
-    legend_key_exceptions = ("\\")
+    legend_key_exceptions = "\\"
 
     def __init__(self, map_module_or_dict, Z="map", xyzgrid=None):
         """
@@ -210,7 +209,9 @@ class XYMap:
         if not _LOADED_PROTOTYPES:
             # inject default prototypes, but don't override prototype-keys loaded from
             # settings, if they exist (that means the user wants to replace the defaults)
-            protlib.load_module_prototypes("evennia.contrib.grid.xyzgrid.prototypes", override=False)
+            protlib.load_module_prototypes(
+                "evennia.contrib.grid.xyzgrid.prototypes", override=False
+            )
             _LOADED_PROTOTYPES = True
 
         self.Z = Z
@@ -264,7 +265,7 @@ class XYMap:
         nnodes = 0
         if self.node_index_map:
             nnodes = len(self.node_index_map)
-        return (f"<XYMap(Z={self.Z}), {self.max_X + 1}x{self.max_Y + 1}, {nnodes} nodes>")
+        return f"<XYMap(Z={self.Z}), {self.max_X + 1}x{self.max_Y + 1}, {nnodes} nodes>"
 
     def log(self, msg):
         if self.xyzgrid:
@@ -317,34 +318,41 @@ class XYMap:
                 mapdata = variable_from_module(mod, "XYMAP_DATA")
 
         if not mapdata:
-            raise MapError("No valid XYMAP_DATA or XYMAP_DATA_LIST could be found from "
-                           f"{map_module_or_dict}.")
+            raise MapError(
+                "No valid XYMAP_DATA or XYMAP_DATA_LIST could be found from "
+                f"{map_module_or_dict}."
+            )
 
         # validate
         if any(key for key in mapdata if key not in MAP_DATA_KEYS):
-            raise MapError(f"Mapdata has keys {list(mapdata)}, but only "
-                           f"keys {MAP_DATA_KEYS} are allowed.")
+            raise MapError(
+                f"Mapdata has keys {list(mapdata)}, but only " f"keys {MAP_DATA_KEYS} are allowed."
+            )
 
-        for key in mapdata.get('legend', DEFAULT_LEGEND):
+        for key in mapdata.get("legend", DEFAULT_LEGEND):
             if not key or len(key) > 1:
                 if key not in self.legend_key_exceptions:
-                    raise MapError(f"Map-legend key '{key}' is invalid: All keys must "
-                                   "be exactly one character long. Use the node/link's "
-                                   "`.display_symbol` property to change how it is "
-                                   "displayed.")
-        if 'map' not in mapdata or not mapdata['map']:
+                    raise MapError(
+                        f"Map-legend key '{key}' is invalid: All keys must "
+                        "be exactly one character long. Use the node/link's "
+                        "`.display_symbol` property to change how it is "
+                        "displayed."
+                    )
+        if "map" not in mapdata or not mapdata["map"]:
             raise MapError("No map found. Add 'map' key to map-data dict.")
-        for key, prototype in mapdata.get('prototypes', {}).items():
+        for key, prototype in mapdata.get("prototypes", {}).items():
             if not (is_iter(key) and (2 <= len(key) <= 3)):
-                raise MapError(f"Prototype override key {key} is malformed: It must be a "
-                               "coordinate (X, Y) for nodes or (X, Y, direction) for links; "
-                               "where direction is a supported direction string ('n', 'ne', etc).")
+                raise MapError(
+                    f"Prototype override key {key} is malformed: It must be a "
+                    "coordinate (X, Y) for nodes or (X, Y, direction) for links; "
+                    "where direction is a supported direction string ('n', 'ne', etc)."
+                )
 
         # store/update result
-        self.Z = mapdata.get('zcoord', self.Z)
-        self.mapstring = mapdata['map']
-        self.prototypes = mapdata.get('prototypes', {})
-        self.options = mapdata.get('options', {})
+        self.Z = mapdata.get("zcoord", self.Z)
+        self.mapstring = mapdata["map"]
+        self.prototypes = mapdata.get("prototypes", {})
+        self.options = mapdata.get("options", {})
 
         # merge the custom legend onto the default legend to allow easily
         # overriding only parts of it
@@ -357,8 +365,9 @@ class XYMap:
                 # nothing more to do
                 continue
             # we need to load the prototype dict onto each for ease of access. Note that
-            proto = protlib.search_prototype(prototype, require_single=True,
-                                             no_db=_NO_DB_PROTOTYPES)[0]
+            proto = protlib.search_prototype(
+                prototype, require_single=True, no_db=_NO_DB_PROTOTYPES
+            )[0]
             node_or_link_class.prototype = proto
 
     def parse(self):
@@ -391,7 +400,8 @@ class XYMap:
             raise MapParserError(
                 f"The mapstring must have at least two '{mapcorner_symbol}' "
                 "symbols marking the upper- and bottom-left corners of the "
-                "grid area.")
+                "grid area."
+            )
 
         # find the the position (in the string as a whole) of the top-left corner-marker
         maplines = mapstring.split("\n")
@@ -406,13 +416,15 @@ class XYMap:
         # find the position (in the string as a whole) of the bottom-left corner-marker
         # this is always in a stright line down from the first marker
         botleft_marker_x, botleft_marker_y = topleft_marker_x, -1
-        for botleft_marker_y, line in enumerate(maplines[topleft_marker_y + 1:]):
+        for botleft_marker_y, line in enumerate(maplines[topleft_marker_y + 1 :]):
             if line.find(mapcorner_symbol) == topleft_marker_x:
                 break
         if botleft_marker_y == -1:
-            raise MapParserError(f"No bottom-left corner-marker ({mapcorner_symbol}) found! "
-                                 "Make sure it lines up with the top-left corner-marker "
-                                 f"(found at column {topleft_marker_x} of the string).")
+            raise MapParserError(
+                f"No bottom-left corner-marker ({mapcorner_symbol}) found! "
+                "Make sure it lines up with the top-left corner-marker "
+                f"(found at column {topleft_marker_x} of the string)."
+            )
         # the actual coordinate is dy below the topleft marker so we need to shift
         botleft_marker_y += topleft_marker_y + 1
 
@@ -443,8 +455,7 @@ class XYMap:
                 mapnode_or_link_class = self.legend.get(char)
                 if not mapnode_or_link_class:
                     raise MapParserError(
-                        f"Symbol '{char}' on XY=({ix / 2:g},{iy / 2:g}) "
-                        "is not found in LEGEND."
+                        f"Symbol '{char}' on XY=({ix / 2:g},{iy / 2:g}) " "is not found in LEGEND."
                     )
                 if hasattr(mapnode_or_link_class, "node_index"):
                     # A mapnode. Mapnodes can only be placed on even grid positions, where
@@ -454,7 +465,8 @@ class XYMap:
                         raise MapParserError(
                             f"Symbol '{char}' on XY=({ix / 2:g},{iy / 2:g}) marks a "
                             "MapNode but is located between integer (X,Y) positions (only "
-                            "Links can be placed between coordinates)!")
+                            "Links can be placed between coordinates)!"
+                        )
 
                     # save the node to several different maps for different uses
                     # in both coordinate systems
@@ -462,14 +474,17 @@ class XYMap:
                     max_X, max_Y = max(max_X, iX), max(max_Y, iY)
                     node_index += 1
 
-                    xygrid[ix][iy] = XYgrid[iX][iY] = node_index_map[node_index] = \
-                        mapnode_or_link_class(x=ix, y=iy, Z=self.Z,
-                                              node_index=node_index, symbol=char, xymap=self)
+                    xygrid[ix][iy] = XYgrid[iX][iY] = node_index_map[
+                        node_index
+                    ] = mapnode_or_link_class(
+                        x=ix, y=iy, Z=self.Z, node_index=node_index, symbol=char, xymap=self
+                    )
 
                 else:
                     # we have a link at this xygrid position (this is ok everywhere)
-                    xygrid[ix][iy] = mapnode_or_link_class(x=ix, y=iy, Z=self.Z, symbol=char,
-                                                           xymap=self)
+                    xygrid[ix][iy] = mapnode_or_link_class(
+                        x=ix, y=iy, Z=self.Z, symbol=char, xymap=self
+                    )
 
                 # store the symbol mapping for transition lookups
                 symbol_map[char].append(xygrid[ix][iy])
@@ -499,20 +514,23 @@ class XYMap:
                 node_coord = (node.X, node.Y)
                 # load prototype from override, or use default
                 try:
-                    node.prototype = flatten_prototype(self.prototypes.get(
-                        node_coord,
-                        self.prototypes.get(('*', '*'), node.prototype)),
-                        no_db=_NO_DB_PROTOTYPES
+                    node.prototype = flatten_prototype(
+                        self.prototypes.get(
+                            node_coord, self.prototypes.get(("*", "*"), node.prototype)
+                        ),
+                        no_db=_NO_DB_PROTOTYPES,
                     )
                 except Exception as err:
                     raise MapParserError(f"Room prototype malformed: {err}", node)
                 # do the same for links (x, y, direction) coords
                 for direction, maplink in node.first_links.items():
                     try:
-                        maplink.prototype = flatten_prototype(self.prototypes.get(
-                            node_coord + (direction,),
-                            self.prototypes.get(('*', '*', '*'), maplink.prototype)),
-                            no_db=_NO_DB_PROTOTYPES
+                        maplink.prototype = flatten_prototype(
+                            self.prototypes.get(
+                                node_coord + (direction,),
+                                self.prototypes.get(("*", "*", "*"), maplink.prototype),
+                            ),
+                            no_db=_NO_DB_PROTOTYPES,
                         )
                     except Exception as err:
                         raise MapParserError(f"Exit prototype malformed: {err}", maplink)
@@ -539,8 +557,10 @@ class XYMap:
             This performs a depth-first pass down the the given dist.
 
         """
-        def _scan_neighbors(start_node, points, dist=2,
-                            xmin=BIGVAL, ymin=BIGVAL, xmax=0, ymax=0, depth=0):
+
+        def _scan_neighbors(
+            start_node, points, dist=2, xmin=BIGVAL, ymin=BIGVAL, xmax=0, ymax=0, depth=0
+        ):
 
             x0, y0 = start_node.x, start_node.y
             points.append((x0, y0))
@@ -558,9 +578,15 @@ class XYMap:
                         ymin, ymax = min(ymin, y), max(ymax, y)
 
                     points, xmin, xmax, ymin, ymax = _scan_neighbors(
-                        end_node, points, dist=dist,
-                        xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax,
-                        depth=depth + 1)
+                        end_node,
+                        points,
+                        dist=dist,
+                        xmin=xmin,
+                        ymin=ymin,
+                        xmax=xmax,
+                        ymax=ymax,
+                        depth=depth + 1,
+                    )
 
             return points, xmin, xmax, ymin, ymax
 
@@ -581,14 +607,16 @@ class XYMap:
             # check if the solution for this grid was already solved previously.
 
             mapstr, dist_matrix, pathfinding_routes = "", None, None
-            with open(self.pathfinder_baked_filename, 'rb') as fil:
+            with open(self.pathfinder_baked_filename, "rb") as fil:
                 try:
                     mapstr, dist_matrix, pathfinding_routes = pickle.load(fil)
                 except Exception:
                     logger.log_trace()
-            if (mapstr == self.mapstring
-                    and dist_matrix is not None
-                    and pathfinding_routes is not None):
+            if (
+                mapstr == self.mapstring
+                and dist_matrix is not None
+                and pathfinding_routes is not None
+            ):
                 # this is important - it means the map hasn't changed so
                 # we can re-use the stored data!
                 self.dist_matrix = dist_matrix
@@ -606,16 +634,20 @@ class XYMap:
 
         # solve using Dijkstra's algorithm
         self.dist_matrix, self.pathfinding_routes = dijkstra(
-            pathfinding_matrix, directed=True,
-            return_predecessors=True, limit=self.max_pathfinding_length)
+            pathfinding_matrix,
+            directed=True,
+            return_predecessors=True,
+            limit=self.max_pathfinding_length,
+        )
 
         if self.pathfinder_baked_filename:
             # try to cache the results
-            with open(self.pathfinder_baked_filename, 'wb') as fil:
-                pickle.dump((self.mapstring, self.dist_matrix, self.pathfinding_routes),
-                            fil, protocol=4)
+            with open(self.pathfinder_baked_filename, "wb") as fil:
+                pickle.dump(
+                    (self.mapstring, self.dist_matrix, self.pathfinding_routes), fil, protocol=4
+                )
 
-    def spawn_nodes(self, xy=('*', '*')):
+    def spawn_nodes(self, xy=("*", "*")):
         """
         Convert the nodes of this XYMap into actual in-world rooms by spawning their
         related prototypes in the correct coordinate positions. This must be done *first*
@@ -638,12 +670,14 @@ class XYMap:
         if not _XYZROOMCLASS:
             from evennia.contrib.grid.xyzgrid.xyzroom import XYZRoom as _XYZROOMCLASS
         x, y = xy
-        wildcard = '*'
+        wildcard = "*"
         spawned = []
 
         # find existing nodes, in case some rooms need to be removed
-        map_coords = [(node.X, node.Y) for node in
-                      sorted(self.node_index_map.values(), key=lambda n: (n.Y, n.X))]
+        map_coords = [
+            (node.X, node.Y)
+            for node in sorted(self.node_index_map.values(), key=lambda n: (n.Y, n.X))
+        ]
         for existing_room in _XYZROOMCLASS.objects.filter_xyz(xyz=(x, y, self.Z)):
             roomX, roomY, _ = existing_room.xyz
             if (roomX, roomY) not in map_coords:
@@ -657,7 +691,7 @@ class XYMap:
                 spawned.append(node)
         return spawned
 
-    def spawn_links(self, xy=('*', '*'), nodes=None, directions=None):
+    def spawn_links(self, xy=("*", "*"), nodes=None, directions=None):
         """
         Convert links of this XYMap into actual in-game exits by spawning their related
         prototypes. It's possible to only spawn a specic exit by specifying the node and
@@ -676,7 +710,7 @@ class XYMap:
 
         """
         x, y = xy
-        wildcard = '*'
+        wildcard = "*"
 
         if not nodes:
             nodes = sorted(self.node_index_map.values(), key=lambda n: (n.Z, n.Y, n.X))
@@ -706,8 +740,10 @@ class XYMap:
 
         iX, iY = xy
         if not ((0 <= iX <= self.max_X) and (0 <= iY <= self.max_Y)):
-            raise MapError(f"get_node_from_coord got coordinate {xy} which is "
-                           f"outside the grid size of (0,0) - ({self.max_X}, {self.max_Y}).")
+            raise MapError(
+                f"get_node_from_coord got coordinate {xy} which is "
+                f"outside the grid size of (0,0) - ({self.max_X}, {self.max_Y})."
+            )
         try:
             return self.XYgrid[iX][iY]
         except KeyError:
@@ -753,8 +789,10 @@ class XYMap:
             istartnode = startnode.node_index
             inextnode = endnode.node_index
         except AttributeError:
-            raise MapError(f"Map.get_shortest_path received start/end nodes {startnode} and "
-                           f"{endnode}. They must both be MapNodes (not Links)")
+            raise MapError(
+                f"Map.get_shortest_path received start/end nodes {startnode} and "
+                f"{endnode}. They must both be MapNodes (not Links)"
+            )
 
         if self.pathfinding_routes is None:
             self.calculate_path_matrix()
@@ -782,13 +820,18 @@ class XYMap:
 
         return directions, path
 
-    def get_visual_range(self, xy, dist=2, mode='nodes',
-                         character='@',
-                         target=None,
-                         target_path_style="|y{display_symbol}|n",
-                         max_size=None,
-                         indent=0,
-                         return_str=True):
+    def get_visual_range(
+        self,
+        xy,
+        dist=2,
+        mode="nodes",
+        character="@",
+        target=None,
+        target_path_style="|y{display_symbol}|n",
+        max_size=None,
+        indent=0,
+        return_str=True,
+    ):
         """
         Get a part of the grid centered on a specific point and extended a certain number
         of nodes or grid points in every direction.
@@ -876,7 +919,7 @@ class XYMap:
             # nothing but ourselves or emptiness
             return character if character else self.empty_symbol
 
-        elif mode == 'nodes':
+        elif mode == "nodes":
             # dist measures only full, reachable nodes.
             points, xmin, xmax, ymin, ymax = self._get_topology_around_coord(xy, dist=dist)
 
@@ -888,7 +931,7 @@ class XYMap:
             for (ix0, iy0) in points:
                 gridmap[iy0 - ymin][ix0 - xmin] = display_map[iy0][ix0]
 
-        elif mode == 'scan':
+        elif mode == "scan":
             # scan-mode - dist measures individual grid points
 
             xmin, xmax = max(0, ix - dist), min(width, ix + dist + 1)
@@ -897,8 +940,10 @@ class XYMap:
             gridmap = [line[xmin:xmax] for line in display_map[ymin:ymax]]
 
         else:
-            raise MapError(f"Map.get_visual_range 'mode' was '{mode}' "
-                           "- it must be either 'scan' or 'nodes'.")
+            raise MapError(
+                f"Map.get_visual_range 'mode' was '{mode}' "
+                "- it must be either 'scan' or 'nodes'."
+            )
         if character:
             gridmap[iyc][ixc] = character  # correct indexing; it's a list of lines
 
@@ -906,8 +951,7 @@ class XYMap:
             # stylize path to target
 
             def _default_callable(node):
-                return target_path_style.format(
-                    display_symbol=node.get_display_symbol())
+                return target_path_style.format(display_symbol=node.get_display_symbol())
 
             if callable(target_path_style):
                 _target_path_style = target_path_style
@@ -916,7 +960,7 @@ class XYMap:
 
             _, path = self.get_shortest_path(xy, target)
 
-            maxstep = dist if mode == 'nodes' else dist / 2
+            maxstep = dist if mode == "nodes" else dist / 2
             nsteps = 0
             for node_or_link in path[1:]:
                 if hasattr(node_or_link, "node_index"):

@@ -217,7 +217,7 @@ class CmdBan(COMMAND_DEFAULT_CLASS):
             ipregex = re.compile(r"%s" % ipregex)
             bantup = ("", ban, ipregex, now, reason)
 
-        ret = yield(f"Are you sure you want to {typ}-ban '|w{ban}|n' [Y]/N?")
+        ret = yield (f"Are you sure you want to {typ}-ban '|w{ban}|n' [Y]/N?")
         if str(ret).lower() in ("no", "n"):
             self.caller.msg("Aborted.")
             return
@@ -273,7 +273,7 @@ class CmdUnban(COMMAND_DEFAULT_CLASS):
             ban = banlist[num - 1]
             value = (" ".join([s for s in ban[:2]])).strip()
 
-            ret = yield(f"Are you sure you want to unban {num}: '|w{value}|n' [Y]/N?")
+            ret = yield (f"Are you sure you want to unban {num}: '|w{value}|n' [Y]/N?")
             if str(ret).lower() in ("n", "no"):
                 self.caller.msg("Aborted.")
                 return

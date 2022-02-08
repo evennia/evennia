@@ -173,10 +173,10 @@ class AttributeProperty:
             foo = AttributeProperty(default="Bar")
 
     """
+
     attrhandler_name = "attributes"
 
-    def __init__(self, default=None, category=None, strattr=False, lockstring="",
-                 autocreate=False):
+    def __init__(self, default=None, category=None, strattr=False, lockstring="", autocreate=False):
         """
         Initialize an Attribute as a property descriptor.
 
@@ -218,13 +218,12 @@ class AttributeProperty:
         """
         value = self._default
         try:
-            value = (
-                getattr(instance, self.attrhandler_name)
-                .get(key=self._key,
-                     default=self._default,
-                     category=self._category,
-                     strattr=self._strattr,
-                     raise_exception=self._autocreate)
+            value = getattr(instance, self.attrhandler_name).get(
+                key=self._key,
+                default=self._default,
+                category=self._category,
+                strattr=self._strattr,
+                raise_exception=self._autocreate,
             )
         except AttributeError:
             if self._autocreate:
@@ -241,12 +240,13 @@ class AttributeProperty:
 
         """
         (
-            getattr(instance, self.attrhandler_name)
-            .add(self._key,
-                 value,
-                 category=self._category,
-                 lockstring=self._lockstring,
-                 strattr=self._strattr)
+            getattr(instance, self.attrhandler_name).add(
+                self._key,
+                value,
+                category=self._category,
+                lockstring=self._lockstring,
+                strattr=self._strattr,
+            )
         )
 
     def __delete__(self, instance):
@@ -254,11 +254,7 @@ class AttributeProperty:
         Called when running `del` on the field. Will remove/clear the Attribute.
 
         """
-        (
-            getattr(instance, self.attrhandler_name)
-            .remove(key=self._key,
-                    category=self._category)
-        )
+        (getattr(instance, self.attrhandler_name).remove(key=self._key, category=self._category))
 
 
 class NAttributeProperty(AttributeProperty):
@@ -273,6 +269,7 @@ class NAttributeProperty(AttributeProperty):
             foo = NAttributeProperty(default="Bar")
 
     """
+
     attrhandler_name = "nattributes"
 
 
@@ -357,7 +354,7 @@ class Attribute(IAttribute, SharedMemoryModel):
         self.save(update_fields=["db_lock_storage"])
 
     def __lock_storage_del(self):
-        self.db_lock_storage = ''
+        self.db_lock_storage = ""
         self.save(update_fields=["db_lock_storage"])
 
     lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
@@ -386,6 +383,7 @@ class Attribute(IAttribute, SharedMemoryModel):
     def value(self):
         """Deleter. Allows for del attr.value. This removes the entire attribute."""
         self.delete()
+
 
 #
 # Handlers making use of the Attribute model
@@ -1465,15 +1463,14 @@ def initialize_nick_templates(pattern, replacement, pattern_is_regex=False):
         # groups.  we need to split out any | - separated parts so we can
         # attach the line-break/ending extras all regexes require.
         pattern_regex_string = r"|".join(
-            or_part + r"(?:[\n\r]*?)\Z"
-            for or_part in _RE_OR.split(pattern))
+            or_part + r"(?:[\n\r]*?)\Z" for or_part in _RE_OR.split(pattern)
+        )
 
     else:
         # Shell pattern syntax - convert $N to argN groups
         # for the shell pattern we make sure we have matching $N on both sides
         pattern_args = [match.group(1) for match in _RE_NICK_RAW_ARG.finditer(pattern)]
-        replacement_args = [
-            match.group(1) for match in _RE_NICK_RAW_ARG.finditer(replacement)]
+        replacement_args = [match.group(1) for match in _RE_NICK_RAW_ARG.finditer(replacement)]
         if set(pattern_args) != set(replacement_args):
             # We don't have the same amount of argN/$N tags in input/output.
             raise NickTemplateInvalid("Nicks: Both in/out-templates must contain the same $N tags.")
@@ -1482,7 +1479,8 @@ def initialize_nick_templates(pattern, replacement, pattern_is_regex=False):
         pattern_regex_string = fnmatch.translate(pattern)
         pattern_regex_string = _RE_NICK_SPACE.sub(r"\\s+", pattern_regex_string)
         pattern_regex_string = _RE_NICK_ARG.sub(
-            lambda m: "(?P<arg%s>.+?)" % m.group(2), pattern_regex_string)
+            lambda m: "(?P<arg%s>.+?)" % m.group(2), pattern_regex_string
+        )
         # we must account for a possible line break coming over the wire
         pattern_regex_string = pattern_regex_string[:-2] + r"(?:[\n\r]*?)\Z"
 
@@ -1509,8 +1507,9 @@ def parse_nick_template(string, template_regex, outtemplate):
     """
     match = template_regex.match(string)
     if match:
-        matchdict = {key: value if value is not None else ""
-                     for key, value in match.groupdict().items()}
+        matchdict = {
+            key: value if value is not None else "" for key, value in match.groupdict().items()
+        }
         return True, outtemplate.format(**matchdict)
     return False, string
 
@@ -1613,9 +1612,11 @@ class NickHandler(AttributeHandler):
 
         """
         nick_regex, nick_template = initialize_nick_templates(
-            pattern, replacement, pattern_is_regex=pattern_is_regex)
-        super().add(pattern, (nick_regex, nick_template, pattern, replacement),
-                    category=category, **kwargs)
+            pattern, replacement, pattern_is_regex=pattern_is_regex
+        )
+        super().add(
+            pattern, (nick_regex, nick_template, pattern, replacement), category=category, **kwargs
+        )
 
     def remove(self, key, category="inputline", **kwargs):
         """

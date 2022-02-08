@@ -11,8 +11,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from evennia.utils import class_from_module
 from django.utils.text import slugify
-from .mixins import (
-    EvenniaCreateView, EvenniaDeleteView, EvenniaUpdateView, EvenniaDetailView)
+from .mixins import EvenniaCreateView, EvenniaDeleteView, EvenniaUpdateView, EvenniaDetailView
 
 
 class ObjectDetailView(EvenniaDetailView):
@@ -35,8 +34,9 @@ class ObjectDetailView(EvenniaDetailView):
     #
     # So when you extend it, this line should look simple, like:
     # model = Object
-    model = class_from_module(settings.BASE_OBJECT_TYPECLASS,
-                              fallback=settings.FALLBACK_OBJECT_TYPECLASS)
+    model = class_from_module(
+        settings.BASE_OBJECT_TYPECLASS, fallback=settings.FALLBACK_OBJECT_TYPECLASS
+    )
 
     # What HTML template you wish to use to display this page.
     template_name = "website/object_detail.html"
@@ -139,8 +139,9 @@ class ObjectCreateView(LoginRequiredMixin, EvenniaCreateView):
 
     """
 
-    model = class_from_module(settings.BASE_OBJECT_TYPECLASS,
-                              fallback=settings.FALLBACK_OBJECT_TYPECLASS)
+    model = class_from_module(
+        settings.BASE_OBJECT_TYPECLASS, fallback=settings.FALLBACK_OBJECT_TYPECLASS
+    )
 
 
 class ObjectDeleteView(LoginRequiredMixin, ObjectDetailView, EvenniaDeleteView):
@@ -155,8 +156,9 @@ class ObjectDeleteView(LoginRequiredMixin, ObjectDetailView, EvenniaDeleteView):
     """
 
     # -- Django constructs --
-    model = class_from_module(settings.BASE_OBJECT_TYPECLASS,
-                              fallback=settings.FALLBACK_OBJECT_TYPECLASS)
+    model = class_from_module(
+        settings.BASE_OBJECT_TYPECLASS, fallback=settings.FALLBACK_OBJECT_TYPECLASS
+    )
     template_name = "website/object_confirm_delete.html"
 
     # -- Evennia constructs --
@@ -178,8 +180,9 @@ class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
     """
 
     # -- Django constructs --
-    model = class_from_module(settings.BASE_OBJECT_TYPECLASS,
-                              fallback=settings.FALLBACK_OBJECT_TYPECLASS)
+    model = class_from_module(
+        settings.BASE_OBJECT_TYPECLASS, fallback=settings.FALLBACK_OBJECT_TYPECLASS
+    )
 
     # -- Evennia constructs --
     access_type = "edit"

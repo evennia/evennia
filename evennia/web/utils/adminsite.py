@@ -17,7 +17,8 @@ class EvenniaAdminApp(apps.AdminConfig):
     This is imported in INSTALLED_APPS instead of django.contrib.admin.
 
     """
-    default_site = 'evennia.web.utils.adminsite.EvenniaAdminSite'
+
+    default_site = "evennia.web.utils.adminsite.EvenniaAdminSite"
 
 
 class EvenniaAdminSite(admin.AdminSite):
@@ -26,10 +27,21 @@ class EvenniaAdminSite(admin.AdminSite):
     admin.register in the admin/ folder, this is what is being registered to.
 
     """
+
     site_header = "Evennia web admin"
 
-    app_order = ["accounts", "objects", "scripts", "comms", "help",
-                 "typeclasses", "server", "sites", "flatpages", "auth"]
+    app_order = [
+        "accounts",
+        "objects",
+        "scripts",
+        "comms",
+        "help",
+        "typeclasses",
+        "server",
+        "sites",
+        "flatpages",
+        "auth",
+    ]
 
     def get_app_list(self, request):
         app_list = super().get_app_list(request)

@@ -315,7 +315,8 @@ class LanguageHandler(DefaultScript):
                         raise IndexError(
                             "Could not find a matching phoneme for the grammar "
                             f"'{match.group()}'. Make there is at least one phoneme matching this "
-                            "combination of consonants and vowels.")
+                            "combination of consonants and vowels."
+                        )
                 translation[word.lower()] = new_word.lower()
 
         if manual_translations:

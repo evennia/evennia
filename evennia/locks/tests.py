@@ -215,12 +215,11 @@ class TestPermissionCheck(BaseEvenniaTest):
     Test the PermissionHandler.check method
 
     """
+
     def test_check__success(self):
         """Test combinations that should pass the check"""
         self.assertEqual(
-            [perm for perm in self.char1.account.permissions.all()],
-            ['developer', 'player']
-
+            [perm for perm in self.char1.account.permissions.all()], ["developer", "player"]
         )
         self.assertTrue(self.char1.permissions.check("Builder"))
         self.assertTrue(self.char1.permissions.check("Builder", "Player"))
@@ -234,12 +233,11 @@ class TestPermissionCheck(BaseEvenniaTest):
         self.assertFalse(self.char1.permissions.check("Builder", "dummy", require_all=True))
         self.assertFalse(self.char1.permissions.check("Developer", "foobar", require_all=True))
 
-        self.char1.account.permissions.remove('developer')
+        self.char1.account.permissions.remove("developer")
         self.char1.account.permissions.add("Builder")
 
         self.assertEqual(
-            [perm for perm in self.char1.account.permissions.all()],
-            ['builder', 'player']
+            [perm for perm in self.char1.account.permissions.all()], ["builder", "player"]
         )
         self.assertFalse(self.char1.permissions.check("Developer"))
         self.assertFalse(self.char1.permissions.check("Developer", "Player", require_all=True))

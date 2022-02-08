@@ -133,8 +133,9 @@ class TestTurnBattleBasicFunc(BaseEvenniaTest):
         self.assertTrue(self.defender.db.hp == 7)
         # Resolve attack
         self.defender.db.hp = 40
-        tb_basic.COMBAT_RULES.resolve_attack(self.attacker, self.defender,
-                                             attack_value=20, defense_value=10)
+        tb_basic.COMBAT_RULES.resolve_attack(
+            self.attacker, self.defender, attack_value=20, defense_value=10
+        )
         self.assertTrue(self.defender.db.hp < 40)
         # Combat cleanup
         self.attacker.db.Combat_attribute = True
@@ -227,7 +228,9 @@ class TestTurnBattleEquipFunc(BaseEvenniaTest):
         self.assertTrue(self.defender.db.hp == 7)
         # Resolve attack
         self.defender.db.hp = 40
-        tb_equip.COMBAT_RULES.resolve_attack(self.attacker, self.defender, attack_value=20, defense_value=10)
+        tb_equip.COMBAT_RULES.resolve_attack(
+            self.attacker, self.defender, attack_value=20, defense_value=10
+        )
         self.assertTrue(self.defender.db.hp < 40)
         # Combat cleanup
         self.attacker.db.Combat_attribute = True
@@ -305,12 +308,14 @@ class TestTurnBattleRangeFunc(BaseEvenniaTest):
         initiative = tb_range.COMBAT_RULES.roll_init(self.attacker)
         self.assertTrue(initiative >= 0 and initiative <= 1000)
         # Attack roll
-        attack_roll = tb_range.COMBAT_RULES.get_attack(self.attacker, self.defender,
-                                                       attack_type="test")
+        attack_roll = tb_range.COMBAT_RULES.get_attack(
+            self.attacker, self.defender, attack_type="test"
+        )
         self.assertTrue(attack_roll >= 0 and attack_roll <= 100)
         # Defense roll
-        defense_roll = tb_range.COMBAT_RULES.get_defense(self.attacker, self.defender,
-                                                         attack_type="test")
+        defense_roll = tb_range.COMBAT_RULES.get_defense(
+            self.attacker, self.defender, attack_type="test"
+        )
         self.assertTrue(defense_roll == 50)
         # Damage roll
         damage_roll = tb_range.COMBAT_RULES.get_damage(self.attacker, self.defender)
@@ -436,8 +441,9 @@ class TestTurnBattleItemsFunc(BaseEvenniaTest):
         self.assertTrue(self.defender.db.hp == 7)
         # Resolve attack
         self.defender.db.hp = 40
-        tb_items.COMBAT_RULES.resolve_attack(self.attacker, self.defender, attack_value=20,
-                                             defense_value=10)
+        tb_items.COMBAT_RULES.resolve_attack(
+            self.attacker, self.defender, attack_value=20, defense_value=10
+        )
         self.assertTrue(self.defender.db.hp < 40)
         # Combat cleanup
         self.attacker.db.Combat_attribute = True
@@ -555,8 +561,9 @@ class TestTurnBattleMagicFunc(BaseEvenniaTest):
         self.assertTrue(self.defender.db.hp == 7)
         # Resolve attack
         self.defender.db.hp = 40
-        tb_magic.COMBAT_RULES.resolve_attack(self.attacker, self.defender, attack_value=20,
-                                             defense_value=10)
+        tb_magic.COMBAT_RULES.resolve_attack(
+            self.attacker, self.defender, attack_value=20, defense_value=10
+        )
         self.assertTrue(self.defender.db.hp < 40)
         # Combat cleanup
         self.attacker.db.Combat_attribute = True

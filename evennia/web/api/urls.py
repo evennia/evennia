@@ -40,18 +40,17 @@ urlpatterns = router.urls
 
 urlpatterns += [
     # openapi schema
-    path('openapi',
-         get_schema_view(
-             title="Evennia API",
-             description="Evennia OpenAPI Schema",
-             version="1.0"),
-         name='openapi',
+    path(
+        "openapi",
+        get_schema_view(title="Evennia API", description="Evennia OpenAPI Schema", version="1.0"),
+        name="openapi",
     ),
     # redoc auto-doc (based on openapi schema)
-    path('redoc/',
-         TemplateView.as_view(
-            template_name="rest_framework/redoc.html" ,
-             extra_context={'schema_url': 'api:openapi'}),
-         name='redoc'
-    )
+    path(
+        "redoc/",
+        TemplateView.as_view(
+            template_name="rest_framework/redoc.html", extra_context={"schema_url": "api:openapi"}
+        ),
+        name="redoc",
+    ),
 ]

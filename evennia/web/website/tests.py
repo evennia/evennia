@@ -129,8 +129,9 @@ class ChannelDetailTest(EvenniaWebTest):
     def setUp(self):
         super().setUp()
 
-        klass = class_from_module(self.channel_typeclass,
-                                  fallback=settings.FALLBACK_CHANNEL_TYPECLASS)
+        klass = class_from_module(
+            self.channel_typeclass, fallback=settings.FALLBACK_CHANNEL_TYPECLASS
+        )
 
         # Create a channel
         klass.create("demo")
@@ -144,12 +145,9 @@ class HelpListTest(EvenniaWebTest):
 
 
 HELP_ENTRY_DICTS = [
-    {
-        "key": "unit test file entry",
-        "category": "General",
-        "text": "cache test file entry text"
-    }
+    {"key": "unit test file entry", "category": "General", "text": "cache test file entry text"}
 ]
+
 
 class HelpDetailTest(EvenniaWebTest):
     url_name = "help-entry-detail"
@@ -158,31 +156,30 @@ class HelpDetailTest(EvenniaWebTest):
         super().setUp()
 
         # create a db help entry
-        create_help_entry('unit test db entry', 'unit test db entry text', category="General")
+        create_help_entry("unit test db entry", "unit test db entry text", category="General")
 
     def get_kwargs(self):
-        return {"category": slugify("general"),
-                "topic": slugify('unit test db entry')}
+        return {"category": slugify("general"), "topic": slugify("unit test db entry")}
 
     def test_view(self):
         response = self.client.get(reverse(self.url_name, kwargs=self.get_kwargs()), follow=True)
-        self.assertEqual(response.context["entry_text"], 'unit test db entry text')
+        self.assertEqual(response.context["entry_text"], "unit test db entry text")
 
     def test_object_cache(self):
         # clear file help entries, use local HELP_ENTRY_DICTS to recreate new entries
         global _FILE_HELP_ENTRIES
         if _FILE_HELP_ENTRIES is None:
             from evennia.help.filehelp import FILE_HELP_ENTRIES as _FILE_HELP_ENTRIES
-        help_module = 'evennia.web.website.tests'
+        help_module = "evennia.web.website.tests"
         self.file_help_store = _FILE_HELP_ENTRIES.__init__(help_file_modules=[help_module])
 
         # request access to an entry
         response = self.client.get(reverse(self.url_name, kwargs=self.get_kwargs()), follow=True)
-        self.assertEqual(response.context["entry_text"], 'unit test db entry text')
+        self.assertEqual(response.context["entry_text"], "unit test db entry text")
         # request a second entry, verifing the cached object is not provided on a new topic request
-        entry_two_args = {"category": slugify("general"), "topic": slugify('unit test file entry')}
+        entry_two_args = {"category": slugify("general"), "topic": slugify("unit test file entry")}
         response = self.client.get(reverse(self.url_name, kwargs=entry_two_args), follow=True)
-        self.assertEqual(response.context["entry_text"], 'cache test file entry text')
+        self.assertEqual(response.context["entry_text"], "cache test file entry text")
 
 
 class HelpLockedDetailTest(EvenniaWebTest):
@@ -192,24 +189,27 @@ class HelpLockedDetailTest(EvenniaWebTest):
         super().setUp()
 
         # create a db entry with a lock
-        self.db_help_entry = create_help_entry('unit test locked topic', 'unit test locked entrytext',
-                          category="General", locks='read:perm(Developer)')
+        self.db_help_entry = create_help_entry(
+            "unit test locked topic",
+            "unit test locked entrytext",
+            category="General",
+            locks="read:perm(Developer)",
+        )
 
     def get_kwargs(self):
-        return {"category": slugify("general"),
-                "topic": slugify('unit test locked topic')}
+        return {"category": slugify("general"), "topic": slugify("unit test locked topic")}
 
     def test_locked_entry(self):
         # request access to an entry for permission the account does not have
         response = self.client.get(reverse(self.url_name, kwargs=self.get_kwargs()), follow=True)
-        self.assertEqual(response.context["entry_text"], 'Failed to find entry.')
+        self.assertEqual(response.context["entry_text"], "Failed to find entry.")
 
     def test_lock_with_perm(self):
         # log TestAccount in, grant permission required, read the entry
         self.login()
         self.account.permissions.add("Developer")
         response = self.client.get(reverse(self.url_name, kwargs=self.get_kwargs()), follow=True)
-        self.assertEqual(response.context["entry_text"], 'unit test locked entrytext')
+        self.assertEqual(response.context["entry_text"], "unit test locked entrytext")
 
 
 class CharacterCreateView(EvenniaWebTest):

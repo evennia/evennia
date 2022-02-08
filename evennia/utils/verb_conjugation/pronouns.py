@@ -36,32 +36,10 @@ DEFAULT_GENDER = "neutral"
 
 PRONOUN_MAPPING = {
     # 1st/2nd person -> 3rd person mappings
-    "I": {
-        "subject pronoun": {
-            "3rd person": {
-                "male": "he",
-                "female": "she",
-                "neutral": "it"
-            }
-        }
-    },
-    "me": {
-        "object pronoun": {
-            "3rd person": {
-                "male": "him",
-                "female": "her",
-                "neutral": "it"
-            }
-        }
-    },
+    "I": {"subject pronoun": {"3rd person": {"male": "he", "female": "she", "neutral": "it"}}},
+    "me": {"object pronoun": {"3rd person": {"male": "him", "female": "her", "neutral": "it"}}},
     "my": {
-        "possessive adjective": {
-            "3rd person": {
-                "male": "his",
-                "female": "her",
-                "neutral": "its"
-            }
-        }
+        "possessive adjective": {"3rd person": {"male": "his", "female": "her", "neutral": "its"}}
     },
     "mine": {
         "possessive pronoun": {
@@ -98,7 +76,7 @@ PRONOUN_MAPPING = {
                 "neutral": "it",
                 "plural": "them",
             }
-        }
+        },
     },
     "your": {
         "possessive adjective": {
@@ -116,7 +94,7 @@ PRONOUN_MAPPING = {
                 "male": "his",
                 "female": "hers",
                 "neutral": "theirs",  # colloqial
-                "plural": "theirs"
+                "plural": "theirs",
             }
         }
     },
@@ -129,235 +107,97 @@ PRONOUN_MAPPING = {
             }
         }
     },
-    "we": {
-        "subject pronoun": {
-            "3rd person": {
-                "plural": "they"
-            }
-        }
-    },
-    "us": {
-        "object pronoun": {
-            "3rd person": {
-                "plural": "them"
-            }
-        }
-    },
-    "our": {
-        "possessive adjective": {
-            "3rd person": {
-                "plural": "their"
-            }
-        }
-    },
-    "ours": {
-        "possessive pronoun": {
-            "3rd person": {
-                "plural": "theirs"
-            }
-        }
-    },
-    "ourselves": {
-        "reflexive pronoun": {
-            "3rd person": {
-                "plural": "themselves"
-            }
-        }
-    },
-    "ours": {
-        "possessive pronoun": {
-            "3rd person": {
-                "plural": "theirs"
-            }
-        }
-    },
-    "ourselves": {
-        "reflexive pronoun": {
-            "3rd person": {
-                "plural": "themselves"
-            }
-        }
-    },
-    "yourselves": {
-        "reflexive_pronoun": {
-            "3rd person": {
-                "plural": "themselves"
-            }
-        }
-    },
+    "we": {"subject pronoun": {"3rd person": {"plural": "they"}}},
+    "us": {"object pronoun": {"3rd person": {"plural": "them"}}},
+    "our": {"possessive adjective": {"3rd person": {"plural": "their"}}},
+    "ours": {"possessive pronoun": {"3rd person": {"plural": "theirs"}}},
+    "ourselves": {"reflexive pronoun": {"3rd person": {"plural": "themselves"}}},
+    "ours": {"possessive pronoun": {"3rd person": {"plural": "theirs"}}},
+    "ourselves": {"reflexive pronoun": {"3rd person": {"plural": "themselves"}}},
+    "yourselves": {"reflexive_pronoun": {"3rd person": {"plural": "themselves"}}},
     # 3rd person to 1st/second person mappings
     "he": {
         "subject pronoun": {
-            "1st person": {
-                "neutral": "I",
-                "plural": "we"  # pluralis majestatis
-            },
-            "2nd person": {
-                "neutral": "you",
-                "plural": "you"  # pluralis majestatis
-            }
+            "1st person": {"neutral": "I", "plural": "we"},  # pluralis majestatis
+            "2nd person": {"neutral": "you", "plural": "you"},  # pluralis majestatis
         }
     },
     "him": {
         "object pronoun": {
-            "1st person": {
-                "neutral": "me",
-                "plural": "us"  # pluralis majestatis
-            },
-            "2nd person": {
-                "neutral": "you",
-                "plural": "you"  # pluralis majestatis
-            },
+            "1st person": {"neutral": "me", "plural": "us"},  # pluralis majestatis
+            "2nd person": {"neutral": "you", "plural": "you"},  # pluralis majestatis
         }
     },
     "his": {
         "possessive adjective": {
-            "1st person": {
-                "neutral": "my",
-                "plural": "our"  # pluralis majestatis
-            },
-            "2nd person": {
-                "neutral": "your",
-                "plural": "your"  # pluralis majestatis
-            }
+            "1st person": {"neutral": "my", "plural": "our"},  # pluralis majestatis
+            "2nd person": {"neutral": "your", "plural": "your"},  # pluralis majestatis
         },
         "possessive pronoun": {
-            "1st person": {
-                "neutral": "mine",
-                "plural": "ours"  # pluralis majestatis
-            },
-            "2nd person": {
-                "neutral": "yours",
-                "plural": "yours"  # pluralis majestatis
-            }
-        }
+            "1st person": {"neutral": "mine", "plural": "ours"},  # pluralis majestatis
+            "2nd person": {"neutral": "yours", "plural": "yours"},  # pluralis majestatis
+        },
     },
     "himself": {
         "reflexive pronoun": {
-            "1st person": {
-                "neutral": "myself",
-                "plural": "ourselves"  # pluralis majestatis
-            },
-            "2nd person": {
-                "neutral": "yours",
-                "plural": "yours"  # pluralis majestatis
-            }
+            "1st person": {"neutral": "myself", "plural": "ourselves"},  # pluralis majestatis
+            "2nd person": {"neutral": "yours", "plural": "yours"},  # pluralis majestatis
         },
     },
     "she": {
         "subject pronoun": {
-            "1st person": {
-                "neutral": "I",
-                "plural": "you"  # pluralis majestatis
-            },
-            "2nd person": {
-                "neutral": "you",
-                "plural": "we"  # pluralis majestatis
-            }
+            "1st person": {"neutral": "I", "plural": "you"},  # pluralis majestatis
+            "2nd person": {"neutral": "you", "plural": "we"},  # pluralis majestatis
         }
     },
     "her": {
         "object pronoun": {
-            "1st person": {
-                "neutral": "me",
-                "plural": "us"  # pluralis majestatis
-            },
-            "2nd person": {
-                "neutral": "you",
-                "plural": "you"  # pluralis majestatis
-            }
+            "1st person": {"neutral": "me", "plural": "us"},  # pluralis majestatis
+            "2nd person": {"neutral": "you", "plural": "you"},  # pluralis majestatis
         },
         "possessive adjective": {
-            "1st person": {
-                "neutral": "my",
-                "plural": "our"  # pluralis majestatis
-            },
-            "2nd person": {
-                "neutral": "your",
-                "plural": "your"  # pluralis majestatis
-            }
+            "1st person": {"neutral": "my", "plural": "our"},  # pluralis majestatis
+            "2nd person": {"neutral": "your", "plural": "your"},  # pluralis majestatis
         },
     },
     "hers": {
         "possessive pronoun": {
-            "1st person": {
-                "neutral": "mine",
-                "plural": "ours"  # pluralis majestatis
-            },
-            "2nd person": {
-                "neutral": "yours",
-                "plural": "yours"  # pluralis majestatis
-            }
+            "1st person": {"neutral": "mine", "plural": "ours"},  # pluralis majestatis
+            "2nd person": {"neutral": "yours", "plural": "yours"},  # pluralis majestatis
         }
     },
     "herself": {
         "reflexive pronoun": {
-            "1st person": {
-                "neutral": "myself",
-                "plural": "ourselves"  # pluralis majestatis
-            },
-            "2nd person": {
-                "neutral": "yourself",
-                "plural": "yourselves"  # pluralis majestatis
-            }
+            "1st person": {"neutral": "myself", "plural": "ourselves"},  # pluralis majestatis
+            "2nd person": {"neutral": "yourself", "plural": "yourselves"},  # pluralis majestatis
         },
     },
     "it": {
         "subject pronoun": {
-            "1st person": {
-                "neutral": "I",
-                "plural": "we"  # pluralis majestatis
-            },
-            "2nd person": {
-                "neutral": "you",
-                "plural": "you"  # pluralis majestatis
-            }
+            "1st person": {"neutral": "I", "plural": "we"},  # pluralis majestatis
+            "2nd person": {"neutral": "you", "plural": "you"},  # pluralis majestatis
         },
         "object pronoun": {
-            "1st person": {
-                "neutral": "me",
-                "plural": "us"  # pluralis majestatis
-            },
-            "2nd person": {
-                "neutral": "you",
-                "plural": "you"  # pluralis majestatis
-            }
-        }
+            "1st person": {"neutral": "me", "plural": "us"},  # pluralis majestatis
+            "2nd person": {"neutral": "you", "plural": "you"},  # pluralis majestatis
+        },
     },
     "its": {
         "possessive adjective": {
-            "1st person": {
-                "neutral": "my",
-                "plural": "our"  # pluralis majestatis
-            },
-            "2nd person": {
-                "neutral": "your",
-                "plural": "your"  # pluralis majestatis
-            }
+            "1st person": {"neutral": "my", "plural": "our"},  # pluralis majestatis
+            "2nd person": {"neutral": "your", "plural": "your"},  # pluralis majestatis
         }
     },
     "theirs": {
         "possessive pronoun": {
-            "1st person": {
-                "neutral": "mine",
-                "plural": "ours"  # pluralis majestatis
-            },
-            "2nd person": {
-                "neutral": "yours",
-                "plural": "yours"  # pluralis majestatis
-            }
+            "1st person": {"neutral": "mine", "plural": "ours"},  # pluralis majestatis
+            "2nd person": {"neutral": "yours", "plural": "yours"},  # pluralis majestatis
         }
     },
     "itself": {
         "reflexive pronoun": {
-            "1st person": {
-                "neutral": "myself",
-                "plural": "ourselves"  # pluralis majestatis
-            },
-            "2nd person": {
-                "neutral": "yourself",
-                "plural": "yourselves"  # pluralis majestatis
-            }
+            "1st person": {"neutral": "myself", "plural": "ourselves"},  # pluralis majestatis
+            "2nd person": {"neutral": "yourself", "plural": "yourselves"},  # pluralis majestatis
         },
     },
     "they": {
@@ -367,7 +207,7 @@ PRONOUN_MAPPING = {
             },
             "2nd person": {
                 "plural": "you",
-            }
+            },
         }
     },
     "them": {
@@ -377,7 +217,7 @@ PRONOUN_MAPPING = {
             },
             "2nd person": {
                 "plural": "you",
-            }
+            },
         }
     },
     "their": {
@@ -387,7 +227,7 @@ PRONOUN_MAPPING = {
             },
             "2nd person": {
                 "plural": "your",
-            }
+            },
         }
     },
     "themselves": {
@@ -397,9 +237,9 @@ PRONOUN_MAPPING = {
             },
             "2nd person": {
                 "plural": "yourselves",
-            }
+            },
         }
-    }
+    },
 }
 
 
@@ -423,15 +263,20 @@ ALIASES = {
     "pp": "possessive pronoun",
 }
 
-PRONOUN_TYPES = ["subject pronoun", "object pronoun", "possessive adjective",
-                 "possessive pronoun", "reflexive pronoun"]
+PRONOUN_TYPES = [
+    "subject pronoun",
+    "object pronoun",
+    "possessive adjective",
+    "possessive pronoun",
+    "reflexive pronoun",
+]
 VIEWPOINTS = ["1st person", "2nd person", "3rd person"]
 GENDERS = ["male", "female", "neutral", "plural"]  # including plural as a gender for simplicity
 
 
-def pronoun_to_viewpoints(pronoun,
-                options=None, pronoun_type="object_pronoun",
-                gender="neutral", viewpoint="2nd person"):
+def pronoun_to_viewpoints(
+    pronoun, options=None, pronoun_type="object_pronoun", gender="neutral", viewpoint="2nd person"
+):
     """
     Access function for determining the forms of a pronount from different viewpoints.
 

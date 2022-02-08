@@ -19,11 +19,7 @@ from evennia.utils import create, evmore
 from evennia.utils.ansi import ANSIString
 from evennia.help.filehelp import FILE_HELP_ENTRIES
 from evennia.utils.eveditor import EvEditor
-from evennia.utils.utils import (
-    class_from_module,
-    inherits_from,
-    format_grid, pad
-)
+from evennia.utils.utils import class_from_module, inherits_from, format_grid, pad
 from evennia.help.utils import help_search_with_index, parse_entry_for_subcategories
 
 CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
@@ -35,12 +31,14 @@ HELP_CLICKABLE_TOPICS = settings.HELP_CLICKABLE_TOPICS
 # limit symbol import for API
 __all__ = ("CmdHelp", "CmdSetHelp")
 
+
 @dataclass
 class HelpCategory:
     """
     Mock 'help entry' to search categories with the same code.
 
     """
+
     key: str
 
     @property
@@ -113,7 +111,10 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         if type(self).help_more:
             usemore = True
 
-            if self.session and self.session.protocol_key in ("websocket", "ajax/comet",):
+            if self.session and self.session.protocol_key in (
+                "websocket",
+                "ajax/comet",
+            ):
                 try:
                     options = self.account.db._saved_webclient_options
                     if options and options["helppopup"]:
@@ -127,8 +128,15 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
         self.msg(text=(text, {"type": "help"}))
 
-    def format_help_entry(self, topic="", help_text="", aliases=None, suggested=None,
-                          subtopics=None, click_topics=True):
+    def format_help_entry(
+        self,
+        topic="",
+        help_text="",
+        aliases=None,
+        suggested=None,
+        subtopics=None,
+        click_topics=True,
+    ):
         """This visually formats the help entry.
         This method can be overriden to customize the way a help
         entry is displayed.
@@ -152,28 +160,24 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         title = f"|CHelp for |w{topic}|n" if topic else "|rNo help found|n"
 
         if aliases:
-            aliases = (
-                " |C(aliases: {}|C)|n".format("|C,|n ".join(f"|w{ali}|n" for ali in aliases))
-            )
+            aliases = " |C(aliases: {}|C)|n".format("|C,|n ".join(f"|w{ali}|n" for ali in aliases))
         else:
-            aliases = ''
+            aliases = ""
 
-        help_text = "\n" + dedent(help_text.strip('\n')) if help_text else ""
+        help_text = "\n" + dedent(help_text.strip("\n")) if help_text else ""
 
         if subtopics:
             if click_topics:
                 subtopics = [
-                             f"|lchelp {topic}/{subtop}|lt|w{topic}/{subtop}|n|le"
-                             for subtop in subtopics
-                            ]
+                    f"|lchelp {topic}/{subtop}|lt|w{topic}/{subtop}|n|le" for subtop in subtopics
+                ]
             else:
                 subtopics = [f"|w{topic}/{subtop}|n" for subtop in subtopics]
-            subtopics = (
-                "\n|CSubtopics:|n\n  {}".format(
-                    "\n  ".join(format_grid(subtopics, width=self.client_width())))
+            subtopics = "\n|CSubtopics:|n\n  {}".format(
+                "\n  ".join(format_grid(subtopics, width=self.client_width()))
             )
         else:
-            subtopics = ''
+            subtopics = ""
 
         if suggested:
             suggested = sorted(suggested)
@@ -181,12 +185,11 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 suggested = [f"|lchelp {sug}|lt|w{sug}|n|le" for sug in suggested]
             else:
                 suggested = [f"|w{sug}|n" for sug in suggested]
-            suggested = (
-                "\n|COther topic suggestions:|n\n{}".format(
-                    "\n  ".join(format_grid(suggested, width=self.client_width())))
+            suggested = "\n|COther topic suggestions:|n\n{}".format(
+                "\n  ".join(format_grid(suggested, width=self.client_width()))
             )
         else:
-            suggested = ''
+            suggested = ""
 
         end = start
 
@@ -194,8 +197,9 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
         return "\n".join(part.rstrip() for part in partorder if part)
 
-    def format_help_index(self, cmd_help_dict=None, db_help_dict=None, title_lone_category=False,
-                          click_topics=True):
+    def format_help_index(
+        self, cmd_help_dict=None, db_help_dict=None, title_lone_category=False, click_topics=True
+    ):
         """Output a category-ordered g for displaying the main help, grouped by
         category.
 
@@ -219,6 +223,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             commands and topics.
 
         """
+
         def _group_by_category(help_dict):
             grid = []
             verbatim_elements = []
@@ -231,9 +236,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
                     # make the help topics clickable
                     if click_topics:
-                        entries = [
-                            f'|lchelp {entry}|lt{entry}|le' for entry in entries
-                        ]
+                        entries = [f"|lchelp {entry}|lt{entry}|le" for entry in entries]
 
                     # add the entries to the grid
                     grid.extend(entries)
@@ -243,7 +246,8 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                     category_str = f"-- {category.title()} "
                     grid.append(
                         ANSIString(
-                            self.index_category_clr + category_str
+                            self.index_category_clr
+                            + category_str
                             + "-" * (width - len(category_str))
                             + self.index_topic_clr
                         )
@@ -255,9 +259,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
                     # make the help topics clickable
                     if click_topics:
-                        entries = [
-                            f'|lchelp {entry}|lt{entry}|le' for entry in entries
-                        ]
+                        entries = [f"|lchelp {entry}|lt{entry}|le" for entry in entries]
 
                     # add the entries to the grid
                     grid.extend(entries)
@@ -272,18 +274,22 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
         if any(cmd_help_dict.values()):
             # get the command-help entries by-category
-            sep1 = (self.index_type_separator_clr
-                    + pad("Commands", width=width, fillchar='-')
-                    + self.index_topic_clr)
+            sep1 = (
+                self.index_type_separator_clr
+                + pad("Commands", width=width, fillchar="-")
+                + self.index_topic_clr
+            )
             grid, verbatim_elements = _group_by_category(cmd_help_dict)
             gridrows = format_grid(grid, width, sep="  ", verbatim_elements=verbatim_elements)
             cmd_grid = ANSIString("\n").join(gridrows) if gridrows else ""
 
         if any(db_help_dict.values()):
             # get db-based help entries by-category
-            sep2 = (self.index_type_separator_clr
-                    + pad("Game & World", width=width, fillchar='-')
-                    + self.index_topic_clr)
+            sep2 = (
+                self.index_type_separator_clr
+                + pad("Game & World", width=width, fillchar="-")
+                + self.index_topic_clr
+            )
             grid, verbatim_elements = _group_by_category(db_help_dict)
             gridrows = format_grid(grid, width, sep="  ", verbatim_elements=verbatim_elements)
             db_grid = ANSIString("\n").join(gridrows) if gridrows else ""
@@ -316,9 +322,9 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
         """
         if inherits_from(cmd_or_topic, "evennia.commands.command.Command"):
-            return cmd_or_topic.auto_help and cmd_or_topic.access(caller, 'read', default=True)
+            return cmd_or_topic.auto_help and cmd_or_topic.access(caller, "read", default=True)
         else:
-            return cmd_or_topic.access(caller, 'read', default=True)
+            return cmd_or_topic.access(caller, "read", default=True)
 
     def can_list_topic(self, cmd_or_topic, caller):
         """
@@ -355,12 +361,12 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         )
 
         if has_view:
-            return cmd_or_topic.access(caller, 'view', default=True)
+            return cmd_or_topic.access(caller, "view", default=True)
         else:
             # no explicit 'view' lock - use the 'read' lock
-            return cmd_or_topic.access(caller, 'read', default=True)
+            return cmd_or_topic.access(caller, "read", default=True)
 
-    def collect_topics(self, caller, mode='list'):
+    def collect_topics(self, caller, mode="list"):
         """
         Collect help topics from all sources (cmd/db/file).
 
@@ -383,43 +389,45 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         cmdset.make_unique(caller)
         # retrieve all available commands and database / file-help topics.
         # also check the 'cmd:' lock here
-        cmd_help_topics = [cmd for cmd in cmdset if cmd and cmd.access(caller, 'cmd')]
+        cmd_help_topics = [cmd for cmd in cmdset if cmd and cmd.access(caller, "cmd")]
         # get all file-based help entries, checking perms
-        file_help_topics = {
-            topic.key.lower().strip(): topic
-            for topic in FILE_HELP_ENTRIES.all()
-        }
+        file_help_topics = {topic.key.lower().strip(): topic for topic in FILE_HELP_ENTRIES.all()}
         # get db-based help entries, checking perms
-        db_help_topics = {
-            topic.key.lower().strip(): topic
-            for topic in HelpEntry.objects.all()
-        }
-        if mode == 'list':
+        db_help_topics = {topic.key.lower().strip(): topic for topic in HelpEntry.objects.all()}
+        if mode == "list":
             # check the view lock for all help entries/commands and determine key
             cmd_help_topics = {
-                cmd.auto_help_display_key
-                if hasattr(cmd, "auto_help_display_key") else cmd.key: cmd
-                for cmd in cmd_help_topics if self.can_list_topic(cmd, caller)}
+                cmd.auto_help_display_key if hasattr(cmd, "auto_help_display_key") else cmd.key: cmd
+                for cmd in cmd_help_topics
+                if self.can_list_topic(cmd, caller)
+            }
             db_help_topics = {
-                key: entry for key, entry in db_help_topics.items()
+                key: entry
+                for key, entry in db_help_topics.items()
                 if self.can_list_topic(entry, caller)
             }
             file_help_topics = {
-                key: entry for key, entry in file_help_topics.items()
-                if self.can_list_topic(entry, caller)}
+                key: entry
+                for key, entry in file_help_topics.items()
+                if self.can_list_topic(entry, caller)
+            }
         else:
             # query - check the read lock on entries
             cmd_help_topics = {
-                cmd.auto_help_display_key
-                if hasattr(cmd, "auto_help_display_key") else cmd.key: cmd
-                for cmd in cmd_help_topics if self.can_read_topic(cmd, caller)}
+                cmd.auto_help_display_key if hasattr(cmd, "auto_help_display_key") else cmd.key: cmd
+                for cmd in cmd_help_topics
+                if self.can_read_topic(cmd, caller)
+            }
             db_help_topics = {
-                key: entry for key, entry in db_help_topics.items()
+                key: entry
+                for key, entry in db_help_topics.items()
                 if self.can_read_topic(entry, caller)
             }
             file_help_topics = {
-                key: entry for key, entry in file_help_topics.items()
-                if self.can_read_topic(entry, caller)}
+                key: entry
+                for key, entry in file_help_topics.items()
+                if self.can_read_topic(entry, caller)
+            }
 
         return cmd_help_topics, db_help_topics, file_help_topics
 
@@ -452,9 +460,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             # return of this will either be a HelpCategory, a Command or a
             # HelpEntry/FileHelpEntry.
             matches, suggestions = help_search_with_index(
-                match_query, entries,
-                suggestion_maxnum=self.suggestion_maxnum,
-                fields=search_fields
+                match_query, entries, suggestion_maxnum=self.suggestion_maxnum, fields=search_fields
             )
             if matches:
                 match = matches[0]
@@ -478,8 +484,9 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         # parse the query
 
         if self.args:
-            self.subtopics = [part.strip().lower()
-                              for part in self.args.split(self.subtopic_separator_char)]
+            self.subtopics = [
+                part.strip().lower() for part in self.args.split(self.subtopic_separator_char)
+            ]
             self.topic = self.subtopics.pop(0)
         else:
             self.topic = ""
@@ -505,7 +512,6 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             return key[1:]
         return key
 
-
     def func(self):
         """
         Run the dynamic help entry creator.
@@ -518,8 +524,9 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             # list all available help entries, grouped by category. We want to
             # build dictionaries {category: [topic, topic, ...], ...}
 
-            cmd_help_topics, db_help_topics, file_help_topics = \
-                self.collect_topics(caller, mode='list')
+            cmd_help_topics, db_help_topics, file_help_topics = self.collect_topics(
+                caller, mode="list"
+            )
 
             # db-topics override file-based ones
             file_db_help_topics = {**file_help_topics, **db_help_topics}
@@ -538,21 +545,21 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 file_db_help_by_category[entry.help_category].append(key)
 
             # generate the index and display
-            output = self.format_help_index(cmd_help_by_category,
-                                            file_db_help_by_category,
-                                            click_topics=clickable_topics)
+            output = self.format_help_index(
+                cmd_help_by_category, file_db_help_by_category, click_topics=clickable_topics
+            )
             self.msg_help(output)
 
             return
 
         # search for a specific entry. We need to check for 'read' access here before
         # building the set of possibilities.
-        cmd_help_topics, db_help_topics, file_help_topics = \
-            self.collect_topics(caller, mode='query')
+        cmd_help_topics, db_help_topics, file_help_topics = self.collect_topics(
+            caller, mode="query"
+        )
 
         # get a collection of all keys + aliases to be able to strip prefixes like @
-        key_and_aliases = set(
-            chain(*(cmd._keyaliases for cmd in cmd_help_topics.values())))
+        key_and_aliases = set(chain(*(cmd._keyaliases for cmd in cmd_help_topics.values())))
 
         # db-help topics takes priority over file-help
         file_db_help_topics = {**file_help_topics, **db_help_topics}
@@ -561,8 +568,9 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         all_topics = {**file_db_help_topics, **cmd_help_topics}
 
         # get all categories
-        all_categories = list(set(
-            HelpCategory(topic.help_category) for topic in all_topics.values()))
+        all_categories = list(
+            set(HelpCategory(topic.help_category) for topic in all_topics.values())
+        )
 
         # all available help options - will be searched in order. We also check # the
         # read-permission here.
@@ -586,23 +594,26 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
                 for match_query in [query, f"{query}*", f"*{query}"]:
                     _, suggestions = help_search_with_index(
-                        match_query, entries,
+                        match_query,
+                        entries,
                         suggestion_maxnum=self.suggestion_maxnum,
-                        fields=search_fields
+                        fields=search_fields,
                     )
                     if suggestions:
                         help_text += (
                             "\n... But matches where found within the help "
-                            "texts of the suggestions below.")
-                        suggestions = [self.strip_cmd_prefix(sugg, key_and_aliases)
-                                       for sugg in suggestions]
+                            "texts of the suggestions below."
+                        )
+                        suggestions = [
+                            self.strip_cmd_prefix(sugg, key_and_aliases) for sugg in suggestions
+                        ]
                         break
 
             output = self.format_help_entry(
                 topic=None,  # this will give a no-match style title
                 help_text=help_text,
                 suggested=suggestions,
-                click_topics=clickable_topics
+                click_topics=clickable_topics,
             )
 
             self.msg_help(output)
@@ -612,14 +623,20 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             # no subtopics for categories - these are just lists of topics
             category = match.key
             category_lower = category.lower()
-            cmds_in_category = [key for key, cmd in cmd_help_topics.items()
-                                if category_lower == cmd.help_category]
-            topics_in_category = [key for key, topic in file_db_help_topics.items()
-                                  if category_lower == topic.help_category]
-            output = self.format_help_index({category: cmds_in_category},
-                                            {category: topics_in_category},
-                                            title_lone_category=True,
-                                            click_topics=clickable_topics)
+            cmds_in_category = [
+                key for key, cmd in cmd_help_topics.items() if category_lower == cmd.help_category
+            ]
+            topics_in_category = [
+                key
+                for key, topic in file_db_help_topics.items()
+                if category_lower == topic.help_category
+            ]
+            output = self.format_help_index(
+                {category: cmds_in_category},
+                {category: topics_in_category},
+                title_lone_category=True,
+                click_topics=clickable_topics,
+            )
             self.msg_help(output)
             return
 
@@ -674,7 +691,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                             topic=topic,
                             help_text=f"No help entry found for '{checked_topic}'",
                             subtopics=subtopic_index,
-                            click_topics=clickable_topics
+                            click_topics=clickable_topics,
                         )
                         self.msg_help(output)
                         return
@@ -702,7 +719,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             aliases=aliases,
             subtopics=subtopic_index,
             suggested=suggested,
-            click_topics=clickable_topics
+            click_topics=clickable_topics,
         )
 
         self.msg_help(output)
@@ -829,15 +846,17 @@ class CmdSetHelp(CmdHelp):
 
         # check if we have an old entry with the same name
 
-        cmd_help_topics, db_help_topics, file_help_topics = \
-            self.collect_topics(self.caller, mode='query')
+        cmd_help_topics, db_help_topics, file_help_topics = self.collect_topics(
+            self.caller, mode="query"
+        )
         # db-help topics takes priority over file-help
         file_db_help_topics = {**file_help_topics, **db_help_topics}
         # commands take priority over the other types
         all_topics = {**file_db_help_topics, **cmd_help_topics}
         # get all categories
-        all_categories = list(set(
-            HelpCategory(topic.help_category) for topic in all_topics.values()))
+        all_categories = list(
+            set(HelpCategory(topic.help_category) for topic in all_topics.values())
+        )
         # all available help options - will be searched in order. We also check # the
         # read-permission here.
         entries = list(all_topics.values()) + all_categories
@@ -853,29 +872,35 @@ class CmdSetHelp(CmdHelp):
             if match:
                 warning = None
                 if isinstance(match, HelpCategory):
-                    warning = (f"'{querystr}' matches (or partially matches) the name of "
-                               "help-category '{match.key}'. If you continue, your help entry will "
-                               "take precedence and the category (or part of its name) *may* not "
-                               "be usable for grouping help entries anymore.")
+                    warning = (
+                        f"'{querystr}' matches (or partially matches) the name of "
+                        "help-category '{match.key}'. If you continue, your help entry will "
+                        "take precedence and the category (or part of its name) *may* not "
+                        "be usable for grouping help entries anymore."
+                    )
                 elif inherits_from(match, "evennia.commands.command.Command"):
-                    warning = (f"'{querystr}' matches (or partially matches) the key/alias of "
-                               "Command '{match.key}'. Command-help take precedence over other "
-                               "help entries so your help *may* be impossible to reach for those "
-                               "with access to that command.")
+                    warning = (
+                        f"'{querystr}' matches (or partially matches) the key/alias of "
+                        "Command '{match.key}'. Command-help take precedence over other "
+                        "help entries so your help *may* be impossible to reach for those "
+                        "with access to that command."
+                    )
                 elif inherits_from(match, "evennia.help.filehelp.FileHelpEntry"):
-                    warning = (f"'{querystr}' matches (or partially matches) the name/alias of the "
-                               f"file-based help topic '{match.key}'. File-help entries cannot be "
-                               "modified from in-game (they are files on-disk). If you continue, "
-                               "your help entry may shadow the file-based one's name partly or "
-                               "completely.")
+                    warning = (
+                        f"'{querystr}' matches (or partially matches) the name/alias of the "
+                        f"file-based help topic '{match.key}'. File-help entries cannot be "
+                        "modified from in-game (they are files on-disk). If you continue, "
+                        "your help entry may shadow the file-based one's name partly or "
+                        "completely."
+                    )
                 if warning:
                     # show a warning for a clashing help-entry type. Even if user accepts this
                     # we don't break here since we may need to show warnings for other inputs.
                     # We don't count this as an old-entry hit because we can't edit these
                     # types of entries.
                     self.msg(f"|rWarning:\n|r{warning}|n")
-                    repl = yield("|wDo you still want to continue? Y/[N]?|n")
-                    if repl.lower() not in ('y', 'yes'):
+                    repl = yield ("|wDo you still want to continue? Y/[N]?|n")
+                    if repl.lower() not in ("y", "yes"):
                         self.msg("Aborted.")
                         return
                 else:
@@ -897,7 +922,11 @@ class CmdSetHelp(CmdHelp):
                 helpentry = old_entry
             else:
                 helpentry = create.create_help_entry(
-                    topicstr, self.rhs, category=category, locks=lockstring, aliases=aliases,
+                    topicstr,
+                    self.rhs,
+                    category=category,
+                    locks=lockstring,
+                    aliases=aliases,
                 )
             self.caller.db._editing_help = helpentry
 
@@ -976,6 +1005,4 @@ class CmdSetHelp(CmdHelp):
                     )
                     return
             else:
-                self.msg(
-                    f"Error when creating topic '{topicstr}'{aliastxt}! Contact an admin."
-                )
+                self.msg(f"Error when creating topic '{topicstr}'{aliastxt}! Contact an admin.")

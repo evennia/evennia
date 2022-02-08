@@ -78,6 +78,7 @@ from .crafting import craft, CraftingRecipe, CraftingValidationError
 # Sword recipe
 # ------------------------------------------------------------
 
+
 class PigIronRecipe(CraftingRecipe):
     """
     Pig iron is a high-carbon result of melting iron in a blast furnace.
@@ -331,9 +332,9 @@ class SwordRecipe(_SwordSmithingBaseRecipe):
     exact_consumable_order = True
 
 
-#------------------------------------------------------------
+# ------------------------------------------------------------
 # Recipes for spell casting
-#------------------------------------------------------------
+# ------------------------------------------------------------
 
 
 class _MagicRecipe(CraftingRecipe):
@@ -348,6 +349,7 @@ class _MagicRecipe(CraftingRecipe):
     We also assume that the crafter has skills set on itself as plain Attributes.
 
     """
+
     name = ""
     # all spells require a spellbook and a wand (so there!)
     tool_tags = ["spellbook", "wand"]
@@ -390,15 +392,15 @@ class _MagicRecipe(CraftingRecipe):
             skill_value = crafter.attributes.get(skill_name)
 
             if skill_value is None or skill_value < min_value:
-                self.msg(self.error_too_low_skill_level.format(skill_name=skill_name,
-                                                               spell=self.name))
+                self.msg(
+                    self.error_too_low_skill_level.format(skill_name=skill_name, spell=self.name)
+                )
                 raise CraftingValidationError
 
         # get the value of the skill to roll
         self.skill_roll_value = self.crafter.attributes.get(self.skill_roll)
         if self.skill_roll_value is None:
-            self.msg(self.error_no_skill_roll.format(skill_name=self.skill_roll,
-                                                     spell=self.name))
+            self.msg(self.error_no_skill_roll.format(skill_name=self.skill_roll, spell=self.name))
             raise CraftingValidationError
 
     def do_craft(self, **kwargs):
@@ -446,12 +448,13 @@ class FireballRecipe(_MagicRecipe):
     need to be created to understand what they mean when used.
 
     """
+
     name = "fireball"
-    skill_requirements = [('firemagic', 10)]  # skill 'firemagic' lvl 10 or higher
+    skill_requirements = [("firemagic", 10)]  # skill 'firemagic' lvl 10 or higher
     skill_roll = "firemagic"
     success_message = "A ball of flame appears!"
-    desired_effects = [('target_fire_damage', 25), ('ranged_attack', -2), ('mana_cost', 12)]
-    failure_effects = [('self_fire_damage', 5), ('mana_cost', 5)]
+    desired_effects = [("target_fire_damage", 25), ("ranged_attack", -2), ("mana_cost", 12)]
+    failure_effects = [("self_fire_damage", 5), ("mana_cost", 5)]
 
 
 class HealingRecipe(_MagicRecipe):
@@ -462,11 +465,12 @@ class HealingRecipe(_MagicRecipe):
     need to be created to understand what they mean.
 
     """
+
     name = "heal"
-    skill_requirements = [('bodymagic', 5), ("empathy", 10)]
+    skill_requirements = [("bodymagic", 5), ("empathy", 10)]
     skill_roll = "bodymagic"
     success_message = "You successfully extend your healing aura."
-    desired_effects = [('healing', 15), ('mana_cost', 5)]
+    desired_effects = [("healing", 15), ("mana_cost", 5)]
     failure_effects = []
 
 
@@ -478,7 +482,8 @@ class CmdCast(Command):
         cast <spell> <target>
 
     """
-    key = 'cast'
+
+    key = "cast"
 
     def parse(self):
         """
@@ -488,8 +493,8 @@ class CmdCast(Command):
         """
         args = self.args.strip().lower()
         target = None
-        if ' ' in args:
-            self.spellname, *target = args.split(' ', 1)
+        if " " in args:
+            self.spellname, *target = args.split(" ", 1)
         else:
             self.spellname = args
 
@@ -512,8 +517,9 @@ class CmdCast(Command):
         try:
             # if this completes without an exception, the caster will have
             # a new magic_effect set on themselves, ready to use or apply in some way.
-            success, effects = craft(self.caller, self.spellname, *possible_tools,
-                                     raise_exception=True)
+            success, effects = craft(
+                self.caller, self.spellname, *possible_tools, raise_exception=True
+            )
         except CraftingValidationError:
             return
         except KeyError:
@@ -527,5 +533,7 @@ class CmdCast(Command):
         # (which could be yourself) by a number of health points given by the recipe.
         effect_txt = ", ".join(f"{eff[0]}({eff[1]})" for eff in effects)
         success_txt = "|gsucceeded|n" if success else "|rfailed|n"
-        self.caller.msg(f"Casting the spell {self.spellname} on {self.target} {success_txt}, "
-                        f"causing the following effects: {effect_txt}.")
+        self.caller.msg(
+            f"Casting the spell {self.spellname} on {self.target} {success_txt}, "
+            f"causing the following effects: {effect_txt}."
+        )

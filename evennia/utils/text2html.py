@@ -301,8 +301,8 @@ class TextToHTMLparser(object):
             text (str): Processed text.
         """
         url, text = [grp.replace('"', "\\&quot;") for grp in match.groups()]
-        val = (
-            r"""<a id="mxplink" href="{url}" target="_blank">{text}</a>""".format(url=url, text=text)
+        val = r"""<a id="mxplink" href="{url}" target="_blank">{text}</a>""".format(
+            url=url, text=text
         )
         return val
 

@@ -304,6 +304,7 @@ class TBBasicCharacter(DefaultCharacter):
     A character able to participate in turn-based combat. Has attributes for current
     and maximum HP, and access to combat commands.
     """
+
     rules = COMBAT_RULES
 
     def at_object_creation(self):

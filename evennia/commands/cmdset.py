@@ -358,14 +358,18 @@ class CmdSet(object, metaclass=_CmdSetMeta):
 
         """
         perm = "perm" if self.persistent else "non-perm"
-        options = ", ".join([
-            "{}:{}".format(opt, "T" if getattr(self, opt) else "F")
-            for opt in ("no_exits", "no_objs", "no_channels", "duplicates")
-            if getattr(self, opt) is not None
-        ])
+        options = ", ".join(
+            [
+                "{}:{}".format(opt, "T" if getattr(self, opt) else "F")
+                for opt in ("no_exits", "no_objs", "no_channels", "duplicates")
+                if getattr(self, opt) is not None
+            ]
+        )
         options = (", " + options) if options else ""
-        return (f"<CmdSet {self.key}, {self.mergetype}, {perm}, prio {self.priority}{options}>: "
-                + ", ".join([str(cmd) for cmd in sorted(self.commands, key=lambda o: o.key)]))
+        return (
+            f"<CmdSet {self.key}, {self.mergetype}, {perm}, prio {self.priority}{options}>: "
+            + ", ".join([str(cmd) for cmd in sorted(self.commands, key=lambda o: o.key)])
+        )
 
     def __iter__(self):
         """
@@ -519,10 +523,12 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             try:
                 cmdset = self._instantiate(cmdset)
             except RuntimeError:
-                err = ("Adding cmdset {cmdset} to {cls} lead to an "
-                       "infinite loop. When adding a cmdset to another, "
-                       "make sure they are not themself cyclically added to "
-                       "the new cmdset somewhere in the chain.")
+                err = (
+                    "Adding cmdset {cmdset} to {cls} lead to an "
+                    "infinite loop. When adding a cmdset to another, "
+                    "make sure they are not themself cyclically added to "
+                    "the new cmdset somewhere in the chain."
+                )
                 raise RuntimeError(_(err.format(cmdset=cmdset, cls=self.__class__)))
             cmds = cmdset.commands
         elif is_iter(cmd):

@@ -213,7 +213,7 @@ class TypedObject(SharedMemoryModel):
         max_length=255,
         null=True,
         help_text="this defines what 'type' of entity this is. This variable holds "
-                  "a Python path to a module with a valid Evennia Typeclass.",
+        "a Python path to a module with a valid Evennia Typeclass.",
         db_index=True,
     )
     # Creation date. This is not changed once the object is created.
@@ -223,19 +223,19 @@ class TypedObject(SharedMemoryModel):
         "locks",
         blank=True,
         help_text="locks limit access to an entity. A lock is defined as a 'lock string' "
-                  "on the form 'type:lockfunctions', defining what functionality is locked and "
-                  "how to determine access. Not defining a lock means no access is granted.",
+        "on the form 'type:lockfunctions', defining what functionality is locked and "
+        "how to determine access. Not defining a lock means no access is granted.",
     )
     # many2many relationships
     db_attributes = models.ManyToManyField(
         Attribute,
         help_text="attributes on this object. An attribute can hold any pickle-able "
-                  "python object (see docs for special cases).",
+        "python object (see docs for special cases).",
     )
     db_tags = models.ManyToManyField(
         Tag,
         help_text="tags on this object. Tags are simple string markers to identify, "
-                  "group and alias objects.",
+        "group and alias objects.",
     )
 
     # Database manager

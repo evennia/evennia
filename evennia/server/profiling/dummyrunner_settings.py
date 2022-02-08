@@ -86,8 +86,9 @@ TELNET_PORT = None
 # some convenient templates
 
 DUMMY_NAME = "Dummy_{gid}"
-DUMMY_PWD = (''.join(random.choice(string.ascii_letters + string.digits)
-                     for _ in range(20)) + "-{gid}")
+DUMMY_PWD = (
+    "".join(random.choice(string.ascii_letters + string.digits) for _ in range(20)) + "-{gid}"
+)
 START_ROOM = "testing_room_start_{gid}"
 ROOM_TEMPLATE = "testing_room_%s"
 EXIT_TEMPLATE = "exit_%s"
@@ -100,6 +101,7 @@ TOBJ_TYPECLASS = "contrib.tutorial_examples.red_button.RedButton"
 # these to build a client "usage profile"
 
 # login/logout
+
 
 def c_login(client):
     "logins to the game"
@@ -131,10 +133,7 @@ def c_login_nodig(client):
     "logins, don't dig its own room"
     cname = DUMMY_NAME.format(gid=client.gid)
     cpwd = DUMMY_PWD.format(gid=client.gid)
-    cmds = (
-        f"create {cname} {cpwd}",
-        f"connect {cname} {cpwd}"
-    )
+    cmds = (f"create {cname} {cpwd}", f"connect {cname} {cpwd}")
     return cmds
 
 
@@ -174,7 +173,10 @@ def c_idles(client):
 
 def c_help(client):
     "reads help files"
-    cmds = ("help", "dummyrunner_echo_response",)
+    cmds = (
+        "help",
+        "dummyrunner_echo_response",
+    )
     return cmds
 
 
@@ -262,21 +264,16 @@ def c_measure_lag(client):
 PROFILE = "looker"
 
 
-if PROFILE == 'idler':
+if PROFILE == "idler":
     ACTIONS = (
         c_login,
         c_logout,
         (0.9, c_idles),
         (0.1, c_measure_lag),
     )
-elif PROFILE == 'looker':
-    ACTIONS = (
-        c_login,
-        c_logout,
-        (0.8, c_looks),
-        (0.2, c_measure_lag)
-    )
-elif PROFILE == 'normal_player':
+elif PROFILE == "looker":
+    ACTIONS = (c_login, c_logout, (0.8, c_looks), (0.2, c_measure_lag))
+elif PROFILE == "normal_player":
     ACTIONS = (
         c_login,
         c_logout,
@@ -285,9 +282,9 @@ elif PROFILE == 'normal_player':
         (0.2, c_help),
         (0.3, c_moves),
         (0.05, c_socialize),
-        (0.1, c_measure_lag)
+        (0.1, c_measure_lag),
     )
-elif PROFILE == 'normal_builder':
+elif PROFILE == "normal_builder":
     ACTIONS = (
         c_login,
         c_logout,
@@ -297,9 +294,9 @@ elif PROFILE == 'normal_builder':
         (0.01, c_digs),
         (0.01, c_creates_obj),
         (0.2, c_moves),
-        (0.1, c_measure_lag)
+        (0.1, c_measure_lag),
     )
-elif PROFILE == 'heavy_builder':
+elif PROFILE == "heavy_builder":
     ACTIONS = (
         c_login,
         c_logout,
@@ -309,9 +306,9 @@ elif PROFILE == 'heavy_builder':
         (0.1, c_digs),
         (0.1, c_creates_obj),
         (0.2, c_moves),
-        (0.1, c_measure_lag)
+        (0.1, c_measure_lag),
     )
-elif PROFILE == 'socializing_builder':
+elif PROFILE == "socializing_builder":
     ACTIONS = (
         c_login,
         c_logout,
@@ -321,17 +318,13 @@ elif PROFILE == 'socializing_builder':
         (0.1, c_creates_obj),
         (0.2, c_digs),
         (0.3, c_moves),
-        (0.1, c_measure_lag)
+        (0.1, c_measure_lag),
     )
-elif PROFILE == 'only_digger':
-    ACTIONS = (
-        c_login,
-        c_logout,
-        (0.9, c_digs),
-        (0.1, c_measure_lag)
-    )
+elif PROFILE == "only_digger":
+    ACTIONS = (c_login, c_logout, (0.9, c_digs), (0.1, c_measure_lag))
 
 else:
     print("No dummyrunner ACTION profile defined.")
     import sys
+
     sys.exit()

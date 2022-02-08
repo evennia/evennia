@@ -22,7 +22,9 @@ class TestGenderSub(BaseEvenniaCommandTest):
         self.assertEqual(
             gendersub._RE_GENDER_PRONOUN.sub(char._get_pronoun, txt), "Test their gender"
         )
-        with patch("evennia.contrib.game_systems.gendersub.gendersub.DefaultCharacter.msg") as mock_msg:
+        with patch(
+            "evennia.contrib.game_systems.gendersub.gendersub.DefaultCharacter.msg"
+        ) as mock_msg:
             char.db.gender = "female"
             char.msg("Test |p gender")
             mock_msg.assert_called_with("Test her gender", from_obj=None, session=None)

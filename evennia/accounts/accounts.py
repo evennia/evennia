@@ -54,11 +54,12 @@ _CMDHANDLER = None
 
 # Create throttles for too many account-creations and login attempts
 CREATION_THROTTLE = Throttle(
-    name='creation', limit=settings.CREATION_THROTTLE_LIMIT,
-    timeout=settings.CREATION_THROTTLE_TIMEOUT
+    name="creation",
+    limit=settings.CREATION_THROTTLE_LIMIT,
+    timeout=settings.CREATION_THROTTLE_TIMEOUT,
 )
 LOGIN_THROTTLE = Throttle(
-    name='login', limit=settings.LOGIN_THROTTLE_LIMIT, timeout=settings.LOGIN_THROTTLE_TIMEOUT
+    name="login", limit=settings.LOGIN_THROTTLE_LIMIT, timeout=settings.LOGIN_THROTTLE_TIMEOUT
 )
 
 
@@ -802,8 +803,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
             except Exception:
                 errors.append(
-                    _("There was an error creating the Account. "
-                      "If this problem persists, contact an admin."))
+                    _(
+                        "There was an error creating the Account. "
+                        "If this problem persists, contact an admin."
+                    )
+                )
                 logger.log_trace()
                 return None, errors
 
@@ -878,7 +882,6 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             return False
         super().delete(*args, **kwargs)
         return True
-
 
     # methods inherited from database model
 
@@ -968,9 +971,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             sessions = self.sessions.get()
             session = sessions[0] if sessions else None
 
-        return _CMDHANDLER(
-            self, raw_string, callertype="account", session=session, **kwargs
-        )
+        return _CMDHANDLER(self, raw_string, callertype="account", session=session, **kwargs)
 
     # channel receive hooks
 
@@ -1000,11 +1001,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         """
         if senders:
-            sender_string = ', '.join(sender.get_display_name(self) for sender in senders)
+            sender_string = ", ".join(sender.get_display_name(self) for sender in senders)
             message_lstrip = message.lstrip()
-            if message_lstrip.startswith((':', ';')):
+            if message_lstrip.startswith((":", ";")):
                 # this is a pose, should show as e.g. "User1 smiles to channel"
-                spacing = "" if message_lstrip[1:].startswith((':', '\'', ',')) else " "
+                spacing = "" if message_lstrip[1:].startswith((":", "'", ",")) else " "
                 message = f"{sender_string}{spacing}{message_lstrip[1:]}"
             else:
                 # normal message
@@ -1035,8 +1036,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             to customize the message for the receiver on the channel-level.
 
         """
-        self.msg(text=(message, {"from_channel": channel.id}),
-                 from_obj=senders, options={"from_channel": channel.id})
+        self.msg(
+            text=(message, {"from_channel": channel.id}),
+            from_obj=senders,
+            options={"from_channel": channel.id},
+        )
 
     def at_post_channel_msg(self, message, channel, senders=None, **kwargs):
         """
@@ -1373,8 +1377,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         if _MUDINFO_CHANNEL is None:
             if settings.CHANNEL_MUDINFO:
                 try:
-                    _MUDINFO_CHANNEL = ChannelDB.objects.get(
-                        db_key=settings.CHANNEL_MUDINFO["key"])
+                    _MUDINFO_CHANNEL = ChannelDB.objects.get(db_key=settings.CHANNEL_MUDINFO["key"])
                 except ChannelDB.DoesNotExist:
                     logger.log_trace()
             else:
@@ -1383,7 +1386,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if settings.CHANNEL_CONNECTINFO:
                 try:
                     _CONNECT_CHANNEL = ChannelDB.objects.get(
-                        db_key=settings.CHANNEL_CONNECTINFO["key"])
+                        db_key=settings.CHANNEL_CONNECTINFO["key"]
+                    )
                 except ChannelDB.DoesNotExist:
                     logger.log_trace()
             else:
@@ -1661,7 +1665,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                             if sess and sid:
                                 result.append(
                                     f"\n - |G{char.key}|n [{', '.join(char.permissions.all())}] "
-                                    f"(played by you in session {sid})")
+                                    f"(played by you in session {sid})"
+                                )
                             else:
                                 result.append(
                                     f"\n - |R{char.key}|n [{', '.join(char.permissions.all())}] "

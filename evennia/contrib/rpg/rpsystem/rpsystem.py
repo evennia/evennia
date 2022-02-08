@@ -513,7 +513,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
             errors.append(_EMOTE_NOMATCH_ERROR.format(ref=marker_match.group()))
         elif nmatches == 1:
             # a unique match - parse into intermediary representation
-            case = '~'  # retain original case of sdesc
+            case = "~"  # retain original case of sdesc
             if case_sensitive:
                 # case sensitive mode
                 # internal flags for the case used for the original /query
@@ -526,14 +526,14 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
                     # self-refs are kept as-is, others are parsed by case
                     matchtext = marker_match.group().lstrip(_PREFIX)
                     if matchtext.istitle():
-                        case = 't'
+                        case = "t"
                     elif matchtext.isupper():
-                        case = '^'
+                        case = "^"
                     elif matchtext.islower():
-                        case = 'v'
+                        case = "v"
 
             key = "#%i%s" % (obj.id, case)
-            string = string[:istart0] + "{%s}" % key + string[istart + maxscore:]
+            string = string[:istart0] + "{%s}" % key + string[istart + maxscore :]
             mapping[key] = obj
 
         else:
@@ -601,8 +601,9 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
     """
     case_sensitive = kwargs.pop("case_sensitive", True)
     try:
-        emote, obj_mapping = parse_sdescs_and_recogs(sender, receivers, emote,
-                                                     case_sensitive=case_sensitive)
+        emote, obj_mapping = parse_sdescs_and_recogs(
+            sender, receivers, emote, case_sensitive=case_sensitive
+        )
         emote, language_mapping = parse_language(sender, emote)
     except (EmoteError, LanguageError) as err:
         # handle all error messages, don't hide actual coding errors
@@ -615,8 +616,8 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
     # (the text could have nested object mappings).
     emote = _RE_REF.sub(r"{{#\1}}", emote)
     # if anonymous_add is passed as a kwarg, collect and remove it from kwargs
-    if 'anonymous_add' in kwargs:
-        anonymous_add = kwargs.pop('anonymous_add')
+    if "anonymous_add" in kwargs:
+        anonymous_add = kwargs.pop("anonymous_add")
     if anonymous_add and not any(1 for tag in obj_mapping if tag.startswith(skey)):
         # no self-reference in the emote - add to the end
         obj_mapping[skey] = sender
@@ -670,12 +671,13 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
             )
         # make sure receiver always sees their real name
         rkey_start = "#%i" % receiver.id
-        rkey_keep_case = rkey_start + '~'  # signifies keeping the case
+        rkey_keep_case = rkey_start + "~"  # signifies keeping the case
         for rkey in (key for key in receiver_sdesc_mapping if key.startswith(rkey_start)):
             # we could have #%i^, #%it etc depending on input case - we want the
             # self-reference to retain case.
             receiver_sdesc_mapping[rkey] = process_sdesc(
-                receiver.key, receiver, ref=rkey_keep_case, **kwargs)
+                receiver.key, receiver, ref=rkey_keep_case, **kwargs
+            )
 
         # do the template replacement of the sdesc/recog {#num} markers
         receiver.msg(sendemote.format(**receiver_sdesc_mapping), from_obj=sender, **kwargs)
@@ -1709,14 +1711,14 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         if not sdesc:
             return ""
 
-        ref = kwargs.get('ref', '~')  # ~ to keep sdesc unchanged
-        if 't' in ref:
+        ref = kwargs.get("ref", "~")  # ~ to keep sdesc unchanged
+        if "t" in ref:
             # we only want to capitalize the first letter if there are many words
             sdesc = sdesc.lower()
             sdesc = sdesc[0].upper() + sdesc[1:] if len(sdesc) > 1 else sdesc.upper()
-        elif '^' in ref:
+        elif "^" in ref:
             sdesc = sdesc.upper()
-        elif 'v' in ref:
+        elif "v" in ref:
             sdesc = sdesc.lower()
         return "|b%s|n" % sdesc
 

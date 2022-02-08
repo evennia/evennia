@@ -32,8 +32,8 @@ from evennia.utils import ansi
 from evennia.utils.utils import to_bytes, class_from_module
 
 _RE_N = re.compile(r"\|n$")
-_RE_LEND = re.compile(br"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
-_RE_LINEBREAK = re.compile(br"\n\r|\r\n|\n|\r", re.DOTALL + re.MULTILINE)
+_RE_LEND = re.compile(rb"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
+_RE_LINEBREAK = re.compile(rb"\n\r|\r\n|\n|\r", re.DOTALL + re.MULTILINE)
 _RE_SCREENREADER_REGEX = re.compile(
     r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE
 )
@@ -63,6 +63,7 @@ class TelnetServerFactory(protocol.ServerFactory):
     This exists only to name this better in logs.
 
     """
+
     noisy = False
 
     def logPrefix(self):
@@ -92,6 +93,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
             super().dataReceived(data)
         except ValueError as err:
             from evennia.utils import logger
+
             logger.log_err(f"Malformed telnet input: {err}")
 
     def connectionMade(self):
@@ -458,8 +460,9 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
                     prompt = mxp_parse(prompt)
             prompt = to_bytes(prompt, self)
             prompt = prompt.replace(IAC, IAC + IAC).replace(b"\n", b"\r\n")
-            if not self.protocol_flags.get("NOPROMPTGOAHEAD",
-                                           self.protocol_flags.get("NOGOAHEAD", True)):
+            if not self.protocol_flags.get(
+                "NOPROMPTGOAHEAD", self.protocol_flags.get("NOGOAHEAD", True)
+            ):
                 prompt += IAC + GA
             self.transport.write(mccp_compress(self, prompt))
         else:

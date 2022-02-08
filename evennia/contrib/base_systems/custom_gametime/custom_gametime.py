@@ -151,8 +151,9 @@ def realtime_to_gametime(secs=0, mins=0, hrs=0, days=1, weeks=1, months=1, yrs=0
 
     """
     if days <= 0 or weeks <= 0 or months <= 0:
-        raise ValueError("realtime_to_gametime: days/weeks/months cannot be set <= 0, "
-                         "they start from 1.")
+        raise ValueError(
+            "realtime_to_gametime: days/weeks/months cannot be set <= 0, " "they start from 1."
+        )
 
     # days/weeks/months start from 1, we need to adjust them to work mathematically.
     days, weeks, months = days - 1, weeks - 1, months - 1

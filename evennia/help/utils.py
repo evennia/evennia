@@ -19,11 +19,9 @@ _LUNR_EXCEPTION = None
 _LUNR_GET_BUILDER = None
 _LUNR_BUILDER_PIPELINE = None
 
-_RE_HELP_SUBTOPICS_START = re.compile(
-    r"^\s*?#\s*?subtopics\s*?$", re.I + re.M)
+_RE_HELP_SUBTOPICS_START = re.compile(r"^\s*?#\s*?subtopics\s*?$", re.I + re.M)
 _RE_HELP_SUBTOPIC_SPLIT = re.compile(r"^\s*?(\#{2,6}\s*?\w+?[a-z0-9 \-\?!,\.]*?)$", re.M + re.I)
-_RE_HELP_SUBTOPIC_PARSE = re.compile(
-    r"^(?P<nesting>\#{2,6})\s*?(?P<name>.*?)$", re.I + re.M)
+_RE_HELP_SUBTOPIC_PARSE = re.compile(r"^(?P<nesting>\#{2,6})\s*?(?P<name>.*?)$", re.I + re.M)
 
 MAX_SUBTOPIC_NESTING = 5
 
@@ -57,6 +55,7 @@ def help_search_with_index(query, candidate_entries, suggestion_maxnum=5, fields
         from lunr import get_default_builder as _LUNR_GET_BUILDER
         from lunr import stop_word_filter
         from lunr.stemmer import stemmer
+
         # from lunr.trimmer import trimmer
 
         # pre-create a lunr index-builder pipeline where we've removed some of
@@ -90,12 +89,7 @@ def help_search_with_index(query, candidate_entries, suggestion_maxnum=5, fields
     builder.pipeline.reset()
     builder.pipeline.add(*_LUNR_BUILDER_PIPELINE)
 
-    search_index = _LUNR(
-        ref="key",
-        fields=fields,
-        documents=indx,
-        builder=builder
-    )
+    search_index = _LUNR(ref="key", fields=fields, documents=indx, builder=builder)
 
     try:
         matches = search_index.search(query)[:suggestion_maxnum]
@@ -175,7 +169,7 @@ def parse_entry_for_subcategories(entry):
 
     """
     topic, *subtopics = _RE_HELP_SUBTOPICS_START.split(entry, maxsplit=1)
-    structure = {None: topic.strip('\n')}
+    structure = {None: topic.strip("\n")}
 
     if subtopics:
         subtopics = subtopics[0]
@@ -193,12 +187,13 @@ def parse_entry_for_subcategories(entry):
         if subtopic_match:
             # a new sub(-sub..) category starts.
             mdict = subtopic_match.groupdict()
-            subtopic = mdict['name'].lower().strip()
-            new_nesting = len(mdict['nesting']) - 1
+            subtopic = mdict["name"].lower().strip()
+            new_nesting = len(mdict["nesting"]) - 1
 
             if new_nesting > MAX_SUBTOPIC_NESTING:
                 raise RuntimeError(
-                    f"Can have max {MAX_SUBTOPIC_NESTING} levels of nested help subtopics.")
+                    f"Can have max {MAX_SUBTOPIC_NESTING} levels of nested help subtopics."
+                )
 
             nestdiff = new_nesting - current_nesting
             if nestdiff < 0:
@@ -226,7 +221,5 @@ def parse_entry_for_subcategories(entry):
                     if key in dct:
                         dct = dct[key]
                     else:
-                        dct[key] = {
-                            None: part
-                        }
+                        dct[key] = {None: part}
     return structure

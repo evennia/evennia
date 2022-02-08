@@ -185,8 +185,10 @@ class SessionHandler(dict):
         global _FUNCPARSER
         if not _FUNCPARSER:
             from evennia.utils.funcparser import FuncParser
-            _FUNCPARSER = FuncParser(settings.FUNCPARSER_OUTGOING_MESSAGES_MODULES,
-                                     raise_errors=True)
+
+            _FUNCPARSER = FuncParser(
+                settings.FUNCPARSER_OUTGOING_MESSAGES_MODULES, raise_errors=True
+            )
 
         options = kwargs.pop("options", None) or {}
         raw = options.get("raw", False)
@@ -222,8 +224,11 @@ class SessionHandler(dict):
             elif isinstance(data, (str, bytes)):
                 data = _utf8(data)
 
-                if (_FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED
-                        and not raw and isinstance(self, ServerSessionHandler)):
+                if (
+                    _FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED
+                    and not raw
+                    and isinstance(self, ServerSessionHandler)
+                ):
                     # only apply funcparser on the outgoing path (sessionhandler->)
                     # data = parse_inlinefunc(data, strip=strip_inlinefunc, session=session)
                     data = _FUNCPARSER.parse(data, strip=strip_inlinefunc, session=session)
@@ -638,8 +643,7 @@ class ServerSessionHandler(SessionHandler):
         # mean connecting from the same host would not catch duplicates
         sid = id(curr_session)
         doublet_sessions = [
-            sess for sess in self.values()
-            if sess.logged_in and sess.uid == uid and id(sess) != sid
+            sess for sess in self.values() if sess.logged_in and sess.uid == uid and id(sess) != sid
         ]
 
         for session in doublet_sessions:

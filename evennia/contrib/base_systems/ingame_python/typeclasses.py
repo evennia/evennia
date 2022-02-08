@@ -11,7 +11,11 @@ from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia import ScriptDB
 from evennia.utils.utils import delay, inherits_from, lazy_property
 from evennia.contrib.base_systems.ingame_python.callbackhandler import CallbackHandler
-from evennia.contrib.base_systems.ingame_python.utils import register_events, time_event, phrase_event
+from evennia.contrib.base_systems.ingame_python.utils import (
+    register_events,
+    time_event,
+    phrase_event,
+)
 
 # Character help
 CHARACTER_CAN_DELETE = """

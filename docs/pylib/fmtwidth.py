@@ -26,7 +26,11 @@ if __name__ == "__main__":
     filepaths = glob.glob(args.files, recursive=True)
     width = args.width
 
-    wrapper = textwrap.TextWrapper(width=width, break_long_words=False, expand_tabs=True,)
+    wrapper = textwrap.TextWrapper(
+        width=width,
+        break_long_words=False,
+        expand_tabs=True,
+    )
 
     count = 0
     for filepath in filepaths:

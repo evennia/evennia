@@ -104,7 +104,6 @@ COMBAT FUNCTIONS START HERE
 
 
 class ItemCombatRules(tb_basic.BasicCombatRules):
-
     def get_attack(self, attacker, defender):
         """
         Returns a value for an attack roll.
@@ -699,7 +698,7 @@ AMULET_OF_MIGHT = {
 AMULET_OF_WEAKNESS = {
     "key": "The Amulet of Weakness",
     "desc": "The one who holds this amulet can call upon its power to gain great weakness. "
-            "It's not a terribly useful artifact.",
+    "It's not a terribly useful artifact.",
     "item_func": "add_condition",
     "item_selfonly": True,
     "item_kwargs": {"conditions": [("Damage Down", 3), ("Accuracy Down", 3), ("Defense Down", 3)]},

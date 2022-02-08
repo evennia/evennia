@@ -391,7 +391,7 @@ class _SaverDeque(_SaverMutable):
     @_save
     def rotate(self, *args):
         self._data.rotate(*args)
-        
+
     @_save
     def remove(self, *args):
         self._data.remove(*args)

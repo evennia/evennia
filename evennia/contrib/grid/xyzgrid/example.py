@@ -81,14 +81,13 @@ class TransitionToCave(xymap_legend.TransitionMapNode):
     into a room but only acts as a target for finding the exit's destination.
 
     """
-    symbol = 'T'
-    target_map_xyz = (1, 0, 'the small cave')
+
+    symbol = "T"
+    target_map_xyz = (1, 0, "the small cave")
 
 
 # extends the default legend
-LEGEND_MAP1 = {
-    'T': TransitionToCave
-}
+LEGEND_MAP1 = {"T": TransitionToCave}
 
 
 # link coordinates to rooms
@@ -96,70 +95,62 @@ PROTOTYPES_MAP1 = {
     # node/room prototypes
     (3, 0): {
         "key": "Dungeon Entrance",
-        "desc": "To the east, a narrow opening leads into darkness."
+        "desc": "To the east, a narrow opening leads into darkness.",
     },
     (4, 1): {
         "key": "Under the foilage of a giant tree",
         "desc": "High above the branches of a giant tree blocks out the sunlight. A slide "
-        "leading down from the upper branches ends here."
+        "leading down from the upper branches ends here.",
     },
     (4, 4): {
         "key": "The slide",
-        "desc": "A slide leads down to the ground from here. It looks like a one-way trip."
+        "desc": "A slide leads down to the ground from here. It looks like a one-way trip.",
     },
     (6, 1): {
         "key": "Thorny path",
         "desc": "To the east is a pathway of thorns. If you get through, you don't think you'll be "
-               "able to get back here the same way."
+        "able to get back here the same way.",
     },
-    (8, 1): {
-        "key": "By a large tree",
-        "desc": "You are standing at the root of a great tree."
-    },
-    (8, 3): {
-        "key": "At the top of the tree",
-        "desc": "You are at the top of the tree."
-    },
+    (8, 1): {"key": "By a large tree", "desc": "You are standing at the root of a great tree."},
+    (8, 3): {"key": "At the top of the tree", "desc": "You are at the top of the tree."},
     (3, 7): {
         "key": "Dense foilage",
-        "desc": "The foilage to the east is extra dense. It will take forever to get through it."
+        "desc": "The foilage to the east is extra dense. It will take forever to get through it.",
     },
     (5, 6): {
         "key": "On a huge branch",
-        "desc": "To the east is a glowing light, may be a teleporter to a higher branch."
+        "desc": "To the east is a glowing light, may be a teleporter to a higher branch.",
     },
     (9, 7): {
         "key": "On an enormous branch",
-        "desc": "To the west is a glowing light. It may be a teleporter to a lower branch."
+        "desc": "To the west is a glowing light. It may be a teleporter to a lower branch.",
     },
     (10, 8): {
         "key": "A gorgeous view",
-        "desc": "The view from here is breathtaking, showing the forest stretching far and wide."
+        "desc": "The view from here is breathtaking, showing the forest stretching far and wide.",
     },
     # default rooms
-    ('*', '*'): {
+    ("*", "*"): {
         "key": "Among the branches of a giant tree",
-        "desc": "These branches are wide enough to easily walk on. There's green all around."
+        "desc": "These branches are wide enough to easily walk on. There's green all around.",
     },
     # directional prototypes
-    (3, 0, 'e'): {
-        "desc": "A dark passage into the underworld."
-    },
+    (3, 0, "e"): {"desc": "A dark passage into the underworld."},
 }
 
 for key, prot in PROTOTYPES_MAP1.items():
     if len(key) == 2:
         # we don't want to give exits the room typeclass!
-        prot['prototype_parent'] = ROOM_PARENT
+        prot["prototype_parent"] = ROOM_PARENT
     else:
-        prot['prototype_parent'] = EXIT_PARENT
+        prot["prototype_parent"] = EXIT_PARENT
 
 
 XYMAP_DATA_MAP1 = {
     "zcoord": "the large tree",
     "map": MAP1,
     "legend": LEGEND_MAP1,
-    "prototypes": PROTOTYPES_MAP1
+    "prototypes": PROTOTYPES_MAP1,
 }
 
 # -------------------------------------- map2
@@ -188,14 +179,13 @@ class TransitionToLargeTree(xymap_legend.TransitionMapNode):
     into a room by only acts as a target for finding the exit's destination.
 
     """
-    symbol = 'T'
-    target_map_xyz = (3, 0, 'the large tree')
+
+    symbol = "T"
+    target_map_xyz = (3, 0, "the large tree")
 
 
 # this extends the default legend (that defines #,-+ etc)
-LEGEND_MAP2 = {
-    "T": TransitionToLargeTree
-}
+LEGEND_MAP2 = {"T": TransitionToLargeTree}
 
 # prototypes for specific locations
 PROTOTYPES_MAP2 = {
@@ -203,64 +193,54 @@ PROTOTYPES_MAP2 = {
     (1, 0): {
         "key": "The entrance",
         "desc": "This is the entrance to a small cave leading into the ground. "
-                "Light sifts in from the outside, while cavernous passages disappear "
-                "into darkness."
+        "Light sifts in from the outside, while cavernous passages disappear "
+        "into darkness.",
     },
     (2, 0): {
         "key": "A gruesome sight.",
-        "desc": "Something was killed here recently. The smell is unbearable."
+        "desc": "Something was killed here recently. The smell is unbearable.",
     },
     (1, 1): {
         "key": "A dark pathway",
-        "desc": "The path splits three ways here. To the north a faint light can be seen."
+        "desc": "The path splits three ways here. To the north a faint light can be seen.",
     },
     (3, 2): {
         "key": "Stagnant water",
         "desc": "A pool of stagnant, black water dominates this small chamber. To the nortwest "
-                "a faint light can be seen."
+        "a faint light can be seen.",
     },
-    (0, 2): {
-        "key": "A dark alcove",
-        "desc": "This alcove is empty."
-    },
+    (0, 2): {"key": "A dark alcove", "desc": "This alcove is empty."},
     (1, 2): {
         "key": "South-west corner of the atrium",
         "desc": "Sunlight sifts down into a large underground chamber. Weeds and grass sprout "
-                "between the stones."
+        "between the stones.",
     },
     (2, 2): {
         "key": "South-east corner of the atrium",
         "desc": "Sunlight sifts down into a large underground chamber. Weeds and grass sprout "
-                "between the stones."
+        "between the stones.",
     },
     (1, 3): {
         "key": "North-west corner of the atrium",
         "desc": "Sunlight sifts down into a large underground chamber. Weeds and grass sprout "
-                "between the stones."
+        "between the stones.",
     },
     (2, 3): {
         "key": "North-east corner of the atrium",
         "desc": "Sunlight sifts down into a large underground chamber. Weeds and grass sprout "
-                "between the stones. To the east is a dark passage."
+        "between the stones. To the east is a dark passage.",
     },
     (3, 3): {
         "key": "Craggy crevice",
         "desc": "This is the deepest part of the dungeon. The path shrinks away and there "
-                "is no way to continue deeper."
+        "is no way to continue deeper.",
     },
     # default fallback for undefined nodes
-    ('*', '*'): {
-        "key": "A dark room",
-        "desc": "A dark, but empty, room."
-    },
+    ("*", "*"): {"key": "A dark room", "desc": "A dark, but empty, room."},
     # directional prototypes
-    (1, 0, 'w'): {
-        "desc": "A narrow path to the fresh air of the outside world."
-    },
+    (1, 0, "w"): {"desc": "A narrow path to the fresh air of the outside world."},
     # directional fallbacks for unset directions
-    ('*', '*', '*'): {
-        "desc": "A dark passage"
-    }
+    ("*", "*", "*"): {"desc": "A dark passage"},
 }
 
 # this is required by the prototypes, but we add it all at once so we don't
@@ -268,9 +248,9 @@ PROTOTYPES_MAP2 = {
 for key, prot in PROTOTYPES_MAP2.items():
     if len(key) == 2:
         # we don't want to give exits the room typeclass!
-        prot['prototype_parent'] = ROOM_PARENT
+        prot["prototype_parent"] = ROOM_PARENT
     else:
-        prot['prototype_parent'] = EXIT_PARENT
+        prot["prototype_parent"] = EXIT_PARENT
 
 
 XYMAP_DATA_MAP2 = {
@@ -278,14 +258,8 @@ XYMAP_DATA_MAP2 = {
     "zcoord": "the small cave",
     "legend": LEGEND_MAP2,
     "prototypes": PROTOTYPES_MAP2,
-    "options": {
-        "map_visual_range": 1,
-        "map_mode": 'scan'
-    }
+    "options": {"map_visual_range": 1, "map_mode": "scan"},
 }
 
 # This is read by the parser
-XYMAP_DATA_LIST = [
-    XYMAP_DATA_MAP1,
-    XYMAP_DATA_MAP2
-]
+XYMAP_DATA_LIST = [XYMAP_DATA_MAP1, XYMAP_DATA_MAP2]

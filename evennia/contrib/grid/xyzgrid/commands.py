@@ -58,6 +58,7 @@ class CmdXYZTeleport(building.CmdTeleport):
     are given, the target is a location on the XYZGrid.
 
     """
+
     def _search_by_xyz(self, inp):
         inp = inp.strip("()")
         X, Y, *Z = inp.split(",", 2)
@@ -69,8 +70,10 @@ class CmdXYZTeleport(building.CmdTeleport):
             try:
                 xyz = self.caller.xyz
             except AttributeError:
-                self.caller.msg("Z-coordinate is also required since you are not currently "
-                                "in a room with a Z coordinate of its own.")
+                self.caller.msg(
+                    "Z-coordinate is also required since you are not currently "
+                    "in a room with a Z coordinate of its own."
+                )
                 raise InterruptCommand
             else:
                 Z = xyz[2]
@@ -134,9 +137,11 @@ class CmdXYZOpen(building.CmdOpen):
 
         self.location = self.caller.location
         if not self.args or not self.rhs:
-            self.caller.msg("Usage: open <new exit>[;alias...][:typeclass]"
-                            "[,<return exit>[;alias..][:typeclass]]] "
-                            "= <destination or (X,Y,Z)>")
+            self.caller.msg(
+                "Usage: open <new exit>[;alias...][:typeclass]"
+                "[,<return exit>[;alias..][:typeclass]]] "
+                "= <destination or (X,Y,Z)>"
+            )
             raise InterruptCommand
         if not self.location:
             self.caller.msg("You cannot create an exit from a None-location.")
@@ -184,6 +189,7 @@ class CmdGoto(COMMAND_DEFAULT_CLASS):
     Builders can optionally specify a specific grid coordinate (X,Y) to go to.
 
     """
+
     key = "goto"
     aliases = "path"
     help_category = "General"
@@ -207,11 +213,19 @@ class CmdGoto(COMMAND_DEFAULT_CLASS):
 
     def _search_by_key_and_alias(self, inp, xyz_start):
         Z = xyz_start[2]
-        candidates = list(XYZRoom.objects.filter_xyz(xyz=('*', '*', Z)))
+        candidates = list(XYZRoom.objects.filter_xyz(xyz=("*", "*", Z)))
         return self.caller.search(inp, candidates=candidates)
 
-    def _auto_step(self, caller, session, target=None,
-                   xymap=None, directions=None, step_sequence=None, step=True):
+    def _auto_step(
+        self,
+        caller,
+        session,
+        target=None,
+        xymap=None,
+        directions=None,
+        step_sequence=None,
+        step=True,
+    ):
 
         path_data = caller.ndb.xy_path_data
 
@@ -221,8 +235,12 @@ class CmdGoto(COMMAND_DEFAULT_CLASS):
                 # stop any old task in its tracks
                 path_data.task.cancel()
             path_data = caller.ndb.xy_path_data = PathData(
-                target=target, xymap=xymap, directions=directions,
-                step_sequence=step_sequence, task=None)
+                target=target,
+                xymap=xymap,
+                directions=directions,
+                step_sequence=step_sequence,
+                task=None,
+            )
 
         if step and path_data:
 
@@ -285,7 +303,7 @@ class CmdGoto(COMMAND_DEFAULT_CLASS):
                     xymap=path_data.xymap,
                     directions=directions,
                     step_sequence=step_sequence,
-                    task=None
+                    task=None,
                 )
             # the map can itself tell the stepper to stop the auto-step prematurely
             interrupt_node_or_link = None
@@ -301,7 +319,8 @@ class CmdGoto(COMMAND_DEFAULT_CLASS):
 
             # the exit name does not need to be the same as the cardinal direction!
             exit_name, *_ = first_link.spawn_aliases.get(
-                direction, current_node.direction_spawn_defaults.get(direction, ('unknown', )))
+                direction, current_node.direction_spawn_defaults.get(direction, ("unknown",))
+            )
 
             exit_obj = caller.search(exit_name)
             if not exit_obj:
@@ -315,13 +334,15 @@ class CmdGoto(COMMAND_DEFAULT_CLASS):
                 # premature stop of pathfind-step because of map node/link of interrupt type
                 if hasattr(interrupt_node_or_link, "node_index"):
                     message = exit_obj.destination.attributes.get(
-                        "xyz_path_interrupt_msg", default=self.default_xyz_path_interrupt_msg)
+                        "xyz_path_interrupt_msg", default=self.default_xyz_path_interrupt_msg
+                    )
                     # we move into the node/room and then stop
                     caller.execute_cmd(exit_name, session=session)
                 else:
                     # if the link is interrupted we don't cross it at all
                     message = exit_obj.attributes.get(
-                        "xyz_path_interrupt_msg", default=self.default_xyz_path_interrupt_msg)
+                        "xyz_path_interrupt_msg", default=self.default_xyz_path_interrupt_msg
+                    )
                 caller.msg(message)
                 return
 
@@ -335,7 +356,7 @@ class CmdGoto(COMMAND_DEFAULT_CLASS):
                 xymap=path_data.xymap,
                 directions=path_data.directions,
                 step_sequence=path_data.step_sequence,
-                task=delay(self.auto_step_delay, self._auto_step, caller, session)
+                task=delay(self.auto_step_delay, self._auto_step, caller, session),
             )
 
     def func(self):
@@ -344,7 +365,7 @@ class CmdGoto(COMMAND_DEFAULT_CLASS):
         """
 
         caller = self.caller
-        goto_mode = self.cmdname == 'goto'
+        goto_mode = self.cmdname == "goto"
 
         # check if we have an existing path
         path_data = caller.ndb.xy_path_data
@@ -359,8 +380,7 @@ class CmdGoto(COMMAND_DEFAULT_CLASS):
                         caller.msg(f"Aborted auto-walking to {target_name}.")
                         return
                 # goto/path-command will show current path
-                current_path = list_to_string(
-                    [f"|w{step}|n" for step in path_data.directions])
+                current_path = list_to_string([f"|w{step}|n" for step in path_data.directions])
                 moving = "(moving)" if task and task.active() else ""
                 caller.msg(f"Path to {target_name}{moving}: {current_path}")
             else:
@@ -405,12 +425,21 @@ class CmdGoto(COMMAND_DEFAULT_CLASS):
         xy_end = xyz_end[:2]
         directions, step_sequence = xymap.get_shortest_path(xy_start, xy_end)
 
-        caller.msg(f"There are {len(directions)} steps to {target.get_display_name(caller)}: "
-                   f"|w{list_to_string(directions, endsep='|n, and finally|w')}|n")
+        caller.msg(
+            f"There are {len(directions)} steps to {target.get_display_name(caller)}: "
+            f"|w{list_to_string(directions, endsep='|n, and finally|w')}|n"
+        )
 
         # create data for display and start stepping if we used goto
-        self._auto_step(caller, self.session, target=target, xymap=xymap,
-                        directions=directions, step_sequence=step_sequence, step=goto_mode)
+        self._auto_step(
+            caller,
+            self.session,
+            target=target,
+            xymap=xymap,
+            directions=directions,
+            step_sequence=step_sequence,
+            step=goto_mode,
+        )
 
 
 class CmdMap(COMMAND_DEFAULT_CLASS):
@@ -424,6 +453,7 @@ class CmdMap(COMMAND_DEFAULT_CLASS):
     This is a builder-command.
 
     """
+
     key = "map"
     locks = "cmd:perm(Builders)"
 
@@ -453,8 +483,10 @@ class CmdMap(COMMAND_DEFAULT_CLASS):
 
         xymap = xyzgrid.get_map(Z)
         if not xymap:
-            self.caller.msg(f"XYMap '{Z}' is not found on the grid. Try 'map list' to see "
-                            "available maps/Zcoords.")
+            self.caller.msg(
+                f"XYMap '{Z}' is not found on the grid. Try 'map list' to see "
+                "available maps/Zcoords."
+            )
             return
 
         self.caller.msg(ansi.raw(xymap.mapstring))
@@ -465,6 +497,7 @@ class XYZGridCmdSet(CmdSet):
     Cmdset for easily adding the above cmds to the character cmdset.
 
     """
+
     key = "xyzgrid_cmdset"
 
     def at_cmdset_creation(self):

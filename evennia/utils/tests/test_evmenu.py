@@ -321,8 +321,7 @@ class TestMenuTemplateParse(BaseEvenniaTest):
     def test_parse_menu_template(self):
         """EvMenu template testing"""
 
-        menutree = evmenu.parse_menu_template(self.char1, self.menu_template,
-                                              self.goto_callables)
+        menutree = evmenu.parse_menu_template(self.char1, self.menu_template, self.goto_callables)
         self.assertEqual(menutree, {"start": Anything, "node1": Anything, "node2": Anything})
 
     def test_template2menu(self):

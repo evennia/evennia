@@ -243,6 +243,7 @@ class TBEquipTurnHandler(tb_basic.TBBasicTurnHandler):
     Fights persist until only one participant is left with any HP or all
     remaining participants choose to end the combat with the 'disengage' command.
     """
+
     rules = COMBAT_RULES
 
 
@@ -258,6 +259,7 @@ class TBEWeapon(DefaultObject):
     A weapon which can be wielded in combat with the 'wield' command.
 
     """
+
     rules = COMBAT_RULES
 
     def at_object_creation(self):
@@ -513,8 +515,9 @@ class CmdWield(Command):
         weapon = self.caller.search(self.args, candidates=self.caller.contents)
         if not weapon:
             return
-        if not weapon.is_typeclass("evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon",
-                                   exact=True):
+        if not weapon.is_typeclass(
+            "evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon", exact=True
+        ):
             self.caller.msg("That's not a weapon!")
             # Remember to update the path to the weapon typeclass if you move this module!
             return
@@ -597,8 +600,9 @@ class CmdDon(Command):
         armor = self.caller.search(self.args, candidates=self.caller.contents)
         if not armor:
             return
-        if not armor.is_typeclass("evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor",
-                                  exact=True):
+        if not armor.is_typeclass(
+            "evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor", exact=True
+        ):
             self.caller.msg("That's not armor!")
             # Remember to update the path to the armor typeclass if you move this module!
             return

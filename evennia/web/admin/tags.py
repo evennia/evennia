@@ -20,9 +20,7 @@ class TagForm(forms.ModelForm):
 
     """
 
-    db_key = forms.CharField(
-        label="Key/Name", required=True, help_text="The main key identifier"
-    )
+    db_key = forms.CharField(label="Key/Name", required=True, help_text="The main key identifier")
     db_category = forms.CharField(
         label="Category",
         help_text="Used for grouping tags. Unset (default) gives a category of None",
@@ -32,15 +30,22 @@ class TagForm(forms.ModelForm):
         label="Type",
         choices=[(None, "-"), ("alias", "alias"), ("permission", "permission")],
         help_text="Tags are used for different things. Unset for regular tags.",
-        required=False
+        required=False,
     )
     db_model = forms.ChoiceField(
-        label="Model" ,
+        label="Model",
         required=False,
-        help_text = "Each Tag can only 'attach' to one type of entity.",
-        choices=([("objectdb", "objectdb"), ("accountdb", "accountdb"),
-                  ("scriptdb", "scriptdb"), ("channeldb", "channeldb"),
-                  ("helpentry", "helpentry"), ("msg", "msg")])
+        help_text="Each Tag can only 'attach' to one type of entity.",
+        choices=(
+            [
+                ("objectdb", "objectdb"),
+                ("accountdb", "accountdb"),
+                ("scriptdb", "scriptdb"),
+                ("channeldb", "channeldb"),
+                ("helpentry", "helpentry"),
+                ("msg", "msg"),
+            ]
+        ),
     )
     db_data = forms.CharField(
         label="Data",
@@ -77,7 +82,7 @@ class InlineTagForm(forms.ModelForm):
         label="Type",
         choices=[(None, "-"), ("alias", "alias"), ("permission", "permission")],
         help_text="Tags are used for different things. Unset for regular tags.",
-        required=False
+        required=False,
     )
     tag_data = forms.CharField(
         label="Data",
@@ -91,10 +96,10 @@ class InlineTagForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         """
-         If we have a tag, then we'll prepopulate our instance with the fields we'd expect it
-         to have based on the tag. tag_key, tag_category, tag_type, and tag_data all refer to
-         the corresponding tag fields. The initial data of the form fields will similarly be
-         populated.
+        If we have a tag, then we'll prepopulate our instance with the fields we'd expect it
+        to have based on the tag. tag_key, tag_category, tag_type, and tag_data all refer to
+        the corresponding tag fields. The initial data of the form fields will similarly be
+        populated.
         """
         super().__init__(*args, **kwargs)
         tagkey = None
@@ -142,6 +147,7 @@ class TagFormSet(forms.BaseInlineFormSet):
     Object, where the handler is an AliasHandler, PermissionsHandler, or TagHandler, based on the
     type of tag.
     """
+
     verbose_name = "Tag"
     verbose_name_plural = "Tags"
 
@@ -222,13 +228,6 @@ class TagAdmin(admin.ModelAdmin):
     fieldsets = (
         (
             None,
-            {
-                "fields": (
-                    ("db_key", "db_category"),
-                    ("db_tagtype", "db_model"),
-                    "db_data"
-                )
-            },
+            {"fields": (("db_key", "db_category"), ("db_tagtype", "db_model"), "db_data")},
         ),
     )
-

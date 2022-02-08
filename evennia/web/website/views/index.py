@@ -29,14 +29,17 @@ def _gamestats():
 
     nobjs = ObjectDB.objects.count()
     nobjs = nobjs or 1  # fix zero-div error with empty database
-    Character = class_from_module(settings.BASE_CHARACTER_TYPECLASS,
-                                  fallback=settings.FALLBACK_CHARACTER_TYPECLASS)
+    Character = class_from_module(
+        settings.BASE_CHARACTER_TYPECLASS, fallback=settings.FALLBACK_CHARACTER_TYPECLASS
+    )
     nchars = Character.objects.all_family().count()
-    Room = class_from_module(settings.BASE_ROOM_TYPECLASS,
-                             fallback=settings.FALLBACK_ROOM_TYPECLASS)
+    Room = class_from_module(
+        settings.BASE_ROOM_TYPECLASS, fallback=settings.FALLBACK_ROOM_TYPECLASS
+    )
     nrooms = Room.objects.all_family().count()
-    Exit = class_from_module(settings.BASE_EXIT_TYPECLASS,
-                             fallback=settings.FALLBACK_EXIT_TYPECLASS)
+    Exit = class_from_module(
+        settings.BASE_EXIT_TYPECLASS, fallback=settings.FALLBACK_EXIT_TYPECLASS
+    )
     nexits = Exit.objects.all_family().count()
     nothers = nobjs - nchars - nrooms - nexits
 

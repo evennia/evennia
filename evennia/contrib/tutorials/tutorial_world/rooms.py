@@ -78,6 +78,7 @@ class CmdTutorial(Command):
         helptext += "\n\n (Write 'give up' if you want to abandon your quest.)"
         caller.msg(helptext)
 
+
 # for the @detail command we inherit from MuxCommand, since
 # we want to make use of MuxCommand's pre-parsing of '=' in the
 # argument.
@@ -202,22 +203,26 @@ class CmdTutorialLook(default_cmds.CmdLook):
         looking_at_obj.at_desc(looker=caller)
         return
 
+
 class CmdTutorialGiveUp(default_cmds.MuxCommand):
     """
     Give up the tutorial-world quest and return to Limbo, the start room of the
     server.
 
     """
+
     key = "give up"
-    aliases = ['abort']
+    aliases = ["abort"]
 
     def func(self):
         outro_room = OutroRoom.objects.all()
         if outro_room:
             outro_room = outro_room[0]
         else:
-            self.caller.msg("That didn't work (seems like a bug). "
-                            "Try to use the |wteleport|n command instead.")
+            self.caller.msg(
+                "That didn't work (seems like a bug). "
+                "Try to use the |wteleport|n command instead."
+            )
             return
 
         self.caller.move_to(outro_room)
@@ -312,6 +317,7 @@ class TutorialStartExit(DefaultExit):
     will also  clean up the intro command.
 
     """
+
     def at_object_creation(self):
         self.cmdset.add(CmdSetEvenniaIntro, persistent=True)
 
@@ -397,6 +403,7 @@ SUPERUSER_WARNING = (
 #
 # -------------------------------------------------------------
 
+
 class CmdEvenniaIntro(Command):
     """
     Start the Evennia intro wizard.
@@ -405,10 +412,12 @@ class CmdEvenniaIntro(Command):
         intro
 
     """
+
     key = "intro"
 
     def func(self):
         from .intro_menu import init_menu
+
         # quell also superusers
         if self.caller.account:
             self.caller.msg("Auto-quelling permissions while in intro ...")
@@ -462,6 +471,7 @@ class IntroRoom(TutorialRoom):
             if character.account:
                 character.account.execute_cmd("quell")
                 character.msg("(Auto-quelling while in tutorial-world)")
+
 
 # -------------------------------------------------------------
 #
@@ -1176,4 +1186,3 @@ class OutroRoom(TutorialRoom):
     def at_object_leave(self, character, destination):
         if character.account:
             character.account.execute_cmd("unquell")
-

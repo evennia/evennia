@@ -301,7 +301,7 @@ ATTRIBUTE_STORED_MODEL_RENAME = [
     (("typeclasses", "defaultplayer"), ("typeclasses", "defaultaccount")),
 ]
 # Default type of autofield (required by Django)
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 ######################################################################
 # Evennia webclient options
@@ -316,7 +316,7 @@ WEBCLIENT_OPTIONS = {
     # Shows notifications of new messages as popup windows
     "notification_popup": False,
     # Plays a sound for notifications of new messages
-    "notification_sound": False
+    "notification_sound": False,
 }
 
 ######################################################################
@@ -487,7 +487,7 @@ COMMAND_DEFAULT_CLASS = "evennia.commands.default.muxcommand.MuxCommand"
 # input. By default the command-name should end with a space or / (since the
 # default commands uses MuxCommand and /switches). Note that the extra \n
 # is necessary for use with batchprocessor.
-COMMAND_DEFAULT_ARG_REGEX = r'^[ /]|\n|$'
+COMMAND_DEFAULT_ARG_REGEX = r"^[ /]|\n|$"
 # By default, Command.msg will only send data to the Session calling
 # the Command in the first place. If set, Command.msg will instead return
 # data to all Sessions connected to the Account/Character associated with
@@ -661,9 +661,9 @@ HELP_CLICKABLE_TOPICS = True
 # This changes the start-symbol for the funcparser callable. Note that
 # this will make a lot of documentation invalid and there may also be
 # other unexpected side effects, so change with caution.
-FUNCPARSER_START_CHAR = '$'
+FUNCPARSER_START_CHAR = "$"
 # The symbol to use to escape Func
-FUNCPARSER_ESCAPE_CHAR = '\\'
+FUNCPARSER_ESCAPE_CHAR = "\\"
 # This is the global max nesting-level for nesting functions in
 # the funcparser. This protects against infinite loops.
 FUNCPARSER_MAX_NESTING = 20
@@ -676,8 +676,10 @@ FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED = False
 FUNCPARSER_OUTGOING_MESSAGES_MODULES = ["evennia.utils.funcparser", "server.conf.inlinefuncs"]
 # Prototype values are also parsed with FuncParser. These modules
 # define which $func callables are available to use in prototypes.
-FUNCPARSER_PROTOTYPE_PARSING_MODULES = ["evennia.prototypes.protfuncs",
-                                        "server.conf.prototypefuncs"]
+FUNCPARSER_PROTOTYPE_PARSING_MODULES = [
+    "evennia.prototypes.protfuncs",
+    "server.conf.prototypefuncs",
+]
 
 ######################################################################
 # Global Scripts
@@ -745,7 +747,7 @@ LOGIN_THROTTLE_TIMEOUT = 5 * 60
 # since they can be exploitative. This list defines Account-level permissions
 # (and higher) that bypass this stripping. It is used as a fallback if a
 # specific list of perms are not given to the helper function.
-INPUT_CLEANUP_BYPASS_PERMISSIONS = ['Builder']
+INPUT_CLEANUP_BYPASS_PERMISSIONS = ["Builder"]
 
 
 ######################################################################
@@ -898,8 +900,8 @@ USE_I18N = False
 # Where to find locales (no need to change this, most likely)
 LOCALE_PATHS = [os.path.join(EVENNIA_DIR, "locale/")]
 # How to display time stamps in e.g. the admin
-SHORT_DATETIME_FORMAT = 'Y-m-d H:i:s.u'
-DATETIME_FORMAT = 'Y-m-d H:i:s'  # ISO 8601 but without T and timezone
+SHORT_DATETIME_FORMAT = "Y-m-d H:i:s.u"
+DATETIME_FORMAT = "Y-m-d H:i:s"  # ISO 8601 but without T and timezone
 # This should be turned off unless you want to do tests with Django's
 # development webserver (normally Evennia runs its own server)
 SERVE_MEDIA = False
@@ -965,16 +967,14 @@ TEMPLATES = [
 # Django cache settings
 # https://docs.djangoproject.com/en/dev/topics/cache/#setting-up-the-cache
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
     },
-    'throttle': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'TIMEOUT': 60 * 5,
-        'OPTIONS': {
-            'MAX_ENTRIES': 2000
-        }
-    }
+    "throttle": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "TIMEOUT": 60 * 5,
+        "OPTIONS": {"MAX_ENTRIES": 2000},
+    },
 }
 # MiddleWare are semi-transparent extensions to Django's functionality.
 # see http://www.djangoproject.com/documentation/middleware/ for a more detailed
@@ -1039,8 +1039,14 @@ AUTH_PASSWORD_VALIDATORS = [
 # Username validation plugins
 AUTH_USERNAME_VALIDATORS = [
     {"NAME": "django.contrib.auth.validators.ASCIIUsernameValidator"},
-    {"NAME": "django.core.validators.MinLengthValidator", "OPTIONS": {"limit_value": 3},},
-    {"NAME": "django.core.validators.MaxLengthValidator", "OPTIONS": {"limit_value": 30},},
+    {
+        "NAME": "django.core.validators.MinLengthValidator",
+        "OPTIONS": {"limit_value": 3},
+    },
+    {
+        "NAME": "django.core.validators.MaxLengthValidator",
+        "OPTIONS": {"limit_value": 30},
+    },
     {"NAME": "evennia.server.validators.EvenniaUsernameAvailabilityValidator"},
 ]
 
@@ -1059,7 +1065,9 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 25,
     # require logged in users to call API so that access checks can work on them
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated",],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
     # These are the different ways people can authenticate for API requests - via
     # session or with user/password. Other ways are possible, such as via tokens
     # or oauth, but require additional dependencies.

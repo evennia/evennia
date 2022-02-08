@@ -22,9 +22,15 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
 from evennia.typeclasses.models import TypeclassBase
 from evennia.utils import ansi, create, funcparser, logger, search
-from evennia.utils.utils import (class_from_module, is_iter, lazy_property,
-                                 list_to_string, make_iter, to_str,
-                                 variable_from_module)
+from evennia.utils.utils import (
+    class_from_module,
+    is_iter,
+    lazy_property,
+    list_to_string,
+    make_iter,
+    to_str,
+    variable_from_module,
+)
 
 _INFLECT = inflect.engine()
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
@@ -212,13 +218,13 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     objects = ObjectManager()
 
     # populated by `return_apperance`
-    appearance_template = '''
+    appearance_template = """
 {header}
 |c{name}|n
 {desc}
 {exits}{characters}{things}
 {footer}
-    '''
+    """
 
     # on-object properties
 
@@ -532,12 +538,14 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 # we re-run exact match agains one of the matches to
                 # make sure we were not catching partial matches not belonging
                 # to the stack
-                nstack = len(ObjectDB.objects.get_objs_with_key_or_alias(
-                    results[0].key,
-                    exact=True,
-                    candidates=list(results),
-                    typeclasses=[typeclass] if typeclass else None
-                ))
+                nstack = len(
+                    ObjectDB.objects.get_objs_with_key_or_alias(
+                        results[0].key,
+                        exact=True,
+                        candidates=list(results),
+                        typeclasses=[typeclass] if typeclass else None,
+                    )
+                )
             if nstack == nresults:
                 # a valid stack, return multiple results
                 return list(results)[:stacked]
@@ -630,9 +638,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         raw_string = self.nicks.nickreplace(
             raw_string, categories=("inputline", "channel"), include_account=True
         )
-        return _CMDHANDLER(
-            self, raw_string, callertype="object", session=session, **kwargs
-        )
+        return _CMDHANDLER(self, raw_string, callertype="object", session=session, **kwargs)
 
     def msg(self, text=None, from_obj=None, session=None, options=None, **kwargs):
         """
@@ -790,7 +796,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         mapping = mapping or {}
         you = from_obj or self
 
-        if 'you' not in mapping:
+        if "you" not in mapping:
             mapping[you] = you
 
         contents = self.contents
@@ -802,14 +808,23 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
             # actor-stance replacements
             inmessage = _MSG_CONTENTS_PARSER.parse(
-                inmessage, raise_errors=True, return_string=True,
-                caller=you, receiver=receiver, mapping=mapping)
+                inmessage,
+                raise_errors=True,
+                return_string=True,
+                caller=you,
+                receiver=receiver,
+                mapping=mapping,
+            )
 
             # director-stance replacements
             outmessage = inmessage.format(
-                **{key: obj.get_display_name(looker=receiver)
-                   if hasattr(obj, "get_display_name") else str(obj)
-                   for key, obj in mapping.items()})
+                **{
+                    key: obj.get_display_name(looker=receiver)
+                    if hasattr(obj, "get_display_name")
+                    else str(obj)
+                    for key, obj in mapping.items()
+                }
+            )
 
             receiver.msg(text=(outmessage, outkwargs), from_obj=from_obj, **kwargs)
 
@@ -866,6 +881,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
              7. `self.at_post_move(source_location)`
 
         """
+
         def logerr(string="", err=None):
             """Simple log helper method"""
             logger.log_trace()
@@ -989,8 +1005,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             if not home:
                 obj.location = None
                 obj.msg(_("Something went wrong! You are dumped into nowhere. Contact an admin."))
-                logger.log_err("Missing default home - '{name}(#{dbid})' now "
-                               "has a null location.".format(name=obj.name, dbid=obj.dbid))
+                logger.log_err(
+                    "Missing default home - '{name}(#{dbid})' now "
+                    "has a null location.".format(name=obj.name, dbid=obj.dbid)
+                )
                 return
 
             if obj.has_account:
@@ -1550,7 +1568,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # This was created from nowhere and added to an account's
             # inventory; it's probably the result of a create command.
             string = _("You now have {name} in your possession.").format(
-                name=self.get_display_name(self.location))
+                name=self.get_display_name(self.location)
+            )
             self.location.msg(string)
             return
 
@@ -1754,13 +1773,14 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 lists are the actual objects.
 
         """
+
         def filter_visible(obj_list):
             return [obj for obj in obj_list if obj != looker and obj.access(looker, "view")]
 
         return {
             "exits": filter_visible(self.contents_get(content_type="exit")),
             "characters": filter_visible(self.contents_get(content_type="character")),
-            "things": filter_visible(self.contents_get(content_type="object"))
+            "things": filter_visible(self.contents_get(content_type="object")),
         }
 
     def get_content_names(self, looker, **kwargs):
@@ -1789,13 +1809,14 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # a mapping {'exits': [...], 'characters': [...], 'things': [...]}
         contents_map = self.get_visible_contents(looker, **kwargs)
 
-        character_names = [char.get_display_name(looker, **kwargs)
-                           for char in contents_map['characters']]
-        exit_names = [exi.get_display_name(looker, **kwargs) for exi in contents_map['exits']]
+        character_names = [
+            char.get_display_name(looker, **kwargs) for char in contents_map["characters"]
+        ]
+        exit_names = [exi.get_display_name(looker, **kwargs) for exi in contents_map["exits"]]
 
         # group all same-named things under one name
         things = defaultdict(list)
-        for thing in contents_map['things']:
+        for thing in contents_map["things"]:
             things[thing.get_display_name(looker, **kwargs)].append(thing)
 
         # pluralize same-named things
@@ -1806,11 +1827,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             singular, plural = thing.get_numbered_name(nthings, looker, key=thingname)
             thing_names.append(singular if nthings == 1 else plural)
 
-        return {
-            "exits": exit_names,
-            "characters": character_names,
-            "things": thing_names
-        }
+        return {"exits": exit_names, "characters": character_names, "things": thing_names}
 
     def return_appearance(self, looker, **kwargs):
         """
@@ -1840,7 +1857,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
 
         if not looker:
-            return ''
+            return ""
 
         # ourselves
         name = self.get_display_name(looker, **kwargs)
@@ -1848,20 +1865,20 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         # contents
         content_names_map = self.get_content_names(looker, **kwargs)
-        exits = list_to_string(content_names_map['exits'])
-        characters = list_to_string(content_names_map['characters'])
-        things = list_to_string(content_names_map['things'])
+        exits = list_to_string(content_names_map["exits"])
+        characters = list_to_string(content_names_map["characters"])
+        things = list_to_string(content_names_map["things"])
 
         # populate the appearance_template string. It's a good idea to strip it and
         # let the client add any extra spaces instead.
         return self.appearance_template.format(
-            header='',
+            header="",
             name=name,
             desc=desc,
-            exits=f"|wExits:|n {exits}" if exits else '',
-            characters=f"\n|wCharacters:|n {characters}" if characters else '',
-            things=f"\n|wYou see:|n {things}" if things else '',
-            footer=''
+            exits=f"|wExits:|n {exits}" if exits else "",
+            characters=f"\n|wCharacters:|n {characters}" if characters else "",
+            things=f"\n|wYou see:|n {things}" if things else "",
+            footer="",
         ).strip()
 
     def at_look(self, target, **kwargs):
@@ -2124,7 +2141,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             msg_type = "whisper"
             msg_self = (
                 '{self} whisper to {all_receivers}, "|n{speech}|n"'
-                if msg_self is True else msg_self
+                if msg_self is True
+                else msg_self
             )
             msg_receivers = msg_receivers or '{object} whispers: "|n{speech}|n"'
             msg_location = None
@@ -2332,7 +2350,7 @@ class DefaultCharacter(DefaultObject):
 
     @classmethod
     def validate_name(cls, name):
-        """ Validate the character name prior to creating. Overload this function to add custom validators
+        """Validate the character name prior to creating. Overload this function to add custom validators
 
         Args:
             name (str) : The name of the character
@@ -2391,8 +2409,7 @@ class DefaultCharacter(DefaultObject):
             self.db.prelogout_location = self.location  # save location again to be sure.
         else:
             account.msg(
-                _("|r{obj} has no location and no home is set.|n").format(obj=self),
-                session=session
+                _("|r{obj} has no location and no home is set.|n").format(obj=self), session=session
             )  # Note to set home.
 
     def at_post_puppet(self, **kwargs):
@@ -2414,8 +2431,10 @@ class DefaultCharacter(DefaultObject):
         self.msg((self.at_look(self.location), {"type": "look"}), options=None)
 
         def message(obj, from_obj):
-            obj.msg(_("{name} has entered the game.").format(name=self.get_display_name(obj)),
-                    from_obj=from_obj)
+            obj.msg(
+                _("{name} has entered the game.").format(name=self.get_display_name(obj)),
+                from_obj=from_obj,
+            )
 
         self.location.for_contents(message, exclude=[self], from_obj=self)
 
@@ -2438,8 +2457,10 @@ class DefaultCharacter(DefaultObject):
             if self.location:
 
                 def message(obj, from_obj):
-                    obj.msg(_("{name} has left the game.").format(name=self.get_display_name(obj)),
-                            from_obj=from_obj)
+                    obj.msg(
+                        _("{name} has left the game.").format(name=self.get_display_name(obj)),
+                        from_obj=from_obj,
+                    )
 
                 self.location.for_contents(message, exclude=[self], from_obj=self)
                 self.db.prelogout_location = self.location
@@ -2581,6 +2602,7 @@ class DefaultRoom(DefaultObject):
 #
 # Default Exit command, used by the base exit object
 #
+
 
 class ExitCommand(_COMMAND_DEFAULT_CLASS):
     """

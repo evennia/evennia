@@ -26,12 +26,13 @@ class GeneralViewSetMixin:
     Mixin for both typeclass- and non-typeclass entities.
 
     """
+
     def get_serializer_class(self):
         """
         Allow different serializers for certain actions.
 
         """
-        if self.action == 'list':
+        if self.action == "list":
             if hasattr(self, "list_serializer_class"):
                 return self.list_serializer_class
         return self.serializer_class
@@ -93,6 +94,7 @@ class ObjectDBViewSet(TypeclassViewSetMixin, ModelViewSet):
     (rooms, exits, characters etc).
 
     """
+
     # An example of a basic viewset for all ObjectDB instances. It declares the
     # serializer to use for both retrieving and changing/creating/deleting
     # instances. Serializers are similar to django forms, used for the
@@ -109,6 +111,7 @@ class CharacterViewSet(ObjectDBViewSet):
     Characters are a type of Object commonly used as player avatars in-game.
 
     """
+
     queryset = DefaultCharacter.objects.typeclass_search(
         DefaultCharacter.path, include_children=True
     )
@@ -167,6 +170,7 @@ class HelpViewSet(GeneralViewSetMixin, ModelViewSet):
     Note that command auto-help and file-based help entries are not accessible this way.
 
     """
+
     serializer_class = serializers.HelpSerializer
     queryset = HelpEntry.objects.all()
     filterset_class = filters.HelpFilterSet

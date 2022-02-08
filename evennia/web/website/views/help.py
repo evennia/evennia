@@ -33,12 +33,12 @@ def get_help_category(help_entry, slugify_cat=True):
     Returns:
         help_category (str): The category for the help entry.
     """
-    help_category = getattr(help_entry, 'help_category', None)
+    help_category = getattr(help_entry, "help_category", None)
     if not help_category:
-        help_category = getattr(help_entry, 'db_help_category', DEFAULT_HELP_CATEGORY)
+        help_category = getattr(help_entry, "db_help_category", DEFAULT_HELP_CATEGORY)
     # if one does not exist, create a category for ease of use with web views html templates
-    if not hasattr(help_entry, 'web_help_category'):
-        setattr(help_entry, 'web_help_category', slugify(help_category))
+    if not hasattr(help_entry, "web_help_category"):
+        setattr(help_entry, "web_help_category", slugify(help_category))
     help_category = help_category.lower()
     return slugify(help_category) if slugify_cat else help_category
 
@@ -52,13 +52,13 @@ def get_help_topic(help_entry):
     Returns:
         help_topic (str): The topic of the help entry. Default is 'unknown_topic'.
     """
-    help_topic = getattr(help_entry, 'key', None)
+    help_topic = getattr(help_entry, "key", None)
     # if object has no key, assume it is a db help entry.
     if not help_topic:
-        help_topic = getattr(help_entry, 'db_key', 'unknown_topic')
+        help_topic = getattr(help_entry, "db_key", "unknown_topic")
     # if one does not exist, create a key for ease of use with web views html templates
-    if not hasattr(help_entry, 'web_help_key'):
-        setattr(help_entry, 'web_help_key', slugify(help_topic))
+    if not hasattr(help_entry, "web_help_key"):
+        setattr(help_entry, "web_help_key", slugify(help_topic))
     return help_topic.lower()
 
 
@@ -79,9 +79,9 @@ def can_read_topic(cmd_or_topic, account):
         `can_list_topic` is also returning False.
     """
     if inherits_from(cmd_or_topic, "evennia.commands.command.Command"):
-        return cmd_or_topic.auto_help and cmd_or_topic.access(account, 'read', default=True)
+        return cmd_or_topic.auto_help and cmd_or_topic.access(account, "read", default=True)
     else:
-        return cmd_or_topic.access(account, 'read', default=True)
+        return cmd_or_topic.access(account, "read", default=True)
 
 
 def collect_topics(account):
@@ -99,7 +99,7 @@ def collect_topics(account):
     # collect commands of account and all puppets
     # skip a command if an entry is recorded with the same topics, category and help entry
     cmd_help_topics = []
-    if not str(account) == 'AnonymousUser':
+    if not str(account) == "AnonymousUser":
         # create list of account and account's puppets
         puppets = account.db._playable_characters + [account]
         # add the account's and puppets' commands to cmd_help_topics list
@@ -112,7 +112,7 @@ def collect_topics(account):
                 # also check the 'cmd:' lock here
                 for cmd in cmdset:
                     # skip the command if the puppet does not have access
-                    if not cmd.access(puppet, 'cmd'):
+                    if not cmd.access(puppet, "cmd"):
                         continue
                     # skip the command if the puppet does not have read access
                     if not can_read_topic(cmd, puppet):
@@ -121,10 +121,11 @@ def collect_topics(account):
                     entry_exists = False
                     for verify_cmd in cmd_help_topics:
                         if (
-                                verify_cmd.key and cmd.key and
-                                verify_cmd.help_category == cmd.help_category and
-                                verify_cmd.__doc__ == cmd.__doc__
-                            ):
+                            verify_cmd.key
+                            and cmd.key
+                            and verify_cmd.help_category == cmd.help_category
+                            and verify_cmd.__doc__ == cmd.__doc__
+                        ):
                             entry_exists = True
                             break
                     if entry_exists:
@@ -148,15 +149,14 @@ def collect_topics(account):
 
     # Collect commands into a dictionary, read access verified at puppet level
     cmd_help_topics = {
-        cmd.auto_help_display_key
-        if hasattr(cmd, "auto_help_display_key") else cmd.key: cmd
+        cmd.auto_help_display_key if hasattr(cmd, "auto_help_display_key") else cmd.key: cmd
         for cmd in cmd_help_topics
     }
 
     return cmd_help_topics, db_help_topics, file_help_topics
 
 
-class HelpMixin():
+class HelpMixin:
     """
     This is a "mixin", a modifier of sorts.
 
@@ -224,7 +224,7 @@ class HelpDetailView(HelpMixin, DetailView):
         # Makes sure the page has a sensible title.
         obj = self.get_object()
         topic = get_help_topic(obj)
-        return f'{topic} detail'
+        return f"{topic} detail"
 
     def get_context_data(self, **kwargs):
         """
@@ -272,7 +272,7 @@ class HelpDetailView(HelpMixin, DetailView):
             context["topic_previous"] = None
 
         # Get the help entry text
-        text = 'Failed to find entry.'
+        text = "Failed to find entry."
         if inherits_from(obj, "evennia.commands.command.Command"):
             text = obj.__doc__
         elif inherits_from(obj, "evennia.help.models.HelpEntry"):
@@ -297,8 +297,8 @@ class HelpDetailView(HelpMixin, DetailView):
 
         """
 
-        if hasattr(self, 'obj'):
-            return getattr(self, 'obj', None)
+        if hasattr(self, "obj"):
+            return getattr(self, "obj", None)
 
         # Get the queryset for the help entries the user can access
         if not queryset:
@@ -323,9 +323,7 @@ class HelpDetailView(HelpMixin, DetailView):
 
         # Check if this object was requested in a valid manner
         if not obj:
-            return HttpResponseBadRequest(
-                f"No ({category}/{topic})s found matching the query."
-            )
+            return HttpResponseBadRequest(f"No ({category}/{topic})s found matching the query.")
         else:
             # cache the object if one was found
             self.obj = obj

@@ -161,9 +161,9 @@ class OptionHandler:
         if not match:
             raise ValueError(_("Option not found!"))
         if len(match) > 1:
-            raise ValueError(_("Multiple matches:")
-                             + f"{', '.join(match)}. "
-                             + _("Please be more specific."))
+            raise ValueError(
+                _("Multiple matches:") + f"{', '.join(match)}. " + _("Please be more specific.")
+            )
         match = match[0]
         op = self.get(match, return_obj=True)
         op.set(value, **kwargs)

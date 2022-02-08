@@ -423,8 +423,7 @@ class CmdSetHandler(object):
             self.mergetype_stack.append(new_current.actual_mergetype)
         self.current = new_current
 
-    def add(self, cmdset, emit_to_obj=None, persistent=False, default_cmdset=False,
-            **kwargs):
+    def add(self, cmdset, emit_to_obj=None, persistent=False, default_cmdset=False, **kwargs):
         """
         Add a cmdset to the handler, on top of the old ones, unless it
         is set as the default one (it will then end up at the bottom of the stack)
@@ -451,9 +450,11 @@ class CmdSetHandler(object):
 
         """
         if "permanent" in kwargs:
-            logger.log_dep("obj.cmdset.add() kwarg 'permanent' has changed name to "
-                           "'persistent' and now defaults to True.")
-            persistent = kwargs['permanent'] if persistent is None else persistent
+            logger.log_dep(
+                "obj.cmdset.add() kwarg 'permanent' has changed name to "
+                "'persistent' and now defaults to True."
+            )
+            persistent = kwargs["permanent"] if persistent is None else persistent
 
         if not (isinstance(cmdset, str) or utils.inherits_from(cmdset, CmdSet)):
             string = _("Only CmdSets can be added to the cmdsethandler!")
@@ -491,9 +492,10 @@ class CmdSetHandler(object):
 
         """
         if "permanent" in kwargs:
-            logger.log_dep("obj.cmdset.add_default() kwarg 'permanent' has changed name to "
-                           "'persistent'.")
-            persistent = kwargs['permanent'] if persistent is None else persistent
+            logger.log_dep(
+                "obj.cmdset.add_default() kwarg 'permanent' has changed name to 'persistent'."
+            )
+            persistent = kwargs["permanent"] if persistent is None else persistent
         self.add(cmdset, emit_to_obj=emit_to_obj, persistent=persistent, default_cmdset=True)
 
     def remove(self, cmdset=None, default_cmdset=False):

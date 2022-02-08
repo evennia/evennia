@@ -23,7 +23,8 @@ class TestParseSubtopics(TestCase):
         """
         self.maxDiff = None
 
-        entry = dedent("""
+        entry = dedent(
+            """
             Main topic text
             # subtopics
             ## foo
@@ -36,7 +37,9 @@ class TestParseSubtopics(TestCase):
             Bar subcategory
             ### moo
             Bar/Moo subcategory
-        """, indent=0)
+        """,
+            indent=0,
+        )
         expected = {
             None: "Main topic text",
             "foo": {
@@ -45,15 +48,10 @@ class TestParseSubtopics(TestCase):
                     None: "\nFoo/Moo subsub-category\n",
                     "dum": {
                         None: "\nFoo/Moo/Dum subsubsub-category\n",
-                    }
+                    },
                 },
             },
-            "bar": {
-                None: "\nBar subcategory\n",
-                "moo": {
-                    None: "\nBar/Moo subcategory"
-                }
-            }
+            "bar": {None: "\nBar subcategory\n", "moo": {None: "\nBar/Moo subcategory"}},
         }
 
         actual_result = help_utils.parse_entry_for_subcategories(entry)
@@ -65,28 +63,30 @@ class TestParseSubtopics(TestCase):
 
         """
 
-        entry = dedent("""
+        entry = dedent(
+            """
         Main topic text
         # SUBTOPICS
         ## creating extra stuff
         Help on creating extra stuff.
-        """, indent=0)
+        """,
+            indent=0,
+        )
         expected = {
             None: "Main topic text",
-            "creating extra stuff": {
-                None: "\nHelp on creating extra stuff."
-            }
+            "creating extra stuff": {None: "\nHelp on creating extra stuff."},
         }
 
         actual_result = help_utils.parse_entry_for_subcategories(entry)
         self.assertEqual(expected, actual_result)
+
 
 # test filehelp system
 
 HELP_ENTRY_DICTS = [
     {
         "key": "evennia",
-        "aliases": ['ev'],
+        "aliases": ["ev"],
         "category": "General",
         "text": """
             Evennia is a MUD game server in Python.
@@ -105,7 +105,7 @@ HELP_ENTRY_DICTS = [
 
             There is also a discord channel you can find from the sidebard on evennia.com.
 
-        """
+        """,
     },
     {
         "key": "building",
@@ -114,10 +114,9 @@ HELP_ENTRY_DICTS = [
             Evennia comes with a bunch of default building commands. You can
             find a building tutorial in the evennia documentation.
 
-        """
-    }
+        """,
+    },
 ]
-
 
 
 class TestFileHelp(TestCase):
@@ -135,7 +134,7 @@ class TestFileHelp(TestCase):
         result = storage.all()
 
         for inum, helpentry in enumerate(result):
-            self.assertEqual(HELP_ENTRY_DICTS[inum]['key'], helpentry.key)
-            self.assertEqual(HELP_ENTRY_DICTS[inum].get('aliases', []), helpentry.aliases)
-            self.assertEqual(HELP_ENTRY_DICTS[inum]['category'], helpentry.help_category)
-            self.assertEqual(HELP_ENTRY_DICTS[inum]['text'], helpentry.entrytext)
+            self.assertEqual(HELP_ENTRY_DICTS[inum]["key"], helpentry.key)
+            self.assertEqual(HELP_ENTRY_DICTS[inum].get("aliases", []), helpentry.aliases)
+            self.assertEqual(HELP_ENTRY_DICTS[inum]["category"], helpentry.help_category)
+            self.assertEqual(HELP_ENTRY_DICTS[inum]["text"], helpentry.entrytext)

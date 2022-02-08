@@ -41,8 +41,10 @@ from twisted.internet import reactor, protocol
 from twisted.internet.task import LoopingCall
 
 import django
+
 django.setup()
 import evennia  # noqa
+
 evennia._init()
 
 from django.conf import settings  # noqa
@@ -214,6 +216,7 @@ class CmdDummyRunnerEchoResponse(Command):
     with the receive time on both ends.
 
     """
+
     key = "dummyrunner_echo_response"
 
     def func(self):
@@ -228,8 +231,10 @@ class DummyRunnerCmdSet(CmdSet):
     Dummyrunner injected cmdset.
 
     """
+
     def at_cmdset_creation(self):
         self.add(CmdDummyRunnerEchoResponse())
+
 
 # ------------------------------------------------------------
 # Helper functions
@@ -285,6 +290,7 @@ def makeiter(obj):
 # Client classes
 # ------------------------------------------------------------
 
+
 class DummyClient(telnet.StatefulTelnetProtocol):
     """
     Handles connection to a running Evennia server,
@@ -296,11 +302,13 @@ class DummyClient(telnet.StatefulTelnetProtocol):
     def report(self, text, clientkey):
         pad = " " * (25 - len(text))
         tim = round(time.time() - self.connection_timestamp)
-        print(f"{text} {clientkey}{pad}\t"
-              f"conn: {NCONNECTED} -> "
-              f"welcome screen: {NLOGIN_SCREEN} -> "
-              f"authing: {NLOGGING_IN} -> "
-              f"loggedin/tot: {NLOGGED_IN}/{NCLIENTS} (after {tim}s)")
+        print(
+            f"{text} {clientkey}{pad}\t"
+            f"conn: {NCONNECTED} -> "
+            f"welcome screen: {NLOGIN_SCREEN} -> "
+            f"authing: {NLOGGING_IN} -> "
+            f"loggedin/tot: {NLOGGED_IN}/{NCLIENTS} (after {tim}s)"
+        )
 
     def connectionMade(self):
         """
@@ -342,7 +350,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
             # (unclear why this would be - overload?)
             # try sending a look to get something to start with
             self.report("?? retrying welcome screen", self.key)
-            self.sendLine(bytes("look", 'utf-8'))
+            self.sendLine(bytes("look", "utf-8"))
             # make sure to check again later
             reactor.callLater(30, self._retry_welcome_screen)
 
@@ -363,8 +371,10 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         TOTAL_LAG_MEASURES = 0
         TIME_ALL_LOGIN = time.time()
 
-        print(f".. running 30s average: ~{avgrate} actions/s "
-              f"lag: {lag:.2}s (in: {lag_in:.2}s, out: {lag_out:.2}s)")
+        print(
+            f".. running 30s average: ~{avgrate} actions/s "
+            f"lag: {lag:.2}s (in: {lag_in:.2}s, out: {lag_out:.2}s)"
+        )
 
         reactor.callLater(30, self._print_statistics)
 
@@ -393,7 +403,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
                 # negotiation)
                 # start client tick
                 d = LoopingCall(self.step)
-                df = max(abs(TIMESTEP * 0.001), min(TIMESTEP/10, 0.5))
+                df = max(abs(TIMESTEP * 0.001), min(TIMESTEP / 10, 0.5))
                 # dither next attempt with random time
                 timestep = TIMESTEP + (-df + (random.random() * df))
                 d.start(timestep, now=True).addErrback(self.error)
@@ -477,7 +487,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         self._logging_out = True
         cmd = self._logout(self)[0]
         self.report(f"-> logout/disconnect ({self.istep} actions)", self.key)
-        self.sendLine(bytes(cmd, 'utf-8'))
+        self.sendLine(bytes(cmd, "utf-8"))
 
     def step(self):
         """
@@ -521,7 +531,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
                 # the send as possible
                 cmd = cmd.format(timestamp=time.time())
 
-            self.sendLine(bytes(cmd, 'utf-8'))
+            self.sendLine(bytes(cmd, "utf-8"))
             self.action_started = time.time()
             self.istep += 1
 
@@ -605,17 +615,19 @@ if __name__ == "__main__":
     args = parser.parse_args()
     nclients = int(args.nclients[0])
 
-    print(INFO_STARTING.format(
-        nclients=nclients,
-        port=TELNET_PORT,
-        idmapper_cache_size=IDMAPPER_CACHE_MAXSIZE,
-        timestep=TIMESTEP,
-        rate=1/TIMESTEP,
-        chance_of_login=CHANCE_OF_LOGIN * 100,
-        chance_of_action=CHANCE_OF_ACTION * 100,
-        avg_rate=(1 / TIMESTEP) * CHANCE_OF_ACTION,
-        avg_rate_total=(1 / TIMESTEP) * CHANCE_OF_ACTION * nclients
-    ))
+    print(
+        INFO_STARTING.format(
+            nclients=nclients,
+            port=TELNET_PORT,
+            idmapper_cache_size=IDMAPPER_CACHE_MAXSIZE,
+            timestep=TIMESTEP,
+            rate=1 / TIMESTEP,
+            chance_of_login=CHANCE_OF_LOGIN * 100,
+            chance_of_action=CHANCE_OF_ACTION * 100,
+            avg_rate=(1 / TIMESTEP) * CHANCE_OF_ACTION,
+            avg_rate_total=(1 / TIMESTEP) * CHANCE_OF_ACTION * nclients,
+        )
+    )
 
     # run the dummyrunner
     TIME_START = t0 = time.time()

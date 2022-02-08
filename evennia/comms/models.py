@@ -104,7 +104,7 @@ class Msg(SharedMemoryModel):
         blank=True,
         db_index=True,
         help_text="Identifier for single external sender, for use with senders "
-                  "not represented by a regular database model."
+        "not represented by a regular database model.",
     )
 
     db_receivers_accounts = models.ManyToManyField(
@@ -137,7 +137,7 @@ class Msg(SharedMemoryModel):
         blank=True,
         db_index=True,
         help_text="Identifier for single external receiver, for use with recievers "
-                  "not represented by a regular database model."
+        "not represented by a regular database model.",
     )
 
     # header could be used for meta-info about the message if your system needs
@@ -286,7 +286,7 @@ class Msg(SharedMemoryModel):
         """
         if isinstance(receivers, str):
             self.db_receiver_external = receivers
-            self.save(update_fields=['db_receiver_external'])
+            self.save(update_fields=["db_receiver_external"])
             return
 
         for receiver in make_iter(receivers):

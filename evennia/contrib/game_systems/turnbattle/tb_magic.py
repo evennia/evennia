@@ -93,8 +93,8 @@ These functions also all accept **kwargs, and how these are used is specified
 in the docstring for each function.
 """
 
-class MagicCombatRules(tb_basic.BasicCombatRules):
 
+class MagicCombatRules(tb_basic.BasicCombatRules):
     def spell_healing(self, caster, spell_name, targets, cost, **kwargs):
         """
         Spell that restores HP to a target or targets.
@@ -325,11 +325,7 @@ SPELLS = {
         "attack_name": ("A jet of flame", "jets of flame"),
         "damage_range": (25, 35),
     },
-    "cure wounds": {
-        "spellfunc": COMBAT_RULES.spell_healing,
-        "target": "anychar",
-        "cost": 5
-    },
+    "cure wounds": {"spellfunc": COMBAT_RULES.spell_healing, "target": "anychar", "cost": 5},
     "mass cure wounds": {
         "spellfunc": COMBAT_RULES.spell_healing,
         "target": "anychar",
@@ -376,6 +372,7 @@ class TBMagicCharacter(tb_basic.TBBasicCharacter):
     and maximum HP, access to combat commands and magic.
 
     """
+
     rules = COMBAT_RULES
 
     def at_object_creation(self):

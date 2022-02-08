@@ -6,11 +6,9 @@
 #
 
 from os.path import dirname, abspath, join as pathjoin
-from evennia.utils.utils import (
-    mod_import, variable_from_module, callables_from_module
-)
+from evennia.utils.utils import mod_import, variable_from_module, callables_from_module
 
-__all__ = ("run_update")
+__all__ = "run_update"
 
 
 PAGE = """
@@ -32,6 +30,7 @@ with [EvEditor](EvEditor), flipping pages in [EvMore](EvMore) or using the
 {alphabetical}
 
 """
+
 
 def run_update(no_autodoc=False):
 
@@ -71,7 +70,8 @@ def run_update(no_autodoc=False):
     for modname in cmd_modules:
         module = mod_import(modname)
         cmds_per_module[module] = [
-            cmd for cmd in callables_from_module(module).values() if cmd.__name__.startswith("Cmd")]
+            cmd for cmd in callables_from_module(module).values() if cmd.__name__.startswith("Cmd")
+        ]
         for cmd in cmds_per_module[module]:
             cmd_to_module_map[cmd] = module
             cmds_alphabetically.append(cmd)
@@ -79,8 +79,9 @@ def run_update(no_autodoc=False):
 
     cmd_infos = []
     for cmd in cmds_alphabetically:
-        aliases = [alias[1:] if alias and alias[0] == "@" else alias
-                   for alias in sorted(cmd.aliases)]
+        aliases = [
+            alias[1:] if alias and alias[0] == "@" else alias for alias in sorted(cmd.aliases)
+        ]
         aliases = f" [{', '.join(sorted(cmd.aliases))}]" if aliases else ""
         cmdlink = f"[**{cmd.key}**{aliases}]({cmd.__module__}.{cmd.__name__})"
         category = f"help-category: _{cmd.help_category.capitalize()}_"
@@ -98,12 +99,13 @@ def run_update(no_autodoc=False):
     txt = PAGE.format(
         ncommands=len(cmd_to_cmdset_map),
         nfiles=len(cmds_per_module),
-        alphabetical="\n".join(f"- {info}" for info in cmd_infos))
+        alphabetical="\n".join(f"- {info}" for info in cmd_infos),
+    )
 
     outdir = pathjoin(dirname(dirname(abspath(__file__))), "source", "Components")
     fname = pathjoin(outdir, "Default-Commands.md")
 
-    with open(fname, 'w') as fil:
+    with open(fname, "w") as fil:
         fil.write(txt)
 
     print("  -- Updated Default Command index.")

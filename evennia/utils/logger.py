@@ -372,9 +372,9 @@ class EvenniaLogFile(logfile.LogFile):
         the previous log to the start of the new one.
 
         """
-        append_tail = (num_lines_to_append
-                       if num_lines_to_append is not None
-                       else self.num_lines_to_append)
+        append_tail = (
+            num_lines_to_append if num_lines_to_append is not None else self.num_lines_to_append
+        )
         if not append_tail:
             logfile.LogFile.rotate(self)
             return
@@ -511,6 +511,7 @@ def log_file_exists(filename="game.log"):
     global _LOGDIR
     if not _LOGDIR:
         from django.conf import settings
+
         _LOGDIR = settings.LOG_DIR
 
     filename = os.path.join(_LOGDIR, filename)
@@ -573,7 +574,7 @@ def tail_log_file(filename, offset, nlines, callback=None):
             lines_found = filehandle.readlines()
             block_count -= 1
         # return the right number of lines
-        lines_found = lines_found[-nlines - offset: -offset if offset else None]
+        lines_found = lines_found[-nlines - offset : -offset if offset else None]
         if callback:
             callback(lines_found)
             return None
