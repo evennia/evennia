@@ -122,7 +122,6 @@ COMBAT FUNCTIONS START HERE
 
 
 class RangedCombatRules(tb_basic.BasicCombatRules):
-
     def get_attack(self, attacker, defender, attack_type):
         """
         Returns a value for an attack roll.
@@ -154,7 +153,7 @@ class RangedCombatRules(tb_basic.BasicCombatRules):
             attack_value -= 15
         return attack_value
 
-    def get_defense(self, attacker, defender, attack_type='melee'):
+    def get_defense(self, attacker, defender, attack_type="melee"):
         """
         Returns a value for defense, which an attack roll must equal or exceed in order
         for an attack to hit.
@@ -284,8 +283,9 @@ class RangedCombatRules(tb_basic.BasicCombatRules):
             if thing != mover and thing != target:
                 # Move away from each object closer to the target than you, if it's also closer to
                 # you than you are to the target.
-                if (self.get_range(mover, thing) >= self.get_range(target, thing)
-                        and self.get_range(mover, thing) < self.get_range(mover, target)):
+                if self.get_range(mover, thing) >= self.get_range(target, thing) and self.get_range(
+                    mover, thing
+                ) < self.get_range(mover, target):
                     self.distance_inc(mover, thing)
                 # Move away from anything your target is engaged with
                 if self.get_range(target, thing) == 0:
@@ -296,8 +296,9 @@ class RangedCombatRules(tb_basic.BasicCombatRules):
         # Then, move away from your target.
         self.distance_inc(mover, target)
 
-    def resolve_attack(self, attacker, defender, attack_value=None, defense_value=None,
-                       attack_type='melee'):
+    def resolve_attack(
+        self, attacker, defender, attack_value=None, defense_value=None, attack_type="melee"
+    ):
         """
         Resolves an attack and outputs the result.
 
@@ -496,6 +497,7 @@ class TBRangeCharacter(tb_basic.TBBasicCharacter):
     A character able to participate in turn-based combat. Has attributes for current
     and maximum HP, and access to combat commands.
     """
+
     rules = COMBAT_RULES
 
 
@@ -797,15 +799,17 @@ class CmdShoot(Command):
         in_melee = []
         for target in attacker.db.combat_range:
             # Object is engaged and has HP
-            if (self.rules.get_range(attacker, defender) == 0
-                    and target.db.hp and target != self.caller):
+            if (
+                self.rules.get_range(attacker, defender) == 0
+                and target.db.hp
+                and target != self.caller
+            ):
                 in_melee.append(target)  # Add to list of targets in melee
 
         if len(in_melee) > 0:
             self.caller.msg(
                 "You can't shoot because there are fighters engaged with you (%s) - you need "
-                "to retreat! (see: help withdraw)"
-                % ", ".join(obj.key for obj in in_melee)
+                "to retreat! (see: help withdraw)" % ", ".join(obj.key for obj in in_melee)
             )
             return
 

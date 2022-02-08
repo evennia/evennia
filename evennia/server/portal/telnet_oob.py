@@ -47,14 +47,14 @@ GMCP = bytes([201])
 # pre-compiled regexes
 # returns 2-tuple
 msdp_regex_table = re.compile(
-    br"%s\s*(\w*?)\s*%s\s*%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_TABLE_OPEN, MSDP_TABLE_CLOSE)
+    rb"%s\s*(\w*?)\s*%s\s*%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_TABLE_OPEN, MSDP_TABLE_CLOSE)
 )
 # returns 2-tuple
 msdp_regex_array = re.compile(
-    br"%s\s*(\w*?)\s*%s\s*%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_ARRAY_OPEN, MSDP_ARRAY_CLOSE)
+    rb"%s\s*(\w*?)\s*%s\s*%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_ARRAY_OPEN, MSDP_ARRAY_CLOSE)
 )
-msdp_regex_var = re.compile(br"%s" % MSDP_VAR)
-msdp_regex_val = re.compile(br"%s" % MSDP_VAL)
+msdp_regex_var = re.compile(rb"%s" % MSDP_VAR)
+msdp_regex_val = re.compile(rb"%s" % MSDP_VAL)
 
 EVENNIA_TO_GMCP = {
     "client_options": "Core.Supports.Get",

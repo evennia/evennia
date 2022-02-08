@@ -18,17 +18,18 @@ import random
 # A map with a temple (▲) amongst mountains (n,∩) in a forest (♣,♠) on an
 # island surrounded by water (≈). By giving no instructions for the water
 # characters we effectively skip it and create no rooms for those squares.
-EXAMPLE1_MAP = '''\
+EXAMPLE1_MAP = """\
 ≈≈≈≈≈
 ≈♣n♣≈
 ≈∩▲∩≈
 ≈♠n♠≈
 ≈≈≈≈≈
-'''
+"""
+
 
 def example1_build_forest(x, y, **kwargs):
-    '''A basic example of build instructions. Make sure to include **kwargs
-    in the arguments and return an instance of the room for exit generation.'''
+    """A basic example of build instructions. Make sure to include **kwargs
+    in the arguments and return an instance of the room for exit generation."""
 
     # Create a room and provide a basic description.
     room = create_object(rooms.Room, key="forest" + str(x) + str(y))
@@ -42,7 +43,7 @@ def example1_build_forest(x, y, **kwargs):
 
 
 def example1_build_mountains(x, y, **kwargs):
-    '''A room that is a little more advanced'''
+    """A room that is a little more advanced"""
 
     # Create the room.
     room = create_object(rooms.Room, key="mountains" + str(x) + str(y))
@@ -68,7 +69,7 @@ def example1_build_mountains(x, y, **kwargs):
 
 
 def example1_build_temple(x, y, **kwargs):
-    '''A unique room that does not need to be as general'''
+    """A unique room that does not need to be as general"""
 
     # Create the room.
     room = create_object(rooms.Room, key="temple" + str(x) + str(y))
@@ -115,7 +116,7 @@ EXAMPLE1_LEGEND = {
 
 # This is the same layout as Example 1 but included are characters for exits.
 # We can use these characters to determine which rooms should be connected.
-EXAMPLE2_MAP = '''\
+EXAMPLE2_MAP = """\
 ≈ ≈ ≈ ≈ ≈
 
 ≈ ♣-♣-♣ ≈
@@ -125,11 +126,11 @@ EXAMPLE2_MAP = '''\
 ≈ ♣-♣-♣ ≈
 
 ≈ ≈ ≈ ≈ ≈
-'''
+"""
 
 
 def example2_build_forest(x, y, **kwargs):
-    '''A basic room'''
+    """A basic room"""
     # If on anything other than the first iteration - Do nothing.
     if kwargs["iteration"] > 0:
         return None
@@ -143,7 +144,7 @@ def example2_build_forest(x, y, **kwargs):
 
 
 def example2_build_verticle_exit(x, y, **kwargs):
-    '''Creates two exits to and from the two rooms north and south.'''
+    """Creates two exits to and from the two rooms north and south."""
     # If on the first iteration - Do nothing.
     if kwargs["iteration"] == 0:
         return
@@ -164,7 +165,7 @@ def example2_build_verticle_exit(x, y, **kwargs):
 
 
 def example2_build_horizontal_exit(x, y, **kwargs):
-    '''Creates two exits to and from the two rooms east and west.'''
+    """Creates two exits to and from the two rooms east and west."""
     # If on the first iteration - Do nothing.
     if kwargs["iteration"] == 0:
         return

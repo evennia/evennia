@@ -42,6 +42,7 @@ from evennia.utils.utils import delay, repeat, interactive
 
 # Commands for the state when the lid covering the button is closed.
 
+
 class CmdPushLidClosed(Command):
     """
     Push the red button (lid closed)
@@ -121,23 +122,27 @@ class CmdSmashGlass(Command):
         """
         rand = random.random()
         self.caller.location.msg_contents(
-            f"{self.caller.name} tries to smash the glass of the button.",
-            exclude=self.caller)
+            f"{self.caller.name} tries to smash the glass of the button.", exclude=self.caller
+        )
 
         if rand < 0.2:
-            string = ("You smash your hand against the glass"
-                      " with all your might. The lid won't budge"
-                      " but you cause quite the tremor through the button's mount."
-                      "\nIt looks like the button's lamp stopped working for the time being, "
-                      "but the lid is still as closed as ever.")
+            string = (
+                "You smash your hand against the glass"
+                " with all your might. The lid won't budge"
+                " but you cause quite the tremor through the button's mount."
+                "\nIt looks like the button's lamp stopped working for the time being, "
+                "but the lid is still as closed as ever."
+            )
             # self.obj is the button itself
             self.obj.break_lamp()
         elif rand < 0.6:
             string = "You hit the lid hard. It doesn't move an inch."
         else:
-            string = ("You place a well-aimed fist against the glass of the lid."
-                      " Unfortunately all you get is a pain in your hand. Maybe"
-                      " you should just try to just ... open the lid instead?")
+            string = (
+                "You place a well-aimed fist against the glass of the lid."
+                " Unfortunately all you get is a pain in your hand. Maybe"
+                " you should just try to just ... open the lid instead?"
+            )
         self.caller.msg(string)
 
 
@@ -165,8 +170,8 @@ class CmdOpenLid(Command):
         string += "the lid will soon close again."
         self.caller.msg(string)
         self.caller.location.msg_contents(
-            f"{self.caller.name} opens the lid of the button.",
-            exclude=self.caller)
+            f"{self.caller.name} opens the lid of the button.", exclude=self.caller
+        )
         self.obj.to_open_state()
 
 
@@ -200,6 +205,7 @@ class LidClosedCmdSet(CmdSet):
 # Commands for the state when the button's protective cover is open - now the
 # push command will work. You can also close the lid again.
 
+
 class CmdPushLidOpen(Command):
     """
     Push the red button
@@ -225,15 +231,15 @@ class CmdPushLidOpen(Command):
         """
         # pause a little between each message.
         self.caller.msg("You reach out to press the big red button ...")
-        yield(2)  # pause 2s before next message
+        yield (2)  # pause 2s before next message
         self.caller.msg("\n\n|wBOOOOM! A bright light blinds you!|n")
-        yield(1)  # pause 1s before next message
+        yield (1)  # pause 1s before next message
         self.caller.msg("\n\n|xThe world goes dark ...|n")
 
         name = self.caller.name
         self.caller.location.msg_contents(
-            f"{name} presses the button. BOOM! {name} is blinded by a flash!",
-            exclude=self.caller)
+            f"{name} presses the button. BOOM! {name} is blinded by a flash!", exclude=self.caller
+        )
         self.obj.blind_target(self.caller)
 
 
@@ -259,8 +265,8 @@ class CmdCloseLid(Command):
         # this will clean out scripts dependent on lid being open.
         self.caller.msg("You close the button's lid. It clicks back into place.")
         self.caller.location.msg_contents(
-            f"{self.caller.name} closes the button's lid.",
-            exclude=self.caller)
+            f"{self.caller.name} closes the button's lid.", exclude=self.caller
+        )
 
 
 class LidOpenCmdSet(CmdSet):
@@ -285,6 +291,7 @@ class LidOpenCmdSet(CmdSet):
 
 # Commands for when the button has been pushed and the player is blinded. This
 # replaces commands on the player making them 'blind' for a while.
+
 
 class CmdBlindLook(Command):
     """
@@ -317,12 +324,14 @@ class CmdBlindLook(Command):
             string = "You fumble around, hands outstretched. You bump your knee."
         else:
             # trying to look
-            string = ("You are temporarily blinded by the flash. "
-                      "Until it wears off, all you can do is feel around blindly.")
+            string = (
+                "You are temporarily blinded by the flash. "
+                "Until it wears off, all you can do is feel around blindly."
+            )
         self.caller.msg(string)
         self.caller.location.msg_contents(
-            f"{self.caller.name} stumbles around, blinded.",
-            exclude=self.caller)
+            f"{self.caller.name} stumbles around, blinded.", exclude=self.caller
+        )
 
 
 class CmdBlindHelp(Command):
@@ -420,20 +429,26 @@ class RedButton(DefaultObject):
     `button = create_object(RedButton, ..., attributes=[('desc', 'my desc')])`.
 
     """
+
     # these are the pre-set descriptions. Setting attributes will override
     # these on the fly.
 
-    desc_closed_lid = ("This is a large red button, inviting yet evil-looking. "
-                       "A closed glass lid protects it.")
-    desc_open_lid = ("This is a large red button, inviting yet evil-looking. "
-                     "Its glass cover is open and the button exposed.")
+    desc_closed_lid = (
+        "This is a large red button, inviting yet evil-looking. " "A closed glass lid protects it."
+    )
+    desc_open_lid = (
+        "This is a large red button, inviting yet evil-looking. "
+        "Its glass cover is open and the button exposed."
+    )
     auto_close_msg = "The button's glass lid silently slides back in place."
     lamp_breaks_msg = "The lamp flickers, the button going dark."
     desc_add_lamp_broken = "\nThe big red button has stopped blinking for the time being."
     # note that this is a list. A random message will display each time
-    blink_msgs = ["The red button flashes briefly.",
-                  "The red button blinks invitingly.",
-                  "The red button flashes. You know you wanna push it!"]
+    blink_msgs = [
+        "The red button flashes briefly.",
+        "The red button blinks invitingly.",
+        "The red button flashes. You know you wanna push it!",
+    ]
 
     def at_object_creation(self):
         """
@@ -523,9 +538,9 @@ class RedButton(DefaultObject):
         self.cmdset.add(LidOpenCmdSet)
 
         # wait 20s then call self.to_closed_state with a message as argument
-        delay(35, self.to_closed_state,
-              self.db.auto_close_msg or self.auto_close_msg,
-              persistent=True)
+        delay(
+            35, self.to_closed_state, self.db.auto_close_msg or self.auto_close_msg, persistent=True
+        )
 
     def _unblind_target(self, caller):
         """
@@ -536,7 +551,8 @@ class RedButton(DefaultObject):
         caller.msg("You blink feverishly as your eyesight slowly returns.")
         self.location.msg_contents(
             f"{caller.name} seems to be recovering their eyesight, blinking feverishly.",
-            exclude=caller)
+            exclude=caller,
+        )
 
     def blind_target(self, caller):
         """
@@ -554,8 +570,7 @@ class RedButton(DefaultObject):
 
         # wait 20s then call self._unblind to remove blindness effect. The
         # persistent=True means the delay should survive a server reload.
-        delay(20, self._unblind_target, caller,
-              persistent=True)
+        delay(20, self._unblind_target, caller, persistent=True)
 
     def _unbreak_lamp(self):
         """

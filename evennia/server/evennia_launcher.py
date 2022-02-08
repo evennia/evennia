@@ -1431,6 +1431,7 @@ def create_superuser():
 
     if (username is not None) and (password is not None) and len(password) > 0:
         from evennia.accounts.models import AccountDB
+
         superuser = AccountDB.objects.create_superuser(username, email, password)
         superuser.save()
     else:
@@ -1947,7 +1948,7 @@ def run_custom_commands(option, *args):
         return False
     cmdpath = custom_commands.get(option)
     if cmdpath:
-        modpath, *cmdname = cmdpath.rsplit('.', 1)
+        modpath, *cmdname = cmdpath.rsplit(".", 1)
         if cmdname:
             cmdname = cmdname[0]
             mod = importlib.import_module(modpath)

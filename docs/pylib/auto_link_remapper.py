@@ -149,7 +149,7 @@ def auto_link_remapper(no_autodoc=False):
 
         for strip_prefix in _STRIP_PREFIX:
             if url.startswith(strip_prefix):
-                url = url[len(strip_prefix):]
+                url = url[len(strip_prefix) :]
 
         if any(url.startswith(noremap) for noremap in _NO_REMAP_STARTSWITH):
             # skip regular http/s urls etc
@@ -157,10 +157,10 @@ def auto_link_remapper(no_autodoc=False):
 
         if url.startswith("evennia."):
             # api link - we want to remove legacy #reference and remove .md
-            if '#' in url:
-                _, url = url.rsplit('#', 1)
+            if "#" in url:
+                _, url = url.rsplit("#", 1)
             if url.endswith(".md"):
-                url, _ = url.rsplit('.', 1)
+                url, _ = url.rsplit(".", 1)
             return f"[{txt}]({url})"
 
         fname, *part = url.rsplit("/", 1)
@@ -174,7 +174,9 @@ def auto_link_remapper(no_autodoc=False):
 
         if _CURRFILE in docref_map and fname in docref_map[_CURRFILE]:
             cfilename = _CURRFILE.rsplit("/", 1)[-1]
-            urlout = docref_map[_CURRFILE][fname] + ".md" + ("#" + anchor[0].lower() if anchor else "")
+            urlout = (
+                docref_map[_CURRFILE][fname] + ".md" + ("#" + anchor[0].lower() if anchor else "")
+            )
             if urlout != url:
                 print(f"  {cfilename}: [{txt}]({url}) -> [{txt}]({urlout})")
         else:
@@ -193,7 +195,7 @@ def auto_link_remapper(no_autodoc=False):
 
         for strip_prefix in _STRIP_PREFIX:
             if url.startswith(strip_prefix):
-                url = url[len(strip_prefix):]
+                url = url[len(strip_prefix) :]
 
         if any(url.startswith(noremap) for noremap in _NO_REMAP_STARTSWITH):
             return f"[{txt}]: {url}"
@@ -202,8 +204,8 @@ def auto_link_remapper(no_autodoc=False):
             urlout = url
         elif url.startswith("evennia."):
             # api link - we want to remove legacy #reference
-            if '#' in url:
-                _, urlout = url.rsplit('#', 1)
+            if "#" in url:
+                _, urlout = url.rsplit("#", 1)
         else:
             fname, *part = url.rsplit("/", 1)
             fname = part[0] if part else fname

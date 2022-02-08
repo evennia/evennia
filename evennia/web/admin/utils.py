@@ -26,6 +26,7 @@ def get_and_load_typeclasses(parent=None, excluded_parents=None):
     # this is necessary in order to have typeclasses imported and accessible
     # in the inheritance tree.
     import evennia
+
     evennia._init()
 
     # this return a dict (path: class}
@@ -33,18 +34,27 @@ def get_and_load_typeclasses(parent=None, excluded_parents=None):
 
     # filter out any excludes
     excluded_parents = excluded_parents or []
-    tpaths = [path for path, tclass in tmap.items()
-              if not any(inherits_from(tclass, excl) for excl in excluded_parents)]
+    tpaths = [
+        path
+        for path, tclass in tmap.items()
+        if not any(inherits_from(tclass, excl) for excl in excluded_parents)
+    ]
 
     # sort so we get custom paths (not in evennia repo) first
     tpaths = sorted(tpaths, key=lambda k: (1 if k.startswith("evennia.") else 0, k))
 
     # the base models are not typeclasses so we filter them out
-    tpaths = [path for path in tpaths if path not in
-              ("evennia.objects.models.ObjectDB",
-               "evennia.accounts.models.AccountDB",
-               "evennia.scripts.models.ScriptDB",
-               "evennia.comms.models.ChannelDB",)]
+    tpaths = [
+        path
+        for path in tpaths
+        if path
+        not in (
+            "evennia.objects.models.ObjectDB",
+            "evennia.accounts.models.AccountDB",
+            "evennia.scripts.models.ScriptDB",
+            "evennia.comms.models.ChannelDB",
+        )
+    ]
 
     # return on form excepted by ChoiceField
     return [(path, path) for path in tpaths if path]
@@ -66,6 +76,7 @@ def get_and_load_cmdsets(parent=None, excluded_parents=None):
     """
     # we must do this to have cmdsets imported and accessible in the inheritance tree.
     import evennia
+
     evennia._init()
 
     cmap = get_all_cmdsets(parent)

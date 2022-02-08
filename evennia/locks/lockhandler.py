@@ -235,8 +235,11 @@ class LockHandler:
                 funcname, rest = (part.strip().strip(")") for part in funcstring.split("(", 1))
                 func = _LOCKFUNCS.get(funcname, None)
                 if not callable(func):
-                    elist.append(_("Lock: lock-function '{lockfunc}' is not available.").format(
-                        lockfunc=funcstring))
+                    elist.append(
+                        _("Lock: lock-function '{lockfunc}' is not available.").format(
+                            lockfunc=funcstring
+                        )
+                    )
                     continue
                 args = list(arg.strip() for arg in rest.split(",") if arg and "=" not in arg)
                 kwargs = dict(
@@ -263,13 +266,16 @@ class LockHandler:
                 continue
             if access_type in locks:
                 duplicates += 1
-                wlist.append(_(
-                    "LockHandler on {obj}: access type '{access_type}' "
-                    "changed from '{source}' to '{goal}' ".format(
-                        obj=self.obj,
-                        access_type=access_type,
-                        source=locks[access_type][2],
-                        goal=raw_lockstring))
+                wlist.append(
+                    _(
+                        "LockHandler on {obj}: access type '{access_type}' "
+                        "changed from '{source}' to '{goal}' ".format(
+                            obj=self.obj,
+                            access_type=access_type,
+                            source=locks[access_type][2],
+                            goal=raw_lockstring,
+                        )
+                    )
                 )
             locks[access_type] = (evalstring, tuple(lock_funcs), raw_lockstring)
         if wlist and WARNING_LOG:
@@ -695,6 +701,7 @@ def check_lockstring(
         access_type=access_type,
     )
 
+
 def check_perm(obj, permission, no_superuser_bypass=False):
     """
     Shortcut for checking if an object has the given `permission`.  If the
@@ -713,6 +720,7 @@ def check_perm(obj, permission, no_superuser_bypass=False):
 
     """
     from evennia.locks.lockfuncs import perm
+
     if not no_superuser_bypass and obj.is_superuser:
         return True
     return perm(obj, None, permission)

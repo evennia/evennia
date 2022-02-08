@@ -397,21 +397,32 @@ class TestSafeConvert(TestCase):
 
     """
 
-    @parameterized.expand([
-        (('1', '2', 3, 4, '5'), {'a': 1, 'b': '2', 'c': 3},
-         ((int, float, str, int), {'a': int, 'b': float}),   # "
-         (1, 2.0, '3', 4, '5'), {'a': 1, 'b': 2.0, 'c': 3}),
-        (('1 + 2', '[1, 2, 3]', [3, 4, 5]), {'a': '3 + 4', 'b': 5},
-         (('py', 'py', 'py'), {'a': 'py', 'b': 'py'}),
-         (3, [1, 2, 3], [3, 4, 5]), {'a': 7, 'b': 5}),
-    ])
+    @parameterized.expand(
+        [
+            (
+                ("1", "2", 3, 4, "5"),
+                {"a": 1, "b": "2", "c": 3},
+                ((int, float, str, int), {"a": int, "b": float}),  # "
+                (1, 2.0, "3", 4, "5"),
+                {"a": 1, "b": 2.0, "c": 3},
+            ),
+            (
+                ("1 + 2", "[1, 2, 3]", [3, 4, 5]),
+                {"a": "3 + 4", "b": 5},
+                (("py", "py", "py"), {"a": "py", "b": "py"}),
+                (3, [1, 2, 3], [3, 4, 5]),
+                {"a": 7, "b": 5},
+            ),
+        ]
+    )
     def test_conversion(self, args, kwargs, converters, expected_args, expected_kwargs):
         """
         Test the converter with different inputs
 
         """
         result_args, result_kwargs = utils.safe_convert_to_types(
-            converters, *args, raise_errors=True, **kwargs)
+            converters, *args, raise_errors=True, **kwargs
+        )
         self.assertEqual(expected_args, result_args)
         self.assertEqual(expected_kwargs, result_kwargs)
 
@@ -423,12 +434,10 @@ class TestSafeConvert(TestCase):
         from evennia.utils.funcparser import ParsingError
 
         with self.assertRaises(ValueError):
-            utils.safe_convert_to_types(
-                (int, ), *('foo', ), raise_errors=True)
+            utils.safe_convert_to_types((int,), *("foo",), raise_errors=True)
 
         with self.assertRaises(ParsingError) as err:
-            utils.safe_convert_to_types(
-                ('py', {}), *('foo', ), raise_errors=True)
+            utils.safe_convert_to_types(("py", {}), *("foo",), raise_errors=True)
 
 
 _TASK_HANDLER = None
@@ -445,10 +454,11 @@ def dummy_func(obj):
     """
     # get a reference of object
     from evennia.objects.models import ObjectDB
+
     obj = ObjectDB.objects.object_search(obj)
     obj = obj[0]
     # make changes to object
-    obj.ndb.dummy_var = 'dummy_func ran'
+    obj.ndb.dummy_var = "dummy_func ran"
     return True
 
 
@@ -477,7 +487,7 @@ class TestDelay(BaseEvenniaTest):
             t = utils.delay(self.timedelay, dummy_func, self.char1.dbref, persistent=pers)
             result = t.call()
             self.assertTrue(result)
-            self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+            self.assertEqual(self.char1.ndb.dummy_var, "dummy_func ran")
             self.assertTrue(t.exists())
             self.assertTrue(t.active())
             self.char1.ndb.dummy_var = False
@@ -489,7 +499,7 @@ class TestDelay(BaseEvenniaTest):
             # call the task early to test Task.call and TaskHandler.call_task
             result = t.do_task()
             self.assertTrue(result)
-            self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+            self.assertEqual(self.char1.ndb.dummy_var, "dummy_func ran")
             self.assertFalse(t.exists())
             self.char1.ndb.dummy_var = False
 
@@ -500,18 +510,18 @@ class TestDelay(BaseEvenniaTest):
             t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=pers)
             self.assertTrue(t.active())
             _TASK_HANDLER.clock.advance(timedelay)  # make time pass
-            self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+            self.assertEqual(self.char1.ndb.dummy_var, "dummy_func ran")
             self.assertFalse(t.exists())
             self.char1.ndb.dummy_var = False
 
     def test_short_deferred_call(self):
         # wait for deferred to call with a very short time
-        timedelay = .1
+        timedelay = 0.1
         for pers in (False, True):
             t = utils.delay(timedelay, dummy_func, self.char1.dbref, persistent=pers)
             self.assertTrue(t.active())
             _TASK_HANDLER.clock.advance(timedelay)  # make time pass
-            self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+            self.assertEqual(self.char1.ndb.dummy_var, "dummy_func ran")
             self.assertFalse(t.exists())
             self.char1.ndb.dummy_var = False
 
@@ -586,7 +596,7 @@ class TestDelay(BaseEvenniaTest):
             _TASK_HANDLER.clock.advance(timedelay)  # make time pass
             self.assertEqual(self.char1.ndb.dummy_var, False)
             t.unpause()
-            self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+            self.assertEqual(self.char1.ndb.dummy_var, "dummy_func ran")
             self.char1.ndb.dummy_var = False
 
     def test_auto_stale_task_removal(self):
@@ -601,7 +611,9 @@ class TestDelay(BaseEvenniaTest):
                 self.assertTrue(t.get_id() in _TASK_HANDLER.to_save)
             self.assertTrue(t.get_id() in _TASK_HANDLER.tasks)
             # Make task handler's now time, after the stale timeout
-            _TASK_HANDLER._now = datetime.now() + timedelta(seconds=_TASK_HANDLER.stale_timeout + timedelay + 1)
+            _TASK_HANDLER._now = datetime.now() + timedelta(
+                seconds=_TASK_HANDLER.stale_timeout + timedelay + 1
+            )
             # add a task to test automatic removal
             t2 = utils.delay(timedelay, dummy_func, self.char1.dbref)
             if pers:
@@ -622,7 +634,9 @@ class TestDelay(BaseEvenniaTest):
                 self.assertTrue(t.get_id() in _TASK_HANDLER.to_save)
             self.assertTrue(t.get_id() in _TASK_HANDLER.tasks)
             # Make task handler's now time, after the stale timeout
-            _TASK_HANDLER._now = datetime.now() + timedelta(seconds=_TASK_HANDLER.stale_timeout + timedelay + 1)
+            _TASK_HANDLER._now = datetime.now() + timedelta(
+                seconds=_TASK_HANDLER.stale_timeout + timedelay + 1
+            )
             _TASK_HANDLER.clean_stale_tasks()  # cleanup of stale tasks in in the save method
             if pers:
                 self.assertFalse(t.get_id() in _TASK_HANDLER.to_save)
@@ -643,7 +657,9 @@ class TestDelay(BaseEvenniaTest):
                 self.assertTrue(t.get_id() in _TASK_HANDLER.to_save)
             self.assertTrue(t.get_id() in _TASK_HANDLER.tasks)
             # Make task handler's now time, after the stale timeout
-            _TASK_HANDLER._now = datetime.now() + timedelta(seconds=_TASK_HANDLER.stale_timeout + timedelay + 1)
+            _TASK_HANDLER._now = datetime.now() + timedelta(
+                seconds=_TASK_HANDLER.stale_timeout + timedelay + 1
+            )
             t2 = utils.delay(timedelay, dummy_func, self.char1.dbref)
             if pers:
                 self.assertTrue(t.get_id() in _TASK_HANDLER.to_save)
@@ -665,5 +681,7 @@ class TestDelay(BaseEvenniaTest):
         self.assertEqual(self.char1.ndb.dummy_var, False)  # task has not run
         _TASK_HANDLER.load()  # load persistent tasks from database.
         _TASK_HANDLER.create_delays()  # create new deffered instances from persistent tasks
-        _TASK_HANDLER.clock.advance(timedelay)  # Clock must advance to trigger, even if past timedelay
-        self.assertEqual(self.char1.ndb.dummy_var, 'dummy_func ran')
+        _TASK_HANDLER.clock.advance(
+            timedelay
+        )  # Clock must advance to trigger, even if past timedelay
+        self.assertEqual(self.char1.ndb.dummy_var, "dummy_func ran")

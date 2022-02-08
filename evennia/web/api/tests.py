@@ -38,7 +38,16 @@ class TestEvenniaRESTApi(BaseEvenniaTest):
     def get_view_details(self, action):
         """Helper function for generating list of named tuples"""
         View = namedtuple(
-            "View", ["view_name", "obj", "list", "serializer", "list_serializer", "create_data", "retrieve_data"]
+            "View",
+            [
+                "view_name",
+                "obj",
+                "list",
+                "serializer",
+                "list_serializer",
+                "create_data",
+                "retrieve_data",
+            ],
         )
         views = [
             View(

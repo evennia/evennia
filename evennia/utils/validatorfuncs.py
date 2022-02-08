@@ -34,8 +34,9 @@ def color(entry, option_key="Color", **kwargs):
         raise ValueError(_("Nothing entered for a {option_key}!").format(option_key=option_key))
     test_str = strip_ansi(f"|{entry}|n")
     if test_str:
-        raise ValueError(_("'{entry}' is not a valid {option_key}.").format(
-            entry=entry, option_key=option_key))
+        raise ValueError(
+            _("'{entry}' is not a valid {option_key}.").format(entry=entry, option_key=option_key)
+        )
     return entry
 
 
@@ -86,16 +87,16 @@ def datetime(entry, option_key="Datetime", account=None, from_tz=None, **kwargs)
     else:
         raise ValueError(
             _("{option_key} must be entered in a 24-hour format such as: {timeformat}").format(
-                option_key=option_key,
-                timeformat=now.strftime('%b %d %H:%M'))
+                option_key=option_key, timeformat=now.strftime("%b %d %H:%M")
+            )
         )
     try:
         local = _dt.datetime.strptime(entry, "%b %d %H:%M %Y")
     except ValueError:
         raise ValueError(
             _("{option_key} must be entered in a 24-hour format such as: {timeformat}").format(
-                option_key=option_key,
-                timeformat=now.strftime('%b %d %H:%M'))
+                option_key=option_key, timeformat=now.strftime("%b %d %H:%M")
+            )
         )
     local_tz = from_tz.localize(local)
     return local_tz.astimezone(utc)
@@ -138,7 +139,8 @@ def duration(entry, option_key="Duration", **kwargs):
         else:
             raise ValueError(
                 _("Could not convert section '{interval}' to a {option_key}.").format(
-                    interval=interval, option_key=option_key)
+                    interval=interval, option_key=option_key
+                )
             )
 
     return _dt.timedelta(days, seconds, 0, 0, minutes, hours, weeks)
@@ -147,38 +149,49 @@ def duration(entry, option_key="Duration", **kwargs):
 def future(entry, option_key="Future Datetime", from_tz=None, **kwargs):
     time = datetime(entry, option_key, from_tz=from_tz)
     if time < _dt.datetime.utcnow().replace(tzinfo=_dt.timezone.utc):
-        raise ValueError(_("That {option_key} is in the past! Must give a Future datetime!").format(
-            option_key=option_key))
+        raise ValueError(
+            _("That {option_key} is in the past! Must give a Future datetime!").format(
+                option_key=option_key
+            )
+        )
     return time
 
 
 def signed_integer(entry, option_key="Signed Integer", **kwargs):
     if not entry:
-        raise ValueError(_("Must enter a whole number for {option_key}!").format(
-            option_key=option_key))
+        raise ValueError(
+            _("Must enter a whole number for {option_key}!").format(option_key=option_key)
+        )
     try:
         num = int(entry)
     except ValueError:
-        raise ValueError(_("Could not convert '{entry}' to a whole "
-                           "number for {option_key}!").format(
-            entry=entry, option_key=option_key))
+        raise ValueError(
+            _("Could not convert '{entry}' to a whole " "number for {option_key}!").format(
+                entry=entry, option_key=option_key
+            )
+        )
     return num
 
 
 def positive_integer(entry, option_key="Positive Integer", **kwargs):
     num = signed_integer(entry, option_key)
     if not num >= 1:
-        raise ValueError(_("Must enter a whole number greater than 0 for {option_key}!").format(
-            option_key=option_key))
+        raise ValueError(
+            _("Must enter a whole number greater than 0 for {option_key}!").format(
+                option_key=option_key
+            )
+        )
     return num
 
 
 def unsigned_integer(entry, option_key="Unsigned Integer", **kwargs):
     num = signed_integer(entry, option_key)
     if not num >= 0:
-        raise ValueError(_("{option_key} must be a whole number greater than "
-                           "or equal to 0!").format(
-            option_key=option_key))
+        raise ValueError(
+            _("{option_key} must be a whole number greater than " "or equal to 0!").format(
+                option_key=option_key
+            )
+        )
     return num
 
 
@@ -194,9 +207,9 @@ def boolean(entry, option_key="True/False", **kwargs):
         Boolean
 
     """
-    error = (_("Must enter a true/false input for {option_key}. Accepts {alternatives}.").format(
-             option_key=option_key,
-             alternatives="0/1, True/False, On/Off, Yes/No, Enabled/Disabled"))
+    error = _("Must enter a true/false input for {option_key}. Accepts {alternatives}.").format(
+        option_key=option_key, alternatives="0/1, True/False, On/Off, Yes/No, Enabled/Disabled"
+    )
     if not isinstance(entry, str):
         raise ValueError(error)
     entry = entry.upper()
@@ -225,11 +238,16 @@ def timezone(entry, option_key="Timezone", **kwargs):
     if len(found) > 1:
         raise ValueError(
             _("That matched: {matches}. Please be more specific!").format(
-                matches=', '.join(str(t) for t in found)))
+                matches=", ".join(str(t) for t in found)
+            )
+        )
     if found:
         return _TZ_DICT[found[0]]
-    raise ValueError(_("Could not find timezone '{entry}' for {option_key}!").format(
-        entry=entry, option_key=option_key))
+    raise ValueError(
+        _("Could not find timezone '{entry}' for {option_key}!").format(
+            entry=entry, option_key=option_key
+        )
+    )
 
 
 def email(entry, option_key="Email Address", **kwargs):
@@ -251,8 +269,11 @@ def lock(entry, option_key="locks", access_options=None, **kwargs):
             raise ValueError(_("Must enter an access type!"))
         if access_options:
             if access_type not in access_options:
-                raise ValueError(_("Access type must be one of: {alternatives}").format(
-                    alternatives=', '.join(access_options)))
+                raise ValueError(
+                    _("Access type must be one of: {alternatives}").format(
+                        alternatives=", ".join(access_options)
+                    )
+                )
         if not lockfunc:
             raise ValueError(_("Lock func not entered."))
     return entry

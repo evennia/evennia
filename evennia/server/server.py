@@ -284,9 +284,12 @@ class Evennia:
                 (i, tup[0], tup[1]) for i, tup in enumerate(settings_compare) if i in mismatches
             ):
                 # update the database
-                INFO_DICT["info"] = (
-                    " %s:\n '%s' changed to '%s'. Updating unchanged entries in database ..."
-                    % (settings_names[i], prev, curr)
+                INFO_DICT[
+                    "info"
+                ] = " %s:\n '%s' changed to '%s'. Updating unchanged entries in database ..." % (
+                    settings_names[i],
+                    prev,
+                    curr,
                 )
                 if i == 0:
                     ObjectDB.objects.filter(db_cmdset_storage__exact=prev).update(
@@ -344,7 +347,7 @@ class Evennia:
                 # i.e. this is an empty DB that needs populating.
                 INFO_DICT["info"] = " Server started for the first time. Setting defaults."
                 initial_setup.handle_setup()
-            elif last_initial_setup_step not in ('done', -1):
+            elif last_initial_setup_step not in ("done", -1):
                 # last step crashed, so we weill resume from this step.
                 # modules and setup will resume from this step, retrying
                 # the last failed module. When all are finished, the step
@@ -405,9 +408,10 @@ class Evennia:
         self.update_defaults()
 
         # run at_init() on all cached entities on reconnect
-        [[entity.at_init()
-          for entity in typeclass_db.get_all_cached_instances()]
-          for typeclass_db in TypedObject.__subclasses__()]
+        [
+            [entity.at_init() for entity in typeclass_db.get_all_cached_instances()]
+            for typeclass_db in TypedObject.__subclasses__()
+        ]
 
         # call correct server hook based on start file value
         if mode == "reload":
@@ -418,6 +422,7 @@ class Evennia:
             self.at_server_cold_start()
             logger.log_msg("Evennia Server successfully restarted in 'reset' mode.")
         elif mode == "shutdown":
+            from evennia.objects.models import ObjectDB
             self.at_server_cold_start()
             # clear eventual lingering session storages
             ObjectDB.objects.clear_all_sessids()

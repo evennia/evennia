@@ -30,13 +30,15 @@ MAPSCAN = {
 
 # errors for Map system
 
-class MapError(RuntimeError):
 
+class MapError(RuntimeError):
     def __init__(self, error="", node_or_link=None):
         prefix = ""
         if node_or_link:
-            prefix = (f"{node_or_link.__class__.__name__} '{node_or_link.symbol}' "
-                      f"at XYZ=({node_or_link.X:g},{node_or_link.Y:g},{node_or_link.Z}) ")
+            prefix = (
+                f"{node_or_link.__class__.__name__} '{node_or_link.symbol}' "
+                f"at XYZ=({node_or_link.X:g},{node_or_link.Y:g},{node_or_link.Z}) "
+            )
         self.node_or_link = node_or_link
         self.message = f"{prefix}{error}"
         super().__init__(self.message)
@@ -52,4 +54,5 @@ class MapTransition(RuntimeWarning):
     leads to another map.
 
     """
+
     pass

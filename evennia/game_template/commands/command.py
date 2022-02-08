@@ -19,6 +19,7 @@ class Command(BaseCommand):
     here. Without setting one, the parent's docstring will show (like now).
 
     """
+
     # Each Command class implements the following methods, called in this order
     # (only func() is actually required):
     #

@@ -49,8 +49,14 @@ import random
 from django.conf import settings
 from evennia.utils import logger
 from evennia.utils.utils import (
-    make_iter, callables_from_module, variable_from_module, pad, crop, justify,
-    safe_convert_to_types)
+    make_iter,
+    callables_from_module,
+    variable_from_module,
+    pad,
+    crop,
+    justify,
+    safe_convert_to_types,
+)
 from evennia.utils import search
 from evennia.utils.verb_conjugation.conjugate import verb_actor_stance_components
 from evennia.utils.verb_conjugation.pronouns import pronoun_to_viewpoints
@@ -69,6 +75,7 @@ class _ParsedFunc:
     Represents a function parsed from the string
 
     """
+
     prefix: str = _START_CHAR
     funcname: str = ""
     args: list = dataclasses.field(default_factory=list)
@@ -96,6 +103,7 @@ class ParsingError(RuntimeError):
     """
     Failed to parse for some reason.
     """
+
     pass
 
 
@@ -106,12 +114,14 @@ class FuncParser:
 
     """
 
-    def __init__(self,
-                 callables,
-                 start_char=_START_CHAR,
-                 escape_char=_ESCAPE_CHAR,
-                 max_nesting=_MAX_NESTING,
-                 **default_kwargs):
+    def __init__(
+        self,
+        callables,
+        start_char=_START_CHAR,
+        escape_char=_ESCAPE_CHAR,
+        max_nesting=_MAX_NESTING,
+        **default_kwargs,
+    ):
         """
         Initialize the parser.
 
@@ -145,7 +155,8 @@ class FuncParser:
             loaded_callables = {}
             for module_or_path in make_iter(callables):
                 callables_mapping = variable_from_module(
-                    module_or_path, variable="FUNCPARSER_CALLABLES")
+                    module_or_path, variable="FUNCPARSER_CALLABLES"
+                )
                 if callables_mapping:
                     try:
                         # mapping supplied in variable
@@ -153,7 +164,8 @@ class FuncParser:
                     except ValueError:
                         raise ParsingError(
                             f"Failure to parse - {module_or_path}.FUNCPARSER_CALLABLES "
-                            "(must be a dict {'funcname': callable, ...})")
+                            "(must be a dict {'funcname': callable, ...})"
+                        )
                 else:
                     # use all top-level variables
                     # (handles both paths and module instances
@@ -229,13 +241,18 @@ class FuncParser:
         if not func:
             if raise_errors:
                 available = ", ".join(f"'{key}'" for key in self.callables)
-                raise ParsingError(f"Unknown parsed function '{str(parsedfunc)}' "
-                                   f"(available: {available})")
+                raise ParsingError(
+                    f"Unknown parsed function '{str(parsedfunc)}' " f"(available: {available})"
+                )
             return str(parsedfunc)
 
         # build kwargs in the proper priority order
-        kwargs = {**self.default_kwargs, **kwargs, **reserved_kwargs,
-                  **{'funcparser': self, "raise_errors": raise_errors}}
+        kwargs = {
+            **self.default_kwargs,
+            **kwargs,
+            **reserved_kwargs,
+            **{"funcparser": self, "raise_errors": raise_errors},
+        }
 
         try:
             ret = func(*args, **kwargs)
@@ -250,8 +267,15 @@ class FuncParser:
                 raise
             return str(parsedfunc)
 
-    def parse(self, string, raise_errors=False, escape=False,
-              strip=False, return_str=True, **reserved_kwargs):
+    def parse(
+        self,
+        string,
+        raise_errors=False,
+        escape=False,
+        strip=False,
+        return_str=True,
+        **reserved_kwargs,
+    ):
         """
         Use parser to parse a string that may or may not have
         `$funcname(*args, **kwargs)` - style tokens in it. Only the callables
@@ -298,14 +322,14 @@ class FuncParser:
         double_quoted = False
         open_lparens = 0  # open (
         open_lsquare = 0  # open [
-        open_lcurly = 0   # open {
+        open_lcurly = 0  # open {
         escaped = False
         current_kwarg = ""
         exec_return = ""
 
         curr_func = None
-        fullstr = ''  # final string
-        infuncstr = ''  # string parts inside the current level of $funcdef (including $)
+        fullstr = ""  # final string
+        infuncstr = ""  # string parts inside the current level of $funcdef (including $)
 
         for char in string:
 
@@ -332,8 +356,10 @@ class FuncParser:
                     if len(callstack) > _MAX_NESTING:
                         # stack full - ignore this function
                         if raise_errors:
-                            raise ParsingError("Only allows for parsing nesting function defs "
-                                               f"to a max depth of {_MAX_NESTING}.")
+                            raise ParsingError(
+                                "Only allows for parsing nesting function defs "
+                                f"to a max depth of {_MAX_NESTING}."
+                            )
                         infuncstr += char
                         continue
                     else:
@@ -368,12 +394,12 @@ class FuncParser:
 
             # in a function def (can be nested)
 
-            if exec_return != '' and char not in (",=)"):
+            if exec_return != "" and char not in (",=)"):
                 # if exec_return is followed by any other character
                 # than one demarking an arg,kwarg or function-end
                 # it must immediately merge as a string
                 infuncstr += str(exec_return)
-                exec_return = ''
+                exec_return = ""
 
             if char == "'":  # note that this is the same as "\'"
                 # a single quote - flip status
@@ -393,12 +419,12 @@ class FuncParser:
                 continue
 
             # special characters detected inside function def
-            if char == '(':
+            if char == "(":
                 if not curr_func.funcname:
                     # end of a funcdef name
                     curr_func.funcname = infuncstr
                     curr_func.fullstr += infuncstr + char
-                    infuncstr = ''
+                    infuncstr = ""
                 else:
                     # just a random left-parenthesis
                     infuncstr += char
@@ -406,29 +432,29 @@ class FuncParser:
                 open_lparens += 1
                 continue
 
-            if char in '[]':
+            if char in "[]":
                 # a square bracket - start/end of a list?
                 infuncstr += char
-                open_lsquare += -1 if char == ']' else 1
+                open_lsquare += -1 if char == "]" else 1
                 continue
 
-            if char in '{}':
+            if char in "{}":
                 # a curly bracket - start/end of dict/set?
                 infuncstr += char
-                open_lcurly += -1 if char == '}' else 1
+                open_lcurly += -1 if char == "}" else 1
                 continue
 
-            if char == '=':
+            if char == "=":
                 # beginning of a keyword argument
-                if exec_return != '':
+                if exec_return != "":
                     infuncstr = exec_return
                 current_kwarg = infuncstr.strip()
                 curr_func.kwargs[current_kwarg] = ""
                 curr_func.fullstr += infuncstr + char
-                infuncstr = ''
+                infuncstr = ""
                 continue
 
-            if char in (',)'):
+            if char in (",)"):
                 # commas and right-parens may indicate arguments ending
 
                 if open_lparens > 1:
@@ -436,7 +462,7 @@ class FuncParser:
                     # indicate we are inside an unclosed, nested (, so
                     # we need to not count this as a new arg or end of funcdef.
                     infuncstr += char
-                    open_lparens -= 1 if char == ')' else 0
+                    open_lparens -= 1 if char == ")" else 0
                     continue
 
                 if open_lcurly > 0 or open_lsquare > 0:
@@ -444,7 +470,7 @@ class FuncParser:
                     infuncstr += char
                     continue
 
-                if exec_return != '':
+                if exec_return != "":
                     # store the execution return as-received
                     if current_kwarg:
                         curr_func.kwargs[current_kwarg] = exec_return
@@ -465,17 +491,17 @@ class FuncParser:
                 curr_func.fullstr += str(exec_return) + infuncstr + char
 
                 current_kwarg = ""
-                exec_return = ''
-                infuncstr = ''
+                exec_return = ""
+                infuncstr = ""
 
-                if char == ')':
+                if char == ")":
                     # closing the function list - this means we have a
                     # ready function-def to run.
                     open_lparens = 0
 
                     if strip:
                         # remove function as if it returned empty
-                        exec_return = ''
+                        exec_return = ""
                     elif escape:
                         # get function and set it as escaped
                         exec_return = escape_char + curr_func.fullstr
@@ -483,7 +509,8 @@ class FuncParser:
                         # execute the function - the result may be a string or
                         # something else
                         exec_return = self.execute(
-                            curr_func, raise_errors=raise_errors, **reserved_kwargs)
+                            curr_func, raise_errors=raise_errors, **reserved_kwargs
+                        )
 
                     if callstack:
                         # unnest the higher-level funcdef from stack
@@ -494,8 +521,8 @@ class FuncParser:
                             # if we have an ongoing string, we must merge the
                             # exec into this as a part of that string
                             infuncstr = curr_func.infuncstr + str(exec_return)
-                            exec_return = ''
-                        curr_func.infuncstr = ''
+                            exec_return = ""
+                        curr_func.infuncstr = ""
                         single_quoted = curr_func.single_quoted
                         double_quoted = curr_func.double_quoted
                         open_lparens = curr_func.open_lparens
@@ -507,8 +534,8 @@ class FuncParser:
                         curr_func = None
                         fullstr += str(exec_return)
                         if return_str:
-                            exec_return = ''
-                        infuncstr = ''
+                            exec_return = ""
+                        infuncstr = ""
                 continue
 
             infuncstr += char
@@ -521,7 +548,7 @@ class FuncParser:
             for _ in range(len(callstack)):
                 infuncstr = str(callstack.pop()) + infuncstr
 
-        if not return_str and exec_return != '':
+        if not return_str and exec_return != "":
             # return explicit return
             return exec_return
 
@@ -576,14 +603,21 @@ class FuncParser:
                 assert parser.parse_to_any("$ret1() and text" == '1 and text'
 
         """
-        return self.parse(string, raise_errors=False, escape=False, strip=False,
-                          return_str=False, **reserved_kwargs)
+        return self.parse(
+            string,
+            raise_errors=False,
+            escape=False,
+            strip=False,
+            return_str=False,
+            **reserved_kwargs,
+        )
 
 
 #
 # Default funcparser callables. These are made available from this module's
 # FUNCPARSER_CALLABLES.
 #
+
 
 def funcparser_callable_eval(*args, **kwargs):
     """
@@ -604,7 +638,7 @@ def funcparser_callable_eval(*args, **kwargs):
 
     """
     args, kwargs = safe_convert_to_types(("py", {}), *args, **kwargs)
-    return args[0] if args else ''
+    return args[0] if args else ""
 
 
 def funcparser_callable_toint(*args, **kwargs):
@@ -631,9 +665,9 @@ def _apply_operation_two_elements(*args, operator="+", **kwargs):
             better for non-list arithmetic.
 
     """
-    args, kwargs = safe_convert_to_types((('py', 'py'), {}), *args, **kwargs)
+    args, kwargs = safe_convert_to_types((("py", "py"), {}), *args, **kwargs)
     if not len(args) > 1:
-        return ''
+        return ""
     val1, val2 = args[0], args[1]
     try:
         if operator == "+":
@@ -645,29 +679,29 @@ def _apply_operation_two_elements(*args, operator="+", **kwargs):
         elif operator == "/":
             return val1 / val2
     except Exception:
-        if kwargs.get('raise_errors'):
+        if kwargs.get("raise_errors"):
             raise
-        return ''
+        return ""
 
 
 def funcparser_callable_add(*args, **kwargs):
     """Usage: `$add(val1, val2) -> val1 + val2`"""
-    return _apply_operation_two_elements(*args, operator='+', **kwargs)
+    return _apply_operation_two_elements(*args, operator="+", **kwargs)
 
 
 def funcparser_callable_sub(*args, **kwargs):
     """Usage: ``$sub(val1, val2) -> val1 - val2`"""
-    return _apply_operation_two_elements(*args, operator='-', **kwargs)
+    return _apply_operation_two_elements(*args, operator="-", **kwargs)
 
 
 def funcparser_callable_mult(*args, **kwargs):
     """Usage: `$mult(val1, val2) -> val1 * val2`"""
-    return _apply_operation_two_elements(*args, operator='*', **kwargs)
+    return _apply_operation_two_elements(*args, operator="*", **kwargs)
 
 
 def funcparser_callable_div(*args, **kwargs):
     """Usage: `$mult(val1, val2) -> val1 / val2`"""
-    return _apply_operation_two_elements(*args, operator='/', **kwargs)
+    return _apply_operation_two_elements(*args, operator="/", **kwargs)
 
 
 def funcparser_callable_round(*args, **kwargs):
@@ -690,7 +724,7 @@ def funcparser_callable_round(*args, **kwargs):
 
     """
     if not args:
-        return ''
+        return ""
     args, _ = safe_convert_to_types(((float, int), {}), *args, **kwargs)
 
     num, *significant = args
@@ -698,9 +732,10 @@ def funcparser_callable_round(*args, **kwargs):
     try:
         round(num, significant)
     except Exception:
-        if kwargs.get('raise_errors'):
+        if kwargs.get("raise_errors"):
             raise
-        return ''
+        return ""
+
 
 def funcparser_callable_random(*args, **kwargs):
     """
@@ -724,7 +759,7 @@ def funcparser_callable_random(*args, **kwargs):
         - `$random(5, 10.0)` - random value [5..10] (float)
 
     """
-    args, _ = safe_convert_to_types((('py', 'py'), {}), *args, **kwargs)
+    args, _ = safe_convert_to_types((("py", "py"), {}), *args, **kwargs)
 
     nargs = len(args)
     if nargs == 1:
@@ -741,9 +776,10 @@ def funcparser_callable_random(*args, **kwargs):
         else:
             return random.randint(minval, maxval)
     except Exception:
-        if kwargs.get('raise_errors'):
+        if kwargs.get("raise_errors"):
             raise
-        return ''
+        return ""
+
 
 def funcparser_callable_randint(*args, **kwargs):
     """
@@ -772,14 +808,14 @@ def funcparser_callable_choice(*args, **kwargs):
 
     """
     if not args:
-        return ''
-    args, _ = safe_convert_to_types(('py', {}), *args, **kwargs)
+        return ""
+    args, _ = safe_convert_to_types(("py", {}), *args, **kwargs)
     try:
         return random.choice(args[0])
     except Exception:
-        if kwargs.get('raise_errors'):
+        if kwargs.get("raise_errors"):
             raise
-        return ''
+        return ""
 
 
 def funcparser_callable_pad(*args, **kwargs):
@@ -798,9 +834,10 @@ def funcparser_callable_pad(*args, **kwargs):
 
     """
     if not args:
-        return ''
+        return ""
     args, kwargs = safe_convert_to_types(
-        ((str, int, str, str), {'width': int, 'align': str, 'fillchar': str}), *args, **kwargs)
+        ((str, int, str, str), {"width": int, "align": str, "fillchar": str}), *args, **kwargs
+    )
 
     text, *rest = args
     nrest = len(rest)
@@ -809,10 +846,10 @@ def funcparser_callable_pad(*args, **kwargs):
     except TypeError:
         width = _CLIENT_DEFAULT_WIDTH
 
-    align = kwargs.get("align", rest[1] if nrest > 1 else 'c')
-    fillchar = kwargs.get("fillchar", rest[2] if nrest > 2 else ' ')
-    if align not in ('c', 'l', 'r'):
-        align = 'c'
+    align = kwargs.get("align", rest[1] if nrest > 1 else "c")
+    fillchar = kwargs.get("fillchar", rest[2] if nrest > 2 else " ")
+    if align not in ("c", "l", "r"):
+        align = "c"
     return pad(str(text), width=width, align=align, fillchar=fillchar)
 
 
@@ -833,14 +870,14 @@ def funcparser_callable_crop(*args, **kwargs):
 
     """
     if not args:
-        return ''
+        return ""
     text, *rest = args
     nrest = len(rest)
     try:
         width = int(kwargs.get("width", rest[0] if nrest > 0 else _CLIENT_DEFAULT_WIDTH))
     except TypeError:
         width = _CLIENT_DEFAULT_WIDTH
-    suffix = kwargs.get('suffix', rest[1] if nrest > 1 else "[...]")
+    suffix = kwargs.get("suffix", rest[1] if nrest > 1 else "[...]")
     return crop(str(text), width=width, suffix=str(suffix))
 
 
@@ -852,7 +889,7 @@ def funcparser_callable_space(*args, **kwarg):
 
     """
     if not args:
-        return ''
+        return ""
     try:
         width = int(args[0])
     except TypeError:
@@ -879,14 +916,14 @@ def funcparser_callable_justify(*args, **kwargs):
 
     """
     if not args:
-        return ''
+        return ""
     text, *rest = args
     lrest = len(rest)
     try:
         width = int(kwargs.get("width", rest[0] if lrest > 0 else _CLIENT_DEFAULT_WIDTH))
     except TypeError:
         width = _CLIENT_DEFAULT_WIDTH
-    align = str(kwargs.get("align", rest[1] if lrest > 1 else 'f'))
+    align = str(kwargs.get("align", rest[1] if lrest > 1 else "f"))
     try:
         indent = int(kwargs.get("indent", rest[2] if lrest > 2 else 0))
     except TypeError:
@@ -897,17 +934,17 @@ def funcparser_callable_justify(*args, **kwargs):
 # legacy for backwards compatibility
 def funcparser_callable_left_justify(*args, **kwargs):
     "Usage: $ljust(text)"
-    return funcparser_callable_justify(*args, align='l', **kwargs)
+    return funcparser_callable_justify(*args, align="l", **kwargs)
 
 
 def funcparser_callable_right_justify(*args, **kwargs):
     "Usage: $rjust(text)"
-    return funcparser_callable_justify(*args, align='r', **kwargs)
+    return funcparser_callable_justify(*args, align="r", **kwargs)
 
 
 def funcparser_callable_center_justify(*args, **kwargs):
     "Usage: $cjust(text)"
-    return funcparser_callable_justify(*args, align='c', **kwargs)
+    return funcparser_callable_justify(*args, align="c", **kwargs)
 
 
 def funcparser_callable_clr(*args, **kwargs):
@@ -930,9 +967,9 @@ def funcparser_callable_clr(*args, **kwargs):
 
     """
     if not args:
-        return ''
+        return ""
 
-    startclr, text, endclr = '', '', ''
+    startclr, text, endclr = "", "", ""
     if len(args) > 1:
         # $clr(pre, text, post))
         startclr, *rest = args
@@ -943,11 +980,11 @@ def funcparser_callable_clr(*args, **kwargs):
     else:
         # $clr(text, start=pre, end=post)
         text = args[0]
-        startclr = kwargs.get("start", '')
-        endclr = kwargs.get("end", '')
+        startclr = kwargs.get("start", "")
+        endclr = kwargs.get("end", "")
 
     startclr = "|" + startclr if startclr else ""
-    endclr = "|" + endclr if endclr else ("|n" if startclr else '')
+    endclr = "|" + endclr if endclr else ("|n" if startclr else "")
     return f"{startclr}{text}{endclr}"
 
 
@@ -1007,13 +1044,14 @@ def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
         raise ParsingError(f"$search: Query '{query}' gave no matches.")
 
     if len(targets) > 1 and not return_list:
-        raise ParsingError("$search: Query '{query}' found {num} matches. "
-                           "Set return_list=True to accept a list".format(
-                               query=query, num=len(targets)))
+        raise ParsingError(
+            "$search: Query '{query}' found {num} matches. "
+            "Set return_list=True to accept a list".format(query=query, num=len(targets))
+        )
 
     for target in targets:
         if not target.access(caller, target, access):
-            raise ParsingError('$search Cannot add found entity - access failure.')
+            raise ParsingError("$search Cannot add found entity - access failure.")
 
     return list(targets) if return_list else targets[0]
 
@@ -1025,12 +1063,14 @@ def funcparser_callable_search_list(*args, caller=None, access="control", **kwar
     Legacy alias for search with a return_list=True kwarg preset.
 
     """
-    return funcparser_callable_search(*args, caller=caller, access=access,
-                                      return_list=True, **kwargs)
+    return funcparser_callable_search(
+        *args, caller=caller, access=access, return_list=True, **kwargs
+    )
 
 
-def funcparser_callable_you(*args, caller=None, receiver=None, mapping=None, capitalize=False,
-                            **kwargs):
+def funcparser_callable_you(
+    *args, caller=None, receiver=None, mapping=None, capitalize=False, **kwargs
+):
     """
     Usage: $you() or $you(key)
 
@@ -1079,18 +1119,23 @@ def funcparser_callable_you(*args, caller=None, receiver=None, mapping=None, cap
     capitalize = bool(capitalize)
     if caller == receiver:
         return "You" if capitalize else "you"
-    return (caller.get_display_name(looker=receiver)
-            if hasattr(caller, "get_display_name") else str(caller))
+    return (
+        caller.get_display_name(looker=receiver)
+        if hasattr(caller, "get_display_name")
+        else str(caller)
+    )
 
 
 def funcparser_callable_you_capitalize(
-        *args, you=None, receiver=None, mapping=None, capitalize=True, **kwargs):
+    *args, you=None, receiver=None, mapping=None, capitalize=True, **kwargs
+):
     """
     Usage: $You() - capitalizes the 'you' output.
 
     """
     return funcparser_callable_you(
-        *args, you=you, receiver=receiver, mapping=mapping, capitalize=capitalize, **kwargs)
+        *args, you=you, receiver=receiver, mapping=mapping, capitalize=capitalize, **kwargs
+    )
 
 
 def funcparser_callable_conjugate(*args, caller=None, receiver=None, **kwargs):
@@ -1125,7 +1170,7 @@ def funcparser_callable_conjugate(*args, caller=None, receiver=None, **kwargs):
 
     """
     if not args:
-        return ''
+        return ""
     if not (caller and receiver):
         raise ParsingError("No caller/receiver supplied to $conj callable")
 
@@ -1229,7 +1274,7 @@ def funcparser_callable_pronoun(*args, caller=None, receiver=None, capitalize=Fa
 
     """
     if not args:
-        return ''
+        return ""
 
     pronoun, *options = args
     # options is either multiple args or a space-separated string
@@ -1252,8 +1297,12 @@ def funcparser_callable_pronoun(*args, caller=None, receiver=None, capitalize=Fa
         default_viewpoint = kwargs["viewpoint"]
 
     pronoun_1st_or_2nd_person, pronoun_3rd_person = pronoun_to_viewpoints(
-        pronoun, options,
-        pronoun_type=default_pronoun_type, gender=default_gender, viewpoint=default_viewpoint)
+        pronoun,
+        options,
+        pronoun_type=default_pronoun_type,
+        gender=default_gender,
+        viewpoint=default_viewpoint,
+    )
 
     if capitalize:
         pronoun_1st_or_2nd_person = pronoun_1st_or_2nd_person.capitalize()
@@ -1263,14 +1312,15 @@ def funcparser_callable_pronoun(*args, caller=None, receiver=None, capitalize=Fa
 
 
 def funcparser_callable_pronoun_capitalize(
-        *args, caller=None, receiver=None, capitalize=True, **kwargs):
+    *args, caller=None, receiver=None, capitalize=True, **kwargs
+):
     """
     Usage: $Pron(word) - always maps to a capitalized word.
 
     """
     return funcparser_callable_pronoun(
-        *args, caller=caller, receiver=receiver, capitalize=capitalize, **kwargs)
-
+        *args, caller=caller, receiver=receiver, capitalize=capitalize, **kwargs
+    )
 
 
 # these are made available as callables by adding 'evennia.utils.funcparser' as
@@ -1278,7 +1328,6 @@ def funcparser_callable_pronoun_capitalize(
 
 FUNCPARSER_CALLABLES = {
     # 'standard' callables
-
     # eval and arithmetic
     "eval": funcparser_callable_eval,
     "add": funcparser_callable_add,
@@ -1287,12 +1336,10 @@ FUNCPARSER_CALLABLES = {
     "div": funcparser_callable_div,
     "round": funcparser_callable_round,
     "toint": funcparser_callable_toint,
-
     # randomizers
     "random": funcparser_callable_random,
     "randint": funcparser_callable_randint,
     "choice": funcparser_callable_choice,
-
     # string manip
     "pad": funcparser_callable_pad,
     "crop": funcparser_callable_crop,

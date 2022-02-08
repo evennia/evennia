@@ -154,8 +154,13 @@ from evennia.prototypes.prototypes import (
 
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
-_PROTOTYPE_META_NAMES = ("prototype_key", "prototype_desc", "prototype_tags",
-                         "prototype_locks", "prototype_parent")
+_PROTOTYPE_META_NAMES = (
+    "prototype_key",
+    "prototype_desc",
+    "prototype_tags",
+    "prototype_locks",
+    "prototype_parent",
+)
 _PROTOTYPE_ROOT_NAMES = (
     "typeclass",
     "key",
@@ -235,9 +240,7 @@ def _get_prototype(inprot, protparents, uninherited=None, _workprot=None):
                 parent_prototype = protparents.get(prototype.lower(), {})
 
             # Build the prot dictionary in reverse order, overloading
-            new_prot = _get_prototype(
-                parent_prototype, protparents, _workprot=_workprot
-            )
+            new_prot = _get_prototype(parent_prototype, protparents, _workprot=_workprot)
 
             # attrs, tags have internal structure that should be inherited separately
             new_prot["attrs"] = _inherit_attrs(
@@ -276,8 +279,9 @@ def flatten_prototype(prototype, validate=False, no_db=False):
 
     if prototype:
         prototype = protlib.homogenize_prototype(prototype)
-        protparents = {prot["prototype_key"].lower(): prot
-                       for prot in protlib.search_prototype(no_db=no_db)}
+        protparents = {
+            prot["prototype_key"].lower(): prot for prot in protlib.search_prototype(no_db=no_db)
+        }
         protlib.validate_prototype(
             prototype, None, protparents, is_prototype_base=validate, strict=validate
         )
@@ -342,7 +346,7 @@ def prototype_from_object(obj):
         prot["aliases"] = aliases
     tags = sorted(
         [(tag.db_key, tag.db_category, tag.db_data) for tag in obj.tags.all(return_objs=True)],
-        key=lambda tup: (str(tup[0]), tup[1] or '', tup[2] or '')
+        key=lambda tup: (str(tup[0]), tup[1] or "", tup[2] or ""),
     )
     if tags:
         prot["tags"] = tags
@@ -351,7 +355,7 @@ def prototype_from_object(obj):
             (attr.key, attr.value, attr.category, ";".join(attr.locks.all()))
             for attr in obj.attributes.all()
         ],
-        key=lambda tup: (str(tup[0]), tup[1] or '', tup[2] or '', tup[3])
+        key=lambda tup: (str(tup[0]), tup[1] or "", tup[2] or "", tup[3]),
     )
     if attrs:
         prot["attrs"] = attrs
@@ -489,8 +493,10 @@ def flatten_diff(diff):
                 out.extend(_get_all_nested_diff_instructions(val))
         else:
             raise RuntimeError(
-                _("Diff contains non-dicts that are not on the "
-                  "form (old, new, action_to_take): {diffpart}").format(diffpart)
+                _(
+                    "Diff contains non-dicts that are not on the "
+                    "form (old, new, action_to_take): {diffpart}"
+                ).format(diffpart)
             )
         return out
 
@@ -627,8 +633,9 @@ def format_diff(diff, minimal=True):
     return "\n ".join(line for line in texts if line)
 
 
-def batch_update_objects_with_prototype(prototype, diff=None, objects=None,
-                                        exact=False, caller=None):
+def batch_update_objects_with_prototype(
+    prototype, diff=None, objects=None, exact=False, caller=None
+):
     """
     Update existing objects with the latest version of the prototype.
 
@@ -941,27 +948,32 @@ def spawn(*prototypes, caller=None, **kwargs):
 
         val = prot.pop("location", None)
         create_kwargs["db_location"] = init_spawn_value(
-            val, value_to_obj, caller=caller, prototype=prototype)
+            val, value_to_obj, caller=caller, prototype=prototype
+        )
 
         val = prot.pop("home", None)
         if val:
-            create_kwargs["db_home"] = init_spawn_value(val, value_to_obj, caller=caller,
-                                                        prototype=prototype)
+            create_kwargs["db_home"] = init_spawn_value(
+                val, value_to_obj, caller=caller, prototype=prototype
+            )
         else:
             try:
                 create_kwargs["db_home"] = init_spawn_value(
-                    settings.DEFAULT_HOME, value_to_obj, caller=caller, prototype=prototype)
+                    settings.DEFAULT_HOME, value_to_obj, caller=caller, prototype=prototype
+                )
             except ObjectDB.DoesNotExist:
                 # settings.DEFAULT_HOME not existing is common for unittests
                 pass
 
         val = prot.pop("destination", None)
-        create_kwargs["db_destination"] = init_spawn_value(val, value_to_obj, caller=caller,
-                                                           prototype=prototype)
+        create_kwargs["db_destination"] = init_spawn_value(
+            val, value_to_obj, caller=caller, prototype=prototype
+        )
 
         val = prot.pop("typeclass", settings.BASE_OBJECT_TYPECLASS)
-        create_kwargs["db_typeclass_path"] = init_spawn_value(val, str, caller=caller,
-                                                              prototype=prototype)
+        create_kwargs["db_typeclass_path"] = init_spawn_value(
+            val, str, caller=caller, prototype=prototype
+        )
 
         # extract calls to handlers
         val = prot.pop("permissions", [])
@@ -974,8 +986,13 @@ def spawn(*prototypes, caller=None, **kwargs):
         val = prot.pop("tags", [])
         tags = []
         for (tag, category, *data) in val:
-            tags.append((init_spawn_value(tag, str, caller=caller, prototype=prototype),
-                         category, data[0] if data else None))
+            tags.append(
+                (
+                    init_spawn_value(tag, str, caller=caller, prototype=prototype),
+                    category,
+                    data[0] if data else None,
+                )
+            )
 
         prototype_key = prototype.get("prototype_key", None)
         if prototype_key:
@@ -987,8 +1004,10 @@ def spawn(*prototypes, caller=None, **kwargs):
 
         # extract ndb assignments
         nattributes = dict(
-            (key.split("_", 1)[1], init_spawn_value(val, value_to_obj, caller=caller,
-                                                    prototype=prototype))
+            (
+                key.split("_", 1)[1],
+                init_spawn_value(val, value_to_obj, caller=caller, prototype=prototype),
+            )
             for key, val in prot.items()
             if key.startswith("ndb_")
         )
@@ -998,8 +1017,13 @@ def spawn(*prototypes, caller=None, **kwargs):
         attributes = []
         for (attrname, value, *rest) in val:
             attributes.append(
-                (attrname, init_spawn_value(value, caller=caller, prototype=prototype),
-                 rest[0] if rest else None, rest[1] if len(rest) > 1 else None))
+                (
+                    attrname,
+                    init_spawn_value(value, caller=caller, prototype=prototype),
+                    rest[0] if rest else None,
+                    rest[1] if len(rest) > 1 else None,
+                )
+            )
 
         simple_attributes = []
         for key, value in (
@@ -1010,8 +1034,14 @@ def spawn(*prototypes, caller=None, **kwargs):
                 continue
             else:
                 simple_attributes.append(
-                    (key, init_spawn_value(value, value_to_obj_or_any, caller=caller,
-                                           prototype=prototype), None, None)
+                    (
+                        key,
+                        init_spawn_value(
+                            value, value_to_obj_or_any, caller=caller, prototype=prototype
+                        ),
+                        None,
+                        None,
+                    )
                 )
 
         attributes = attributes + simple_attributes

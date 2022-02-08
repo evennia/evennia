@@ -50,15 +50,11 @@ tutorials are found here. Also the home of the Tutorial World demo adventure.
     "utils": """
 Miscellaneous, optional tools for manipulating text, auditing connections
 and more.
-"""
+""",
 }
 
 
-_FILENAME_MAP = {
-    "rpsystem": "RPSystem",
-    "xyzgrid": "XYZGrid",
-    "awsstorage": "AWSStorage"
-}
+_FILENAME_MAP = {"rpsystem": "RPSystem", "xyzgrid": "XYZGrid", "awsstorage": "AWSStorage"}
 
 HEADER = """# Contribs
 
@@ -145,10 +141,14 @@ def readmes2docs(directory=_SOURCE_DIR):
 
         pypath = f"evennia.contrib.{category}.{name}"
 
-        filename = "Contrib-" + "-".join(
-            _FILENAME_MAP.get(
-                part, part.capitalize() if part[0].islower() else part)
-            for part in name.split("_")) + ".md"
+        filename = (
+            "Contrib-"
+            + "-".join(
+                _FILENAME_MAP.get(part, part.capitalize() if part[0].islower() else part)
+                for part in name.split("_")
+            )
+            + ".md"
+        )
         outfile = pathjoin(_OUT_DIR, filename)
 
         with open(file_path) as fil:
@@ -163,7 +163,7 @@ def readmes2docs(directory=_SOURCE_DIR):
         except IndexError:
             blurb = name
 
-        with open(outfile, 'w') as fil:
+        with open(outfile, "w") as fil:
             fil.write(data)
 
         categories[category].append((name, credits, blurb, filename, pypath))
@@ -179,11 +179,7 @@ def readmes2docs(directory=_SOURCE_DIR):
         for tup in sorted(contrib_tups, key=lambda tup: tup[0].lower()):
             catlines.append(
                 BLURB.format(
-                    name=tup[0],
-                    credits=tup[1],
-                    blurb=tup[2],
-                    filename=tup[3],
-                    code_location=tup[4]
+                    name=tup[0], credits=tup[1], blurb=tup[2], filename=tup[3], code_location=tup[4]
                 )
             )
             filenames.append(f"{tup[3]}")
@@ -193,17 +189,15 @@ def readmes2docs(directory=_SOURCE_DIR):
                 category=category,
                 category_desc=_CATEGORY_DESCS[category].strip(),
                 blurbs="\n".join(catlines),
-                toctree=toctree
+                toctree=toctree,
             )
         )
 
     text = _FILE_STRUCTURE.format(
-        header=HEADER,
-        categories="\n".join(category_sections),
-        footer=INDEX_FOOTER
+        header=HEADER, categories="\n".join(category_sections), footer=INDEX_FOOTER
     )
 
-    with open(_OUT_INDEX_FILE, 'w') as fil:
+    with open(_OUT_INDEX_FILE, "w") as fil:
         fil.write(text)
 
     print(f"  -- Converted Contrib READMEs to {ncount} doc pages + index.")

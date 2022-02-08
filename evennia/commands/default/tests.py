@@ -21,7 +21,11 @@ from unittest.mock import patch, Mock, MagicMock
 
 from evennia import DefaultRoom, DefaultExit, ObjectDB
 from evennia.commands.default.cmdset_character import CharacterCmdSet
-from evennia.utils.test_resources import BaseEvenniaTest, BaseEvenniaCommandTest, EvenniaCommandTest  # noqa
+from evennia.utils.test_resources import (
+    BaseEvenniaTest,
+    BaseEvenniaCommandTest,
+    EvenniaCommandTest,
+)  # noqa
 from evennia.commands.default import (
     help as help_module,
     general,
@@ -170,83 +174,90 @@ class TestHelp(BaseEvenniaCommandTest):
             help_module.CmdSetHelp(),
             "testhelp, General = This is a test",
             "Topic 'testhelp' was successfully created.",
-            cmdset=CharacterCmdSet()
+            cmdset=CharacterCmdSet(),
         )
         self.call(help_module.CmdHelp(), "testhelp", "Help for testhelp", cmdset=CharacterCmdSet())
 
-    @parameterized.expand([
-        ("test",  # main help entry
-         "Help for test\n\n"
-         "Main help text\n\n"
-         "Subtopics:\n"
-         "  test/creating extra stuff"
-         "  test/something else"
-         "  test/more"
-         ),
-        ("test/creating extra stuff",  # subtopic, full match
-         "Help for test/creating extra stuff\n\n"
-         "Help on creating extra stuff.\n\n"
-         "Subtopics:\n"
-         "  test/creating extra stuff/subsubtopic\n"
-         ),
-        ("test/creating",  # startswith-match
-         "Help for test/creating extra stuff\n\n"
-         "Help on creating extra stuff.\n\n"
-         "Subtopics:\n"
-         "  test/creating extra stuff/subsubtopic\n"
-         ),
-        ("test/extra",  # partial match
-         "Help for test/creating extra stuff\n\n"
-         "Help on creating extra stuff.\n\n"
-         "Subtopics:\n"
-         "  test/creating extra stuff/subsubtopic\n"
-         ),
-        ("test/extra/subsubtopic",  # partial subsub-match
-         "Help for test/creating extra stuff/subsubtopic\n\n"
-         "A subsubtopic text"
-         ),
-        ("test/creating extra/subsub",  # partial subsub-match
-         "Help for test/creating extra stuff/subsubtopic\n\n"
-         "A subsubtopic text"
-         ),
-        ("test/Something else",  # case
-         "Help for test/something else\n\n"
-         "Something else"
-         ),
-        ("test/More",  # case
-         "Help for test/more\n\n"
-         "Another text\n\n"
-         "Subtopics:\n"
-         "  test/more/second-more"
-         ),
-        ("test/More/Second-more",
-         "Help for test/more/second-more\n\n"
-         "The Second More text.\n\n"
-         "Subtopics:\n"
-         "  test/more/second-more/more again"
-         "  test/more/second-more/third more"
-         ),
-        ("test/More/-more",  # partial match
-         "Help for test/more/second-more\n\n"
-         "The Second More text.\n\n"
-         "Subtopics:\n"
-         "  test/more/second-more/more again"
-         "  test/more/second-more/third more"
-         ),
-        ("test/more/second/more again",
-         "Help for test/more/second-more/more again\n\n"
-         "Even more text.\n"
-         ),
-        ("test/more/second/third",
-         "Help for test/more/second-more/third more\n\n"
-         "Third more text\n"
-         ),
-    ])
+    @parameterized.expand(
+        [
+            (
+                "test",  # main help entry
+                "Help for test\n\n"
+                "Main help text\n\n"
+                "Subtopics:\n"
+                "  test/creating extra stuff"
+                "  test/something else"
+                "  test/more",
+            ),
+            (
+                "test/creating extra stuff",  # subtopic, full match
+                "Help for test/creating extra stuff\n\n"
+                "Help on creating extra stuff.\n\n"
+                "Subtopics:\n"
+                "  test/creating extra stuff/subsubtopic\n",
+            ),
+            (
+                "test/creating",  # startswith-match
+                "Help for test/creating extra stuff\n\n"
+                "Help on creating extra stuff.\n\n"
+                "Subtopics:\n"
+                "  test/creating extra stuff/subsubtopic\n",
+            ),
+            (
+                "test/extra",  # partial match
+                "Help for test/creating extra stuff\n\n"
+                "Help on creating extra stuff.\n\n"
+                "Subtopics:\n"
+                "  test/creating extra stuff/subsubtopic\n",
+            ),
+            (
+                "test/extra/subsubtopic",  # partial subsub-match
+                "Help for test/creating extra stuff/subsubtopic\n\n" "A subsubtopic text",
+            ),
+            (
+                "test/creating extra/subsub",  # partial subsub-match
+                "Help for test/creating extra stuff/subsubtopic\n\n" "A subsubtopic text",
+            ),
+            ("test/Something else", "Help for test/something else\n\n" "Something else"),  # case
+            (
+                "test/More",  # case
+                "Help for test/more\n\n"
+                "Another text\n\n"
+                "Subtopics:\n"
+                "  test/more/second-more",
+            ),
+            (
+                "test/More/Second-more",
+                "Help for test/more/second-more\n\n"
+                "The Second More text.\n\n"
+                "Subtopics:\n"
+                "  test/more/second-more/more again"
+                "  test/more/second-more/third more",
+            ),
+            (
+                "test/More/-more",  # partial match
+                "Help for test/more/second-more\n\n"
+                "The Second More text.\n\n"
+                "Subtopics:\n"
+                "  test/more/second-more/more again"
+                "  test/more/second-more/third more",
+            ),
+            (
+                "test/more/second/more again",
+                "Help for test/more/second-more/more again\n\n" "Even more text.\n",
+            ),
+            (
+                "test/more/second/third",
+                "Help for test/more/second-more/third more\n\n" "Third more text\n",
+            ),
+        ]
+    )
     def test_subtopic_fetch(self, helparg, expected):
         """
         Check retrieval of subtopics.
 
         """
+
         class TestCmd(Command):
             """
             Main help text
@@ -282,6 +293,7 @@ class TestHelp(BaseEvenniaCommandTest):
                             Third more text
 
             """
+
             key = "test"
 
         class TestCmdSet(CmdSet):
@@ -289,10 +301,7 @@ class TestHelp(BaseEvenniaCommandTest):
                 self.add(TestCmd())
                 self.add(help_module.CmdHelp())
 
-        self.call(help_module.CmdHelp(),
-                  helparg,
-                  expected,
-                  cmdset=TestCmdSet())
+        self.call(help_module.CmdHelp(), helparg, expected, cmdset=TestCmdSet())
 
 
 class TestSystem(BaseEvenniaCommandTest):
@@ -314,13 +323,15 @@ class TestSystem(BaseEvenniaCommandTest):
     def test_server_load(self):
         self.call(system.CmdServerLoad(), "", "Server CPU and Memory load:")
 
+
 _TASK_HANDLER = None
 
+
 def func_test_cmd_tasks():
-    return 'success'
+    return "success"
+
 
 class TestCmdTasks(BaseEvenniaCommandTest):
-
     def setUp(self):
         super().setUp()
         # get a reference of TASK_HANDLER
@@ -334,70 +345,82 @@ class TestCmdTasks(BaseEvenniaCommandTest):
         self.task = self.task_handler.add(self.timedelay, func_test_cmd_tasks)
         task_args = self.task_handler.tasks.get(self.task.get_id(), False)
 
-
     def tearDown(self):
         super().tearDown()
         self.task_handler.clear()
 
     def test_no_tasks(self):
         self.task_handler.clear()
-        self.call(system.CmdTasks(), '', 'There are no active tasks.')
+        self.call(system.CmdTasks(), "", "There are no active tasks.")
 
     def test_active_task(self):
-        cmd_result = self.call(system.CmdTasks(), '')
-        for ptrn in ('Task ID', 'Completion', 'Date', 'Function', 'KWARGS', 'persisten',
-                     '1', r'\d+/\d+/\d+', r'\d+\:', r'\d+\:\d+', r'\:\d+', 'func_test', '{}',
-                     'False'):
+        cmd_result = self.call(system.CmdTasks(), "")
+        for ptrn in (
+            "Task ID",
+            "Completion",
+            "Date",
+            "Function",
+            "KWARGS",
+            "persisten",
+            "1",
+            r"\d+/\d+/\d+",
+            r"\d+\:",
+            r"\d+\:\d+",
+            r"\:\d+",
+            "func_test",
+            "{}",
+            "False",
+        ):
             self.assertRegex(cmd_result, ptrn)
 
     def test_persistent_task(self):
         self.task_handler.clear()
         self.task_handler.add(self.timedelay, func_test_cmd_tasks, persistent=True)
-        cmd_result = self.call(system.CmdTasks(), '')
-        self.assertRegex(cmd_result, 'True')
+        cmd_result = self.call(system.CmdTasks(), "")
+        self.assertRegex(cmd_result, "True")
 
     def test_pause_unpause(self):
         # test pause
-        args = f'/pause {self.task.get_id()}'
-        wanted_msg = 'Pause task 1 with completion date'
+        args = f"/pause {self.task.get_id()}"
+        wanted_msg = "Pause task 1 with completion date"
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, ' \(func_test_cmd_tasks\) ')
-        self.char1.execute_cmd('y')
+        self.assertRegex(cmd_result, " \(func_test_cmd_tasks\) ")
+        self.char1.execute_cmd("y")
         self.assertTrue(self.task.paused)
         self.task_handler.clock.advance(self.timedelay + 1)
         # test unpause
-        args = f'/unpause {self.task.get_id()}'
+        args = f"/unpause {self.task.get_id()}"
         self.assertTrue(self.task.exists())
-        wanted_msg = 'Unpause task 1 with completion date'
+        wanted_msg = "Unpause task 1 with completion date"
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, ' \(func_test_cmd_tasks\) ')
-        self.char1.execute_cmd('y')
+        self.assertRegex(cmd_result, " \(func_test_cmd_tasks\) ")
+        self.char1.execute_cmd("y")
         # verify task continues after unpause
         self.task_handler.clock.advance(1)
         self.assertFalse(self.task.exists())
 
     def test_do_task(self):
-        args = f'/do_task {self.task.get_id()}'
-        wanted_msg = 'Do_task task 1 with completion date'
+        args = f"/do_task {self.task.get_id()}"
+        wanted_msg = "Do_task task 1 with completion date"
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, ' \(func_test_cmd_tasks\) ')
-        self.char1.execute_cmd('y')
+        self.assertRegex(cmd_result, " \(func_test_cmd_tasks\) ")
+        self.char1.execute_cmd("y")
         self.assertFalse(self.task.exists())
 
     def test_remove(self):
-        args = f'/remove {self.task.get_id()}'
-        wanted_msg = 'Remove task 1 with completion date'
+        args = f"/remove {self.task.get_id()}"
+        wanted_msg = "Remove task 1 with completion date"
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, ' \(func_test_cmd_tasks\) ')
-        self.char1.execute_cmd('y')
+        self.assertRegex(cmd_result, " \(func_test_cmd_tasks\) ")
+        self.char1.execute_cmd("y")
         self.assertFalse(self.task.exists())
 
     def test_call(self):
-        args = f'/call {self.task.get_id()}'
-        wanted_msg = 'Call task 1 with completion date'
+        args = f"/call {self.task.get_id()}"
+        wanted_msg = "Call task 1 with completion date"
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, ' \(func_test_cmd_tasks\) ')
-        self.char1.execute_cmd('y')
+        self.assertRegex(cmd_result, " \(func_test_cmd_tasks\) ")
+        self.char1.execute_cmd("y")
         # make certain the task is still active
         self.assertTrue(self.task.active())
         # go past delay time, the task should call do_task and remove itself after calling.
@@ -405,55 +428,57 @@ class TestCmdTasks(BaseEvenniaCommandTest):
         self.assertFalse(self.task.exists())
 
     def test_cancel(self):
-        args = f'/cancel {self.task.get_id()}'
-        wanted_msg = 'Cancel task 1 with completion date'
+        args = f"/cancel {self.task.get_id()}"
+        wanted_msg = "Cancel task 1 with completion date"
         cmd_result = self.call(system.CmdTasks(), args, wanted_msg)
-        self.assertRegex(cmd_result, ' \(func_test_cmd_tasks\) ')
-        self.char1.execute_cmd('y')
+        self.assertRegex(cmd_result, " \(func_test_cmd_tasks\) ")
+        self.char1.execute_cmd("y")
         self.assertTrue(self.task.exists())
         self.assertFalse(self.task.active())
 
     def test_func_name_manipulation(self):
         self.task_handler.add(self.timedelay, func_test_cmd_tasks)  # add an extra task
-        args = f'/remove func_test_cmd_tasks'
-        wanted_msg = 'Task action remove completed on task ID 1.|The task function remove returned: True|' \
-                     'Task action remove completed on task ID 2.|The task function remove returned: True'
+        args = f"/remove func_test_cmd_tasks"
+        wanted_msg = (
+            "Task action remove completed on task ID 1.|The task function remove returned: True|"
+            "Task action remove completed on task ID 2.|The task function remove returned: True"
+        )
         self.call(system.CmdTasks(), args, wanted_msg)
         self.assertFalse(self.task_handler.tasks)  # no tasks should exist.
 
     def test_wrong_func_name(self):
-        args = f'/remove intentional_fail'
-        wanted_msg = 'No tasks deferring function name intentional_fail found.'
+        args = f"/remove intentional_fail"
+        wanted_msg = "No tasks deferring function name intentional_fail found."
         self.call(system.CmdTasks(), args, wanted_msg)
         self.assertTrue(self.task.active())
 
     def test_no_input(self):
-        args = f'/cancel {self.task.get_id()}'
+        args = f"/cancel {self.task.get_id()}"
         self.call(system.CmdTasks(), args)
         # task should complete since no input was received
         self.task_handler.clock.advance(self.timedelay + 1)
         self.assertFalse(self.task.exists())
 
     def test_responce_of_yes(self):
-        self.call(system.CmdTasks(), f'/cancel {self.task.get_id()}')
+        self.call(system.CmdTasks(), f"/cancel {self.task.get_id()}")
         self.char1.msg = Mock()
-        self.char1.execute_cmd('y')
-        text = ''
+        self.char1.execute_cmd("y")
+        text = ""
         for _, _, kwargs in self.char1.msg.mock_calls:
-            text += kwargs.get('text', '')
-        self.assertEqual(text, 'cancel request completed.The task function cancel returned: True')
+            text += kwargs.get("text", "")
+        self.assertEqual(text, "cancel request completed.The task function cancel returned: True")
         self.assertTrue(self.task.exists())
 
     def test_task_complete_waiting_input(self):
         """Test for task completing while waiting for input."""
-        self.call(system.CmdTasks(), f'/cancel {self.task.get_id()}')
+        self.call(system.CmdTasks(), f"/cancel {self.task.get_id()}")
         self.task_handler.clock.advance(self.timedelay + 1)
         self.char1.msg = Mock()
-        self.char1.execute_cmd('y')
-        text = ''
+        self.char1.execute_cmd("y")
+        text = ""
         for _, _, kwargs in self.char1.msg.mock_calls:
-            text += kwargs.get('text', '')
-        self.assertEqual(text, 'Task completed while waiting for input.')
+            text += kwargs.get("text", "")
+        self.assertEqual(text, "Task completed while waiting for input.")
         self.assertFalse(self.task.exists())
 
     def test_new_task_waiting_input(self):
@@ -461,22 +486,23 @@ class TestCmdTasks(BaseEvenniaCommandTest):
         Test task completing than a new task with the same ID being made while waitinf for input.
         """
         self.assertTrue(self.task.get_id(), 1)
-        self.call(system.CmdTasks(), f'/cancel {self.task.get_id()}')
+        self.call(system.CmdTasks(), f"/cancel {self.task.get_id()}")
         self.task_handler.clock.advance(self.timedelay + 1)
         self.assertFalse(self.task.exists())
         self.task = self.task_handler.add(self.timedelay, func_test_cmd_tasks)
         self.assertTrue(self.task.get_id(), 1)
         self.char1.msg = Mock()
-        self.char1.execute_cmd('y')
-        text = ''
+        self.char1.execute_cmd("y")
+        text = ""
         for _, _, kwargs in self.char1.msg.mock_calls:
-            text += kwargs.get('text', '')
-        self.assertEqual(text, 'Task completed while waiting for input.')
+            text += kwargs.get("text", "")
+        self.assertEqual(text, "Task completed while waiting for input.")
 
     def test_misformed_command(self):
-        wanted_msg = 'Task command misformed.|Proper format tasks[/switch] ' \
-                     '[function name or task id]'
-        self.call(system.CmdTasks(), f'/cancel', wanted_msg)
+        wanted_msg = (
+            "Task command misformed.|Proper format tasks[/switch] " "[function name or task id]"
+        )
+        self.call(system.CmdTasks(), f"/cancel", wanted_msg)
 
 
 class TestAdmin(BaseEvenniaCommandTest):
@@ -656,7 +682,9 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(building.CmdExamine(), "*TestAccount", "Name/key: TestAccount")
 
         self.char1.db.test = "testval"
-        self.call(building.CmdExamine(), "self/test", "Attribute Char/test [category=None]:\n\ntestval")
+        self.call(
+            building.CmdExamine(), "self/test", "Attribute Char/test [category=None]:\n\ntestval"
+        )
         self.call(building.CmdExamine(), "NotFound", "Could not find 'NotFound'.")
         self.call(building.CmdExamine(), "out", "Name/key: out")
 
@@ -665,7 +693,7 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdExamine(),
             "self/test2",
-            "Attribute Char/test2 [category=None]:\n\nthis is a \$random() value."
+            "Attribute Char/test2 [category=None]:\n\nthis is a \$random() value.",
         )
 
         self.room1.scripts.add(self.script.__class__)
@@ -710,10 +738,16 @@ class TestBuilding(BaseEvenniaCommandTest):
             'Obj2/test2="value2"',
             "Created attribute Obj2/test2 [category:None] = value2",
         )
-        self.call(building.CmdSetAttribute(),
-                  "Obj2/test2", "Attribute Obj2/test2 [category:None] = value2")
-        self.call(building.CmdSetAttribute(),
-                  "Obj2/NotFound", "Attribute Obj2/notfound [category:None] does not exist.")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj2/test2",
+            "Attribute Obj2/test2 [category:None] = value2",
+        )
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj2/NotFound",
+            "Attribute Obj2/notfound [category:None] does not exist.",
+        )
 
         with patch("evennia.commands.default.building.EvEditor") as mock_ed:
             self.call(building.CmdSetAttribute(), "/edit Obj2/test3")
@@ -753,17 +787,18 @@ class TestBuilding(BaseEvenniaCommandTest):
         # list - adding white space proves real parsing
         self.call(
             building.CmdSetAttribute(),
-            "Obj/test1=[1,2]", "Created attribute Obj/test1 [category:None] = [1, 2]"
+            "Obj/test1=[1,2]",
+            "Created attribute Obj/test1 [category:None] = [1, 2]",
         )
-        self.call(building.CmdSetAttribute(),
-                  "Obj/test1",
-                  "Attribute Obj/test1 [category:None] = [1, 2]")
-        self.call(building.CmdSetAttribute(),
-                  "Obj/test1[0]",
-                  "Attribute Obj/test1[0] [category:None] = 1")
-        self.call(building.CmdSetAttribute(),
-                  "Obj/test1[1]",
-                  "Attribute Obj/test1[1] [category:None] = 2")
+        self.call(
+            building.CmdSetAttribute(), "Obj/test1", "Attribute Obj/test1 [category:None] = [1, 2]"
+        )
+        self.call(
+            building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] [category:None] = 1"
+        )
+        self.call(
+            building.CmdSetAttribute(), "Obj/test1[1]", "Attribute Obj/test1[1] [category:None] = 2"
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[0] = 99",
@@ -772,7 +807,7 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[0]",
-            "Attribute Obj/test1[0] [category:None] = 99"
+            "Attribute Obj/test1[0] [category:None] = 99",
         )
         # list delete
         self.call(
@@ -781,9 +816,7 @@ class TestBuilding(BaseEvenniaCommandTest):
             "Deleted attribute Obj/test1[0] [category:None].",
         )
         self.call(
-            building.CmdSetAttribute(),
-            "Obj/test1[0]",
-            "Attribute Obj/test1[0] [category:None] = 2"
+            building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] [category:None] = 2"
         )
         self.call(
             building.CmdSetAttribute(),
@@ -795,7 +828,7 @@ class TestBuilding(BaseEvenniaCommandTest):
             building.CmdSetAttribute(),
             "Obj/test1[5] =",
             "No attribute Obj/test1[5] [category: None] was found to "
-            "delete. (Nested lookups attempted)"
+            "delete. (Nested lookups attempted)",
         )
         # Append
         self.call(
@@ -817,17 +850,18 @@ class TestBuilding(BaseEvenniaCommandTest):
         )
         self.call(
             building.CmdSetAttribute(),
-            "Obj/test2", "Attribute Obj/test2 [category:None] = {'one': 1, 'two': 2}"
+            "Obj/test2",
+            "Attribute Obj/test2 [category:None] = {'one': 1, 'two': 2}",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['one']",
-            "Attribute Obj/test2['one'] [category:None] = 1"
+            "Attribute Obj/test2['one'] [category:None] = 1",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['one]",
-            "Attribute Obj/test2['one] [category:None] = 1"
+            "Attribute Obj/test2['one] [category:None] = 1",
         )
         self.call(
             building.CmdSetAttribute(),
@@ -837,17 +871,17 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['one']",
-            "Attribute Obj/test2['one'] [category:None] = 99"
+            "Attribute Obj/test2['one'] [category:None] = 99",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['two']",
-            "Attribute Obj/test2['two'] [category:None] = 2"
+            "Attribute Obj/test2['two'] [category:None] = 2",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[+'three']",
-            "Attribute Obj/test2[+'three'] [category:None] does not exist. (Nested lookups attempted)"
+            "Attribute Obj/test2[+'three'] [category:None] does not exist. (Nested lookups attempted)",
         )
         self.call(
             building.CmdSetAttribute(),
@@ -857,7 +891,7 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[+'three'] =",
-            "Deleted attribute Obj/test2[+'three'] [category:None]."
+            "Deleted attribute Obj/test2[+'three'] [category:None].",
         )
         self.call(
             building.CmdSetAttribute(),
@@ -873,23 +907,23 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['two']",
-            "Attribute Obj/test2['two'] [category:None] does not exist. (Nested lookups attempted)"
+            "Attribute Obj/test2['two'] [category:None] does not exist. (Nested lookups attempted)",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2",
-            "Attribute Obj/test2 [category:None] = {'one': 99, 'three': 3}"
+            "Attribute Obj/test2 [category:None] = {'one': 99, 'three': 3}",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[0]",
-            "Attribute Obj/test2[0] [category:None] does not exist. (Nested lookups attempted)"
+            "Attribute Obj/test2[0] [category:None] does not exist. (Nested lookups attempted)",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['five'] =",
             "No attribute Obj/test2['five'] [category: None] "
-            "was found to delete. (Nested lookups attempted)"
+            "was found to delete. (Nested lookups attempted)",
         )
         self.call(
             building.CmdSetAttribute(),
@@ -907,7 +941,7 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSetAttribute(),
             "Obj/tup = (1,2)",
-            "Created attribute Obj/tup [category:None] = (1, 2)"
+            "Created attribute Obj/tup [category:None] = (1, 2)",
         )
         self.call(
             building.CmdSetAttribute(),
@@ -929,7 +963,7 @@ class TestBuilding(BaseEvenniaCommandTest):
             # Special case for tuple, could have a better message
             "Obj/tup[1] = ",
             "No attribute Obj/tup[1] [category: None] "
-            "was found to delete. (Nested lookups attempted)"
+            "was found to delete. (Nested lookups attempted)",
         )
 
         # Deaper nesting
@@ -941,26 +975,25 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSetAttribute(),
             "Obj/test3[0]['one']",
-            "Attribute Obj/test3[0]['one'] [category:None] = 1"
+            "Attribute Obj/test3[0]['one'] [category:None] = 1",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test3[0]",
-            "Attribute Obj/test3[0] [category:None] = {'one': 1}"
+            "Attribute Obj/test3[0] [category:None] = {'one': 1}",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test3[0]['one'] =",
-            "Deleted attribute Obj/test3[0]['one'] [category:None]."
+            "Deleted attribute Obj/test3[0]['one'] [category:None].",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test3[0]",
-            "Attribute Obj/test3[0] [category:None] = {}")
+            "Attribute Obj/test3[0] [category:None] = {}",
+        )
         self.call(
-            building.CmdSetAttribute(),
-            "Obj/test3",
-            "Attribute Obj/test3 [category:None] = [{}]"
+            building.CmdSetAttribute(), "Obj/test3", "Attribute Obj/test3 [category:None] = [{}]"
         )
 
         # Naughty keys
@@ -972,7 +1005,8 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSetAttribute(),
             "Obj/test4[0]",
-            "Attribute Obj/test4[0] [category:None] = foo")
+            "Attribute Obj/test4[0] [category:None] = foo",
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test4=[{'one': 1}]",
@@ -981,32 +1015,30 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdSetAttribute(),
             "Obj/test4[0]['one']",
-            "Attribute Obj/test4[0]['one'] [category:None] = 1"
+            "Attribute Obj/test4[0]['one'] [category:None] = 1",
         )
         # Prefer nested items
         self.call(
             building.CmdSetAttribute(),
             "Obj/test4[0]",
-            "Attribute Obj/test4[0] [category:None] = {'one': 1}"
+            "Attribute Obj/test4[0] [category:None] = {'one': 1}",
         )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test4[0]['one']",
-            "Attribute Obj/test4[0]['one'] [category:None] = 1"
+            "Attribute Obj/test4[0]['one'] [category:None] = 1",
         )
         # Restored access
-        self.call(
-            building.CmdWipe(),
-            "Obj/test4",
-            "Wiped attributes test4 on Obj.")
+        self.call(building.CmdWipe(), "Obj/test4", "Wiped attributes test4 on Obj.")
         self.call(
             building.CmdSetAttribute(),
             "Obj/test4[0]",
-            "Attribute Obj/test4[0] [category:None] = foo")
+            "Attribute Obj/test4[0] [category:None] = foo",
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test4[0]['one']",
-            "Attribute Obj/test4[0]['one'] [category:None] does not exist. (Nested lookups attempted)"
+            "Attribute Obj/test4[0]['one'] [category:None] does not exist. (Nested lookups attempted)",
         )
 
     def test_split_nested_attr(self):
@@ -1222,8 +1254,11 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(building.CmdSetHome(), "Obj = Room2", "Home location of Obj was set to Room")
 
     def test_list_cmdsets(self):
-        self.call(building.CmdListCmdSets(), "",
-                  "<CmdSetHandler> stack:\n <CmdSet DefaultCharacter, Union, perm, prio 0>:")
+        self.call(
+            building.CmdListCmdSets(),
+            "",
+            "<CmdSetHandler> stack:\n <CmdSet DefaultCharacter, Union, perm, prio 0>:",
+        )
         self.call(building.CmdListCmdSets(), "NotFound", "Could not find 'NotFound'")
 
     def test_typeclass(self):
@@ -1392,17 +1427,13 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdScripts(),
             "Obj = scripts.scripts.DefaultScript",
-            "Script scripts.scripts.DefaultScript successfully added"
+            "Script scripts.scripts.DefaultScript successfully added",
         )
-        self.call(
-            building.CmdScripts(),
-            "evennia.Dummy",
-            "Global Script NOT Created "
-        )
+        self.call(building.CmdScripts(), "evennia.Dummy", "Global Script NOT Created ")
         self.call(
             building.CmdScripts(),
             "evennia.scripts.scripts.DoNothing",
-            "Global Script Created - sys_do_nothing "
+            "Global Script Created - sys_do_nothing ",
         )
         self.call(building.CmdScripts(), "Obj ", "dbref ")
 
@@ -1412,32 +1443,33 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(building.CmdScripts(), "/stop Obj", "Script on Obj Stopped - ")
 
         self.call(
-            building.CmdScripts(), "Obj = scripts.scripts.DefaultScript",
+            building.CmdScripts(),
+            "Obj = scripts.scripts.DefaultScript",
             "Script scripts.scripts.DefaultScript successfully added",
-            inputs=["Y"]
+            inputs=["Y"],
         )
         self.call(
             building.CmdScripts(),
             "/start Obj = scripts.scripts.DefaultScript",
             "Script on Obj Started ",
-            inputs=["Y"]
+            inputs=["Y"],
         )
         self.call(
             building.CmdScripts(),
             "/stop Obj = scripts.scripts.DefaultScript",
             "Script on Obj Stopped ",
-            inputs=["Y"]
+            inputs=["Y"],
         )
         self.call(
             building.CmdScripts(),
             "/delete Obj = scripts.scripts.DefaultScript",
             "Script on Obj Deleted ",
-            inputs=["Y"]
+            inputs=["Y"],
         )
         self.call(
             building.CmdScripts(),
             "/delete evennia.scripts.scripts.DoNothing",
-            "Global Script Deleted -"
+            "Global Script Deleted -",
         )
 
     def test_script_multi_delete(self):
@@ -1452,7 +1484,7 @@ class TestBuilding(BaseEvenniaCommandTest):
             f"Global Script Deleted - #{script1.id} (evennia.scripts.scripts.DefaultScript)|"
             f"Global Script Deleted - #{script2.id} (evennia.scripts.scripts.DefaultScript)|"
             f"Global Script Deleted - #{script3.id} (evennia.scripts.scripts.DefaultScript)",
-            inputs=["y"]
+            inputs=["y"],
         )
         self.assertFalse(script1.pk)
         self.assertFalse(script2.pk)
@@ -1707,11 +1739,10 @@ class TestCommsChannel(BaseEvenniaCommandTest):
     Test the central `channel` command.
 
     """
+
     def setUp(self):
         super().setUp()
-        self.channel = create_channel(
-            key="testchannel",
-            desc="A test channel")
+        self.channel = create_channel(key="testchannel", desc="A test channel")
         self.channel.connect(self.char1)
         self.cmdchannel = cmd_comms.CmdChannel
         self.cmdchannel.account_caller = False
@@ -1722,61 +1753,35 @@ class TestCommsChannel(BaseEvenniaCommandTest):
 
     # test channel command
     def test_channel__noarg(self):
-        self.call(
-            self.cmdchannel(),
-            "",
-            "Channel subscriptions"
-        )
+        self.call(self.cmdchannel(), "", "Channel subscriptions")
 
     def test_channel__msg(self):
         self.channel.msg = Mock()
-        self.call(
-            self.cmdchannel(),
-            "testchannel = Test message",
-            ""
-        )
+        self.call(self.cmdchannel(), "testchannel = Test message", "")
         self.channel.msg.assert_called_with("Test message", senders=self.char1)
 
     def test_channel__list(self):
-        self.call(
-            self.cmdchannel(),
-            "/list",
-            "Channel subscriptions"
-        )
+        self.call(self.cmdchannel(), "/list", "Channel subscriptions")
 
     def test_channel__all(self):
-        self.call(
-            self.cmdchannel(),
-            "/all",
-            "Available channels"
-        )
+        self.call(self.cmdchannel(), "/all", "Available channels")
 
     def test_channel__history(self):
         with patch("evennia.commands.default.comms.tail_log_file") as mock_tail:
-            self.call(
-                self.cmdchannel(),
-                "/history testchannel",
-                ""
-            )
+            self.call(self.cmdchannel(), "/history testchannel", "")
             mock_tail.assert_called()
 
     def test_channel__sub(self):
         self.channel.disconnect(self.char1)
 
-        self.call(
-            self.cmdchannel(),
-            "/sub testchannel",
-            "You are now subscribed"
-        )
+        self.call(self.cmdchannel(), "/sub testchannel", "You are now subscribed")
         self.assertTrue(self.char1 in self.channel.subscriptions.all())
-        self.assertEqual(self.char1.nicks.nickreplace("testchannel Hello"), "channel testchannel = Hello")
+        self.assertEqual(
+            self.char1.nicks.nickreplace("testchannel Hello"), "channel testchannel = Hello"
+        )
 
     def test_channel__unsub(self):
-        self.call(
-            self.cmdchannel(),
-            "/unsub testchannel",
-            "You un-subscribed"
-        )
+        self.call(self.cmdchannel(), "/unsub testchannel", "You un-subscribed")
         self.assertFalse(self.char1 in self.channel.subscriptions.all())
 
     def test_channel__alias__unalias(self):
@@ -1786,51 +1791,31 @@ class TestCommsChannel(BaseEvenniaCommandTest):
         self.call(
             self.cmdchannel(),
             "/alias testchannel = foo",
-            "Added/updated your alias 'foo' for channel testchannel."
+            "Added/updated your alias 'foo' for channel testchannel.",
         )
-        self.assertEqual(
-            self.char1.nicks.nickreplace('foo Hello'), "channel testchannel = Hello")
+        self.assertEqual(self.char1.nicks.nickreplace("foo Hello"), "channel testchannel = Hello")
 
         # use alias
         self.channel.msg = Mock()
-        self.call(
-            self.cmdchannel(),
-            "foo = test message",
-            "")
+        self.call(self.cmdchannel(), "foo = test message", "")
         self.channel.msg.assert_called_with("test message", senders=self.char1)
 
         # remove alias
-        self.call(
-            self.cmdchannel(),
-            "/unalias foo",
-            "Removed your channel alias 'foo'"
-        )
-        self.assertEqual(self.char1.nicks.get('foo $1', category="channel"), None)
+        self.call(self.cmdchannel(), "/unalias foo", "Removed your channel alias 'foo'")
+        self.assertEqual(self.char1.nicks.get("foo $1", category="channel"), None)
 
     def test_channel__mute(self):
-        self.call(
-            self.cmdchannel(),
-            "/mute testchannel",
-            "Muted channel testchannel"
-        )
+        self.call(self.cmdchannel(), "/mute testchannel", "Muted channel testchannel")
         self.assertTrue(self.char1 in self.channel.mutelist)
 
     def test_channel__unmute(self):
         self.channel.mute(self.char1)
 
-        self.call(
-            self.cmdchannel(),
-            "/unmute testchannel = Char1",
-            "Un-muted channel testchannel"
-        )
+        self.call(self.cmdchannel(), "/unmute testchannel = Char1", "Un-muted channel testchannel")
         self.assertFalse(self.char1 in self.channel.mutelist)
 
     def test_channel__create(self):
-        self.call(
-            self.cmdchannel(),
-            "/create testchannel2",
-            "Created (and joined) new channel"
-        )
+        self.call(self.cmdchannel(), "/create testchannel2", "Created (and joined) new channel")
 
     def test_channel__destroy(self):
         self.channel.msg = Mock()
@@ -1838,34 +1823,27 @@ class TestCommsChannel(BaseEvenniaCommandTest):
             self.cmdchannel(),
             "/destroy testchannel = delete reason",
             "Are you sure you want to delete channel ",
-            inputs=['Yes']
+            inputs=["Yes"],
         )
-        self.channel.msg.assert_called_with(
-            "delete reason", bypass_mute=True, senders=self.char1)
+        self.channel.msg.assert_called_with("delete reason", bypass_mute=True, senders=self.char1)
 
     def test_channel__desc(self):
         self.call(
             self.cmdchannel(),
             "/desc testchannel = Another description",
-            "Updated channel description."
+            "Updated channel description.",
         )
 
     def test_channel__lock(self):
         self.call(
-            self.cmdchannel(),
-            "/lock testchannel = foo:false()",
-            "Added/updated lock on channel"
+            self.cmdchannel(), "/lock testchannel = foo:false()", "Added/updated lock on channel"
         )
-        self.assertEqual(self.channel.locks.get('foo'), 'foo:false()')
+        self.assertEqual(self.channel.locks.get("foo"), "foo:false()")
 
     def test_channel__unlock(self):
         self.channel.locks.add("foo:true()")
-        self.call(
-            self.cmdchannel(),
-            "/unlock testchannel = foo",
-            "Removed lock from channel"
-        )
-        self.assertEqual(self.channel.locks.get('foo'), '')
+        self.call(self.cmdchannel(), "/unlock testchannel = foo", "Removed lock from channel")
+        self.assertEqual(self.channel.locks.get("foo"), "")
 
     def test_channel__boot(self):
         self.channel.connect(self.char2)
@@ -1877,12 +1855,14 @@ class TestCommsChannel(BaseEvenniaCommandTest):
             self.cmdchannel(),
             "/boot testchannel = Char2 : Booting from channel!",
             "Are you sure ",
-            inputs=["Yes"]
+            inputs=["Yes"],
         )
         self.channel.msg.assert_called_with(
-            "Char2 was booted from channel by Char. Reason: Booting from channel!")
+            "Char2 was booted from channel by Char. Reason: Booting from channel!"
+        )
         self.char2.msg.assert_called_with(
-            "You were booted from channel testchannel by Char. Reason: Booting from channel!")
+            "You were booted from channel testchannel by Char. Reason: Booting from channel!"
+        )
 
     def test_channel__ban__unban(self):
         """Test first ban and then unban"""
@@ -1897,12 +1877,14 @@ class TestCommsChannel(BaseEvenniaCommandTest):
             self.cmdchannel(),
             "/ban testchannel = Char2 : Banning from channel!",
             "Are you sure ",
-            inputs=["Yes"]
+            inputs=["Yes"],
         )
         self.channel.msg.assert_called_with(
-            "Char2 was booted from channel by Char. Reason: Banning from channel!")
+            "Char2 was booted from channel by Char. Reason: Banning from channel!"
+        )
         self.char2.msg.assert_called_with(
-            "You were booted from channel testchannel by Char. Reason: Banning from channel!")
+            "You were booted from channel testchannel by Char. Reason: Banning from channel!"
+        )
         self.assertTrue(self.char2 in self.channel.banlist)
 
         # unban
@@ -1910,23 +1892,18 @@ class TestCommsChannel(BaseEvenniaCommandTest):
         self.call(
             self.cmdchannel(),
             "/unban testchannel = Char2",
-            "Un-banned Char2 from channel testchannel"
+            "Un-banned Char2 from channel testchannel",
         )
         self.assertFalse(self.char2 in self.channel.banlist)
 
     def test_channel__who(self):
-        self.call(
-            self.cmdchannel(),
-            "/who testchannel",
-            "Subscribed to testchannel:\nChar"
-        )
+        self.call(self.cmdchannel(), "/who testchannel", "Subscribed to testchannel:\nChar")
 
 
 from evennia.commands.default import comms  # noqa
 
 
 class TestComms(BaseEvenniaCommandTest):
-
     def test_page(self):
         self.call(
             comms.CmdPage(),
@@ -1942,6 +1919,7 @@ class TestBatchProcess(BaseEvenniaCommandTest):
     Test the batch processor.
 
     """
+
     # there is some sort of issue with the mock; it needs to loaded once to work
     from evennia.contrib.tutorials.red_button import red_button  # noqa
 

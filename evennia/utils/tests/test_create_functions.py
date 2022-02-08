@@ -50,7 +50,6 @@ class TestCreateScript(BaseEvenniaTest):
         assert script
         assert not script.is_active
 
-
     def test_create_script_w_repeats_equal_2(self):
         class TestScriptC(DefaultScript):
             def at_script_creation(self):

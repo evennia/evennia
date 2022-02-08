@@ -12,10 +12,8 @@ from .server import AuditedServerSession
 from evennia.server.sessionhandler import SESSIONS
 
 
-@override_settings(
-    AUDIT_MASKS=[])
+@override_settings(AUDIT_MASKS=[])
 class AuditingTest(BaseEvenniaTest):
-
     @patch("evennia.server.sessionhandler._ServerSession", AuditedServerSession)
     def setup_session(self):
         """Overrides default one in EvenniaTest"""
@@ -29,8 +27,10 @@ class AuditingTest(BaseEvenniaTest):
         SESSIONS.login(session, self.account, testmode=True)
         self.session = session
 
-    @patch("evennia.contrib.utils.auditing.server.AUDIT_CALLBACK",
-           "evennia.contrib.utils.auditing.outputs.to_syslog")
+    @patch(
+        "evennia.contrib.utils.auditing.server.AUDIT_CALLBACK",
+        "evennia.contrib.utils.auditing.outputs.to_syslog",
+    )
     @patch("evennia.contrib.utils.auditing.server.AUDIT_IN", True)
     @patch("evennia.contrib.utils.auditing.server.AUDIT_OUT", True)
     def test_mask(self):
@@ -100,8 +100,10 @@ class AuditingTest(BaseEvenniaTest):
         for secret in secrets:
             self.assertEqual(self.session.mask(secret), secret)
 
-    @patch("evennia.contrib.utils.auditing.server.AUDIT_CALLBACK",
-           "evennia.contrib.utils.auditing.outputs.to_syslog")
+    @patch(
+        "evennia.contrib.utils.auditing.server.AUDIT_CALLBACK",
+        "evennia.contrib.utils.auditing.outputs.to_syslog",
+    )
     @patch("evennia.contrib.utils.auditing.server.AUDIT_IN", True)
     @patch("evennia.contrib.utils.auditing.server.AUDIT_OUT", True)
     def test_audit(self):

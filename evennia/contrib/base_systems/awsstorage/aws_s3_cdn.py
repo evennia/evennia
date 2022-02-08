@@ -165,7 +165,9 @@ def check_location(storage):
         correct = storage.location.lstrip("/")
         raise ImproperlyConfigured(
             "{}.location cannot begin with a leading slash. Found '{}'. Use '{}' instead.".format(
-                storage.__class__.__name__, storage.location, correct,
+                storage.__class__.__name__,
+                storage.location,
+                correct,
             )
         )
 

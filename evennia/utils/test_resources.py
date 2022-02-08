@@ -55,8 +55,10 @@ DEFAULT_SETTING_RESETS = dict(
     MSSP_META_MODULE="evennia.game_template.server.conf.mssp",
     WEB_PLUGINS_MODULE="server.conf.web_plugins",
     LOCK_FUNC_MODULES=("evennia.locks.lockfuncs", "evennia.game_template.server.conf.lockfuncs"),
-    INPUT_FUNC_MODULES=["evennia.server.inputfuncs",
-                        "evennia.game_template.server.conf.inputfuncs"],
+    INPUT_FUNC_MODULES=[
+        "evennia.server.inputfuncs",
+        "evennia.game_template.server.conf.inputfuncs",
+    ],
     PROTOTYPE_MODULES=["evennia.game_template.world.prototypes"],
     CMDSET_UNLOGGEDIN="evennia.game_template.commands.default_cmdsets.UnloggedinCmdSet",
     CMDSET_SESSION="evennia.game_template.commands.default_cmdsets.SessionCmdSet",
@@ -70,7 +72,8 @@ DEFAULT_SETTING_RESETS = dict(
         "evennia.contrib.base_systems",
         "evennia.contrib.full_systems",
         "evennia.contrib.tutorials",
-        "evennia.contrib.utils"],
+        "evennia.contrib.utils",
+    ],
     BASE_ACCOUNT_TYPECLASS="evennia.accounts.accounts.DefaultAccount",
     BASE_OBJECT_TYPECLASS="evennia.objects.objects.DefaultObject",
     BASE_CHARACTER_TYPECLASS="evennia.objects.objects.DefaultCharacter",
@@ -78,22 +81,26 @@ DEFAULT_SETTING_RESETS = dict(
     BASE_EXIT_TYPECLASS="evennia.objects.objects.DefaultExit",
     BASE_CHANNEL_TYPECLASS="evennia.comms.comms.DefaultChannel",
     BASE_SCRIPT_TYPECLASS="evennia.scripts.scripts.DefaultScript",
-    BASE_BATCHPROCESS_PATHS=["evennia.game_template.world",
-                             "evennia.contrib", "evennia.contrib.tutorials"],
+    BASE_BATCHPROCESS_PATHS=[
+        "evennia.game_template.world",
+        "evennia.contrib",
+        "evennia.contrib.tutorials",
+    ],
     FILE_HELP_ENTRY_MODULES=["evennia.game_template.world.help_entries"],
-    FUNCPARSER_OUTGOING_MESSAGES_MODULES=["evennia.utils.funcparser",
-                                          "evennia.game_template.server.conf.inlinefuncs"],
-    FUNCPARSER_PROTOTYPE_PARSING_MODULES=["evennia.prototypes.protfuncs",
-                                          "evennia.game_template.server.conf.prototypefuncs"],
+    FUNCPARSER_OUTGOING_MESSAGES_MODULES=[
+        "evennia.utils.funcparser",
+        "evennia.game_template.server.conf.inlinefuncs",
+    ],
+    FUNCPARSER_PROTOTYPE_PARSING_MODULES=[
+        "evennia.prototypes.protfuncs",
+        "evennia.game_template.server.conf.prototypefuncs",
+    ],
     BASE_GUEST_TYPECLASS="evennia.accounts.accounts.DefaultGuest",
     # a special flag; test with settings._TEST_ENVIRONMENT to see if code runs in a test
     _TEST_ENVIRONMENT=True,
 )
 
-DEFAULT_SETTINGS = {
-    **all_from_module(settings_default),
-    **DEFAULT_SETTING_RESETS
-}
+DEFAULT_SETTINGS = {**all_from_module(settings_default), **DEFAULT_SETTING_RESETS}
 DEFAULT_SETTINGS.pop("DATABASES")  # we want different dbs tested in CI
 
 
@@ -154,6 +161,7 @@ class EvenniaTestMixin:
     """
     Evennia test environment mixin
     """
+
     account_typeclass = DefaultAccount
     object_typeclass = DefaultObject
     character_typeclass = DefaultCharacter
@@ -183,8 +191,9 @@ class EvenniaTestMixin:
             self.account2.delete()
 
     # Set up fake prototype module for allowing tests to use named prototypes.
-    @override_settings(PROTOTYPE_MODULES=["evennia.utils.tests.data.prototypes_example"],
-                       DEFAULT_HOME="#1")
+    @override_settings(
+        PROTOTYPE_MODULES=["evennia.utils.tests.data.prototypes_example"], DEFAULT_HOME="#1"
+    )
     def create_rooms(self):
         self.room1 = create.create_object(self.room_typeclass, key="Room", nohome=True)
         self.room1.db.desc = "room_desc"
@@ -262,8 +271,10 @@ class EvenniaTestMixin:
             settings.DEFAULT_HOME = self.backups[2]
             settings.PROTOTYPE_MODULES = self.backups[3]
         except AttributeError as err:
-            raise AttributeError(f"{err}: Teardown error. If you overrode the `setUp()` method "
-                                 "in your test, make sure you also added `super().setUp()`!")
+            raise AttributeError(
+                f"{err}: Teardown error. If you overrode the `setUp()` method "
+                "in your test, make sure you also added `super().setUp()`!"
+            )
 
         del SESSIONS[self.session.sessid]
         self.teardown_accounts()
@@ -415,8 +426,9 @@ class EvenniaCommandTestMixin:
         receiver_mapping = {}
         if isinstance(msg, dict):
             # a mapping {receiver: msg, ...}
-            receiver_mapping = {recv: str(msg).strip() if msg else None
-                                for recv, msg in msg.items()}
+            receiver_mapping = {
+                recv: str(msg).strip() if msg else None for recv, msg in msg.items()
+            }
         else:
             # a single expected string and thus a single receiver (defaults to caller)
             receiver = receiver if receiver else caller
@@ -487,8 +499,9 @@ class EvenniaCommandTestMixin:
             receiver.msg = unmocked_msg_methods[receiver]
 
             # Get the first element of a tuple if msg received a tuple instead of a string
-            stored_msg = [str(smsg[0])
-                          if isinstance(smsg, tuple) else str(smsg) for smsg in stored_msg]
+            stored_msg = [
+                str(smsg[0]) if isinstance(smsg, tuple) else str(smsg) for smsg in stored_msg
+            ]
             if expected_msg is None:
                 # no expected_msg; just build the returned_msgs dict
 
@@ -504,16 +517,17 @@ class EvenniaCommandTestMixin:
                 # to write the comparison string. We also strip ansi before this
                 # comparison since otherwise it would mess with the regex.
                 returned_msg = msg_sep.join(
-                    _RE_STRIP_EVMENU.sub(
-                        "", ansi.parse_ansi(mess, strip_ansi=noansi))
-                    for mess in stored_msg).strip()
+                    _RE_STRIP_EVMENU.sub("", ansi.parse_ansi(mess, strip_ansi=noansi))
+                    for mess in stored_msg
+                ).strip()
 
                 # this is the actual test
                 if expected_msg == "" and returned_msg or not returned_msg.startswith(expected_msg):
                     # failed the test
                     raise AssertionError(
                         self._ERROR_FORMAT.format(
-                            expected_msg=expected_msg, returned_msg=returned_msg)
+                            expected_msg=expected_msg, returned_msg=returned_msg
+                        )
                     )
                 # passed!
                 returned_msgs[receiver] = returned_msg
@@ -525,6 +539,7 @@ class EvenniaCommandTestMixin:
 
 # Base testing classes
 
+
 @override_settings(**DEFAULT_SETTINGS)
 class BaseEvenniaTestCase(TestCase):
     """
@@ -532,11 +547,13 @@ class BaseEvenniaTestCase(TestCase):
 
     """
 
+
 class EvenniaTestCase(TestCase):
     """
     For use with gamedir settings; Just like the normal test case, only for naming consistency.
 
     """
+
     pass
 
 
@@ -546,6 +563,7 @@ class BaseEvenniaTest(EvenniaTestMixin, TestCase):
     This class parent has all default objects and uses only default settings.
 
     """
+
 
 class EvenniaTest(EvenniaTestMixin, TestCase):
     """

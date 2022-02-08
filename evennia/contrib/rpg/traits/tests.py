@@ -59,16 +59,28 @@ class TraitHandlerTest(_TraitHandlerBase):
         super().setUp()
         self.traithandler.add("test1", name="Test1", trait_type="trait")
         self.traithandler.add(
-            "test2", name="Test2", trait_type="trait", value=["foo", {"1": [1, 2, 3]}, 4],
+            "test2",
+            name="Test2",
+            trait_type="trait",
+            value=["foo", {"1": [1, 2, 3]}, 4],
         )
 
     def test_add_trait(self):
         self.assertEqual(
-            self._get_dbstore("test1"), {"name": "Test1", "trait_type": "trait", "value": None,}
+            self._get_dbstore("test1"),
+            {
+                "name": "Test1",
+                "trait_type": "trait",
+                "value": None,
+            },
         )
         self.assertEqual(
             self._get_dbstore("test2"),
-            {"name": "Test2", "trait_type": "trait", "value": ["foo", {"1": [1, 2, 3]}, 4],},
+            {
+                "name": "Test2",
+                "trait_type": "trait",
+                "value": ["foo", {"1": [1, 2, 3]}, 4],
+            },
         )
         self.assertEqual(len(self.traithandler), 2)
 
@@ -328,7 +340,12 @@ class TestTraitCounter(_TraitHandlerBase):
             max=10,
             extra_val1="xvalue1",
             extra_val2="xvalue2",
-            descs={0: "range0", 2: "range1", 5: "range2", 7: "range3",},
+            descs={
+                0: "range0",
+                2: "range1",
+                5: "range2",
+                7: "range3",
+            },
         )
         self.trait = self.traithandler.get("test1")
 
@@ -348,7 +365,12 @@ class TestTraitCounter(_TraitHandlerBase):
                 "max": 10,
                 "extra_val1": "xvalue1",
                 "extra_val2": "xvalue2",
-                "descs": {0: "range0", 2: "range1", 5: "range2", 7: "range3",},
+                "descs": {
+                    0: "range0",
+                    2: "range1",
+                    5: "range2",
+                    7: "range3",
+                },
                 "rate": 0,
                 "ratetarget": None,
                 "last_update": None,
@@ -507,7 +529,12 @@ class TestTraitCounterTimed(_TraitHandlerBase):
             max=100,
             extra_val1="xvalue1",
             extra_val2="xvalue2",
-            descs={0: "range0", 2: "range1", 5: "range2", 7: "range3",},
+            descs={
+                0: "range0",
+                2: "range1",
+                5: "range2",
+                7: "range3",
+            },
             rate=1,
             ratetarget=None,
         )
@@ -579,7 +606,12 @@ class TestTraitGauge(_TraitHandlerBase):
             mod=2,
             extra_val1="xvalue1",
             extra_val2="xvalue2",
-            descs={0: "range0", 2: "range1", 5: "range2", 7: "range3",},
+            descs={
+                0: "range0",
+                2: "range1",
+                5: "range2",
+                7: "range3",
+            },
         )
         self.trait = self.traithandler.get("test1")
 
@@ -598,7 +630,12 @@ class TestTraitGauge(_TraitHandlerBase):
                 "min": 0,
                 "extra_val1": "xvalue1",
                 "extra_val2": "xvalue2",
-                "descs": {0: "range0", 2: "range1", 5: "range2", 7: "range3",},
+                "descs": {
+                    0: "range0",
+                    2: "range1",
+                    5: "range2",
+                    7: "range3",
+                },
                 "rate": 0,
                 "ratetarget": None,
                 "last_update": None,
@@ -763,7 +800,12 @@ class TestTraitGaugeTimed(_TraitHandlerBase):
             min=0,
             extra_val1="xvalue1",
             extra_val2="xvalue2",
-            descs={0: "range0", 2: "range1", 5: "range2", 7: "range3",},
+            descs={
+                0: "range0",
+                2: "range1",
+                5: "range2",
+                7: "range3",
+            },
             rate=1,
             ratetarget=None,
         )
@@ -831,8 +873,20 @@ class TestNumericTraitOperators(BaseEvenniaTestCase):
 
     def setUp(self):
         # direct instantiation for testing only; use TraitHandler in production
-        self.st = traits.Trait({"name": "Strength", "trait_type": "trait", "value": 8,})
-        self.at = traits.Trait({"name": "Attack", "trait_type": "trait", "value": 4,})
+        self.st = traits.Trait(
+            {
+                "name": "Strength",
+                "trait_type": "trait",
+                "value": 8,
+            }
+        )
+        self.at = traits.Trait(
+            {
+                "name": "Attack",
+                "trait_type": "trait",
+                "value": 4,
+            }
+        )
 
     def tearDown(self):
         self.st, self.at = None, None

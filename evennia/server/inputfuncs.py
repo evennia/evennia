@@ -42,7 +42,6 @@ _STRIP_INCOMING_MXP = settings.MXP_ENABLED and settings.MXP_OUTGOING_ONLY
 _STRIP_MXP = None
 
 
-
 def _NA(o):
     return "N/A"
 
@@ -95,9 +94,7 @@ def text(session, *args, **kwargs):
         # nick replacement
         puppet = session.puppet
         if puppet:
-            txt = puppet.nicks.nickreplace(
-                txt, categories=("inputline"), include_account=True
-            )
+            txt = puppet.nicks.nickreplace(txt, categories=("inputline"), include_account=True)
         else:
             txt = session.account.nicks.nickreplace(
                 txt, categories=("inputline"), include_account=False

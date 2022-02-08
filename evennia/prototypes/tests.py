@@ -45,6 +45,7 @@ _PROTPARENTS = {
     },
 }
 
+
 class TestSpawner(BaseEvenniaTest):
     def setUp(self):
         super().setUp()
@@ -340,7 +341,6 @@ class TestProtLib(BaseEvenniaTest):
 
 
 class TestProtFuncs(BaseEvenniaTest):
-
     @override_settings(PROT_FUNC_MODULES=["evennia.prototypes.protfuncs"])
     def test_protkey_protfunc(self):
         test_prot = {"key1": "value1", "key2": 2}
@@ -350,8 +350,7 @@ class TestProtFuncs(BaseEvenniaTest):
             "value1",
         )
         self.assertEqual(
-            protlib.protfunc_parser("$protkey(key2)", testing=True, prototype=test_prot),
-            2
+            protlib.protfunc_parser("$protkey(key2)", testing=True, prototype=test_prot), 2
         )
 
 
@@ -908,6 +907,7 @@ class Test2474(BaseEvenniaTest):
     that of its prototype_parent.
 
     """
+
     prototypes = {
         "WEAPON": {
             "typeclass": "evennia.objects.objects.DefaultObject",
@@ -951,14 +951,14 @@ class TestPartialTagAttributes(BaseEvenniaTest):
     def setUp(self):
         super().setUp()
         self.prot = {
-            'prototype_key': 'rock',
-            'typeclass': 'evennia.objects.objects.DefaultObject',
-            'key': 'a rock',
-            'tags': [('quantity', 'groupable')],  # missing data field
-            'attrs': [('quantity', 1)],   # missing category and lock fields
-            'desc': 'A good way to get stoned.'
+            "prototype_key": "rock",
+            "typeclass": "evennia.objects.objects.DefaultObject",
+            "key": "a rock",
+            "tags": [("quantity", "groupable")],  # missing data field
+            "attrs": [("quantity", 1)],  # missing category and lock fields
+            "desc": "A good way to get stoned.",
         }
 
     def test_partial_spawn(self):
         obj = spawner.spawn(self.prot)
-        self.assertEqual(obj[0].key, self.prot['key'])
+        self.assertEqual(obj[0].key, self.prot["key"])

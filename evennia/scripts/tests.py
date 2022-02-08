@@ -85,5 +85,5 @@ class TestExtendedLoopingCall(TestCase):
         loopcall.start(20, now=False, start_delay=10, count_start=1)
 
         loopcall.__call__.assert_not_called()
-        self.assertEqual(loopcall.interval , 20)
+        self.assertEqual(loopcall.interval, 20)
         loopcall._scheduleFrom.assert_called_with(121)

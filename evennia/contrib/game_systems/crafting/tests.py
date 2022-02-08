@@ -165,7 +165,7 @@ class TestCraftingRecipe(BaseEvenniaTestCase):
             pass
 
     def test_error_format(self):
-        """Test the automatic error formatter """
+        """Test the automatic error formatter"""
         recipe = _MockRecipe(
             self.crafter, self.tool1, self.tool2, self.cons1, self.cons2, self.cons3
         )
@@ -428,7 +428,7 @@ class TestCraftingRecipe(BaseEvenniaTestCase):
         self.assertIsNotNone(self.tool2.pk)
 
     def test_craft_tool_order__fail(self):
-        """Strict tool-order recipe fail """
+        """Strict tool-order recipe fail"""
         recipe = _MockRecipe(
             self.crafter, self.tool2, self.tool1, self.cons1, self.cons2, self.cons3
         )
@@ -451,7 +451,7 @@ class TestCraftingRecipe(BaseEvenniaTestCase):
         self.assertIsNotNone(self.tool2.pk)
 
     def test_craft_cons_order__fail(self):
-        """Strict tool-order recipe fail """
+        """Strict tool-order recipe fail"""
         recipe = _MockRecipe(
             self.crafter, self.tool1, self.tool2, self.cons3, self.cons2, self.cons1
         )
@@ -653,7 +653,10 @@ class TestCraftSword(BaseEvenniaTestCase):
 
 
 @mock.patch("evennia.contrib.game_systems.crafting.crafting._load_recipes", new=mock.MagicMock())
-@mock.patch("evennia.contrib.game_systems.crafting.crafting._RECIPE_CLASSES", new={"testrecipe": _MockRecipe})
+@mock.patch(
+    "evennia.contrib.game_systems.crafting.crafting._RECIPE_CLASSES",
+    new={"testrecipe": _MockRecipe},
+)
 @override_settings(CRAFT_RECIPE_MODULES=[])
 class TestCraftCommand(BaseEvenniaCommandTest):
     """Test the crafting command"""

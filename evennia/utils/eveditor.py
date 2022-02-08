@@ -64,7 +64,8 @@ _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 #
 # -------------------------------------------------------------
 
-_HELP_TEXT = _("""
+_HELP_TEXT = _(
+    """
  <txt>  - any non-command is appended to the end of the buffer.
  :  <l> - view buffer or only line(s) <l>
  :: <l> - raw-view buffer or only line(s) <l>
@@ -100,54 +101,67 @@ _HELP_TEXT = _("""
  :fd <l>    - de-indent entire buffer or line <l>
 
  :echo - turn echoing of the input on/off (helpful for some clients)
-""")
+"""
+)
 
-_HELP_LEGEND = _("""
+_HELP_LEGEND = _(
+    """
     Legend:
     <l>   - line number, like '5' or range, like '3:7'.
     <w>   - a single word, or multiple words with quotes around them.
     <txt> - longer string, usually not needing quotes.
-""")
+"""
+)
 
-_HELP_CODE = _("""
+_HELP_CODE = _(
+    """
  :!    - Execute code buffer without saving
  :<    - Decrease the level of automatic indentation for the next lines
  :>    - Increase the level of automatic indentation for the next lines
  :=    - Switch automatic indentation on/off
 """.lstrip(
-    "\n"
-))
+        "\n"
+    )
+)
 
-_ERROR_LOADFUNC = _("""
+_ERROR_LOADFUNC = _(
+    """
 {error}
 
 |rBuffer load function error. Could not load initial data.|n
-""")
+"""
+)
 
-_ERROR_SAVEFUNC = _("""
+_ERROR_SAVEFUNC = _(
+    """
 {error}
 
 |rSave function returned an error. Buffer not saved.|n
-""")
+"""
+)
 
 _ERROR_NO_SAVEFUNC = _("|rNo save function defined. Buffer cannot be saved.|n")
 
 _MSG_SAVE_NO_CHANGE = _("No changes need saving")
 _DEFAULT_NO_QUITFUNC = _("Exited editor.")
 
-_ERROR_QUITFUNC = _("""
+_ERROR_QUITFUNC = _(
+    """
 {error}
 
 |rQuit function gave an error. Skipping.|n
-""")
+"""
+)
 
-_ERROR_PERSISTENT_SAVING = _("""
+_ERROR_PERSISTENT_SAVING = _(
+    """
 {error}
 
 |rThe editor state could not be saved for persistent mode. Switching
 to non-persistent mode (which means the editor session won't survive
 an eventual server reload - so save often!)|n
-""")
+"""
+)
 
 _TRACE_PERSISTENT_SAVING = _(
     "EvEditor persistent-mode error. Commonly, this is because one or "
@@ -522,11 +536,15 @@ class CmdEditorGroup(CmdEditorBase):
                 if not self.linerange:
                     lstart = 0
                     lend = self.cline + 1
-                    caller.msg(_("Removed {arg1} for lines {l1}-{l2}.").format(
-                        arg1=self.arg1, l1=lstart + 1, l2=lend + 1))
+                    caller.msg(
+                        _("Removed {arg1} for lines {l1}-{l2}.").format(
+                            arg1=self.arg1, l1=lstart + 1, l2=lend + 1
+                        )
+                    )
                 else:
-                    caller.msg(_("Removed {arg1} for {line}.").format(
-                        arg1=self.arg1, line=self.lstr))
+                    caller.msg(
+                        _("Removed {arg1} for {line}.").format(arg1=self.arg1, line=self.lstr)
+                    )
                 sarea = "\n".join(linebuffer[lstart:lend])
                 sarea = re.sub(r"%s" % self.arg1.strip("'").strip('"'), "", sarea, re.MULTILINE)
                 buf = linebuffer[:lstart] + sarea.split("\n") + linebuffer[lend:]
@@ -561,8 +579,11 @@ class CmdEditorGroup(CmdEditorBase):
             else:
                 buf = linebuffer[:lstart] + editor._copy_buffer + linebuffer[lstart:]
                 editor.update_buffer(buf)
-                caller.msg(_("Pasted buffer {cbuf} to {line}.").format(
-                    cbuf=editor._copy_buffer, line=self.lstr))
+                caller.msg(
+                    _("Pasted buffer {cbuf} to {line}.").format(
+                        cbuf=editor._copy_buffer, line=self.lstr
+                    )
+                )
         elif cmd == ":i":
             # :i <l> <txt> - insert new line
             new_lines = self.args.split("\n")
@@ -571,8 +592,11 @@ class CmdEditorGroup(CmdEditorBase):
             else:
                 buf = linebuffer[:lstart] + new_lines + linebuffer[lstart:]
                 editor.update_buffer(buf)
-                caller.msg(_("Inserted {num} new line(s) at {line}.").format(
-                    num=len(new_lines), line=self.lstr))
+                caller.msg(
+                    _("Inserted {num} new line(s) at {line}.").format(
+                        num=len(new_lines), line=self.lstr
+                    )
+                )
         elif cmd == ":r":
             # :r <l> <txt> - replace lines
             new_lines = self.args.split("\n")
@@ -581,8 +605,11 @@ class CmdEditorGroup(CmdEditorBase):
             else:
                 buf = linebuffer[:lstart] + new_lines + linebuffer[lend:]
                 editor.update_buffer(buf)
-                caller.msg(_("Replaced {num} line(s) at {line}.").format(
-                    num=len(new_lines), line=self.lstr))
+                caller.msg(
+                    _("Replaced {num} line(s) at {line}.").format(
+                        num=len(new_lines), line=self.lstr
+                    )
+                )
         elif cmd == ":I":
             # :I <l> <txt> - insert text at beginning of line(s) <l>
             if not self.raw_string and not editor._codefunc:
@@ -618,12 +645,14 @@ class CmdEditorGroup(CmdEditorBase):
                     lend = self.cline + 1
                     caller.msg(
                         _("Search-replaced {arg1} -> {arg2} for lines {l1}-{l2}.").format(
-                            arg1=self.arg1, arg2=self.arg2, l1=lstart + 1, l2=lend)
+                            arg1=self.arg1, arg2=self.arg2, l1=lstart + 1, l2=lend
+                        )
                     )
                 else:
                     caller.msg(
                         _("Search-replaced {arg1} -> {arg2} for {line}.").format(
-                            arg1=self.arg1, arg2=self.arg2, line=self.lstr)
+                            arg1=self.arg1, arg2=self.arg2, line=self.lstr
+                        )
                     )
                 sarea = "\n".join(linebuffer[lstart:lend])
 
@@ -645,8 +674,7 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
-                caller.msg(_("Flood filled lines {l1}-{l2}.").format(
-                    l1=lstart + 1, l2=lend))
+                caller.msg(_("Flood filled lines {l1}-{l2}.").format(l1=lstart + 1, l2=lend))
             else:
                 caller.msg(_("Flood filled {line}.").format(line=self.lstr))
             fbuf = "\n".join(linebuffer[lstart:lend])
@@ -678,11 +706,15 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
-                self.caller.msg(_("{align}-justified lines {l1}-{l2}.").format(
-                    align=align_name[align], l1=lstart + 1, l2=lend))
+                self.caller.msg(
+                    _("{align}-justified lines {l1}-{l2}.").format(
+                        align=align_name[align], l1=lstart + 1, l2=lend
+                    )
+                )
             else:
-                self.caller.msg(_("{align}-justified {line}.").format(
-                    align=align_name[align], line=self.lstr))
+                self.caller.msg(
+                    _("{align}-justified {line}.").format(align=align_name[align], line=self.lstr)
+                )
             jbuf = "\n".join(linebuffer[lstart:lend])
             jbuf = justify(jbuf, width=width, align=align)
             buf = linebuffer[:lstart] + jbuf.split("\n") + linebuffer[lend:]
@@ -704,8 +736,11 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
-                caller.msg(_("Removed left margin (dedented) lines {l1}-{l2}.").format(
-                    l1=lstart + 1, l2=lend))
+                caller.msg(
+                    _("Removed left margin (dedented) lines {l1}-{l2}.").format(
+                        l1=lstart + 1, l2=lend
+                    )
+                )
             else:
                 caller.msg(_("Removed left margin (dedented) {line}.").format(line=self.lstr))
             fbuf = "\n".join(linebuffer[lstart:lend])
@@ -727,9 +762,11 @@ class CmdEditorGroup(CmdEditorBase):
                 editor.decrease_indent()
                 indent = editor._indent
                 if indent >= 0:
-                    caller.msg(_(
-                        "Decreased indentation: new indentation is {indent}.").format(
-                            indent=indent))
+                    caller.msg(
+                        _("Decreased indentation: new indentation is {indent}.").format(
+                            indent=indent
+                        )
+                    )
                 else:
                     caller.msg(_("|rManual indentation is OFF.|n Use := to turn it on."))
             else:
@@ -740,9 +777,11 @@ class CmdEditorGroup(CmdEditorBase):
                 editor.increase_indent()
                 indent = editor._indent
                 if indent >= 0:
-                    caller.msg(_(
-                        "Increased indentation: new indentation is {indent}.").format(
-                            indent=indent))
+                    caller.msg(
+                        _("Increased indentation: new indentation is {indent}.").format(
+                            indent=indent
+                        )
+                    )
                 else:
                     caller.msg(_("|rManual indentation is OFF.|n Use := to turn it on."))
             else:
@@ -909,9 +948,11 @@ class EvEditor:
         try:
             self._buffer = self._loadfunc(self._caller)
             if not isinstance(self._buffer, str):
-                self._caller.msg(f"|rBuffer is of type |w{type(self._buffer)})|r. "
-                                 "Continuing, it is converted to a string "
-                                 "(and will be saved as such)!|n")
+                self._caller.msg(
+                    f"|rBuffer is of type |w{type(self._buffer)})|r. "
+                    "Continuing, it is converted to a string "
+                    "(and will be saved as such)!|n"
+                )
                 self._buffer = to_str(self._buffer)
         except Exception as e:
             from evennia.utils import logger

@@ -440,7 +440,7 @@ class ANSIParser(object):
         Strip explicitly ansi line breaks and tabs.
 
         """
-        return self.unsafe_tokens.sub('', string)
+        return self.unsafe_tokens.sub("", string)
 
     def parse_ansi(self, string, strip_ansi=False, xterm256=False, mxp=False):
         """
@@ -998,10 +998,10 @@ class ANSIString(str, metaclass=ANSIMeta):
                     return ANSIString(self._raw_string[slc])
                 if slc.start is None:
                     # this is a [:x] slice
-                    return ANSIString(self._raw_string[:char_indexes[0]])
+                    return ANSIString(self._raw_string[: char_indexes[0]])
                 if slc.stop is None:
                     # a [x:] slice
-                    return ANSIString(self._raw_string[char_indexes[-1] + 1:])
+                    return ANSIString(self._raw_string[char_indexes[-1] + 1 :])
             return ANSIString("")
         try:
             string = self[slc.start or 0]._raw_string
@@ -1104,7 +1104,7 @@ class ANSIString(str, metaclass=ANSIMeta):
         current_index = 0
         result = tuple()
         for section in parent_result:
-            result += (self[current_index: current_index + len(section)],)
+            result += (self[current_index : current_index + len(section)],)
             current_index += len(section)
         return result
 
@@ -1224,7 +1224,7 @@ class ANSIString(str, metaclass=ANSIMeta):
             start = next + bylen
             maxsplit -= 1  # NB. if it's already < 0, it stays < 0
 
-        res.append(self[start: len(self)])
+        res.append(self[start : len(self)])
         if drop_spaces:
             return [part for part in res if part != ""]
         return res
@@ -1267,7 +1267,7 @@ class ANSIString(str, metaclass=ANSIMeta):
             if next < 0:
                 break
             # Get character codes after the index as well.
-            res.append(self[next + bylen: end])
+            res.append(self[next + bylen : end])
             end = next
             maxsplit -= 1  # NB. if it's already < 0, it stays < 0
 
@@ -1321,7 +1321,7 @@ class ANSIString(str, metaclass=ANSIMeta):
                 ic -= 1
             ir2 -= 1
         rstripped = rstripped[::-1]
-        return ANSIString(lstripped + raw[ir1: ir2 + 1] + rstripped)
+        return ANSIString(lstripped + raw[ir1 : ir2 + 1] + rstripped)
 
     def lstrip(self, chars=None):
         """
@@ -1440,7 +1440,7 @@ class ANSIString(str, metaclass=ANSIMeta):
             start = None
         end = char._char_indexes[0]
         prefix = char._raw_string[start:end]
-        postfix = char._raw_string[end + 1:]
+        postfix = char._raw_string[end + 1 :]
         line = char._clean_string * amount
         code_indexes = [i for i in range(0, len(prefix))]
         length = len(prefix) + len(line)

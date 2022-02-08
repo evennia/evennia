@@ -160,10 +160,11 @@ _TOPICS_MAP = {
     "add": _HELP_ADD,
     "spawn": _HELP_SPAWN,
     "initpath": _HELP_INITPATH,
-    "delete": _HELP_DELETE
+    "delete": _HELP_DELETE,
 }
 
 evennia._init()
+
 
 def _option_help(*suboptions):
     """
@@ -188,6 +189,7 @@ def _option_list(*suboptions):
     # override grid's logger to echo directly to console
     def _log(msg):
         print(msg)
+
     xyzgrid.log = _log
 
     xymap_data = xyzgrid.grid
@@ -210,7 +212,7 @@ def _option_list(*suboptions):
     if not xymap:
         print(f"No XYMap with Z='{zcoord}' was found on grid.")
     else:
-        nrooms = xyzgrid.get_room(('*', '*', zcoord)).count()
+        nrooms = xyzgrid.get_room(("*", "*", zcoord)).count()
         nnodes = len(xymap.node_index_map)
         print("\n" + str(repr(xymap)) + ":\n")
         checkwarning = True
@@ -218,22 +220,29 @@ def _option_list(*suboptions):
             print(f"{nrooms} / {nnodes} rooms are spawned.")
             checkwarning = False
         elif nrooms < nnodes:
-            print(f"{nrooms} / {nnodes} rooms are spawned\n"
-                  "Note: Transitional nodes are *not* spawned (they just point \n"
-                  "to another map), so the 'missing room(s)' may just be from such nodes.")
+            print(
+                f"{nrooms} / {nnodes} rooms are spawned\n"
+                "Note: Transitional nodes are *not* spawned (they just point \n"
+                "to another map), so the 'missing room(s)' may just be from such nodes."
+            )
         elif nrooms > nnodes:
-            print(f"{nrooms} / {nnodes} rooms are spawned\n"
-                  "Note: Maybe some rooms were removed from map. Run 'spawn' to re-sync.")
+            print(
+                f"{nrooms} / {nnodes} rooms are spawned\n"
+                "Note: Maybe some rooms were removed from map. Run 'spawn' to re-sync."
+            )
         else:
             print(f"{nrooms} / {nnodes} rooms are spawned\n")
 
         if checkwarning:
-            print("Note: This check is not complete; it does not consider changed map "
-                  "topology\nlike relocated nodes/rooms and new/removed links/exits - this "
-                  "is calculated only during a spawn.")
+            print(
+                "Note: This check is not complete; it does not consider changed map "
+                "topology\nlike relocated nodes/rooms and new/removed links/exits - this "
+                "is calculated only during a spawn."
+            )
         print("\nDisplayed map (as appearing in-game):\n\n" + ansi.parse_ansi(str(xymap)))
-        print("\nRaw map string (including axes and invisible nodes/links):\n"
-              + str(xymap.mapstring))
+        print(
+            "\nRaw map string (including axes and invisible nodes/links):\n" + str(xymap.mapstring)
+        )
         print(f"\nCustom map options: {xymap.options}\n")
         legend = []
         for key, node_or_link in xymap.legend.items():
@@ -260,6 +269,7 @@ def _option_add(*suboptions):
     # override grid's logger to echo directly to console
     def _log(msg):
         print(msg)
+
     grid.log = _log
 
     xymap_data_list = []
@@ -290,35 +300,44 @@ def _option_spawn(*suboptions):
     # override grid's logger to echo directly to console
     def _log(msg):
         print(msg)
+
     grid.log = _log
 
     if suboptions:
-        opts = ''.join(suboptions).strip('()')
+        opts = "".join(suboptions).strip("()")
         # coordinate tuple
         try:
             x, y, z = (part.strip() for part in opts.split(","))
         except ValueError:
-            print("spawn coordinate must be given as (X, Y, Z) tuple, where '*' act "
-                  "wild cards and Z is the mapname/z-coord of the map to load.")
+            print(
+                "spawn coordinate must be given as (X, Y, Z) tuple, where '*' act "
+                "wild cards and Z is the mapname/z-coord of the map to load."
+            )
             return
     else:
-        x, y, z = '*', '*', '*'
+        x, y, z = "*", "*", "*"
 
-    if x == y == z == '*':
-        inp = input("This will (re)spawn the entire grid. If it was built before, it may spawn \n"
-                    "new rooms or delete rooms that no longer matches the grid.\nDo you want to "
-                    "continue? [Y]/N? ")
+    if x == y == z == "*":
+        inp = input(
+            "This will (re)spawn the entire grid. If it was built before, it may spawn \n"
+            "new rooms or delete rooms that no longer matches the grid.\nDo you want to "
+            "continue? [Y]/N? "
+        )
     else:
-        inp = input("This will spawn/delete objects in the database matching grid coordinates \n"
-                    f"({x},{y},{z}) (where '*' is a wildcard).\nDo you want to continue? [Y]/N? ")
-    if inp.lower() in ('no', 'n'):
+        inp = input(
+            "This will spawn/delete objects in the database matching grid coordinates \n"
+            f"({x},{y},{z}) (where '*' is a wildcard).\nDo you want to continue? [Y]/N? "
+        )
+    if inp.lower() in ("no", "n"):
         print("Aborted.")
         return
 
     print("Beginner-Tutorial spawn ...")
     grid.spawn(xyz=(x, y, z))
-    print("... spawn complete!\nIt's recommended to reload the server to refresh caches if this "
-          "modified an existing grid.")
+    print(
+        "... spawn complete!\nIt's recommended to reload the server to refresh caches if this "
+        "modified an existing grid."
+    )
 
 
 def _option_initpath(*suboptions):
@@ -331,6 +350,7 @@ def _option_initpath(*suboptions):
     # override grid's logger to echo directly to console
     def _log(msg):
         print(msg)
+
     grid.log = _log
 
     xymaps = grid.all_maps()
@@ -354,19 +374,24 @@ def _option_delete(*suboptions):
     # override grid's logger to echo directly to console
     def _log(msg):
         print(msg)
+
     grid.log = _log
 
     if not suboptions:
-        repl = input("WARNING: This will delete the ENTIRE Grid and wipe all rooms/exits!"
-                     "\nObjects/Chars inside deleted rooms will be moved to their home locations."
-                     "\nThis can't be undone. Are you sure you want to continue? Y/[N]? ")
-        if repl.lower() not in ('yes', 'y'):
+        repl = input(
+            "WARNING: This will delete the ENTIRE Grid and wipe all rooms/exits!"
+            "\nObjects/Chars inside deleted rooms will be moved to their home locations."
+            "\nThis can't be undone. Are you sure you want to continue? Y/[N]? "
+        )
+        if repl.lower() not in ("yes", "y"):
             print("Aborted.")
             return
         print("Deleting grid ...")
         grid.delete()
-        print("... done.\nPlease reload the server now; otherwise "
-              "removed rooms may linger in cache.")
+        print(
+            "... done.\nPlease reload the server now; otherwise "
+            "removed rooms may linger in cache."
+        )
         return
 
     zcoords = (part.strip() for part in suboptions)
@@ -376,21 +401,24 @@ def _option_delete(*suboptions):
             print(f"Mapname/zcoord {zcoord} is not a part of the grid.")
             err = True
     if err:
-        print("Valid mapnames/zcoords are\n:", "\n ".join(
-            xymap.Z for xymap in grid.all_rooms()))
+        print("Valid mapnames/zcoords are\n:", "\n ".join(xymap.Z for xymap in grid.all_rooms()))
         return
-    repl = input("This will delete map(s) {', '.join(zcoords)} and wipe all corresponding\n"
-                 "rooms/exits!"
-                 "\nObjects/Chars inside deleted rooms will be moved to their home locations."
-                 "\nThis can't be undone. Are you sure you want to continue? Y/[N]? ")
-    if repl.lower() not in ('yes', 'y'):
+    repl = input(
+        "This will delete map(s) {', '.join(zcoords)} and wipe all corresponding\n"
+        "rooms/exits!"
+        "\nObjects/Chars inside deleted rooms will be moved to their home locations."
+        "\nThis can't be undone. Are you sure you want to continue? Y/[N]? "
+    )
+    if repl.lower() not in ("yes", "y"):
         print("Aborted.")
         return
 
     print("Deleting selected xymaps ...")
     grid.remove_map(*zcoords, remove_objects=True)
-    print("... done.\nPlease reload the server to refresh room caches."
-          "\nAlso remember to remove any links from remaining maps pointing to deleted maps.")
+    print(
+        "... done.\nPlease reload the server to refresh room caches."
+        "\nAlso remember to remove any links from remaining maps pointing to deleted maps."
+    )
 
 
 def xyzcommand(*args):
@@ -405,20 +433,19 @@ def xyzcommand(*args):
 
     option, *suboptions = args
 
-    if option in ('help', 'h'):
+    if option in ("help", "h"):
         _option_help(*suboptions)
-    if option in ('list', 'show'):
+    if option in ("list", "show"):
         _option_list(*suboptions)
-    elif option == 'init':
+    elif option == "init":
         _option_init(*suboptions)
-    elif option == 'add':
+    elif option == "add":
         _option_add(*suboptions)
-    elif option == 'spawn':
+    elif option == "spawn":
         _option_spawn(*suboptions)
-    elif option == 'initpath':
+    elif option == "initpath":
         _option_initpath(*suboptions)
-    elif option == 'delete':
+    elif option == "delete":
         _option_delete(*suboptions)
     else:
         print(f"Unknown option '{option}'. Use 'evennia xyzgrid help' for valid arguments.")
-

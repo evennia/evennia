@@ -47,12 +47,12 @@ NULNUL = b"\x00\x00"
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH  # max allowed data length in AMP protocol (cannot be changed)
 
 # amp internal
-ASK = b'_ask'
-ANSWER = b'_answer'
-ERROR = b'_error'
-ERROR_CODE = b'_error_code'
-ERROR_DESCRIPTION = b'_error_description'
-UNKNOWN_ERROR_CODE = b'UNKNOWN'
+ASK = b"_ask"
+ANSWER = b"_answer"
+ERROR = b"_error"
+ERROR_CODE = b"_error_code"
+ERROR_DESCRIPTION = b"_error_description"
+UNKNOWN_ERROR_CODE = b"UNKNOWN"
 
 # buffers
 _SENDBATCH = defaultdict(list)
@@ -322,6 +322,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         add a specific log of the problem on the erroring side.
 
         """
+
         def formatAnswer(answerBox):
             answerBox[ANSWER] = box[ASK]
             return answerBox
@@ -350,6 +351,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
             errorBox[ERROR_DESCRIPTION] = desc
             errorBox[ERROR_CODE] = code
             return errorBox
+
         deferred = self.dispatchCommand(box)
         if ASK in box:
             deferred.addCallbacks(formatAnswer, formatError)

@@ -343,7 +343,7 @@ class EvscaperoomObject(DefaultObject):
     # Evennia hooks
 
     def return_appearance(self, looker, **kwargs):
-        """ Could be modified per state. We generally don't worry about the
+        """Could be modified per state. We generally don't worry about the
         contents of the object by default.
 
         """

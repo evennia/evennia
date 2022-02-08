@@ -10,6 +10,7 @@ DOCDIR = pathjoin(ROOTDIR, "docs")
 DOCSRCDIR = pathjoin(DOCDIR, "source")
 EVENNIADIR = pathjoin(ROOTDIR, "evennia")
 
+
 def update_changelog():
     """
     Plain CHANGELOG copy
@@ -22,7 +23,7 @@ def update_changelog():
     with open(sourcefile) as fil:
         txt = fil.read()
 
-    with open(targetfile, 'w') as fil:
+    with open(targetfile, "w") as fil:
         fil.write(txt)
 
     print("  -- Updated Changelog.md")
@@ -62,7 +63,7 @@ if settings.SERVERNAME == "Evennia":
 {txt}
 ```
 """
-    with open(targetfile, 'w') as fil:
+    with open(targetfile, "w") as fil:
         fil.write(txt)
 
     print("  -- Updated Settings-Default.md")

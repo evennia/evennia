@@ -25,6 +25,7 @@ class AttributeSerializer(serializers.ModelSerializer):
     Serialize Attribute views.
 
     """
+
     value_display = serializers.SerializerMethodField(source="value")
     db_value = serializers.CharField(write_only=True, required=False)
 
@@ -151,6 +152,7 @@ class TypeclassListSerializerMixin:
     Shortened serializer for list views.
 
     """
+
     shared_fields = [
         "id",
         "db_key",
@@ -215,6 +217,7 @@ class ObjectListSerializer(TypeclassListSerializerMixin, serializers.ModelSerial
     Shortened representation for listings.]
 
     """
+
     class Meta:
         model = DefaultObject
         fields = [
@@ -261,10 +264,12 @@ class AccountListSerializer(TypeclassListSerializerMixin, serializers.ModelSeria
     A shortened form for listing.
 
     """
+
     class Meta:
         model = DefaultAccount
         fields = ["username"] + [
-            fi for fi in TypeclassListSerializerMixin.shared_fields if fi != "db_key"]
+            fi for fi in TypeclassListSerializerMixin.shared_fields if fi != "db_key"
+        ]
         read_only_fields = ["id"]
 
 
@@ -273,6 +278,7 @@ class ScriptDBSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
     Serializing Account.
 
     """
+
     attributes = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
     aliases = serializers.SerializerMethodField()
@@ -295,6 +301,7 @@ class ScriptListSerializer(TypeclassListSerializerMixin, serializers.ModelSerial
     Shortened form for listing.
 
     """
+
     class Meta:
         model = ScriptDB
         fields = [
@@ -312,25 +319,36 @@ class HelpSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
     Serializers Help entries (not a typeclass).
 
     """
+
     tags = serializers.SerializerMethodField()
     aliases = serializers.SerializerMethodField()
 
     class Meta:
         model = HelpEntry
         fields = [
-            "id", "db_key", "db_help_category", "db_entrytext", "db_date_created",
-            "tags", "aliases"
+            "id",
+            "db_key",
+            "db_help_category",
+            "db_entrytext",
+            "db_date_created",
+            "tags",
+            "aliases",
         ]
         read_only_fields = ["id"]
+
 
 class HelpListSerializer(TypeclassListSerializerMixin, serializers.ModelSerializer):
     """
     Shortened form for listings.
 
     """
+
     class Meta:
         model = HelpEntry
         fields = [
-            "id", "db_key", "db_help_category", "db_date_created",
+            "id",
+            "db_key",
+            "db_help_category",
+            "db_date_created",
         ]
         read_only_fields = ["id"]

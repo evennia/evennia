@@ -25,14 +25,16 @@ ERROR_NO_SUPERUSER = """
     """
 
 
-LIMBO_DESC = _("""
+LIMBO_DESC = _(
+    """
 Welcome to your new |wEvennia|n-based game! Visit https://www.evennia.com if you need
 help, want to contribute, report issues or just join the community.
 
 As a privileged user, write |wbatchcommand tutorial_world.build|n to build
 tutorial content. Once built, try |wintro|n for starting help and |wtutorial|n to
 play the demo game.
-""")
+"""
+)
 
 
 WARNING_POSTGRESQL_FIX = """
@@ -99,7 +101,8 @@ def create_objects():
         superuser_character = ObjectDB.objects.get(id=1)
     except ObjectDB.DoesNotExist:
         superuser_character = create.create_object(
-            character_typeclass, key=superuser.username, nohome=True)
+            character_typeclass, key=superuser.username, nohome=True
+        )
 
     superuser_character.db_typeclass_path = character_typeclass
     superuser_character.db.desc = _("This is User #1.")
@@ -134,6 +137,7 @@ def create_objects():
         superuser_character.location = limbo_obj
     if not superuser_character.home:
         superuser_character.home = limbo_obj
+
 
 def at_initial_setup():
     """
@@ -192,7 +196,7 @@ def handle_setup(last_step=None):
             the function will exit immediately.
 
     """
-    if last_step in('done', -1):
+    if last_step in ("done", -1):
         # this means we don't need to handle setup since
         # it already ran sucessfully once. -1 is the legacy
         # value for existing databases.
@@ -200,15 +204,15 @@ def handle_setup(last_step=None):
 
     # setup sequence
     setup_sequence = {
-        'create_objects': create_objects,
-        'at_initial_setup': at_initial_setup,
-        'collectstatic': collectstatic,
-        'done': reset_server,
+        "create_objects": create_objects,
+        "at_initial_setup": at_initial_setup,
+        "collectstatic": collectstatic,
+        "done": reset_server,
     }
 
     # determine the sequence so we can skip ahead
     steps = list(setup_sequence)
-    steps = steps[steps.index(last_step) + 1 if last_step is not None else 0:]
+    steps = steps[steps.index(last_step) + 1 if last_step is not None else 0 :]
 
     # step through queue from last completed function. Once completed,
     # the 'done' key should be set.
@@ -221,6 +225,6 @@ def handle_setup(last_step=None):
         else:
             # save the step
             ServerConfig.objects.conf("last_initial_setup_step", stepname)
-            if stepname == 'done':
+            if stepname == "done":
                 # always exit on 'done'
                 break

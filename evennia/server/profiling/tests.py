@@ -31,7 +31,7 @@ class TestDummyrunnerSettings(TestCase):
         self.client.counter = Mock(return_value=1)
         self.client.gid = "20171025161153-1"
         self.client.name = "Dummy_%s" % self.client.gid
-        self.client.password = Something,
+        self.client.password = (Something,)
         self.client.start_room = "testing_room_start_%s" % self.client.gid
         self.client.objs = []
         self.client.exits = []
@@ -45,12 +45,12 @@ class TestDummyrunnerSettings(TestCase):
             c_login(self.client),
             (
                 Something,  # create
-                'yes',  # confirm creation
+                "yes",  # confirm creation
                 Something,  # connect
                 "dig %s" % self.client.start_room,
                 "teleport %s" % self.client.start_room,
                 "py from evennia.server.profiling.dummyrunner import DummyRunnerCmdSet;"
-                "self.cmdset.add(DummyRunnerCmdSet, persistent=False)"
+                "self.cmdset.add(DummyRunnerCmdSet, persistent=False)",
             ),
         )
 
@@ -86,7 +86,7 @@ class TestDummyrunnerSettings(TestCase):
         )
 
     def test_c_digs(self):
-        self.assertEqual(c_digs(self.client), ("dig/tel testing_room_1 = exit_1, exit_1", ))
+        self.assertEqual(c_digs(self.client), ("dig/tel testing_room_1 = exit_1, exit_1",))
         self.assertEqual(self.client.exits, ["exit_1", "exit_1"])
         self.clear_client_lists()
 

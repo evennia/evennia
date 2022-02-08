@@ -6,6 +6,7 @@ These all print to the terminal.
 """
 import os
 
+
 def check_errors(settings):
     """
     Check for deprecations that are critical errors and should stop
@@ -61,19 +62,26 @@ def check_errors(settings):
         )
     depstring = (
         "settings.{} was renamed to {}. Update your settings file (the FuncParser "
-        "replaces and generalizes that which inlinefuncs used to do).")
+        "replaces and generalizes that which inlinefuncs used to do)."
+    )
     if hasattr(settings, "INLINEFUNC_ENABLED"):
-        raise DeprecationWarning(depstring.format(
-            "settings.INLINEFUNC_ENABLED", "FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED"))
+        raise DeprecationWarning(
+            depstring.format(
+                "settings.INLINEFUNC_ENABLED", "FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED"
+            )
+        )
     if hasattr(settings, "INLINEFUNC_STACK_MAXSIZE"):
-        raise DeprecationWarning(depstring.format(
-            "settings.INLINEFUNC_STACK_MAXSIZE", "FUNCPARSER_MAX_NESTING"))
+        raise DeprecationWarning(
+            depstring.format("settings.INLINEFUNC_STACK_MAXSIZE", "FUNCPARSER_MAX_NESTING")
+        )
     if hasattr(settings, "INLINEFUNC_MODULES"):
-        raise DeprecationWarning(depstring.format(
-            "settings.INLINEFUNC_MODULES", "FUNCPARSER_OUTGOING_MESSAGES_MODULES"))
+        raise DeprecationWarning(
+            depstring.format("settings.INLINEFUNC_MODULES", "FUNCPARSER_OUTGOING_MESSAGES_MODULES")
+        )
     if hasattr(settings, "PROTFUNC_MODULES"):
-        raise DeprecationWarning(depstring.format(
-            "settings.PROTFUNC_MODULES", "FUNCPARSER_PROTOTYPE_VALUE_MODULES"))
+        raise DeprecationWarning(
+            depstring.format("settings.PROTFUNC_MODULES", "FUNCPARSER_PROTOTYPE_VALUE_MODULES")
+        )
 
     gametime_deprecation = (
         "The settings TIME_SEC_PER_MIN, TIME_MIN_PER_HOUR,"
@@ -121,7 +129,8 @@ def check_errors(settings):
         raise DeprecationWarning(
             "settings.CHANNEL_HANDLER_CLASS and CHANNEL COMMAND_CLASS are "
             "unused and should be removed. The ChannelHandler is no more; "
-            "channels are now handled by aliasing the default 'channel' command.")
+            "channels are now handled by aliasing the default 'channel' command."
+        )
 
     template_overrides_dir = os.path.join(settings.GAME_DIR, "web", "template_overrides")
     static_overrides_dir = os.path.join(settings.GAME_DIR, "web", "static_overrides")
@@ -151,8 +160,10 @@ def check_warnings(settings):
     if settings.ALLOWED_HOSTS == ["*"]:
         print(" [Devel: settings.ALLOWED_HOSTS set to '*' (all). Limit in production.]")
     if settings.SERVER_HOSTNAME == "localhost":
-        print(" [Devel: settings.SERVER_HOSTNAME is set to 'localhost'. "
-              "Update to the actual hostname in production.]")
+        print(
+            " [Devel: settings.SERVER_HOSTNAME is set to 'localhost'. "
+            "Update to the actual hostname in production.]"
+        )
 
     for dbentry in settings.DATABASES.values():
         if "psycopg" in dbentry.get("ENGINE", ""):

@@ -58,8 +58,7 @@ from random import randint
 from evennia import default_cmds, CmdSet
 
 
-def roll(dicenum, dicetype, modifier=None,
-         conditional=None, return_tuple=False):
+def roll(dicenum, dicetype, modifier=None, conditional=None, return_tuple=False):
     """
     This is a standard dice roller.
 
@@ -140,6 +139,7 @@ def roll(dicenum, dicetype, modifier=None,
             return outcome
         else:
             return result
+
 
 # legacy alias
 roll_dice = roll

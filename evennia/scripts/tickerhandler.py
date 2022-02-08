@@ -90,6 +90,7 @@ a text-game, and if you want to update some property, consider doing so
 on-demand rather than using a ticker.
 """
 
+
 class Ticker(object):
     """
     Represents a repeatedly running task that calls

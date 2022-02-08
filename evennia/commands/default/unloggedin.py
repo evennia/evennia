@@ -201,13 +201,17 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
         non_normalized_username = username
         username = Account.normalize_username(username)
         if non_normalized_username != username:
-            session.msg("Note: your username was normalized to strip spaces and remove characters "
-                        "that could be visually confusing.")
+            session.msg(
+                "Note: your username was normalized to strip spaces and remove characters "
+                "that could be visually confusing."
+            )
 
         # have the user verify their new account was what they intended
-        answer = yield(f"You want to create an account '{username}' with password '{password}'."
-                       "\nIs this what you intended? [Y]/N?")
-        if answer.lower() in ('n', 'no'):
+        answer = yield (
+            f"You want to create an account '{username}' with password '{password}'."
+            "\nIs this what you intended? [Y]/N?"
+        )
+        if answer.lower() in ("n", "no"):
             session.msg("Aborted. If your user name contains spaces, surround it by quotes.")
             return
 
@@ -344,7 +348,7 @@ class CmdUnconnectedEncoding(COMMAND_DEFAULT_CLASS):
 
     If you don't submit an encoding, the current encoding will be displayed
     instead.
-  """
+    """
 
     key = "encoding"
     aliases = "encode"

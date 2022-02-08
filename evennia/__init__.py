@@ -100,6 +100,7 @@ MONITOR_HANDLER = None
 GLOBAL_SCRIPTS = None
 OPTION_CLASSES = None
 
+
 def _create_version():
     """
     Helper function for building the version string

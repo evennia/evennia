@@ -80,47 +80,63 @@ _SEARCH_AT_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit
 # is the normal "production message to echo to the account.
 
 _ERROR_UNTRAPPED = (
-    _("""
+    _(
+        """
 An untrapped error occurred.
-"""),
-    _("""
+"""
+    ),
+    _(
+        """
 An untrapped error occurred. Please file a bug report detailing the steps to reproduce.
-"""),
+"""
+    ),
 )
 
 _ERROR_CMDSETS = (
-    _("""
+    _(
+        """
 A cmdset merger-error occurred. This is often due to a syntax
 error in one of the cmdsets to merge.
-"""),
-    _("""
+"""
+    ),
+    _(
+        """
 A cmdset merger-error occurred. Please file a bug report detailing the
 steps to reproduce.
-"""),
+"""
+    ),
 )
 
 _ERROR_NOCMDSETS = (
-    _("""
+    _(
+        """
 No command sets found! This is a critical bug that can have
 multiple causes.
-"""),
-    _("""
+"""
+    ),
+    _(
+        """
 No command sets found! This is a sign of a critical bug.  If
 disconnecting/reconnecting doesn't" solve the problem, try to contact
 the server admin through" some other means for assistance.
-"""),
+"""
+    ),
 )
 
 _ERROR_CMDHANDLER = (
-    _("""
+    _(
+        """
 A command handler bug occurred. If this is not due to a local change,
 please file a bug report with the Evennia project, including the
 traceback and steps to reproduce.
-"""),
-    _("""
+"""
+    ),
+    _(
+        """
 A command handler bug occurred. Please notify staff - they should
 likely file a bug report with the Evennia project.
-"""),
+"""
+    ),
 )
 
 _ERROR_RECURSION_LIMIT = _(

@@ -121,7 +121,11 @@ class S3Boto3StorageTests(S3Boto3TestCase):
 
         obj = self.storage.bucket.Object.return_value
         obj.upload_fileobj.assert_called_with(
-            content, ExtraArgs={"ContentType": "text/plain", "ACL": self.storage.default_acl,}
+            content,
+            ExtraArgs={
+                "ContentType": "text/plain",
+                "ACL": self.storage.default_acl,
+            },
         )
 
     def test_storage_save_with_acl(self):
@@ -136,7 +140,11 @@ class S3Boto3StorageTests(S3Boto3TestCase):
 
         obj = self.storage.bucket.Object.return_value
         obj.upload_fileobj.assert_called_with(
-            content, ExtraArgs={"ContentType": "text/plain", "ACL": "private",}
+            content,
+            ExtraArgs={
+                "ContentType": "text/plain",
+                "ACL": "private",
+            },
         )
 
     def test_content_type(self):
@@ -151,7 +159,11 @@ class S3Boto3StorageTests(S3Boto3TestCase):
 
         obj = self.storage.bucket.Object.return_value
         obj.upload_fileobj.assert_called_with(
-            content, ExtraArgs={"ContentType": "image/jpeg", "ACL": self.storage.default_acl,}
+            content,
+            ExtraArgs={
+                "ContentType": "image/jpeg",
+                "ACL": self.storage.default_acl,
+            },
         )
 
     def test_storage_save_gzipped(self):
@@ -379,7 +391,10 @@ class S3Boto3StorageTests(S3Boto3TestCase):
         self.assertEqual(uploaded_content, written_content)
         multipart.complete.assert_called_once_with(
             MultipartUpload={
-                "Parts": [{"ETag": "123", "PartNumber": 1}, {"ETag": "456", "PartNumber": 2},]
+                "Parts": [
+                    {"ETag": "123", "PartNumber": 1},
+                    {"ETag": "456", "PartNumber": 2},
+                ]
             }
         )
 
@@ -394,7 +409,10 @@ class S3Boto3StorageTests(S3Boto3TestCase):
         )
         self.storage._get_or_create_bucket("testbucketname")
         Bucket.create.assert_called_once_with(
-            ACL="public-read", CreateBucketConfiguration={"LocationConstraint": "sa-east-1",}
+            ACL="public-read",
+            CreateBucketConfiguration={
+                "LocationConstraint": "sa-east-1",
+            },
         )
 
     def test_auto_creating_bucket_with_acl(self):
@@ -409,22 +427,28 @@ class S3Boto3StorageTests(S3Boto3TestCase):
         )
         self.storage._get_or_create_bucket("testbucketname")
         Bucket.create.assert_called_once_with(
-            ACL="public-read", CreateBucketConfiguration={"LocationConstraint": "sa-east-1",}
+            ACL="public-read",
+            CreateBucketConfiguration={
+                "LocationConstraint": "sa-east-1",
+            },
         )
 
     def test_storage_exists(self):
         self.assertTrue(self.storage.exists("file.txt"))
         self.storage.connection.meta.client.head_object.assert_called_with(
-            Bucket=self.storage.bucket_name, Key="file.txt",
+            Bucket=self.storage.bucket_name,
+            Key="file.txt",
         )
 
     def test_storage_exists_false(self):
         self.storage.connection.meta.client.head_object.side_effect = ClientError(
-            {"Error": {"Code": "404", "Message": "Not Found"}}, "HeadObject",
+            {"Error": {"Code": "404", "Message": "Not Found"}},
+            "HeadObject",
         )
         self.assertFalse(self.storage.exists("file.txt"))
         self.storage.connection.meta.client.head_object.assert_called_with(
-            Bucket=self.storage.bucket_name, Key="file.txt",
+            Bucket=self.storage.bucket_name,
+            Key="file.txt",
         )
 
     def test_storage_exists_doesnt_create_bucket(self):
@@ -445,8 +469,14 @@ class S3Boto3StorageTests(S3Boto3TestCase):
         #   4.txt
         pages = [
             {
-                "CommonPrefixes": [{"Prefix": "some"}, {"Prefix": "other"},],
-                "Contents": [{"Key": "2.txt"}, {"Key": "4.txt"},],
+                "CommonPrefixes": [
+                    {"Prefix": "some"},
+                    {"Prefix": "other"},
+                ],
+                "Contents": [
+                    {"Key": "2.txt"},
+                    {"Key": "4.txt"},
+                ],
             },
         ]
 
@@ -465,7 +495,14 @@ class S3Boto3StorageTests(S3Boto3TestCase):
         #   some/path/1.txt
         #   some/2.txt
         pages = [
-            {"CommonPrefixes": [{"Prefix": "some/path"},], "Contents": [{"Key": "some/2.txt"},],},
+            {
+                "CommonPrefixes": [
+                    {"Prefix": "some/path"},
+                ],
+                "Contents": [
+                    {"Key": "some/2.txt"},
+                ],
+            },
         ]
 
         paginator = mock.MagicMock()

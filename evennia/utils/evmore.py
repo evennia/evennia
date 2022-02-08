@@ -103,6 +103,7 @@ class CmdMoreExit(Command):
     Any non-more command will exit the pager.
 
     """
+
     key = _CMD_NOMATCH
 
     def func(self):
@@ -356,7 +357,7 @@ class EvMore(object):
         querysets); to avoid fetching all objects at the same time.
 
         """
-        return self._data[pageno * self.height: pageno * self.height + self.height]
+        return self._data[pageno * self.height : pageno * self.height + self.height]
 
     def paginator_django(self, pageno):
         """
@@ -434,7 +435,7 @@ class EvMore(object):
             lines = text.split("\n")
 
         self._data = [
-            _LBR.join(lines[i: i + self.height]) for i in range(0, len(lines), self.height)
+            _LBR.join(lines[i : i + self.height]) for i in range(0, len(lines), self.height)
         ]
         self._npages = len(self._data)
 

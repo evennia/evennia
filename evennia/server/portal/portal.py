@@ -358,8 +358,7 @@ if SSH_ENABLED:
         for port in SSH_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
             factory = ssh.makeFactory(
-                {"protocolFactory": _ssh_protocol,
-                 "protocolArgs": (), "sessions": PORTAL_SESSIONS}
+                {"protocolFactory": _ssh_protocol, "protocolArgs": (), "sessions": PORTAL_SESSIONS}
             )
             factory.noisy = False
             ssh_service = internet.TCPServer(port, factory, interface=interface)

@@ -134,11 +134,12 @@ class GlobalScriptContainer(Container):
 
         typeclass = self.typeclass_storage[key]
         script = typeclass.objects.filter(
-            db_key=key, db_account__isnull=True, db_obj__isnull=True).first()
+            db_key=key, db_account__isnull=True, db_obj__isnull=True
+        ).first()
 
         kwargs = {**self.loaded_data[key]}
-        kwargs['key'] = key
-        kwargs['persistent'] = kwargs.get('persistent', True)
+        kwargs["key"] = key
+        kwargs["persistent"] = kwargs.get("persistent", True)
 
         compare_hash = str(dumps(kwargs, protocol=4))
 
@@ -146,8 +147,9 @@ class GlobalScriptContainer(Container):
             script_hash = script.attributes.get("global_script_settings", category="settings_hash")
             if script_hash is None:
                 # legacy - store the hash anew and assume no change
-                script.attributes.add("global_script_settings", compare_hash,
-                                      category="settings_hash")
+                script.attributes.add(
+                    "global_script_settings", compare_hash, category="settings_hash"
+                )
             elif script_hash != compare_hash:
                 # wipe the old version and create anew
                 logger.log_info(f"GLOBAL_SCRIPTS: Settings changed for {key} ({typeclass}).")
@@ -164,8 +166,7 @@ class GlobalScriptContainer(Container):
                 return None
 
             # store a hash representation of the setup
-            script.attributes.add("_global_script_settings",
-                                  compare_hash, category="settings_hash")
+            script.attributes.add("_global_script_settings", compare_hash, category="settings_hash")
             script.start()
 
         return script
@@ -200,7 +201,8 @@ class GlobalScriptContainer(Container):
                     self.typeclass_storage[key] = class_from_module(typeclass)
                 except Exception:
                     logger.log_trace(
-                        f"GlobalScriptContainer could not start import global script {key}.")
+                        f"GlobalScriptContainer could not start import global script {key}."
+                    )
 
     def get(self, key, default=None):
         """

@@ -215,7 +215,7 @@ class MsgManager(TypedObjectManager):
             return self.filter(db_receivers_accounts=obj).exclude(db_hide_from_accounts=obj)
         elif typ == "object":
             return self.filter(db_receivers_objects=obj).exclude(db_hide_from_objects=obj)
-        elif typ == 'script':
+        elif typ == "script":
             return self.filter(db_receivers_scripts=obj)
         else:
             raise CommError
@@ -257,7 +257,7 @@ class MsgManager(TypedObjectManager):
             sender_restrict = Q(db_sender_accounts__pk=spk) & ~Q(db_hide_from_accounts__pk=spk)
         elif styp == "object":
             sender_restrict = Q(db_sender_objects__pk=spk) & ~Q(db_hide_from_objects__pk=spk)
-        elif styp == 'script':
+        elif styp == "script":
             sender_restrict = Q(db_sender_scripts__pk=spk)
         else:
             sender_restrict = Q()
@@ -266,16 +266,16 @@ class MsgManager(TypedObjectManager):
         if receiver:
             rpk = receiver.pk
         if rtyp == "account":
-            receiver_restrict = (
-                Q(db_receivers_accounts__pk=rpk) & ~Q(db_hide_from_accounts__pk=rpk))
+            receiver_restrict = Q(db_receivers_accounts__pk=rpk) & ~Q(db_hide_from_accounts__pk=rpk)
         elif rtyp == "object":
             receiver_restrict = Q(db_receivers_objects__pk=rpk) & ~Q(db_hide_from_objects__pk=rpk)
-        elif rtyp == 'script':
+        elif rtyp == "script":
             receiver_restrict = Q(db_receivers_scripts__pk=rpk)
         elif rtyp == "channel":
             raise DeprecationWarning(
                 "Msg.objects.search don't accept channel recipients since "
-                "Channels no longer accepts Msg objects.")
+                "Channels no longer accepts Msg objects."
+            )
         else:
             receiver_restrict = Q()
         # filter by full text
@@ -289,8 +289,9 @@ class MsgManager(TypedObjectManager):
     # back-compatibility alias
     message_search = search_message
 
-    def create_message(self, senderobj, message, receivers=None, locks=None, tags=None,
-                       header=None, **kwargs):
+    def create_message(
+        self, senderobj, message, receivers=None, locks=None, tags=None, header=None, **kwargs
+    ):
         """
         Create a new communication Msg. Msgs represent a unit of
         database-persistent communication between entites.
@@ -315,7 +316,7 @@ class MsgManager(TypedObjectManager):
             it's up to the command definitions to limit this as desired.
 
         """
-        if 'channels' in kwargs:
+        if "channels" in kwargs:
             raise DeprecationWarning(
                 "create_message() does not accept 'channel' kwarg anymore "
                 "- channels no longer accept Msg objects."
@@ -338,6 +339,7 @@ class MsgManager(TypedObjectManager):
 
         new_message.save()
         return new_message
+
 
 #
 # Channel manager

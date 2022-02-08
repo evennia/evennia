@@ -30,9 +30,9 @@ class TestEvForm(TestCase):
             }
         )
         # create the EvTables
-        tableA = evtable.EvTable("HP", "MV", "MP",
-                                 table=[["**"], ["*****"], ["***"]],
-                                 border="incols")
+        tableA = evtable.EvTable(
+            "HP", "MV", "MP", table=[["**"], ["*****"], ["***"]], border="incols"
+        )
         tableB = evtable.EvTable(
             "Skill",
             "Value",
@@ -50,7 +50,7 @@ class TestEvForm(TestCase):
 
     def _simple_form(self, form):
         cellsdict = {1: "Apple", 2: "Banana", 3: "Citrus", 4: "Durian"}
-        formdict = {"FORMCHAR": 'x', "TABLECHAR": 'c', "FORM": form}
+        formdict = {"FORMCHAR": "x", "TABLECHAR": "c", "FORM": form}
         form = evform.EvForm(form=formdict)
         form.map(cellsdict)
         form = ansi.strip_ansi(str(form))
@@ -226,25 +226,16 @@ class TestEvFormParallelTables(TestCase):
 
     def setUp(self):
         self.text1 = "Test text"
-        self.table2 = evtable.EvTable(
-            "Ab", "Sc",
-            table=[
-                ["|ySTR", "|yCON", "|yDEX"],
-                [10, 10, 10]
-            ]
-        )
+        self.table2 = evtable.EvTable("Ab", "Sc", table=[["|ySTR", "|yCON", "|yDEX"], [10, 10, 10]])
         self.table3 = evtable.EvTable(
-            "|RSkill", "|RLevel",
+            "|RSkill",
+            "|RLevel",
             table=[
                 ["|yAcro", "|yAnim", "|yArca", "|yAth", "|yDec", "|yHis"],
-                [10, 10, 10, 10, 10, 10]
-            ]
+                [10, 10, 10, 10, 10, 10],
+            ],
         )
-        self.formdict = {
-            "FORM": _SHEET,
-            "FORMCHAR": 'x',
-            "TABLECHAR": 'c'
-        }
+        self.formdict = {"FORM": _SHEET, "FORMCHAR": "x", "TABLECHAR": "c"}
 
     def test_parallel_tables(self):
         """
@@ -253,14 +244,8 @@ class TestEvFormParallelTables(TestCase):
         form = evform.EvForm(form=self.formdict)
         form.map(
             cells={
-                '1': self.text1,
+                "1": self.text1,
             },
-            tables={
-                '2': self.table2,
-                '3': self.table3
-            }
+            tables={"2": self.table2, "3": self.table3},
         )
-        self.assertEqual(
-            ansi.strip_ansi(str(form).strip()),
-            _EXPECTED.strip()
-        )
+        self.assertEqual(ansi.strip_ansi(str(form).strip()), _EXPECTED.strip())

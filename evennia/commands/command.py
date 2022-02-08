@@ -102,16 +102,16 @@ def _init_command(cls, **kwargs):
     # pre-prepare a help index entry for quicker lookup
     # strip the @- etc to allow help to be agnostic
     stripped_key = cls.key[1:] if cls.key and cls.key[0] in CMD_IGNORE_PREFIXES else ""
-    stripped_aliases = (
-        " ".join(al[1:] if al and al[0] in CMD_IGNORE_PREFIXES else al
-                 for al in cls.aliases))
+    stripped_aliases = " ".join(
+        al[1:] if al and al[0] in CMD_IGNORE_PREFIXES else al for al in cls.aliases
+    )
     cls.search_index_entry = {
         "key": cls.key,
         "aliases": " ".join(cls.aliases),
         "no_prefix": f"{stripped_key} {stripped_aliases}",
         "category": cls.help_category,
         "text": cls.__doc__,
-        "tags": ""
+        "tags": "",
     }
 
 
@@ -562,7 +562,7 @@ Command {self} has no defined `func()` - showing on-command variables:
         """
         try:
             return reverse(
-                'help-entry-detail',
+                "help-entry-detail",
                 kwargs={"category": slugify(self.help_category), "topic": slugify(self.key)},
             )
         except Exception as e:

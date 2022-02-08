@@ -24,8 +24,9 @@ class AccountMixin(TypeclassMixin):
     """
 
     # -- Django constructs --
-    model = class_from_module(settings.BASE_ACCOUNT_TYPECLASS,
-                              fallback=settings.FALLBACK_ACCOUNT_TYPECLASS)
+    model = class_from_module(
+        settings.BASE_ACCOUNT_TYPECLASS, fallback=settings.FALLBACK_ACCOUNT_TYPECLASS
+    )
     form_class = forms.AccountForm
 
 
@@ -73,4 +74,3 @@ class AccountCreateView(AccountMixin, EvenniaCreateView):
 
         # Redirect the user to the login page
         return HttpResponseRedirect(self.success_url)
-
